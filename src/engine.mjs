@@ -111,20 +111,25 @@ export class CatSystem2 {
       }
     if (this.story) {
       this.story.language = this.language('lang_text_main');
+      const translated = (entry) => {
+        const script = this.story.scripts.get(entry.scene);
+        if (!script) return null;
+        const text = script.translation?.[this.story.language]?.[entry.index];
+        return {
+          text: cleanText(text?.text ?? entry.original),
+          speaker: text?.speaker || entry.originalSpeaker || null,
+        };
+      };
+      for (const entry of this.story.log) {
+        const text = translated(entry);
+        if (text) Object.assign(entry, text);
+      }
       const message = this.story.currentMessage,
-        translated = message
-          ? this.story.scripts.get(message.scene)?.translation?.[this.story.language]?.[
-              message.index
-            ]
-          : null;
-      if (
-        translated &&
-        (message.text !== cleanText(translated.text) || message.speaker !== translated.speaker)
-      ) {
-        message.text = cleanText(translated.text);
-        message.speaker = translated.speaker;
+        text = message ? translated(message) : null;
+      if (text && (message.text !== text.text || message.speaker !== text.speaker)) {
+        Object.assign(message, text);
         this.message(message);
-        Object.assign(this.story.log.at(-1), message);
+        if (this.story.log.length) Object.assign(this.story.log.at(-1), message);
       }
     }
   }
@@ -207,8 +212,10 @@ export class CatSystem2 {
     const xml = parseXML(decodeText(await this.game.require(themeFile)));
     this.theme = xml.node(name) || xml.node('default');
     if (!this.theme) throw new Error(`Missing message window theme ${name}`);
-    for (let i = 0; i < 4; i++)
+    for (let i = 0; i < 4; i++) {
       this.strings[900 + i] = this.theme.value('mes', `img0${i}`).replace(/\.hg3$/i, '');
+      this.strings[910 + i] = this.theme.value('log', `img0${i}`).replace(/\.hg3$/i, '');
+    }
     this.windowFES = this.fes();
     this.windowFES.transparent = true;
     await this.windowFES.start(this.theme.value('mes', 'script'));

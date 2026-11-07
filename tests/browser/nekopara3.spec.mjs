@@ -94,6 +94,21 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
       globalThis.catSystem2.settings.lang_text_main === 2 &&
       globalThis.catSystem2.modal.player.stack.includes('config#WAIT'),
   );
+  await button(page, 'system_langage[1]');
+  await button(page, 'system_main[0]');
+  await page.waitForFunction(() => globalThis.catSystem2.story.language === 'jp');
+  expect(
+    await page.evaluate(async () => {
+      const { cleanText } = await import('/src/scene.mjs');
+      const message = globalThis.catSystem2.story.currentMessage;
+      return (
+        message.text === cleanText(message.original) && message.speaker === message.originalSpeaker
+      );
+    }),
+  ).toBe(true);
+  await button(page, 'system_langage[1]');
+  await button(page, 'system_main[2]');
+  await page.waitForFunction(() => globalThis.catSystem2.story.language === 'cn');
   await button(page, 'system_langage[0]');
   await page.waitForFunction(() =>
     globalThis.catSystem2.modal.player.stack.includes('config#SYSTEM_LANG_WAIT'),
@@ -122,8 +137,28 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
     globalThis.catSystem2.modal?.player.stack.includes('hist_b#WAIT'),
   );
   await noError(page);
-  await page.keyboard.press('Escape');
+  const rollbackTarget = await page.evaluate(() => {
+    const e = globalThis.catSystem2;
+    return e.story.log[e.modal.player.root.byKey.get('log').top];
+  });
+  await page.screenshot({
+    path: '.local/evidence/accepted-backlog.jpg',
+    type: 'jpeg',
+    quality: 95,
+  });
+  await button(page, 'ret[0]');
+  await page.waitForFunction(() =>
+    globalThis.catSystem2.modal?.player.stack.includes('confirm#WAIT'),
+  );
+  await button(page, 'btn[0]');
   await page.waitForFunction(() => !globalThis.catSystem2.modal);
+  await page.waitForFunction(
+    (message) =>
+      globalThis.catSystem2.story?.currentMessage?.scene === message.scene &&
+      globalThis.catSystem2.story.currentMessage.index === message.index &&
+      !!globalThis.catSystem2.windowFES?.root,
+    rollbackTarget,
+  );
   await page.reload();
   await page.click('#start');
   await page.waitForFunction(() => window.catSystem2?.mode === 'title');

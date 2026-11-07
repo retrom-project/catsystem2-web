@@ -102,7 +102,7 @@ export class CanvasRenderer {
           if (!entry) continue;
           const area = player.picture(o.areaFile)?.frame((o.areaID || 0) + i);
           this.text(
-            `${entry.speaker || ''} ${entry.text}`,
+            entry.text,
             area?.offsetX ?? at.x,
             area?.offsetY ?? at.y + i * 155,
             area?.width || 802,

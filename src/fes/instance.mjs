@@ -478,7 +478,7 @@ export class FESInstance {
         return { action: 'stop' };
       case 'send': {
         if (p(0) >>> 0 === 0xffff0003) this.player.enqueue(host.systemAction?.(p(2), this));
-        else if (p(0) >>> 0 === 0xfffe0002) store(2, host.log?.[p(1)]?.nameID ?? -1);
+        else if (p(0) >>> 0 === 0xfffe0002) this.setGlobal(p(2), host.log?.[p(1)]?.nameID ?? -1);
         else if (p(0) >>> 0 === 0xfffe0000)
           host.playLogVoice?.(this.objects.find((o) => o.type === 'LOGSTRING8')?.lineInfo);
         else if (host.send)

@@ -9,7 +9,47 @@ import { objectCommand, FESObject } from '../src/fes/object.mjs';
 import { Stage, planeNumbers } from '../src/stage.mjs';
 import { ScenePlayer } from '../src/scene.mjs';
 import { AudioMixer } from '../src/audio.mjs';
+import { CatSystem2 } from '../src/engine.mjs';
 import { catScene, memoryGame, u32, translation } from './helpers.mjs';
+
+test('changing language refreshes cached history and can return from translation to original text', () => {
+  let language = 'cn';
+  const currentMessage = {
+    scene: 'scene',
+    index: 0,
+    text: 'Hello',
+    speaker: 'Cat',
+    original: '原文\\@',
+    originalSpeaker: '猫',
+  };
+  const old = { ...currentMessage, index: 1, original: '前の文章', text: 'Previous' };
+  const story = {
+    currentMessage,
+    log: [old, { ...currentMessage }],
+    scripts: new Map([
+      [
+        'scene',
+        {
+          translation: {
+            cn: [
+              { text: '你好', speaker: '貓' },
+              { text: '前文', speaker: '貓' },
+            ],
+          },
+        },
+      ],
+    ]),
+  };
+  const player = { story, language: () => language, message() {} };
+  CatSystem2.prototype.updateLanguage.call(player);
+  assert.equal(currentMessage.text, '你好');
+  assert.equal(old.text, '前文');
+  language = 'jp';
+  CatSystem2.prototype.updateLanguage.call(player);
+  assert.equal(currentMessage.text, '原文');
+  assert.equal(currentMessage.speaker, '猫');
+  assert.equal(old.text, '前の文章');
+});
 
 test('missing voice remains silent with a diagnostic; corrupt audio still fails', async () => {
   let found = false;
@@ -158,6 +198,21 @@ test('an absent FES subroutine returns to its caller and remains visible in diag
   await player.step();
   assert.equal(player.globals[1], 42);
   assert.deepEqual([...player.unresolvedTargets], ['flow: missing call OPTIONAL']);
+});
+test('FES log-name queries evaluate a variable holding the result variable index', async () => {
+  const player = new FESPlayer(
+    memoryGame({
+      'flow.fes': new TextEncoder().encode(
+        '#START\n\\0=1\n\\1=850\nsend 0xfffe0002 \\0 \\1\nnext WAIT\n#WAIT\n',
+      ),
+    }),
+    {},
+    { log: [{ nameID: 2 }, { nameID: 9 }] },
+  );
+  await player.start('flow');
+  await player.step();
+  assert.equal(player.globals[850], 9);
+  assert.equal(Object.hasOwn(player.globals, 'NaN'), false);
 });
 test('FES next runs the destination in the same frame and preserves its wait after an event', async () => {
   const game = memoryGame({
