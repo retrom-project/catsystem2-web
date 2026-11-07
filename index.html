@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CatSystem2 Web</title>
+    <link rel="stylesheet" href="/web/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>CatSystem2 Web</strong><span id="game-title">Standalone player</span
+      ><button id="open">Open game folder</button
+      ><input id="folder" type="file" webkitdirectory multiple hidden />
+    </header>
+    <main>
+      <div id="stage">
+        <canvas id="screen" width="1280" height="720" tabindex="0" aria-label="Game screen"></canvas
+        ><video id="movie" playsinline hidden></video>
+        <div id="welcome">
+          <p>Play a CatSystem2 game in your browser.</p>
+          <p>Select a prepared game folder, or start the game mounted by the local server.</p>
+          <button id="start">Start game</button>
+        </div>
+      </div>
+      <nav aria-label="Player controls">
+        <button id="next" disabled>Continue</button
+        ><button id="quick-save" disabled>Quick save</button
+        ><button id="quick-load" disabled>Quick load</button
+        ><button id="backlog" disabled>Backlog</button
+        ><button id="settings" disabled>Settings</button><button id="fullscreen">Fullscreen</button
+        ><button id="export" disabled>Export save</button
+        ><button id="import" disabled>Import save</button
+        ><input id="save-file" type="file" accept=".json,application/json" hidden />
+      </nav>
+      <p id="status" role="status">
+        Click or tap to advance · Arrow keys / gamepad to select · Enter / A to confirm · Escape / B
+        for menu
+      </p>
+      <p id="error" role="alert" hidden></p>
+      <details>
+        <summary>Diagnostics</summary>
+        <pre id="diagnostics"></pre>
+      </details>
+    </main>
+    <script type="module" src="/web/app.mjs"></script>
+  </body>
+</html>

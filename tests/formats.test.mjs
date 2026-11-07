@@ -1,0 +1,159 @@
+// SPDX-License-Identifier: MPL-2.0
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { deflateSync } from 'node:zlib';
+import { Binary, inflate } from '../src/binary.mjs';
+import { BlobFile, GameFiles, KIFArchive } from '../src/files.mjs';
+import { readScene, readTranslation, readFES } from '../src/formats/scene.mjs';
+import { HG3 } from '../src/formats/hg3.mjs';
+import { PSB } from '../src/formats/psb.mjs';
+import { parseXML } from '../src/xml.mjs';
+import { sourceIdentity } from '../src/identity.mjs';
+import { catScene, translation, kif, hg3, ascii, u32 } from './helpers.mjs';
+
+test('binary magic includes embedded NUL and rejects incomplete signatures', () => {
+  assert.equal(new Binary(new Uint8Array([75, 67, 83, 0])).magic('KCS\0'), true);
+  assert.equal(new Binary(new Uint8Array([75, 67, 83])).magic('KCS\0'), false);
+  assert.throws(() => new Binary(new Uint8Array(2)).u32(0), /range/);
+});
+test('zlib validates output size, truncation, and an explicit expansion ceiling', async () => {
+  const compressed = deflateSync(new Uint8Array(4096));
+  assert.equal((await inflate(compressed, 4096)).length, 4096);
+  await assert.rejects(inflate(compressed, 4095), /exceeds/);
+  await assert.rejects(inflate(compressed.subarray(0, -1), 4096));
+  await assert.rejects(inflate(compressed, 4096, 1024), /size/);
+});
+test('KIF reads entry boundaries and refuses encrypted input explicitly', async () => {
+  const archive = await KIFArchive.open(
+    new BlobFile(new Blob([kif([['test.bin', new Uint8Array([1, 2, 3])]])])),
+    'test.int',
+  );
+  assert.deepEqual([...(await archive.read(archive.entries[0]))], [1, 2, 3]);
+  await assert.rejects(
+    KIFArchive.open(
+      new BlobFile(new Blob([kif([['__key__.dat', new Uint8Array()]])])),
+      'encrypted.int',
+    ),
+    /encrypted/,
+  );
+  const malformed = kif([['test', new Uint8Array([1])]]);
+  new DataView(malformed.buffer).setUint32(76, 999, true);
+  await assert.rejects(KIFArchive.open(new BlobFile(new Blob([malformed])), 'broken.int'), /entry/);
+});
+test('loose patch data wins over patch archives, and patch archives win over base', async () => {
+  const file = (b) => new BlobFile(new Blob([b]));
+  const game = new GameFiles(
+    new Map([
+      ['base.int', file(kif([['HELLO.txt', new Uint8Array([1])]]))],
+      ['patch/patch.int', file(kif([['hello.txt', new Uint8Array([2])]]))],
+      ['patch/loose/hello.txt', file(new Uint8Array([3]))],
+    ]),
+  );
+  await game.open();
+  assert.deepEqual([...(await game.require('Hello.TXT'))], [3]);
+});
+test('CatScene preserves Japanese CP932 and command/message boundaries', async () => {
+  const scene = await readScene(
+    catScene([
+      [0x30, 'bg 0 room'],
+      [0x21, '名前'],
+      [0x20, 'こんにちは'],
+      [2, ''],
+    ]),
+  );
+  assert.deepEqual(
+    scene.lines.map((l) => l.kind),
+    [48, 33, 32, 2],
+  );
+  assert.equal(scene.lines[2].text, 'こんにちは');
+});
+test('CSTL indexes UTF-8 by message and language, including 255-byte length runs', () => {
+  const bytes = translation(
+    ['en', 'jp'],
+    [{ en: ['Speaker', 'x'.repeat(300)], jp: ['名前', '文章'] }],
+  );
+  const t = readTranslation(bytes);
+  assert.equal(t.en[0].text.length, 300);
+  assert.equal(t.jp[0].speaker, '名前');
+  assert.throws(() => readTranslation(new Uint8Array([...bytes, 1])), /trailing/);
+});
+test('FES recognizes both original UTF-8 and CP932 script text', async () => {
+  const text = new TextEncoder().encode('#START\nstrvar 1 日本語\0'),
+    packed = deflateSync(text);
+  assert.equal(
+    await readFES(
+      new Uint8Array([
+        ...ascii('FES\0'),
+        ...u32(packed.length),
+        ...u32(text.length),
+        ...u32(0),
+        ...packed,
+      ]),
+    ),
+    '#START\nstrvar 1 日本語',
+  );
+});
+test('HG3 reconstructs known RGBA pixels, including vertical order and horizontal/vertical deltas', async () => {
+  const pixels = new Uint8Array([
+    255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 128, 255, 255, 255, 255,
+  ]);
+  const image = new HG3(hg3(2, 2, pixels));
+  await image.decode(image.frames[0]);
+  assert.deepEqual([...image.frames[0].rgba], [...pixels]);
+});
+test('PSB parses tagged scalar/list values and rejects out-of-bounds references', () => {
+  const array = [13, 0, 13],
+    names = [...array, ...array, ...array],
+    strings = array,
+    chunks = array,
+    headerSize = 56;
+  const rootAt = headerSize + names.length + strings.length + chunks.length * 2;
+  const root = [32, 13, 3, 13, 0, 1, 2, 2, 3, 5, 249];
+  const bytes = new Uint8Array([
+    ...ascii('PSB\0'),
+    4,
+    0,
+    0,
+    0,
+    ...[
+      56,
+      56,
+      56 + names.length,
+      56 + names.length + strings.length,
+      56 + names.length + strings.length,
+      56 + names.length + strings.length + chunks.length,
+      rootAt,
+      rootAt,
+      0,
+      0,
+      0,
+      0,
+    ].flatMap(u32),
+    ...names,
+    ...strings,
+    ...chunks,
+    ...chunks,
+    ...root,
+  ]);
+  assert.deepEqual(new PSB(bytes).root, [false, true, -7]);
+  const bad = bytes.slice();
+  new DataView(bad.buffer).setUint32(36, bytes.length + 1, true);
+  assert.throws(() => new PSB(bad), /range/);
+});
+test('XML handles comments, nested values and entities without evaluating external declarations', () => {
+  const doc = parseXML('<root><!-- x --><section><label>A &amp; B</label></section></root>');
+  assert.equal(doc.value('section', 'label'), 'A & B');
+  assert.throws(() => parseXML('<!DOCTYPE root><root/>'), /Unsupported/);
+  assert.throws(() => parseXML('<a><b></a>'), /Mismatched/);
+});
+test('content identity is stable under enumeration order and changes when bytes change', async () => {
+  const file = (value) => new BlobFile(new Blob([new Uint8Array(value)]));
+  const a = new Map([
+      ['b', file([2])],
+      ['a', file([1])],
+    ]),
+    b = new Map([...a].reverse());
+  assert.equal(await sourceIdentity(a), await sourceIdentity(b));
+  b.set('a', file([9]));
+  assert.notEqual(await sourceIdentity(a), await sourceIdentity(b));
+});

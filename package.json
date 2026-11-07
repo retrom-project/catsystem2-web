@@ -1,0 +1,29 @@
+{
+  "name": "catsystem2-web",
+  "version": "0.0.0-dev",
+  "private": true,
+  "type": "module",
+  "license": "MPL-2.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test:browser": "playwright test",
+    "test:game": "playwright test --config playwright.game.config.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "corpus": "node scripts/corpus.mjs",
+    "prepare:media": "node scripts/prepare-media.mjs",
+    "test:route": "playwright test --config playwright.route.config.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.0",
+    "@playwright/test": "1.61.1",
+    "eslint": "9.39.0",
+    "globals": "16.5.0",
+    "prettier": "3.6.2"
+  }
+}
