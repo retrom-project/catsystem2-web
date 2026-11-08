@@ -4,62 +4,64 @@ import { NativeConfiguration } from '../../src/native/config.mjs';
 import { MotionLibrary } from '../../src/motion/library.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
 
+export function createTextureMemoryWorld(profile, files, stageRendererFactory) {
+  const names = [...files.keys()],
+    game = {
+      width: 16,
+      height: 16,
+      index: new Map(names.map((name) => [name, {}])),
+      names: (ext) => names.filter((name) => name.endsWith('.' + ext)),
+      has: (name) => files.has(name.toLowerCase()),
+      read: async (name) => files.get(name.toLowerCase()) ?? null,
+      async require(name) {
+        const bytes = await this.read(name);
+        if (bytes === null) throw new Error('Missing ' + name);
+        return bytes;
+      },
+      resolveCategory(name, category) {
+        const path = this.has(name) ? name : `@cat/${category}/${name}`;
+        return this.has(path) ? path : null;
+      },
+      readCategory(name, category) {
+        return this.read(this.resolveCategory(name, category));
+      },
+    },
+    configuration = new NativeConfiguration({ profile }),
+    texture = configuration.fields.texture,
+    random = new ParticleRandom();
+  Object.assign(configuration.screen, {
+    width: 16,
+    height: 16,
+    currentWidth: 16,
+    currentHeight: 16,
+    virtualWidth: 16,
+    virtualHeight: 16,
+  });
+  texture.size.set([64, 64]);
+  texture.grid.set([48, 104]);
+  texture.bppY.set([1, 1]);
+  texture.bpp = 32;
+  for (const area of texture.areas) area.fill(0xffffffff);
+  texture.areas[0].set([0, 0, 2, 1]);
+  texture.areas[1].set([47, 103, 1, 1]);
+  const world = new NativeWorld({
+    game,
+    profile,
+    configuration,
+    random,
+    images: {},
+    host: {},
+    motionLibrary: new MotionLibrary(game, { profile, random }),
+    storage: { read: async () => null, write: async () => true },
+  });
+  if (stageRendererFactory) world.stageRenderer = stageRendererFactory();
+  return world;
+}
+
 // The virtual VRAM is 3072x6656 (over 64 MiB as RGBA), but only three
 // 64x64 pages exist. Exercise the original clear through both KCS and host.
 export async function exerciseTextureClear(profile, files, stageRendererFactory) {
-  const make = () => {
-      const names = [...files.keys()],
-        game = {
-          width: 16,
-          height: 16,
-          index: new Map(names.map((name) => [name, {}])),
-          names: (ext) => names.filter((name) => name.endsWith('.' + ext)),
-          has: (name) => files.has(name.toLowerCase()),
-          read: async (name) => files.get(name.toLowerCase()) ?? null,
-          async require(name) {
-            const bytes = await this.read(name);
-            if (bytes === null) throw new Error('Missing ' + name);
-            return bytes;
-          },
-          resolveCategory(name, category) {
-            const path = this.has(name) ? name : `@cat/${category}/${name}`;
-            return this.has(path) ? path : null;
-          },
-          readCategory(name, category) {
-            return this.read(this.resolveCategory(name, category));
-          },
-        },
-        configuration = new NativeConfiguration({ profile }),
-        texture = configuration.fields.texture,
-        random = new ParticleRandom();
-      Object.assign(configuration.screen, {
-        width: 16,
-        height: 16,
-        currentWidth: 16,
-        currentHeight: 16,
-        virtualWidth: 16,
-        virtualHeight: 16,
-      });
-      texture.size.set([64, 64]);
-      texture.grid.set([48, 104]);
-      texture.bppY.set([1, 1]);
-      texture.bpp = 32;
-      for (const area of texture.areas) area.fill(0xffffffff);
-      texture.areas[0].set([0, 0, 2, 1]);
-      texture.areas[1].set([47, 103, 1, 1]);
-      const world = new NativeWorld({
-        game,
-        profile,
-        configuration,
-        random,
-        images: {},
-        host: {},
-        motionLibrary: new MotionLibrary(game, { profile, random }),
-        storage: { read: async () => null, write: async () => true },
-      });
-      if (stageRendererFactory) world.stageRenderer = stageRendererFactory();
-      return world;
-    },
+  const make = () => createTextureMemoryWorld(profile, files, stageRendererFactory),
     world = make(),
     checks = {},
     indices = [0, 1, 48 * 104 - 1],

@@ -16,9 +16,18 @@ bitmap. The view's disabled gate still returns failure without changing pages.
 An existing CPU VRAM shadow is cleared only within its current extent.
 Authored tests cover partial cross-page clears, sparse allocation, preserved
 page identities/formats, subsequent original 16-bit dither uploads and fresh
-World restoration in both frozen engines. Ordinary host bitmap uploads still
-materialize the CPU shadow; large-coordinate uploads need a separate bounded
-transfer change and are not covered by this clear fix.
+World restoration in both frozen engines.
+
+Host bitmap uploads keep the CPU VRAM shadow but materialize only each requested
+intersection with an allocated page in native memory. The original uploader
+still locks and converts that rectangle; source rows retain their ascending
+physical order. Splitting at the original page intersections preserves its
+16-bit dither phase. Missing pages require no temporary bitmap. Authored
+comparisons against whole-source uploads in each frozen engine cover source
+clipping, positive/negative origins, cross-page rectangles, asymmetric rows and
+untouched bytes. A small image written at the end of a 3072×6656 virtual canvas,
+a sparse whole-canvas upload, fresh restoration and GPU samples use the same
+bounded path. This does not remove the separately retained CPU shadow.
 
 The page manager negotiates configured dimensions against device limits, then
 rounds actual texture dimensions to powers of two. Graph subdivision retains

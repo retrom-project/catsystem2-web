@@ -60,35 +60,54 @@ export class NativeTexturePageView {
   }
   async upload(bitmap, rectangle = null) {
     const frame = await bitmap.frame(),
-      [left, top, right, bottom] = rectangle ?? [0, 0, frame.width, frame.height];
+      [left, top, right, bottom] = rectangle ?? [0, 0, frame.width, frame.height],
+      ox = bitmap.state.offsetX ?? 0,
+      oy = bitmap.state.offsetY ?? 0,
+      sourceLeft = Math.max(left, ox) - ox,
+      sourceTop = Math.max(top, oy) - oy,
+      width = Math.min(right, ox + frame.width) - ox - sourceLeft,
+      height = Math.min(bottom, oy + frame.height) - oy - sourceTop;
     if (left >= right || top >= bottom) return;
-    await this.platform.withBitmap(bitmap, async (pointer) => {
-      // A VRAM sampling frame already uses ascending texture rows. Preserve
-      // that order when crossing the physical-bitmap upload boundary.
-      const p = this.process,
-        stride = p.load(pointer + 20),
-        data = p.load(pointer + 12),
-        bytes = p.read(data, stride * frame.height);
-      for (let y = 0; y < frame.height; y++)
-        for (let x = 0; x < frame.width; x++) {
-          const source = (y * frame.width + x) * 4,
-            target = y * stride + x * 4;
-          bytes[target] = frame.rgba[source + 2];
-          bytes[target + 1] = frame.rgba[source + 1];
-          bytes[target + 2] = frame.rgba[source];
-          bytes[target + 3] = frame.rgba[source + 3];
-        }
-      p.write(data, bytes);
-      await this.platform.rawBitmapUpload(
-        pointer,
-        left,
-        top,
-        right - left,
-        bottom - top,
-        left,
-        top,
-      );
-    });
+    if (width <= 0 || height <= 0) return;
+    const p = this.process,
+      manager = this.pointer,
+      pageWidth = p.load(manager),
+      pageHeight = p.load(manager + 4),
+      columns = p.load(manager + 8),
+      rows = p.load(manager + 12),
+      dx = (left + ox) | 0,
+      dy = (top + oy) | 0,
+      endColumn = Math.min(columns, Math.ceil((dx + width) / pageWidth)),
+      endRow = Math.min(rows, Math.ceil((dy + height) / pageHeight));
+    for (let row = Math.max(0, Math.floor(dy / pageHeight)); row < endRow; row++)
+      for (let column = Math.max(0, Math.floor(dx / pageWidth)); column < endColumn; column++) {
+        if (!this.texture(column + row * columns)) continue;
+        const x = Math.max(dx, column * pageWidth),
+          y = Math.max(dy, row * pageHeight),
+          w = Math.min(dx + width, (column + 1) * pageWidth) - x,
+          h = Math.min(dy + height, (row + 1) * pageHeight) - y,
+          transfer = await bitmap.crop(sourceLeft + x - dx, sourceTop + y - dy, w, h),
+          input = await transfer.frame();
+        await this.platform.withBitmap(transfer, async (pointer) => {
+          // 6805F0/557210 resets conversion at each page intersection. Keep
+          // those exact rectangles and ascending physical source rows while
+          // materializing only their pixels, rather than the virtual canvas.
+          const stride = p.load(pointer + 20),
+            data = p.load(pointer + 12),
+            bytes = p.read(data, stride * h);
+          for (let sy = 0; sy < h; sy++)
+            for (let sx = 0; sx < w; sx++) {
+              const source = (sy * w + sx) * 4,
+                target = sy * stride + sx * 4;
+              bytes[target] = input.rgba[source + 2];
+              bytes[target + 1] = input.rgba[source + 1];
+              bytes[target + 2] = input.rgba[source];
+              bytes[target + 3] = input.rgba[source + 3];
+            }
+          p.write(data, bytes);
+          await this.platform.rawBitmapUpload(pointer, 0, 0, w, h, x, y);
+        });
+      }
   }
   snapshot() {
     return { native: true };
