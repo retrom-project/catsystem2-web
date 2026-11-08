@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 import { createServer } from 'node:http';
-import { realpath, stat } from 'node:fs/promises';
+import { realpath, stat, readFile } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve, sep, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { walk, NodeFile } from './node-files.mjs';
 import { sourceIdentity } from '../src/identity.mjs';
+import { PPI_BACKEND_FILES } from '../src/ppi/backend-artifact.mjs';
+import { NATIVE_ZLIB_FILES } from '../src/native/zlib-artifact.mjs';
 const args = process.argv.slice(2),
   option = (key, fallback) => (args.includes(key) ? args[args.indexOf(key) + 1] : fallback);
 const root = fileURLToPath(new URL('..', import.meta.url)),
@@ -20,8 +23,33 @@ const identity = gameRoot
   : null;
 const mediaRoot = identity ? resolve(root, '.local/media', identity) : null;
 let mediaFiles = [];
+const media = {};
 try {
-  if (mediaRoot) mediaFiles = (await walk(mediaRoot)).filter((f) => /\.(mp4|webm)$/i.test(f.path));
+  if (mediaRoot) {
+    const provenance = JSON.parse(await readFile(resolve(mediaRoot, 'provenance.json'), 'utf8'));
+    if (provenance.sourceIdentity !== identity)
+      throw new Error('Prepared movie source identity differs');
+    const candidates = (await walk(mediaRoot)).filter((f) => /\.(mp4|webm)$/i.test(f.path));
+    for (const record of provenance.records) {
+      const file = candidates.find((f) => f.path === record.output);
+      if (!file || !Array.isArray(record.sources) || !/^[0-9a-f]{64}$/.test(record.sourceSha256))
+        throw new Error('Prepared movie record is incomplete; run prepare:media');
+      const hash = createHash('sha256');
+      for await (const bytes of createReadStream(resolve(mediaRoot, file.path))) hash.update(bytes);
+      if (hash.digest('hex') !== record.outputSha256)
+        throw new Error('Prepared movie output hash differs');
+      mediaFiles.push(file);
+      for (const source of record.sources)
+        media[source] = {
+          sourceIdentity: identity,
+          sourceSize: record.sourceSize,
+          sourceSha256: record.sourceSha256,
+          outputSha256: record.outputSha256,
+          mime: record.mime,
+          url: `/media/${encodeURIComponent(file.path)}`,
+        };
+    }
+  }
 } catch (e) {
   if (e.code !== 'ENOENT') throw e;
 }
@@ -51,12 +79,7 @@ const server = createServer(async (request, response) => {
       response.end(
         JSON.stringify({
           identity,
-          media: Object.fromEntries(
-            mediaFiles.map((f) => [
-              f.path.replace(/\.[^.]+$/, '').toLowerCase(),
-              `/media/${encodeURIComponent(f.path)}`,
-            ]),
-          ),
+          media,
           files: gameFiles.map((f) => ({
             ...f,
             url: `/game/${f.path.split('/').map(encodeURIComponent).join('/')}`,
@@ -66,7 +89,20 @@ const server = createServer(async (request, response) => {
       return;
     }
     let path;
-    if (url.pathname.startsWith('/media/')) {
+    if (url.pathname.startsWith('/vendor/')) {
+      const name = url.pathname.slice(8);
+      const vendor = PPI_BACKEND_FILES.includes(name)
+        ? 'ppi'
+        : NATIVE_ZLIB_FILES.includes(name)
+          ? 'zlib'
+          : null;
+      if (!vendor) {
+        response.writeHead(404);
+        response.end();
+        return;
+      }
+      path = await realpath(resolve(root, '.local/vendor', vendor, name));
+    } else if (url.pathname.startsWith('/media/')) {
       const name = decodeURIComponent(url.pathname.slice(7));
       if (!mediaFiles.some((f) => f.path === name)) {
         response.writeHead(404);
