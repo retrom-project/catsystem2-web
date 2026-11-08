@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    600 |             82 |                     19 |                     308 |
-| Game / 2.6.1.76 | 1,055 |                    867 |             58 |                     17 |                     113 |
+| SDK / 2.6.1.74  | 1,009 |                    601 |             82 |                     19 |                     307 |
+| Game / 2.6.1.76 | 1,055 |                    868 |             58 |                     17 |                     112 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -28,6 +28,11 @@ The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
 wrappers and VM translators with 40,612 comparisons across both engines.
 Independent platform probes cover 748 USER32 cases; bitmap unions preserve the
 raw image dimensions, signed overflow, VM aliases and fresh live backing.
+
+The original [ANM existence query](native-image-file.md) `1AE` preserves its
+`anmtable.csv` fallback and real IFile lifecycle. Both engines have 16,789
+comparisons each, including original formatting, candidate order and complete
+view/heap state. A fresh World rebuilds the same native ordered map.
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file
