@@ -26,6 +26,12 @@
     "imageBase": "0x400000",
     "anchors": {
       "kcsNativeTable": "0xA2DD38",
+      "kcsOpcodeTable": "0xB49A00",
+      "kcsDecodeOperands": "0x876CA0",
+      "kcsGCALL": "0x87A330",
+      "kcsMemoryAddress": "0x8772A0",
+      "kcsReceiveMessage": "0x877440",
+      "kcsTaskFrame": "0x5E8CB0",
       "kcsGetNumberedVariable": "0x643BD0",
       "kcsSetNumberedVariable": "0x643CF0",
       "kcsStartFES": "0x654EC0",
@@ -34,7 +40,7 @@
       "fesNext": "0x77A580",
       "fesCall": "0x77BA00"
     },
-    "scope": "Static analysis anchors for this exact prepared binary; not a native execution or visual equivalence claim."
+    "scope": "Static anchors for this exact prepared binary. Selected original x86 VM and particle numerical handlers also execute in private Linux ELF oracle harnesses; their precise substituted services and coverage are documented separately. This does not establish native game initialization, DLL execution or visual equivalence."
   },
   "manuals": [
     "https://cs2.suki.jp/manual/fes/reference/cn/next.html",

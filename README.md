@@ -10,12 +10,18 @@
 
 ```sh
 npm ci
+# /path/to/emsdk 使用固定 Emscripten 3.1.74。
+python3 scripts/prepare-ppi-backend.py --emsdk /path/to/emsdk --jobs 2
+python3 scripts/prepare-native-zlib.py --emsdk /path/to/emsdk
 npm run dev -- --game /path/to/prepared-game --port 4101
 ```
 
 打开 `http://localhost:4101`，点击 **Start game**。也可通过 **Open game folder** 选择本地目录。
 输入目录保持只读，原始 `.int` 归档按需读取，不会整体装进 JavaScript 内存。
-KIF 和 PSB 必须已经解密；本项目不执行 Windows EXE、DLL、PPI，也不在启动时脱壳。
+KIF 和 PSB 必须已经解密，目录还需包含与 profile 指纹匹配的引擎及其所需 DLL/PPI。
+浏览器通过固定的 x86/WASM 后端执行已恢复契约的原 EXE 区域、E-mote DLL 和 PPI，
+由浏览器服务承接文件、输入、GPU、音频及其他已实现的平台边界。启动时不进行脱壳或解密。
+目前固定两版引擎；它们的来源及 SHA-256 见 [references.json](references.json)。
 
 WMV 影片需要单独安装 FFmpeg，然后执行以下命令，并重启开发服务器：
 
@@ -29,7 +35,7 @@ npm run prepare:media -- /path/to/prepared-game
 
 点击或轻触推进；方向键／手柄方向移动焦点，Enter／A 确认，Escape／B 打开或退出菜单。
 Ctrl 快进。游戏自己的标题、设置、存读档和历史窗口由其 FES 脚本绘制和控制。
-页面工具栏另提供快速存读档、JSON 导出与导入。
+页面工具栏另提供快速存读档和便携二进制 checkpoint 导出、导入。
 
 ## 验证和构建
 
@@ -59,26 +65,26 @@ CAT2_GAME_URL=http://localhost:4101 npm run test:route
 已有浏览器可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` 复用。
 不要将私有游戏、截图、存档或反编译数据库添加到本仓库。
 
-## 实现范围
+## 实现与验收范围
 
-- KIF 文件索引、松散 patch 覆盖、按需 HTTP Range / 本地 File 读取。
-- CST / CSTL、UTF-8 与 CP932 FES、KCS v2 字节码解析及 VM。
-- FES 父子脚本、事件、按钮、滑块、设置、系统菜单、保存面板和历史记录。
-- HG-3 无损及 JPEG＋alpha；图层、变换、动画、遮罩、色调、模糊和转场。
-- PSB v2–4、E-mote 图层树、Bézier 变形、嵌套遮罩、表情、待机、眨眼、口型与惯性。
-- E-mote 命中图、触碰区域、动作和反应语音，直接读取游戏的 profile／action 定义。
-- Ogg/WAV 等浏览器音频、语音 `.tag` 时标及 `.lv` 口型数据、浏览器兼容影片。
-- 内容指纹隔离的存档、新实例恢复及有界历史回退。
+正常入口运行 `NativeWorld`：KCS VM 持续执行游戏自己的 main、sscript 和辅助脚本，
+保留任务图、消息队列、变量域和原生控制返回。FES/CST 通过这些任务驱动。
+原 EXE 处理器、格式解析、字体/图像操作和插件共用一个可保存的 PE 进程；
+浏览器 GPU/音频/文件等服务有各自的明确契约和测试。
 
-KCS 的指令集和引擎 native 服务是两个独立层。目前使用 VM 执行启动／选场景，
-剧情与系统界面的引擎服务由浏览器宿主提供；**没有完整模拟任意 KCS 调用的全部 native API**。
-Windows PPI 的表现由浏览器效果替代，并非逐像素复现原生插件；跨游戏兼容性、
-所有菜单分支和原生视觉一致性仍需逐项验证。未识别命令和无效对象引用会保留在诊断报告中。
-缺失的音频引用保留为警告并静音继续，现有音频的解码失败仍会中断并报告。
-CG／动画鉴赏的登记、缩略图和回想辅助服务尚未完成，不能把主线通过视为鉴赏模式也通过。
-目标样本首次进入设置时，可能需要先选择页签；启动阶段 native 的完整状态初始化仍有缺口。
+- [完整实现标准](docs/completion.md)：通用模拟器的完成条件及必要验收。
+- [native 契约目录](docs/native-compatibility.md)：两版独立 ABI、已恢复族及未知项。
+- [FES/CST](docs/fes-cst-compatibility.md)、[PPI/PTCL](docs/ppi-compatibility.md) 与
+  [E-mote](docs/emote-compatibility.md)：各自的语义、执行路径和原生证据边界。
+- [架构与嵌入接口](docs/architecture.md)、[问题定位](docs/debugging.md)：宿主接口、恢复和差分流程。
 
-参见[架构与嵌入接口](docs/architecture.md)及[问题定位](docs/debugging.md)。
+目前仍在开发中：全部 main native、完整初始化、FES/CST 变体、系统/鉴赏/回想全分支、
+原生视觉一致性及实际运行性能均须继续验收。未知调用会携带 ABI、参数、任务和 PC 报错，
+不能以返回零或继续脚本来计作兼容。标题或主线通过也不代表上述范围完成。
+当前原生模型执行速度仍不足以据此宣称达到正常游玩性能。
+
+公共测试使用自制资源；私有 fixture 用于 SDK/游戏原生差分与真实流程验证。
+旧的脚本遍历或浏览器近似路径结果不能替代当前原生执行路径的验收。
 
 ## 来源与许可
 
