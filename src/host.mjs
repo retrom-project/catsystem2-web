@@ -1,68 +1,185 @@
 // SPDX-License-Identifier: MPL-2.0
 import { decodeText } from './binary.mjs';
+import { CanvasTextGlyphs } from './render/native-text.mjs';
 import { pointToRoot } from './emote/draw-list.mjs';
+import { BrowserNativeMovie } from './native/movie-browser.mjs';
+import { BrowserNativeWindow } from './native/window-browser.mjs';
+import { BrowserNativeClipboard } from './native/clipboard-browser.mjs';
 export class EngineHost {
+  nativeMovie(_name, _owner, world) {
+    return new BrowserNativeMovie({
+      game: world.game,
+      container: this.engine.video?.parentElement ?? this.engine.canvas.parentElement,
+      width: world.graphics.view.clientWidth,
+      height: world.graphics.view.clientHeight,
+      diagnostic: (detail) => this.nativeDiagnostic?.(detail),
+    });
+  }
+  nativeWindowActive() {
+    return document.hasFocus();
+  }
+  nativeTextGlyphs() {
+    return new CanvasTextGlyphs({
+      family: (name) => this.engine.renderer.fonts.get(name.toLowerCase()) || name,
+    });
+  }
   constructor(engine) {
     this.engine = engine;
+    this.steam = engine.steam;
+  }
+  postWindowMessage(message) {
+    this.engine.world.windowMessages.push({
+      message: message.message >>> 0,
+      wParam: message.wParam >>> 0,
+      lParam: message.lParam >>> 0,
+    });
+  }
+  nativeWindowAction(action, world) {
+    this.windowService ??= new BrowserNativeWindow(this.engine);
+    return this.windowService.perform(action, world);
+  }
+  nativeDispose() {
+    this.windowService?.close();
+    this.clipboardService?.close();
+  }
+  get nativeClipboard() {
+    return (this.clipboardService ??= new BrowserNativeClipboard({
+      diagnostic: (detail) => this.nativeDiagnostic(detail),
+    }));
+  }
+  nativeDebugOutput(bytes) {
+    this.nativeLog(new TextDecoder('shift_jis').decode(bytes));
   }
   get log() {
     return this.engine.story?.log || [];
   }
-  config(name) {
-    if (this.engine.settings[name] !== undefined) return this.engine.settings[name];
-    if (name === 'wndcolor') {
-      const node = this.engine.startup.node('GAME', 'wndcolor');
-      return (
-        ((Number(node?.value('a')) || 80) << 24) |
-        (Number(node?.value('r')) << 16) |
-        (Number(node?.value('g')) << 8) |
-        Number(node?.value('b')) |
-        0
-      );
-    }
-    return (
-      {
-        lang_ui: 0,
-        lang_text_main: 0,
-        lang_text_sub: -1,
-        messpd: 2,
-        messize: 2,
-        wndalpha: 100,
-        wndframe: 1,
-        m2_iner_lv_bust: 100,
-      }[name] ?? 0
-    );
+  config(name, ex1 = 0, ex2 = 0, context = {}) {
+    const service = this.engine.world?.fesConfiguration;
+    if (!service) throw new Error('FES configuration requires an initialized native world');
+    return context.m2 ? service.getM2(name, context.part) : service.get(name, ex1, ex2);
   }
-  setConfig(name, value) {
-    this.engine.settings[name] = value;
-    this.engine.persistSettings();
-    if (name.startsWith('lang_')) {
-      this.engine.updateLanguage();
-      for (const p of [
-        this.engine.titleFES,
-        this.engine.windowFES,
-        this.engine.extraFES,
-        this.engine.modal?.player,
-      ])
-        if (p) p.enqueue(p.refreshImages());
-    }
+  setConfig(name, value, ex1 = 0, ex2 = 0, context = {}) {
+    const service = this.engine.world?.fesConfiguration;
+    if (!service) throw new Error('FES configuration requires an initialized native world');
+    return context.m2
+      ? service.setM2(name, value, context.part)
+      : service.set(name, value, ex1, ex2, context);
   }
-  soundConfig(args) {
-    return this.engine.settings[`sound:${args.join(':')}`] ?? 80;
+  soundConfig(args, context = {}) {
+    const service = this.engine.world?.fesSoundConfiguration;
+    if (!service) throw new Error('FES sound configuration requires an initialized native world');
+    return service.get(args, context);
   }
-  setSoundConfig(args, value) {
-    this.engine.settings[`sound:${args.join(':')}`] = value;
-    if (args[0] === 'volume') this.engine.audio.setGroup(args[1], value);
-    this.engine.persistSettings();
+  soundConfigTokens(line) {
+    const service = this.engine.world?.fesSoundConfiguration;
+    if (!service) throw new Error('FES sound configuration requires an initialized native world');
+    return service.tokens(line);
+  }
+  setSoundConfig(args, value, context = {}) {
+    const service = this.engine.world?.fesSoundConfiguration;
+    if (!service) throw new Error('FES sound configuration requires an initialized native world');
+    return service.set(args, value, context);
+  }
+  soundSelector(args, context = {}, write = false) {
+    const service = this.engine.world?.fesSoundConfiguration;
+    if (!service) throw new Error('FES sound configuration requires an initialized native world');
+    return service.selector(args, context, write);
   }
   async sound(sound) {
     await this.engine.audio.play(sound);
     if (sound.channel === 'voice' && sound.file) await this.engine.emote.levels(sound.file);
   }
+  async soundCommand(command) {
+    const result = await this.engine.audio.command(command);
+    if (result.handled && command.group === 'pcm')
+      for (const bank of result.banks) if (bank.file) await this.engine.emote.levels(bank.file);
+    return result;
+  }
+  async startKCS(name, owner) {
+    const world = this.engine.world,
+      runtime = world?.runtime;
+    if (!runtime) throw new Error('The native world has not been initialized');
+    const previous = runtime.scheduler.tasks.get(owner.kcsTaskID);
+    if (previous && !['finished', 'cancelled', 'failed'].includes(previous.status))
+      return previous.id;
+    let parent = owner;
+    while (parent.parent) parent = parent.parent;
+    if (!Number.isSafeInteger(parent.runtimeID))
+      throw new Error('FES KCS helper has no native parent task');
+    const task = await world.spawnScript(name, { parent: parent.runtimeID, initialExecute: true });
+    return task.id;
+  }
+  endKCS(id) {
+    const world = this.engine.world;
+    if (!world) throw new Error('The native world has not been initialized');
+    if (id) return world.objects.destroy(id);
+  }
+  openGallery(...args) {
+    return this.engine.world.galleries.open(...args);
+  }
+  nativeFESLoaded(record, player, world) {
+    if (world !== this.engine.world) return;
+    this.engine.nativeFES.set(record.id, player);
+  }
+  nativeIsWindow() {
+    return !document.fullscreenElement;
+  }
+  nativeTitleChanged(title, world) {
+    if (world === this.engine.world) document.title = title;
+  }
+  async nativeWindowMessage(message, world) {
+    if (message.message === 0x467) {
+      const mode = message.lParam >>> 0;
+      if (mode > 1) return; // Original 53255F accepts only window/fullscreen.
+      const surface = this.engine.canvas.closest('#stage') || this.engine.canvas;
+      try {
+        if (mode && !document.fullscreenElement) await surface.requestFullscreen();
+        else if (!mode && document.fullscreenElement) await document.exitFullscreen();
+      } catch (error) {
+        world.host.nativeDiagnostic?.({ type: 'fullscreen-request', error: error.message });
+      }
+      this.engine.nativeWindowStateChanged();
+    }
+    this.engine.onNativeWindowMessage?.(message, world);
+  }
+  nativeFESClosed(record, world) {
+    if (world === this.engine.world) this.engine.nativeFES.delete(record.id);
+  }
+  bindFESSurface(record, surface) {
+    const graphics = this.engine.world.graphics;
+    if (!graphics.bindFES) throw new Error('Native FES surface binding has not been implemented');
+    graphics.bindFES(surface, record.implementation.player);
+    record.implementation.surface = surface;
+  }
+  imageLoaded(request) {
+    this.engine.onImageLoaded?.(request);
+  }
+  nativeLog(text) {
+    this.engine.nativeLog ??= [];
+    this.engine.nativeLog.push(text);
+  }
+  nativeDiagnostic(detail) {
+    this.engine.nativeDiagnostics ??= [];
+    this.engine.nativeDiagnostics.push(detail);
+  }
+  nativeCursorChanged(visible, world = this.engine.world) {
+    if (world !== this.engine.world) return;
+    this.engine.canvas.style.cursor = visible && !world.graphics.cursor.state.image ? '' : 'none';
+  }
+  async nativeCursorImageChanged(name, x, y, world = this.engine.world) {
+    return world.graphics.cursor.setImage(name, x, y);
+  }
+  nativeMenuChanged(id, enabled) {
+    this.engine.onNativeMenuChanged?.(id, enabled);
+  }
   soundControl(channel, args) {
     this.engine.audio.control(channel, args);
   }
-  soundBusy(channel) {
+  soundBusy(channel, bank = null) {
+    if (channel === 'voice' || channel === 'se')
+      return [...this.engine.audio.channels.values()].some(
+        (c) => c.group === channel && (bank === null || c.bank === bank) && c.playing,
+      );
     return !!this.engine.audio.channels.get(channel)?.playing;
   }
   actorBusy(group) {
@@ -86,7 +203,10 @@ export class EngineHost {
     return this.engine.emote.attribute(this.engine.story.stage, bank, number);
   }
   particle(verb, args) {
-    this.engine.particles.command(verb, args);
+    return this.engine.particles.command(verb, args);
+  }
+  particleBusy(bank) {
+    return this.engine.particles.busy(bank);
   }
   message(message) {
     this.engine.message(message);
@@ -179,10 +299,15 @@ export class EngineHost {
     if (voice) await this.sound({ channel: 'voice', file: voice, group: 'voice' });
   }
   inputText(defaultText) {
-    return globalThis.prompt?.('Comment', defaultText) ?? '';
+    return globalThis.prompt?.('Comment', defaultText) ?? null;
   }
   async systemAction(code) {
     const e = this.engine;
+    if (e.world) {
+      const instance = e.activeFES()?.root;
+      if (!instance) throw new Error('No active native FES task can receive a system action');
+      return this.send([0xffff0003, 0, code], instance);
+    }
     switch (code) {
       case 3:
         e.story.windowVisible = !e.story.windowVisible;
@@ -242,9 +367,21 @@ export class EngineHost {
         e.unsupported.add(`system action ${code}`);
     }
   }
-  async send(values, instance) {
+  async send(values, instance, { target = 'parent' } = {}) {
     const e = this.engine,
       [code, a, b] = values;
+    if (e.world) {
+      let root = instance;
+      while (root.parent) root = root.parent;
+      const record = e.world.objects.objects.get(root.runtimeID);
+      if (!record) throw new Error('FES message sender has no native task');
+      const id = target === 'script' ? instance.kcsTaskID : record.parent;
+      if (target !== 'parent' && target !== 'script')
+        throw new Error(`Unknown FES message destination ${target}`);
+      if (id === null || id === undefined || (target === 'script' && !id)) return 0;
+      return (await e.nativeRuntime.scheduler.send(id, [record.id, code >>> 0, a >>> 0, b >>> 0]))
+        .result;
+    }
     switch (code >>> 0) {
       case 0xfffe0001:
         e.strings[b] = this.log[a]?.speaker || '';

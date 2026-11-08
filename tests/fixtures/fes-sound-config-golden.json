@@ -1,0 +1,19 @@
+{
+  "format": "native-fes-sound-configuration-golden",
+  "profiles": [
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "total": 2808,
+      "nativeResultsSHA256": "4d0c78e95adb78f01e570e733ff0ae64a0995c8e6fe8c70b51bd86baafb7a665",
+      "lexerResultsSHA256": "0806cc36997299d565b7297fc5b59fb4e2c159a3270afc75b533627ea72e3556"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "engineSHA256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "total": 2808,
+      "nativeResultsSHA256": "5446af6276e7b892f1731e15a393d3dfceac58bed813db98f60b9d9afd26284c",
+      "lexerResultsSHA256": "7e3748d4f23eb6ecd4b7dd30e342afe86499d031deff28713adbb0a43a6fdeb8"
+    }
+  ]
+}

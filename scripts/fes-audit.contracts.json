@@ -1,0 +1,4148 @@
+{
+  "schema": 1,
+  "reference": "Official CatSystem2 manual and frozen SDK 4.01",
+  "contracts": [
+    {
+      "id": "scene.reference.effect.particle",
+      "domain": "cst-command",
+      "names": ["particle"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["particle [no] [script] [tex] [num] [pri] [param0] ...", "particle (no) stop"]
+    },
+    {
+      "id": "scene.reference.effect.particle2",
+      "domain": "cst-command",
+      "names": ["particle2"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle2.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "particle2 [no] [script] [tex] [num] [pri] [pl] [param0] ...",
+        "particle2 (no) stop"
+      ]
+    },
+    {
+      "id": "scene.reference.effect.particle3",
+      "domain": "cst-command",
+      "names": ["particle3"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle3.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "particle3 [no] [plugin] [tex] [num] [pri] [pl] [param0] ...",
+        "particle3 (no) stop"
+      ]
+    },
+    {
+      "id": "scene.reference.effect.particle_alpha",
+      "domain": "cst-command",
+      "names": ["particle_alpha"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle_alpha.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["particle (no) alpha (alpha)"]
+    },
+    {
+      "id": "scene.reference.effect.particle_fade",
+      "domain": "cst-command",
+      "names": ["particle_fade"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle_fade.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["particle (no) fade [frame] (alpha1) (alpha2)"]
+    },
+    {
+      "id": "scene.reference.effect.particle_set",
+      "domain": "cst-command",
+      "names": ["particle_set"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/particle_set.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["particle (no) set (param0) ..."]
+    },
+    {
+      "id": "scene.reference.effect.raster",
+      "domain": "cst-command",
+      "names": ["raster"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/raster.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] [no] raster [dir] [ras] [cyc] [spd]"]
+    },
+    {
+      "id": "scene.reference.effect.raster_fade",
+      "domain": "cst-command",
+      "names": ["raster_fade"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/effect/raster_fade.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] (no) raster fade [frame] [ras] [cyc] [spd]"]
+    },
+    {
+      "id": "scene.reference.escape",
+      "domain": "cst-command",
+      "names": ["message escapes"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/escape.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Case-insensitive formatting/timing controls become serializable runs; full message-window typography, ruby and reveal timing require renderer acceptance.",
+      "signatures": [
+        "¥c0x[AABBGGRR];",
+        "¥cr0x[AABBGGRR];",
+        "¥cs0x[AABBGGRR];",
+        "¥f[size]",
+        "¥fr[size]",
+        "¥pl",
+        "¥pc",
+        "¥pr",
+        "¥w[wait]",
+        "¥wf[frame]"
+      ]
+    },
+    {
+      "id": "scene.reference.image_plane.after",
+      "domain": "cst-command",
+      "names": ["after"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/after.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) after (num) (interval) (ox) (oy) (oz) (alpha) (sx) (sy) (sz) (oc) (depth)"
+      ]
+    },
+    {
+      "id": "scene.reference.image_plane.base",
+      "domain": "cst-command",
+      "names": ["base"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/base.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/pl] (no) base (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.image_plane.blend",
+      "domain": "cst-command",
+      "names": ["blend"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/blend.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) blend (a)"]
+    },
+    {
+      "id": "scene.reference.image_plane.blur_i",
+      "domain": "cst-command",
+      "names": ["blur_i"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/blur_i.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw] (no) blur (x) (y)"]
+    },
+    {
+      "id": "scene.reference.image_plane.bmode",
+      "domain": "cst-command",
+      "names": ["bmode"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/bmode.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] (no) bmode (mode)"]
+    },
+    {
+      "id": "scene.reference.image_plane.c_image",
+      "domain": "cst-command",
+      "names": ["c_image"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/c_image.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw] [no] [argb] (width) (height) (dummy) (plane)"]
+    },
+    {
+      "id": "scene.reference.image_plane.c_plane",
+      "domain": "cst-command",
+      "names": ["c_plane"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/c_plane.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] [no] [argb] (width) (height)"]
+    },
+    {
+      "id": "scene.reference.image_plane.clone",
+      "domain": "cst-command",
+      "names": ["clone"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/clone.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[image1(bg/cg/eg/fg/fw)] [no] clone [image2(bg/cg/eg/fg/fw)] [s_no]",
+        "[pl] [no] clone [pl] [s_no]"
+      ]
+    },
+    {
+      "id": "scene.reference.image_plane.color",
+      "domain": "cst-command",
+      "names": ["color"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/color.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] (no) color (abgr)"]
+    },
+    {
+      "id": "scene.reference.image_plane.def",
+      "domain": "cst-command",
+      "names": ["def"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/def.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg] (no) def (plane)"]
+    },
+    {
+      "id": "scene.reference.image_plane.delay",
+      "domain": "cst-command",
+      "names": ["delay"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/delay.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) delay (frame)"]
+    },
+    {
+      "id": "scene.reference.image_plane.disp",
+      "domain": "cst-command",
+      "names": ["disp"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/disp.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/pl] (no) disp (flag)"]
+    },
+    {
+      "id": "scene.reference.image_plane.get",
+      "domain": "cst-command",
+      "names": ["get"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/get.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["get [bg/cg/eg/fg/pl] [no] [prm] [p1] (p2) (p3)"]
+    },
+    {
+      "id": "scene.reference.image_plane.init",
+      "domain": "cst-command",
+      "names": ["init"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/init.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw] (no)", "[pl] (no)"]
+    },
+    {
+      "id": "scene.reference.image_plane.load",
+      "domain": "cst-command",
+      "names": ["image load"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/load.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw] [no] [filename] (x) (y) (z) (plane) (prm)"]
+    },
+    {
+      "id": "scene.reference.image_plane.mode",
+      "domain": "cst-command",
+      "names": ["mode"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/mode.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw] (no) mode (c_mode)"]
+    },
+    {
+      "id": "scene.reference.image_plane.pos",
+      "domain": "cst-command",
+      "names": ["pos"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/pos.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) pos (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.image_plane.pri",
+      "domain": "cst-command",
+      "names": ["pri"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/pri.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[pl] [no] pri (priority)"]
+    },
+    {
+      "id": "scene.reference.image_plane.rect_plane",
+      "domain": "cst-command",
+      "names": ["rect_plane"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/rect_plane.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] [no] [width] [height]", "[pl] [no] [filename]"]
+    },
+    {
+      "id": "scene.reference.image_plane.rot",
+      "domain": "cst-command",
+      "names": ["rot"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/rot.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[pl] (no) rot (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.image_plane.rp_plane",
+      "domain": "cst-command",
+      "names": ["rp_plane"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/rp_plane.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] [no] [width] [height] [dummy] [w_num] [h_num]"]
+    },
+    {
+      "id": "scene.reference.image_plane.scale",
+      "domain": "cst-command",
+      "names": ["scale"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/scale.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) scale (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.image_plane.shift",
+      "domain": "cst-command",
+      "names": ["shift"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/shift.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) shift (x) (y)"]
+    },
+    {
+      "id": "scene.reference.image_plane.tone",
+      "domain": "cst-command",
+      "names": ["tone"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/tone.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw] (no) tone (r) (g) (b)",
+        "[bg/cg/eg/fg/fw] (no) tone [table name]"
+      ]
+    },
+    {
+      "id": "scene.reference.image_plane.video_vcom",
+      "domain": "cst-command",
+      "names": ["video", "vcom"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/video_vcom.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] (no) video [file]", "[pl] (no) vcom [com] (param)"]
+    },
+    {
+      "id": "scene.reference.image_plane.vram",
+      "domain": "cst-command",
+      "names": ["vram"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/image_plane/vram.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[pl] [no] vram (x) (y)"]
+    },
+    {
+      "id": "scene.reference.motion.amove",
+      "domain": "cst-command",
+      "names": ["amove1", "amove2", "amove3"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/amove.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) amove1 [frame] [x] (y) (z)",
+        "[bg/cg/eg/fg/fw/pl] (no) amove2 [frame] [x] (y) (z)",
+        "[bg/cg/eg/fg/fw/pl] (no) amove3 [frame] [x] (y) (z)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.arc",
+      "domain": "cst-command",
+      "names": ["arc"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/arc.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) arc (frame) (sd) (ed) (xr) (yr) (zr)",
+        "[bg/cg/eg/fg/fw/pl] (no) m2arc (frame) (sd) (ed) (xr) (yr) (zr)",
+        "[bg/cg/eg/fg/fw/pl] (no) mcarc (frame) (sd) (ed) (xr) (yr) (zr)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.cfade",
+      "domain": "cst-command",
+      "names": ["cfade"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/cfade.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) cfade [frame] [color1] [color2]",
+        "[pl] (no) m2cfade [frame] [color1] [color2]",
+        "[pl] (no) mccfade [frame] [color1] [color2]"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.fade",
+      "domain": "cst-command",
+      "names": ["fade"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/fade.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) fade [frame] [start] [end]",
+        "[bg/cg/eg/fg/fw/pl] (no) m2fade [frame] [start] [end]",
+        "[bg/cg/eg/fg/fw/pl] (no) mcfade [frame] [alpha1] [alpha2]"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.fade2",
+      "domain": "cst-command",
+      "names": ["fade2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/fade2.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) fade2 [frame] [alpha1] (alpha2)"]
+    },
+    {
+      "id": "scene.reference.motion.mcdisp",
+      "domain": "cst-command",
+      "names": ["mcdisp"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/mcdisp.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) mcdisp [show1] [hide1] (show2) (hide2) ..."]
+    },
+    {
+      "id": "scene.reference.motion.move",
+      "domain": "cst-command",
+      "names": ["move"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/move.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) move [frame] [x] (y) (z)",
+        "[bg/cg/eg/fg/fw/pl] (no) m2move [frame] [x] (y) (z)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.mrot",
+      "domain": "cst-command",
+      "names": ["mrot"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/mrot.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[pl] (no) mrot [frame] [xr] (yr) (zr)",
+        "[pl] (no) m2rot [frame] [xr] (yr) (zr)",
+        "[pl] (no) mcrot [fx] (fy) (fz)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.mscale1",
+      "domain": "cst-command",
+      "names": ["mscale"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/mscale1.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[pl] (no) mscale [frame] (x) (y) (z)",
+        "[pl] (no) m2scale [frame] (x) (y) (z)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.mscale2",
+      "domain": "cst-command",
+      "names": ["mcscalecos", "mcscalesin"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/mscale2.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) mcscalecos [fx] [fy] [fz] [xmin] [ymin] [zmin] [xmax] [ymax] [zmax]",
+        "[pl] (no) mcscalesin [fx] [fy] [fz] [xmin] [ymin] [zmin] [xmax] [ymax] [zmax]"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.pend",
+      "domain": "cst-command",
+      "names": ["pend"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/pend.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) pend [frame] [rep] [x] [y] [z]",
+        "[pl] (no) m2pend [frame] [rep] [x] [y] [z]",
+        "[pl] (no) mcpend [frame] [x] [y] [z]"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.quake",
+      "domain": "cst-command",
+      "names": ["quake"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/quake.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) quake [frame],[x],(y),(z) [frame],[x],(y),(z) ...",
+        "[bg/cg/eg/fg/fw/pl] (no) m2quake [frame],[x],(y),(z) [frame],[x],(y),(z) ...",
+        "[bg/cg/eg/fg/fw/pl] (no) mcquake [frame],[x],(y),(z) [frame],[x],(y),(z) ..."
+      ]
+    },
+    {
+      "id": "scene.reference.motion.shake",
+      "domain": "cst-command",
+      "names": ["shake"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/shake.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) shake [frame] [rep] [x] (y) (z)",
+        "[bg/cg/eg/fg/fw/pl] (no) m2shake [frame] [rep] [x] (y) (z)",
+        "[bg/cg/eg/fg/fw/pl] (no) mcshake [frame] [rep] [x] (y) (z)"
+      ]
+    },
+    {
+      "id": "scene.reference.motion.spline",
+      "domain": "cst-command",
+      "names": ["spline"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/spline.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[bg/cg/eg/fg/fw/pl] (no) spline [frame],[x],(y),(z) [frame],(x),(y),(z) ...",
+        "[bg/cg/eg/fg/fw/pl] (no) m2spline [frame],[x],(y),(z) [frame],(x),(y),(z) ...",
+        "[bg/cg/eg/fg/fw/pl] (no) mcspline [frame],[x],(y),(z) [frame],(x),(y),(z) ..."
+      ]
+    },
+    {
+      "id": "scene.reference.motion.spline_r",
+      "domain": "cst-command",
+      "names": ["spline_r"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/spline_r.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) spline_r [frame],[x](y),(z) [frame],(x),(y),(z) ...",
+        "[pl] (no) m2spline_r [frame],[x],(y),(z) [frame],(x),(y),(z) ...",
+        "[pl] (no) mcspline_r [frame],[x],(y),(z) [frame],(x),(y),(z) ..."
+      ]
+    },
+    {
+      "id": "scene.reference.motion.spline_s",
+      "domain": "cst-command",
+      "names": ["spline_s"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/motion/spline_s.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[pl] (no) spline_s [frame],[x],[y],(z) [frame],[x],[y],(z) ...",
+        "[pl] (no) m2spline_s [frame],[x],[y],(z) [frame],[x],[y],(z) ...",
+        "[pl] (no) mcspline_s [frame],[x],[y],(z) [frame],[x],[y],(z) ..."
+      ]
+    },
+    {
+      "id": "scene.reference.ref_exp",
+      "domain": "cst-command",
+      "names": ["expressions"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/ref_exp.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": []
+    },
+    {
+      "id": "scene.reference.screen.draw",
+      "domain": "cst-command",
+      "names": ["draw"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/draw.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["draw (frame) (plane)"]
+    },
+    {
+      "id": "scene.reference.screen.drawdef",
+      "domain": "cst-command",
+      "names": ["drawdef"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/drawdef.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["drawdef [frame] (plane)"]
+    },
+    {
+      "id": "scene.reference.screen.rdraw",
+      "domain": "cst-command",
+      "names": ["rdraw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/rdraw.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["rdraw (frame) (min_z) (max_z)"]
+    },
+    {
+      "id": "scene.reference.screen.rmos",
+      "domain": "cst-command",
+      "names": ["rwmos", "rfmos"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/rmos.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["rwmos [frame] [size] [mode]", "rfmos [frame] [size] [mode]"]
+    },
+    {
+      "id": "scene.reference.screen.rwipe",
+      "domain": "cst-command",
+      "names": ["rwipe"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/rwipe.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["rwipe [filename] (frame) (min_z) (max_z)"]
+    },
+    {
+      "id": "scene.reference.screen.wbreak",
+      "domain": "cst-command",
+      "names": ["wbreak"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/wbreak.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["wbreak [frame] [width] [height] [pow] [rot]"]
+    },
+    {
+      "id": "scene.reference.screen.wipe",
+      "domain": "cst-command",
+      "names": ["wipe"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/wipe.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["wipe [filename] (frame) (plane)"]
+    },
+    {
+      "id": "scene.reference.screen.wipe2",
+      "domain": "cst-command",
+      "names": ["wipe2"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/wipe2.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["wipe2 [filename] (frame) (plane)"]
+    },
+    {
+      "id": "scene.reference.screen.wipe3",
+      "domain": "cst-command",
+      "names": ["wipe3"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/wipe3.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["wipe3 [filename] (frame1) (frame2) (plane)"]
+    },
+    {
+      "id": "scene.reference.screen.wipedef",
+      "domain": "cst-command",
+      "names": ["wipedef"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/screen/wipedef.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["wipedef [frame] (plane)"]
+    },
+    {
+      "id": "scene.reference.sound.end",
+      "domain": "cst-command",
+      "names": ["end"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/end.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "end remains a fade-and-clear control request; native default/timing and completion belong to the audio host.",
+      "signatures": ["[bgm/se/pcm] (no) end (frame)"]
+    },
+    {
+      "id": "scene.reference.sound.loop",
+      "domain": "cst-command",
+      "names": ["loop"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/loop.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Loop is a sound command with an optional filename, rather than a boolean switch; audio host acceptance remains.",
+      "signatures": ["[se] [no] loop (file) (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.pause",
+      "domain": "cst-command",
+      "names": ["pause", "replay"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/pause.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "pause/replay are forwarded as control verbs and cannot become filenames; audio host state/timing acceptance remains.",
+      "signatures": ["[bgm/se/pcm] [no] pause", "[bgm/se/pcm] (no) replay"]
+    },
+    {
+      "id": "scene.reference.sound.play",
+      "domain": "cst-command",
+      "names": ["sound play", "sound init"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/play.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Unified soundCommand request preserves explicit/automatic banks, filenames, pan and delay; native host must acknowledge and own true bank state.",
+      "signatures": ["[bgm/se/pcm] (no) [file] (pan) (delay)", "[bgm/se/pcm] (no)"]
+    },
+    {
+      "id": "scene.reference.sound.s_arc",
+      "domain": "cst-command",
+      "names": ["arc (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_arc.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) arc (frame) (sd) (ed) (xr) (yr) (zr)"]
+    },
+    {
+      "id": "scene.reference.sound.s_base",
+      "domain": "cst-command",
+      "names": ["base (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_base.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) base (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.s_fade",
+      "domain": "cst-command",
+      "names": ["fade (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_fade.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) fade (frame) [start] [end]"]
+    },
+    {
+      "id": "scene.reference.sound.s_move",
+      "domain": "cst-command",
+      "names": ["move (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_move.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) move (frame) (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.s_mrot",
+      "domain": "cst-command",
+      "names": ["mrot (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_mrot.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) mrot [frame] [xr] (yr) (zr)"]
+    },
+    {
+      "id": "scene.reference.sound.s_pos",
+      "domain": "cst-command",
+      "names": ["pos (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_pos.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) pos (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.s_quake",
+      "domain": "cst-command",
+      "names": ["quake (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_quake.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) quake (frame),(x),(y),(z) (frame),(x),(y),(z) ..."]
+    },
+    {
+      "id": "scene.reference.sound.s_rot",
+      "domain": "cst-command",
+      "names": ["rot (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_rot.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) rot (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.s_shake",
+      "domain": "cst-command",
+      "names": ["shake (sound)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/s_shake.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) shake [frame] (rep) (x) (y) (z)"]
+    },
+    {
+      "id": "scene.reference.sound.vol",
+      "domain": "cst-command",
+      "names": ["vol"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/sound/vol.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "Parsed as a structured soundCommand control request; full spatial motion, exceptional values and native timing require audio-host verification.",
+      "signatures": ["[bgm/se/pcm] (no) vol (vol)"]
+    },
+    {
+      "id": "scene.reference.unique.attr",
+      "domain": "cst-command",
+      "names": ["attr"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/attr.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/pl] [b_no] attr (a_no) (x) (y) (w) (h) (c)"]
+    },
+    {
+      "id": "scene.reference.unique.attr_def",
+      "domain": "cst-command",
+      "names": ["attr_def"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/attr_def.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/pl] (no) attr_def (x) (y) (w) (h) (c)"]
+    },
+    {
+      "id": "scene.reference.unique.auto",
+      "domain": "cst-command",
+      "names": ["auto"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/auto.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Forced auto delay and optional manual input work; native voice synchronization and system-button gating require host acceptance.",
+      "signatures": ["auto (on/off) (base) (char) (scrl) (key)"]
+    },
+    {
+      "id": "scene.reference.unique.autoface",
+      "domain": "cst-command",
+      "names": ["autoface"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/autoface.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["autoface (on/off)"]
+    },
+    {
+      "id": "scene.reference.unique.callmestag",
+      "domain": "cst-command",
+      "names": ["callmestag"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/callmestag.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["callmestag [tag]"]
+    },
+    {
+      "id": "scene.reference.unique.cgflag",
+      "domain": "cst-command",
+      "names": ["cgflag"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/cgflag.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["cgflag [name]"]
+    },
+    {
+      "id": "scene.reference.unique.cgreg",
+      "domain": "cst-command",
+      "names": ["cgreg"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/cgreg.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["cgreg [name]"]
+    },
+    {
+      "id": "scene.reference.unique.debug",
+      "domain": "cst-command",
+      "names": ["debug"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/debug.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["debug[on/off]"]
+    },
+    {
+      "id": "scene.reference.unique.end_o_k",
+      "domain": "cst-command",
+      "names": ["end_of_kaisou"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/end_o_k.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Uses configured replayFlagBase+n and terminates at the boundary only in replayMode; host must bind adv.xml and native replay lifecycle.",
+      "signatures": ["end_of_kaisou [n]"]
+    },
+    {
+      "id": "scene.reference.unique.fbit",
+      "domain": "cst-command",
+      "names": ["getfbit", "setfbit", "clearfbit"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/fbit.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Bit query/set/clear and dynamic destination indices are tested, including bit 31.",
+      "signatures": [
+        "getfbit [var] [flag] [bit]",
+        "setfbit [flag] [bit1] (bit2) ...",
+        "clearfbit [flag] [bit1] (bit2) ..."
+      ]
+    },
+    {
+      "id": "scene.reference.unique.fes",
+      "domain": "cst-command",
+      "names": ["fes", "fesjs", "fesds"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/fes.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "fes/fesjs request a modal script; fesds dispatches bank/save/VRAM/parameters asynchronously. Native task ownership and multi-bank rendering still need host acceptance.",
+      "signatures": [
+        "fes [file]",
+        "fesjs [file]",
+        "fesds [bank] [save] [il] [file] (param1) (param2) ... (param16)"
+      ]
+    },
+    {
+      "id": "scene.reference.unique.forcemesdel",
+      "domain": "cst-command",
+      "names": ["forcemesdel"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/forcemesdel.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Persistent suppression is distinct from frameoff automatic text-time restoration; native window/FES renderer acceptance remains.",
+      "signatures": ["forcemesdel [del]"]
+    },
+    {
+      "id": "scene.reference.unique.frame",
+      "domain": "cst-command",
+      "names": ["frameon", "frameoff"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/frame.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["frame[on/off] (fade) (frame)"]
+    },
+    {
+      "id": "scene.reference.unique.fselect",
+      "domain": "cst-command",
+      "names": ["fselect"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/fselect.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Consumes real compiled rows and serializes selection waiting state; actual chosen FES, string-700 parameter binding and native rendering require host acceptance.",
+      "signatures": ["fselect (script)"]
+    },
+    {
+      "id": "scene.reference.unique.if",
+      "domain": "cst-command",
+      "names": ["if"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/if.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Single-line conditional commands and parenthesized assignments use signed int32 expressions and short-circuit evaluation.",
+      "signatures": ["if [式] [コマンド]"]
+    },
+    {
+      "id": "scene.reference.unique.js",
+      "domain": "cst-command",
+      "names": ["js"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/js.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["js [file]"]
+    },
+    {
+      "id": "scene.reference.unique.jumpstop",
+      "domain": "cst-command",
+      "names": ["jumpstop"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/jumpstop.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["jumpstop"]
+    },
+    {
+      "id": "scene.reference.unique.keyskip",
+      "domain": "cst-command",
+      "names": ["keyskip"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/keyskip.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Prevents input from skipping timed/motion waits; text input remains separate.",
+      "signatures": ["keyskip (on/off)"]
+    },
+    {
+      "id": "scene.reference.unique.mesdraw",
+      "domain": "cst-command",
+      "names": ["mesdraw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/mesdraw.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["mesdraw (0/1)"]
+    },
+    {
+      "id": "scene.reference.unique.movie",
+      "domain": "cst-command",
+      "names": ["movie"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/movie.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["movie [file] (cancel) (volume)"]
+    },
+    {
+      "id": "scene.reference.unique.next",
+      "domain": "cst-command",
+      "names": ["next", "#label"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/next.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Replaces the current CST frame and follows an actual compiled label resource; call parents remain intact.",
+      "signatures": ["next [name]", "#[name]"]
+    },
+    {
+      "id": "scene.reference.unique.novel",
+      "domain": "cst-command",
+      "names": ["novel"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/novel.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["novel (on/off)"]
+    },
+    {
+      "id": "scene.reference.unique.para00",
+      "domain": "cst-command",
+      "names": ["max", "min"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/para00.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Returns the position of the first extreme value, not the value or variable number; ties are tested.",
+      "signatures": ["max [out] [v1] [v2] [v3] ...", "min [out] [v1] [v2] [v3] ..."]
+    },
+    {
+      "id": "scene.reference.unique.scene",
+      "domain": "cst-command",
+      "names": ["scene"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/scene.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Scene title state persists until replaced or cleared; native save-panel display policy belongs to the host.",
+      "signatures": ["scene (title)"]
+    },
+    {
+      "id": "scene.reference.unique.select",
+      "domain": "cst-command",
+      "names": ["select", "select2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/select.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Compiled tables, duplicate IDs, disabled styles and select2 selected-ID flags are tested; native choice rendering, alpha masks and automatic undo acceptance remain host work.",
+      "signatures": ["select", "select2 [file] [pl] (flag)"]
+    },
+    {
+      "id": "scene.reference.unique.skipstop",
+      "domain": "cst-command",
+      "names": ["skipstop"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/skipstop.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["skipstop"]
+    },
+    {
+      "id": "scene.reference.unique.stop",
+      "domain": "cst-command",
+      "names": ["stop"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/stop.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[bg/cg/eg/fg/fw/pl] (no) stop"]
+    },
+    {
+      "id": "scene.reference.unique.str",
+      "domain": "cst-command",
+      "names": ["str"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/str.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Shared numbered strings expand in commands, speaker names and message text; complete native queue/cache timing still needs differential validation.",
+      "signatures": ["str [str no] [string]"]
+    },
+    {
+      "id": "scene.reference.unique.strcmp",
+      "domain": "cst-command",
+      "names": ["strcmp"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/strcmp.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Default case-insensitive and explicit case-sensitive comparisons are tested.",
+      "signatures": ["strcmp [v] [cmp1] [cmp2] (i)"]
+    },
+    {
+      "id": "scene.reference.unique.strn",
+      "domain": "cst-command",
+      "names": ["strn"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/strn.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Numeric conversion works; documented delayed text expansion after variable-based conversion requires native queue parity.",
+      "signatures": ["strn [str no] [no]"]
+    },
+    {
+      "id": "scene.reference.unique.subroutine",
+      "domain": "cst-command",
+      "names": ["call", "return"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/subroutine.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Real nested call/return and fall-through return preserve caller position and shared variables; tested with compiled public fixtures.",
+      "signatures": ["call [tag]", "return"]
+    },
+    {
+      "id": "scene.reference.unique.sysbtn",
+      "domain": "cst-command",
+      "names": ["sysbtn"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/sysbtn.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["sysbtn (no) (enable)"]
+    },
+    {
+      "id": "scene.reference.unique.thumbnail",
+      "domain": "cst-command",
+      "names": ["thumbnail"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/thumbnail.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["thumbnail (enable)"]
+    },
+    {
+      "id": "scene.reference.unique.title",
+      "domain": "cst-command",
+      "names": ["title"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/title.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["title"]
+    },
+    {
+      "id": "scene.reference.unique.tonetbl",
+      "domain": "cst-command",
+      "names": ["tonetbl"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/tonetbl.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["tonetbl (on／off)"]
+    },
+    {
+      "id": "scene.reference.unique.undo",
+      "domain": "cst-command",
+      "names": ["undo"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/undo.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["undo"]
+    },
+    {
+      "id": "scene.reference.unique.view",
+      "domain": "cst-command",
+      "names": ["view"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/view.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["view (type) (file1) (file2)"]
+    },
+    {
+      "id": "scene.reference.unique.voiceoff",
+      "domain": "cst-command",
+      "names": ["voiceoff"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/voiceoff.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["voiceoff (ch) (mute)"]
+    },
+    {
+      "id": "scene.reference.unique.wait",
+      "domain": "cst-command",
+      "names": ["wait"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/wait.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/execution.test.mjs"],
+      "note": "Frame/zero, key, motion, voice, SE, particle, tag and modal waits have explicit state; complete sound/particle native lifetime acceptance remains.",
+      "signatures": ["wait (frame)", "wait [type] (ex) (ex2)"]
+    },
+    {
+      "id": "scene.reference.unique.week",
+      "domain": "cst-command",
+      "names": ["week"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/scene/reference/unique/week.html",
+      "implementation": "src/scene.mjs; src/stage.mjs",
+      "evidence": ["tests/scene-contracts.test.mjs"],
+      "note": "Calendar calculation returns Sunday=0 through Saturday=6 and is independent of local time zones.",
+      "signatures": ["week [v] [y] [m] [d]"]
+    },
+    {
+      "id": "cst-extension.place",
+      "domain": "cst-extension",
+      "names": ["place"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/scene.mjs",
+      "evidence": [],
+      "note": "Present in fixed SDK initialization macros. No validated native camera/space contract; explicit diagnostic is required.",
+      "signatures": []
+    },
+    {
+      "id": "fes.reference.cn.automove",
+      "domain": "fes-command",
+      "names": ["automove"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/automove.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["automove [obj]"]
+    },
+    {
+      "id": "fes.reference.cn.basebtnpri",
+      "domain": "fes-command",
+      "names": ["basebtnpri"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/basebtnpri.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/native-fes-input.test.mjs"],
+      "note": "Changes the native low-button input priority. The default -1 restores depth from the FES parent chain.",
+      "signatures": ["basebtnpri [pri]"]
+    },
+    {
+      "id": "fes.reference.cn.baseimg",
+      "domain": "fes-command",
+      "names": ["baseimg"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/baseimg.html",
+      "implementation": "src/fes; src/native/fes-graphics.mjs; src/native/draw-task.mjs",
+      "evidence": ["tests/native-draw.test.mjs"],
+      "note": "CIMAGE/IMAGE/BUTTON deep-copy their bitmap; PLANE captures its retained VRAM rectangle independently of screen rotation, scale and opacity. Clearing hides the real base plane; entry resets and checkpoints retain its private copy. PANEL/SAVEPANEL/IMGWND bitmap adapters remain incomplete; other native object classes deliberately leave the base image unchanged.",
+      "signatures": ["baseimg (obj)"]
+    },
+    {
+      "id": "fes.reference.cn.break",
+      "domain": "fes-command",
+      "names": ["break"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/break.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["break"]
+    },
+    {
+      "id": "fes.reference.cn.call",
+      "domain": "fes-command",
+      "names": ["call"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/call.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["call [header]"]
+    },
+    {
+      "id": "fes.reference.cn.cgreg_init",
+      "domain": "fes-command",
+      "names": ["cgreg_init"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/cgreg_init.html",
+      "implementation": "src/fes/instance.mjs; src/gallery.mjs; src/native/gallery.mjs",
+      "evidence": ["tests/gallery-contracts.test.mjs", "scripts/verify-native-gallery.mjs"],
+      "note": "CGL parsing, native prefix/variant selectors, group names/indices, seen/count/table queries and native binary persistence are recovered; the shared library opens the actual CGL/global-file entry. The full gallery/recollection UI and resource rendering have separate acceptance checks.",
+      "signatures": ["cgreg_init [global save] [data id] [list file]"]
+    },
+    {
+      "id": "fes.reference.cn.cgreg_t",
+      "domain": "fes-command",
+      "names": ["cgreg_t"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/cgreg_t.html",
+      "implementation": "src/fes/instance.mjs; src/gallery.mjs; src/native/gallery.mjs",
+      "evidence": ["tests/gallery-contracts.test.mjs", "scripts/verify-native-gallery.mjs"],
+      "note": "CGL parsing, native prefix/variant selectors, group names/indices, seen/count/table queries and native binary persistence are recovered; the shared library opens the actual CGL/global-file entry. The full gallery/recollection UI and resource rendering have separate acceptance checks.",
+      "signatures": ["cgreg_t [flag no] [block no/name]"]
+    },
+    {
+      "id": "fes.reference.cn.cgregmax",
+      "domain": "fes-command",
+      "names": ["cgregmax"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/cgregmax.html",
+      "implementation": "src/fes/instance.mjs; src/gallery.mjs; src/native/gallery.mjs",
+      "evidence": ["tests/gallery-contracts.test.mjs", "scripts/verify-native-gallery.mjs"],
+      "note": "CGL parsing, native prefix/variant selectors, group names/indices, seen/count/table queries and native binary persistence are recovered; the shared library opens the actual CGL/global-file entry. The full gallery/recollection UI and resource rendering have separate acceptance checks.",
+      "signatures": ["cgregmax [block no/name] [flag no]"]
+    },
+    {
+      "id": "fes.reference.cn.cgregnum",
+      "domain": "fes-command",
+      "names": ["cgregnum"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/cgregnum.html",
+      "implementation": "src/fes/instance.mjs; src/gallery.mjs; src/native/gallery.mjs",
+      "evidence": ["tests/gallery-contracts.test.mjs", "scripts/verify-native-gallery.mjs"],
+      "note": "CGL parsing, native prefix/variant selectors, group names/indices, seen/count/table queries and native binary persistence are recovered; the shared library opens the actual CGL/global-file entry. The full gallery/recollection UI and resource rendering have separate acceptance checks.",
+      "signatures": ["cgregnum [block no/name] [flag no]"]
+    },
+    {
+      "id": "fes.reference.cn.cgregtbl",
+      "domain": "fes-command",
+      "names": ["cgregtbl"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/cgregtbl.html",
+      "implementation": "src/fes/instance.mjs; src/gallery.mjs; src/native/gallery.mjs",
+      "evidence": ["tests/gallery-contracts.test.mjs", "scripts/verify-native-gallery.mjs"],
+      "note": "CGL parsing, native prefix/variant selectors, group names/indices, seen/count/table queries and native binary persistence are recovered; the shared library opens the actual CGL/global-file entry. The full gallery/recollection UI and resource rendering have separate acceptance checks.",
+      "signatures": ["cgregtbl [block name] [flag no]"]
+    },
+    {
+      "id": "fes.reference.cn.clipboard",
+      "domain": "fes-command",
+      "names": ["clipboard"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/clipboard.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["clipboard [str]"]
+    },
+    {
+      "id": "fes.reference.cn.config",
+      "domain": "fes-command",
+      "names": ["config"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/config.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Deprecated alias in the official manual; not independently implemented.",
+      "signatures": ["config [var] [type]"]
+    },
+    {
+      "id": "fes.reference.cn.config_open",
+      "domain": "fes-command",
+      "names": ["config_open"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/config_open.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["config_open"]
+    },
+    {
+      "id": "fes.reference.cn.datasave",
+      "domain": "fes-command",
+      "names": ["datasave"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/datasave.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["datasave [no] [obj]"]
+    },
+    {
+      "id": "fes.reference.cn.dbgstr",
+      "domain": "fes-command",
+      "names": ["dbgstr"],
+      "status": "platform-substitution",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/dbgstr.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Unicode text is recorded in FESPlayer.debugLogs and delivered through host.fesDebug; this replaces the native DebugLog window.",
+      "signatures": ["dbgstr (str)"]
+    },
+    {
+      "id": "fes.reference.cn.debug",
+      "domain": "fes-command",
+      "names": ["debug"],
+      "status": "platform-substitution",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/debug.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Evaluated integer values, expression and source location are recorded and delivered through host.fesDebug instead of the native DebugLog window.",
+      "signatures": ["debug (var)"]
+    },
+    {
+      "id": "fes.reference.cn.decode",
+      "domain": "fes-command",
+      "names": ["decode"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/decode.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Flushes pending asynchronous resources and resumes in the same logical frame.",
+      "signatures": ["decode"]
+    },
+    {
+      "id": "fes.reference.cn.deletebgbutton",
+      "domain": "fes-command",
+      "names": ["deletebgbutton"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/deletebgbutton.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/native-fes-input.test.mjs"],
+      "note": "Destroys the actual low-button child task and suppresses recreation. Explicit command/continued-input checkpoint acceptance remains to be expanded.",
+      "signatures": ["deletebgbutton"]
+    },
+    {
+      "id": "fes.reference.cn.endfes",
+      "domain": "fes-command",
+      "names": ["endfes"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/endfes.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["endfes"]
+    },
+    {
+      "id": "fes.reference.cn.endjs",
+      "domain": "fes-command",
+      "names": ["endjs"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/endjs.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["endjs"]
+    },
+    {
+      "id": "fes.reference.cn.endkcs",
+      "domain": "fes-command",
+      "names": ["endkcs"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/endkcs.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["endkcs"]
+    },
+    {
+      "id": "fes.reference.cn.execfes",
+      "domain": "fes-command",
+      "names": ["execfes"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/execfes.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["execfes [script]"]
+    },
+    {
+      "id": "fes.reference.cn.execjs",
+      "domain": "fes-command",
+      "names": ["execjs"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/execjs.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["execjs [filename]"]
+    },
+    {
+      "id": "fes.reference.cn.execkcs",
+      "domain": "fes-command",
+      "names": ["execkcs"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/execkcs.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Must execute requested native script through the resumable KCS bridge; menu helper substitution is not implementation.",
+      "signatures": ["execkcs [filename]"]
+    },
+    {
+      "id": "fes.reference.cn.exit",
+      "domain": "fes-command",
+      "names": ["exit"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/exit.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["exit (code)"]
+    },
+    {
+      "id": "fes.reference.cn.fileexist",
+      "domain": "fes-command",
+      "names": ["fileexist"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/fileexist.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Queries unified file index; explicit archive qualification needs native search-priority parity.",
+      "signatures": ["fileexist [file] [var]"]
+    },
+    {
+      "id": "fes.reference.cn.fontcom",
+      "domain": "fes-command",
+      "names": ["fontcom"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/fontcom.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["fontcom [com] (p1) (p2) ..."]
+    },
+    {
+      "id": "fes.reference.cn.force_redraw",
+      "domain": "fes-command",
+      "names": ["force_redraw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/force_redraw.html",
+      "implementation": "src/fes; src/native/fes-input.mjs; src/native/graphics.mjs",
+      "evidence": ["tests/native-draw.test.mjs"],
+      "note": "Records the native pending flag and exposes graphics.flushFESRedraw for notification 337 to force the full retained bitmap back into VRAM. Native-world notification dispatch and sleep behavior still need integrated acceptance.",
+      "signatures": ["force_redraw"]
+    },
+    {
+      "id": "fes.reference.cn.getconf",
+      "domain": "fes-command",
+      "names": ["getconf"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/getconf.html",
+      "implementation": "src/fes/instance.mjs; src/native/fes-config.mjs",
+      "evidence": ["tests/native-fes-config.test.mjs"],
+      "note": "All 52 game / 43 SDK getter keys are recovered against both frozen PEs, including numeric/string banks, extras, unknown-key behavior and event emission. Platform event execution and preference persistence have separate acceptance checks.",
+      "signatures": ["getconf [var] [type] (ex1) (ex2)"]
+    },
+    {
+      "id": "fes.reference.cn.getsndconfex",
+      "domain": "fes-command",
+      "names": ["getsndconfex"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/getsndconfex.html",
+      "implementation": "src/fes/instance.mjs; src/native/fes-sound-config.mjs",
+      "evidence": [
+        "tests/native-fes-sound-config.test.mjs",
+        "scripts/verify-native-fes-sound-config.mjs"
+      ],
+      "note": "All 15 getter keys use the shared native sound tree. Both frozen PEs verify complete dispatch, tree lookups and profile-specific token boundaries; unknown keys preserve the destination and numeric selectors evaluate only in _id forms.",
+      "signatures": ["getsndconfex [var] [type] (ex1) (ex2)"]
+    },
+    {
+      "id": "fes.reference.cn.getstbl",
+      "domain": "fes-command",
+      "names": ["getstbl"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/getstbl.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["getstbl [no] [var]"]
+    },
+    {
+      "id": "fes.reference.cn.gettime",
+      "domain": "fes-command",
+      "names": ["gettime"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/gettime.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["gettime (year) (month) (day) (week) (hour) (minute) (second)"]
+    },
+    {
+      "id": "fes.reference.cn.getweek",
+      "domain": "fes-command",
+      "names": ["getweek"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/getweek.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["getweek [v] [year] [month] [day]"]
+    },
+    {
+      "id": "fes.reference.cn.if",
+      "domain": "fes-command",
+      "names": ["if", "else", "endif"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/if.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": []
+    },
+    {
+      "id": "fes.reference.cn.input_text",
+      "domain": "fes-command",
+      "names": ["input_text"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/input_text.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["input_text [ok] [title] [text]"]
+    },
+    {
+      "id": "fes.reference.cn.keyskip",
+      "domain": "fes-command",
+      "names": ["keyskip"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/keyskip.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/native-fes-input.test.mjs"],
+      "note": "on/off/ctrl/cont and force control timed waits and preserve checkpoint state; native input updates the force-key state. Native nested waits, single-decode skip consumption and all object/audio wait edge cases still require full differential acceptance.",
+      "signatures": ["keyskip [on/off/ctrl/cont]"]
+    },
+    {
+      "id": "fes.reference.cn.lockactive",
+      "domain": "fes-command",
+      "names": ["lockactive"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/lockactive.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["lockactive [lock]"]
+    },
+    {
+      "id": "fes.reference.cn.messagebox",
+      "domain": "fes-command",
+      "names": ["messagebox"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/messagebox.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["messagebox [v] [type] [title] [mes]"]
+    },
+    {
+      "id": "fes.reference.cn.newsave",
+      "domain": "fes-command",
+      "names": ["newsave"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/newsave.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["newsave [v] [min] [max]"]
+    },
+    {
+      "id": "fes.reference.cn.next",
+      "domain": "fes-command",
+      "names": ["next"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/next.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["next [head]"]
+    },
+    {
+      "id": "fes.reference.cn.opensite",
+      "domain": "fes-command",
+      "names": ["opensite"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/opensite.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["opensite [url1] [url2]"]
+    },
+    {
+      "id": "fes.reference.cn.rand",
+      "domain": "fes-command",
+      "names": ["rand"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/rand.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["rand [var] [min] [max]"]
+    },
+    {
+      "id": "fes.reference.cn.randtbl",
+      "domain": "fes-command",
+      "names": ["randtbl"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/randtbl.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["randtbl [vmin] [vmax] [min] [max]"]
+    },
+    {
+      "id": "fes.reference.cn.rdraw",
+      "domain": "fes-command",
+      "names": ["rdraw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/rdraw.html",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect-render.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Both frozen profiles execute the original command, native resource/capture and MOT/callback lifecycle. Actual GPU and fresh-World pixels are checked; exhaustive parameter variants and a separate final-screen oracle remain unaccepted.",
+      "signatures": ["rdraw [frame]"]
+    },
+    {
+      "id": "fes.reference.cn.react",
+      "domain": "fes-command",
+      "names": ["react"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/react.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["react"]
+    },
+    {
+      "id": "fes.reference.cn.reset_frame",
+      "domain": "fes-command",
+      "names": ["reset_frame"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/reset_frame.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["reset_frame"]
+    },
+    {
+      "id": "fes.reference.cn.resetactive",
+      "domain": "fes-command",
+      "names": ["resetactive"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/resetactive.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["reset_frame"]
+    },
+    {
+      "id": "fes.reference.cn.restoremove",
+      "domain": "fes-command",
+      "names": ["restoremove"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/restoremove.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["restoremove"]
+    },
+    {
+      "id": "fes.reference.cn.rettitle",
+      "domain": "fes-command",
+      "names": ["rettitle"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/rettitle.html",
+      "implementation": "src/fes/instance.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "scripts/verify-native-fes-return-title.mjs",
+        "docs/native-window-commands.md"
+      ],
+      "note": "Both pinned FES handlers enqueue their complete native event packet. The host posts original window message 0x468 and the interpreter continues; World window-message effects have a separate contract.",
+      "signatures": ["rettitle"]
+    },
+    {
+      "id": "fes.reference.cn.rwipe",
+      "domain": "fes-command",
+      "names": ["rwipe"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/rwipe.html",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect-render.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Both frozen profiles execute the original command, native resource/capture and MOT/callback lifecycle. Actual GPU and fresh-World pixels are checked; exhaustive parameter variants and a separate final-screen oracle remain unaccepted.",
+      "signatures": ["rwipe [mask] [frame]"]
+    },
+    {
+      "id": "fes.reference.cn.saveapend_str",
+      "domain": "fes-command",
+      "names": ["saveapend_str"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/saveapend_str.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["saveapend_str [no] [id] [text]"]
+    },
+    {
+      "id": "fes.reference.cn.savecopy",
+      "domain": "fes-command",
+      "names": ["savecopy"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/savecopy.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["savecopy [src] [dst]"]
+    },
+    {
+      "id": "fes.reference.cn.savedelete",
+      "domain": "fes-command",
+      "names": ["savedelete"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/savedelete.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["savedelete [no]"]
+    },
+    {
+      "id": "fes.reference.cn.saveexchg",
+      "domain": "fes-command",
+      "names": ["saveexchg"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/saveexchg.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["saveexchg [n1] [n2]"]
+    },
+    {
+      "id": "fes.reference.cn.saveexist",
+      "domain": "fes-command",
+      "names": ["saveexist"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/saveexist.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["saveexist [save no] [flag no] (version)"]
+    },
+    {
+      "id": "fes.reference.cn.saveget_str",
+      "domain": "fes-command",
+      "names": ["saveget_str"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/saveget_str.html",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Both mounted profiles execute the original command and file helpers against the same CSS storage and live banks. Differential checks cover all eleven save commands; fresh-World system clients verify FES datasave and KCS restore. Complete save-screen and whole-title acceptance are separate.",
+      "signatures": ["saveget_str [no] [id] [s]"]
+    },
+    {
+      "id": "fes.reference.cn.send",
+      "domain": "fes-command",
+      "names": ["send"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/send.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["send [mes] [wp] [lp]"]
+    },
+    {
+      "id": "fes.reference.cn.sendbtn",
+      "domain": "fes-command",
+      "names": ["sendbtn"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/sendbtn.html",
+      "implementation": "src/fes; src/native/fes-input.mjs; src/native/graphics.mjs",
+      "evidence": ["tests/native-fes-input.test.mjs"],
+      "note": "Routes the stored propagation word to native base-plane message 94 when an event has no handler. The manual documents a per-frame reset; the frozen game writes this field only in construction and the command, so that version difference remains unresolved.",
+      "signatures": ["sendbtn [flag]"]
+    },
+    {
+      "id": "fes.reference.cn.setconf",
+      "domain": "fes-command",
+      "names": ["setconf"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/setconf.html",
+      "implementation": "src/fes/instance.mjs; src/native/fes-config.mjs",
+      "evidence": ["tests/native-fes-config.test.mjs"],
+      "note": "All 51 game / 42 SDK setter keys are recovered against both frozen PEs, including numeric/string banks, extras, unknown-key behavior and event emission. Platform event execution and preference persistence have separate acceptance checks.",
+      "signatures": ["setconf [num] [type] (ex1) (ex2)"]
+    },
+    {
+      "id": "fes.reference.cn.setsndconfex",
+      "domain": "fes-command",
+      "names": ["setsndconfex"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/setsndconfex.html",
+      "implementation": "src/fes/instance.mjs; src/native/fes-sound-config.mjs",
+      "evidence": [
+        "tests/native-fes-sound-config.test.mjs",
+        "scripts/verify-native-fes-sound-config.mjs"
+      ],
+      "note": "All 18 setter/reset keys mutate the shared native sound tree. Both frozen PEs verify target selection, default restoration, case rules and the common dirty/derived-volume epilogue, including unknown and incomplete commands.",
+      "signatures": ["setsndconfex [num] [type] (ex1) (ex2)"]
+    },
+    {
+      "id": "fes.reference.cn.setstbl",
+      "domain": "fes-command",
+      "names": ["setstbl"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/setstbl.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["setstbl [no] [str]"]
+    },
+    {
+      "id": "fes.reference.cn.strvar",
+      "domain": "fes-command",
+      "names": ["strvar"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/strvar.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Numeric formatting/dynamic destinations and SDK 4.01 indexed strvar get copying have public fixtures; no guessed set-keyword alias.",
+      "signatures": ["strvar [no] [str] (v1) (v2) (v3) (v4)"]
+    },
+    {
+      "id": "fes.reference.cn.sysvoice",
+      "domain": "fes-command",
+      "names": ["sysvoice"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/sysvoice.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["sysvoice [var]"]
+    },
+    {
+      "id": "fes.reference.cn.wait",
+      "domain": "fes-command",
+      "names": ["wait"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/wait.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Frame/zero, named motion, all-motion/transition and sound waits tested; complete sound lifecycle is pending.",
+      "signatures": ["wait (frame/obj)"]
+    },
+    {
+      "id": "fes.reference.cn.wndmenu",
+      "domain": "fes-command",
+      "names": ["wndmenu"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/cn/wndmenu.html",
+      "implementation": "src/fes/instance.mjs; src/native/window-commands.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "scripts/verify-native-window-commands.mjs",
+        "scripts/verify-native-window-actions.mjs",
+        "docs/native-window-commands.md"
+      ],
+      "note": "The original argument expression posts 0x46C and yields. Both original application callbacks confirm all 13 selector mappings; original menu handlers confirm packet routing, action order, fullscreen guards and return values in 832 comparisons. Browser platform actions and dialogs remain under integration.",
+      "signatures": ["wndmenu [id]"]
+    },
+    {
+      "id": "fes-extension.Steam-queries-and-achievement-screenshot-commands",
+      "domain": "fes-extension",
+      "names": ["Steam queries and achievement/screenshot commands"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Achievement and screenshot commands retain the original null-manager no-call branch and an explicit optional provider; no unlock result is fabricated. Steam query coverage and complete platform behavior remain partial.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.automoveex",
+      "domain": "fes-extension",
+      "names": ["automoveex"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed engine extension; no validated pointer restoration/coordinate contract.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.drag---dragimg---draghelp---btnsimulate",
+      "domain": "fes-extension",
+      "names": ["drag / dragimg / draghelp / btnsimulate"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed engine interaction extensions; native capture/hit-area lifecycle needs recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.m2_getconf---m2_setconf",
+      "domain": "fes-extension",
+      "names": ["m2_getconf / m2_setconf"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes/instance.mjs; src/native/fes-config.mjs",
+      "evidence": ["tests/native-fes-config.test.mjs"],
+      "note": "All nine getter and ten setter configuration keys, registered-part maps, loaded-model flags, reset and local-bank limits match the frozen PE. The actual Emote manager lifecycle and rendering remain separate gaps.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.namebtn",
+      "domain": "fes-extension",
+      "names": ["namebtn"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Present in frozen SDK FES; not covered by current official command index. Native signature and behavior need recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.strvar-get",
+      "domain": "fes-extension",
+      "names": ["strvar get"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "SDK 4.01 uses indexed string copying. Independent public fixture covers expression-based source/destination indices.",
+      "signatures": []
+    },
+    {
+      "id": "fes-extension.sysvoiceex",
+      "domain": "fes-extension",
+      "names": ["sysvoiceex"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed engine extension; native system-voice selection and channel lifetime require recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-initialization-extension.BTYPE---MASK",
+      "domain": "fes-initialization-extension",
+      "names": ["BTYPE / MASK"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Present in frozen SDK/game image initialization. Blend and mask semantics require native renderer recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-initialization-extension.ID.N---ID.D---ID.F---ID.P",
+      "domain": "fes-initialization-extension",
+      "names": ["ID.N / ID.D / ID.F / ID.P"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "These symbolic button ID columns occur in frozen SDK 4.01. Numeric state mapping must come from the native oracle.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_button",
+      "domain": "fes-object",
+      "names": ["BUTTON"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_button.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/draw-task.mjs; src/native/graphics-process.mjs",
+      "evidence": [
+        "tests/native-fes-images.test.mjs",
+        "tests/native-retained-raster.test.mjs",
+        "tests/browser/native-text.spec.mjs",
+        "docs/native-fes-images.md"
+      ],
+      "note": "Both original constructors, complete header/apply and built-in command handlers, frame/MOT and retained ANM execute. Original CPU compositor covers MASK/BTYPE/affine/clip; 43 CPU/VRAM cases per PE and ten asymmetric final GPU cases per PE pass. Compound viewport/nested-renderer adapters, complete skin/input acceptance and CPU performance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_cimage",
+      "domain": "fes-object",
+      "names": ["CIMAGE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_cimage.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/draw-task.mjs; src/native/graphics-process.mjs",
+      "evidence": [
+        "tests/native-fes-images.test.mjs",
+        "tests/native-retained-raster.test.mjs",
+        "tests/browser/native-text.spec.mjs",
+        "docs/native-fes-images.md"
+      ],
+      "note": "Both original constructors, complete header/apply and built-in command handlers, frame/MOT and retained ANM execute. Original CPU compositor covers MASK/BTYPE/affine/clip; 43 CPU/VRAM cases per PE and ten asymmetric final GPU cases per PE pass. Compound viewport/nested-renderer adapters, complete skin/input acceptance and CPU performance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_cplane",
+      "domain": "fes-object",
+      "names": ["CPLANE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_cplane.html",
+      "implementation": "src/native/fes-planes.mjs; src/native/fes-objects.mjs; src/native/graphics.mjs",
+      "evidence": ["tests/native-fes-planes.test.mjs", "docs/native-fes-planes.md"],
+      "note": "Both original constructors, definition apply, built-ins, frame drivers and KCS motions execute; actual child task identities and parent/surface transforms survive fresh World. SimplePlane receiver/GraphManager is still a host adapter; complete geometry/messages and browser transition acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_difimage",
+      "domain": "fes-object",
+      "names": ["DIFIMAGE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_difimage.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/fes-objects.mjs",
+      "evidence": [
+        "tests/native-fes-planes.test.mjs",
+        "tests/browser/native-retained-owner.spec.mjs",
+        "docs/native-fes-images.md"
+      ],
+      "note": "Both original 960-byte constructors, definition application, built-ins and frame drivers execute. Original refex retains a real external image owner and emits retained kind 3; both-profile asymmetric full CPU/GPU pixels, KCS release, fresh World and final destruction pass. Capture/reference variants and all command combinations remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_image",
+      "domain": "fes-object",
+      "names": ["IMAGE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_image.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/draw-task.mjs; src/native/graphics-process.mjs",
+      "evidence": [
+        "tests/native-fes-images.test.mjs",
+        "tests/native-retained-raster.test.mjs",
+        "tests/browser/native-text.spec.mjs",
+        "docs/native-fes-images.md"
+      ],
+      "note": "Both original constructors, complete header/apply and built-in command handlers, frame/MOT and retained ANM execute. Original CPU compositor covers MASK/BTYPE/affine/clip; 43 CPU/VRAM cases per PE and ten asymmetric final GPU cases per PE pass. Compound viewport/nested-renderer adapters, complete skin/input acceptance and CPU performance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_logstring",
+      "domain": "fes-object",
+      "names": ["LOGSTRING"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_logstring.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original constructors, frame drivers, slot-created STRING children, layout and display-log binding execute in the mounted SDK/game PE. Authored runtime/restore tests pass; remaining columns and paging/color edge cases still require coverage.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_nvstring",
+      "domain": "fes-object",
+      "names": ["NVSTRING"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_nvstring.html",
+      "implementation": "src/native/fes-text.mjs; src/native/text.mjs; src/native/text-task.mjs; src/native/fes-objects.mjs",
+      "evidence": [
+        "tests/native-text.test.mjs",
+        "scripts/verify-native-nv-text.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original profiled object constructors/commands/drivers and text writers execute; NV main/sub sections, frame state, bitmap/VRAM, SIZE/SIZE2, image fonts and fresh-process restore have authored fixtures. Remaining definition columns, complete UI integration and browser glyph-pixel acceptance remain open; SDK STRING8 is absent, never aliased.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_particle",
+      "domain": "fes-object",
+      "names": ["PARTICLE"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_particle.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_plane",
+      "domain": "fes-object",
+      "names": ["PLANE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_plane.html",
+      "implementation": "src/native/fes-planes.mjs; src/native/fes-objects.mjs; src/native/graphics.mjs",
+      "evidence": ["tests/native-fes-planes.test.mjs", "docs/native-fes-planes.md"],
+      "note": "Both original FES drivers and the pre-script/post-script image-count phases execute. True SimplePlane children, parent/surface transforms, KCS motion and all three CPU area-task branches have fresh-World fixtures. The complete original SimplePlane receiver/GraphManager path and final browser transition acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_savepanel",
+      "domain": "fes-object",
+      "names": ["SAVEPANEL"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_savepanel.html",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both pinned constructors, header application, all ptype branches, CSS flag/thumbnail/string/date loading and original composite drivers execute. Public fixtures cover native pixels and fresh-World recovery; complete save-screen interaction and every image-derived edge case remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_scroll",
+      "domain": "fes-object",
+      "names": ["SCROLL"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_scroll.html",
+      "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
+      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_scroll2",
+      "domain": "fes-object",
+      "names": ["SCROLL2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_scroll2.html",
+      "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
+      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_slider",
+      "domain": "fes-object",
+      "names": ["SLIDER"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_slider.html",
+      "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
+      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_sndtable",
+      "domain": "fes-object",
+      "names": ["SNDTABLE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_sndtable.html",
+      "implementation": "src/fes; src/native/fes-sound.mjs",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Commands and asynchronous waits are routed by FES owner/object identity to the native sound-bank adapter. STYPE is a system-voice flag and initialization BLEND bypasses category volume. Full table behavior, native packet differential checks and audible lifecycle acceptance are still in progress.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_sound",
+      "domain": "fes-object",
+      "names": ["SOUND"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_sound.html",
+      "implementation": "src/fes; src/native/fes-sound.mjs",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Commands and asynchronous waits are routed by FES owner/object identity to the native sound-bank adapter. STYPE is a system-voice flag and initialization BLEND bypasses category volume. Full table behavior, native packet differential checks and audible lifecycle acceptance are still in progress.",
+      "signatures": []
+    },
+    {
+      "id": "fes.code.o_string",
+      "domain": "fes-object",
+      "names": ["STRING"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/o_string.html",
+      "implementation": "src/native/fes-text.mjs; src/native/text.mjs; src/native/text-task.mjs; src/native/fes-objects.mjs",
+      "evidence": [
+        "tests/native-text.test.mjs",
+        "scripts/verify-native-nv-text.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original profiled object constructors/commands/drivers and text writers execute; NV main/sub sections, frame state, bitmap/VRAM, SIZE/SIZE2, image fonts and fresh-process restore have authored fixtures. Remaining definition columns, complete UI integration and browser glyph-pixel acceptance remain open; SDK STRING8 is absent, never aliased.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.BGTABLE",
+      "domain": "fes-object",
+      "names": ["BGTABLE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-images.mjs; src/native/engine-files.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original constructors, TABLE header loading and load row/variant selection execute. Authored binary tables check selected files, empty and unsigned-invalid variants, actual retained pixels, replacement selection and fresh-World restore. Other table formats and all table command combinations remain separate coverage gaps.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.BGTABLE2",
+      "domain": "fes-object",
+      "names": ["BGTABLE2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-images.mjs; src/native/engine-files.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original TABLE loaders and image drivers execute. Authored CP932 CSV fixtures select only circle-marked rows and column variant+2; invalid rows/variants and empty filenames preserve the current image. Retained pixels and fresh-World restore are covered; other table combinations and global cache lifecycle remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.CGTABLE",
+      "domain": "fes-object",
+      "names": ["CGTABLE"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Indexed by the official object list or frozen SDK 4.01; no complete object contract/renderer parity claim.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.CHTABLE",
+      "domain": "fes-object",
+      "names": ["CHTABLE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-images.mjs; src/native/engine-files.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original 86400-byte table loaders and image drivers execute. Authored plain-prefix fixtures cover character/pose selection, both variant bank bounds, replacement pixels and fresh-World restore. Complex variant masks and compound layer acceptance remain partial; CHTABLE2/3 are separate unverified formats.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.CHTABLE2",
+      "domain": "fes-object",
+      "names": ["CHTABLE2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-images.mjs; src/native/engine-files.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original relative-offset tree loaders, image drivers and load/max/baseopt commands execute. Authored fixtures cover leading axes, dimension/value lookup, suffixes, missing-selector behavior, replacement pixels and fresh-World restore. Complete mask combinations and command coverage remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.LOGSTRING8",
+      "domain": "fes-object",
+      "names": ["LOGSTRING8"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "The game original constructor/driver creates paired STRING8 children and executes real display-log data. This type is absent from the frozen SDK. Remaining paging/color and definition coverage is incomplete.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.SIMAGE",
+      "domain": "fes-object",
+      "names": ["SIMAGE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Indexed by the official object list or frozen SDK 4.01; no complete object contract/renderer parity claim.",
+      "signatures": []
+    },
+    {
+      "id": "fes.object.STRING8",
+      "domain": "fes-object",
+      "names": ["STRING8"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/object.html",
+      "implementation": "src/native/fes-text.mjs; src/native/text.mjs; src/native/text-task.mjs; src/native/fes-objects.mjs",
+      "evidence": [
+        "tests/native-text.test.mjs",
+        "scripts/verify-native-nv-text.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original profiled object constructors/commands/drivers and text writers execute; NV main/sub sections, frame state, bitmap/VRAM, SIZE/SIZE2, image fonts and fresh-process restore have authored fixtures. Remaining definition columns, complete UI integration and browser glyph-pixel acceptance remain open; SDK STRING8 is absent, never aliased.",
+      "signatures": []
+    },
+    {
+      "id": "fes.reference.co.anm",
+      "domain": "fes-object-command",
+      "names": ["anm"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/anm.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/draw-task.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "IMAGE/BUTTON use their original command handlers and retained ANM interpreter for frame/alpha/display, including fresh-process continuation and the reviewed game prefetch callback. Other object variants and all instruction/skin combinations are not yet accepted.",
+      "signatures": ["[obj] anm (play)"]
+    },
+    {
+      "id": "fes.reference.co.apend",
+      "domain": "fes-object-command",
+      "names": ["apend"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/apend.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/native-text.test.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] apend [str]"]
+    },
+    {
+      "id": "fes.reference.co.apendmark",
+      "domain": "fes-object-command",
+      "names": ["apendmark"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/apendmark.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] apendmark"]
+    },
+    {
+      "id": "fes.reference.co.arc",
+      "domain": "fes-object-command",
+      "names": ["arc", "mcarc"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/arc.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Current endpoint interpolation is an approximation; native elliptical trajectory and loop semantics are missing.",
+      "signatures": ["[obj] arc [frame] [r1] [r2] [x] [y]", "[obj] mcarc [frame] [r1] [r2] [x] [y]"]
+    },
+    {
+      "id": "fes.reference.co.attach",
+      "domain": "fes-object-command",
+      "names": ["attach"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/attach.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] attach (at)"]
+    },
+    {
+      "id": "fes.reference.co.attr",
+      "domain": "fes-object-command",
+      "names": ["attr"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/attr.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] attr [id] (x) (y) (w) (h) (c)"]
+    },
+    {
+      "id": "fes.reference.co.base",
+      "domain": "fes-object-command",
+      "names": ["base"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/base.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stores base coordinates; complete transformed rendering/hit testing still needs stage support.",
+      "signatures": ["[obj] base (x) (y)"]
+    },
+    {
+      "id": "fes.reference.co.baseopt",
+      "domain": "fes-object-command",
+      "names": ["baseopt"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/baseopt.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] baseopt (opt)"]
+    },
+    {
+      "id": "fes.reference.co.blend",
+      "domain": "fes-object-command",
+      "names": ["blend"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/blend.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] blend [bl]"]
+    },
+    {
+      "id": "fes.reference.co.blockcolor",
+      "domain": "fes-object-command",
+      "names": ["blockcolor"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/blockcolor.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "The original block color command is dispatched against native log records. Full pixel, paging and selection coverage remains incomplete.",
+      "signatures": ["[obj] blockcolor [line] [type]"]
+    },
+    {
+      "id": "fes.reference.co.blockinfo",
+      "domain": "fes-object-command",
+      "names": ["blockinfo"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/blockinfo.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Runs the original LOGSTRING handler against native display-log blocks and voice records. Authored source history rebuild and runtime tests exist; full output-index/whole-array coverage remains.",
+      "signatures": ["[obj] blockinfo [line] [block] [min] [max] [pcm]"]
+    },
+    {
+      "id": "fes.reference.co.channel",
+      "domain": "fes-object-command",
+      "names": ["channel"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/channel.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] channel [ch]"]
+    },
+    {
+      "id": "fes.reference.co.clear",
+      "domain": "fes-object-command",
+      "names": ["clear"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/clear.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] clear"]
+    },
+    {
+      "id": "fes.reference.co.clip",
+      "domain": "fes-object-command",
+      "names": ["clip"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/clip.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] clip [x] [y] [w] [h]"]
+    },
+    {
+      "id": "fes.reference.co.color",
+      "domain": "fes-object-command",
+      "names": ["color"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/color.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Solid-object color state exists; image pixel fill needs renderer support.",
+      "signatures": ["[obj] color [abgr]"]
+    },
+    {
+      "id": "fes.reference.co.coordmode",
+      "domain": "fes-object-command",
+      "names": ["coordmode"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/coordmode.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] coordmode (enable)"]
+    },
+    {
+      "id": "fes.reference.co.copy",
+      "domain": "fes-object-command",
+      "names": ["copy"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/copy.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] copy [src] [x] [y] [w] [h]"]
+    },
+    {
+      "id": "fes.reference.co.delay",
+      "domain": "fes-object-command",
+      "names": ["delay"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/delay.html",
+      "implementation": "src/fes/object.mjs; src/motion/instance.mjs",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "The per-object uint32 delay is passed to native SUBCOMMAND MOT instances and survives checkpoints. Built-in motion builders must use the same delay; their full integration is still in progress.",
+      "signatures": ["[obj] delay (frame)"]
+    },
+    {
+      "id": "fes.reference.co.delete",
+      "domain": "fes-object-command",
+      "names": ["delete"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/delete.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Object cannot be targeted after deletion; resource ownership and sound end flags need native lifecycle parity.",
+      "signatures": ["[obj] delete"]
+    },
+    {
+      "id": "fes.reference.co.disp",
+      "domain": "fes-object-command",
+      "names": ["disp"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/disp.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] disp [d]"]
+    },
+    {
+      "id": "fes.reference.co.dispid",
+      "domain": "fes-object-command",
+      "names": ["dispid"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/dispid.html",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/native-fes-images.test.mjs",
+        "docs/native-fes-images.md"
+      ],
+      "note": "Original SAVEPANEL display-ID selection and ranges run through the mounted handlers; authored NORM/image parts and complete composite restoration are checked in both profiles.",
+      "signatures": ["[obj] dispid [d] [pid1] (pid2) (pid3) ..."]
+    },
+    {
+      "id": "fes.reference.co.draw",
+      "domain": "fes-object-command",
+      "names": ["draw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/draw.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] draw [frame]"]
+    },
+    {
+      "id": "fes.reference.co.enable",
+      "domain": "fes-object-command",
+      "names": ["enable"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/enable.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] enable [flag]"]
+    },
+    {
+      "id": "fes.reference.co.endpos",
+      "domain": "fes-object-command",
+      "names": ["endpos"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/endpos.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] endpos [x] [y]"]
+    },
+    {
+      "id": "fes.reference.co.exist",
+      "domain": "fes-object-command",
+      "names": ["exist"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/exist.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] exist (place) (type) (out)"]
+    },
+    {
+      "id": "fes.reference.co.fade",
+      "domain": "fes-object-command",
+      "names": ["fade", "fade2", "mcfade"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/fade.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Public fixture covers fade2 returning alpha; continuous mcfade and custom SUBCOMMAND execution are missing.",
+      "signatures": [
+        "[obj] fade [frame] [a1] [a2]",
+        "[obj] fade2 [frame] [a1] [a2]",
+        "[obj] mcfade [frame] [a1] [a2]"
+      ]
+    },
+    {
+      "id": "fes.reference.co.fade_s",
+      "domain": "fes-object-command",
+      "names": ["fade (SOUND)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/fade_s.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Volume state animates, but the mixer does not receive per-frame automation.",
+      "signatures": ["[obj] fade [frame] [a1] [a2]"]
+    },
+    {
+      "id": "fes.reference.co.getflag",
+      "domain": "fes-object-command",
+      "names": ["getflag"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/getflag.html",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original handlers read the SAVEPANEL private flag bank and write the requested global. Authored CSS checks include a populated flag and unsigned out-of-range indices -1/1024.",
+      "signatures": ["[obj] getflag [v] [f]"]
+    },
+    {
+      "id": "fes.reference.co.getid",
+      "domain": "fes-object-command",
+      "names": ["getid"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/getid.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] getid [v]"]
+    },
+    {
+      "id": "fes.reference.co.getpos",
+      "domain": "fes-object-command",
+      "names": ["getpos"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/getpos.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] getpos (vx) (vy) (vz)"]
+    },
+    {
+      "id": "fes.reference.co.getpos2",
+      "domain": "fes-object-command",
+      "names": ["getpos2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/getpos2.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Parent translation is tested; native 3D parent transforms require render/stage parity.",
+      "signatures": ["[obj] getpos2 (vx) (vy) (vz)"]
+    },
+    {
+      "id": "fes.reference.co.getsize",
+      "domain": "fes-object-command",
+      "names": ["getsize"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/getsize.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] getsize (vx) (vy) (vz)"]
+    },
+    {
+      "id": "fes.reference.co.gettonetbl",
+      "domain": "fes-object-command",
+      "names": ["gettonetbl"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/gettonetbl.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] gettonetbl (r) (g) (b)"]
+    },
+    {
+      "id": "fes.reference.co.imot",
+      "domain": "fes-object-command",
+      "names": ["imot"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/imot.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented. Primary page fetch failed; name is still indexed and must not disappear from coverage."
+    },
+    {
+      "id": "fes.reference.co.init",
+      "domain": "fes-object-command",
+      "names": ["init"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/init.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] init [plg] [script] [tex] [cnt] [pri]"]
+    },
+    {
+      "id": "fes.reference.co.insert",
+      "domain": "fes-object-command",
+      "names": ["insert"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/insert.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] insert"]
+    },
+    {
+      "id": "fes.reference.co.isdraw",
+      "domain": "fes-object-command",
+      "names": ["isdraw"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/isdraw.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/native-text.test.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] isdraw"]
+    },
+    {
+      "id": "fes.reference.co.ismot",
+      "domain": "fes-object-command",
+      "names": ["ismot"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/ismot.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Motion state is queryable; PARTICLE state requires a particle executor.",
+      "signatures": ["[obj] ismot [v]"]
+    },
+    {
+      "id": "fes.reference.co.keyblock",
+      "domain": "fes-object-command",
+      "names": ["keyblock"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/keyblock.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] keyblock [block] [x] [y]"]
+    },
+    {
+      "id": "fes.reference.co.keypos",
+      "domain": "fes-object-command",
+      "names": ["keypos"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/keypos.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] keypos [enable] (x) (y)"]
+    },
+    {
+      "id": "fes.reference.co.layout",
+      "domain": "fes-object-command",
+      "names": ["layout"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/layout.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] layout [mode] (p1) (p2) ..."]
+    },
+    {
+      "id": "fes.reference.co.linecolor",
+      "domain": "fes-object-command",
+      "names": ["linecolor"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/linecolor.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "The original per-line color command is dispatched for native LOGSTRING types. Full pixel, paging and whole-array contract fixtures remain incomplete.",
+      "signatures": ["[obj] linecolor [line] [n] [s] [r]"]
+    },
+    {
+      "id": "fes.reference.co.lineinfo",
+      "domain": "fes-object-command",
+      "names": ["lineinfo"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/lineinfo.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Runs the original LOGSTRING handler against the actual source scene/command records; no host.log or invented line index is used. Full output-index/array coverage remains.",
+      "signatures": ["[obj] lineinfo [line] [str] [num]"]
+    },
+    {
+      "id": "fes.reference.co.load",
+      "domain": "fes-object-command",
+      "names": ["load"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/load.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] load [file] (id)"]
+    },
+    {
+      "id": "fes.reference.co.load_s",
+      "domain": "fes-object-command",
+      "names": ["load (SOUND)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/load_s.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] load [file]"]
+    },
+    {
+      "id": "fes.reference.co.loadlist",
+      "domain": "fes-object-command",
+      "names": ["loadlist"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/loadlist.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] loadlist [tid] [tno] [no] [id]"]
+    },
+    {
+      "id": "fes.reference.co.loadlist2",
+      "domain": "fes-object-command",
+      "names": ["loadlist2"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/loadlist2.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] loadlist2 [tid] [tno] [no] [id]"]
+    },
+    {
+      "id": "fes.reference.co.lock",
+      "domain": "fes-object-command",
+      "names": ["lock"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/lock.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Locks hit rectangle; native alpha-mask hit regions are not yet implemented.",
+      "signatures": ["[obj] lock [flag]"]
+    },
+    {
+      "id": "fes.reference.co.mag",
+      "domain": "fes-object-command",
+      "names": ["mag"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/mag.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] mag (m)"]
+    },
+    {
+      "id": "fes.reference.co.max",
+      "domain": "fes-object-command",
+      "names": ["max"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/max.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": []
+    },
+    {
+      "id": "fes.reference.co.move",
+      "domain": "fes-object-command",
+      "names": ["move", "mcmove"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/move.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Linear state motion exists; SDK relative/absolute SUBCOMMAND coercion and continuous KX2 motion remain unverified.",
+      "signatures": ["[obj] move [frame] [x] (y) (z)", "[obj] mcmove [frame] [x] (y) (z)"]
+    },
+    {
+      "id": "fes.reference.co.mrot",
+      "domain": "fes-object-command",
+      "names": ["mrot", "mcrot"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/mrot.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] mrot [frame] [x] (y) (z)", "[obj] mcrot [x] (y) (z)"]
+    },
+    {
+      "id": "fes.reference.co.mscale",
+      "domain": "fes-object-command",
+      "names": ["mscale", "mcscalecos", "mcscalesin"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/mscale.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": [
+        "[obj] mscale [frame] [x] (y) (z)",
+        "[obj] mcscalecos [frame] [x] (y) (z)",
+        "[obj] mcscalesin [frame] [x] (y) (z)"
+      ]
+    },
+    {
+      "id": "fes.reference.co.next",
+      "domain": "fes-object-command",
+      "names": ["next"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/next.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] next"]
+    },
+    {
+      "id": "fes.reference.co.noact",
+      "domain": "fes-object-command",
+      "names": ["noact"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/noact.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] noact"]
+    },
+    {
+      "id": "fes.reference.co.page",
+      "domain": "fes-object-command",
+      "names": ["page"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/page.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] page [min] [max] (p)"]
+    },
+    {
+      "id": "fes.reference.co.param",
+      "domain": "fes-object-command",
+      "names": ["param"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/param.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] param (p1) (p2) ..."]
+    },
+    {
+      "id": "fes.reference.co.pend",
+      "domain": "fes-object-command",
+      "names": ["pend"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/pend.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] pend [frame] [rep] [x] [y] [z]", "[obj] mcpend [frame] [x] [y] [z]"]
+    },
+    {
+      "id": "fes.reference.co.pl",
+      "domain": "fes-object-command",
+      "names": ["pl"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/pl.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] pl [pl]"]
+    },
+    {
+      "id": "fes.reference.co.play",
+      "domain": "fes-object-command",
+      "names": ["play"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/play.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Basic one-shot/infinite loop request only; finite repeat counts, destruction flag and native event/playlist lifecycle are incomplete.",
+      "signatures": ["[obj] play [loop] [end]"]
+    },
+    {
+      "id": "fes.reference.co.pos",
+      "domain": "fes-object-command",
+      "names": ["pos"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/pos.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] pos (x) (y) (z)"]
+    },
+    {
+      "id": "fes.reference.co.pos2",
+      "domain": "fes-object-command",
+      "names": ["pos2"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/pos2.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] pos2 [file] [id]"]
+    },
+    {
+      "id": "fes.reference.co.pri",
+      "domain": "fes-object-command",
+      "names": ["pri"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/pri.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] pri [p]"]
+    },
+    {
+      "id": "fes.reference.co.ptype",
+      "domain": "fes-object-command",
+      "names": ["ptype"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/ptype.html",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "All ten original ptype branches execute in both pinned engines. Actual CSS thumbnail/string, object-reference and numeric branches have authored fixtures; unused/manual-different fields retain native defaults. Remaining full parameter/scene integration is not claimed.",
+      "signatures": ["[obj] ptype [type] [pid] (ex1) (ex2) ..."]
+    },
+    {
+      "id": "fes.reference.co.ref",
+      "domain": "fes-object-command",
+      "names": ["ref"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/ref.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] ref [robj]"]
+    },
+    {
+      "id": "fes.reference.co.refex",
+      "domain": "fes-object-command",
+      "names": ["refex"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/refex.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] refex (obj)"]
+    },
+    {
+      "id": "fes.reference.co.refparentpl",
+      "domain": "fes-object-command",
+      "names": ["refparentpl"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/refparentpl.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] refparentpl (pl)"]
+    },
+    {
+      "id": "fes.reference.co.repeat",
+      "domain": "fes-object-command",
+      "names": ["repeat"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/repeat.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] repeat [f]"]
+    },
+    {
+      "id": "fes.reference.co.reset",
+      "domain": "fes-object-command",
+      "names": ["reset"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/reset.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] reset"]
+    },
+    {
+      "id": "fes.reference.co.rev",
+      "domain": "fes-object-command",
+      "names": ["rev"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/rev.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] rev"]
+    },
+    {
+      "id": "fes.reference.co.rot",
+      "domain": "fes-object-command",
+      "names": ["rot"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/rot.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stores three rotations; the renderer currently applies only its existing 2D transform path.",
+      "signatures": ["[obj] rot (x) (y) (z)"]
+    },
+    {
+      "id": "fes.reference.co.scale",
+      "domain": "fes-object-command",
+      "names": ["scale"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/scale.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stores scale; complete parent transforms/hit testing need renderer support.",
+      "signatures": ["[obj] scale (x) (y) (z)"]
+    },
+    {
+      "id": "fes.reference.co.setact",
+      "domain": "fes-object-command",
+      "names": ["setact"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/setact.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] setact"]
+    },
+    {
+      "id": "fes.reference.co.setanm",
+      "domain": "fes-object-command",
+      "names": ["setanm"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/setanm.html",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs; src/native/draw-task.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "IMAGE/BUTTON use their original command handlers and retained ANM interpreter for frame/alpha/display, including fresh-process continuation and the reviewed game prefetch callback. Other object variants and all instruction/skin combinations are not yet accepted.",
+      "signatures": ["[obj] setanm (anm)"]
+    },
+    {
+      "id": "fes.reference.co.setid",
+      "domain": "fes-object-command",
+      "names": ["setid"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/setid.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] setid [id]"]
+    },
+    {
+      "id": "fes.reference.co.setlog",
+      "domain": "fes-object-command",
+      "names": ["setlog"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/setlog.html",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Binds the real shared display-log manager to LOGSTRING/LOGSTRING8 and executes original child creation/rendering. Both-profile runtime and checkpoint tests pass; complete page/selection coverage remains.",
+      "signatures": ["[obj] setlog [log]"]
+    },
+    {
+      "id": "fes.reference.co.setsave",
+      "domain": "fes-object-command",
+      "names": ["setsave"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/setsave.html",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Original save%04d.dat formatting, CSS import, private flag bank, file-time conversion and part rebuild execute in both profiles with a real authored save. Error/reload/start-offset combinations and complete save UI acceptance remain under audit.",
+      "signatures": ["[obj] setsave [no] [sid] [start]"]
+    },
+    {
+      "id": "fes.reference.co.settbl",
+      "domain": "fes-object-command",
+      "names": ["settbl"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/settbl.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] settbl [idx] [no]"]
+    },
+    {
+      "id": "fes.reference.co.shuffle",
+      "domain": "fes-object-command",
+      "names": ["shuffle"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/shuffle.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] shuffle [f]"]
+    },
+    {
+      "id": "fes.reference.co.size",
+      "domain": "fes-object-command",
+      "names": ["size"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/size.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Dimensions are tracked; native object-type restrictions and texture recreation remain partial.",
+      "signatures": ["[obj] size (w) (h)"]
+    },
+    {
+      "id": "fes.reference.co.skip",
+      "domain": "fes-object-command",
+      "names": ["skip"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/skip.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] skip"]
+    },
+    {
+      "id": "fes.reference.co.sndtbl",
+      "domain": "fes-object-command",
+      "names": ["sndtbl"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/sndtbl.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stores filenames only; enable masks, table bounds and automatic progression are incomplete.",
+      "signatures": ["[obj] sndtbl [no] [file] [enable]"]
+    },
+    {
+      "id": "fes.reference.co.start",
+      "domain": "fes-object-command",
+      "names": ["start"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/start.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] start"]
+    },
+    {
+      "id": "fes.reference.co.stop",
+      "domain": "fes-object-command",
+      "names": ["stop"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/stop.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stops continuous motions only; complete continuous KX2 motion scheduling is missing.",
+      "signatures": ["[obj] stop"]
+    },
+    {
+      "id": "fes.reference.co.stop_s",
+      "domain": "fes-object-command",
+      "names": ["stop (SOUND)"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/stop_s.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "signatures": ["[obj] stop"]
+    },
+    {
+      "id": "fes.reference.co.str",
+      "domain": "fes-object-command",
+      "names": ["str"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/str.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/native-text.test.mjs",
+        "docs/native-text.md"
+      ],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] str (str)"]
+    },
+    {
+      "id": "fes.reference.co.stype",
+      "domain": "fes-object-command",
+      "names": ["stype"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/stype.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "signatures": ["[obj] stype [type]"]
+    },
+    {
+      "id": "fes.reference.co.time",
+      "domain": "fes-object-command",
+      "names": ["time"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/time.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] time [m] [s] [ms]"]
+    },
+    {
+      "id": "fes.reference.co.tone",
+      "domain": "fes-object-command",
+      "names": ["tone"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/tone.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] tone (r) (g) (b)"]
+    },
+    {
+      "id": "fes.reference.co.tonetable",
+      "domain": "fes-object-command",
+      "names": ["tonetable"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/tonetable.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] tonetable [table]"]
+    },
+    {
+      "id": "fes.reference.co.userfont",
+      "domain": "fes-object-command",
+      "names": ["userfont"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/userfont.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] userfont [pid] [font] [code] [x] [y] [w] [h]"]
+    },
+    {
+      "id": "fes.reference.co.userfontobj",
+      "domain": "fes-object-command",
+      "names": ["userfontobj"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/userfontobj.html",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": ["[obj] userfontobj [obj]"]
+    },
+    {
+      "id": "fes.reference.co.vram",
+      "domain": "fes-object-command",
+      "names": ["vram"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/vram.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Stores VRAM coordinates; native atlas/compositor ownership is not emulated.",
+      "signatures": ["[obj] vram (x) (y)"]
+    },
+    {
+      "id": "fes.reference.co.wipe",
+      "domain": "fes-object-command",
+      "names": ["wipe"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/reference/co/wipe.html",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "signatures": ["[obj] wipe [frame] [mask]"]
+    },
+    {
+      "id": "fes-object-extension.crossfade",
+      "domain": "fes-object-extension",
+      "names": ["crossfade"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed sound-table extension; no complete native transition/lifecycle implementation.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.getbase",
+      "domain": "fes-object-extension",
+      "names": ["getbase"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed engine extension; native object base output semantics require recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.getoffset",
+      "domain": "fes-object-extension",
+      "names": ["getoffset"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Observed engine extension; native object offset output semantics require recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.getsavedate",
+      "domain": "fes-object-extension",
+      "names": ["getsavedate"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Browser save date fields are available; native field/default/error rules require validation.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.getsavestr",
+      "domain": "fes-object-extension",
+      "names": ["getsavestr"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Known title/comment/date formatting subset; complete arbitrary save-string IDs and native metadata need recovery.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.isdrawmark",
+      "domain": "fes-object-extension",
+      "names": ["isdrawmark"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.linecnt",
+      "domain": "fes-object-extension",
+      "names": ["linecnt"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.pathinfo",
+      "domain": "fes-object-extension",
+      "names": ["pathinfo"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-log.mjs; src/native/text-log.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
+      "note": "Dispatches the original handler and preserves original history path indices; indices are not derived from a host log-array position. Full output/array coverage remains incomplete.",
+      "signatures": []
+    },
+    {
+      "id": "fes-object-extension.setid_s",
+      "domain": "fes-object-extension",
+      "names": ["setid_s"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes",
+      "evidence": [],
+      "note": "Recognized compatibility token with no validated native signature or implementation.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.DEFINE",
+      "domain": "fes-syntax",
+      "names": ["#DEFINE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_define.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Scalar/array declarations work; complete native object type restrictions are pending.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.INCLUDE",
+      "domain": "fes-syntax",
+      "names": ["#INCLUDE"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_include.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Recursive includes, unresolved includes and include cycles are tested.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.KEYBLOCK",
+      "domain": "fes-syntax",
+      "names": ["#KEYBLOCK"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_keyblock.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Block dimensions, links, cell assignments and logical cursor positions are tested; native alpha hit regions and diagonal/input edge cases are incomplete.",
+      "signatures": ["#KEYBLOCK [block]"]
+    },
+    {
+      "id": "fes.syntax.MACRO",
+      "domain": "fes-syntax",
+      "names": ["#MACRO"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_macro.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Recursive token replacement covers command names, object counts and variable indices.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.OBJECT",
+      "domain": "fes-syntax",
+      "names": ["#OBJECT"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_object.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Known columns initialize state; unknown columns are explicit diagnostics. ID.N/D/F/P, BTYPE and MASK remain unresolved in SDK.",
+      "signatures": ["#OBJECT [param1] [param2] [param3] ..."]
+    },
+    {
+      "id": "fes.syntax.PRELOAD",
+      "domain": "fes-syntax",
+      "names": ["#PRELOAD"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_preload.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Image metadata is preloaded by token scan; native explicit texture residency/destruction lifetime is incomplete.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.SUBCOMMAND",
+      "domain": "fes-syntax",
+      "names": ["#SUBCOMMAND"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/manual/fes/code/h_include.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Parsed definitions are retained; a generic KX2 motion executor/coercion is not implemented.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.comments",
+      "domain": "fes-syntax",
+      "names": ["comments"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/code/comment.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Both C comment forms are tested, preserving command line boundaries.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.events",
+      "domain": "fes-syntax",
+      "names": ["events"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/event.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Default-before-object ordering and bank @ are tested; complete sound/playlist/input lifecycle is incomplete.",
+      "signatures": ["#[obj].[event]"]
+    },
+    {
+      "id": "fes.syntax.expressions",
+      "domain": "fes-syntax",
+      "names": ["expressions"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/var.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Signed int32 precedence, prefix/postfix changes, assignment, indirect indices and short circuits are tested. Native exceptional arithmetic/coercion edges require an oracle.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.headers",
+      "domain": "fes-syntax",
+      "names": ["headers"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/code/headblock.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Case-sensitive labels; blocks repeat once per frame, next transitions in the same frame.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.string-variables",
+      "domain": "fes-syntax",
+      "names": ["string variables"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/manual/fes/code/svar.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "String substitution, numeric formatting and numbered string tables are tested.",
+      "signatures": []
+    },
+    {
+      "id": "fes.syntax.system-variables",
+      "domain": "fes-syntax",
+      "names": ["system variables"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/manual/fes/code/sysvar.html",
+      "implementation": "src/fes",
+      "evidence": ["tests/fes-contracts.test.mjs"],
+      "note": "Input handles and per-instance frame reset are tracked; _SAVEOBJ_ requires a genuine native save object.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.VIEW",
+      "domain": "fes-object",
+      "names": ["VIEW"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-planes.mjs; src/native/fes-objects.mjs; src/native/graphics.mjs",
+      "evidence": [
+        "tests/native-fes-factory.test.mjs",
+        "tests/native-fes-planes.test.mjs",
+        "docs/native-fes-planes.md"
+      ],
+      "note": "Both original factory switches allocate a 44-byte Base/type-0 object for declared VIEW. Original built-in type filters execute; no image/viewport task is invented. Public fixtures cover native identity, commands and fresh-World restoration.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.DRAW",
+      "domain": "fes-object",
+      "names": ["DRAW"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-area.mjs; src/native/area-effect.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-fes-planes.test.mjs", "docs/native-fes-planes.md"],
+      "note": "Both original constructors, resource initialization/list frame, CPU alpha-task 27 and completion cleanup execute. Fixtures check intermediate VRAM, retained surface separation, child destruction, upload reenabling and fresh World; complete parameters and final browser acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.WIPE",
+      "domain": "fes-object",
+      "names": ["WIPE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-area.mjs; src/native/area-effect.mjs; src/native/fes-objects.mjs",
+      "evidence": ["tests/native-fes-planes.test.mjs", "docs/native-fes-planes.md"],
+      "note": "Both original constructors, Plane image-count phases, resource initialization/frame and CPU tasks 26/28 execute. Fixtures cover incoming/outgoing/cross-image selection, intermediate mask/alpha VRAM and complete cleanup across fresh World. Complete mask/parameter combinations and final browser acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.PANEL",
+      "domain": "fes-object",
+      "names": ["PANEL"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-images.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original constructors, definition application, ptype branch handlers and frame composition execute into actual retained pixels. Authored NORM and image parts and fresh-World composites are checked; complete input, reconfiguration and all panel command combinations remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.CHTABLE3",
+      "domain": "fes-object",
+      "names": ["CHTABLE3"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-images.mjs; src/native/engine-files.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original section-table loaders, image drivers and load/max/baseopt commands execute. Authored fixtures cover _TOP_ and named section traversal, placeholder merging, invalid and partial paths, plain-prefix suffix behavior, replacement pixels and fresh-World restore. Complete mask combinations and command coverage remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.IMGWND",
+      "domain": "fes-object",
+      "names": ["IMGWND"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-images.mjs; src/native/retained-draw.mjs",
+      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
+      "note": "Both original constructors, header apply functions, frame drivers and nine-frame window composers execute. Authored HG3 fixtures cover all four corners, four tiled edges, center pixels, size-before-load, actual retained drawing, visibility and fresh-World VRAM restore. Reference sizing, all command combinations and browser-pixel acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.RDRAW",
+      "domain": "fes-object",
+      "names": ["RDRAW"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect.mjs; src/native/screen-effect-render.mjs; src/render/stage.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Original object constructor, common definition parser, resource-list driver, MOT scheduling, callback drawing, cleanup and checkpoint run in both mounted profiles. Browser coverage includes global transition entry points; exhaustive parameters and object commands remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.RWIPE",
+      "domain": "fes-object",
+      "names": ["RWIPE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect.mjs; src/native/screen-effect-render.mjs; src/render/stage.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Original object constructor, common definition parser, resource-list driver, MOT scheduling, callback drawing, cleanup and checkpoint run in both mounted profiles. Browser coverage includes global transition entry points; exhaustive parameters and object commands remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.NUMIMG",
+      "domain": "fes-object",
+      "names": ["NUMIMG"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes/instance.mjs; src/native/fes-objects.mjs; src/native/fes-planes.mjs",
+      "evidence": [
+        "tests/native-fes-factory.test.mjs",
+        "tests/native-fes-planes.test.mjs",
+        "docs/native-fes-planes.md"
+      ],
+      "note": "Both original factories register NUMIMG group count and return success but allocate no type-28 objects. Count/NULL lookup/empty-target command behavior and fresh World are preserved; this is defined native absence, not an invented number display.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.WBREAK",
+      "domain": "fes-object",
+      "names": ["WBREAK"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect.mjs; src/native/screen-effect-render.mjs; src/render/stage.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Original object constructor, common definition parser, resource-list driver, MOT scheduling, callback drawing, cleanup and checkpoint run in both mounted profiles. Browser coverage includes global transition entry points; exhaustive parameters and object commands remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.RWMOS",
+      "domain": "fes-object",
+      "names": ["RWMOS"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect.mjs; src/native/screen-effect-render.mjs; src/render/stage.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Original object constructor, common definition parser, resource-list driver, MOT scheduling, callback drawing, cleanup and checkpoint run in both mounted profiles. Browser coverage includes global transition entry points; exhaustive parameters and object commands remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.RFMOS",
+      "domain": "fes-object",
+      "names": ["RFMOS"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect.mjs; src/native/screen-effect-render.mjs; src/render/stage.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "Original object constructor, common definition parser, resource-list driver, MOT scheduling, callback drawing, cleanup and checkpoint run in both mounted profiles. Browser coverage includes global transition entry points; exhaustive parameters and object commands remain under audit.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.STRTABLE",
+      "domain": "fes-object",
+      "names": ["STRTABLE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-data.mjs; src/native/fes-objects.mjs; src/native/fes-graphics.mjs",
+      "evidence": ["tests/native-fes-data.test.mjs", "docs/native-fes-data.md"],
+      "note": "Original constructors, FILE definition, TAB parser and get handler execute in the shared PE. Tests cover signed row IDs, quotes, CP932/raw UTF-8/invalid bytes, missing cells, output flags and fresh-World continuation. Broader invalid-input combinations and complete UI acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.FILELIST",
+      "domain": "fes-object",
+      "names": ["FILELIST"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-data.mjs; src/native/fes-objects.mjs; src/native/fes-graphics.mjs",
+      "evidence": ["tests/native-fes-data.test.mjs", "docs/native-fes-data.md"],
+      "note": "Original constructors, no-op definition callback, make Win32 enumeration and indexed count/name/fullpath queries execute in shared PE state. Tests cover directories, native profile pattern differences, case-preserving results, accumulating maps, invalid indices and fresh-World continuation. Complete platform/path input acceptance remains open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.M2PLANE",
+      "domain": "fes-object",
+      "names": ["M2PLANE"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/emote-fes.mjs; src/native/emote.mjs; src/native/emote-sdk-task.mjs",
+      "evidence": [
+        "tests/native-m2.test.mjs",
+        "tests/browser/emote-native.spec.mjs",
+        "docs/emote-compatibility.md"
+      ],
+      "note": "Both original FES constructors/commands/drivers execute. The game uses the actual shared-process E-mote task and mounted DLL; the SDK runs its actual SimplePlane placeholder. Fresh GPU and model paths are checked. Sustained large-model performance, arbitrary variants and full UI acceptance remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-object.EFKPLANE",
+      "domain": "fes-object",
+      "names": ["EFKPLANE"],
+      "status": "missing",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/fes/types.mjs; src/fes/object.mjs; src/native/fes-graphics.mjs",
+      "evidence": [],
+      "note": "Frozen native object type 36; definition/factory identity is enumerated, but the complete object command, task/resource, draw and checkpoint contracts are not yet accepted. A constructor or recognized name does not complete this row.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.sortsave",
+      "domain": "fes-extension",
+      "names": ["sortsave"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Original fixed-profile extension handler, CSS/file-time or sort operations and live bank writes are included in the complete two-profile save-command checks; this is not a claim of whole save-screen acceptance.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.sortsave2",
+      "domain": "fes-extension",
+      "names": ["sortsave2"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Original fixed-profile extension handler, CSS/file-time or sort operations and live bank writes are included in the complete two-profile save-command checks; this is not a claim of whole save-screen acceptance.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.saveget_date",
+      "domain": "fes-extension",
+      "names": ["saveget_date"],
+      "status": "implemented",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/save-slots.mjs; src/fes/instance.mjs",
+      "evidence": [
+        "tests/native-save-slots.test.mjs",
+        "scripts/verify-native-save-slots.mjs",
+        "docs/native-save-slots.md"
+      ],
+      "note": "Original fixed-profile extension handler, CSS/file-time or sort operations and live bank writes are included in the complete two-profile save-command checks; this is not a claim of whole save-screen acceptance.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.wbreak",
+      "domain": "fes-extension",
+      "names": ["wbreak"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect-render.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "The original command allocates its FES object, captures the native target and schedules original MOT/callback execution. Both-profile GPU completion, duplicate-live guards and cleanup are tested; exhaustive parameters and independent final-screen coverage remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.rwmos",
+      "domain": "fes-extension",
+      "names": ["rwmos"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect-render.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "The original command allocates its FES object, captures the native target and schedules original MOT/callback execution. Both-profile GPU completion, duplicate-live guards and cleanup are tested; exhaustive parameters and independent final-screen coverage remain open.",
+      "signatures": []
+    },
+    {
+      "id": "fes.native-command.rfmos",
+      "domain": "fes-extension",
+      "names": ["rfmos"],
+      "status": "partial",
+      "source": "https://cs2.suki.jp/download",
+      "implementation": "src/native/fes-effects.mjs; src/native/screen-effect-render.mjs",
+      "evidence": [
+        "tests/native-screen-effect.test.mjs",
+        "tests/browser/native-screen-effect.spec.mjs",
+        "docs/native-screen-effects.md"
+      ],
+      "note": "The original command allocates its FES object, captures the native target and schedules original MOT/callback execution. Both-profile GPU completion, duplicate-live guards and cleanup are tested; exhaustive parameters and independent final-screen coverage remain open.",
+      "signatures": []
+    }
+  ],
+  "indexSources": [
+    "https://cs2.suki.jp/manual/fes/reference/ref_abc.html",
+    "https://cs2.suki.jp/manual/fes/reference/ref_norm.html",
+    "https://cs2.suki.jp/manual/fes/reference/ref_obj.html",
+    "https://cs2.suki.jp/manual/fes/code/object.html",
+    "https://cs2.suki.jp/manual/scene/reference/contents.html"
+  ],
+  "baseline": "Frozen official SDK 4.01; prepared game engine 2.6.1.76 is a separate binary profile"
+}

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit FESPlayer (OWCramer).
 import { readFES } from '../formats/scene.mjs';
-import { parseProgram } from './program.mjs';
+import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
+import { NativeFESSourceArena } from '../native/fes-source.mjs';
 
 export class FESPlayer {
   constructor(game, images, host = {}, globals = {}, strings = {}) {
@@ -12,6 +13,7 @@ export class FESPlayer {
       host,
       globals,
       strings,
+      stringTable: {},
       language: 'en',
       root: null,
       frameCount: 0,
@@ -25,15 +27,14 @@ export class FESPlayer {
       unsupportedCommands: new Set(),
       hints: new Set(),
       events: [],
-      requestedKCS: null,
+      debugLogs: [],
     });
     this.metadata = new Map();
     this.unresolvedTargets = new Set();
+    this.localSources = new NativeFESSourceArena();
   }
   get instances() {
-    const result = [];
-    for (let s = this.root; s; s = s.child) result.push(s);
-    return result;
+    return this.root ? [this.root] : [];
   }
   get stack() {
     return this.instances.map((s) => `${s.name}#${s.label}`);
@@ -44,25 +45,50 @@ export class FESPlayer {
       .replace(/%LANG%/g, this.language)
       .replace(/\$str(\d+)/g, (_, n) => this.strings[n] || '');
   }
-  async load(name, parent = null) {
+  async load(name, options) {
     const text = await readFES(
-        await this.game.require(/\.fes$/i.test(name) ? name : `${name}.fes`),
-      ),
-      program = parseProgram(text);
-    program.source = text;
-    const tokens = new Set(this.expand(text).match(/[\w%-]+/g) || []);
-    const names = [...tokens].filter((t) => this.game.has(`${t}.hg3`));
+      this.game.requireCategory
+        ? await this.game.requireCategory(name, 'fes')
+        : await this.game.require(/\.fes$/i.test(name) ? name : `${name}.fes`),
+    );
+    const includes = new Map();
+    const loadIncludes = async (source) => {
+      for (const file of includeNames(source)) {
+        if (includes.has(file)) continue;
+        const contents = await readFES(
+          this.game.requireCategory
+            ? await this.game.requireCategory(file, 'fes')
+            : await this.game.require(file),
+        );
+        includes.set(file, contents);
+        await loadIncludes(contents);
+      }
+    };
+    await loadIncludes(text);
+    const program = parseProgram(text, { include: (file) => includes.get(file) });
+    const sources = this.nativeSources || this.localSources;
+    program.sourceKey = sources.register(
+      this.nativeOwner,
+      name.toLowerCase().replace(/\.fes$/, ''),
+      program,
+    );
+    program.source = [text, ...includes.values()].join('\n');
+    const tokens = new Set(this.expand(program.source).match(/[\w%-]+/g) || []);
+    const names = [...tokens].filter((t) =>
+      this.game.resolveCategory
+        ? this.game.resolveCategory(t, 'image') !== null
+        : this.game.has(`${t}.hg3`),
+    );
     await Promise.all(
       names.map(async (n) => {
         this.metadata.set(n.toLowerCase(), await this.images.load(n));
       }),
     );
-    return new FESInstance(name.toLowerCase().replace(/\.fes$/, ''), program, this, parent);
+    return new FESInstance(name.toLowerCase().replace(/\.fes$/, ''), program, this, options);
   }
   async start(name) {
     this.root = await this.load(name);
     this.focused = null;
-    this.requestedKCS = null;
   }
   enqueue(promise) {
     if (!promise || typeof promise.then !== 'function') return;
@@ -81,12 +107,58 @@ export class FESPlayer {
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
-      s.tick();
-      s.clickL = 0;
+      if (this.nativeImages)
+        for (const object of s.objects)
+          if (this.nativeImages.supports(object)) await this.nativeImages.advance(s, object);
+      if (this.nativeControls)
+        for (const object of s.objects)
+          if (this.nativeControls.supports(object)) await this.nativeControls.advance(s, object);
+      if (this.nativeEffects)
+        for (const object of s.objects)
+          if (this.nativeEffects.supports(object)) await this.nativeEffects.advance(s, object);
+      if (this.nativePlanes)
+        for (const object of s.objects)
+          if (this.nativePlanes.supports(object)) await this.nativePlanes.advance(s, object);
+      if (this.nativeArea)
+        for (const object of s.objects)
+          if (this.nativeArea.supports(object)) await this.nativeArea.advance(s, object);
+      const tick = async () => {
+        if (s.waitSound !== null) {
+          const object = s.byKey.get(s.waitSound);
+          if (!object)
+            throw new Error(`${s.name}: waiting sound object ${s.waitSound} disappeared`);
+          if (this.nativeSound) {
+            if (await this.nativeSound.busy(s, object)) return;
+          } else {
+            if (typeof this.host.soundBusy !== 'function')
+              throw new Error('FES sound wait requires a sound lifecycle host');
+            if (await this.host.soundBusy(object.soundChannel)) return;
+          }
+          s.waitSound = null;
+        }
+        s.tick();
+      };
+      await tick();
+      let flushes = 0;
+      while (s.decodePending) {
+        if (++flushes > 10000) throw new Error(`${s.name}: FES decode instruction budget`);
+        s.decodePending = false;
+        await this.flush();
+        await tick();
+      }
+      if (!s.keySkipControlOnly || !s.skipControl) s.clickL = 0;
+      if (!s.keySkipContinuous && !s.skipControl && !s.keySkipForced) s.skipPressed = false;
       s.clickR = 0;
       s.scrollUp = 0;
       s.scrollDown = 0;
-      for (const o of s.objects) o.advance();
+      s.scrollPosition = 0;
+      s.pageUp = 0;
+      s.pageDown = 0;
+      s.pushUp = 0;
+      s.pushDown = 0;
+      s.pushLeft = 0;
+      s.pushRight = 0;
+      for (const o of s.objects) o.advance(this.frameCount);
     }
     if (this.focused && !this.instances.includes(this.focused.s)) this.focused = null;
   }
@@ -109,8 +181,19 @@ export class FESPlayer {
         .map(async (name) => this.metadata.set(name.toLowerCase(), await this.images.load(name))),
     );
   }
+  async loadPicture(name) {
+    const key = this.expand(name)
+      .toLowerCase()
+      .replace(/\.hg3$/, '');
+    if (!this.metadata.has(key)) this.metadata.set(key, await this.images.load(key));
+    return this.metadata.get(key);
+  }
   note(text) {
     this.hints.add(text);
+  }
+  debugLog(entry) {
+    this.debugLogs.push(entry);
+    this.host.fesDebug?.(entry);
   }
   unsupported(text) {
     this.unsupportedCommands.add(text);
@@ -121,13 +204,72 @@ export class FESPlayer {
     );
   }
   requestKCS(name, owner) {
-    this.requestedKCS = { name, owner };
+    if (owner.childTaskID !== null || owner.kcsTaskID !== null) {
+      this.hints.add('execkcs ignored while a child script exists');
+      return;
+    }
+    if (typeof this.host.startKCS !== 'function')
+      throw new Error('FES execkcs requires a KCS task host');
+    this.enqueue(
+      Promise.resolve(this.host.startKCS(name, owner)).then((id) => {
+        if (id === null) return;
+        if (!Number.isSafeInteger(id) || id < 0)
+          throw new Error('KCS task host did not return a handle');
+        owner.kcsTaskID = id;
+      }),
+    );
+  }
+  endKCS(owner) {
+    if (owner.kcsTaskID === null) return;
+    if (typeof this.host.endKCS !== 'function')
+      throw new Error('FES endkcs requires a KCS task host');
+    this.enqueue(
+      Promise.resolve(this.host.endKCS(owner.kcsTaskID, owner)).then(() => {
+        owner.kcsTaskID = null;
+      }),
+    );
+  }
+  requestFES(name, owner, parameters) {
+    if (owner.childTaskID !== null || owner.kcsTaskID !== null) {
+      this.hints.add('execfes ignored while a child script exists');
+      return;
+    }
+    if (typeof this.host.startFES !== 'function')
+      throw new Error('FES execfes requires a native task host');
+    this.enqueue(
+      Promise.resolve(this.host.startFES(name, owner, parameters)).then((id) => {
+        if (id === null) return;
+        if (!Number.isSafeInteger(id) || id < 0)
+          throw new Error('FES task host did not return a handle');
+        owner.childTaskID = id;
+      }),
+    );
+  }
+  endFES(owner) {
+    if (owner.childTaskID === null) return;
+    if (typeof this.host.endFES !== 'function')
+      throw new Error('FES endfes requires a native task host');
+    this.enqueue(
+      Promise.resolve(this.host.endFES(owner.childTaskID, owner)).then(() => {
+        owner.childTaskID = null;
+      }),
+    );
+  }
+  childExitCode(owner) {
+    const id = owner.childTaskID ?? owner.kcsTaskID;
+    if (id === null) return owner.exitCode;
+    if (typeof this.host.childExitCode !== 'function')
+      throw new Error('FES child exit-code task query is unavailable');
+    return this.host.childExitCode(id, owner);
   }
   transition(frames, kind, mask) {
     this.host.transition?.(frames, kind, mask);
   }
-  snapshotBase() {
-    if (!this.transparent) this.host.snapshotBase?.();
+  snapshotBase(instance, object) {
+    if (this.nativeGraphics) this.enqueue(this.nativeGraphics.baseImage(instance, object));
+    else if (typeof this.host.snapshotBase === 'function')
+      this.enqueue(Promise.resolve(this.host.snapshotBase(object, instance)));
+    else throw new Error('FES baseimg requires a native drawing surface or a bitmap host');
   }
   random(low, high) {
     this.randomState = (Math.imul(this.randomState, 1103515245) + 12345) >>> 0;
@@ -182,6 +324,61 @@ export class FESPlayer {
     this.focused = target;
     if (target) target.s.event(target.o, 'FOCUS');
   }
+  nativeEvent(key, event) {
+    const instance = this.root,
+      object = key == null ? null : instance.byKey.get(key);
+    if (key != null && !object) throw new Error(`FES native input refers to missing object ${key}`);
+    const fields = {
+      PUSH_L: 'clickL',
+      PUSH_R: 'clickR',
+      SCRL_U: 'scrollUp',
+      SCRL_D: 'scrollDown',
+      SCRL_P: 'scrollPosition',
+      PAGE_U: 'pageUp',
+      PAGE_D: 'pageDown',
+      PUSH_UP: 'pushUp',
+      PUSH_DOWN: 'pushDown',
+      PUSH_LEFT: 'pushLeft',
+      PUSH_RIGHT: 'pushRight',
+      RELEASE_UP: 'releaseUp',
+      RELEASE_DOWN: 'releaseDown',
+      RELEASE_LEFT: 'releaseLeft',
+      RELEASE_RIGHT: 'releaseRight',
+      TOUCH: 'touch',
+    };
+    if (fields[event]) instance[fields[event]] = object?.handle ?? -1;
+    if (event === 'RELEASE_L') instance.clickL = 0;
+    if (event === 'RELEASE_R') instance.clickR = 0;
+    if (event === 'PUSH_L') instance.skipPressed = true;
+    if (!object) return false;
+    if (
+      ![
+        'FOCUS',
+        'UNFOCUS',
+        'PUSH_L',
+        'PUSH_R',
+        'RELEASE_L',
+        'RELEASE_R',
+        'SCRL_P',
+        'TOUCH',
+      ].includes(event)
+    )
+      return false;
+    return instance.dispatchEvent(object, event);
+  }
+  notify(event, objectName = null, objectIndex = 0) {
+    if (!this.root) throw new Error('FES notification requires a loaded script');
+    return this.root.notify(event, objectName, objectIndex);
+  }
+  focusObject(s, o) {
+    this.focus({ s, o });
+    const r = s.rect(o);
+    if (r)
+      this.mouse = {
+        x: r.x + (o.keyPosition ? o.keyPosition.x : r.w - 1),
+        y: r.y + (o.keyPosition ? o.keyPosition.y : r.h - 1),
+      };
+  }
   hover(x, y) {
     if (x === null) {
       this.focus(null);
@@ -223,24 +420,31 @@ export class FESPlayer {
   }
   rightClick() {
     const s = this.instances.at(-1);
-    if (s) s.clickR = 1;
+    const target = this.focused?.s === s ? this.focused : null;
+    if (s) s.clickR = target?.o.handle || -1;
+    if (target) {
+      s.event(target.o, 'PUSH_R');
+      s.event(target.o, 'RELEASE_R');
+    }
   }
   scroll(up) {
     const s = this.instances.at(-1);
-    if (s) s[up ? 'scrollUp' : 'scrollDown'] = 1;
+    if (s) s[up ? 'scrollUp' : 'scrollDown'] = this.focused?.s === s ? this.focused.o.handle : -1;
   }
   moveFocus(direction) {
     const all = this.candidates();
     if (!all.length) return false;
     const current = all.find((c) => c.o === this.focused?.o);
     if (!current) {
-      this.focus(
+      const first =
+        all.find((c) => c.o.key === c.s.defaultButton) ||
         all.toSorted(
           (a, b) => Math.floor(a.rect.y / 24) - Math.floor(b.rect.y / 24) || a.rect.x - b.rect.x,
-        )[0],
-      );
+        )[0];
+      this.focusObject(first.s, first.o);
       return true;
     }
+    current.s[`push${direction[0].toUpperCase()}${direction.slice(1)}`] = current.o.handle;
     if (current.o.type === 'SLIDER' && ['left', 'right'].includes(direction)) {
       const o = current.o;
       o.value = Math.max(
@@ -251,7 +455,43 @@ export class FESPlayer {
         ),
       );
       current.s.event(o, 'SCRL_P');
+      current.s.scrollPosition = o.handle;
       return true;
+    }
+    if (current.o.keyblock && current.s.program.keyblocks.length) {
+      const { s, o } = current,
+        [dx, dy] = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[direction],
+        link = { up: 0, down: 1, left: 2, right: 3 }[direction];
+      let { block, x, y } = o.keyblock;
+      const seen = new Set();
+      for (let i = 0; i < 10000; i++) {
+        const area = s.program.keyblocks[block];
+        if (!area) return false;
+        x += dx;
+        y += dy;
+        if (x < 0 || y < 0 || x >= area.width || y >= area.height) {
+          block = area.links[link];
+          const next = s.program.keyblocks[block];
+          if (!next) return false;
+          x = dx > 0 ? 0 : dx < 0 ? next.width - 1 : Math.min(x, next.width - 1);
+          y = dy > 0 ? 0 : dy < 0 ? next.height - 1 : Math.min(y, next.height - 1);
+        }
+        const position = `${block},${x},${y}`;
+        if (seen.has(position)) return false;
+        seen.add(position);
+        const target = all.find(
+          (c) =>
+            c.s === s &&
+            c.o.keyblock?.block === block &&
+            c.o.keyblock.x === x &&
+            c.o.keyblock.y === y,
+        );
+        if (target) {
+          this.focusObject(s, target.o);
+          return true;
+        }
+      }
+      return false;
     }
     const cx = current.rect.x + current.rect.w / 2,
       cy = current.rect.y + current.rect.h / 2;
@@ -273,7 +513,7 @@ export class FESPlayer {
       .filter((c) => Number.isFinite(c.score))
       .toSorted((a, b) => a.score - b.score);
     if (!candidates.length) return false;
-    this.focus(candidates[0]);
+    this.focusObject(candidates[0].s, candidates[0].o);
     return true;
   }
   knob(s, o) {
@@ -302,6 +542,7 @@ export class FESPlayer {
     if (value !== o.value) {
       o.value = value;
       s.event(o, 'SCRL_P');
+      s.scrollPosition = o.handle;
     }
   }
   beginDrag(x, y) {
@@ -323,16 +564,36 @@ export class FESPlayer {
         ? {
             name: s.name,
             label: s.label,
-            locals: s.locals,
+            ...(this.nativeVariableContext
+              ? { nativeVariableContextKey: s.nativeVariableContextKey }
+              : { locals: s.locals }),
             exitCode: s.exitCode,
+            childTaskID: s.childTaskID,
+            kcsTaskID: s.kcsTaskID,
+            galleryDescriptor: s.galleryDescriptor,
             finished: s.finished,
             suspended: s.suspended,
             waitFrames: s.waitFrames,
             waitMotion: s.waitMotion,
             waitSound: s.waitSound,
+            waitObjects: s.waitObjects,
+            frameOrigin: s.frameOrigin,
+            defaultButton: s.defaultButton,
             transitionUntil: s.transitionUntil,
-            objects: s.objects.map((o) => ({ ...o })),
-            child: instance(s.child),
+            keySkipEnabled: s.keySkipEnabled,
+            keySkipControlOnly: s.keySkipControlOnly,
+            keySkipContinuous: s.keySkipContinuous,
+            keySkipForced: s.keySkipForced,
+            skipPressed: s.skipPressed,
+            skipControl: s.skipControl,
+            inputPropagation: s.inputPropagation,
+            forceRedrawPending: s.forceRedrawPending,
+            resultValue: s.resultValue,
+            commandDelayUntil: s.commandDelayUntil,
+            deferredCommandReturn: s.deferredCommandReturn,
+            dynamicDefinitions: s.dynamicDefinitions,
+            nativeDictionary: s.nativeDictionary.snapshot(),
+            objects: s.objects.map((o) => ({ ...o, motionState: o.motionTarget?.snapshot() })),
           }
         : null;
     return structuredClone({
@@ -340,41 +601,76 @@ export class FESPlayer {
       languageMain: this.languageMain,
       frameCount: this.frameCount,
       randomState: this.randomState,
+      stringTable: this.stringTable,
       root: instance(this.root),
+      sourceArena: this.nativeSources ? null : this.localSources.snapshot(),
     });
   }
   async restore(state) {
+    if (!this.nativeSources) this.localSources.restore(state.sourceArena);
     this.language = state.language;
     this.languageMain = state.languageMain;
     this.frameCount = state.frameCount;
     this.randomState = state.randomState;
-    const instance = async (saved, parent) => {
+    this.stringTable = structuredClone(state.stringTable);
+    const instance = async (saved) => {
       if (!saved) return null;
-      const s = await this.load(saved.name, parent);
+      const s = await this.load(saved.name, {
+        nativeVariableContextKey: saved.nativeVariableContextKey,
+      });
+      s.nativeDictionary.restore(saved.nativeDictionary);
+      for (const definition of saved.dynamicDefinitions)
+        s.createObjects(definition.typeIndex, definition.name, definition.count);
       for (const key of [
         'label',
         'locals',
         'exitCode',
+        'kcsTaskID',
+        'childTaskID',
         'finished',
         'suspended',
         'waitFrames',
         'waitMotion',
         'waitSound',
+        'waitObjects',
+        'frameOrigin',
+        'defaultButton',
         'transitionUntil',
+        'keySkipEnabled',
+        'keySkipControlOnly',
+        'keySkipContinuous',
+        'keySkipForced',
+        'skipPressed',
+        'skipControl',
+        'inputPropagation',
+        'forceRedrawPending',
+        'resultValue',
+        'commandDelayUntil',
+        'deferredCommandReturn',
       ])
         s[key] = structuredClone(saved[key]);
       if (!s.program.blocks[s.label]) throw new Error('Save refers to missing FES block');
+      if (saved.galleryDescriptor) {
+        const { file, entry, list } = saved.galleryDescriptor;
+        if (typeof this.host.openGallery !== 'function')
+          throw new Error('CG gallery storage is unavailable');
+        s.galleryDescriptor = structuredClone(saved.galleryDescriptor);
+        s.cgGallery = await this.host.openGallery(file, entry, list);
+      }
       for (const o of saved.objects) {
         const target = s.byKey.get(o.key);
         if (!target || target.type !== o.type) throw new Error('Save FES object mismatch');
-        Object.assign(target, structuredClone(o));
+        const { motionState, ...fields } = o;
+        Object.assign(target, structuredClone(fields));
+        if (motionState) {
+          if (!this.motionLibrary) throw new Error('Restoring FES motion requires its MOT library');
+          await target.attachMotion(this.motionLibrary).restore(motionState);
+        }
       }
-      s.child = await instance(saved.child, s);
       return s;
     };
-    this.root = await instance(state.root, null);
+    this.root = await instance(state.root);
     this.focused = null;
     this.dragging = null;
-    this.requestedKCS = null;
   }
 }

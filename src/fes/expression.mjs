@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit FESExpression (OWCramer).
 const precedence = {
-  '||': 1,
-  '&&': 2,
-  '|': 3,
-  '^': 4,
-  '&': 5,
-  '==': 6,
-  '!=': 6,
-  '<': 7,
-  '>': 7,
-  '<=': 7,
-  '>=': 7,
-  '<<': 8,
-  '>>': 8,
-  '+': 9,
-  '-': 9,
-  '*': 10,
-  '/': 10,
-  '%': 10,
+  '||': 2,
+  '&&': 3,
+  '|': 4,
+  '^': 5,
+  '&': 6,
+  '==': 7,
+  '!=': 7,
+  '<': 8,
+  '>': 8,
+  '<=': 8,
+  '>=': 8,
+  '<<': 9,
+  '>>': 9,
+  '+': 10,
+  '-': 10,
+  '*': 11,
+  '/': 11,
+  '%': 11,
 };
 const operations = {
   '||': (a, b) => Number(!!a || !!b),
@@ -37,107 +37,138 @@ const operations = {
   '+': (a, b) => (a + b) | 0,
   '-': (a, b) => (a - b) | 0,
   '*': Math.imul,
-  '/': (a, b) => (b ? (a / b) | 0 : 0),
-  '%': (a, b) => (b ? a % b : 0),
+  '/': (a, b) => {
+    if (!b) throw new RangeError('FES division by zero');
+    return (a / b) | 0;
+  },
+  '%': (a, b) => {
+    if (!b) throw new RangeError('FES remainder by zero');
+    return a % b;
+  },
 };
+const assignments = new Set(['=', '+=', '-=', '*=', '/=', '%=', '|=', '&=', '^=', '<<=', '>>=']);
+
+// Parse first, then execute the expression tree. This keeps logical operators
+// short-circuiting, and preserves variable references for assignment and ++/--.
 export function evaluate(text, context, depth = 0) {
   if (depth > 32) throw new Error('Expression macro recursion');
   const tokens =
-    text.match(/0x[\da-f]+|\d+|[a-z_][a-z_\d]*|\|\||&&|==|!=|<=|>=|<<|>>|[^\s]/gi) || [];
+    text.match(
+      /0x[\da-f]+|\d+|[a-z_][a-z_\d]*|<<=|>>=|\+\+|--|\|\||&&|==|!=|<=|>=|<<|>>|[+\-*/%|&^]=|[^\s]/gi,
+    ) || [];
   let at = 0;
   const take = (token) => tokens[at] === token && (++at, true);
+  const required = (token) => {
+    if (!take(token)) throw new Error(`Missing '${token}' in expression ${text}`);
+  };
   function primary() {
-    const t = tokens[at++];
-    if (t === undefined) throw new Error(`Incomplete expression: ${text}`);
-    if (t === '-') return -primary() | 0;
-    if (t === '+') return primary();
-    if (t === '!') return Number(!primary());
-    if (t === '~') return ~primary();
-    if (t === '(') {
-      const v = expression(1);
-      if (!take(')')) throw new Error(`Missing ')' in ${text}`);
-      return v;
+    const token = tokens[at++];
+    if (token === undefined) throw new Error(`Incomplete expression: ${text}`);
+    if (['-', '+', '!', '~', '++', '--'].includes(token))
+      return { kind: 'unary', op: token, value: primary() };
+    let node;
+    if (token === '(') {
+      node = expression(1);
+      required(')');
+    } else if (['$', '\\', '#'].includes(token)) {
+      let index;
+      if (take('(')) {
+        index = expression(1);
+        required(')');
+      } else {
+        const number = tokens[at++];
+        if (/^\d+$/.test(number || '')) index = { kind: 'number', value: Number(number) };
+        else if (context.macro?.(number) !== undefined)
+          index = { kind: 'macro', value: context.macro(number) };
+        else throw new Error(`Invalid variable index in ${text}`);
+      }
+      node = { kind: 'variable', local: token === '\\', index };
+    } else if (/^(0x[\da-f]+|\d+)$/i.test(token))
+      node = { kind: 'number', value: Number(token) | 0 };
+    else {
+      let index;
+      if (take('[')) {
+        index = expression(1);
+        required(']');
+      }
+      node = { kind: 'identifier', name: token, index };
     }
-    if (t === '$' || t === '\\' || t === '#') {
-      const index = take('(')
-        ? (() => {
-            const v = expression(1);
-            if (!take(')')) throw new Error('Invalid variable index');
-            return v;
-          })()
-        : Number(tokens[at++]);
-      return t === '\\' ? context.local(index) : context.global(index);
-    }
-    if (/^(0x[\da-f]+|\d+)$/i.test(t)) return Number(t) | 0;
-    const system = context.system?.(t);
-    if (system !== undefined && system !== null) return system;
-    const macro = context.macro?.(t);
-    if (macro !== undefined) return evaluate(macro, context, depth + 1);
-    let index;
-    if (take('[')) {
-      index = expression(1);
-      if (!take(']')) throw new Error('Invalid object index');
-    }
-    return context.objectHandle?.(t, index) || 0;
+    if (tokens[at] === '++' || tokens[at] === '--')
+      node = { kind: 'postfix', op: tokens[at++], value: node };
+    return node;
   }
   function expression(min) {
-    let v = primary();
-    while ((precedence[tokens[at]] || 0) >= min) {
-      const op = tokens[at++],
-        right = expression(precedence[op] + 1);
-      v = operations[op](v, right);
+    let node = primary();
+    while (at < tokens.length) {
+      const op = tokens[at],
+        binding = assignments.has(op) ? 1 : precedence[op] || 0;
+      if (binding < min) break;
+      at++;
+      const right = expression(binding + (assignments.has(op) ? 0 : 1));
+      node = { kind: 'binary', op, left: node, right };
     }
-    return v;
+    return node;
   }
-  const value = expression(1);
+  function reference(node) {
+    if (node.kind !== 'variable') throw new Error(`Invalid assignment target in ${text}`);
+    const index = run(node.index);
+    if (!Number.isInteger(index) || index < 0) throw new Error(`Invalid variable index in ${text}`);
+    return {
+      get: () => (node.local ? context.local(index) : context.global(index)),
+      set: (value) =>
+        node.local ? context.setLocal(index, value | 0) : context.setGlobal(index, value | 0),
+    };
+  }
+  function run(node) {
+    if (node.kind === 'number') return node.value;
+    if (node.kind === 'macro') return evaluate(node.value, context, depth + 1);
+    if (node.kind === 'variable') return reference(node).get() | 0;
+    if (node.kind === 'identifier') {
+      const system = context.system?.(node.name);
+      if (system !== undefined && system !== null) return system | 0;
+      const macro = context.macro?.(node.name);
+      if (macro !== undefined) return evaluate(macro, context, depth + 1);
+      const handle = context.objectHandle?.(node.name, node.index ? run(node.index) : undefined);
+      if (handle === undefined || handle === null)
+        throw new Error(`Unexpected FES expression identifier '${node.name}' in ${text}`);
+      return handle | 0;
+    }
+    if (node.kind === 'postfix' || (node.kind === 'unary' && ['++', '--'].includes(node.op))) {
+      const target = reference(node.value),
+        old = target.get() | 0,
+        value = (old + (node.op === '++' ? 1 : -1)) | 0;
+      target.set(value);
+      return node.kind === 'postfix' ? old : value;
+    }
+    if (node.kind === 'unary') {
+      const value = run(node.value);
+      if (node.op === '-') return -value | 0;
+      if (node.op === '+') return value;
+      if (node.op === '!') return Number(!value);
+      return ~value;
+    }
+    if (assignments.has(node.op)) {
+      const target = reference(node.left),
+        value =
+          node.op === '='
+            ? run(node.right)
+            : operations[node.op.slice(0, -1)](target.get(), run(node.right));
+      target.set(value);
+      return value | 0;
+    }
+    const left = run(node.left);
+    if (node.op === '&&' && !left) return 0;
+    if (node.op === '||' && left) return 1;
+    return operations[node.op](left, run(node.right)) | 0;
+  }
+  const tree = expression(1);
   if (at !== tokens.length) throw new Error(`Unexpected '${tokens[at]}' in expression ${text}`);
-  return value | 0;
+  return run(tree) | 0;
 }
 
 export function assign(text, context) {
-  const compact = text.replace(/\s/g, '');
-  function target(lhs) {
-    const local = lhs[0] === '\\',
-      s = lhs.slice(1),
-      n = s.startsWith('(') ? evaluate(s, context) : Number(s);
-    if (!Number.isInteger(n)) throw new Error(`Invalid assignment: ${text}`);
-    return {
-      get: () => (local ? context.local(n) : context.global(n)),
-      set: (v) => (local ? context.setLocal(n, v | 0) : context.setGlobal(n, v | 0)),
-    };
-  }
-  const postfix = /^(.*)(\+\+|--)$/.exec(compact);
-  if (postfix) {
-    const t = target(postfix[1]);
-    t.set(t.get() + (postfix[2] === '++' ? 1 : -1));
-    return;
-  }
-  const compound = /^(.*?)([+\-*/%|&^])=(.*)$/.exec(compact);
-  if (compound) {
-    const t = target(compound[1]);
-    t.set(operations[compound[2]](t.get(), evaluate(compound[3], context)));
-    return;
-  }
-  const parts = [];
-  let depth = 0,
-    start = 0;
-  for (let i = 0; i < compact.length; i++) {
-    if (compact[i] === '(') depth++;
-    if (compact[i] === ')') depth--;
-    if (
-      !depth &&
-      compact[i] === '=' &&
-      compact[i + 1] !== '=' &&
-      !'=<>!'.includes(compact[i - 1] || ' ')
-    ) {
-      parts.push(compact.slice(start, i));
-      start = i + 1;
-    }
-  }
-  parts.push(compact.slice(start));
-  if (parts.length < 2) throw new Error(`Invalid assignment: ${text}`);
-  const v = evaluate(parts.pop(), context);
-  for (const lhs of parts) target(lhs).set(v);
+  if (!/^(?:\s*(?:\+\+|--))?\s*[$\\#]/.test(text)) throw new Error(`Invalid assignment: ${text}`);
+  return evaluate(text, context);
 }
 
 export function condition(line) {
