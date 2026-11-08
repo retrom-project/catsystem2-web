@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    592 |             82 |                     19 |                     316 |
-| Game / 2.6.1.76 | 1,055 |                    859 |             58 |                     17 |                     121 |
+| SDK / 2.6.1.74  | 1,009 |                    593 |             82 |                     19 |                     315 |
+| Game / 2.6.1.76 | 1,055 |                    860 |             58 |                     17 |                     120 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations

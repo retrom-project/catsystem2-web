@@ -120,7 +120,7 @@ export async function verifyScalarMath(bytes, profile) {
       comparisons,
       covered: Object.fromEntries([...cases].map(([id, n]) => [id.toString(16), n])),
       scope:
-        'All eighteen complete main scalar wrappers, raw f32/integer words, signed zero, infinities, qNaN/sNaN payloads, denormals, domain errors and limits. Eight masked x87 precision/rounding configurations with matched MXCSR, original output canaries and complete x87/SIMD context are compared; adjacent native argument reads are separate.',
+        'All nineteen complete main scalar-result wrappers, raw f32/integer words, signed zero, infinities, qNaN/sNaN payloads, denormals, domain errors and limits. Eight masked x87 precision/rounding configurations with matched MXCSR, original output canaries and complete x87/SIMD context are compared; adjacent native argument reads are separate. The paired 36B memory writer has its own full-wrapper comparison.',
     };
   } finally {
     await engine.close();

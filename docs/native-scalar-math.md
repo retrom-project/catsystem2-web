@@ -1,17 +1,22 @@
 # Native scalar math
 
-The eighteen main scalar interfaces `32..40`, `18D`, `1CD` and `36A` execute
+The nineteen main scalar-result interfaces `32..40`, `141`, `18D`, `1CD` and `36A` execute
 their complete original wrappers in the mounted engine. This includes the
 trigonometric functions, rounding, remainder, square root, power, angle-unit
 conversion, integer absolute value, `atan2`, decimal logarithm and low/high-word
 packing. `18D` takes y followed by x, as confirmed by literal reference calls.
+`141` is the original periodic triangle wave: it uses the absolute phase and
+period, reaches 1 and -1 at successive odd quarter periods and returns to zero
+at half periods. Its zero-period and NaN behavior remains original CPU behavior.
+The raw half-period result retains negative zero where the original wrapper
+negates zero; it is not normalized to positive zero.
 
 Math shares the engine's actual x87/SIMD thread with native plugins. The host
 does not convert a returned NaN, signed zero or denormal through a JavaScript
 number. Original precision, rounding and exception status changes are retained.
 Adjacent native argument words are read from the caller's mapped frame.
 
-`scripts/verify-native-scalar-math.mjs` executes 3,474 complete calls and 14,262
+`scripts/verify-native-scalar-math.mjs` executes 3,667 complete calls and 15,033
 comparisons per frozen engine. It compares original output canaries and the
 entire x87/SIMD context under eight masked precision/rounding configurations.
 Inputs include domain errors, signed zero, denormals, infinities, quiet and

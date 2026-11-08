@@ -82,6 +82,24 @@ test(
       );
       assert.equal((await call(0x36a, [0xabcd1234, 0xef987654])).value, 0x76541234);
       assert.equal((await call(0x1cd, [floatBits(10)])).value, floatBits(1));
+      for (const [phase, period, expected] of [
+        [0, 4, 0],
+        [1, 4, 1],
+        [2, 4, -0],
+        [3, 4, -1],
+        [4, 4, 0],
+        [-1, 4, 1],
+        [1, -4, 1],
+        [5, 4, 1],
+        [6, 4, -0],
+        [7, 4, -1],
+        [8, 4, 0],
+      ])
+        assert.equal(
+          (await call(0x141, [floatBits(phase), floatBits(period)])).value,
+          floatBits(expected),
+          `original triangle phase ${phase}, period ${period}`,
+        );
       const block = m.allocate(16);
       assert.deepEqual(await call(0x36b, [0x8000ffff, 256, 0x80000010]), { control: 2 });
       assert.equal(m.load(256), 0xffffffff);
@@ -104,6 +122,7 @@ test(
       assert.equal(m.load(0x80000010), 0xffff8000);
       assert.equal(m.load(block), 0);
       assert.equal((await invoke(0x3c, [floatBits(2)])).value, 0x3fb504f4);
+      assert.equal((await invoke(0x141, [floatBits(0.75), floatBits(2)])).value, floatBits(0.5));
       fp.cpu.reg_write_i32(fp.uc.X86_REG_FPCW, 0x37f);
       fp.cpu.reg_write_i32(fp.uc.X86_REG_MXCSR, 0x1f80);
       assert.equal((await invoke(0x3c, [floatBits(2)])).value, 0x3fb504f3);

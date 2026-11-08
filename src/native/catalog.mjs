@@ -1653,6 +1653,7 @@ const extendedDescriptions = [
   [0x164, 'vector4.lengthSquared', ['VMptr vector'], 'f32'],
   [0x165, 'vector4.scale', ['VMptr inOut', 'VMptr scaleFloat'], 'void'],
   [0x166, 'vector4.transform', ['VMptr inOut', 'VMptr matrix4'], 'void'],
+  [0x141, 'math.triangleWave', ['f32 phase', 'f32 period'], 'f32'],
   [0x18d, 'math.atan2', ['f32 y', 'f32 x'], 'f32'],
   [0x1cd, 'math.log10', ['f32 value'], 'f32'],
   [0x36a, 'math.packWords', ['word low', 'word high'], 'word'],
@@ -3143,8 +3144,8 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     contentMainIDs.has(id) ||
     effectCommandIDs.has(id) ||
     [
-      0xc0, 0xc1, 0xc2, 0xc3, 0x6b, 0x18a, 0x3a9, 0x18d, 0x1cd, 0x36a, 0x36b, 0x6f, 0x70, 0x72,
-      0x75, 0x76, 0x77, 0x79,
+      0xc0, 0xc1, 0xc2, 0xc3, 0x6b, 0x18a, 0x3a9, 0x141, 0x18d, 0x1cd, 0x36a, 0x36b, 0x6f, 0x70,
+      0x72, 0x75, 0x76, 0x77, 0x79,
     ].includes(id) ||
     [0x71, 0x1b9, 0x235, 0x236].includes(id) ||
     [

@@ -20,6 +20,7 @@ export const NATIVE_SCALAR_MATH_CONTRACTS = Object.freeze(
     [0x3e, 'degreeToRadian', 1, 0x659720, 0x52ad90],
     [0x3f, 'radianToDegree', 1, 0x659800, 0x52b280],
     [0x40, 'integerAbs', 1, 0x659870, 0x5269b0],
+    [0x141, 'triangleWave', 2, 0x65b9a0, 0x52b910],
     [0x18d, 'atan2', 2, 0x65b5b0, 0x5269d0],
     [0x1cd, 'log10', 1, 0x659980, 0x526af0],
     [0x36a, 'packWords', 2, 0x6597e0, 0x526950],
