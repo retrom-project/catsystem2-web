@@ -1,29 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit HGImage (OWCramer); HG decoding derives from GARbro (MIT, see NOTICE).
 import { Binary, inflate } from '../binary.mjs';
-
-class Bits {
-  constructor(bytes) {
-    this.bytes = bytes;
-    this.at = 0;
-  }
-  bit() {
-    if (this.at >= this.bytes.length * 8) throw new Error('HG3 control stream exhausted');
-    return (this.bytes[this.at >> 3] >> (this.at++ & 7)) & 1;
-  }
-  gamma() {
-    let n = 0;
-    while (!this.bit()) if (++n > 30) throw new Error('HG3 gamma exceeds limit');
-    let v = 1;
-    while (n--) v = v * 2 + this.bit();
-    return v;
-  }
-}
-const spread = Array.from(
-  { length: 256 },
-  (_, i) => ((i & 192) << 18) | ((i & 48) << 12) | ((i & 12) << 6) | (i & 3),
-);
-const unfold = (v) => (v & 1 ? (v >> 1) ^ 255 : v >> 1);
+import { unpackHGPixels } from './hg-codec.mjs';
+import { HG2 } from './hg2.mjs';
+import { RasterImage } from './raster.mjs';
 
 export class HG3 {
   constructor(bytes) {
@@ -122,44 +102,15 @@ export class HG3 {
     ]);
     if (!rows || top + rows > frame.height || 24 + packed + controlPacked > part.size)
       throw new Error('HG3 part bounds');
-    const bits = new Bits(control),
-      pixelSize = frame.bpp / 8,
-      stride = frame.width * pixelSize;
-    let copy = !!bits.bit();
-    const total = bits.gamma();
-    // Some producers pad tiny frames to a taller pixel block. Decode the declared block, crop at output.
-    if (total < stride * rows || total % 4 || total > Math.max(stride * rows, 1024 * 1024) * 4)
-      throw new Error(`HG3 invalid pixel run total ${total}`);
-    const planar = new Uint8Array(total),
-      pixels = new Uint8Array(total);
-    let source = 0,
-      destination = 0;
-    while (destination < total) {
-      const count = bits.gamma();
-      if (destination + count > total || (copy && source + count > data.length))
-        throw new Error('HG3 invalid run');
-      if (copy) {
-        planar.set(data.subarray(source, source + count), destination);
-        source += count;
-      }
-      destination += count;
-      copy = !copy;
-    }
-    const plane = total / 4;
-    for (let i = 0; i < plane; i++) {
-      const v =
-        (spread[planar[i]] << 6) |
-        (spread[planar[plane + i]] << 4) |
-        (spread[planar[plane * 2 + i]] << 2) |
-        spread[planar[plane * 3 + i]];
-      for (let c = 0; c < 4; c++) pixels[i * 4 + c] = unfold((v >>> (c * 8)) & 255);
-    }
-    for (let x = pixelSize; x < stride; x++) pixels[x] += pixels[x - pixelSize];
-    for (let y = 1; y < rows; y++)
-      for (let x = 0; x < stride; x++) pixels[y * stride + x] += pixels[(y - 1) * stride + x];
+    const pixelSize = frame.bpp / 8,
+      stride = frame.width * pixelSize,
+      pixels = unpackHGPixels(data, control, frame.width, rows, pixelSize);
     for (let y = 0; y < rows; y++)
       for (let x = 0; x < frame.width; x++) {
-        const src = (rows - 1 - y) * stride + x * pixelSize,
+        // The native HG3 decoder writes the first expanded row through its
+        // logical (0, partTop) accessor, then advances down the image. Its DIB
+        // storage is bottom-up; the public RGBA frame already uses logical rows.
+        const src = y * stride + x * pixelSize,
           dst = ((top + y) * frame.width + x) * 4;
         frame.rgba[dst] = pixels[src + 2];
         frame.rgba[dst + 1] = pixels[src + 1];
@@ -167,6 +118,13 @@ export class HG3 {
         frame.rgba[dst + 3] = pixelSize === 4 ? pixels[src + 3] : 255;
       }
   }
+}
+
+export async function openImage(bytes) {
+  const b = new Binary(bytes);
+  if (b.magic('HG-2')) return new HG2(bytes);
+  if (b.magic('HG-3')) return new HG3(bytes);
+  return new RasterImage(bytes).initialize();
 }
 
 export class ImageStore {
@@ -178,7 +136,21 @@ export class ImageStore {
     this.memory = 0;
   }
   async load(name) {
-    const key = name.toLowerCase();
+    const file = this.game.resolveCategory
+      ? this.game.resolveCategory(name, 'image')
+      : this.game.resolve(name, [
+          'hg3',
+          'hg2',
+          'png',
+          'jpg',
+          'jpeg',
+          'bmp',
+          'kcf',
+          'webp',
+          'psd',
+        ]) || name;
+    if (file === null) throw new Error(`Missing image resource: ${name}`);
+    const key = file.toLowerCase();
     if (this.images.has(key)) {
       const image = this.images.get(key);
       this.images.delete(key);
@@ -189,9 +161,9 @@ export class ImageStore {
       this.pending.set(
         key,
         this.game
-          .require(this.game.resolve(name, ['hg3']) || name)
-          .then((b) => {
-            const image = new HG3(b);
+          .require(file)
+          .then(async (b) => {
+            const image = await openImage(b);
             this.images.set(key, image);
             return image;
           })

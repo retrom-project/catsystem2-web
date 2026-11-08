@@ -52,6 +52,24 @@ test('loose patch data wins over patch archives, and patch archives win over bas
   await game.open();
   assert.deepEqual([...(await game.require('Hello.TXT'))], [3]);
 });
+test('archive-qualified reads preserve distinct same-named resources and never fall back to another namespace', async () => {
+  const file = (bytes) => new BlobFile(new Blob([bytes]));
+  const game = new GameFiles(
+    new Map([
+      ['left.int', file(kif([['same.bin', new Uint8Array([1])]]))],
+      ['right.int', file(kif([['same.bin', new Uint8Array([2])]]))],
+      ['config/setting.xml', file(new TextEncoder().encode('config'))],
+      ['patch/left.int', file(kif([['same.bin', new Uint8Array([3])]]))],
+    ]),
+  );
+  await game.open();
+  assert.deepEqual([...(await game.require('RIGHT.INT\\same.bin'))], [2]);
+  assert.deepEqual([...(await game.require('left.int/same.bin'))], [3]);
+  assert.deepEqual([...(await game.require('left/same.bin'))], [3]);
+  assert.equal(await game.read('missing.int/same.bin'), null);
+  assert.equal(new TextDecoder().decode(await game.require('config.int/setting.xml')), 'config');
+  assert.throws(() => game.has('../left.int/same.bin'), /escapes/);
+});
 test('CatScene preserves Japanese CP932 and command/message boundaries', async () => {
   const scene = await readScene(
     catScene([

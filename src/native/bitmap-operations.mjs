@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: MPL-2.0
+// Original bitmap base operations share persistent wrappers and guest pixels.
+import { nativeReply } from '../kcs/vm.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
+  [
+    [0x7a, 3, 2, 0x64c8b0, 0x519270],
+    [0x16f, 10, 2, 0x64b200, 0x517e10],
+    [0x171, 2, 2, 0x64b940, 0x518500],
+    [0x172, 3, 1, 0x64ca70, 0x519460],
+    [0x173, 3, 1, 0x64bad0, 0x518690],
+    [0x174, 3, 1, 0x64c9c0, 0x5193b0],
+    [0x175, 3, 1, 0x64c980, 0x519370],
+    [0x176, 3, 1, 0x64c910, 0x519300],
+    [0x178, 2, 2, 0x64a9e0, 0x517630],
+    [0x179, 1, 1, 0x64c080, 0x518be0],
+    [0x17a, 2, 2, 0x64ca40, 0x519430],
+    [0x2c1, 3, 2, 0x64c8b0, 0x519270],
+  ].map(([id, words, control, game, sdk]) =>
+    Object.freeze({ id, words, control, handlers: [game, sdk] }),
+  ),
+);
+const byID = new Map(NATIVE_BITMAP_OPERATION_CONTRACTS.map((s) => [s.id, s]));
+export class NativeBitmapOperations {
+  constructor(engine, world) {
+    Object.assign(this, { engine, world, process: engine.process });
+    this.profileIndex =
+      engine.profile === 'nekopara-vol3-engine-2.6.1.76'
+        ? 0
+        : engine.profile === 'sdk-4.01-engine-2.6.1.74'
+          ? 1
+          : -1;
+    if (this.profileIndex < 0) throw new Error('Bitmap operations require a reviewed engine');
+    engine.registerFeature('bitmap-operations', this);
+  }
+  async apply(id, args, machine, task) {
+    const spec = byID.get(id);
+    if (!spec) return undefined;
+    const words = Array.from(args);
+    while (!words.length) words.push(machine.nativeArgument(0));
+    let count = spec.words;
+    if (id === 0x16f) {
+      while (words.length < 6) words.push(machine.nativeArgument(words.length));
+      if (!words[5]) count = 6;
+    } else if (!words[0]) count = 1;
+    while (words.length < count) words.push(machine.nativeArgument(words.length));
+    const bitmaps = await this.world.getNativeFeature('bitmap-memory');
+    if (id !== 0x16f || words[5]) {
+      words[0] = await bitmaps.wrapper(words[0]);
+      if (id === 0x16f) words[5] = await bitmaps.wrapper(words[5]);
+    }
+    let platform;
+    if (id === 0x16f && !words[0] && words[5]) {
+      platform = await this.world.getNativeFeature('graphics-platform');
+      await platform.ensureRenderer();
+    }
+    const memory =
+      this.world.objects.machine(task.id) === machine
+        ? await this.world.getNativeFeature('task-memory')
+        : null;
+    if (memory) memory.vmPointer(task.id);
+    const p = this.process,
+      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
+      argv = p.allocate(words.length * 4),
+      out = p.allocate(4),
+      host = platform ? (memory ? await memory.pointer(task.id) : p.allocate(120, true)) : 0;
+    try {
+      words.forEach((v, i) => p.store(argv + i * 4, v));
+      p.store(out, 0xcccccccc);
+      if (platform) p.store(host + 116, platform.refs.view);
+      const params = [bridge.pointer, host, argv, out],
+        control = p.asyncEnabled
+          ? await this.engine.callFromHost(spec.handlers[this.profileIndex], params, undefined, {
+              task: task.id,
+            })
+          : await this.engine.call(spec.handlers[this.profileIndex], params, undefined, {
+              task: task.id,
+            });
+      if (control !== spec.control)
+        throw new Error('Original bitmap wrapper returned an unexpected control');
+      return nativeReply(control, control === 1 ? p.load(out) : undefined);
+    } finally {
+      try {
+        bridge.close();
+      } finally {
+        if (host && !memory) p.free(host);
+        p.free(out);
+        p.free(argv);
+      }
+    }
+  }
+  snapshot() {
+    return {};
+  }
+  restore() {}
+}
+export function installNativeBitmapOperations(world) {
+  world.registerNativeFeature(
+    'bitmap-operations',
+    (engine) => new NativeBitmapOperations(engine, world),
+  );
+  for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS.filter((spec) => spec.id !== 0x7a))
+    world.runtime.register('main', id, async (args, machine, task) =>
+      (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task),
+    );
+}

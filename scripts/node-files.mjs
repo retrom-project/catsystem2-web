@@ -3,9 +3,10 @@ import { open, readdir, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { GameFiles } from '../src/files.mjs';
 export class NodeFile {
-  constructor(path, size) {
+  constructor(path, size, modifiedMs) {
     this.path = path;
     this.size = size;
+    this.modifiedMs = modifiedMs;
   }
   async read(at, count) {
     if (at < 0 || count < 0 || at + count > this.size) throw new Error('File read out of bounds');
@@ -30,18 +31,21 @@ export async function walk(root, directory = root) {
     if (entry.name.startsWith('.')) continue;
     const path = join(directory, entry.name);
     if (entry.isDirectory()) result.push(...(await walk(root, path)));
-    else if (entry.isFile())
+    else if (entry.isFile()) {
+      const info = await stat(path);
       result.push({
         path: relative(root, path).split('\\').join('/'),
-        size: (await stat(path)).size,
+        size: info.size,
+        modifiedMs: info.mtimeMs,
       });
+    }
   }
   return result;
 }
 export async function nodeGame(root) {
   const files = await walk(root),
     game = new GameFiles(
-      new Map(files.map((f) => [f.path, new NodeFile(join(root, f.path), f.size)])),
+      new Map(files.map((f) => [f.path, new NodeFile(join(root, f.path), f.size, f.modifiedMs)])),
     );
   await game.open();
   return game;
