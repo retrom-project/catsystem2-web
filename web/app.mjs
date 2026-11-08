@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import { GameFiles } from '../src/files.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
+import {
+  CHECKPOINT_LIMIT,
+  serializeCheckpoint,
+  deserializeCheckpoint,
+} from '../src/checkpoint.mjs';
 const $ = (id) => document.getElementById(id),
   canvas = $('screen'),
   actions = [];
@@ -8,9 +13,7 @@ let engine,
   running = false,
   lastTime = 0,
   accumulator = 0,
-  statusTime = 0,
-  padState = {},
-  padRepeat = 0;
+  statusTime = 0;
 const fail = (error) => {
   $('error').hidden = false;
   $('error').textContent = error.message;
@@ -29,7 +32,8 @@ const enqueue = (action) =>
     }),
   );
 function updateStatus(state) {
-  for (const id of ['next', 'quick-save', 'export']) $(id).disabled = !state.story;
+  for (const id of ['next', 'quick-save']) $(id).disabled = !state.story;
+  $('export').disabled = state.mode !== 'running';
   for (const id of ['quick-load', 'backlog', 'settings', 'import']) $(id).disabled = !engine;
   const now = performance.now();
   if (now - statusTime < 400) return;
@@ -57,6 +61,12 @@ async function launch(getGame) {
       audioContext,
       video: $('movie'),
       onState: updateStatus,
+      onClosed: () => {
+        running = false;
+        $('welcome').hidden = false;
+        $('start').disabled = false;
+        $('status').textContent = 'Game closed';
+      },
     });
     engine.onError = fail;
     globalThis.catSystem2 = engine;
@@ -75,34 +85,14 @@ async function launch(getGame) {
     await audioContext.close();
   }
 }
-function gamepad(now) {
-  const pad = [...navigator.getGamepads()].find(Boolean);
-  if (!pad) {
-    padState = {};
-    return;
-  }
-  const buttons = {
-    confirm: !!pad.buttons[0]?.pressed,
-    cancel: !!pad.buttons[1]?.pressed,
-    up: !!pad.buttons[12]?.pressed || pad.axes[1] < -0.5,
-    down: !!pad.buttons[13]?.pressed || pad.axes[1] > 0.5,
-    left: !!pad.buttons[14]?.pressed || pad.axes[0] < -0.5,
-    right: !!pad.buttons[15]?.pressed || pad.axes[0] > 0.5,
-  };
-  for (const direction of ['up', 'down', 'left', 'right'])
-    if (buttons[direction] && (!padState[direction] || now > padRepeat)) {
-      engine.activeFES()?.moveFocus(direction);
-      padRepeat = now + 180;
-    }
-  if (buttons.confirm && !padState.confirm) engine.confirm();
-  if (buttons.cancel && !padState.cancel) engine.cancel();
-  padState = buttons;
+function gamepad() {
+  engine.inputBindings.gamepad(navigator.getGamepads());
 }
 async function loop(now) {
   if (!running) return;
   try {
     while (actions.length) await actions.shift()();
-    gamepad(now);
+    gamepad();
     accumulator += Math.min(100, now - lastTime) * 0.06;
     lastTime = now;
     const count = Math.min(6, Math.floor(accumulator));
@@ -121,7 +111,7 @@ $('folder').onchange = () => launch(() => GameFiles.fromFileList($('folder').fil
 $('next').onclick = () => enqueue(() => engine.advance()).catch(() => {});
 $('settings').onclick = () =>
   enqueue(() =>
-    engine.story ? engine.openModal('config') : engine.activeFES()?.root?.startChild('config'),
+    engine.world ? engine.world.window.post(0x46c, 0, 20) : engine.openModal('config'),
   ).catch(() => {});
 $('backlog').onclick = () =>
   enqueue(() => engine.openModal(engine.theme?.value('log', 'script') || 'hist_b')).catch(() => {});
@@ -136,13 +126,16 @@ $('fullscreen').onclick = () => {
   if (document.fullscreenElement) document.exitFullscreen().catch(fail);
   else $('stage').requestFullscreen().catch(fail);
 };
+document.addEventListener('fullscreenchange', () => engine?.nativeWindowStateChanged());
 $('export').onclick = () =>
   enqueue(async () => {
     const data = await engine.snapshot(),
-      url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+      url = URL.createObjectURL(
+        new Blob([await serializeCheckpoint(data)], { type: 'application/octet-stream' }),
+      );
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'catsystem2-save.json';
+    a.download = 'catsystem2-save.cs2save';
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }).catch(() => {});
@@ -150,8 +143,9 @@ $('import').onclick = () => $('save-file').click();
 $('save-file').onchange = () =>
   enqueue(async () => {
     const file = $('save-file').files[0];
-    if (!file || file.size > 16 * 1024 * 1024) throw new Error('Save file exceeds 16 MiB');
-    await engine.restore(JSON.parse(await file.text()));
+    if (!file || file.size > CHECKPOINT_LIMIT)
+      throw new Error('Save file exceeds checkpoint limit');
+    await engine.restore(await deserializeCheckpoint(new Uint8Array(await file.arrayBuffer())));
   }).catch(() => {});
 const point = (event) => {
   const r = canvas.getBoundingClientRect();
@@ -160,62 +154,72 @@ const point = (event) => {
     ((event.clientY - r.top) * canvas.height) / r.height,
   ];
 };
+const nativeTouch = (event) =>
+  event.pointerType === 'touch' && !!engine?.world.configuration.fields.application.touch;
 canvas.addEventListener('pointermove', (event) => {
-  if (engine && running) enqueue(() => engine.hover(...point(event))).catch(() => {});
+  if (engine && running)
+    enqueue(() =>
+      nativeTouch(event)
+        ? engine.touchContact(event.pointerId, ...point(event), 'move')
+        : engine.hover(...point(event)),
+    ).catch(() => {});
 });
-canvas.addEventListener('pointerleave', () => {
+canvas.addEventListener('pointerleave', (event) => {
+  if (event.pointerType !== 'mouse') return;
   if (engine && running) enqueue(() => engine.hover(null, null)).catch(() => {});
 });
 canvas.addEventListener('pointerdown', (event) => {
   canvas.focus();
-  if (!engine || !running || event.button !== 0) return;
+  if (!engine || !running) return;
   canvas.setPointerCapture(event.pointerId);
-  enqueue(() => engine.beginDrag(...point(event))).catch(() => {});
+  enqueue(() =>
+    nativeTouch(event)
+      ? engine.touchContact(event.pointerId, ...point(event), 'down')
+      : engine.pointerButton(...point(event), event.button, true),
+  ).catch(() => {});
 });
 canvas.addEventListener('pointerup', (event) => {
-  if (!engine || !running || event.button !== 0) return;
+  if (!engine || !running) return;
   enqueue(() => {
-    if (!engine.dragging) engine.click(...point(event));
-    engine.endDrag();
-    if (event.pointerType !== 'mouse') engine.hover(null, null);
+    if (nativeTouch(event)) engine.touchContact(event.pointerId, ...point(event), 'up');
+    else engine.pointerButton(...point(event), event.button, false);
   }).catch(() => {});
+});
+canvas.addEventListener('pointercancel', (event) => {
+  if (!engine || !running) return;
+  enqueue(() =>
+    nativeTouch(event)
+      ? engine.touchContact(event.pointerId, ...point(event), 'up')
+      : engine.inputBindings.releasePointer(),
+  ).catch(() => {});
 });
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
-  if (engine && running) enqueue(() => engine.cancel()).catch(() => {});
 });
 canvas.addEventListener(
   'wheel',
   (event) => {
     if (!engine || !running) return;
     event.preventDefault();
-    enqueue(() => engine.activeFES()?.scroll(event.deltaY < 0)).catch(() => {});
+    enqueue(() => engine.inputBindings.wheel(event.deltaY < 0)).catch(() => {});
   },
   { passive: false },
 );
 document.addEventListener('keydown', (event) => {
   if (!engine || !running || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
-  if (
-    ['Enter', ' ', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Control'].includes(
-      event.key,
-    )
-  ) {
+  if (engine.inputBindings.acceptsKeyboard(event)) {
     event.preventDefault();
     enqueue(async () => {
       await engine.audio.unlock();
-      if (event.key === 'Enter' || event.key === ' ') engine.confirm();
-      else if (event.key === 'Escape') engine.cancel();
-      else if (event.key === 'Control') engine.skip = true;
-      else engine.activeFES()?.moveFocus(event.key.slice(5).toLowerCase());
+      engine.inputBindings.keyboard(event, true);
     }).catch(() => {});
   }
 });
 document.addEventListener('keyup', (event) => {
-  if (event.key === 'Control' && engine) engine.skip = false;
+  if (engine && running) enqueue(() => engine.inputBindings.keyboard(event, false)).catch(() => {});
 });
 window.addEventListener('blur', () => {
-  if (engine) engine.skip = false;
-  padState = {};
+  engine?.inputBindings?.releaseAll();
 });
 window.addEventListener('pagehide', () => {
   running = false;

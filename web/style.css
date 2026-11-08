@@ -123,6 +123,62 @@ pre {
   white-space: pre-wrap;
   word-break: break-word;
 }
+.native-window {
+  max-width: min(44rem, 90vw);
+  max-height: 85vh;
+  color: inherit;
+  background: #202631;
+  border: 1px solid #526078;
+  border-radius: 0.6rem;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+.native-window::backdrop {
+  background: #000a;
+}
+.native-window h2 {
+  margin-top: 0;
+}
+.native-window-body {
+  overflow: auto;
+  max-height: 65vh;
+}
+.native-window fieldset {
+  margin: 0.75rem 0;
+  border: 1px solid #526078;
+}
+.native-setting,
+.native-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.65rem 0;
+}
+.native-setting input:not([type='checkbox']),
+.native-setting select {
+  max-width: 14rem;
+  width: 45%;
+  box-sizing: border-box;
+}
+.native-window input,
+.native-window select {
+  color: inherit;
+  background: #141a24;
+  border: 1px solid #526078;
+  border-radius: 0.25rem;
+  padding: 0.4rem;
+}
+.native-window-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.native-file span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 600px) {
   header {
     padding: 0.7rem;

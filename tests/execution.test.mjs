@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Binary } from '../src/binary.mjs';
-import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
+import { KCSMachine, encodeCP932, nativeReply } from '../src/kcs.mjs';
 import { evaluate, assign } from '../src/fes/expression.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { objectCommand, FESObject } from '../src/fes/object.mjs';
@@ -102,7 +102,7 @@ test('KCS signed arithmetic, stack operand order and assignment side effects', (
   vm.run();
   assert.equal(vm.load(0), 13);
   assert.equal(vm.pop(), 3);
-  const signed = machine([[4, -17, 3], [59]]);
+  const signed = machine([[4, [0x23, -17], [0x23, 3]], [59]]);
   signed.run();
   assert.equal(signed.pop() | 0, -5);
 });
@@ -111,14 +111,16 @@ test('KCS native arguments retain push order and bad stack/memory references fai
     vm = machine([[37, 10], [37, 20], [43, 7, 8], [59]], {
       native(id, args) {
         calls.push([id, args]);
-        return args[0] * 10 + args[1];
+        return nativeReply(1, args[0] * 10 + args[1]);
       },
     });
   vm.run();
   assert.deepEqual(calls, [[7, [10, 20]]]);
   assert.equal(vm.pop(), 120);
   assert.throws(() => vm.load(0x7fffffff), /memory/);
-  assert.throws(() => machine([[60], [59]]).run(), /underflow/);
+  const invalid = machine([[45], [59]]);
+  invalid.sp = 0;
+  assert.throws(() => invalid.run(), /underflow/);
 });
 test('KCS calls reserve arguments/return frame and restore the caller', () => {
   // call target=12; main body begins immediately after halt at byte 11.
@@ -126,7 +128,7 @@ test('KCS calls reserve arguments/return frame and restore the caller', () => {
   vm.run();
   assert.equal(vm.pop(), 42);
   assert.equal(vm.depth, 0);
-  assert.equal(vm.fp, 0);
+  assert.equal(vm.fp, vm.data.length);
 });
 test('KCS CP932 memory strings preserve non-ASCII characters', () => {
   const vm = machine([[59]]);
@@ -199,15 +201,21 @@ test('an absent FES subroutine returns to its caller and remains visible in diag
   assert.equal(player.globals[1], 42);
   assert.deepEqual([...player.unresolvedTargets], ['flow: missing call OPTIONAL']);
 });
-test('FES log-name queries evaluate a variable holding the result variable index', async () => {
+test('FES generic messages evaluate indirect output indices and pass the native routing target', async () => {
   const player = new FESPlayer(
     memoryGame({
       'flow.fes': new TextEncoder().encode(
-        '#START\n\\0=1\n\\1=850\nsend 0xfffe0002 \\0 \\1\nnext WAIT\n#WAIT\n',
+        '#START\n\\0=1\n\\1=850\nsend 0x12345678 \\0 \\1\nnext WAIT\n#WAIT\n',
       ),
     }),
     {},
-    { log: [{ nameID: 2 }, { nameID: 9 }] },
+    {
+      send: async (values, instance, { target }) => {
+        assert.deepEqual(values, [0x12345678, 1, 850]);
+        assert.equal(target, 'parent');
+        instance.setGlobal(values[2], 9);
+      },
+    },
   );
   await player.start('flow');
   await player.step();
