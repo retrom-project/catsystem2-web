@@ -44,6 +44,14 @@ parameter addresses and output word with each receiver. Two-profile tests
 compare that packet sequence and its writes with the original helper and
 exercise inherited movement and pixels before and after fresh restoration.
 
+The game build's custom-plane creation and callback registration entries
+(`675440`, `67E3D0`) keep their original bodies. The M2 platform handles its
+own task's callback, identified by the current task and guest object.
+SimplePlane messages 45 and 46 execute the original entries and allocate
+their original graph models. The tiled path creates two real child tasks
+through the World router in the two-profile browser fixture. The same game
+build also exercises ordinary native callback registration alongside M2.
+
 ## VRAM pages
 
 Ordinary textured planes and explicit divided meshes use the same owned VRAM

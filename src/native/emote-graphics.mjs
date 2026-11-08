@@ -2,6 +2,7 @@
 // Platform records shared with the reconstructed graph manager. M2 animation
 // and its graph callback remain original executable code.
 import { NativeGraphicTask } from './graphics.mjs';
+import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
 export class NativeEmoteGraphics {
   constructor(owner, platform) {
@@ -17,28 +18,44 @@ export class NativeEmoteGraphics {
     this.unsubscribe = platform.onDestroy((id) => this.callbacks.delete(id));
     const patch = (address, name, count, fn) =>
       this.engine.patch(address, name, count, fn, { calleePops: true });
-    const resolve = (id) => this.world.resolveTaskID(id, this.engine.currentTaskID);
-    patch(0x675440, 'graph create custom plane', 2, ([nativeID, type]) => {
-      const id = resolve(nativeID);
-      if (type !== 1) throw new Error(`M2 graph type ${type} needs its graph factory`);
-      const task = this.owner.tasks.get(id);
-      if (!task) throw new Error(`M2 graph ${id} has no task`);
-      task.plane.makeGraph({
-        type: 1,
-        width: this.world.game.width,
-        height: this.world.game.height,
-        colors: [0xffffffff],
-        vram: false,
-      });
-      return 1;
-    });
-    patch(0x67e3d0, 'graph set custom callback', 5, ([nativeID, index, callback, object, flag]) => {
-      const id = resolve(nativeID);
-      if (index || flag) throw new Error('M2 custom graph uses an unsupported primitive slot');
-      if (!this.owner.tasks.has(id)) return 0;
-      this.callbacks.set(id, { callback, object });
-      return 1;
-    });
+    const ownGraph = (nativeID) => {
+      const task = owner.tasks.get(this.engine.currentTaskID);
+      return task?.record.nativeID === nativeID;
+    };
+    this.customBoundaries = [
+      conditionalNativeGraphicsBoundary(
+        this.engine,
+        0x675440,
+        'M2 create custom plane',
+        2,
+        ([nativeID]) =>
+          ownGraph(nativeID) && p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0 === this.refs.view,
+        ([, type]) => {
+          if (type !== 1) throw new Error(`M2 graph type ${type} needs its graph factory`);
+          owner.tasks.get(this.engine.currentTaskID).plane.makeGraph({
+            type: 1,
+            width: this.world.game.width,
+            height: this.world.game.height,
+            colors: [0xffffffff],
+            vram: false,
+          });
+          return 1;
+        },
+      ),
+      conditionalNativeGraphicsBoundary(
+        this.engine,
+        0x67e3d0,
+        'M2 set custom callback',
+        5,
+        ([nativeID, , , object]) =>
+          ownGraph(nativeID) && owner.tasks.get(this.engine.currentTaskID).pointer === object,
+        ([, index, callback, object, flag]) => {
+          if (index || flag) throw new Error('M2 custom graph uses an unsupported primitive slot');
+          this.callbacks.set(this.engine.currentTaskID, { callback, object });
+          return 1;
+        },
+      ),
+    ];
     patch(0x66fe70, 'renderer acquire named stencil surface', 3, ([name, width, height]) =>
       this.acquire(p.string(name), width, height),
     );
@@ -112,13 +129,16 @@ export class NativeEmoteGraphics {
     return structuredClone({
       callbacks: [...this.callbacks],
       stencils: [...this.stencils],
+      customBoundaries: this.customBoundaries.map(({ trap }) => trap),
     });
   }
   restore(state) {
     this.callbacks = new Map(structuredClone(state.callbacks));
     this.stencils = new Map(structuredClone(state.stencils));
+    state.customBoundaries.forEach((trap, i) => (this.customBoundaries[i].trap = trap));
   }
   close() {
+    for (const boundary of this.customBoundaries) boundary.detach();
     this.unsubscribe();
     for (const [name, surface] of this.stencils) while (surface.references > 0) this.release(name);
   }

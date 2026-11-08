@@ -293,6 +293,64 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     const moved = await render(fresh);
     checks.freshInheritedPixels =
       !equal(moved, inheritedPixels) && colors(moved, [255, 255, 0]) > 0;
+
+    const customID = await fresh.objects.create({
+        kind: 2,
+        parent: fresh.main.id,
+        nativeID: 0x200,
+        name: 'Original custom plane',
+      }),
+      custom = bindPlane(fresh.graphics.get(customID)),
+      customNativeID = custom.task.record.nativeID,
+      sendCustom = (message, payload) =>
+        fresh.sendEngine(customID, fresh.main.id, message, 0, 0, { payload }),
+      freshEngine = fresh.nativeEngine,
+      fp = freshEngine.process,
+      getDescriptor = (id) => freshEngine.call(raw.descriptor, [id], freshPlatform.refs.manager);
+    await sendCustom(45);
+    const customDescriptor = await getDescriptor(customNativeID),
+      customModel = customDescriptor && fp.load(customDescriptor + 8);
+    checks.customPlane = Boolean(customModel) && fp.load(custom.task.pointer + 336) === 5;
+    if (!sdk && customModel) {
+      const callback = fp.load(fp.load(custom.task.pointer) + 24);
+      const registered = await freshEngine.call(
+        0x67e3d0,
+        [customNativeID, 2, callback, custom.task.pointer, 0],
+        undefined,
+        { task: customID },
+      );
+      checks.customCallback =
+        registered === 1 &&
+        equal(
+          [236, 240, 244, 248].map((at) => fp.load(customModel + at)),
+          [2, callback, custom.task.pointer, 1],
+        ) &&
+        !freshEngine.features.get('m2').graphics.callbacks.has(customID);
+    }
+    const createPlane = fresh.objects.factories.get(2);
+    fresh.objects.factories.set(2, async (...args) => {
+      const task = await createPlane(...args);
+      bindPlane(task);
+      return task;
+    });
+    try {
+      await sendCustom(46, packet([0, 0, 0, floatBits(4), floatBits(3), 32, 1, 0xffffffff, 2, 1]));
+    } finally {
+      fresh.objects.factories.set(2, createPlane);
+    }
+    const tiles = fresh.objects.children(custom.task.record);
+    checks.customTiles = fp.load(custom.task.pointer + 336) === 9 && tiles.length === 2;
+    for (const [i, tile] of tiles.entries()) {
+      const task = fresh.graphics.get(tile.id),
+        tileDescriptor = await getDescriptor(tile.nativeID);
+      checks['tile' + i] =
+        Boolean(tileDescriptor && fp.load(tileDescriptor + 16)) &&
+        fp.load(task.pointer + 12) === custom.task.pointer &&
+        equal(
+          [176, 180, 336].map((at) => fp.load(task.pointer + at)),
+          [floatBits(4), floatBits(3), 1],
+        );
+    }
     return checks;
   } finally {
     await fresh?.close({ flushFiles: false });
