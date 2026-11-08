@@ -1,0 +1,35 @@
+{
+  "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+  "wineImage": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+  "inputsSHA256": "b5cacbc81ff9f46c6dc61071ff512b1c9cd9872b72cbb71ed80526db78400b04",
+  "sourceSHA256": {
+    "native-m2-lip-oracle.py": "18f9a1f7ce914a780d8995e7b43e5f423b762e66a5f9439538279a3a0cab4662",
+    "native-m2-lip-oracle.cpp": "d91c13d4fbfb9b07338c91a789fd91fdcdc3e626a2b20ba3a7726e8f22f57e98",
+    "native-m2-oracle.cpp": "016535892c36a051db35f5fb77fb85185d4e007f0f007f351d1333551541963d",
+    "native-ppi-d3d9-oracle.cpp": "a95968213edadcf51ee95d277fd64cbe0fdc92feb0dfdc5066d0e8686a46bf44",
+    "native-ppi-wine-oracle.py": "3b1ea8da5d780c56d788d3fcf49d42da19eb8e9378b66dd6cf8988b23d2aceb6"
+  },
+  "lpb": {
+    "result": 1,
+    "count": 8,
+    "values": [
+      1065353216, 1057300152, 1054056557, 1055175039, 1059257495, 1057020532, 1053161772, 1040522937
+    ],
+    "backup": [
+      1065353216, 1052938077, 1043878380, 1059984507, 1056293520, 1061158912, 1049582634, 1040522937
+    ]
+  },
+  "failures": [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+  ],
+  "lv": {
+    "result": 1,
+    "count": 8,
+    "values": [0, 1054168405, 1058362709, 1056964608, 1054168405, 1058362709, 1051372203, 0],
+    "backup": [0, 1065353216, 1048576000, 1056964608, 1061158912, 0, 1065353216, 0]
+  }
+}

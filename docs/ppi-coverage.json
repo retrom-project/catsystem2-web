@@ -1,0 +1,1113 @@
+{
+  "oracle": {
+    "engineVersion": "2.6.1.76",
+    "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+    "sdk": "4.01"
+  },
+  "ptcl": {
+    "sourcePairs": 111,
+    "scriptVersions": {
+      "1.0": 25,
+      "2.0": 86
+    },
+    "declaredNatives": 51,
+    "natives": [
+      {
+        "id": 0,
+        "name": "DbgMessage",
+        "handlerVA": "0x0065bae0",
+        "control": 2,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 1,
+        "name": "GetFrame",
+        "handlerVA": "0x0065b000",
+        "control": 1,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 2,
+        "name": "GetBeforeFrame",
+        "handlerVA": "0x0065aea0",
+        "control": 1,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 3,
+        "name": "CalcFrame",
+        "handlerVA": "0x0065ae10",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 4,
+        "name": "GetFps",
+        "handlerVA": "0x00650030",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 5,
+        "name": "GetScreenSize",
+        "handlerVA": "0x0065b150",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 6,
+        "name": "sin",
+        "handlerVA": "0x00659a30",
+        "control": 1,
+        "sdkScriptsUsing": 80,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 7,
+        "name": "cos",
+        "handlerVA": "0x0065b5f0",
+        "control": 1,
+        "sdkScriptsUsing": 65,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 8,
+        "name": "tan",
+        "handlerVA": "0x0065b8e0",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 9,
+        "name": "asin",
+        "handlerVA": "0x0065b580",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 10,
+        "name": "acos",
+        "handlerVA": "0x0065b550",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 11,
+        "name": "atan",
+        "handlerVA": "0x00659890",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 12,
+        "name": "atan2",
+        "handlerVA": "0x0065b5b0",
+        "control": 1,
+        "sdkScriptsUsing": 30,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 13,
+        "name": "ceil",
+        "handlerVA": "0x006598c0",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 14,
+        "name": "fabs",
+        "handlerVA": "0x0065b640",
+        "control": 1,
+        "sdkScriptsUsing": 10,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 15,
+        "name": "floor",
+        "handlerVA": "0x00659900",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 16,
+        "name": "fmod",
+        "handlerVA": "0x00659940",
+        "control": 1,
+        "sdkScriptsUsing": 6,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 17,
+        "name": "sqrt",
+        "handlerVA": "0x0065a050",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 18,
+        "name": "pow",
+        "handlerVA": "0x006599b0",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 19,
+        "name": "Deg2Rad",
+        "handlerVA": "0x00659720",
+        "control": 1,
+        "sdkScriptsUsing": 53,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 20,
+        "name": "Rad2Deg",
+        "handlerVA": "0x00659800",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 21,
+        "name": "abs",
+        "handlerVA": "0x00659870",
+        "control": 1,
+        "sdkScriptsUsing": 1,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 22,
+        "name": "rotate_x",
+        "handlerVA": "0x0065b690",
+        "control": 2,
+        "sdkScriptsUsing": 6,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 23,
+        "name": "rotate_y",
+        "handlerVA": "0x0065b710",
+        "control": 2,
+        "sdkScriptsUsing": 6,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 24,
+        "name": "rotate_z",
+        "handlerVA": "0x0065b790",
+        "control": 2,
+        "sdkScriptsUsing": 68,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 25,
+        "name": "trans",
+        "handlerVA": "0x0065b910",
+        "control": 2,
+        "sdkScriptsUsing": 50,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 26,
+        "name": "scale",
+        "handlerVA": "0x0065b810",
+        "control": 2,
+        "sdkScriptsUsing": 6,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 27,
+        "name": "SetPos",
+        "handlerVA": "0x0065b400",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 28,
+        "name": "GetPos",
+        "handlerVA": "0x0065b060",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 29,
+        "name": "SetTex",
+        "handlerVA": "0x0065b4a0",
+        "control": 2,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 30,
+        "name": "GetBox",
+        "handlerVA": "0x0065aec0",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 31,
+        "name": "SetBox",
+        "handlerVA": "0x0065b340",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 32,
+        "name": "exit",
+        "handlerVA": "0x0065b620",
+        "control": 4,
+        "sdkScriptsUsing": 15,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 33,
+        "name": "rand",
+        "handlerVA": "0x00655cd0",
+        "control": 1,
+        "sdkScriptsUsing": 17,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 34,
+        "name": "frand",
+        "handlerVA": "0x0065b670",
+        "control": 1,
+        "sdkScriptsUsing": 93,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 35,
+        "name": "GetReg",
+        "handlerVA": "0x0065b0e0",
+        "control": 2,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 36,
+        "name": "GetNow",
+        "handlerVA": "0x0065b040",
+        "control": 1,
+        "sdkScriptsUsing": 111,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 37,
+        "name": "GetDistance",
+        "handlerVA": "0x0065af90",
+        "control": 1,
+        "sdkScriptsUsing": 6,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 38,
+        "name": "ParsScreen",
+        "handlerVA": "0x0065b190",
+        "control": 2,
+        "sdkScriptsUsing": 12,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 39,
+        "name": "SetShow",
+        "handlerVA": "0x0065b470",
+        "control": 2,
+        "sdkScriptsUsing": 68,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 40,
+        "name": "GetMax",
+        "handlerVA": "0x0065b020",
+        "control": 1,
+        "sdkScriptsUsing": 41,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 41,
+        "name": "LinearInt",
+        "handlerVA": "0x00659750",
+        "control": 1,
+        "sdkScriptsUsing": 50,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 42,
+        "name": "round",
+        "handlerVA": "0x006599e0",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 43,
+        "name": "triwave",
+        "handlerVA": "0x0065b9a0",
+        "control": 1,
+        "sdkScriptsUsing": 2,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 44,
+        "name": "ResetVertex",
+        "handlerVA": "0x0065bcd0",
+        "control": 2,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 45,
+        "name": "BackupVertex",
+        "handlerVA": "0x0065bb10",
+        "control": 2,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 46,
+        "name": "GetAttach",
+        "handlerVA": "0x0065bb40",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 47,
+        "name": "GetAttachShow",
+        "handlerVA": "0x0065bc80",
+        "control": 1,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 48,
+        "name": "GetAttachBase",
+        "handlerVA": "0x0065bb60",
+        "control": 2,
+        "sdkScriptsUsing": 0,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 49,
+        "name": "GetAttachPos",
+        "handlerVA": "0x0065bbe0",
+        "control": 2,
+        "sdkScriptsUsing": 55,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      },
+      {
+        "id": 50,
+        "name": "SetBlendMode",
+        "handlerVA": "0x0065bd00",
+        "control": 2,
+        "sdkScriptsUsing": 77,
+        "evidence": "SDK declaration and native static handler",
+        "runtimeCoverage": "implemented; JS ABI contract test; stock script execution where used"
+      }
+    ],
+    "execution": {
+      "implementation": "src/ppi/script.mjs",
+      "nativeSlotsImplemented": 51,
+      "directContractTestSlots": 51,
+      "sdkScriptsExecuted": 111,
+      "gameScriptsExecuted": 17,
+      "frames": [0, 1, 2, 15, 60, 61],
+      "particlesPerScript": 4,
+      "snapshotContinuation": "all128 scripts: quad bytes and VM memory identical",
+      "limitation": "Registers set to1 for corpus execution; no native image equivalence or intended-effect visual validation implied."
+    }
+  },
+  "ppi": {
+    "stockSDKPlugins": ["sample_rain.ppi"],
+    "hostSlots": {
+      "2.0": 31,
+      "2.1": 32,
+      "2.2": 35
+    },
+    "plugins": [
+      {
+        "file": "blur.ppi",
+        "bytes": 94720,
+        "sha256": "ee4c3f91688794c30dae4947fa5b1fc7a5c0a240e5640bc6d595fc738595bd91",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "cmnptcl.ppi",
+        "bytes": 289280,
+        "sha256": "afe0138dfde4b7c558b87e00e2518c34e55cb0866cb27ef0ba9623bdd73d1c05",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "dash.ppi",
+        "bytes": 94720,
+        "sha256": "2c680ed461b97d615d162588a221a812734414b68c2773e597affef9d1b049ca",
+        "version": 131073,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_angry.ppi",
+        "bytes": 77312,
+        "sha256": "384f720f7f2a061a5080c1d98d5015edc3f24bcc046d7272d1d29a1133446ae7",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_double.ppi",
+        "bytes": 91648,
+        "sha256": "5d207cb0eeb89891369c0f72aab080cf808ef2b71127aba360b693baaa059e22",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_note.ppi",
+        "bytes": 86528,
+        "sha256": "58bd95795fd711379de18e13084112069ea048a88e095052001bca279fdb8a4e",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_question.ppi",
+        "bytes": 76288,
+        "sha256": "de9de8d2b26be6e1896dd4d078eac461778cd15fe019497f5bf1cb240cbe741e",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_question_a.ppi",
+        "bytes": 76288,
+        "sha256": "3a412a08bf5e94e50cff7302af620574da7e6503d4d8a039087ad744a7b09594",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "em_sweat.ppi",
+        "bytes": 84992,
+        "sha256": "cb791b30afea7024ca4ef833a23977d2913edfa7a7cd630bb05c5a64b13e44b8",
+        "version": 131074,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "filmnoise.ppi",
+        "bytes": 83456,
+        "sha256": "7aff22d2b0389c32cfa6c4edd06e3ab43d4ce5f30a53c27f933f73dba9bb2da8",
+        "version": 131073,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "rain.ppi",
+        "bytes": 74240,
+        "sha256": "6ab38b54395c896d3e07dbee014bb5d3aa95d0e2d3f26c9b70aaf976e1d1c256",
+        "version": 131073,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      },
+      {
+        "file": "steam.ppi",
+        "bytes": 105984,
+        "sha256": "940362f102707ae6098ea8517d1f7940e6499dbf62e9369050100b5158e989bd",
+        "version": 131073,
+        "type": 1,
+        "imports": ["KERNEL32.dll"]
+      }
+    ],
+    "pe32Execution": {
+      "implementation": "src/ppi/pe32.mjs + src/ppi/native*.mjs",
+      "backend": {
+        "wrapper": {
+          "url": "https://github.com/AlexAltea/unicorn.js.git",
+          "commit": "560284c59c11c8d6c94d537f4354339f069ddcdf"
+        },
+        "unicorn": {
+          "url": "https://github.com/unicorn-engine/unicorn.git",
+          "commit": "8028ec436f2d9376525352dd38ed9ed6b9f6be10"
+        },
+        "emscripten": "3.1.74",
+        "patches": {
+          "tci-loads.patch": "a1c9d5e5a2843bba4c067e499d3749579d67c642379cf65b9c1cdbbd1ed650f1",
+          "tci-helper-temporaries.patch": "f1960d15d134b8b4f13723cf6653dd225fbf0808e45858b6a2c160984417dcc8",
+          "page-protection-cache.patch": "90ba675fc11054d438b1a8b015c4810cdf249d7b5ea196e86710a3a127dd2477",
+          "sse-status.patch": "446d0aafbb42060d259642a4707dc9700fb5860edb5183576c4176d8e23cfb63",
+          "host-code-cache.patch": "901ed1a621248dc746b69cdaef21dc4d772edbe512becbeb83cf30dc2fc68a7b",
+          "count-only-hooks.patch": "b6eba30b996ffcebfb7bde0375ff3d50b7997217ed279c093ea3406d2e33f7d7",
+          "ram-views.patch": "5c673f0768eccaeda9f10e772737bb79bed5c82c945e3557df83977412d4cdd3",
+          "count-budget-side-exits.patch": "0b0636ec3ac6cceb4526c675685d0d272ac8fd55a18e8405d34bb80d96c77b3c"
+        },
+        "prepareScriptSHA256": "ad6ded91ea5c0584f2aa4273c92cee8f17c03aec8e251ef7ac83fa4e8b2a96aa"
+      },
+      "artifact": {
+        "sha256": "d07e5e79ee93c577213853d4ee4fc28fb3d86ebd53dfe0dc57785d6f869fd4e3",
+        "bytes": 1069602
+      },
+      "sourceArchive": {
+        "sha256": "db0d2640862a0808de908dde92eab9e36c547ea4c72d5dfb05a338830c8921e9",
+        "bytes": 4403602
+      },
+      "license": "GPL-2.0 backend; preserve component/MPL notices and provide corresponding source",
+      "originalDLLsExecuted": 12,
+      "hostABI": "all35 callbacks implemented; slot34 is sampler state, not texture-stage state",
+      "sseHardwareOracle": {
+        "fixture": "tests/fixtures/native-sse-golden.json",
+        "cases": 7392,
+        "scope": "masked scalar SSE arithmetic/conversions, rounding/DAZ/FTZ, sticky flags; FXSAVE/FXRSTOR and CPU checkpoint"
+      },
+      "instructionBudget": {
+        "tests": "tests/native-cpu-budget.test.mjs",
+        "scope": "exact stops, complete CPU state against full instruction callbacks, user-hook EFLAGS writes and long x87 spill state"
+      },
+      "sharedRAM": {
+        "tests": ["tests/native-ram-view.test.mjs", "tests/native-task-memory.test.mjs"],
+        "scope": "live external and runtime shared backing, WASM growth, nested callbacks, EXEC invalidation and fresh-process rebind"
+      },
+      "callingThreadFloatingPoint": {
+        "implementation": "src/ppi/floating-point.mjs",
+        "tests": "tests/ppi-floating-point.test.mjs",
+        "pluginFixture": "tests/fixtures/ppi-native-controls.json",
+        "deviceFixture": "tests/fixtures/native-d3d9-control-golden.json",
+        "originalPluginCases": 24,
+        "originalDeviceCases": 144,
+        "controlWords": [127, 895],
+        "scope": "complete x87 stack/status/control/tag/instruction-data metadata and XMM/MXCSR exchange with the unique engine thread, including loader/unload and fresh World restore",
+        "precisionSensitivePlugins": ["em_note.ppi", "rain.ppi"]
+      }
+    },
+    "records": "implemented",
+    "hostMath": "implemented; used callback outputs match original DLL + original-engine PPF oracle for bounded golden inputs; arbitrary Intel-math ulp equivalence not established",
+    "lifecycle": "actual DLL process attach/detach, shared same-DLL globals, final-reference unload, per-instance Init/Exec/Stop/Release, relocated distinct DLLs; authored ABI tests and12 game DLLs",
+    "stockSDKPluginVersion": "sample_rain.ppi reports0x10000; native loader rejects it; adjacent SDK source declares2.1",
+    "nativeComparison": {
+      "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "wineImage": "sha256:81080f23de3472eb80c335daad91f187fdd1d78e678a0a630fee90677d3359a8",
+      "frames": ["Init", 0, 1, 2, 15, 60, 61],
+      "particles": 4,
+      "recordBytes": 148,
+      "plistSHA256": "265514757de77b16de391a471a55a050e158e1f2cee475b0a0f212ea90011ed6",
+      "plugins": [
+        {
+          "name": "blur.ppi",
+          "pluginSHA256": "ee4c3f91688794c30dae4947fa5b1fc7a5c0a240e5640bc6d595fc738595bd91",
+          "recordSHA256": "feebb2f984a3a9c5b5f6e6cad2afba880668717ed296e3f8ea90747341c5d68d",
+          "bytes": 4144
+        },
+        {
+          "name": "cmnptcl.ppi",
+          "pluginSHA256": "afe0138dfde4b7c558b87e00e2518c34e55cb0866cb27ef0ba9623bdd73d1c05",
+          "recordSHA256": "9f71d2a4c538bc6dd6cf32e097ee54422248f657718253980242d679ca01009e",
+          "bytes": 4144
+        },
+        {
+          "name": "dash.ppi",
+          "pluginSHA256": "2c680ed461b97d615d162588a221a812734414b68c2773e597affef9d1b049ca",
+          "recordSHA256": "ac21081f9dfdfc52b9abecf521792f1d6bec414f9fd6b25f801f5fbc54fb4731",
+          "bytes": 4144
+        },
+        {
+          "name": "em_angry.ppi",
+          "pluginSHA256": "384f720f7f2a061a5080c1d98d5015edc3f24bcc046d7272d1d29a1133446ae7",
+          "recordSHA256": "4f5e604c549feb14099662ddda35dd68885a895aa329c37143ab28cc38281ffe",
+          "bytes": 4144
+        },
+        {
+          "name": "em_double.ppi",
+          "pluginSHA256": "5d207cb0eeb89891369c0f72aab080cf808ef2b71127aba360b693baaa059e22",
+          "recordSHA256": "b5bb09d736a7d57b8800ed44837f0843819070bf91e76819386bdf5820eec16a",
+          "bytes": 4144
+        },
+        {
+          "name": "em_note.ppi",
+          "pluginSHA256": "58bd95795fd711379de18e13084112069ea048a88e095052001bca279fdb8a4e",
+          "recordSHA256": "8fc7a08dfce341e1e168eafa74dbcab773493f59b645ec329b693b226eed83b7",
+          "bytes": 4144
+        },
+        {
+          "name": "em_question.ppi",
+          "pluginSHA256": "de9de8d2b26be6e1896dd4d078eac461778cd15fe019497f5bf1cb240cbe741e",
+          "recordSHA256": "3c37a274710a72a30bc56bb64657385d991333de7c88caa99f1054956963e8d0",
+          "bytes": 4144
+        },
+        {
+          "name": "em_question_a.ppi",
+          "pluginSHA256": "3a412a08bf5e94e50cff7302af620574da7e6503d4d8a039087ad744a7b09594",
+          "recordSHA256": "3c37a274710a72a30bc56bb64657385d991333de7c88caa99f1054956963e8d0",
+          "bytes": 4144
+        },
+        {
+          "name": "em_sweat.ppi",
+          "pluginSHA256": "cb791b30afea7024ca4ef833a23977d2913edfa7a7cd630bb05c5a64b13e44b8",
+          "recordSHA256": "7eced0594f47b81cf59c24ae00cd07bdecadea9e20f61ac0177210032a0dacd4",
+          "bytes": 4144
+        },
+        {
+          "name": "filmnoise.ppi",
+          "pluginSHA256": "7aff22d2b0389c32cfa6c4edd06e3ab43d4ce5f30a53c27f933f73dba9bb2da8",
+          "recordSHA256": "56479a87823d5b4ca58b82c341ce58a686ef28b03df1c9e4aace74db9b56d12f",
+          "bytes": 4144
+        },
+        {
+          "name": "rain.ppi",
+          "pluginSHA256": "6ab38b54395c896d3e07dbee014bb5d3aa95d0e2d3f26c9b70aaf976e1d1c256",
+          "recordSHA256": "d684ff73d1d61082086f48ca4f86d31eb0a706961b87161d0f60928e92de3283",
+          "bytes": 4144
+        },
+        {
+          "name": "steam.ppi",
+          "pluginSHA256": "940362f102707ae6098ea8517d1f7940e6499dbf62e9369050100b5158e989bd",
+          "recordSHA256": "395467ad492eaef6058f142192d26a341ebcec2c15ef368a07c2d6eaaf689167",
+          "bytes": 4144
+        }
+      ],
+      "outputComparison": "all4144 bytes per DLL identical in browser backend and Wine oracle",
+      "sharedProcess": "12 DLLs /13 instances; snapshot and fresh-runtime continuation identical",
+      "limitations": [
+        "authored complete ParticleDesigner plist for cmnptcl; target ptcldat category contains no resource",
+        "fixed registers/count/attachment/frames/seed; no whole-game native visual equivalence implied"
+      ]
+    },
+    "windowsServices": {
+      "implementation": "src/ppi/native-services.mjs",
+      "privateHeaps": true,
+      "virtualReserveCommitProtectDecommitRelease": true,
+      "dynamicAndStaticTLS": true,
+      "singleThreadCriticalSections": true,
+      "unknownImports": "explicit error with import/callback context",
+      "remaining": [
+        "SEH/guard-page exception dispatch",
+        "full Windows NLS equivalence across locale/codepage inputs",
+        "additional imported DLL/OS services outside implemented profile"
+      ]
+    }
+  },
+  "motion": {
+    "archiveMembers": 64,
+    "binding": "generic table for current loader; legacy pt* table conflict unresolved",
+    "members": [
+      {
+        "file": "dummy.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "mcArc.kcs",
+        "natives": [38, 41, 2, 1]
+      },
+      {
+        "file": "mcCFade.kcs",
+        "natives": [38, 42, 9, 17]
+      },
+      {
+        "file": "mcDisp.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "mcFade.kcs",
+        "natives": [38, 42, 9, 17]
+      },
+      {
+        "file": "mcMove.kcs",
+        "natives": [38, 41]
+      },
+      {
+        "file": "mcPend.kcs",
+        "natives": [38, 42, 1, 23]
+      },
+      {
+        "file": "mcQuake.kcs",
+        "natives": [38, 17, 16]
+      },
+      {
+        "file": "mcRot.kcs",
+        "natives": [9, 41, 23, 38]
+      },
+      {
+        "file": "mcRotC.kcs",
+        "natives": [9, 41, 44, 38]
+      },
+      {
+        "file": "mcRotRep.kcs",
+        "natives": [42, 23, 38]
+      },
+      {
+        "file": "mcRotRepC.kcs",
+        "natives": [42, 23, 38]
+      },
+      {
+        "file": "mcRotYPR.kcs",
+        "natives": [9, 41, 43, 38]
+      },
+      {
+        "file": "mcScale.kcs",
+        "natives": [41, 38]
+      },
+      {
+        "file": "mcScaleCos.kcs",
+        "natives": [41, 2, 38]
+      },
+      {
+        "file": "mcScaleRep.kcs",
+        "natives": [42, 38]
+      },
+      {
+        "file": "mcScaleSin.kcs",
+        "natives": [41, 1, 38]
+      },
+      {
+        "file": "mcShake.kcs",
+        "natives": [38, 42]
+      },
+      {
+        "file": "mcSpline.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "mcSpline_r.kcs",
+        "natives": [38, 23]
+      },
+      {
+        "file": "mcSpline_s.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "mcmovest.kcs",
+        "natives": [17, 38, 41]
+      },
+      {
+        "file": "motAMove1.kcs",
+        "natives": [17, 38, 14, 41, 2, 1]
+      },
+      {
+        "file": "motAMove2.kcs",
+        "natives": [17, 38, 14, 41, 2, 1]
+      },
+      {
+        "file": "motAMove3.kcs",
+        "natives": [17, 38, 14, 41, 2, 1]
+      },
+      {
+        "file": "motArc.kcs",
+        "natives": [41, 2, 1, 17, 38]
+      },
+      {
+        "file": "motCFade.kcs",
+        "natives": [17, 38, 41]
+      },
+      {
+        "file": "motFade.kcs",
+        "natives": [17, 38, 41]
+      },
+      {
+        "file": "motFade2.kcs",
+        "natives": [17, 38, 42]
+      },
+      {
+        "file": "motMove.kcs",
+        "natives": [17, 38, 41]
+      },
+      {
+        "file": "motPan.kcs",
+        "natives": [38, 41, 5, 2, 1, 7]
+      },
+      {
+        "file": "motPend.kcs",
+        "natives": [38, 42, 1, 23]
+      },
+      {
+        "file": "motQuake.kcs",
+        "natives": [38, 17, 16]
+      },
+      {
+        "file": "motRot.kcs",
+        "natives": [23, 38, 41]
+      },
+      {
+        "file": "motRotC.kcs",
+        "natives": [44, 38, 41]
+      },
+      {
+        "file": "motRotRep.kcs",
+        "natives": [23, 38, 42]
+      },
+      {
+        "file": "motRotRepC.kcs",
+        "natives": [23, 38, 42]
+      },
+      {
+        "file": "motRotYPR.kcs",
+        "natives": [43, 38, 41]
+      },
+      {
+        "file": "motScale.kcs",
+        "natives": [38, 41]
+      },
+      {
+        "file": "motShake.kcs",
+        "natives": [38, 42]
+      },
+      {
+        "file": "motSpline.kcs",
+        "natives": [17, 38]
+      },
+      {
+        "file": "motSpline_r.kcs",
+        "natives": [23, 38]
+      },
+      {
+        "file": "motSpline_s.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "motVMove.kcs",
+        "natives": [38, 41]
+      },
+      {
+        "file": "motVScale.kcs",
+        "natives": [38, 41]
+      },
+      {
+        "file": "pAlpha.kcs",
+        "natives": [17, 38]
+      },
+      {
+        "file": "pBase.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pColor.kcs",
+        "natives": [17, 38]
+      },
+      {
+        "file": "pDepth.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pDisp.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pPos.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pPriority.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pRot.kcs",
+        "natives": [26, 23, 38]
+      },
+      {
+        "file": "pRotC.kcs",
+        "natives": [44, 38]
+      },
+      {
+        "file": "pRotYPR.kcs",
+        "natives": [26, 43, 38]
+      },
+      {
+        "file": "pScale.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pVScale.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "pVram.kcs",
+        "natives": [38]
+      },
+      {
+        "file": "ptBase.kcs",
+        "natives": [23]
+      },
+      {
+        "file": "ptColor.kcs",
+        "natives": [17, 23]
+      },
+      {
+        "file": "ptPos.kcs",
+        "natives": [23]
+      },
+      {
+        "file": "ptRot.kcs",
+        "natives": [23]
+      },
+      {
+        "file": "ptScale.kcs",
+        "natives": [23]
+      },
+      {
+        "file": "ptVram.kcs",
+        "natives": [23]
+      }
+    ]
+  },
+  "render": {
+    "kx2": "unimplemented",
+    "projectiveTexturedQuads": "implemented XYZRHW+diffuse+UV WebGL2 strip, per-particle transforms/sort/projection",
+    "blendModes": "all6 factors: original D3D9 RGBA pixel probes; <=1LSB on bounded inputs",
+    "zSort": "ascending native depth, including native sorted-rank final-zshift asymmetry",
+    "customD3DStates": "render/sampler overrides, global native mode/blend caches, fog, gamma, cull, stencil, alpha, depth, line coverage and scissor implemented",
+    "samplerStates": "slot34 is SetSamplerState at device vtable+276; all5 address modes plus point/linear filtering",
+    "graphicsRemaining": [
+      "whole-game native visual acceptance for task graph, image/actor/font/compositor interactions",
+      "KX2/raster mesh lifecycle integration tracked by Stage/NativeGraphics owner"
+    ],
+    "sharedTarget": "StageRenderer, NativeGraphicTask and NativeParticleTask draw into one RGBA8/depth/stencil framebuffer; cross-layer destination-alpha browser test",
+    "nativeStateComparison": {
+      "handlerVA": "0x00671df0",
+      "cases": 120,
+      "originalCalls": 4356,
+      "comparison": "exact SetRenderState/SetTextureStageState/SetSamplerState call sequences",
+      "test": "tests/fixtures/ppi-render-state-golden.json"
+    },
+    "nativeRasterComparison": {
+      "cases": 39,
+      "wineImage": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+      "format": "8x8 RGBA8",
+      "test": "tests/fixtures/ppi-d3d9-golden.json",
+      "comparison": "interior non-anisotropic pixels <=1LSB; analytically constrained nearest-texel ties, line endpoint/join coverage and device-specific anisotropic footprint energy"
+    },
+    "nativeDeviceProfile": {
+      "wBufferAdvertised": false,
+      "D3DZB_USEW": "native accepts state2 and retains z-based XYZRHW depth; browser matches",
+      "multisampling": "single-sample target; corresponding per-sample controls have no effect",
+      "unsupportedNativeCapabilities": [
+        "Phong shade mode",
+        "obsolete pyramid/Gaussian quad texture filters",
+        "multi-element texture sources"
+      ]
+    }
+  },
+  "numeric": {
+    "nativeBytecodeExecuted": true,
+    "random": {
+      "seed": 4357,
+      "outputsPerStream": 1024,
+      "integerSHA256": "20cb731c856e758cb79975c86f748462d10361d2af76a04b021df45ce58e2e03",
+      "floatSHA256": "216de8e6297cb128218d6b5fb72dc01f00e6d0734ba758b423e37c9cd47e9644"
+    },
+    "triangleWave": "15 native cases including negative zero/period0",
+    "round": "8 native cases including int32 overflow",
+    "projection": "6 original-instruction cases with baseline D3DX table and fixed1280x720 screen",
+    "textureUV": "2 original-instruction cases verify integer-word vs float-word inputs"
+  },
+  "sceneParticles": {
+    "implementation": "src/particles.mjs",
+    "families": ["particle", "particle2", "particle3"],
+    "bankSharing": "all scene families share banks0..3",
+    "commands": ["load-and-start executable", "stop", "set", "alpha", "fade"],
+    "unverifiedFormerAliases": ["ptcl", "ptclp"],
+    "taskMessages": "0x13a..0x141 are task messages, not main GCALL IDs",
+    "nativeAPI": [
+      "create",
+      "load",
+      "start",
+      "stop",
+      "end",
+      "set",
+      "get",
+      "busy",
+      "alpha",
+      "attach",
+      "message",
+      "snapshot",
+      "restore",
+      "drawItems"
+    ],
+    "nativeAttachment": "uses unified NativeGraphics graph keys and shared global projection; CST index+27 mapping is supplied by scene owner",
+    "nativeTaskFactory": {
+      "kind": 16,
+      "factoryVA": "0x005ddcb0",
+      "constructorVA": "0x005f4b50",
+      "PTCLAndPPI": "same kcTaskParticle; MSG13A family flag",
+      "installedIn": "NativeWorld"
+    },
+    "nativeBindings": {
+      "loadPTCL": "0x10f",
+      "loadPPI": "0x2b5",
+      "start": "0x110",
+      "stop": "0x111",
+      "active": "0x112",
+      "registers": "0x113",
+      "alpha": "0x1aa",
+      "attach": "0x1ab"
+    },
+    "persistence": "complete NativeWorld with2 live native particle tasks, one DLL, fresh-world restore and continued per-instance record bytes verified"
+  }
+}

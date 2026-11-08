@@ -1,0 +1,97 @@
+{
+  "builderSHA256": "551c6d8fc9589022e0d4ade42e6b8394d00ded2a7816c37d6978e8610ceb03e2",
+  "compositeSHA256": "3b1ea8da5d780c56d788d3fcf49d42da19eb8e9378b66dd6cf8988b23d2aceb6",
+  "engineImportRVA": 6360096,
+  "kind": "Original engine M2 wrapper and original E-mote driver, authored model",
+  "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+  "driverSHA256": "85eb459e94e74ab608f649eb7fb440f2526e90aaa1af7276ed01dc10018903ce",
+  "harnessSHA256": "016535892c36a051db35f5fb77fb85185d4e007f0f007f351d1333551541963d",
+  "modelSHA256": "54c4824dd24ad06152d976c5606f1c510ab69b98c48bd30169fb9b7655cbb7ea",
+  "wineImage": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+  "variants": {
+    "psb": {
+      "loaded": 1,
+      "frames": [
+        {
+          "result": 1,
+          "width": 64,
+          "height": 64,
+          "draws": [
+            {
+              "slot": 83,
+              "type": 5,
+              "count": 2,
+              "stride": 24,
+              "fvf": 322,
+              "bytes": "AACAvwAAgL8AAAAAgICA/wAAAAAAAAAAAACAvwAAgD8AAAAAgICA/wAAAAAAAIA/AACAPwAAgL8AAAAAgICA/wAAgD8AAAAAAACAPwAAgD8AAAAAgICA/wAAgD8AAIA/"
+            }
+          ],
+          "rgbaDeflate": "eNrt0jERAAAMArH6N023GmBsMrwAjhkAAAAAAAAAoJHL3wWSOAIAAAAAAAAAlBaOIAX7"
+        },
+        {
+          "result": 1,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0jERAAAMArH6N023GmBsMrwAjhkAAAAAAAAAoJHL3wWSOAIAAAAAAAAAlBaOIAX7"
+        },
+        {
+          "result": 0,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0kERAAAIAjD7l9bDCj7dIAFHFQAAAAAAAABw0Wnyd4HlCQAAAAAAAABwMxGkCfc="
+        },
+        {
+          "result": 0,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0kERAAAIAjD7l9bDCj7dIAFHFQAAAAAAAABw0Wnyd4HlCQAAAAAAAABwMxGkCfc="
+        }
+      ]
+    },
+    "psz": {
+      "loaded": 1,
+      "frames": [
+        {
+          "result": 1,
+          "width": 64,
+          "height": 64,
+          "draws": [
+            {
+              "slot": 83,
+              "type": 5,
+              "count": 2,
+              "stride": 24,
+              "fvf": 322,
+              "bytes": "AACAvwAAgL8AAAAAgICA/wAAAAAAAAAAAACAvwAAgD8AAAAAgICA/wAAAAAAAIA/AACAPwAAgL8AAAAAgICA/wAAgD8AAAAAAACAPwAAgD8AAAAAgICA/wAAgD8AAIA/"
+            }
+          ],
+          "rgbaDeflate": "eNrt0jERAAAMArH6N023GmBsMrwAjhkAAAAAAAAAoJHL3wWSOAIAAAAAAAAAlBaOIAX7"
+        },
+        {
+          "result": 1,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0jERAAAMArH6N023GmBsMrwAjhkAAAAAAAAAoJHL3wWSOAIAAAAAAAAAlBaOIAX7"
+        },
+        {
+          "result": 0,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0kERAAAIAjD7l9bDCj7dIAFHFQAAAAAAAABw0Wnyd4HlCQAAAAAAAABwMxGkCfc="
+        },
+        {
+          "result": 0,
+          "width": 64,
+          "height": 64,
+          "draws": [],
+          "rgbaDeflate": "eNrt0kERAAAIAjD7l9bDCj7dIAFHFQAAAAAAAABw0Wnyd4HlCQAAAAAAAABwMxGkCfc="
+        }
+      ]
+    }
+  }
+}
