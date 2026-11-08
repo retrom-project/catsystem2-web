@@ -1,0 +1,17 @@
+{
+  "format": "native-engine-message-golden",
+  "profiles": [
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "total": 1387,
+      "resultsSHA256": "466f129e47a0d504c7553fb255ea7eff4eb8365c93ff8edef0ca42924cf8b4ec"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "engineSHA256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "total": 1388,
+      "resultsSHA256": "927a03519569569bd84b86249df7ac864c3728b084f4ba4f8092130512b0958a"
+    }
+  ]
+}
