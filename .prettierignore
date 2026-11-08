@@ -3,3 +3,6 @@ node_modules
 .local
 package-lock.json
 LICENSE
+
+# The rectangle oracle writes a compact generated fixture.
+tests/fixtures/native-rectangles-golden.json
