@@ -3,6 +3,40 @@ import { deflateSync } from 'node:zlib';
 import { encodeCP932 } from '../src/kcs.mjs';
 export const u32 = (v) => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
 export const ascii = (text) => [...new TextEncoder().encode(text)];
+export function kcsProgram(instructions, strings = []) {
+  const code = instructions.flatMap(([op, ...args]) => [
+      op,
+      ...args.flatMap((arg) => {
+        const [mode, value] = Array.isArray(arg) ? arg : [0x23, arg];
+        return [mode, ...u32(value)];
+      }),
+    ]),
+    table = [],
+    text = [];
+  for (const [address, value] of strings) {
+    table.push(...u32(strings.length * 8 + text.length), ...u32(address));
+    text.push(...encodeCP932(value), 0);
+  }
+  const body = Uint8Array.from([...code, ...table, ...text]);
+  return Uint8Array.from([
+    ...[
+      0x0053434b,
+      2,
+      0,
+      52,
+      code.length,
+      52 + code.length,
+      strings.length,
+      table.length + text.length,
+      4096,
+      4096,
+      52 + body.length,
+      0,
+      Math.max(body.length, code.length * 2),
+    ].flatMap(u32),
+    ...deflateSync(body),
+  ]);
+}
 export function catScene(lines) {
   const strings = [],
     offsets = [];
@@ -91,7 +125,7 @@ export function hg3(width, height, rgba) {
     stride = width * 4;
   for (let y = 0; y < height; y++)
     for (let x = 0; x < width; x++) {
-      const source = ((height - 1 - y) * width + x) * 4,
+      const source = (y * width + x) * 4,
         p = (y * width + x) * 4;
       pixel.set([rgba[source + 2], rgba[source + 1], rgba[source], rgba[source + 3]], p);
     }
