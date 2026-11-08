@@ -8,6 +8,74 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
+  test(`${profile} sparse native VRAM clears retain page identity, 16-bit conversion and fresh GPU state`, async ({
+    page,
+  }) => {
+    test.skip(
+      !process.env[variable] || (!profile.startsWith('sdk-') && !process.env.CATSYSTEM2_EMOTE_DLL),
+    );
+    test.setTimeout(180000);
+    const files = new Map([
+      ['engine.exe', new Uint8Array(await readFile(process.env[variable]))],
+      ['main.kcs', kcsProgram([[37, 1024], [43, 0xd1, 4], [43, 0x41, 0], [59]])],
+    ]);
+    if (!profile.startsWith('sdk-'))
+      files.set(
+        'emotedriver.dll',
+        new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL)),
+      );
+    await page.route('**/tests/fixtures/texture-clear-fixture.mjs', async (route) =>
+      route.fulfill({
+        contentType: 'text/javascript',
+        body: await readFile(new URL('../fixtures/texture-clear-fixture.mjs', import.meta.url)),
+      }),
+    );
+    await page.route('**/texture-clear-fixture/**', async (route) => {
+      const name = decodeURIComponent(
+          new URL(route.request().url()).pathname.slice('/texture-clear-fixture/'.length),
+        ),
+        bytes = files.get(name);
+      await route.fulfill(bytes ? { body: Buffer.from(bytes) } : { status: 404, body: '' });
+    });
+    await page.goto('/');
+    const result = await page.evaluate(
+      async ({ profile, names }) => {
+        const [{ exerciseTextureClear }, { StageRenderer }] = await Promise.all([
+            import('/tests/fixtures/texture-clear-fixture.mjs'),
+            import('/src/render/stage.mjs'),
+          ]),
+          files = new Map(
+            await Promise.all(
+              names.map(async (name) => [
+                name,
+                new Uint8Array(
+                  await (
+                    await fetch('/texture-clear-fixture/' + encodeURIComponent(name))
+                  ).arrayBuffer(),
+                ),
+              ]),
+            ),
+          );
+        return exerciseTextureClear(profile, files, () => {
+          const canvas = new OffscreenCanvas(16, 16);
+          return new StageRenderer({
+            canvas,
+            ctx: canvas.getContext('2d'),
+            begin() {
+              this.ctx.reset();
+            },
+          });
+        });
+      },
+      { profile, names: [...files.keys()] },
+    );
+    for (const [name, passed] of Object.entries(result)) expect(passed, name).toBe(true);
+  });
+
+for (const [profile, variable] of [
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
+])
   for (const mode of ['kcs', 'fes'])
     test(`${profile} ${mode} retained owner pixels and native references survive KCS release and fresh GPU restoration`, async ({
       page,

@@ -7,6 +7,19 @@ cannot update it until the original missing-page allocation operation runs.
 Reallocation clears the new page and preserves the other pages' identities,
 pixels and depth. A missing page follows the native unbound-texture behavior.
 
+Mounted-engine clears execute the original view and TextureManager functions
+(`6745B0` → `6803E0` in the game, `54B6A0` → `557000` in the SDK). They
+intersect the requested rectangle with each existing page, lock its native
+16- or 32-bit texture, and clear the intersecting bytes. Missing pages stay
+unallocated. A 3072×6656 virtual rectangle therefore needs no full-size RGBA
+bitmap. The view's disabled gate still returns failure without changing pages.
+An existing CPU VRAM shadow is cleared only within its current extent.
+Authored tests cover partial cross-page clears, sparse allocation, preserved
+page identities/formats, subsequent original 16-bit dither uploads and fresh
+World restoration in both frozen engines. Ordinary host bitmap uploads still
+materialize the CPU shadow; large-coordinate uploads need a separate bounded
+transfer change and are not covered by this clear fix.
+
 The page manager negotiates configured dimensions against device limits, then
 rounds actual texture dimensions to powers of two. Graph subdivision retains
 the configured dimensions. It uses full-page cells when all four device guard

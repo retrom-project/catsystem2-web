@@ -177,6 +177,9 @@ export class NativeGraphics {
     return this.images.get(next);
   }
   async fill(x, y, width, height, color = 0) {
+    const engine = this.world.nativeEngine;
+    if (color === 0 && engine?.features.get('renderer')?.initialized)
+      return engine.features.get('graphics-platform').clearBitmap(x, y, width, height);
     const vram = await this.ensureVRAM(
       Math.max(this.world.game.width, x + width),
       Math.max(this.world.game.height, y + height),

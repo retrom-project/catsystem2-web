@@ -61,6 +61,7 @@ export class NativeGraphicsPlatform {
     this.boundaryDetachers = [];
     this.nativeBoundaries = [];
     this.nativeUploadDepth = 0;
+    this.nativeClearDepth = 0;
     this.bitmapHandles = new Map();
     this.pendingBitmaps = 0;
     this.memory = {
@@ -79,6 +80,7 @@ export class NativeGraphicsPlatform {
           this.abi.graphDisplay,
           this.abi.graphBase,
           this.abi.bitmapCopy,
+          this.abi.bitmapClear,
         ].includes(address)
       ) {
         const boundary = conditionalNativeGraphicsBoundary(
@@ -88,6 +90,7 @@ export class NativeGraphicsPlatform {
           count,
           (args) => {
             if (address === this.abi.bitmapCopy) return !this.nativeUploadDepth;
+            if (address === this.abi.bitmapClear) return !this.nativeClearDepth;
             const task =
               address === this.abi.baseMessage
                 ? this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0)
@@ -131,11 +134,7 @@ export class NativeGraphicsPlatform {
       ([bitmap, sx, sy, width, height, dx, dy]) =>
         this.copyBitmap(bitmap, sx, sy, width, height, dx, dy),
     );
-    patch(this.abi.bitmapClear, 'shared graph clear VRAM', 4, async ([x, y, width, height]) => {
-      if ((width | 0) <= 0 || (height | 0) <= 0) return 0;
-      await world.graphics.fill(x | 0, y | 0, width | 0, height | 0, 0);
-      return 1;
-    });
+    patch(this.abi.bitmapClear, 'shared graph clear VRAM', 4, (args) => this.clearBitmap(...args));
     if (this.abi.graphBase)
       patch(
         this.abi.graphBase,
@@ -472,6 +471,29 @@ export class NativeGraphicsPlatform {
     } finally {
       this.nativeUploadDepth--;
     }
+  }
+  async clearBitmap(x, y, width, height) {
+    if (!this.engine.features.get('renderer')?.initialized) {
+      if ((width | 0) <= 0 || (height | 0) <= 0) return 0;
+      await this.world.graphics.fill(x | 0, y | 0, width | 0, height | 0, 0);
+      return 1;
+    }
+    this.nativeClearDepth++;
+    let result;
+    try {
+      const args = [x, y, width, height];
+      result = await (this.process.asyncEnabled
+        ? this.engine.callFromHost(this.abi.bitmapClear, args, this.refs.view)
+        : this.engine.call(this.abi.bitmapClear, args, this.refs.view));
+    } finally {
+      this.nativeClearDepth--;
+    }
+    // 6803E0/557000 intersects existing texture pages and clears their actual
+    // locked bytes. Its virtual rectangle never becomes a temporary bitmap.
+    const graphics = this.world.graphics;
+    if (result && graphics.vramHandle)
+      await graphics.images.get(graphics.vramHandle).fill(x, y, width, height, 0);
+    return result;
   }
   sync() {
     const p = this.process,

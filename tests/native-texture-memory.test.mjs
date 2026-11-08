@@ -8,6 +8,22 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NativeTexturePageView } from '../src/native/texture-memory.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
+import { exerciseTextureClear } from './fixtures/texture-clear-fixture.mjs';
+
+test(
+  'SDK large sparse VRAM clears use only original allocated pages and survive fresh World',
+  { skip: !process.env.CATSYSTEM2_SDK_EXE },
+  async () => {
+    const checks = await exerciseTextureClear(
+      'sdk-4.01-engine-2.6.1.74',
+      new Map([
+        ['engine.exe', new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE))],
+        ['main.kcs', kcsProgram([[37, 1024], [43, 0xd1, 4], [43, 0x41, 0], [59]])],
+      ]),
+    );
+    for (const [name, passed] of Object.entries(checks)) assert.equal(passed, true, name);
+  },
+);
 
 test(
   'SDK texture pages retain the original allocation, format and unique D3D backing across fresh World',
