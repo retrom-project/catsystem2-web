@@ -34,7 +34,28 @@ for (const [profile, variable] of [
           [f.images.get(h).state.canvasWidth, f.images.get(h).state.canvasHeight],
           [5, 4],
         );
+        assert.deepEqual(await call(0x16a, [h, 0, 4]), { control: 2 });
+        assert.deepEqual([m.load(0), m.load(4), m.load(8)], [5, 4, 0xa5a5a5a5]);
+        assert.deepEqual(await call(0x16b, [h, 0, 4]), { control: 2 });
+        assert.deepEqual([m.load(0) | 0, m.load(4) | 0, m.load(8)], [-1, 2, 0xa5a5a5a5]);
+        await call(0x16a, [0, 0, 4]);
+        assert.deepEqual([m.load(0), m.load(4), m.load(8)], [0, 0, 0xa5a5a5a5]);
+        await call(0x16b, [0, 0, 4]);
+        assert.deepEqual([m.load(0), m.load(4), m.load(8)], [0, 0, 0xa5a5a5a5]);
+        await call(0x174, [h, 0, 0]);
+        await call(0x16a, [h, 0, 4]);
+        assert.deepEqual(
+          [m.load(0), m.load(4)],
+          [2, 2],
+          'zero canvas dimensions fall back to native image dimensions',
+        );
+        await call(0x174, [h, 5, 4]);
         await f.images.get(h).fill(0, 0, 2, 2, 0x80224466);
+        if (profile.startsWith('nekopara-')) {
+          assert.equal((await call(0x402, [h, -1, 2])).value, 0x80224466);
+          assert.equal((await call(0x402, [h, 100, 100])).value, 0);
+          assert.equal((await call(0x402, [0])).value, 0);
+        } else assert.equal(await call(0x402, [h, -1, 2]), undefined);
         await call(0x171, [h, 0xff808080]);
         assert.equal((await call(0x172, [h, -1, 2])).value, 128);
         assert.equal((await call(0x172, [h, 100, 100])).value, 0);
@@ -114,6 +135,13 @@ test(
         feature = await fresh.getNativeFeature('bitmap-memory');
       assert.equal(await feature.pointer(h), pointer);
       assert.equal(await feature.wrapper(alias), wrapper);
+      await fresh.runtime.native('main', 0x16a, [alias, 0, 4], fm, fresh.main);
+      assert.deepEqual([fm.load(0), fm.load(4)], [3, 2]);
+      await fresh.runtime.native('main', 0x175, [alias, -11, 19], fm, fresh.main);
+      await fresh.runtime.native('main', 0x16b, [h, 0, 4], fm, fresh.main);
+      assert.deepEqual([fm.load(0) | 0, fm.load(4) | 0], [-11, 19]);
+      assert.equal(world.graphics.images.get(h).state.offsetX, 0);
+      await fresh.runtime.native('main', 0x175, [alias, 0, 0], fm, fresh.main);
       fm.bytes(0, 12).fill(0xa5);
       await fresh.runtime.native('main', 0x173, [alias, 0, 4], fm, fresh.main);
       assert.deepEqual([fm.load(0) | 0, fm.load(4) | 0, fm.load(8)], [-7, 13, 0xa5a5a5a5]);

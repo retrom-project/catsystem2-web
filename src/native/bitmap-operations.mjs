@@ -5,6 +5,8 @@ import { NativeKCSMemory } from './kcs-memory.mjs';
 export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
   [
     [0x7a, 3, 2, 0x64c8b0, 0x519270],
+    [0x16a, 3, 2, 0x64bfa0, 0x518b40],
+    [0x16b, 3, 2, 0x64bf50, 0x518af0],
     [0x16f, 10, 2, 0x64b200, 0x517e10],
     [0x171, 2, 2, 0x64b940, 0x518500],
     [0x172, 3, 1, 0x64ca70, 0x519460],
@@ -16,6 +18,7 @@ export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
     [0x179, 1, 1, 0x64c080, 0x518be0],
     [0x17a, 2, 2, 0x64ca40, 0x519430],
     [0x2c1, 3, 2, 0x64c8b0, 0x519270],
+    [0x402, 3, 1, 0x64bff0, null],
   ].map(([id, words, control, game, sdk]) =>
     Object.freeze({ id, words, control, handlers: [game, sdk] }),
   ),
@@ -35,14 +38,14 @@ export class NativeBitmapOperations {
   }
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
-    if (!spec) return undefined;
+    if (!spec?.handlers[this.profileIndex]) return undefined;
     const words = Array.from(args);
     while (!words.length) words.push(machine.nativeArgument(0));
     let count = spec.words;
     if (id === 0x16f) {
       while (words.length < 6) words.push(machine.nativeArgument(words.length));
       if (!words[5]) count = 6;
-    } else if (!words[0]) count = 1;
+    } else if (!words[0] && id !== 0x16a && id !== 0x16b) count = 1;
     while (words.length < count) words.push(machine.nativeArgument(words.length));
     const bitmaps = await this.world.getNativeFeature('bitmap-memory');
     if (id !== 0x16f || words[5]) {
@@ -99,7 +102,10 @@ export function installNativeBitmapOperations(world) {
     'bitmap-operations',
     (engine) => new NativeBitmapOperations(engine, world),
   );
-  for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS.filter((spec) => spec.id !== 0x7a))
+  const profileIndex = Number(world.profile.startsWith('sdk-'));
+  for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS.filter(
+    (spec) => spec.id !== 0x7a && spec.handlers[profileIndex],
+  ))
     world.runtime.register('main', id, async (args, machine, task) =>
       (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task),
     );

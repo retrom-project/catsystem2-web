@@ -25,7 +25,7 @@ const raw = await bitmapMemoryFixture(bytes, profile, { uploadBoundary: true }),
   index = Number(profile.startsWith('sdk-')),
   covered = new Map();
 installNativeRasterKernels(f.engine);
-for (const spec of NATIVE_BITMAP_OPERATION_CONTRACTS)
+for (const spec of NATIVE_BITMAP_OPERATION_CONTRACTS.filter((item) => item.handlers[index]))
   assert.equal(
     p.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
     spec.handlers[index],
@@ -100,7 +100,7 @@ async function run(spec, args) {
   if (spec.id === 0x16f) {
     while (words.length < 6) words.push(a.nativeArgument(words.length));
     if (!words[5]) count = 6;
-  } else if (!words[0]) count = 1;
+  } else if (!words[0] && spec.id !== 0x16a && spec.id !== 0x16b) count = 1;
   while (words.length < count) words.push(a.nativeArgument(words.length));
   if (spec.id !== 0x16f || words[5]) {
     words[0] = words[0] ? pointers.get(words[0]) : 0;
@@ -140,9 +140,16 @@ async function run(spec, args) {
   return reply;
 }
 try {
-  for (const spec of NATIVE_BITMAP_OPERATION_CONTRACTS) {
+  for (const spec of NATIVE_BITMAP_OPERATION_CONTRACTS.filter((item) => item.handlers[index])) {
     reset();
-    await run(spec, spec.id === 0x16f ? [0x41414141, 0, 0, 0, 0, 0] : [0]);
+    await run(
+      spec,
+      spec.id === 0x16f
+        ? [0x41414141, 0, 0, 0, 0, 0]
+        : [0x16a, 0x16b].includes(spec.id)
+          ? [0, 512, 516]
+          : [0],
+    );
     for (const bpp of [2, 3, 4])
       for (let n = 0; n < 24; n++) {
         reset(bpp);
@@ -170,8 +177,21 @@ try {
             args = [h, [0, 0xff112233, 0x80123456, 0xffffffff][n % 4]];
             break;
           case 0x172:
+          case 0x402:
             args = [h, [-3, -1, 0, 1, 3, 4][n % 6], [-2, -1, 0, 1, 2, 4][(n * 5) % 6]];
             break;
+          case 0x16a:
+          case 0x16b: {
+            for (const fixture of [raw, f]) {
+              const ptr = fixture.process.load(pointers.get(h)),
+                offset = spec.id === 0x16a ? 28 : 36;
+              fixture.process.store(ptr + offset, [0, 1, 17, 0x80000000][n % 4]);
+              fixture.process.store(ptr + offset + 4, [0, 23, -7, 0xffffffff][n % 4]);
+            }
+            const at = [512, a.data.length + 64, 0x80000040, block + 64][n % 4];
+            args = [h, at, at + [0, 1, 4, -1][n % 4]];
+            break;
+          }
           case 0x173: {
             const at = [512, a.data.length + 64, 0x80000040, block + 64][n % 4];
             args = [h, at, at + (n % 5 === 0 ? 0 : 4)];
@@ -214,7 +234,7 @@ try {
         comparisons,
         covered: Object.fromEntries([...covered].map(([id, n]) => [id.toString(16), n])),
         scope:
-          'All twelve original wrapper slots (including identical 7A/2C1 resize aliases) with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
+          'All profile-available original wrapper slots (including identical 7A/2C1 resize aliases), canvas/offset queries and the game-only 402 pixel getter, with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
       },
       null,
       2,

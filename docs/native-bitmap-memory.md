@@ -45,6 +45,7 @@ original wrappers:
 | IDs             | Operation                                                       | Control |
 | --------------- | --------------------------------------------------------------- | ------- |
 | 7A / 2C1        | Canvas-relative resize; identical original handler              | 2       |
+| 16A / 16B       | Canvas size with image-size fallback; signed image offset       | 2       |
 | 16F             | Clipped source/destination blit, or source upload to VRAM       | 2       |
 | 171             | Packed color multiplication, including original byte arithmetic | 2       |
 | 172             | Alpha at canvas coordinates, adjusted by the bitmap offset      | 1       |
@@ -53,15 +54,25 @@ original wrappers:
 | 178             | Mode 1 grayscale, 2 sepia, 3 inversion                          | 2       |
 | 179             | Cached alpha-presence query                                     | 1       |
 | 17A             | Set the alpha-presence hint; it does not scale pixels           | 2       |
+| 402 (game only) | Packed native pixel at canvas coordinates                       | 1       |
 
 Null branches preserve each original early return. `179` leaves its result word
 unwritten for a null owner, preserving the GCALL `CCCCCCCC` sentinel. `16F` with
 no source does not dereference the destination. VM address zero is valid, and
 missing argument words read the adjacent mapped GCALL area.
 
-`verify-native-bitmap-operations.mjs` compares **888 complete calls and 5,777
-checks per profile**, **11,554 comparisons total**. It covers all twelve slots
-and eleven distinct wrapper bodies, two-, three- and four-byte native pixels,
+`16A` and `16B` translate and zero both VM outputs even when the owner is null.
+For a live bitmap, each zero canvas dimension independently falls back to its
+image dimension. Signed offsets and overlapping outputs retain the original
+write order. The game-only `402` getter returns the original physical-row packed
+pixel, including the native four-bit channel shifts. Null, missing pixel data
+and out-of-bounds coordinates return zero. This slot lies beyond the SDK main
+table and is not registered for the SDK profile.
+
+`verify-native-bitmap-operations.mjs` compares **1,110 complete calls and 7,183
+checks for the game**, **1,036 calls and 6,665 checks for the SDK**, **13,848
+comparisons total**. It covers fifteen game slots and fourteen SDK slots
+(including the identical resize handlers), two-, three- and four-byte native pixels,
 metadata, color modes, alpha/cache state, clipping and overlap, four VM domains,
 null gates, untouched bytes and all live allocations. The VRAM upload is an
 explicit test boundary. Original arithmetic and dispatch execute in the mounted
