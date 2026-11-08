@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { windowsMultiByteToWideChar } from './windows-multibyte.mjs';
+import { windowsWideCharToMultiByte } from './windows-widechar.mjs';
 
 export class PPIWindowsServices {
   constructor(process, { clock, now = () => performance.now(), epoch } = {}) {
@@ -247,23 +248,7 @@ export class PPIWindowsServices {
       return previous;
     });
     def('MultiByteToWideChar', 6, (args) => windowsMultiByteToWideChar(this, args));
-    def('WideCharToMultiByte', 8, ([codepage, , input, size, output, capacity, , usedDefault]) => {
-      const text =
-        size === 0xffffffff
-          ? process.string(input, true) + '\0'
-          : new TextDecoder('utf-16le', { ignoreBOM: true }).decode(process.read(input, size * 2));
-      if (![0, 932, 65001].includes(codepage))
-        throw new Error(`PPI unsupported byte encoder ${codepage}`);
-      const bytes = codepage === 65001 ? new TextEncoder().encode(text) : encodeCP932(text);
-      if (!output || !capacity) return bytes.length;
-      if (capacity < bytes.length) {
-        this.lastError = 122;
-        return 0;
-      }
-      process.write(output, bytes);
-      if (usedDefault) process.store(usedDefault, 0);
-      return bytes.length;
-    });
+    def('WideCharToMultiByte', 8, (args) => windowsWideCharToMultiByte(this, args));
     const stringType = (type, input, size, output, wide) => {
       if (type !== 1) throw new Error(`PPI unsupported character classification ${type}`);
       const text =

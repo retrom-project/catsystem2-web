@@ -21,8 +21,8 @@ The public import rejects identical source/destination pointers, mutually
 exclusive composition flags, and UTF8 flags other than zero or strict invalid
 character checking. These cases follow the documented [Windows API
 contract](https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar)
-when the pinned Wine implementation accepts a forbidden call. Other Windows
-code pages and the reverse conversion are outside this decoder's scope.
+when the pinned Wine implementation accepts a forbidden call. The companion
+[wide character converter](native-widechar.md) handles UTF-16 to multibyte output.
 
 `scripts/native-multibyte-oracle.py` records complete 128-byte output buffers
 for 5,356 authored calls in the pinned Japanese Wine environment. Tests compare
