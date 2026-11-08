@@ -66,13 +66,38 @@ export class NativeEmoteMeshBlocks {
     if (
       !this.mapped(owner + 0x39c, 4) ||
       !this.mapped(vector, 12, true) ||
+      overlap(vector, 12, esp - 16, 0xc8) ||
+      reg('ECX') !== vector ||
+      reg('EDX') !== load(0x14) ||
       !this.mapped(positionsRef, 4)
     )
       return false;
-    const destination = p.load(vector + 4),
+    const begin = p.load(vector),
+      destination = p.load(vector + 4),
+      source = esp + 0xa0,
       outputSize = skipped * 48,
       capacity = p.load(vector + 8);
-    if (!destination || destination + outputSize + 48 > capacity) return false;
+    if (
+      !destination ||
+      destination + outputSize + 48 > capacity ||
+      (source >= begin && source < destination) ||
+      overlap(destination, outputSize + 48, esp - 16, 0xc8)
+    )
+      return false;
+    // push_back executes 20 instructions for a source beyond end, or 23 for
+    // one below begin. Its alias/reallocation paths remain original code.
+    const instructionsPerPair = source >= destination ? 90 : 96,
+      additional = skipped * instructionsPerPair - 2,
+      budget = p.instructionBudget();
+    // The lead MOV and the hook instruction are already counted. The final
+    // native pair produces scratch registers/flags; it must finish before a
+    // budget stop can observe them. The query and consume cannot yield.
+    if (
+      !budget.active ||
+      (budget.limit !== 0n &&
+        budget.limit - budget.counter < BigInt(additional + instructionsPerPair))
+    )
+      return false;
     const row = load(0x14),
       positions = p.load(positionsRef),
       colors = p.load(owner + 0x39c),
@@ -132,6 +157,7 @@ export class NativeEmoteMeshBlocks {
         out.setUint32(at + 20, pair ? vb : va, true);
       }
     }
+    if (!p.consumeInstructions(additional)) return false;
     p.write(destination, output);
     p.store(vector + 4, destination + outputSize);
     p.store(esp + 0x3c, load(0x3c) + skipped * 4);

@@ -50,9 +50,9 @@ standalone build serves `vendor/COPYING`, `vendor/manifest.json` and the complet
 patched `vendor/corresponding-source.tar.gz` alongside `vendor/unicorn_x86.js`.
 The manifest identifies the exact upstream commits, patches, toolchain and
 artifact hashes. The maintained patches include exact instruction-budget handling
-with architectural state captured at budget exits and checked shared-RAM views;
-these remain modifications under the backend's
-GPL license. Existing source-file licenses remain intact.
+with architectural state captured at budget exits, atomic host instruction
+accounting and checked shared-RAM views. These remain modifications under the
+backend's GPL license. Existing source-file licenses remain intact.
 
 The reviewed native regions use a separately compiled zlib 1.2.3 under the zlib
 license. The standalone build includes its license and corresponding source in

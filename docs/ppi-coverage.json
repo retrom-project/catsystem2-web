@@ -609,17 +609,18 @@
           "host-code-cache.patch": "901ed1a621248dc746b69cdaef21dc4d772edbe512becbeb83cf30dc2fc68a7b",
           "count-only-hooks.patch": "b6eba30b996ffcebfb7bde0375ff3d50b7997217ed279c093ea3406d2e33f7d7",
           "ram-views.patch": "5c673f0768eccaeda9f10e772737bb79bed5c82c945e3557df83977412d4cdd3",
-          "count-budget-side-exits.patch": "0b0636ec3ac6cceb4526c675685d0d272ac8fd55a18e8405d34bb80d96c77b3c"
+          "count-budget-side-exits.patch": "0b0636ec3ac6cceb4526c675685d0d272ac8fd55a18e8405d34bb80d96c77b3c",
+          "host-instruction-budget.patch": "6795d8db6c87c0b8490b3062fb05999f254f3742dd72e1515846dd39b6ec5cd6"
         },
-        "prepareScriptSHA256": "ad6ded91ea5c0584f2aa4273c92cee8f17c03aec8e251ef7ac83fa4e8b2a96aa"
+        "prepareScriptSHA256": "0bb18789521e05a709eb7978083b3c9c10e7531f0e739be59bca430184de16b5"
       },
       "artifact": {
-        "sha256": "d07e5e79ee93c577213853d4ee4fc28fb3d86ebd53dfe0dc57785d6f869fd4e3",
-        "bytes": 1069602
+        "sha256": "aeb39642ff2a880d8865caf95a000d6706d2c2c891e4aae6931c4df7bd8b0b77",
+        "bytes": 1070220
       },
       "sourceArchive": {
-        "sha256": "db0d2640862a0808de908dde92eab9e36c547ea4c72d5dfb05a338830c8921e9",
-        "bytes": 4403602
+        "sha256": "70a50ba135e9c6a96a1a52e6e7e60cbbc64e3b49e67b9ca0d47d41d20aefdc6f",
+        "bytes": 4405431
       },
       "license": "GPL-2.0 backend; preserve component/MPL notices and provide corresponding source",
       "originalDLLsExecuted": 12,
@@ -630,8 +631,8 @@
         "scope": "masked scalar SSE arithmetic/conversions, rounding/DAZ/FTZ, sticky flags; FXSAVE/FXRSTOR and CPU checkpoint"
       },
       "instructionBudget": {
-        "tests": "tests/native-cpu-budget.test.mjs",
-        "scope": "exact stops, complete CPU state against full instruction callbacks, user-hook EFLAGS writes and long x87 spill state"
+        "tests": ["tests/native-cpu-budget.test.mjs", "tests/native-shortcut-budget.test.mjs"],
+        "scope": "exact stops and architectural state, user-hook EFLAGS, long x87 spill state, counted/uncounted translation reuse, nested segments and atomic charges for original bicubic/mesh driver loops"
       },
       "sharedRAM": {
         "tests": ["tests/native-ram-view.test.mjs", "tests/native-task-memory.test.mjs"],

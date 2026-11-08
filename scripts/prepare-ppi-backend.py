@@ -18,7 +18,7 @@ WRAPPER_COMMIT = '560284c59c11c8d6c94d537f4354339f069ddcdf'
 UNICORN_URL = 'https://github.com/unicorn-engine/unicorn.git'
 UNICORN_COMMIT = '8028ec436f2d9376525352dd38ed9ed6b9f6be10'
 EMSCRIPTEN_VERSION = '3.1.74'
-PATCHES = ['tci-loads.patch', 'tci-helper-temporaries.patch', 'page-protection-cache.patch', 'sse-status.patch', 'host-code-cache.patch', 'count-only-hooks.patch', 'ram-views.patch', 'count-budget-side-exits.patch']
+PATCHES = ['tci-loads.patch', 'tci-helper-temporaries.patch', 'page-protection-cache.patch', 'sse-status.patch', 'host-code-cache.patch', 'count-only-hooks.patch', 'ram-views.patch', 'count-budget-side-exits.patch', 'host-instruction-budget.patch']
 
 
 def digest(path):
@@ -121,8 +121,9 @@ def main():
         apply_patch(source / 'unicorn', ROOT / 'third_party/unicorn' / name)
     # Do not let the upstream script start one compiler per host CPU.
     build.os.cpu_count = lambda: options.jobs
-    # Host memory aliases use the reviewed RAM-only API added by ram-views.
-    build.EXPORTED_FUNCTIONS.extend(['_uc_mem_host_ptr', '_uc_mem_invalidate'])
+    # Export the checked RAM and instruction-accounting APIs used by PE32.
+    build.EXPORTED_FUNCTIONS.extend(['_uc_mem_host_ptr', '_uc_mem_invalidate',
+                                     '_uc_emu_budget_query', '_uc_emu_budget_consume'])
     # Preserve stable source paths in diagnostics embedded in the final WASM.
     os.environ['CFLAGS'] = '-ffile-prefix-map=' + str(source) + '=unicorn-js'
     build.generateConstants()

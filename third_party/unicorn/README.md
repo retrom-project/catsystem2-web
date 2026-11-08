@@ -7,7 +7,7 @@ and its Unicorn submodule commit
 The wrapper commit also includes the QEMU5.0.1 baseline, the upstream TCI and
 helper-adapter patches, JavaScript bindings and build scripts.
 
-Eight local patches address CPU execution and performance problems observed while running original
+Nine local patches address CPU execution and performance problems observed while running original
 PPI DLLs. `tci-loads.patch` implements signed8-bit and signed/unsigned16-bit TCG
 loads, including the load used by SSE2 `pextrw`. `tci-helper-temporaries.patch`
 releases the wide temporaries allocated for the WASM helper-call ABI. Without
@@ -38,6 +38,13 @@ constant location before stopping at the exact instruction PC. Full user code
 hooks retain their materialized-state path. Counted runs are compared with full
 instruction callbacks, randomized flag-changing hooks and the hardware SSE
 oracle; real-model DrawUP records and final pixels remain unchanged.
+`host-instruction-budget.patch` exposes the current execution segment's budget
+and an atomic charge for extra instructions simulated by a host code hook.
+The hook instruction is already counted. Insufficient, idle and stopping
+segments decline without changing CPU or guest memory. Uncounted segments
+accept without changing their unused counter. Enabling counting invalidates
+blocks translated in uncounted mode. Each native resume or nested host call
+starts its own segment, so no counter is carried across a suspended callback.
 These patches are modifications to upstream GPL code and follow its license.
 
 Build with the pinned Emscripten3.1.74 toolchain:

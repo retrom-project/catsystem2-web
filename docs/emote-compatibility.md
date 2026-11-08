@@ -67,6 +67,13 @@ A World checkpoint stores the guest process once, plus host identities, task/VM 
 
 Reviewed engine heaps and stacks use read/write permissions. Code, host traps and the sentinel remain executable; explicit Windows executable-page requests retain their semantics. Checkpoints preserve the actual memory permissions, including partial protection changes. Borrowed VM shared ranges retain their original guest address. RAM getters reacquire their WASM view after memory growth; executable ranges are invalidated before native calls and resumes without remapping RAM. The internal instruction budget retains lazy flags until the exact stopping PC, while user code hooks can still inspect and alter full flags. Immediate M2 draws do not retain an unbounded command history. Commands requested by the standalone capture API still copy their device state.
 
+The reviewed DLL's bicubic and strip-packing shortcuts charge the exact original
+instructions before changing guest state. The mesh shortcut also reserves enough
+budget for its final native pair, which completes scratch registers and flags.
+If the entire loop cannot finish, the original instructions run up to the exact
+budget stop. Budget counters are local to each native execution segment and do
+not enter a checkpoint.
+
 ## Acceptance and outstanding work
 
 Public authored fixtures contain a PSB model, a minimal legal PFL/DIF configuration and FES script. Supplying the frozen engine and driver enables these tests:
@@ -75,6 +82,7 @@ Public authored fixtures contain a PSB model, a minimal legal PFL/DIF configurat
 - `tests/native-task-memory.test.mjs` and `tests/native-shared-memory.test.mjs`: persistent live VM data/stack/shared/block arenas, original allocation identities, nested CPU/JS writes, memory growth, source reload/free/reallocation and a fresh World. Translator headers survive a temporary bridge's close without an ownership transfer.
 - `tests/native-emote-bootstrap.test.mjs`: exact-image/import discovery, an unrelated executable, SDK absence and a game whose required driver has not been mounted.
 - `tests/native-cpu-budget.test.mjs` and `tests/native-ram-view.test.mjs`: exact budgets, long x87 blocks, shared RAM through growth/nested callbacks, modified executable views and a fresh process.
+- `tests/native-shortcut-budget.test.mjs`: compares every budget cutoff in three traced original DLL loops with the accelerated paths, including the next PC, full CPU state and scratch bytes. It also checks counted/uncounted translation reuse, atomic rejection, nested/async segments and a fresh process.
 - `tests/native-engine-process.test.mjs`: asynchronous continuation, nested guest calls, Win32 conversion/files, late callback restore, floating result scratch addresses and actual output-word writes.
 - `tests/native-m2-blocks.test.mjs`: 832 executions compare the original PE loops with their accelerated paths, including integer registers, arithmetic flags, complete output bytes, signed coefficient extremes and overlapping buffers.
 - `tests/native-raster-kernel.test.mjs`: 2,624 executions per original profile compare integer mixing, channel masks, copies, all five BTYPE modes, fixed-point affine sampling, alpha discovery and CRT transfers. The complete image arena, stack and CPU state (including XMM/MXCSR) must match. Dispatch, clipping, affine setup and the last native scanline still execute in the mounted PE. Affine BTYPE retains its separate native weight rounding. Unsafe mappings, observed output ranges, aliases and unstablished layouts continue through the original instructions.

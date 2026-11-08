@@ -1,0 +1,84 @@
+--- a/include/unicorn/unicorn.h
++++ b/include/unicorn/unicorn.h
+@@ -1060,6 +1060,27 @@
+ uc_err uc_emu_stop(uc_engine *uc);
+ 
+ /*
++ Read the instruction counter of the current uc_emu_start segment. The counter
++ already includes the instruction whose code hook is running. A zero limit is
++ uncounted. Active is zero outside emulation and after a stop request.
++ This read-only API does not initialize the CPU or alter its execution state.
++*/
++UNICORN_EXPORT
++uc_err uc_emu_budget_query(uc_engine *uc, uint64_t *counter, uint64_t *limit,
++                           uint32_t *active);
++
++/*
++ Atomically account for additional instructions simulated by a host code hook.
++ If the active counted segment cannot accommodate the whole amount, or is idle
++ or stopping, accepted is zero and no counter, CPU or guest memory is changed.
++ An active uncounted segment accepts without changing its unused counter.
++ Call only on the emulation thread; this function never yields or resumes it.
++*/
++UNICORN_EXPORT
++uc_err uc_emu_budget_consume(uc_engine *uc, uint64_t additional,
++                             uint32_t *accepted);
++
++/*
+  Register callback for a hook event.
+  The callback will be run when the hook event is hit.
+ 
+--- a/uc.c
++++ b/uc.c
+@@ -1282,6 +1282,9 @@
+             uc->nested_level--;
+             return err;
+         }
++        // Blocks translated while count was zero have no budget checks.
++        // Remove them when enabling counting, as when disabling it above.
++        uc->tb_flush(uc);
+     }
+ 
+     // If UC_CTL_UC_USE_EXITS is set, then the @until param won't have any
+@@ -1330,6 +1333,41 @@
+     uc_err err = break_translation_loop(uc);
+     restore_jit_state(uc);
+     return err;
++}
++
++UNICORN_EXPORT
++uc_err uc_emu_budget_query(uc_engine *uc, uint64_t *counter, uint64_t *limit,
++                           uint32_t *active)
++{
++    if (!uc || !counter || !limit || !active) {
++        return UC_ERR_ARG;
++    }
++    *counter = uc->emu_counter;
++    *limit = uc->emu_count;
++    *active = uc->nested_level > 0 && !uc->emulation_done && !uc->stop_request;
++    return UC_ERR_OK;
++}
++
++UNICORN_EXPORT
++uc_err uc_emu_budget_consume(uc_engine *uc, uint64_t additional,
++                             uint32_t *accepted)
++{
++    if (!uc || !accepted) {
++        return UC_ERR_ARG;
++    }
++    *accepted = 0;
++    if (uc->nested_level == 0 || uc->emulation_done || uc->stop_request) {
++        return UC_ERR_OK;
++    }
++    if (uc->emu_count != 0) {
++        if (uc->emu_counter > uc->emu_count ||
++            additional > (uint64_t)(uc->emu_count - uc->emu_counter)) {
++            return UC_ERR_OK;
++        }
++        uc->emu_counter += (size_t)additional;
++    }
++    *accepted = 1;
++    return UC_ERR_OK;
+ }
+ 
+ // return target index where a memory region at the address exists, or could be

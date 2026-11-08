@@ -596,6 +596,48 @@ export class PE32Process {
     });
     return address;
   }
+  budgetTransfer() {
+    if (this.budgetPointer === null) throw new Error('PE32 process is closed');
+    if (!this.uc._uc_emu_budget_query || !this.uc._uc_emu_budget_consume)
+      throw new Error('The fixed CPU backend does not expose instruction-budget accounting');
+    if (this.budgetPointer === undefined) {
+      const pointer = this.uc._malloc(24);
+      if (!pointer) throw new Error('PE32 instruction-budget transfer allocation failed');
+      this.budgetPointer = pointer;
+    }
+    return this.budgetPointer;
+  }
+  instructionBudget() {
+    const pointer = this.budgetTransfer(),
+      result = this.uc.ccall(
+        'uc_emu_budget_query',
+        'number',
+        ['pointer', 'pointer', 'pointer', 'pointer'],
+        [this.uc.getValue(this.cpu.handle_ptr, '*'), pointer, pointer + 8, pointer + 16],
+      );
+    if (result !== this.uc.ERR_OK)
+      throw new Error(`PE32 instruction-budget query failed: ${this.uc.strerror(result)}`);
+    const view = new DataView(this.uc.HEAPU8.buffer, pointer, 20);
+    return {
+      counter: view.getBigUint64(0, true),
+      limit: view.getBigUint64(8, true),
+      active: view.getUint32(16, true) !== 0,
+    };
+  }
+  consumeInstructions(additional) {
+    if (!Number.isSafeInteger(additional) || additional < 0)
+      throw new RangeError('PE32 simulated instruction count requires a nonnegative safe integer');
+    const pointer = this.budgetTransfer(),
+      result = this.uc.ccall(
+        'uc_emu_budget_consume',
+        'number',
+        ['pointer', 'number', 'pointer'],
+        [this.uc.getValue(this.cpu.handle_ptr, '*'), BigInt(additional), pointer + 16],
+      );
+    if (result !== this.uc.ERR_OK)
+      throw new Error(`PE32 instruction-budget consumption failed: ${this.uc.strerror(result)}`);
+    return this.uc.getValue(pointer + 16, 'i32') !== 0;
+  }
   call(address, args = [], thisPointer, { resume = false } = {}) {
     let sp = this.stackTop;
     if (!resume) {
@@ -896,6 +938,8 @@ export class PE32Process {
       for (const allocation of this.hostMappings.values()) this.uc._free(allocation);
       this.hostMappings.clear();
       if (this.transferPointer) this.uc._free(this.transferPointer);
+      if (this.budgetPointer) this.uc._free(this.budgetPointer);
+      this.budgetPointer = null;
       this.transferPointer = 0;
       this.transferSize = 0;
       this.borrowedRanges.length = 0;

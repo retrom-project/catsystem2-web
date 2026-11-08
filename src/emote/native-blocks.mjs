@@ -70,6 +70,15 @@ export class NativeEmoteBlocks {
       overlap(start, size, esi, 8)
     )
       return false;
+    // The first MOVSS is already counted when the hook runs. If the whole
+    // loop cannot fit, leave it to the CPU before calculating any results.
+    const additional = (count - index) * 101 - 1,
+      budget = p.instructionBudget();
+    if (
+      !budget.active ||
+      (budget.limit !== 0n && budget.limit - budget.counter < BigInt(additional))
+    )
+      return false;
     const stack = p.read(esp + 24, 168),
       sv = new DataView(stack.buffer, stack.byteOffset, stack.byteLength),
       control = p.read(edi + 68, 16),
@@ -226,6 +235,8 @@ export class NativeEmoteBlocks {
       if (error === invalid) return false;
       throw error;
     }
+    // Commit only after the counter accepts the entire simulated block.
+    if (!p.consumeInstructions(additional)) return false;
     p.write(start, bytes);
     for (let i = 0; i < 8; i++)
       cpu.reg_write(
