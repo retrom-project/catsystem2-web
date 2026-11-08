@@ -37,6 +37,13 @@ has not yet switched to the original receiver; these tests explicitly use
 `NativePlaneReceiver`. Other model families and arbitrary model callbacks need
 their own exercised inputs before being declared complete.
 
+The original SimplePlane descendant helper (`5DFBD0`, SDK `4BBF70`)
+dispatches through the World's task route table. It visits signed native IDs
+in order, follows intermediate routes to descendants and shares the caller's
+parameter addresses and output word with each receiver. Two-profile tests
+compare that packet sequence and its writes with the original helper and
+exercise inherited movement and pixels before and after fresh restoration.
+
 ## VRAM pages
 
 Ordinary textured planes and explicit divided meshes use the same owned VRAM

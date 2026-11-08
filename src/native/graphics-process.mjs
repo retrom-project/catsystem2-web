@@ -5,12 +5,14 @@
 import { NativeBitmap } from './image.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { bitsFloat } from '../kcs.mjs';
+import { NATIVE_UNWRITTEN_WORD, nativeTaskKeyOrder } from './engine-message.mjs';
 import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
 import { NativeGraphRendering } from './graphics-render.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
     baseMessage: 0x5e0920,
+    planeBroadcast: 0x5dfbd0,
     graphDestroy: 0x675ea0,
     graphShown: 0x676910,
     graphDisplay: 0x6776f0,
@@ -24,6 +26,7 @@ const ABI = {
   },
   'sdk-4.01-engine-2.6.1.74': {
     baseMessage: 0x4bcc70,
+    planeBroadcast: 0x4bbf70,
     graphDestroy: 0x54cfb0,
     graphShown: 0x54da30,
     graphDisplay: 0x54e7f0,
@@ -76,6 +79,7 @@ export class NativeGraphicsPlatform {
       if (
         [
           this.abi.baseMessage,
+          this.abi.planeBroadcast,
           this.abi.graphDestroy,
           this.abi.graphShown,
           this.abi.graphDisplay,
@@ -92,6 +96,10 @@ export class NativeGraphicsPlatform {
           (args) => {
             if (address === this.abi.bitmapCopy) return !this.nativeUploadDepth;
             if (address === this.abi.bitmapClear) return !this.nativeClearDepth;
+            if (address === this.abi.planeBroadcast) {
+              const pointer = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0;
+              return this.originalTasks.has(engine.features.get('task-memory')?.worldID(pointer));
+            }
             const task =
               address === this.abi.baseMessage
                 ? this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0)
@@ -108,6 +116,9 @@ export class NativeGraphicsPlatform {
     };
     patch(this.abi.baseMessage, 'shared graph task platform messages', 6, (args) =>
       this.baseMessage(args),
+    );
+    patch(this.abi.planeBroadcast, 'native plane descendant packets', 5, (args) =>
+      this.broadcastPlane(args),
     );
     patch(this.abi.graphDestroy, 'shared graph destroy', 1, ([id]) => this.destroyGraph(id));
     patch(this.abi.graphShown, 'shared graph query visibility', 2, ([id, out]) => {
@@ -223,6 +234,39 @@ export class NativeGraphicsPlatform {
       value = await (task.plane || task).message([sender, message, w, l], context);
     if (out && Number.isInteger(value)) p.store(out, value);
     return Number(Boolean(context.nativeUnhandled));
+  }
+  async broadcastPlane([rawMessage, w, l, flags, out]) {
+    const p = this.process,
+      pointer = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0,
+      owner = this.task(pointer).record,
+      protocol = this.world.engineMessages,
+      sender = p.load(pointer + 4);
+    // The plane helper visits every route key, including descendants through
+    // an intermediate branch, and calls the packet receiver directly.
+    let previous = -Infinity;
+    for (;;) {
+      const nativeID = [...protocol.registry(owner).keys()]
+        .filter((id) => (id | 0) > previous)
+        .sort(nativeTaskKeyOrder)[0];
+      if (nativeID === undefined) return;
+      previous = nativeID | 0;
+      const target = protocol.lookupPointer(owner, nativeID);
+      if (!target) continue;
+      const message =
+          this.engine.profile.startsWith('sdk-') && target.kind !== 1 && rawMessage >= 37
+            ? rawMessage + 2
+            : rawMessage,
+        packet = [nativeID, sender, message, w, l, flags],
+        output = { value: NATIVE_UNWRITTEN_WORD };
+      packet.senderWorldID = owner.id;
+      await protocol.invoke(
+        target,
+        packet,
+        { payload: this.memory, nativePointer: true, nativeResult: out, fromHost: true },
+        output,
+      );
+      if (out && Number.isInteger(output.value)) p.store(out, output.value);
+    }
   }
   attachDevice(device) {
     if (!this.engine.profile.startsWith('nekopara-'))
