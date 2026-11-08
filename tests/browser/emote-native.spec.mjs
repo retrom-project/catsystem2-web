@@ -7,6 +7,111 @@ import { nativeM2Files, nativeM2Program } from '../fixtures/native-m2-fixture.mj
 import { nativeLPB, nativeLipWAV } from '../fixtures/native-lip.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
+test('native rectangle uploads use the original RGBA view and restore row layout through empty and failing transfers', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { ParticlesGL } = await import('/src/render/particles-gl.mjs'),
+      gpu = new ParticlesGL(17, 11),
+      fresh = new ParticlesGL(17, 11),
+      gl = gpu.gl,
+      buffer = new Uint8Array(17 * 11 * 4 + 15).fill(0xa5),
+      frame = { width: 17, height: 11, rgba: buffer.subarray(7, buffer.length - 8) },
+      expected = Uint8Array.from({ length: frame.rgba.length }, (_, i) => (i * 173 + 23) & 255),
+      target = gpu.createRenderTarget(17, 11, expected),
+      rows = [],
+      nativeSubImage = gl.texSubImage2D.bind(gl);
+    let calls = [];
+    gl.texSubImage2D = (...args) => {
+      calls.push({
+        sameView: args[8] === frame.rgba,
+        offset: args[9],
+        rowLength: gl.getParameter(gl.UNPACK_ROW_LENGTH),
+        rectangle: args.slice(2, 6),
+      });
+      return nativeSubImage(...args);
+    };
+    try {
+      for (const [n, rectangle] of [
+        [9, 4, 3, 4],
+        [0, 1, 17, 2],
+        [2, 0, 1, 11],
+        [0, 0, 17, 11],
+        [17, 11, 0, 0],
+        [0, 0, 0, 3],
+      ].entries()) {
+        frame.rgba.set(
+          Uint8Array.from({ length: frame.rgba.length }, (_, i) => (i * 197 + 31 + n * 19) & 255),
+        );
+        const [x, y, width, height] = rectangle;
+        for (let row = 0; row < height; row++) {
+          const begin = ((y + row) * 17 + x) * 4;
+          expected.set(frame.rgba.subarray(begin, begin + width * 4), begin);
+        }
+        calls = [];
+        gpu.uploadRenderTarget(target, frame, rectangle);
+        const pixels = gpu.pixels(target);
+        rows.push({
+          rectangle,
+          samePixels: pixels.every((value, i) => value === expected[i]),
+          rowLength: gl.getParameter(gl.UNPACK_ROW_LENGTH),
+          calls,
+          error: gl.getError(),
+        });
+      }
+      let failed = false;
+      gl.texSubImage2D = () => {
+        throw new Error('authored upload interruption');
+      };
+      try {
+        gpu.uploadRenderTarget(target, frame, [1, 2, 3, 4]);
+      } catch (error) {
+        failed = error.message === 'authored upload interruption';
+      }
+      const afterFailure = gl.getParameter(gl.UNPACK_ROW_LENGTH);
+      gl.texSubImage2D = nativeSubImage;
+      const restored = fresh.createRenderTarget(17, 11, gpu.pixels(target));
+      fresh.uploadRenderTarget(restored, frame, [1, 2, 3, 4]);
+      gpu.uploadRenderTarget(target, frame, [1, 2, 3, 4]);
+      const a = gpu.pixels(target),
+        b = fresh.pixels(restored),
+        independent = a.every((value, i) => value === b[i]);
+      fresh.destroyRenderTarget(restored);
+      return {
+        rows,
+        failed,
+        afterFailure,
+        independent,
+        canaries: [...buffer.subarray(0, 7), ...buffer.subarray(buffer.length - 8)],
+        errors: [gl.getError(), fresh.gl.getError()],
+      };
+    } finally {
+      gpu.destroyRenderTarget(target);
+      gpu.close();
+      fresh.close();
+    }
+  });
+  for (const row of result.rows) {
+    const [x, y, width, height] = row.rectangle;
+    expect(row).toEqual({
+      rectangle: row.rectangle,
+      samePixels: true,
+      rowLength: 0,
+      error: 0,
+      calls:
+        width && height
+          ? [{ sameView: true, offset: (y * 17 + x) * 4, rowLength: 17, rectangle: row.rectangle }]
+          : [],
+    });
+  }
+  expect(result.failed).toBe(true);
+  expect(result.afterFailure).toBe(0);
+  expect(result.independent).toBe(true);
+  expect(result.canaries).toEqual(Array(15).fill(0xa5));
+  expect(result.errors).toEqual([0, 0]);
+});
+
 test('native frame setup preserves retained color, depth and stencil until an original clear', async ({
   page,
 }) => {

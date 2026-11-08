@@ -53,6 +53,14 @@ The driver advertises the implemented software vertex-processing capabilities an
 
 Framebuffer/depth pairs are validated when attachments change. Nested use of the same color target restores the caller's depth attachment. The original D3D BeginScene/EndScene span can keep successive native submissions on their current framebuffer, restoring the surrounding compositor once at EndScene; draw order, state transitions and readbacks remain immediate.
 
+Render-target uploads pass the existing RGBA view directly to WebGL2 with its
+row length and source offset, avoiding a second packed copy of the rectangle.
+Subarray byte offsets and the original row direction are preserved. Empty
+rectangles make no transfer; the unpack row length resets to zero even when an
+upload throws. The browser contract test checks asymmetric pixels, source
+canaries, cropped rows, full rows and a fresh graphics device against the
+[WebGL2 pixel-unpack contract](https://registry.khronos.org/webgl/specs/2.0.0/).
+
 Asynchronous graph submissions lease the current D3D render target, depth surface and shared state context until their callback settles. A nested guest call cannot prematurely restore the framebuffer. Native frame setup can retain existing color, depth and stencil so that the original Clear calls and dirty rectangles determine their lifetime. Presentation copies the current target into an opaque canvas on the GPU without ending the active frame; later original callbacks and the cursor can continue drawing before the surrounding frame ends.
 
 A World checkpoint stores the guest process once, plus host identities, task/VM references, open file state and native GPU resource state. Render-target color and every depth/stencil bit are restored into a fresh candidate GPU. Features reconstruct callbacks against saved guest addresses; they do not replay an assumed allocation history or serialize an approximate JavaScript model. Restoring a failed candidate cannot mutate the currently published process or GPU.

@@ -625,21 +625,29 @@ export class ParticlesGL {
   uploadRenderTarget(target, frame, rectangle = [0, 0, target.width, target.height]) {
     if (target.owner !== this || frame.width !== target.width || frame.height !== target.height)
       throw new Error('Native render-target upload dimensions differ');
-    const [x, y, width, height] = rectangle,
-      rgba = new Uint8Array(width * height * 4);
-    for (let row = 0; row < height; row++)
-      rgba.set(
-        frame.rgba.subarray(
-          ((y + row) * target.width + x) * 4,
-          ((y + row) * target.width + x + width) * 4,
-        ),
-        row * width * 4,
-      );
+    const [x, y, width, height] = rectangle;
+    if (!width || !height) return;
     const gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, target.texture);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+    gl.pixelStorei(gl.UNPACK_ROW_LENGTH, frame.width);
+    try {
+      gl.texSubImage2D(
+        gl.TEXTURE_2D,
+        0,
+        x,
+        y,
+        width,
+        height,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        frame.rgba,
+        (y * frame.width + x) * 4,
+      );
+    } finally {
+      gl.pixelStorei(gl.UNPACK_ROW_LENGTH, 0);
+    }
   }
   destroyRenderTarget(target) {
     if (this.nativeTargets.delete(target)) {
