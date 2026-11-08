@@ -1,22 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 // The original view3D owns screen-effect phases, render-target captures and
-// depth passes. Only its graph enumeration crosses to the shared host graphs.
-import { bitsFloat } from '../kcs.mjs';
-
+// depth passes. GraphManager draws original models and merges host callbacks
+// through the shared graphics platform.
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
     render: 0x675ee0,
     changed: 0x67e370,
-    graphs: 0x67bb20,
-    state: 0x671df0,
-    fvf: 0x673060,
   },
   'sdk-4.01-engine-2.6.1.74': {
     render: 0x54cff0,
     changed: 0x555000,
-    graphs: 0x5527c0,
-    state: 0x548c10,
-    fvf: 0x549e80,
   },
 };
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
@@ -34,13 +27,7 @@ export class NativeScreenEffectRenderer {
     });
     this.abi = ABI[this.engine.profile];
     this.frame = null;
-    this.engine.patch(
-      this.abi.graphs,
-      'screen-effect shared graph rendering',
-      3,
-      (args) => this.graphs(args),
-      { calleePops: true },
-    );
+    this.platform.graphRendering.frameProvider = () => this.currentFrame();
   }
   get active() {
     const view = this.platform.refs.view3D;
@@ -76,20 +63,8 @@ export class NativeScreenEffectRenderer {
       },
     };
   }
-  async graphs([out, minimum, maximum]) {
-    const p = this.process,
-      lo = bitsFloat(minimum),
-      hi = bitsFloat(maximum);
-    p.zero(out, 8);
-    if (hi <= 0) return out;
-    await this.call(this.abi.state, [0, 0, 1], this.platform.refs.renderer);
-    await this.call(this.abi.fvf, [324], this.platform.refs.renderer);
-    const frame = this.currentFrame();
-    await this.device.hostDraw(async (gpu) => {
-      for (const item of frame.items)
-        if (lo <= item.priority && item.priority < hi) await frame.draw(item, gpu);
-    });
-    return out;
+  close() {
+    this.platform.graphRendering.frameProvider = null;
   }
   async render(items, draw, present) {
     if (this.frame) throw new Error('Screen-effect frame rendering cannot be reentered');
@@ -101,8 +76,8 @@ export class NativeScreenEffectRenderer {
     device.onPresent = present;
     this.platform.sync();
     try {
-      // The graph list lives on the host. Submitting it invalidates the native
-      // manager's client rectangle before the original view applies its dirty,
+      // Host callbacks and original models share the native manager's client
+      // rectangle before the original view applies its dirty,
       // pause, effect, Present and recording gates in their normal order.
       await this.call(this.abi.changed, [0], this.platform.refs.manager);
       await this.call(this.abi.render, [], this.platform.refs.view);

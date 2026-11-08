@@ -77,6 +77,8 @@ export class NativeGraphics {
     this.world = world;
     this.tasks = new Map();
     this.graphs = new Map();
+    this.renderSequence = 0;
+    this.nativeRenderOrder = new Map();
     this.stage = new Stage(world.game.width, world.game.height, Number);
     this.stage.motionLibrary = world.motionLibrary;
     this.images = new NativeImages(world);
@@ -324,6 +326,9 @@ export class NativeGraphics {
       cameraNear: this.cameraNear,
     };
   }
+  allocateRenderOrder() {
+    return ++this.renderSequence;
+  }
   snapshot() {
     return structuredClone({
       vramHandle: this.vramHandle,
@@ -334,11 +339,15 @@ export class NativeGraphics {
       cameraNear: this.cameraNear,
       texturePages: this.texturePages?.snapshot() ?? null,
       cursor: this.cursor.snapshot(),
+      renderSequence: this.renderSequence,
+      nativeRenderOrder: [...this.nativeRenderOrder],
     });
   }
   restore(state) {
-    const { d3dContext, view, texturePages, cursor, ...values } = structuredClone(state);
+    const { d3dContext, view, texturePages, cursor, nativeRenderOrder, ...values } =
+      structuredClone(state);
     Object.assign(this, values);
+    this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);
     this.view.restore(view);
     this.texturePages =
@@ -506,6 +515,7 @@ export class NativeGraphicTask {
   makeGraph(shape) {
     this.graph = {
       ...shape,
+      renderOrder: this.graphics.allocateRenderOrder(),
       kx2: initialMotionObject(),
       textureTransform: initialMotionObject(),
       matrixExplicit: false,

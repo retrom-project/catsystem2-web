@@ -240,6 +240,7 @@ export class Particles {
     }
     bank.registers.set(bank.instance.registers);
     bank.loaded = true;
+    bank.nativeRenderOrder = this.stage.nativeGraphics?.allocateRenderOrder?.();
     this.metadata(bank);
     if (spec.autoStart) this.start(key);
     return bank;
@@ -464,6 +465,7 @@ export class Particles {
         type: 'particle',
         priority: bank.priority,
         order: bank.order,
+        nativeRenderOrder: bank.nativeRenderOrder,
         drawGPU: async (gpu) => this.drawBank(bank.key, gpu),
         draw: async (context) => {
           this.gpu ||= new ParticlesGL(this.stage.width, this.stage.height);
@@ -487,6 +489,7 @@ export class Particles {
       banks: [...this.banks.values()].map((bank) => ({
         key: bank.key,
         order: bank.order,
+        nativeRenderOrder: bank.nativeRenderOrder,
         family: bank.family,
         program: bank.program,
         texture: bank.texture,

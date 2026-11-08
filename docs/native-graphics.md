@@ -1,5 +1,44 @@
 # Native graphics and VRAM pages
 
+## Original model draw traversal
+
+Task routing and graph lookup have different identity domains. A task number
+belongs to its Top. Nested Tops inherit their parent's view: the original game
+factory `5DDCB0` passes `this+104` to both the Top and Plane constructors; SDK
+`4B9F40` does the same. The view's type table and GraphManager's model map use
+the raw task number without a Top component. Two same-number planes sharing a
+view therefore alias one graph. Recreating either replaces that model, queries
+from either see it, and deleting either removes it. Separate host world IDs do
+not become new native graph keys.
+
+The mounted GraphManager draw functions (`67BB20`, SDK `5527C0`) now execute
+their own model lookup, stable list traversal, transforms, texture selection
+and D3D submission. Their original code and model records remain authoritative;
+the browser does not reconstruct a second geometry model. Existing host text,
+M2 and particle callbacks join at the original traversal points, using the same
+render target, depth surface and D3D state. The original background insertion
+at priority 55000 remains in that execution path.
+
+The original sort compares only base priority and preserves insertion order
+for ties. A shared derived sequence records native descriptor insertions and
+host graph/particle loads so ties across the platform boundary retain that
+order. Native deletion removes its metadata. The sequence and pointer-to-order
+table are checkpoint metadata; CPU model contents are saved once in the shared
+engine process. Callback return restores the original custom-model FVF,
+texture and shader postamble before native traversal resumes.
+
+Public tests execute each frozen engine's full view-to-Present path and compare
+it with StageRenderer using the same D3D platform. They cover visible color
+rectangles, asymmetric cross-page 32/16-bit texture models, same-number Top
+aliasing, replacement, deletion, particle ties in both insertion orders,
+background ordering and fresh process/GPU restoration. This is not independent
+Windows screen-pixel evidence. The ordinary kind 2/6 default message dispatcher
+has not yet switched to the original receiver; these tests explicitly use
+`NativePlaneReceiver`. Other model families and arbitrary model callbacks need
+their own exercised inputs before being declared complete.
+
+## VRAM pages
+
 Ordinary textured planes and explicit divided meshes use the same owned VRAM
 pages. The CPU bitmap retained for drawing commands is separate from those
 pages. Releasing a page drops its pixels and GPU texture; subsequent uploads

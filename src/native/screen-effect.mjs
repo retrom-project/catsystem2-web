@@ -134,6 +134,9 @@ export class NativeScreenEffects {
       ? { args: 7, real: false, handler: (args) => this.route(args) }
       : null;
   }
+  close() {
+    this.rendering.close();
+  }
 }
 
 export class NativeScreenEffectTask {

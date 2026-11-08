@@ -6,6 +6,7 @@ import { NativeBitmap } from './image.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { bitsFloat } from '../kcs.mjs';
 import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
+import { NativeGraphRendering } from './graphics-render.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
@@ -154,6 +155,7 @@ export class NativeGraphicsPlatform {
           return 1;
         },
       );
+    this.graphRendering = new NativeGraphRendering(this);
     this.sync();
     engine.registerFeature('graphics-platform', this);
   }
@@ -530,6 +532,7 @@ export class NativeGraphicsPlatform {
       bitmapHandles: [...this.bitmapHandles],
       boundaries: this.nativeBoundaries.map((entry) => entry.trap),
       nativeRouteTrap: this.nativeRouteTrap,
+      rendering: this.graphRendering.snapshot(),
     });
   }
   restore(state) {
@@ -538,6 +541,7 @@ export class NativeGraphicsPlatform {
     this.owned = new Set(state.owned);
     this.bitmapHandles = new Map(state.bitmapHandles);
     this.nativeRouteTrap = state.nativeRouteTrap;
+    this.graphRendering.restore(state.rendering);
     if (state.boundaries.length !== this.nativeBoundaries.length)
       throw new Error('Native graphics instruction boundary count differs');
     state.boundaries.forEach((trap, index) => (this.nativeBoundaries[index].trap = trap));
@@ -545,9 +549,10 @@ export class NativeGraphicsPlatform {
   recoverTrap(trap) {
     return trap.name === 'native graph task message router'
       ? { args: 7, real: false, handler: (args) => this.routeTask(args) }
-      : null;
+      : this.graphRendering.recoverTrap(trap);
   }
   async close() {
+    this.graphRendering.close();
     for (const detach of this.boundaryDetachers) detach();
     this.boundaryDetachers = [];
     for (const handle of this.bitmapHandles.values())
