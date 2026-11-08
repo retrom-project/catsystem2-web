@@ -1,0 +1,817 @@
+{
+  "wineImage": "sha256:81080f23de3472eb80c335daad91f187fdd1d78e678a0a630fee90677d3359a8",
+  "names": [
+    "update.INT",
+    "update1.INT",
+    "update01.INT",
+    "update99.INT",
+    "updateAA.INT",
+    "update012.INT",
+    "update0a.INT",
+    "update1",
+    "update",
+    "a",
+    "ab",
+    "abc",
+    "abcd",
+    "a.txt",
+    "ab.txt",
+    "abc.txt",
+    "a.b.txt",
+    "a.b",
+    "a.long",
+    "file",
+    "FILE.TXT",
+    ".hidden",
+    "a.hidden",
+    "b.txt",
+    "long file name.txt"
+  ],
+  "aliases": {
+    ".hidden": "_HID~45N",
+    "a": "",
+    "a.b": "",
+    "a.b.txt": "A_B~~201.TXT",
+    "a.hidden": "A~~~~52F.HID",
+    "a.long": "A~~~~LD4.LON",
+    "a.txt": "",
+    "ab": "",
+    "ab.txt": "",
+    "abc": "",
+    "abc.txt": "",
+    "abcd": "",
+    "b.txt": "",
+    "file": "",
+    "FILE.TXT": "",
+    "long file name.txt": "LONG~5R1.TXT",
+    "update": "",
+    "update.INT": "",
+    "update01.INT": "",
+    "update012.INT": "UPDA~I2K.INT",
+    "update0a.INT": "",
+    "update1": "",
+    "update1.INT": "",
+    "update99.INT": "",
+    "updateAA.INT": ""
+  },
+  "cases": [
+    {
+      "wide": false,
+      "pattern": "*",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "*.*",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "*.",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "update??.INT",
+      "matches": ["update01.INT", "update0a.INT", "update99.INT", "updateAA.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "update?.INT",
+      "matches": ["update1.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "update*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "update.*",
+      "matches": ["update", "update.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "UP*??.i?t",
+      "matches": []
+    },
+    {
+      "wide": false,
+      "pattern": "a?",
+      "matches": ["ab"]
+    },
+    {
+      "wide": false,
+      "pattern": "a??",
+      "matches": ["a.b", "abc"]
+    },
+    {
+      "wide": false,
+      "pattern": "?.txt",
+      "matches": ["a.txt", "b.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "??.txt",
+      "matches": ["ab.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "*.txt",
+      "matches": [
+        "FILE.TXT",
+        "a.b.txt",
+        "a.txt",
+        "ab.txt",
+        "abc.txt",
+        "b.txt",
+        "long file name.txt"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "a.*",
+      "matches": ["a", "a.b", "a.b.txt", "a.hidden", "a.long", "a.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "a*.*",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "a*.txt",
+      "matches": ["a.b.txt", "a.txt", "ab.txt", "abc.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "a?.*",
+      "matches": ["ab", "ab.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "*.???",
+      "matches": [
+        "FILE.TXT",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab.txt",
+        "abc.txt",
+        "b.txt",
+        "long file name.txt",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "a*.",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "*a*",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "????????.???",
+      "matches": [
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "long file name.txt",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "no-match*",
+      "matches": []
+    },
+    {
+      "wide": false,
+      "pattern": "update.INT",
+      "matches": ["update.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "UPDATE01.int",
+      "matches": ["update01.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "a.",
+      "matches": ["a"]
+    },
+    {
+      "wide": false,
+      "pattern": ".hidden",
+      "matches": [".hidden"]
+    },
+    {
+      "wide": false,
+      "pattern": "a.txt.",
+      "matches": ["a.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "a?b.txt",
+      "matches": ["a.b.txt"]
+    },
+    {
+      "wide": false,
+      "pattern": "UPDATE??.INT",
+      "matches": ["update01.INT", "update0a.INT", "update99.INT", "updateAA.INT"]
+    },
+    {
+      "wide": false,
+      "pattern": "UP*??.INT",
+      "matches": []
+    },
+    {
+      "wide": false,
+      "pattern": "update*??.INT",
+      "matches": []
+    },
+    {
+      "wide": false,
+      "pattern": "up*??.i?t",
+      "matches": []
+    },
+    {
+      "wide": false,
+      "pattern": "*.i?t",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "*.int",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": false,
+      "pattern": "UPDATE*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*.*",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*.",
+      "matches": [
+        ".hidden",
+        "FILE.TXT",
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "b.txt",
+        "file",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "update??.INT",
+      "matches": ["update01.INT", "update0a.INT", "update99.INT", "updateAA.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "update?.INT",
+      "matches": ["update1.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "update*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "update.*",
+      "matches": ["update", "update.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "UP*??.i?t",
+      "matches": []
+    },
+    {
+      "wide": true,
+      "pattern": "a?",
+      "matches": ["ab"]
+    },
+    {
+      "wide": true,
+      "pattern": "a??",
+      "matches": ["a.b", "abc"]
+    },
+    {
+      "wide": true,
+      "pattern": "?.txt",
+      "matches": ["a.txt", "b.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "??.txt",
+      "matches": ["ab.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "*.txt",
+      "matches": [
+        "FILE.TXT",
+        "a.b.txt",
+        "a.txt",
+        "ab.txt",
+        "abc.txt",
+        "b.txt",
+        "long file name.txt"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "a.*",
+      "matches": ["a", "a.b", "a.b.txt", "a.hidden", "a.long", "a.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "a*.*",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "a*.txt",
+      "matches": ["a.b.txt", "a.txt", "ab.txt", "abc.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "a?.*",
+      "matches": ["ab", "ab.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "*.???",
+      "matches": [
+        "FILE.TXT",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab.txt",
+        "abc.txt",
+        "b.txt",
+        "long file name.txt",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "a*.",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*a*",
+      "matches": [
+        "a",
+        "a.b",
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "a.txt",
+        "ab",
+        "ab.txt",
+        "abc",
+        "abc.txt",
+        "abcd",
+        "long file name.txt",
+        "update",
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "????????.???",
+      "matches": [
+        "a.b.txt",
+        "a.hidden",
+        "a.long",
+        "long file name.txt",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "no-match*",
+      "matches": []
+    },
+    {
+      "wide": true,
+      "pattern": "update.INT",
+      "matches": ["update.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "UPDATE01.int",
+      "matches": ["update01.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "a.",
+      "matches": ["a"]
+    },
+    {
+      "wide": true,
+      "pattern": ".hidden",
+      "matches": [".hidden"]
+    },
+    {
+      "wide": true,
+      "pattern": "a.txt.",
+      "matches": ["a.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "a?b.txt",
+      "matches": ["a.b.txt"]
+    },
+    {
+      "wide": true,
+      "pattern": "UPDATE??.INT",
+      "matches": ["update01.INT", "update0a.INT", "update99.INT", "updateAA.INT"]
+    },
+    {
+      "wide": true,
+      "pattern": "UP*??.INT",
+      "matches": []
+    },
+    {
+      "wide": true,
+      "pattern": "update*??.INT",
+      "matches": []
+    },
+    {
+      "wide": true,
+      "pattern": "up*??.i?t",
+      "matches": []
+    },
+    {
+      "wide": true,
+      "pattern": "*.i?t",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "*.int",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    },
+    {
+      "wide": true,
+      "pattern": "UPDATE*.INT",
+      "matches": [
+        "update.INT",
+        "update01.INT",
+        "update012.INT",
+        "update0a.INT",
+        "update1.INT",
+        "update99.INT",
+        "updateAA.INT"
+      ]
+    }
+  ]
+}
