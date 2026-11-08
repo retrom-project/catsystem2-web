@@ -1,0 +1,92 @@
+--- a/qemu/target/i386/translate.c
++++ b/qemu/target/i386/translate.c
+@@ -4818,6 +4818,26 @@
+     // Unicorn: callback might need to access to EFLAGS,
+     // or want to stop emulation immediately
+     if (HOOK_EXISTS_BOUNDED(env->uc, UC_HOOK_CODE, pc_start)) {
++        /* The budget callback cannot inspect or alter CPU flags. Its narrow
++         * helper preserves lazy flag state and materializes PC/CC on stop. */
++        bool counter_only = env->uc->count_hook != 0;
++        struct list_item *cur;
++        struct hook *hh;
++        HOOK_FOREACH(env->uc, hh, UC_HOOK_CODE) {
++            if (HOOK_BOUND_CHECK(hh, pc_start) &&
++                (uc_hook)hh != env->uc->count_hook) {
++                counter_only = false;
++                break;
++            }
++        }
++        if (counter_only) {
++            TCGv_i64 count_pc = tcg_const_i64(tcg_ctx, pc_start - s->cs_base);
++            TCGv_i32 count_cc = tcg_const_i32(tcg_ctx, s->cc_op);
++            gen_helper_uc_count(tcg_ctx, tcg_ctx->cpu_env, count_pc, count_cc);
++            tcg_temp_free_i64(tcg_ctx, count_pc);
++            tcg_temp_free_i32(tcg_ctx, count_cc);
++            s->last_cc_op = CC_OP_DYNAMIC;
++        } else {
+         if (s->last_cc_op != s->cc_op) {
+             sync_eflags(s, tcg_ctx);
+             s->last_cc_op = s->cc_op;
+@@ -4833,8 +4853,11 @@
+ 
+         check_exit_request(tcg_ctx);
+ 
+-        // Unicorn: Previous hook might change eflags to any state, let's sync it
++        /* A user hook may write EFLAGS using uc_reg_write. Re-read the
++         * resulting lazy operation, rather than the pre-hook operation. */
++        set_cc_op(s, CC_OP_DYNAMIC);
+         gen_compute_eflags(s);
++        }
+     }
+ 
+     s->override = -1;
+--- a/qemu/target/i386/helper.h
++++ b/qemu/target/i386/helper.h
+@@ -1,3 +1,4 @@
++DEF_HELPER_FLAGS_3(uc_count, TCG_CALL_NO_WG, void, env, i64, i32)
+ DEF_HELPER_4(uc_tracecode, void, i32, i32, ptr, i64)
+ DEF_HELPER_6(uc_traceopcode, void, ptr, i64, i64, i32, ptr, i64)
+ 
+--- a/qemu/target/i386/misc_helper.c
++++ b/qemu/target/i386/misc_helper.c
+@@ -27,6 +27,23 @@
+ #include "uc_priv.h"
+ #include "tcg/tcg-apple-jit.h"
+ 
++/* The internal counter returns without changing any CPU global. When the
++ * exact limit is exceeded it exits instead, after materializing the lazy CC
++ * operation and current instruction PC supplied by the translator. */
++void HELPER(uc_count)(CPUX86State *env, uint64_t pc, uint32_t cc_op)
++{
++    uc_engine *uc = env->uc;
++    if (++uc->emu_counter > uc->emu_count) {
++        if (cc_op != CC_OP_DYNAMIC) {
++            env->cc_op = cc_op;
++        }
++        env->eip = pc;
++        uc->skip_sync_pc_on_exit = true;
++        uc_emu_stop(uc);
++        HELPER(check_exit_request)(uc, 0);
++    }
++}
++
+ void helper_outb(CPUX86State *env, uint32_t port, uint32_t data)
+ {
+ // #ifdef UNICORN_ARCH_POSTFIX
+--- a/qemu/include/tcg/tcg.h
++++ b/qemu/include/tcg/tcg.h
+@@ -52,7 +52,14 @@
+  * (N = number of input arguments + output arguments).  */
+ #define MAX_OPC_PARAM (4 + (MAX_OPC_PARAM_PER_ARG * MAX_OPC_PARAM_ARGS))
+ 
++/* The interpreter spills each TCGTemp to at most one host-word slot. Long
++ * blocks with per-instruction instrumentation can spill more than128 temps;
++ * reserve the translator's actual hard bound instead of aborting. */
++#ifdef TCG_TARGET_INTERPRETER
++#define CPU_TEMP_BUF_NLONGS TCG_MAX_TEMPS
++#else
+ #define CPU_TEMP_BUF_NLONGS 128
++#endif
+ 
+ /* Default target word size to pointer size.  */
+ #ifndef TCG_TARGET_REG_BITS

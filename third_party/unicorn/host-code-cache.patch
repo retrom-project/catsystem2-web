@@ -1,0 +1,14 @@
+--- a/uc.c
++++ b/uc.c
+@@ -987,6 +987,11 @@
+                 break;
+             }
+ 
++            /* Host writes must invalidate previously translated instructions. */
++            if (operms & UC_PROT_EXEC) {
++                uc->uc_invalidate_tb(uc, address, len);
++            }
++
+             if (!(operms & UC_PROT_WRITE)) { // write protected
+                 // now write protect it again
+                 uc->readonly_mem(mr, true);

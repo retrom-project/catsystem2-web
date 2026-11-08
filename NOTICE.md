@@ -7,7 +7,7 @@ Its format parsers, VM, script execution and E-mote implementation adapt
 WebGL backend, audio, persistence and standalone host are implemented here.
 Modified and derived files remain under MPL-2.0 with source available in this repository.
 
-KIF and HG-3 format algorithms follow CatSystemKit and
+KIF and HG-2/HG-3 format algorithms follow CatSystemKit and
 [GARbro](https://github.com/morkt/GARbro), by morkt, under the MIT license:
 
 ```
@@ -39,3 +39,27 @@ in this project. No native CatSystem2/E-mote/Steam binaries, SDK files, game scr
 fonts, images, audio or movies are included. The player reads content supplied by
 the user. FFmpeg is an optional, separately installed development tool; converted
 media is private local output and is excluded from the build.
+
+Native x86 execution uses Unicorn.js commit
+`560284c59c11c8d6c94d537f4354339f069ddcdf` and Unicorn commit
+`8028ec436f2d9376525352dd38ed9ed6b9f6be10`, built with the maintained patches
+under `third_party/unicorn`. This dependency is GPL-2.0 and includes components
+under their upstream licenses. The combined distribution must retain the
+applicable GPL, LGPL and MPL notices and provide corresponding source. The
+standalone build serves `vendor/COPYING`, `vendor/manifest.json` and the complete
+patched `vendor/corresponding-source.tar.gz` alongside `vendor/unicorn_x86.js`.
+The manifest identifies the exact upstream commits, patches, toolchain and
+artifact hashes. The maintained patches include exact instruction-budget handling
+with architectural state captured at budget exits and checked shared-RAM views;
+these remain modifications under the backend's
+GPL license. Existing source-file licenses remain intact.
+
+The reviewed native regions use a separately compiled zlib 1.2.3 under the zlib
+license. The standalone build includes its license and corresponding source in
+`vendor/ZLIB-LICENSE.txt` and `vendor/zlib-1.2.3-source.tar.gz`; the fixed inputs and
+build toolchain are recorded in `vendor/zlib-manifest.json`.
+
+`tests/fixtures/native-movie.webm` is an authored synthetic color/tone fixture,
+distributed under this project's MPL-2.0 license. Its adjacent text file records
+the FFmpeg generation command. It contains no game media and is excluded from
+the standalone player build.

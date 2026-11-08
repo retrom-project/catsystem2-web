@@ -1,0 +1,73 @@
+--- a/uc.c
++++ b/uc.c
+@@ -909,6 +909,70 @@
+     return UC_ERR_OK;
+ }
+ 
++/* Borrow a contiguous RAM span without copying it. The owner must retain
++ * the mapping, reacquire its view after host memory growth, and invalidate
++ * executable translations before running code after an unobserved write.
++ * MMIO and copy-on-write snapshots deliberately have no borrowed RAM view. */
++UNICORN_EXPORT
++uc_err uc_mem_host_ptr(uc_engine *uc, uint64_t address, uint64_t size,
++                       uintptr_t *output)
++{
++    uint64_t done = 0;
++    uint8_t *first = NULL;
++    *output = 0;
++    UC_INIT(uc);
++    if (!size || address + size < address || uc->snapshot_level) {
++        restore_jit_state(uc);
++        return UC_ERR_ARG;
++    }
++    while (done < size) {
++        MemoryRegion *mr = uc->memory_mapping(uc, address + done);
++        MemoryRegion *container;
++        uint64_t base, count;
++        uint8_t *host;
++        if (!mr) {
++            restore_jit_state(uc);
++            return UC_ERR_READ_UNMAPPED;
++        }
++        if (!memory_region_is_ram(mr) || !mr->ram_block || !mr->ram_block->host) {
++            restore_jit_state(uc);
++            return UC_ERR_ARG;
++        }
++        base = mr->addr;
++        container = mr->container;
++        while (container && container != uc->system_memory) {
++            base += container->addr;
++            container = container->container;
++        }
++        host = (uint8_t *)mr->ram_block->host + address + done - base;
++        count = memory_region_len(uc, mr, address + done, size - done);
++        if (!count || (first && host != first + done)) {
++            restore_jit_state(uc);
++            return UC_ERR_ARG;
++        }
++        if (!first) first = host;
++        done += count;
++    }
++    *output = (uintptr_t)first;
++    restore_jit_state(uc);
++    return UC_ERR_OK;
++}
++
++/* Typed counterpart of uc_ctl_remove_cache for a host's borrowed RAM views.
++ * This does not split/remap RAM, unlike reapplying memory permissions. */
++UNICORN_EXPORT
++uc_err uc_mem_invalidate(uc_engine *uc, uint64_t address, uint64_t size)
++{
++    UC_INIT(uc);
++    if (address + size < address) {
++        restore_jit_state(uc);
++        return UC_ERR_ARG;
++    }
++    if (size) uc->uc_invalidate_tb(uc, address, size);
++    restore_jit_state(uc);
++    return UC_ERR_OK;
++}
++
+ UNICORN_EXPORT
+ uc_err uc_mem_read(uc_engine *uc, uint64_t address, void *_bytes, uint64_t size)
+ {

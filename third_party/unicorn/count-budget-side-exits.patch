@@ -1,0 +1,204 @@
+--- a/qemu/target/i386/translate.c
++++ b/qemu/target/i386/translate.c
+@@ -4831,11 +4831,22 @@
+             }
+         }
+         if (counter_only) {
+-            TCGv_i64 count_pc = tcg_const_i64(tcg_ctx, pc_start - s->cs_base);
+-            TCGv_i32 count_cc = tcg_const_i32(tcg_ctx, s->cc_op);
+-            gen_helper_uc_count(tcg_ctx, tcg_ctx->cpu_env, count_pc, count_cc);
+-            tcg_temp_free_i64(tcg_ctx, count_pc);
+-            tcg_temp_free_i32(tcg_ctx, count_cc);
++#ifdef TCG_TARGET_INTERPRETER
++            if (tcg_ctx->nb_indirects == 0) {
++                tcg_gen_op5(tcg_ctx, INDEX_op_uc_budget,
++                            (uintptr_t)env->uc,
++                            (uint32_t)(pc_start - s->cs_base),
++                            (uint32_t)((uint64_t)(pc_start - s->cs_base) >> 32),
++                            s->cc_op, (uintptr_t)helper_uc_count_stop);
++            } else
++#endif
++            {
++                TCGv_i64 count_pc = tcg_const_i64(tcg_ctx, pc_start - s->cs_base);
++                TCGv_i32 count_cc = tcg_const_i32(tcg_ctx, s->cc_op);
++                gen_helper_uc_count(tcg_ctx, tcg_ctx->cpu_env, count_pc, count_cc);
++                tcg_temp_free_i64(tcg_ctx, count_pc);
++                tcg_temp_free_i32(tcg_ctx, count_cc);
++            }
+             s->last_cc_op = CC_OP_DYNAMIC;
+         } else {
+         if (s->last_cc_op != s->cc_op) {
+--- a/qemu/target/i386/helper.h
++++ b/qemu/target/i386/helper.h
+@@ -1,3 +1,4 @@
++DEF_HELPER_3(uc_count_stop, void, env, i64, i32)
+ DEF_HELPER_FLAGS_3(uc_count, TCG_CALL_NO_WG, void, env, i64, i32)
+ DEF_HELPER_4(uc_tracecode, void, i32, i32, ptr, i64)
+ DEF_HELPER_6(uc_traceopcode, void, ptr, i64, i64, i32, ptr, i64)
+--- a/qemu/target/i386/misc_helper.c
++++ b/qemu/target/i386/misc_helper.c
+@@ -44,6 +44,18 @@
+     }
+ }
+ 
++void HELPER(uc_count_stop)(CPUX86State *env, uint64_t pc, uint32_t cc_op)
++{
++    uc_engine *uc = env->uc;
++    if (cc_op != CC_OP_DYNAMIC) {
++        env->cc_op = cc_op;
++    }
++    env->eip = pc;
++    uc->skip_sync_pc_on_exit = true;
++    uc_emu_stop(uc);
++    HELPER(check_exit_request)(uc, 0);
++}
++
+ void helper_outb(CPUX86State *env, uint32_t port, uint32_t data)
+ {
+ // #ifdef UNICORN_ARCH_POSTFIX
+--- a/qemu/include/tcg/tcg-opc.h
++++ b/qemu/include/tcg/tcg-opc.h
+@@ -29,6 +29,11 @@
+ /* predefined ops */
+ DEF(discard, 1, 0, 0, TCG_OPF_NOT_PRESENT)
+ DEF(set_label, 0, 0, 1, TCG_OPF_BB_END | TCG_OPF_NOT_PRESENT)
++
++#ifdef TCG_TARGET_INTERPRETER
++/* Five constants; register liveness is handled without eager global spills. */
++DEF(uc_budget, 0, 0, 5, TCG_OPF_NOT_PRESENT)
++#endif
+ 
+ /* variable number of parameters */
+ DEF(call, 0, 0, 3, TCG_OPF_CALL_CLOBBER | TCG_OPF_NOT_PRESENT)
+--- a/qemu/tcg/tcg.c
++++ b/qemu/tcg/tcg.c
+@@ -2375,6 +2375,16 @@
+         const TCGOpDef *def = &s->tcg_op_defs[opc];
+ 
+         switch (opc) {
++#ifdef TCG_TARGET_INTERPRETER
++        case INDEX_op_uc_budget:
++            /* A budget exit observes each architectural global, even if a
++             * following instruction would overwrite it. Keep it live, but
++             * capture its physical location instead of spilling on every op. */
++            for (i = 0; i < nb_globals; i++) {
++                s->temps[i].state &= ~TS_DEAD;
++            }
++            break;
++#endif
+         case INDEX_op_call:
+             {
+                 int call_flags;
+@@ -3828,6 +3838,11 @@
+             tcg_reg_alloc_bb_end(s, s->reserved_regs);
+             tcg_out_label(s, arg_label(op->args[0]), s->code_ptr);
+             break;
++#ifdef TCG_TARGET_INTERPRETER
++        case INDEX_op_uc_budget:
++            tcg_out_uc_budget(s, op);
++            break;
++#endif
+         case INDEX_op_call:
+             tcg_reg_alloc_call(s, op);
+             break;
+--- a/qemu/tcg/tci/tcg-target.inc.c
++++ b/qemu/tcg/tci/tcg-target.inc.c
+@@ -554,6 +554,46 @@
+     old_code_ptr[1] = s->code_ptr - old_code_ptr;
+ }
+ 
++static void tcg_out_uc_budget(TCGContext *s, const TCGOp *op)
++{
++    uint8_t *begin = s->code_ptr;
++    uint8_t *length_at;
++    uint8_t *count_at;
++    unsigned int count = 0;
++    int i;
++    tcg_out8(s, INDEX_op_uc_budget);
++    tcg_out8(s, 0);  /* Extended bytecode length follows. */
++    length_at = s->code_ptr;
++    tcg_out32(s, 0);
++    tcg_out_i(s, op->args[0]);
++    tcg_out32(s, op->args[1]);
++    tcg_out32(s, op->args[2]);
++    tcg_out32(s, op->args[3]);
++    tcg_out_i(s, op->args[4]);
++    count_at = s->code_ptr;
++    tcg_out32(s, 0);
++    for (i = 0; i < s->nb_globals; i++) {
++        TCGTemp *ts = &s->temps[i];
++        if (ts->fixed_reg || ts->mem_coherent || ts->val_type == TEMP_VAL_MEM) {
++            continue;
++        }
++        tcg_debug_assert(ts->mem_allocated && ts->mem_base);
++        tcg_debug_assert(ts->val_type == TEMP_VAL_REG || ts->val_type == TEMP_VAL_CONST);
++        tcg_out32(s, ts->mem_offset);
++        tcg_out8(s, ts->mem_base->reg);
++        tcg_out8(s, ts->type == TCG_TYPE_I64 ? 8 : 4);
++        tcg_out8(s, ts->val_type == TEMP_VAL_CONST);
++        if (ts->val_type == TEMP_VAL_CONST) {
++            tcg_out_i(s, ts->val);
++        } else {
++            tcg_out8(s, ts->reg);
++        }
++        count++;
++    }
++    *(uint32_t *)length_at = s->code_ptr - begin;
++    *(uint32_t *)count_at = count;
++}
++
+ static void tcg_out_op(TCGContext *s, TCGOpcode opc, const TCGArg *args,
+                        const int *const_args)
+ {
+--- a/qemu/tcg/tci.c
++++ b/qemu/tcg/tci.c
+@@ -493,7 +493,7 @@
+     for (;;) {
+         TCGOpcode opc = tb_ptr[0];
+ #if defined(CONFIG_DEBUG_TCG) && !defined(NDEBUG)
+-        uint8_t op_size = tb_ptr[1];
++        uint32_t op_size = tb_ptr[1];
+         uint8_t *old_code_ptr = tb_ptr;
+ #endif
+         tcg_target_ulong t0;
+@@ -519,6 +519,40 @@
+         tb_ptr += 2;
+ 
+         switch (opc) {
++        case INDEX_op_uc_budget: {
++            uint8_t *begin = tb_ptr - 2;
++            uint32_t length = tci_read_i32(&tb_ptr);
++            struct uc_struct *count_owner = (struct uc_struct *)tci_read_i(&tb_ptr);
++            if (++count_owner->emu_counter > count_owner->emu_count) {
++                uint64_t count_pc = tci_read_i32(&tb_ptr);
++                uint32_t count_cc;
++                void (*stop)(void *, uint64_t, uint32_t);
++                uint32_t entries;
++                count_pc |= (uint64_t)tci_read_i32(&tb_ptr) << 32;
++                count_cc = tci_read_i32(&tb_ptr);
++                stop = (void (*)(void *, uint64_t, uint32_t))tci_read_i(&tb_ptr);
++                entries = tci_read_i32(&tb_ptr);
++                while (entries--) {
++                    int32_t offset = tci_read_s32(&tb_ptr);
++                    unsigned int base = *tb_ptr++;
++                    unsigned int width = *tb_ptr++;
++                    unsigned int constant = *tb_ptr++;
++                    uint8_t *destination = (uint8_t *)(uintptr_t)regs[base] + offset;
++                    tcg_target_ulong value = constant ? tci_read_i(&tb_ptr) : regs[*tb_ptr++];
++                    if (width == 8) {
++                        stq_p(destination, value);
++                    } else {
++                        stl_p(destination, value);
++                    }
++                }
++                stop(env, count_pc, count_cc);
++            }
++            tb_ptr = begin + length;
++#if defined(CONFIG_DEBUG_TCG) && !defined(NDEBUG)
++            op_size = length;
++#endif
++            break;
++        }
+         case INDEX_op_call:
+             t0 = tci_read_ri(regs, &tb_ptr);
+ #if TCG_TARGET_REG_BITS == 32

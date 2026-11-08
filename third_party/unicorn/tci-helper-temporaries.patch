@@ -1,0 +1,34 @@
+--- a/qemu/tcg/tcg.c
++++ b/qemu/tcg/tcg.c
+@@ -1441,6 +1441,7 @@
+     unsigned sizemask, flags;
+     TCGHelperInfo *info;
+     TCGOp *op;
++    TCGv_i64 extended_args[MAX_OPC_PARAM_IARGS] = { 0 };
+ 
+     info = g_hash_table_lookup(tcg_ctx->helper_table, (gpointer)func);
+     flags = info->flags;
+@@ -1498,8 +1499,9 @@
+         int arg_is_64bit = sizemask & (1 << (i+1)*2);
+         if (!arg_is_64bit) {
+             TCGv_i64 ext_temp = tcg_temp_new_i64(tcg_ctx);
+-            TCGv_i64 ext_orig = temp_tcgv_i64(tcg_ctx, args[i]);
+-            tcg_gen_ext32u_i64(tcg_ctx, ext_temp, ext_orig);
++            TCGv_i32 ext_orig = temp_tcgv_i32(tcg_ctx, args[i]);
++            extended_args[i] = ext_temp;
++            tcg_gen_extu_i32_i64(tcg_ctx, ext_temp, ext_orig);
+             args[i] = tcgv_i64_temp(tcg_ctx, ext_temp);
+         }
+     }
+@@ -1612,6 +1614,11 @@
+         }
+     }
+ #endif /* TCG_TARGET_EXTEND_ARGS */
++    for (i = 0; i < nargs; i++) {
++        if (extended_args[i]) {
++            tcg_temp_free_i64(tcg_ctx, extended_args[i]);
++        }
++    }
+ }
+ 
+ static void tcg_reg_alloc_start(TCGContext *s)
