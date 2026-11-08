@@ -1660,6 +1660,21 @@ const extendedDescriptions = [
   [0x1cd, 'math.log10', ['f32 value'], 'f32'],
   [0x36a, 'math.packWords', ['word low', 'word high'], 'word'],
   [0x36b, 'math.unpackWords', ['word packed', 'VMptr lowSigned', 'VMptr highSigned'], 'void'],
+  [0xd6, 'rectangle.clear', ['VMptr destination'], 'void'],
+  [0xd7, 'rectangle.union', ['VMptr destination', 'VMptr source'], 'void'],
+  [
+    0xd8,
+    'rectangle.unionBitmap',
+    ['VMptr destination', 'handle nullableBitmap', 'i32 x', 'i32 y'],
+    'void',
+  ],
+  [0xd9, 'rectangle.isEmpty', ['VMptr rectangle'], 'bool'],
+  [
+    0xda,
+    'rectangle.intersect',
+    ['VMptr destination', 'i32 left', 'i32 top', 'i32 right', 'i32 bottom'],
+    'void',
+  ],
   [0x24d, 'configuration.words24D', ['VMptr first', 'VMptr second'], 'void'],
   [0x25d, 'legacySound.groupGain', ['format* filename'], 'word'],
   [0x25e, 'legacySound.playWord', ['format* filename'], 'word'],
@@ -3146,8 +3161,8 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     contentMainIDs.has(id) ||
     effectCommandIDs.has(id) ||
     [
-      0xc0, 0xc1, 0xc2, 0xc3, 0x6b, 0x18a, 0x3a9, 0x141, 0x18d, 0x1cd, 0x36a, 0x36b, 0x6f, 0x70,
-      0x72, 0x75, 0x76, 0x77, 0x79,
+      0xc0, 0xc1, 0xc2, 0xc3, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0x6b, 0x18a, 0x3a9, 0x141, 0x18d, 0x1cd,
+      0x36a, 0x36b, 0x6f, 0x70, 0x72, 0x75, 0x76, 0x77, 0x79,
     ].includes(id) ||
     [0x71, 0x1b9, 0x235, 0x236].includes(id) ||
     [
