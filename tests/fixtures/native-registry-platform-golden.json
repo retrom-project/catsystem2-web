@@ -1,0 +1,185 @@
+{
+  "wineImage": "sha256:81080f23de3472eb80c335daad91f187fdd1d78e678a0a630fee90677d3359a8",
+  "cases": [
+    {
+      "api": "path",
+      "wide": false,
+      "path": "Software\\RetromRegistryOracle\\Paths\\Plain",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "software\\RETROMREGISTRYORACLE\\paths\\plain",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "Software\\RetromRegistryOracle\\Paths\\Plain\\",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "Software\\RetromRegistryOracle\\Paths\\\\Repeated",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "Software\\RetromRegistryOracle\\Paths\\..",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "Software\\RetromRegistryOracle\\Paths\\with/slash",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "\\Software\\RetromRegistryOracle\\Paths\\Leading",
+      "result": [161, 0, 324508639, 161, 0, 4294967295, 4294967295]
+    },
+    {
+      "api": "path",
+      "wide": false,
+      "path": "",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 0,
+      "result": [0, 5, 5, 0, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 1,
+      "result": [0, 0, 5, 4, 4, 2018915346, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 2,
+      "result": [0, 5, 0, 0, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 4,
+      "result": [0, 5, 5, 0, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 131097,
+      "result": [0, 0, 5, 4, 4, 2018915346, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 131078,
+      "result": [0, 5, 0, 0, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": false,
+      "access": 983103,
+      "result": [0, 0, 0, 4, 4, 2018915346, 0]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "Software\\RetromRegistryOracle\\Paths\\Plain",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "software\\RETROMREGISTRYORACLE\\paths\\plain",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "Software\\RetromRegistryOracle\\Paths\\Plain\\",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "Software\\RetromRegistryOracle\\Paths\\\\Repeated",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "Software\\RetromRegistryOracle\\Paths\\..",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "Software\\RetromRegistryOracle\\Paths\\with/slash",
+      "result": [0, 1, 2, 0, 1, 0, 6]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "\\Software\\RetromRegistryOracle\\Paths\\Leading",
+      "result": [161, 0, 324508639, 161, 0, 4294967295, 4294967295]
+    },
+    {
+      "api": "path",
+      "wide": true,
+      "path": "",
+      "result": [0, 1, 1, 0, 1, 0, 6]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 0,
+      "result": [0, 5, 5, 324508639, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 1,
+      "result": [0, 0, 5, 4, 4, 2018915346, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 2,
+      "result": [0, 5, 0, 324508639, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 4,
+      "result": [0, 5, 5, 324508639, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 131097,
+      "result": [0, 0, 5, 4, 4, 2018915346, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 131078,
+      "result": [0, 5, 0, 324508639, 4, 2779096485, 0]
+    },
+    {
+      "api": "permission",
+      "wide": true,
+      "access": 983103,
+      "result": [0, 0, 0, 4, 4, 2018915346, 0]
+    }
+  ]
+}

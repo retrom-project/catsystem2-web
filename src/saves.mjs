@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { checkpointBytes } from './checkpoint.mjs';
 export class SaveStore {
   constructor(namespace, database = 'catsystem2-web') {
     this.namespace = namespace;
@@ -26,9 +27,8 @@ export class SaveStore {
     });
   }
   async put(slot, data, info) {
-    const size = new TextEncoder().encode(JSON.stringify(data)).length;
-    if (!size || size > 16 * 1024 * 1024)
-      throw new Error('Save must be nonempty and at most 16 MiB');
+    const size = checkpointBytes(data);
+    if (!size) throw new Error('Save must be nonempty');
     const record = {
       ...info,
       key: `${this.namespace}:${slot}`,
@@ -47,6 +47,18 @@ export class SaveStore {
   async delete(slot) {
     await this.request('readwrite', (store) => store.delete(`${this.namespace}:${slot}`));
     this.records.delete(slot);
+  }
+  async move(from, to) {
+    const source = this.get(from);
+    if (!source || this.get(to)) return false;
+    const next = { ...source, key: `${this.namespace}:${to}`, slot: to };
+    await this.request('readwrite', (store) => {
+      store.put(next);
+      return store.delete(`${this.namespace}:${from}`);
+    });
+    this.records.delete(from);
+    this.records.set(to, next);
+    return true;
   }
   newest(from, count) {
     return (
