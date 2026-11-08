@@ -263,10 +263,14 @@ for (const [profile, variable] of [
               'NULL output requests only the original file size',
             );
           }
+          // The game ANSI reader does not check MultiByteToWideChar's failure
+          // before using its stack filename. Fix the test's scratch input so
+          // a previous successful read cannot supply that filename.
+          p.write(p.stackTop - 0x8000, new Uint8Array(0x8000));
           assert.equal(
             await engine.call(reader, [0, readOut, 0x13], 0),
             0,
-            'NULL filename does not open a resource',
+            'NULL filename with empty caller scratch does not open a resource',
           );
           assert.equal(
             await engine.call(reader, [source, readOut, 0x10012], 0),

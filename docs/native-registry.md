@@ -54,10 +54,10 @@ The registry ANSI boundary uses a measured NT CP932 codec. It preserves lone
 lead-byte handling, private-use mappings, default characters and best-fit
 encoding. Eight decoding differences and 461 encoding differences supplement
 the host's existing codec; no Windows or Wine code or data file is bundled.
-The game's earlier name conversion still uses the shared
-`MultiByteToWideChar(932, 1)` platform service. Its uncommon invalid-input
-behavior has not been independently established by this registry audit; the
-RTL evidence is not a claim that all shared Windows NLS APIs are complete.
+The game's earlier name conversion uses the shared
+[`MultiByteToWideChar(932, 1)` platform service](native-multibyte.md), which has
+its own independent Win32 import comparisons. The registry RTL codec and this
+import have distinct invalid-input behavior; neither replaces the rest of NLS.
 
 ## Verification
 

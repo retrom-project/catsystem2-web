@@ -2,6 +2,10 @@
 
 The browser owns the Windows services used by the fixed SDK 4.01 and NEKOPARA Vol.3 engine images. Original engine handlers and their parsers still execute in the shared PE process. Platform adapters project browser files, storage quota, clipboard and time into the original import ABI.
 
+The shared [multibyte input converter](native-multibyte.md) retains the
+reference CP932/UTF8, capacity, flag and error contracts for native engine
+and plugin calls.
+
 The original display-capability and complete view constructors now run before
 an actual mounted executable enters its task loop. They create the original
 view, view3D, graph manager, D3D core, render-target resources and GDI bitmap.
