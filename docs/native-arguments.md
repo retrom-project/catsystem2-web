@@ -1,0 +1,7 @@
+# Native argument decoders
+
+Main `21B` reads raw VM text as an expression, comma-separated bracketed list, or bracketed range, writing DWORD values to a VM destination. It uses the caller's existing variable bank and selected private context; evaluation can change variables. Capacity is signed. Range endpoints and increment retain signed DWORD behavior, including wrap at `7FFFFFFF`. List output may overlap and change the source before the next token is read. Empty and malformed brackets follow the original parser's observed behavior rather than a generic CSV or JavaScript array grammar.
+
+Main `21C` returns a byte offset after a requested number of runs of ASCII spaces, or `FFFFFFFF` when it runs out of separators. Index zero returns zero even when VM pointer translation fails. Leading/trailing spaces matter; tabs and grouped expressions are not separators. It does not perform KCS formatting or return a token length.
+
+`scripts/verify-native-arguments.mjs` executes the complete original wrappers, VM translation and bank expression evaluator in each fixed PE. Each passes 8,596 comparisons across 2,149 calls, covering all VM memory domains, complete source/output canaries, overlapping outputs, eager assignments, signed capacities, wrap, unusual bracket forms, leading/trailing spaces, CP932/UTF-8/invalid bytes and failed mappings. No tokenizer or expression helper is replaced. Runtime tests additionally restore selected private contexts into a fresh runtime and continue name lookup and writes independently.
