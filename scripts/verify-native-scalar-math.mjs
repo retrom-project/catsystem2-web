@@ -72,7 +72,7 @@ export async function verifyScalarMath(bytes, profile) {
     for (const base of [0x7f, 0x37f])
       for (const rounding of [0, 0x400, 0x800, 0xc00]) {
         const control = base | rounding;
-        for (const spec of NATIVE_SCALAR_MATH_CONTRACTS)
+        for (const spec of NATIVE_SCALAR_MATH_CONTRACTS.filter((item) => !item.memory))
           for (let i = 0; i < inputs.length; i++) {
             const words = inputs.slice(i, i + 1);
             if (spec.words === 2) words.push(inputs[(i * 7 + 3) % inputs.length]);
@@ -96,7 +96,7 @@ export async function verifyScalarMath(bytes, profile) {
               check(actual.value, Math.abs(words[0] | 0) >>> 0, 'signed absolute DWORD');
           }
       }
-    for (const spec of NATIVE_SCALAR_MATH_CONTRACTS) {
+    for (const spec of NATIVE_SCALAR_MATH_CONTRACTS.filter((item) => !item.memory)) {
       const frame = [floatBits(0.75), floatBits(2)],
         machine = { nativeArgument: (i) => frame[i] };
       configure(original.process, 0x37f);

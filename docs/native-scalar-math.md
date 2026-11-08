@@ -22,3 +22,17 @@ The public SDK World test changes the actual native rounding context. Its
 upward-rounded square root of two is one ULP above the ordinary host result.
 The same context and result survive a fresh World; changing the restored
 context leaves the original World independent.
+
+The paired `36B` unpacking wrapper also runs its complete original code. It
+sign-extends each 16-bit half to a DWORD and writes low followed by high through
+the original VM translator, returning control 2 without writing a result. Zero
+is a valid VM address; identical and overlapping destinations retain that write
+order. Live World memory, shared memory and extended blocks use the existing
+task-memory binding, including after fresh restore.
+
+`scripts/verify-native-word-unpack.mjs` compares 1,105 complete calls and 7,732
+checks per engine. The reference executes the full wrapper without replacing
+its VM translator. It checks every byte of data, stack, shared memory and two
+extended blocks, including unaligned and overlapping outputs, adjacent argument
+reads, FP context and temporary bridge ownership. The SDK World test exercises
+the live native backing and an independent restored World.

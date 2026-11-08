@@ -11,13 +11,18 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    589 |             82 |                     19 |                     319 |
-| Game / 2.6.1.76 | 1,055 |                    855 |             58 |                     17 |                     125 |
+| SDK / 2.6.1.74  | 1,009 |                    590 |             82 |                     19 |                     318 |
+| Game / 2.6.1.76 | 1,055 |                    856 |             58 |                     17 |                     124 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
 come from the SDK particle headers and [PPI contracts](../src/ppi/contracts.mjs).
 See [particle compatibility](ppi-compatibility.md) for their implementation status.
+
+The paired `36B` integer-unpacking interface executes both original wrappers
+and VM translators. Signed halves, aliased/overlapping destinations, all VM
+storage classes and fresh live backing have 15,464 differential checks plus
+separate World coverage; see [scalar and word contracts](native-scalar-math.md).
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Scalar math executes in the same original CPU/FPU thread as native plugins.
 import { nativeReply } from '../kcs/vm.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_SCALAR_MATH_CONTRACTS = Object.freeze(
   [
@@ -22,15 +23,16 @@ export const NATIVE_SCALAR_MATH_CONTRACTS = Object.freeze(
     [0x18d, 'atan2', 2, 0x65b5b0, 0x5269d0],
     [0x1cd, 'log10', 1, 0x659980, 0x526af0],
     [0x36a, 'packWords', 2, 0x6597e0, 0x526950],
-  ].map(([id, name, words, game, sdk]) =>
-    Object.freeze({ id, name, words, handlers: [game, sdk] }),
+    [0x36b, 'unpackWords', 3, 0x659830, 0x526970, 2, true],
+  ].map(([id, name, words, game, sdk, control = 1, memory = false]) =>
+    Object.freeze({ id, name, words, control, memory, handlers: [game, sdk] }),
   ),
 );
 const byID = new Map(NATIVE_SCALAR_MATH_CONTRACTS.map((spec) => [spec.id, spec]));
 
 export class NativeScalarMath {
-  constructor(engine) {
-    Object.assign(this, { engine, process: engine.process });
+  constructor(engine, world) {
+    Object.assign(this, { engine, world, process: engine.process });
     this.profileIndex = Number(engine.profile.startsWith('sdk-'));
     engine.registerFeature('scalar-math', this);
   }
@@ -39,13 +41,22 @@ export class NativeScalarMath {
     if (!spec) return undefined;
     const words = Array.from(args);
     while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
+    let bridge;
+    if (spec.memory) {
+      const memory =
+        this.world?.objects.machine(task.id) === machine
+          ? await this.world.getNativeFeature('task-memory')
+          : null;
+      if (memory) memory.vmPointer(task.id);
+      bridge = new NativeKCSMemory(this.process, machine, memory?.mapMachine(task.id, machine));
+    }
     const p = this.process,
       argv = p.allocate(words.length * 4),
       out = p.allocate(12);
     try {
       words.forEach((word, i) => p.store(argv + i * 4, word));
       p.write(out, new Uint8Array(12).fill(0xcc));
-      const parameters = [0, 0, argv, out + 4],
+      const parameters = [bridge?.pointer ?? 0, 0, argv, out + 4],
         options = { task: task.id },
         control = p.asyncEnabled
           ? await this.engine.callFromHost(
@@ -60,12 +71,21 @@ export class NativeScalarMath {
               undefined,
               options,
             );
-      if (control !== 1 || p.load(out) !== 0xcccccccc || p.load(out + 8) !== 0xcccccccc)
+      if (
+        control !== spec.control ||
+        p.load(out) !== 0xcccccccc ||
+        p.load(out + 8) !== 0xcccccccc ||
+        (control === 2 && p.load(out + 4) !== 0xcccccccc)
+      )
         throw new Error('Native scalar math changed its reviewed output contract');
-      return nativeReply(control, p.load(out + 4));
+      return nativeReply(control, control === 1 ? p.load(out + 4) : undefined);
     } finally {
-      p.free(out);
-      p.free(argv);
+      try {
+        bridge?.close();
+      } finally {
+        p.free(out);
+        p.free(argv);
+      }
     }
   }
   snapshot() {
@@ -74,7 +94,7 @@ export class NativeScalarMath {
   restore() {}
 }
 export function installNativeScalarMath(world) {
-  world.registerNativeFeature('scalar-math', (engine) => new NativeScalarMath(engine));
+  world.registerNativeFeature('scalar-math', (engine) => new NativeScalarMath(engine, world));
   for (const { id } of NATIVE_SCALAR_MATH_CONTRACTS)
     world.runtime.register('main', id, async (args, machine, task) =>
       (await world.getNativeFeature('scalar-math')).apply(id, args, machine, task),
