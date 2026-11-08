@@ -2,7 +2,7 @@
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
-import { NativeFileAccess } from './storage.mjs';
+import { NativeFileAccess, installNativeFormattedFileOutput } from './storage.mjs';
 import { NativeMotionRegistry } from './motion.mjs';
 import {
   NativeSoundConfiguration,
@@ -376,6 +376,7 @@ export class NativeWorld {
     installNativeImageFiles(this);
     installNativeImageComposites(this);
     installNativeUnicodeOutput(this);
+    installNativeFormattedFileOutput(this);
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76')
       this.runtime.register('main', 0x41e, (args) => {
         if (args.length) throw new Error('Native return-title window request expects no arguments');
