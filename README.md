@@ -53,14 +53,16 @@ npm run build
 
 ```sh
 npm run corpus -- /path/to/prepared-game --decode --walk 01
+CAT2_GAME_URL=http://localhost:4101 npm run test:native-game
 CAT2_GAME_URL=http://localhost:4101 npm run test:game
 CAT2_GAME_URL=http://localhost:4101 npm run test:route
 ```
 
 `corpus` 检查全部支持格式；`--decode` 解码全部 HG 无损帧与 PSB 模型；`--walk 01`
-只遍历脚本命令，不验证时序、音频或画面。两个浏览器用例针对 NEKOPARA Vol. 3：
-`test:game` 验证交互、语言和存读档；`test:route` 使用正常标题入口、Ctrl 快进和影片跳过，
-遍历 14 章并检查 OP／ED 实际解码及返回标题。完整主线用例可能需要数分钟。
+只遍历脚本命令，不验证时序、音频或画面。`test:native-game` 使用固定的
+NEKOPARA Vol. 3 输入，从浏览器启动原生 World，验证语言选择、标题、真实输入和
+导入 checkpoint 后的像素一致性。`test:game` 和 `test:route` 是旧播放器的
+交互及完整路线用例，依赖旧播放器的场景状态，不能作为原生 World 的验收证据。
 
 已有浏览器可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` 复用。
 不要将私有游戏、截图、存档或反编译数据库添加到本仓库。
