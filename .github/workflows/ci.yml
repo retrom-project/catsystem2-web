@@ -11,7 +11,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Prepare pinned native libraries
+        run: |
+          git init .local/emsdk
+          git -C .local/emsdk remote add origin https://github.com/emscripten-core/emsdk.git
+          git -C .local/emsdk fetch --depth 1 origin 3d6d8ee910466516a53e665b86458faa81dae9ba
+          git -C .local/emsdk checkout --detach FETCH_HEAD
+          .local/emsdk/emsdk install 3.1.74
+          .local/emsdk/emsdk activate 3.1.74
+          python3 scripts/prepare-ppi-backend.py --emsdk .local/emsdk --jobs 2
+          python3 scripts/prepare-native-zlib.py --emsdk .local/emsdk
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - run: npx playwright test --config playwright.ppi.config.mjs
+      - run: npx playwright test --config playwright.emote.config.mjs
       - run: npm run build
