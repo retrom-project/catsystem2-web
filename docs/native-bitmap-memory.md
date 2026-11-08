@@ -54,6 +54,8 @@ original wrappers:
 | 178             | Mode 1 grayscale, 2 sepia, 3 inversion                          | 2       |
 | 179             | Cached alpha-presence query                                     | 1       |
 | 17A             | Set the alpha-presence hint; it does not scale pixels           | 2       |
+| 22E             | Mirror pixels, offsets, anchors and attribute coordinates       | 2       |
+| 234             | Set the raw bitmap mask word                                    | 2       |
 | 402 (game only) | Packed native pixel at canvas coordinates                       | 1       |
 
 Null branches preserve each original early return. `179` leaves its result word
@@ -67,11 +69,15 @@ image dimension. Signed offsets and overlapping outputs retain the original
 write order. The game-only `402` getter returns the original physical-row packed
 pixel, including the native four-bit channel shifts. Null, missing pixel data
 and out-of-bounds coordinates return zero. This slot lies beyond the SDK main
-table and is not registered for the SDK profile.
+table and is not registered for the SDK profile. `22E` uses any nonzero direction
+word for horizontal mirroring and zero for vertical mirroring. Its original
+routine updates the corresponding offset and anchor using the raw canvas
+dimension, and edits attribute payloads in place. Aliases keep one bitmap
+identity. `234` updates the mask word without changing stored pixel bytes.
 
-`verify-native-bitmap-operations.mjs` compares **1,110 complete calls and 7,183
-checks for the game**, **1,036 calls and 6,665 checks for the SDK**, **13,848
-comparisons total**. It covers fifteen game slots and fourteen SDK slots
+`verify-native-bitmap-operations.mjs` compares **1,258 complete calls and 8,071
+checks for the game**, **1,184 calls and 7,553 checks for the SDK**, **15,624
+comparisons total**. It covers seventeen game slots and sixteen SDK slots
 (including the identical resize handlers), two-, three- and four-byte native pixels,
 metadata, color modes, alpha/cache state, clipping and overlap, four VM domains,
 null gates, untouched bytes and all live allocations. The VRAM upload is an

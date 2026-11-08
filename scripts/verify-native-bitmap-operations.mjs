@@ -215,6 +215,12 @@ try {
           case 0x17a:
             args = [h, [0, 1, 50, 100, 200, 0xffffffff][n % 6]];
             break;
+          case 0x22e:
+            args = [h, [0, 1, 2, 0xffffffff][n % 4]];
+            break;
+          case 0x234:
+            args = [h, [0, 1, 0xff123456, 0x80123456, 0xffffffff][n % 5]];
+            break;
         }
         await run(spec, args);
       }

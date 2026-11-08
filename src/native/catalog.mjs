@@ -1643,6 +1643,8 @@ const extendedDescriptions = [
   [0x178, 'bitmap.colorTransform', ['handle bitmap', 'word mode'], 'void'],
   [0x179, 'bitmap.hasAlpha', ['handle bitmap'], 'bool'],
   [0x17a, 'bitmap.setAlphaHint', ['handle bitmap', 'word enabled'], 'void'],
+  [0x22e, 'bitmap.mirror', ['handle nullableBitmap', 'word horizontal'], 'void'],
+  [0x234, 'bitmap.setMask', ['handle nullableBitmap', 'word mask'], 'void'],
   [0x2c1, 'bitmap.resize', ['handle bitmap', 'u32 width', 'u32 height'], 'void'],
   [0x402, 'bitmap.pixelAt', ['handle nullableBitmap', 'i32 canvasX', 'i32 canvasY'], 'word'],
   [0x15f, 'matrix.copy', ['VMptr destinationMatrix4', 'VMptr sourceMatrix4'], 'void'],
@@ -3189,7 +3191,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     (id >= 0x26e && id <= 0x271) ||
     [
       0x08, 0x0c, 0x313, 0x7a, 0x16a, 0x16b, 0x16f, 0x171, 0x172, 0x173, 0x174, 0x175, 0x176, 0x178,
-      0x179, 0x17a, 0x2c1,
+      0x179, 0x17a, 0x22e, 0x234, 0x2c1,
     ].includes(id) ||
     [
       0x276, 0x277, 0x278, 0x285, 0x286, 0x287, 0x298, 0x299, 0x29a, 0x29b, 0x29c, 0x2e2, 0x372,

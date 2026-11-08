@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    593 |             82 |                     19 |                     315 |
-| Game / 2.6.1.76 | 1,055 |                    860 |             58 |                     17 |                     120 |
+| SDK / 2.6.1.74  | 1,009 |                    595 |             82 |                     19 |                     313 |
+| Game / 2.6.1.76 | 1,055 |                    862 |             58 |                     17 |                     118 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -46,7 +46,7 @@ original ANM control, pixels and fresh restoration.
 
 [Persistent bitmap memory and operations](native-bitmap-memory.md) use stable
 original bitmap/wrapper identities, reference counts and a single guest pixel
-backing. Fifteen game slots and fourteen SDK slots have 13,848 differential comparisons, with
+backing. Seventeen game slots and sixteen SDK slots have 15,624 differential comparisons, with
 separate strong/borrowed alias, Canvas, and fresh-World checks.
 
 The thirty [screen-effect wrappers](native-effect-commands.md) have 72,096

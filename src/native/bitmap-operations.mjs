@@ -17,6 +17,8 @@ export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
     [0x178, 2, 2, 0x64a9e0, 0x517630],
     [0x179, 1, 1, 0x64c080, 0x518be0],
     [0x17a, 2, 2, 0x64ca40, 0x519430],
+    [0x22e, 2, 2, 0x64b9c0, 0x518580],
+    [0x234, 2, 2, 0x64c950, 0x519340],
     [0x2c1, 3, 2, 0x64c8b0, 0x519270],
     [0x402, 3, 1, 0x64bff0, null],
   ].map(([id, words, control, game, sdk]) =>
