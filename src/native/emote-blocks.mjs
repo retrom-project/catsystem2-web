@@ -57,7 +57,14 @@ export class NativeM2Blocks {
         throw new Error(`Native M2 loop identity differs at 0x${address.toString(16)}`);
       this.detachers.push(
         process.beforeInstruction(address, name, () => {
-          if (this.enabled) execute();
+          if (!this.enabled) return;
+          // Mapping and protection changes invalidate this PE32 cache key.
+          const layout = process.executableRanges;
+          if (!layout || layout !== this.memoryLayoutKey) {
+            this.memoryLayoutKey = layout;
+            this.memoryRanges = null;
+          }
+          execute();
         }),
       );
     }
@@ -68,54 +75,83 @@ export class NativeM2Blocks {
     if (value === undefined) return p.cpu.reg_read_i32(id) >>> 0;
     p.cpu.reg_write_i32(id, value >>> 0);
   }
-  mapped(address, size) {
-    return this.process.regions.some(
-      (region) => address >= region.address && address + size <= region.address + region.size,
+  mappedRange(address, size, write = false) {
+    const { cpu, uc } = this.process;
+    this.memoryRanges ??= cpu.mem_regions().map(({ begin, end, perms }) => ({
+      begin: Number(begin),
+      end: Number(end) + 1,
+      perms,
+    }));
+    // Host transfers bypass guest permissions. Let the original instruction
+    // fault on protected memory and handle writes into executable mappings.
+    const required = uc.PROT_READ | (write ? uc.PROT_WRITE : 0);
+    return this.memoryRanges.find(
+      (region) =>
+        address >= region.begin &&
+        address + size <= region.end &&
+        (region.perms & required) === required &&
+        (!write || !(region.perms & uc.PROT_EXEC)),
     );
   }
+  availableInstructions() {
+    const { active, limit, counter } = this.process.instructionBudget();
+    // A code hook has already counted the instruction at its entry PC.
+    if (!active) return 0;
+    return limit === 0n ? Infinity : Number(limit - counter) + 1;
+  }
   scan() {
-    const p = this.process;
-    let address = this.reg('ECX');
-    for (;;) {
-      const region = p.regions.find(
-        (region) => address >= region.address && address < region.address + region.size,
-      );
-      // Preserve the original instruction's fault behavior for unmapped input.
+    const p = this.process,
+      start = this.reg('ECX'),
+      limit = Math.min(0x100000000, start + Math.floor(this.availableInstructions() / 4));
+    for (let address = start; address < limit; ) {
+      const region = this.mappedRange(address, 1);
       if (!region) return;
-      const bytes = p.read(address, Math.min(4096, region.address + region.size - address)),
+      const bytes = p.read(address, Math.min(4096, region.end - address, limit - address)),
         end = bytes.indexOf(0);
       if (end >= 0) {
-        this.reg('ECX', address + end + 1);
+        const next = address + end + 1;
+        // MOV, INC, TEST, JNE for every byte, including the terminator.
+        if (!p.consumeInstructions((next - start) * 4 - 1)) return;
+        this.reg('ECX', next);
         this.reg('EAX', this.reg('EAX') & 0xffffff00);
         this.reg('EFLAGS', (this.reg('EFLAGS') & ~arithmeticFlags) | 0x44);
         this.reg('EIP', 0x787847);
         return;
       }
       address += bytes.length;
-      if (address > 0xffffffff) return;
     }
   }
   blend() {
     const p = this.process,
       frame = this.reg('EBP');
-    if (!this.mapped(frame - 44, 44)) return;
+    if (!this.mappedRange(frame - 44, 44) || !this.mappedRange(frame - 12, 8, true)) return;
     const owner = p.load(frame - 20);
-    if (!this.mapped(owner + 216, 4)) return;
+    if (!this.mappedRange(owner + 216, 4)) return;
     const width = p.load(owner + 216),
       before = p.load(frame - 8);
     if (before >= width) return;
     const count = width - before,
+      instructions = count * 40,
       size = count * 4,
       a = this.reg('EDX'),
       b = this.reg('ESI'),
       destination = this.reg('EDI');
-    if (![a, b, destination].every((address) => this.mapped(address, size))) return;
+    if (
+      instructions > this.availableInstructions() ||
+      !this.mappedRange(a, size) ||
+      !this.mappedRange(b, size) ||
+      !this.mappedRange(destination, size, true)
+    )
+      return;
     // Shifted aliases can read bytes just written by an earlier iteration.
     // Leave those cases to the original forward loop.
     if (
       [a, b].some(
-        (source) => source !== destination && overlaps(source, size, destination, size),
+        (source) =>
+          (source !== destination && overlaps(source, size, destination, size)) ||
+          overlaps(source, size, frame - 12, 8),
       ) ||
+      overlaps(owner + 216, 4, frame - 12, 8) ||
       overlaps(destination, size, frame - 44, 44) ||
       overlaps(destination, size, owner + 216, 4)
     )
@@ -129,6 +165,7 @@ export class NativeM2Blocks {
     for (let i = 0; i < size; i++)
       output[i] =
         (Math.imul(first[i], inverse) + Math.imul(second[i], i ? alpha : initialAlpha)) >>> 8;
+    if (!p.consumeInstructions(instructions - 1)) return;
     p.write(destination, output);
     p.store(frame - 8, width);
     p.store(frame - 12, width);
@@ -144,14 +181,21 @@ export class NativeM2Blocks {
     const p = this.process,
       frame = this.reg('EBP'),
       owner = this.reg('EDI');
-    if (!this.mapped(frame - 4, 4) || !this.mapped(owner + 216, 4)) return;
+    if (!this.mappedRange(frame - 4, 4) || !this.mappedRange(owner + 216, 4)) return;
     const width = p.load(owner + 216),
       before = this.reg('ESI');
     if (before >= width) return;
-    const size = (width - before) * 4,
+    const count = width - before,
+      instructions = count * 16,
+      size = count * 4,
       source = this.reg('ECX'),
       destination = this.reg('EDX');
-    if (![source, destination].every((address) => this.mapped(address, size))) return;
+    if (
+      instructions > this.availableInstructions() ||
+      !this.mappedRange(source, size) ||
+      !this.mappedRange(destination, size, true)
+    )
+      return;
     if (
       (source !== destination && overlaps(source, size, destination, size)) ||
       overlaps(destination, size, frame - 4, 4) ||
@@ -161,6 +205,7 @@ export class NativeM2Blocks {
     const output = p.read(source, size),
       inverse = p.load(frame - 4);
     for (let i = 3; i < size; i += 4) output[i] = Math.imul(output[i], inverse) >>> 8;
+    if (!p.consumeInstructions(instructions - 1)) return;
     p.write(destination, output);
     this.reg('ECX', source + size);
     this.reg('EDX', destination + size);
@@ -173,14 +218,20 @@ export class NativeM2Blocks {
     const p = this.process,
       owner = this.reg('EDI'),
       frame = this.reg('EBP');
-    if (!this.mapped(owner + 216, 4)) return;
+    if (!this.mappedRange(owner + 216, 4)) return;
     const width = p.load(owner + 216),
       before = this.reg('ESI');
     if (before >= width) return;
-    const size = (width - before) * 4,
+    const count = width - before,
+      size = count * 4,
       a = this.reg('EDX'),
       b = this.reg('EAX');
-    if (![a, b].every((address) => this.mapped(address, size))) return;
+    if (
+      count * 11 > this.availableInstructions() ||
+      !this.mappedRange(a, size, true) ||
+      !this.mappedRange(b, size, true)
+    )
+      return;
     if (
       (a !== b && overlaps(a, size, b, size)) ||
       [a, b].some(
@@ -197,6 +248,7 @@ export class NativeM2Blocks {
         (bytes[i] | (bytes[i + 1] << 8) | (bytes[i + 2] << 16) | (bytes[i + 3] << 24)) >>> 0;
     let ecx = this.reg('ECX'),
       ebx = this.reg('EBX'),
+      instructions = 0,
       firstStart = -1,
       secondStart = -1;
     for (let i = 0; i < size; i += 4) {
@@ -204,12 +256,17 @@ export class NativeM2Blocks {
         ba = second[i + 3],
         writeFirst = aa === 0 && ba !== 0,
         writeSecond = aa !== 0 && ba === 0;
+      // A transparent first pixel executes an extra test and branch.
+      // Copying either color adds one load and two stores.
+      instructions += aa === 0 ? 13 : 11;
       ecx = (ecx & 0xffffff00) | ba;
       ebx |= ba;
       if (writeFirst) {
+        instructions += 3;
         ecx = color(second, i);
         first.set(second.subarray(i, i + 3), i);
       } else if (writeSecond) {
+        instructions += 3;
         ecx = color(first, i);
         second.set(first.subarray(i, i + 3), i);
       }
@@ -226,6 +283,7 @@ export class NativeM2Blocks {
     }
     if (firstStart >= 0) firstRuns.push([firstStart, size]);
     if (secondStart >= 0) secondRuns.push([secondStart, size]);
+    if (!p.consumeInstructions(instructions - 1)) return;
     for (const [address, bytes, runs] of [
       [a, first, firstRuns],
       [b, second, secondRuns],
@@ -245,9 +303,13 @@ export class NativeM2Blocks {
       pointer = this.reg('ESI'),
       end = this.reg(endRegister);
     if (counter >= target || end <= pointer || (end - pointer) % 8) return;
-    const steps = Math.min((end - pointer) / 8, target - counter);
+    const steps = Math.min((end - pointer) / 8, target - counter),
+      next = pointer + steps * 8,
+      // If the counter wins, the next CMP/JGE leaves before advancing ESI.
+      instructions = steps * 6 + (next === end ? 0 : 2);
+    if (!this.process.consumeInstructions(instructions - 1)) return;
     this.reg(counterRegister, counter + steps);
-    this.reg('ESI', pointer + steps * 8);
+    this.reg('ESI', next);
     this.reg('EFLAGS', (this.reg('EFLAGS') & ~arithmeticFlags) | 0x44);
     this.reg('EIP', address + 12);
   }
@@ -257,10 +319,20 @@ export class NativeM2Blocks {
       destination = this.reg('ECX'),
       end = this.reg('EDX'),
       size = end - source;
-    if (size <= 0 || size % 8 || ![source, destination].every((a) => this.mapped(a, size))) return;
-    if (destination > source && overlaps(source, size, destination, size)) return;
-    const last = p.load(end - 4);
-    p.write(destination, p.read(source, size));
+    // Each eight-byte entry executes eight instructions.
+    if (
+      size <= 0 ||
+      size % 8 ||
+      size > this.availableInstructions() ||
+      !this.mappedRange(source, size) ||
+      !this.mappedRange(destination, size, true) ||
+      (destination > source && overlaps(source, size, destination, size))
+    )
+      return;
+    const last = p.load(end - 4),
+      output = p.read(source, size);
+    if (!p.consumeInstructions(size - 1)) return;
+    p.write(destination, output);
     this.reg('ESI', end);
     this.reg('ECX', destination + size);
     this.reg('EAX', last);

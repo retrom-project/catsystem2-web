@@ -192,3 +192,205 @@ test(
     }
   },
 );
+
+test(
+  'original M2 EXE shortcuts charge each traced instruction and preserve partial and restored execution',
+  { skip: !process.env.CATSYSTEM2_ENGINE_EXE },
+  async () => {
+    const bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_ENGINE_EXE)),
+      options = { profile: 'nekopara-vol3-engine-2.6.1.76', bytes, heapSize: 0x200000 },
+      engine = await NativeEngineProcess.open(options),
+      p = engine.process,
+      loops = new NativeM2Blocks(p),
+      arena = p.allocate(0x5000, true),
+      frame = arena + 0x100,
+      owner = arena + 0x400,
+      first = arena + 0x1000,
+      second = arena + 0x2000,
+      destination = arena + 0x3000,
+      initial = p.registers(),
+      pixels = Uint8Array.from({ length: 0x5000 }, (_, i) => (i * 73 + 17) & 255);
+    let fresh, freshLoops;
+    const charged = [],
+      consume = p.consumeInstructions.bind(p);
+    p.consumeInstructions = (additional) => {
+      const accepted = consume(additional);
+      if (accepted) charged.push(additional);
+      return accepted;
+    };
+    const state = (process) => ({
+        registers: process.registers(),
+        memory: process.read(arena, pixels.length),
+        budget: process.instructionBudget(),
+      }),
+      pc = (registers) => new DataView(registers.EIP.buffer).getUint32(0, true),
+      setup = (registers, words = [], pixelAlpha = []) => {
+        p.write(arena, pixels);
+        p.writeRegisters(initial);
+        for (const [name, value] of Object.entries({
+          EBP: frame,
+          ESP: arena + 0x800,
+          EFLAGS: 0x203,
+          MXCSR: 0x1fa0,
+          ...registers,
+        }))
+          p.cpu.reg_write_i32(p.uc['X86_REG_' + name], value);
+        for (const [address, value] of [
+          [frame - 20, owner],
+          [frame - 8, 2],
+          [frame - 4, 193],
+          [owner + 216, 6],
+          ...words,
+        ])
+          p.store(address, value);
+        for (const [i, [a, b]] of pixelAlpha.entries()) {
+          p.write(first + i * 4 + 3, [a]);
+          p.write(second + i * 4 + 3, [b]);
+        }
+      },
+      execute = (fixture, enabled, budget) => {
+        loops.enabled = enabled;
+        setup(fixture.registers, fixture.words, fixture.pixelAlpha);
+        charged.length = 0;
+        p.pendingError = null;
+        let fault;
+        try {
+          p.cpu.emu_start(fixture.start, fixture.end, 0, budget);
+        } catch (error) {
+          fault = String(error);
+        }
+        if (p.pendingError) throw p.pendingError;
+        return { ...state(p), fault };
+      },
+      fixture = (start, end, registers, words, pixelAlpha) => ({
+        start,
+        end,
+        registers,
+        words,
+        pixelAlpha,
+      }),
+      scan = fixture(0x787840, 0x787847, { EAX: 0x87654321, ECX: first }, [[first, 0x00abcdef]]),
+      blend = fixture(0x59c720, 0x59c79d, {
+        EDX: first,
+        ESI: second,
+        EDI: destination,
+        EAX: 239,
+        EBX: 63,
+      }),
+      alpha = fixture(0x59c888, 0x59c8ba, { ECX: first, EDX: destination, ESI: 2, EDI: owner }),
+      transparent = (pixelAlpha) =>
+        fixture(
+          0x59c974,
+          0x59c9ae,
+          { EAX: second, EBX: 0x11800000, ECX: 0x87654321, EDX: first, ESI: 2, EDI: owner },
+          [[owner + 216, 2 + pixelAlpha.length]],
+          pixelAlpha,
+        ),
+      alphaCases = [
+        [0, 0],
+        [0, 127],
+        [255, 0],
+        [255, 127],
+      ],
+      cases = [
+        scan,
+        blend,
+        alpha,
+        ...alphaCases.map((pair) => transparent([pair])),
+        transparent(alphaCases),
+      ];
+    for (const start of [0x7877b0, 0x787a64, 0x787b97, 0x787640])
+      for (const target of [1, 2, 9]) {
+        const [counter, end] = start === 0x787640 ? ['EAX', 'ECX'] : ['ECX', 'EAX'];
+        cases.push(
+          fixture(start, start + 12, { [counter]: -1, [end]: first + 24, ESI: first, EDX: target }),
+        );
+      }
+    for (const start of [0x7876a8, 0x787751])
+      cases.push(fixture(start, start + 21, { ESI: first, EDX: first + 32, ECX: first - 8 }));
+    try {
+      for (const sample of cases) {
+        // The uncounted original hook trace supplies every cutoff PC.
+        const trace = [],
+          hook = p.cpu.hook_add(
+            p.uc.HOOK_CODE,
+            (_cpu, address) => trace.push(Number(address)),
+            null,
+            sample.start,
+            sample.end - 1,
+          );
+        try {
+          p.invalidateExecutable(sample.start, sample.end);
+          const native = execute(sample, false, 0);
+          assert.equal(native.fault, undefined);
+          assert.equal(pc(native.registers), sample.end);
+        } finally {
+          p.cpu.hook_del(hook);
+          p.invalidateExecutable(sample.start, sample.end);
+        }
+        const budgets = Array.from({ length: trace.length + 2 }, (_, i) => i + 1);
+        for (const budget of [...budgets, 0]) {
+          const native = execute(sample, false, budget),
+            name = `0x${sample.start.toString(16)} budget ${budget}`;
+          assert.equal(pc(native.registers), (budget && trace[budget]) || sample.end, name);
+          assert.equal(
+            native.budget.counter,
+            BigInt(budget ? Math.min(budget + 1, trace.length) : 0),
+            name,
+          );
+          assert.deepEqual(execute(sample, true, budget), native, name);
+          assert.deepEqual(
+            charged,
+            budget && budget < trace.length ? [] : [trace.length - 1],
+            name,
+          );
+        }
+      }
+      // A live mapping protection change and a source that aliases the
+      // mutable frame words must both use the original memory accesses.
+      const page = destination & ~4095;
+      p.cpu.mem_protect(page, 4096, p.uc.PROT_READ);
+      const fault = execute(blend, false, 160);
+      assert.match(fault.fault, /WRITE_PROT/i);
+      assert.deepEqual(execute(blend, true, 160), fault);
+      assert.deepEqual(charged, []);
+      p.cpu.mem_protect(page, 4096, p.uc.PROT_READ | p.uc.PROT_WRITE);
+      const alias = {
+          ...blend,
+          registers: { ...blend.registers, EDX: frame - 13, EAX: 0, EBX: 256 },
+          words: [[frame - 4, 0]],
+        },
+        aliasOriginal = execute(alias, false, 160);
+      assert.deepEqual(execute(alias, true, 160), aliasOriginal);
+      assert.equal(pc(aliasOriginal.registers), blend.end);
+      assert.ok(
+        !charged.includes(Number(aliasOriginal.budget.counter) - 1),
+        'the aliased entry cannot skip the whole loop',
+      );
+
+      // Stop between original stores, then continue the same partial loop
+      // in a fresh process with a new budget segment.
+      const partial = execute(blend, true, 43),
+        saved = engine.snapshot(),
+        resume = pc(partial.registers);
+      assert.notEqual(resume, blend.start);
+      assert.notEqual(resume, blend.end);
+      loops.enabled = false;
+      p.cpu.emu_start(resume, blend.end, 0, 160);
+      const complete = state(p);
+      fresh = await NativeEngineProcess.open(options);
+      freshLoops = new NativeM2Blocks(fresh.process);
+      fresh.restore(saved);
+      assert.deepEqual(fresh.process.registers(), partial.registers);
+      assert.deepEqual(fresh.process.read(arena, pixels.length), partial.memory);
+      fresh.process.cpu.emu_start(resume, blend.end, 0, 160);
+      if (fresh.process.pendingError) throw fresh.process.pendingError;
+      assert.deepEqual(state(fresh.process), complete);
+    } finally {
+      freshLoops?.close();
+      await fresh?.close();
+      loops.close();
+      await engine.close();
+    }
+  },
+);
