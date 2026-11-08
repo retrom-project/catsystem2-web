@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: MPL-2.0
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { verifyScalarMath } from '../scripts/verify-native-scalar-math.mjs';
+import { NativeWorld } from '../src/native/world.mjs';
+import { NativeConfiguration } from '../src/native/config.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { floatBits } from '../src/kcs.mjs';
+import { kcsProgram, memoryGame } from './helpers.mjs';
+
+for (const [profile, variable] of [
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
+])
+  test(
+    `${profile} scalar math retains original result words and full floating-point context`,
+    { skip: !process.env[variable] },
+    async () => {
+      await verifyScalarMath(new Uint8Array(await readFile(process.env[variable])), profile);
+    },
+  );
+
+test(
+  'SDK World scalar math follows the actual native rounding context through a fresh World',
+  { skip: !process.env.CATSYSTEM2_SDK_EXE },
+  async () => {
+    const exe = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
+      profile = 'sdk-4.01-engine-2.6.1.74',
+      make = () => {
+        const game = memoryGame({
+            'engine.exe': exe,
+            'main.kcs': kcsProgram([[37, 128], [43, 0xd1, 4], [59]]),
+          }),
+          configuration = new NativeConfiguration({ profile }),
+          random = new ParticleRandom();
+        game.width = 64;
+        game.height = 48;
+        Object.assign(configuration.screen, {
+          width: 64,
+          height: 48,
+          currentWidth: 64,
+          currentHeight: 48,
+          virtualWidth: 64,
+          virtualHeight: 48,
+        });
+        return new NativeWorld({
+          game,
+          configuration,
+          random,
+          profile,
+          images: {},
+          host: {},
+          motionLibrary: new MotionLibrary(game, { profile, random }),
+          storage: { read: async () => null, write: async () => true },
+        });
+      },
+      world = make();
+    let fresh;
+    try {
+      await world.initialize('main.kcs');
+      const task = world.main,
+        m = task.machine,
+        p = world.nativeEngine.process,
+        call = (id, args) => world.runtime.native('main', id, args, m, task);
+      p.cpu.reg_write_i32(p.uc.X86_REG_FPCW, 0xb7f);
+      p.cpu.reg_write_i32(p.uc.X86_REG_MXCSR, 0x5f80);
+      assert.equal(
+        (await call(0x3c, [floatBits(2)])).value,
+        0x3fb504f4,
+        'the original upward-rounded square root differs from host round-to-nearest',
+      );
+      assert.equal((await call(0x36a, [0xabcd1234, 0xef987654])).value, 0x76541234);
+      assert.equal((await call(0x1cd, [floatBits(10)])).value, floatBits(1));
+      const savedCW = p.cpu.reg_read_i32(p.uc.X86_REG_FPCW),
+        savedMXCSR = p.cpu.reg_read_i32(p.uc.X86_REG_MXCSR);
+      fresh = make();
+      await fresh.restore(structuredClone(world.snapshot()));
+      const fp = fresh.nativeEngine.process,
+        ft = fresh.main,
+        fm = ft.machine,
+        invoke = (id, args) => fresh.runtime.native('main', id, args, fm, ft);
+      assert.equal(fp.cpu.reg_read_i32(fp.uc.X86_REG_FPCW), savedCW);
+      assert.equal(fp.cpu.reg_read_i32(fp.uc.X86_REG_MXCSR), savedMXCSR);
+      assert.equal((await invoke(0x3c, [floatBits(2)])).value, 0x3fb504f4);
+      fp.cpu.reg_write_i32(fp.uc.X86_REG_FPCW, 0x37f);
+      fp.cpu.reg_write_i32(fp.uc.X86_REG_MXCSR, 0x1f80);
+      assert.equal((await invoke(0x3c, [floatBits(2)])).value, 0x3fb504f3);
+      assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_FPCW), savedCW);
+      assert.equal((await call(0x3c, [floatBits(2)])).value, 0x3fb504f4);
+    } finally {
+      await fresh?.close({ flushFiles: false });
+      await world.close({ flushFiles: false });
+    }
+  },
+);
