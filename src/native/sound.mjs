@@ -218,13 +218,8 @@ export class NativeSound {
     return this.audio?.channels.get(this.key(bank)) ?? null;
   }
   now() {
-    return (
-      Math.trunc(
-        this.audio?.context
-          ? this.audio.context.currentTime * 1000
-          : (this.world.frame * 1000) / 60,
-      ) >>> 0
-    );
+    // PLV start/index use timeGetTime, independently of the media clock.
+    return Math.trunc(this.world.clock.now()) >>> 0;
   }
   frame() {
     return this.world.frame >>> 0;

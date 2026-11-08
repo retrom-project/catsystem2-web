@@ -9,12 +9,14 @@ import {
 } from '../src/native/sound.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
+import { NativeSystemClock } from '../src/native/clock.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { parseXML } from '../src/xml.mjs';
 
 const gameProfile = 'nekopara-vol3-engine-2.6.1.76',
   sdkProfile = 'sdk-4.01-engine-2.6.1.74';
 function fixture(profile = gameProfile, files = new Map()) {
+  let clockValue = 1000;
   const audio = {
     context: { currentTime: 1 },
     channels: new Map(),
@@ -90,6 +92,7 @@ function fixture(profile = gameProfile, files = new Map()) {
   const world = {
     profile,
     frame: 40,
+    clock: new NativeSystemClock({ now: () => clockValue }),
     audio,
     configuration,
     soundConfiguration: null,
@@ -123,7 +126,24 @@ function fixture(profile = gameProfile, files = new Map()) {
     packet.store(272, 1);
     return send(type === 1 ? 179 : 180, 0, 0, packet);
   };
-  return { audio, world, sound, task, send, load };
+  return {
+    audio,
+    world,
+    sound,
+    task,
+    send,
+    load,
+    setClock: (value) => {
+      clockValue = value;
+    },
+  };
+}
+
+function plvFile(values, step) {
+  const file = new NativeSoundPacket([0x4c5650, 20, values.length, step], 16 + values.length * 2),
+    view = new DataView(file.data.buffer);
+  values.forEach((value, i) => view.setUint16(16 + i * 2, value, true));
+  return file.data;
 }
 
 test('both sound profiles preload without playing and keep their original bank limits', async () => {
@@ -255,11 +275,13 @@ test('PLV, tag and sidecar resources preserve native clock units and live handle
   new DataView(plv.data.buffer).setUint16(20, 50, true);
   files.set('a_line.plv', plv.data);
   files.set('a_line.lpb', Uint8Array.of(1, 2, 3));
-  const { sound, task, load, send, audio, world } = fixture(gameProfile, files);
+  const { sound, task, load, send, audio, world, setClock } = fixture(gameProfile, files);
   await load();
   await send(182, 0, 1);
   assert.equal(await send(212), 10);
   audio.context.currentTime = 1.21;
+  assert.equal(await send(212), 10, 'media progress does not advance the PLV system clock');
+  setClock(1210);
   assert.equal(await send(212), 50);
   assert.equal(await send(214, 0, 0, tag), 1234);
   const handle = await send(216);
@@ -285,6 +307,77 @@ test('PLV, tag and sidecar resources preserve native clock units and live handle
   );
   await send(181);
   assert.equal(world.runtime.handles.records.has(packet.load(0)), false);
+});
+
+test('both PLV profiles follow the system clock at non-60 FPS with changing or absent AudioContext clocks', async () => {
+  const values = Array.from({ length: 32 }, (_, i) => 100 + i);
+  for (const profile of [gameProfile, sdkProfile])
+    for (const fps of [24, 75, 144]) {
+      const { world, audio, task, load, send } = fixture(
+        profile,
+        new Map([['a_line.plv', plvFile(values, 100)]]),
+      );
+      world.clock = new NativeSystemClock();
+      world.configuration.screen.fps = fps;
+      await load();
+      await send(182, 0, 1);
+      assert.equal(task.controls[0].word(C.wallStart), 0);
+      for (let frame = 1; frame <= fps * 2; frame++) {
+        world.clock.advance(fps);
+        world.frame = frame;
+        if (frame === fps) audio.context = null;
+        else if (audio.context) audio.context.currentTime = 9000 + frame * 13;
+        if ([1, fps - 1, fps, fps + 1, fps * 2].includes(frame)) {
+          const index = Number((BigInt(frame) * 1000n) / BigInt(fps * 100));
+          assert.equal(await send(212), values[index], `${profile}/${fps}fps/frame${frame}`);
+        }
+      }
+    }
+});
+
+test('external PLV ticks preserve DWORD rollover and rebase after a fresh sound/clock restore independently of media offsets', async () => {
+  const values = Array.from({ length: 12 }, (_, i) => 10 + i * 10),
+    files = new Map([['a_line.plv', plvFile(values, 10)]]);
+  for (const profile of [gameProfile, sdkProfile]) {
+    const first = fixture(profile, files);
+    first.setClock(0xfffffff0);
+    await first.load();
+    await first.send(182, 0, 1);
+    first.audio.channels.get('native:0').offset = 3.25;
+    assert.equal(first.task.controls[0].word(C.wallStart), 0xfffffff0);
+    first.setClock(0x12);
+    assert.equal(await first.send(212), 40, '34ms elapsed across the original DWORD wrap');
+    const saved = {
+        clock: structuredClone(first.world.clock.snapshot()),
+        sound: first.sound.snapshot(),
+        task: first.task.snapshot(),
+        handles: first.world.runtime.handles.snapshot(),
+      },
+      fresh = fixture(profile, files);
+    fresh.setClock(8000000);
+    fresh.audio.context.currentTime = 200;
+    fresh.world.frame = 999;
+    fresh.world.clock.restore(saved.clock);
+    fresh.world.runtime.handles.restore(saved.handles);
+    fresh.task.restore(saved.task);
+    await fresh.sound.restore(saved.sound);
+    assert.equal(await fresh.send(212), 40);
+    assert.equal(
+      fresh.audio.channels.get('native:0').offset,
+      3.25,
+      'the saved media position is not derived from PLV ticks',
+    );
+    fresh.setClock(8000020);
+    assert.equal(await fresh.send(212), 60);
+    assert.equal(
+      await first.send(212),
+      40,
+      'a restored clock does not advance its source instance',
+    );
+    fresh.audio.context.currentTime = 120000;
+    assert.equal(await fresh.send(212), 60);
+    assert.equal(fresh.task.controls[0].word(C.wallStart), 0xfffffff0);
+  }
 });
 
 test('main sound wrappers preserve ignored arguments, packed fades and void control replies', async () => {
