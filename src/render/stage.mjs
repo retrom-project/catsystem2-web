@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Stage placement and pixel effects adapted from CatSystemKit StageLayout (OWCramer).
+import { ParticlesGL, createD3DContext } from './particles-gl.mjs';
 function boxBlur(pixels, width, height, radius, horizontal) {
   const count = horizontal ? width : height,
     lines = horizontal ? height : width,
@@ -22,12 +23,21 @@ function boxBlur(pixels, width, height, radius, horizontal) {
   }
 }
 export class StageRenderer {
+  dispose() {
+    if (this.disposed) return;
+    this.disposed = true;
+    this.gpu.close();
+    this.effects = new WeakMap();
+    this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
+  }
   constructor(renderer, emote) {
     this.renderer = renderer;
     this.emote = emote;
     this.effects = new WeakMap();
     this.plane = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.mask = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
+    this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height);
+    this.d3dContext = createD3DContext();
   }
   effect(frame, picture) {
     if (!picture.mode?.length && !picture.tone?.length && !picture.blur?.length)
@@ -82,11 +92,22 @@ export class StageRenderer {
     }
     ctx.restore();
   }
-  async render(stage, voice) {
+  async render(stage, voice, additionalItems = []) {
     const r = this.renderer,
       ctx = r.ctx;
-    r.begin();
-    await this.emote.prepare(stage);
+    await stage.nativeGraphics?.prepareRender(this);
+    const nativeWorld = stage.nativeGraphics?.world,
+      effects = nativeWorld?.nativeEngine?.features.get('renderer')?.initialized
+        ? await nativeWorld.getNativeFeature('screen-effects')
+        : null;
+    if (!effects) r.begin();
+    this.gpu.beginFrame(0xff000000, { preserve: Boolean(effects) });
+    this.currentD3DContext = stage.nativeGraphics?.d3dContext || this.d3dContext;
+    this.gpu.frameContext = this.currentD3DContext;
+    const actors = Object.entries(stage.actors || {});
+    if (actors.length && !this.emote)
+      throw new Error('Stage actors require a model rendering provider');
+    if (this.emote) await this.emote.prepare(stage);
     const ordered = [
       ...Object.entries(stage.planes).map(([n, p]) => ({
         type: 'plane',
@@ -94,59 +115,152 @@ export class StageRenderer {
         p,
         priority: p.priority,
       })),
-      ...Object.entries(stage.actors).map(([n, p]) => ({
+      ...actors.map(([n, p]) => ({
         type: 'actor',
         n,
         p,
         priority: p.priority,
       })),
+      ...[...(stage.nativeGraphics?.drawItems() ?? []), ...additionalItems].map((item, index) => {
+        if (
+          !Number.isFinite(item.priority) ||
+          (typeof item.draw !== 'function' && typeof item.drawGPU !== 'function')
+        )
+          throw new Error('Invalid additional stage draw item');
+        return { ...item, order: item.order ?? index };
+      }),
     ].sort(
       (a, b) =>
         a.priority - b.priority ||
+        (a.order ?? 0) - (b.order ?? 0) ||
         Number(a.type === 'actor') - Number(b.type === 'actor') ||
         Number(a.n) - Number(b.n),
     );
-    for (const item of ordered) {
-      const p = stage.place(item.p);
-      if (!p.visible || p.alpha < 0.5) continue;
-      if (item.type === 'actor') {
-        const d = this.emote.drawing(stage, item.n, voice);
-        if (d) {
-          ctx.save();
-          ctx.globalAlpha = 1;
-          ctx.drawImage(this.emote.gpu.render(d.model, d.list, d.alpha), 0, 0);
-          ctx.restore();
+    const draw = (item, gpu = this.gpu, options = {}) =>
+      this.drawItem(stage, voice, item, gpu, options);
+    let presentation = null;
+    const overlays = [];
+    if (effects) {
+      await effects.rendering.render(
+        ordered,
+        (item, gpu) => draw(item, gpu, { fromHost: true }),
+        (request) => {
+          presentation = request;
+          return this.presentNative(request);
+        },
+      );
+      for (const item of ordered)
+        if (!item.p?.nativeGraph && item.type !== 'particle') {
+          if (item.draw) overlays.push(item);
+          else await draw(item);
         }
-        continue;
-      }
+    } else for (const item of ordered) await draw(item);
+    if (presentation) {
+      this.gpu.endNativeFrame();
+      for (const item of overlays) await item.draw(ctx);
+    } else if (effects) {
+      this.gpu.endNativeFrame();
+    } else {
+      ctx.reset();
+      ctx.drawImage(this.gpu.endFrame(), 0, 0);
+    }
+  }
+  presentNative({ device, source, destination, window, dirty }) {
+    const p = device.process,
+      ctx = this.renderer.ctx,
+      record = device.surfaceData(device.backbuffer),
+      target = device.gpuTarget(device.backbuffer),
+      rectangle = (pointer, fallback) =>
+        pointer ? Array.from({ length: 4 }, (_, i) => p.load(pointer + i * 4) | 0) : fallback;
+    if (window && window !== device.presentation[7])
+      throw new Error('Native presentation targets an unknown window');
+    if (dirty) p.read(dirty, 32);
+    const src = rectangle(source, [0, 0, record.width, record.height]),
+      dst = rectangle(destination, [0, 0, this.renderer.canvas.width, this.renderer.canvas.height]);
+    const canvas = this.gpu.presentTarget(target);
+    ctx.reset();
+    if (src[2] > src[0] && src[3] > src[1] && dst[2] > dst[0] && dst[3] > dst[1])
+      ctx.drawImage(
+        canvas,
+        src[0],
+        src[1],
+        src[2] - src[0],
+        src[3] - src[1],
+        dst[0],
+        dst[1],
+        dst[2] - dst[0],
+        dst[3] - dst[1],
+      );
+    return 0;
+  }
+  async drawItem(stage, voice, item, gpu = this.gpu, options = {}) {
+    if (item.drawGPU) {
+      await item.drawGPU(gpu, options);
+      return;
+    }
+    if (item.draw) {
       const off = this.plane.getContext('2d');
       off.reset();
-      if (p.color !== undefined) {
-        off.fillStyle = `rgb(${(p.color >>> 16) & 255},${(p.color >>> 8) & 255},${p.color & 255})`;
-        off.fillRect(0, 0, stage.width, stage.height);
-      }
-      const pictures = p.pictures.toSorted(
-        (a, b) =>
-          ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(a.kind) -
-            ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(b.kind) || a.slot - b.slot,
-      );
-      for (const picture of pictures.filter((p) => !p.mask))
-        await this.picture(stage, p, picture, off);
-      const mask = pictures.find((p) => p.mask);
-      if (mask) {
-        const m = this.mask.getContext('2d');
-        m.reset();
-        await this.picture(stage, p, mask, m);
-        off.save();
-        off.globalCompositeOperation = 'destination-in';
-        off.drawImage(this.mask, 0, 0);
-        off.restore();
-      }
-      ctx.save();
-      ctx.globalAlpha = p.alpha / 255;
-      if (p.blendMode === 1) ctx.globalCompositeOperation = 'lighter';
-      ctx.drawImage(this.plane, 0, 0);
-      ctx.restore();
+      await item.draw(off);
+      this.drawCanvas(this.plane);
+      return;
     }
+    if (item.p.nativeGraph) {
+      if (!stage.nativeGraphics) throw new Error('Native graph stage has no graphics owner');
+      await stage.nativeGraphics.get(Number(item.n)).drawGPU(gpu, options);
+      return;
+    }
+    const p = stage.place(item.p);
+    if (!p.visible || p.alpha < 0.5) return;
+    if (item.type === 'actor') {
+      const d = this.emote.drawing(stage, item.n, voice);
+      if (d) {
+        this.drawCanvas(this.emote.gpu.render(d.model, d.list, d.alpha));
+      }
+      return;
+    }
+    const off = this.plane.getContext('2d');
+    off.reset();
+    if (p.color !== undefined) {
+      off.fillStyle = `rgb(${(p.color >>> 16) & 255},${(p.color >>> 8) & 255},${p.color & 255})`;
+      off.fillRect(0, 0, stage.width, stage.height);
+    }
+    const pictures = p.pictures.toSorted(
+      (a, b) =>
+        ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(a.kind) -
+          ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(b.kind) || a.slot - b.slot,
+    );
+    for (const picture of pictures.filter((p) => !p.mask))
+      await this.picture(stage, p, picture, off);
+    const mask = pictures.find((p) => p.mask);
+    if (mask) {
+      const m = this.mask.getContext('2d');
+      m.reset();
+      await this.picture(stage, p, mask, m);
+      off.save();
+      off.globalCompositeOperation = 'destination-in';
+      off.drawImage(this.mask, 0, 0);
+      off.restore();
+    }
+    this.drawCanvas(this.plane, { alpha: p.alpha, blendMode: p.blendMode });
+  }
+  drawCanvas(canvas, { alpha = 255, blendMode = 0 } = {}) {
+    const width = this.renderer.canvas.width,
+      height = this.renderer.canvas.height,
+      color = ((Math.max(0, Math.min(255, alpha)) << 24) | 0xffffff) >>> 0;
+    this.gpu.drawGeometry(
+      [
+        {
+          vertices: [
+            { x: -0.5, y: -0.5, z: 0, w: 1, color, u: 0, v: 0 },
+            { x: width - 0.5, y: -0.5, z: 0, w: 1, color, u: 1, v: 0 },
+            { x: -0.5, y: height - 0.5, z: 0, w: 1, color, u: 0, v: 1 },
+            { x: width - 0.5, y: height - 0.5, z: 0, w: 1, color, u: 1, v: 1 },
+          ],
+        },
+      ],
+      canvas,
+      { blendMode, context: this.currentD3DContext, drawType: 0 },
+    );
   }
 }

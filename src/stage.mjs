@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Plane and actor semantics adapted from CatSystemKit ScenePlayer, PlaneStage and EmoteStage (OWCramer).
+import { MotionTarget, objectMotionState, applyObjectMotionState } from './motion/target.mjs';
 export function planeNumbers(text) {
   if (/^\d+$/.test(text)) return [Number(text)];
   if (!/^\[.*\]$/.test(text || '')) return [];
@@ -44,6 +45,14 @@ export function animate(o, key, to, frames, frame, kind = 'linear', blocking = t
   };
   o[key] = to;
 }
+export const IMAGE_COMMANDS = new Set(
+  (
+    'init base pos scale blend disp delay get clone shift load def blur mode tone stop rot color ' +
+    'move amove1 amove2 amove3 ascale1 ascale2 ascale3 fade fade2 cfade mcdisp mcmove mcfade mcarc ' +
+    'arc quake mcquake shake mcshake spline mcSpline spline_s spline_r mscale mcscalecos mcscalesin ' +
+    'mrot mcrot pend mcpend vram pri bmode after video vcom clip coordmode'
+  ).split(' '),
+);
 export class Stage {
   constructor(width, height, evaluate) {
     Object.assign(this, {
@@ -57,21 +66,101 @@ export class Stage {
       emitters: {},
       background: 0xff000000,
       unsupported: new Set(),
+      planeDefaults: {},
+      imageDefaults: {},
+      imageSettings: {},
+      configuredVRAM: false,
+      toneTables: {},
+      motionPending: new Set(),
     });
+  }
+  configureVRAM(xml) {
+    if (Object.values(this.planes).some((p) => p.pictures.length))
+      throw new Error('VRAM defaults must be configured before scene image commands');
+    const value = (node, fallback, ...field) => {
+      const text = node.value(...field);
+      if (!text) return fallback;
+      const result = Number(text);
+      if (!Number.isFinite(result)) throw new Error(`Invalid VRAM field ${field.join('.')}`);
+      return result;
+    };
+    this.planeDefaults = {};
+    this.imageDefaults = {};
+    for (const node of xml.node('plane')?.children || []) {
+      const match = /^pl(\d+)$/i.exec(node.name);
+      if (!match) continue;
+      const n = Number(match[1]);
+      const width = value(node, this.width, 'width'),
+        height = value(node, this.height, 'height');
+      this.planeDefaults[n] = {
+        vramX: value(node, 0, 'x'),
+        vramY: value(node, 0, 'y'),
+        width,
+        height,
+        visible: value(node, 1, 'disp') !== 0,
+        shiftX: value(node, 0, 'shift_x'),
+        shiftY: value(node, 0, 'shift_y'),
+        baseX: value(node, width / 2, 'base', 'x'),
+        baseY: value(node, height / 2, 'base', 'y'),
+        baseZ: value(node, 0, 'base', 'z'),
+        x: value(node, this.width / 2, 'pos', 'x'),
+        y: value(node, this.height / 2, 'pos', 'y'),
+        z: value(node, 0, 'pos', 'z'),
+      };
+    }
+    for (const node of xml.node('image')?.children || []) {
+      const match = /^(bg|cg|eg|fg|fw)(\d+)$/i.exec(node.name);
+      if (!match) continue;
+      const kind = match[1].toLowerCase(),
+        slot = Number(match[2]);
+      this.imageDefaults[kind] ||= {};
+      this.imageDefaults[kind][slot] = {
+        plane: value(node, 0, 'pl'),
+        shiftX: value(node, 0, 'shift_x'),
+        shiftY: value(node, 0, 'shift_y'),
+        baseX: value(node, 0, 'base', 'x'),
+        baseY: value(node, 0, 'base', 'y'),
+        baseZ: value(node, 0, 'base', 'z'),
+        x: value(node, 0, 'pos', 'x'),
+        y: value(node, 0, 'pos', 'y'),
+        z: value(node, 0, 'pos', 'z'),
+      };
+    }
+    this.vramRegions = Object.fromEntries(
+      (xml.node('vram')?.children || []).map((node) => [
+        node.name,
+        Object.fromEntries(
+          ['x', 'y', 'width', 'height'].map((field) => [field, value(node, 0, field)]),
+        ),
+      ]),
+    );
+    this.configuredVRAM = true;
+    this.planes = {};
+    for (const n of Object.keys(this.planeDefaults)) this.plane(Number(n));
   }
   plane(n) {
     return (this.planes[n] ||= {
       x: this.width / 2,
       y: this.height / 2,
+      z: 0,
       baseX: this.width / 2,
       baseY: this.height / 2,
+      baseZ: 0,
       scaleX: 100,
       scaleY: 100,
+      scaleZ: 100,
+      width: this.width,
+      height: this.height,
+      vramX: 0,
+      vramY: 0,
+      shiftX: 0,
+      shiftY: 0,
       alpha: 255,
       visible: true,
       priority: 3000 + n * 100,
       pictures: [],
       tweens: {},
+      ...structuredClone(this.planeDefaults[n] || {}),
     });
   }
   actor(n, faces = false) {
@@ -101,6 +190,86 @@ export class Stage {
   }
   value(o, key) {
     return current(o, key, this.frame);
+  }
+  diagnostic(command) {
+    this.unsupported.add(command);
+  }
+  motionTarget(object) {
+    if (!this.motionLibrary) throw new Error('Stage motion requires its MOT library');
+    if (!object.motionTarget)
+      Object.defineProperty(object, 'motionTarget', {
+        configurable: true,
+        value: new MotionTarget(this.motionLibrary, {
+          readState: () => objectMotionState(object, { scaleUnit: 100, visible: 'visible' }),
+          writeState: (bytes) =>
+            applyObjectMotionState(object, bytes, { scaleUnit: 100, visible: 'visible' }),
+        }),
+      });
+    return object.motionTarget;
+  }
+  motionObjects() {
+    return [
+      ...Object.values(this.planes),
+      ...Object.values(this.actors),
+      ...Object.values(this.faces),
+      ...Object.values(this.planes).flatMap((plane) => plane.pictures),
+    ];
+  }
+  async updateMotions() {
+    while (this.motionPending.size) await Promise.all([...this.motionPending]);
+    for (const object of this.motionObjects()) object.motionTarget?.update(this.frame);
+  }
+  imageDefault(kind, slot) {
+    const settings = this.imageSettings[kind] || {};
+    return {
+      ...(this.imageDefaults[kind]?.[slot] || {}),
+      ...(settings.all || {}),
+      ...(settings.slots?.[slot] || {}),
+    };
+  }
+  image(kind, slot, create = false) {
+    const found = Object.values(this.planes)
+      .flatMap((p) => p.pictures)
+      .find((p) => p.kind === kind && p.slot === slot);
+    if (found || !create) return found;
+    const defaults = this.imageDefault(kind, slot);
+    const centered = !this.configuredVRAM && !['bg', 'cg'].includes(kind);
+    const picture = {
+      kind,
+      slot,
+      file: null,
+      color: null,
+      x: centered ? this.width / 2 : 0,
+      y: centered ? this.height / 2 : 0,
+      baseX: 0,
+      baseY: 0,
+      baseZ: 0,
+      z: 0,
+      shiftX: 0,
+      shiftY: 0,
+      scaleX: 100,
+      scaleY: 100,
+      scaleZ: 100,
+      rotation: 0,
+      alpha: 255,
+      visible: true,
+      width: 0,
+      height: 0,
+      frameID: 0,
+      tweens: {},
+      ...structuredClone(defaults),
+    };
+    picture.plane = defaults.plane ?? (this.configuredVRAM ? 0 : slot);
+    this.plane(picture.plane).pictures.push(picture);
+    return picture;
+  }
+  moveImagePlane(picture, destination) {
+    if (!Number.isInteger(destination) || destination < 0)
+      throw new Error(`Invalid image plane ${destination}`);
+    for (const plane of Object.values(this.planes))
+      plane.pictures = plane.pictures.filter((p) => p !== picture);
+    picture.plane = destination;
+    this.plane(destination).pictures.push(picture);
   }
   setMotion(o, sub, args, pictureKind) {
     const n = (i, key, fallback) => this.number(args[i], key ? this.value(o, key) : 0, fallback);
@@ -275,82 +444,154 @@ export class Stage {
       this.setMotion(o, 'stop', []);
   }
   pictures(kind, args) {
-    const slots = planeNumbers(args[0]);
-    if (!args.length || (slots.length && args.length === 1)) {
-      for (const p of Object.values(this.planes))
-        p.pictures = p.pictures.filter(
-          (p) => p.kind !== kind || (slots.length && !slots.includes(p.slot)),
+    let slots = planeNumbers(args[0]);
+    const specified = slots.length > 0;
+    if (!args.length || (specified && args.length === 1)) {
+      for (const plane of Object.values(this.planes))
+        plane.pictures = plane.pictures.filter(
+          (p) => p.kind !== kind || (specified && !slots.includes(p.slot)),
         );
+      if (!specified) delete this.imageSettings[kind];
+      else
+        for (const slot of slots)
+          if (this.imageSettings[kind]?.slots) delete this.imageSettings[kind].slots[slot];
       return;
     }
-    if (!slots.length) {
-      if (['tone', 'mode', 'blur'].includes(args[0]))
-        for (const plane of Object.values(this.planes))
-          for (const p of plane.pictures) if (p.kind === kind) delete p[args[0]];
+    const sub = args[specified ? 1 : 0],
+      parameters = args.slice(specified ? 2 : 1);
+    if (!specified && !IMAGE_COMMANDS.has(sub)) {
+      this.diagnostic(`${kind}: image loading requires an explicit bank (${sub})`);
       return;
     }
-    const verbs = new Set([
-      'pos',
-      'scale',
-      'move',
-      'amove1',
-      'amove2',
-      'amove3',
-      'ascale1',
-      'ascale2',
-      'ascale3',
-      'fade',
-      'blend',
-      'mode',
-      'tone',
-      'blur',
-    ]);
-    for (const slot of slots) {
-      const old = Object.values(this.planes)
-          .flatMap((p) => p.pictures)
-          .find((p) => p.kind === kind && p.slot === slot),
-        sub = args[1];
-      if (verbs.has(sub)) {
-        if (old) {
-          if (['mode', 'tone', 'blur'].includes(sub)) old[sub] = args.slice(2);
-          else this.setMotion(old, sub, args.slice(2), kind);
+    this.imageSettings[kind] ||= { all: {}, slots: {} };
+    const settings = this.imageSettings[kind];
+    if (!specified)
+      slots = [
+        ...new Set(
+          Object.values(this.planes)
+            .flatMap((p) => p.pictures)
+            .filter((p) => p.kind === kind)
+            .map((p) => p.slot),
+        ),
+      ];
+    const remember = (values) => {
+      if (!specified) Object.assign(settings.all, structuredClone(values));
+      for (const slot of slots)
+        Object.assign((settings.slots[slot] ||= {}), structuredClone(values));
+    };
+    if (['mode', 'tone', 'blur', 'def', 'shift'].includes(sub)) {
+      let properties;
+      if (sub === 'def')
+        properties = {
+          plane: parameters.length
+            ? this.number(parameters[0])
+            : (this.imageDefaults[kind]?.[slots[0]]?.plane ?? 0),
+        };
+      else if (sub === 'shift')
+        properties = {
+          shiftX: this.number(parameters[0], 0),
+          shiftY: this.number(parameters[1], 0),
+        };
+      else if (sub === 'mode') {
+        if (parameters.length && !['mono', 'sepia', 'np'].includes(parameters[0])) {
+          this.diagnostic(`${kind}.mode ${parameters[0]}`);
+          return;
         }
+        properties = { mode: parameters.length ? [parameters[0]] : [] };
+      } else if (sub === 'tone') {
+        properties = {
+          tone:
+            parameters.length === 1 && !/^[-+\d#@$(]/.test(parameters[0])
+              ? parameters
+              : [0, 1, 2].map((i) => this.number(parameters[i], 100)),
+        };
+      } else properties = { blur: [this.number(parameters[0], 0), this.number(parameters[1], 0)] };
+      remember(properties);
+      for (const slot of slots) {
+        const picture = this.image(kind, slot, true);
+        if (sub === 'def') continue; // Only subsequent loads use a changed default plane.
+        if (sub === 'tone' && picture.file && picture.loadFrame !== this.frame) continue;
+        Object.assign(picture, structuredClone(properties));
+      }
+      return;
+    }
+    for (const slot of slots) {
+      const old = this.image(kind, slot, true);
+      if (IMAGE_COMMANDS.has(sub)) {
+        if (sub === 'clone') {
+          const source = this.image(parameters[0], this.number(parameters[1]));
+          if (!source) {
+            this.diagnostic(`${kind}.${slot}.clone missing source ${parameters.join(' ')}`);
+            continue;
+          }
+          const destination = old.plane;
+          Object.assign(old, structuredClone(source), { kind, slot, plane: destination });
+          this.moveImagePlane(old, destination);
+        } else if (sub === 'init') {
+          for (const plane of Object.values(this.planes))
+            plane.pictures = plane.pictures.filter((p) => p !== old);
+          delete settings.slots[slot];
+        } else if (sub === 'scale' && old.file && old.loadFrame !== this.frame) {
+          // Documented original behavior: static image scale is a load-time setting.
+          continue;
+        } else if (!this.setMotion(old, sub, parameters, kind))
+          this.diagnostic(`${kind}.${slot}.${sub}`);
         continue;
       }
-      const values = args.slice(2).filter((a) => !a.startsWith('\\')),
-        flags = new Set(args.slice(2).filter((a) => a.startsWith('\\')));
-      const center = !sub.startsWith('$') && !['bg', 'cg'].includes(kind),
-        x = center ? this.width / 2 : 0,
-        y = center ? this.height / 2 : 0;
-      const p = {
-        kind,
-        slot,
-        file: sub.startsWith('$') ? null : sub,
-        color: sub.startsWith('$') ? parseInt(sub.slice(1), 16) >>> 0 : null,
-        x,
-        y,
-        scaleX: 100,
-        scaleY: 100,
-        alpha: 255,
+      const values = parameters.filter((p) => !p.startsWith('\\')),
+        flags = new Set(parameters.filter((p) => p.startsWith('\\')).map((p) => p.toLowerCase())),
+        color = sub.startsWith('$') || /^0x[\da-f]+$/i.test(sub),
+        defaults = this.imageDefault(kind, slot);
+      const picture = {
+        ...old,
+        ...structuredClone(defaults),
+        file: color ? null : sub,
+        color: color
+          ? sub.startsWith('$')
+            ? parseInt(sub.slice(1), 16) >>> 0
+            : this.number(sub) >>> 0
+          : null,
         flipX: flags.has('\\lr'),
         flipY: flags.has('\\ud'),
-        mask: flags.has('\\ma'),
+        loadRotation: flags.has('\\r90')
+          ? 90
+          : flags.has('\\r180')
+            ? 180
+            : flags.has('\\r270')
+              ? 270
+              : 0,
+        mask: ['r', 'g', 'b', 'a'].find((c) => flags.has(`\\m${c}`)) || null,
         frameID: 0,
         tweens: {},
-        mode: old?.mode,
-        tone: old?.tone,
-        blur: old?.blur,
+        visible: true,
+        loadFrame: this.frame,
       };
-      p.x =
-        this.number(values[0], x) +
-        (kind === 'eg' && values[0] && !values[0].startsWith('@') ? this.width / 2 : 0);
-      p.y =
-        this.number(values[1], y) +
-        (kind === 'eg' && values[1] && !values[1].startsWith('@') ? this.height / 2 : 0);
-      if (values[2] && values[2] !== '@') p.frameID = this.number(values[2]);
-      for (const plane of Object.values(this.planes))
-        plane.pictures = plane.pictures.filter((p) => p.kind !== kind || p.slot !== slot);
-      this.plane(values[3] && values[3] !== '@' ? this.number(values[3]) : slot).pictures.push(p);
+      if (color) {
+        picture.x = defaults.x ?? 0;
+        picture.y = defaults.y ?? 0;
+        picture.width = this.number(values[0], 1024);
+        picture.height = this.number(values[1], 1024);
+        const planeIndex = values.length === 3 ? 2 : 3;
+        if (values[planeIndex] !== undefined && values[planeIndex] !== '@')
+          picture.plane = this.number(values[planeIndex]);
+      } else {
+        const centered = !this.configuredVRAM && !['bg', 'cg'].includes(kind);
+        picture.x =
+          this.number(values[0], defaults.x ?? old.x) +
+          (centered && values[0] && !values[0].startsWith('@') ? this.width / 2 : 0);
+        picture.y =
+          this.number(values[1], defaults.y ?? old.y) +
+          (centered && values[1] && !values[1].startsWith('@') ? this.height / 2 : 0);
+        picture.z = this.number(values[2], 0);
+        if (values[3] !== undefined && values[3] !== '@') picture.plane = this.number(values[3]);
+        const frame = /^(.*):(-?\d+)$/.exec(picture.file);
+        if (frame) {
+          picture.file = frame[1];
+          picture.frameID = Number(frame[2]);
+        }
+      }
+      Object.assign(old, picture);
+      this.moveImagePlane(old, picture.plane);
     }
   }
   planeCommand(args) {
@@ -437,10 +678,28 @@ export class Stage {
       actors: this.actors,
       faces: this.faces,
       emitters: this.emitters,
+      planeDefaults: this.planeDefaults,
+      imageDefaults: this.imageDefaults,
+      imageSettings: this.imageSettings,
+      configuredVRAM: this.configuredVRAM,
+      vramRegions: this.vramRegions,
+      toneTables: this.toneTables,
     });
   }
   restore(state) {
-    for (const key of ['frame', 'planes', 'actors', 'faces', 'emitters'])
+    for (const key of [
+      'frame',
+      'planes',
+      'actors',
+      'faces',
+      'emitters',
+      'planeDefaults',
+      'imageDefaults',
+      'imageSettings',
+      'configuredVRAM',
+      'vramRegions',
+      'toneTables',
+    ])
       this[key] = structuredClone(state[key]);
   }
 }

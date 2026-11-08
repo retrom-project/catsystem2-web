@@ -1,0 +1,1734 @@
+{
+  "clip": [
+    {
+      "triangle": [
+        {
+          "x": 7.588235378265381,
+          "y": 4.789473533630371,
+          "color": 4293734928
+        },
+        {
+          "x": 14,
+          "y": 2.0526316165924072,
+          "color": 4293734928
+        },
+        {
+          "x": 9.70588207244873,
+          "y": 11.473684310913086,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "09LyQF5DmUAAAGBBUV4DQEtLG0E2lDdB"
+    },
+    {
+      "triangle": [
+        {
+          "x": 295,
+          "y": 131,
+          "color": 4293734928
+        },
+        {
+          "x": -57,
+          "y": -71,
+          "color": 4293734928
+        },
+        {
+          "x": 145,
+          "y": 195,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAAAAAAAAPcoVCAAAAgAAAAEO6qAxCAAAAQwAAwEKco4tCAADAQgAAAICn5oFA"
+    },
+    {
+      "triangle": [
+        {
+          "x": -60,
+          "y": 179,
+          "color": 4293734928
+        },
+        {
+          "x": 226,
+          "y": 241,
+          "color": 4293734928
+        },
+        {
+          "x": 144,
+          "y": 157,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    },
+    {
+      "triangle": [
+        {
+          "x": -3.3529412746429443,
+          "y": 10.473684310913086,
+          "color": 4293734928
+        },
+        {
+          "x": 17.235294342041016,
+          "y": -4.4210524559021,
+          "color": 4293734928
+        },
+        {
+          "x": 11.29411792755127,
+          "y": 7.789473533630371,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgHzEAEEg/TFBAAAAgM1YcUEAAACAtbQ0QV5D+UAAAACAZL8dQQ=="
+    },
+    {
+      "triangle": [
+        {
+          "x": 225,
+          "y": 5,
+          "color": 4293734928
+        },
+        {
+          "x": -38,
+          "y": 198,
+          "color": 4293734928
+        },
+        {
+          "x": 255,
+          "y": 271,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "Wf3JQgAAwEIAAABDcl2YQgAAAEMAAMBC"
+    },
+    {
+      "triangle": [
+        {
+          "x": -83,
+          "y": 197,
+          "color": 4293734928
+        },
+        {
+          "x": 197,
+          "y": 132,
+          "color": 4293734928
+        },
+        {
+          "x": 288,
+          "y": 2,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "ZVHaQgAAwEIAAABDrzGsQgAAAEMAAMBC"
+    },
+    {
+      "triangle": [
+        {
+          "x": 4.941176414489746,
+          "y": 8.105262756347656,
+          "color": 4293734928
+        },
+        {
+          "x": -2.411764621734619,
+          "y": 14.368420600891113,
+          "color": 4293734928
+        },
+        {
+          "x": -4.352941036224365,
+          "y": 14.263157844543457,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgLcQNkEeHp5AKK8BQQAAAICUBkVB"
+    },
+    {
+      "triangle": [
+        {
+          "x": 264,
+          "y": 78,
+          "color": 4293734928
+        },
+        {
+          "x": 285,
+          "y": 133,
+          "color": 4293734928
+        },
+        {
+          "x": -71,
+          "y": 15,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgGPR4kEAAABDDrJRQgAAAEPd66FCAAAAgIQiGkI="
+    },
+    {
+      "triangle": [
+        {
+          "x": 132,
+          "y": 161,
+          "color": 4293734928
+        },
+        {
+          "x": 20,
+          "y": 255,
+          "color": 4293734928
+        },
+        {
+          "x": -40,
+          "y": 14,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgIO+QEJGyF9CAADAQgAAAAAAAMBC"
+    },
+    {
+      "triangle": [
+        {
+          "x": 7.235294342041016,
+          "y": 1,
+          "color": 4293734928
+        },
+        {
+          "x": -5.117647171020508,
+          "y": 8.052631378173828,
+          "color": 4293734928
+        },
+        {
+          "x": 7.588235378265381,
+          "y": 11.473684310913086,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgL0vpECIh+dAAACAP9PS8kA2lDdBAAAAgI7jFkE="
+    },
+    {
+      "triangle": [
+        {
+          "x": -44,
+          "y": -76,
+          "color": 4293734928
+        },
+        {
+          "x": 188,
+          "y": 275,
+          "color": 4293734928
+        },
+        {
+          "x": 268,
+          "y": 73,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "zXnHQAAAAIApSOZCAAAAgAAAAENIg8RAAAAAQwAAwEKLX4tCAADAQg=="
+    },
+    {
+      "triangle": [
+        {
+          "x": 84,
+          "y": 226,
+          "color": 4293734928
+        },
+        {
+          "x": 58,
+          "y": 196,
+          "color": 4293734928
+        },
+        {
+          "x": -76,
+          "y": 177,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    },
+    {
+      "triangle": [
+        {
+          "x": 10.117647171020508,
+          "y": 6.842105388641357,
+          "color": 4293734928
+        },
+        {
+          "x": 0.29411765933036804,
+          "y": -1.3157894611358643,
+          "color": 4293734928
+        },
+        {
+          "x": 1.8823529481887817,
+          "y": -4.736842155456543,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "lXTwPwAAAID0CqhAAAAAgOLhIUGH8tpA"
+    },
+    {
+      "triangle": [
+        {
+          "x": 256,
+          "y": 176,
+          "color": 4293734928
+        },
+        {
+          "x": 291,
+          "y": 151,
+          "color": 4293734928
+        },
+        {
+          "x": 182,
+          "y": 91,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    },
+    {
+      "triangle": [
+        {
+          "x": 107,
+          "y": 214,
+          "color": 4293734928
+        },
+        {
+          "x": -74,
+          "y": 50,
+          "color": 4293734928
+        },
+        {
+          "x": 232,
+          "y": -11,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgFT+DEIAAABDYbYbQQAAAEMAAMBCAAAAAAAAwEI="
+    },
+    {
+      "triangle": [
+        {
+          "x": 7.647058963775635,
+          "y": 12.421052932739258,
+          "color": 4293734928
+        },
+        {
+          "x": 14.235294342041016,
+          "y": -0.31578946113586426,
+          "color": 4293734928
+        },
+        {
+          "x": 11.29411792755127,
+          "y": -0.8947368264198303,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "tbT0QKK8RkHxyDBBAAAAgLQmYUEAAACA"
+    },
+    {
+      "triangle": [
+        {
+          "x": 153,
+          "y": 43,
+          "color": 4293734928
+        },
+        {
+          "x": 255,
+          "y": 173,
+          "color": 4293734928
+        },
+        {
+          "x": 216,
+          "y": 188,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    },
+    {
+      "triangle": [
+        {
+          "x": -38,
+          "y": 83,
+          "color": 4293734928
+        },
+        {
+          "x": -10,
+          "y": 179,
+          "color": 4293734928
+        },
+        {
+          "x": 299,
+          "y": 105,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgCD2qkIAAABDcKy7QgAAAEMAAMBCAAAAAAAAwEI="
+    },
+    {
+      "triangle": [
+        {
+          "x": 1.941176414489746,
+          "y": 6.4210524559021,
+          "color": 4293734928
+        },
+        {
+          "x": 5.941176414489746,
+          "y": -3.21052622795105,
+          "color": 4293734928
+        },
+        {
+          "x": 14.058823585510254,
+          "y": 9.894737243652344,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "eHj4P0N5zUBzc5NAAAAAgDrB/UAAAACA8fBgQdhQHkE="
+    },
+    {
+      "triangle": [
+        {
+          "x": -42,
+          "y": -74,
+          "color": 4293734928
+        },
+        {
+          "x": 241,
+          "y": 119,
+          "color": 4293734928
+        },
+        {
+          "x": 287,
+          "y": 117,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "+wOFQgAAAICT7qpCAAAAgAAAAENIi8VBAAAAQ9++J0I="
+    },
+    {
+      "triangle": [
+        {
+          "x": 207,
+          "y": -45,
+          "color": 4293734928
+        },
+        {
+          "x": 252,
+          "y": 189,
+          "color": 4293734928
+        },
+        {
+          "x": 86,
+          "y": -41,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "vy7nQgAAAIAAAABDAAAAAAAAAEPMiolB"
+    },
+    {
+      "triangle": [
+        {
+          "x": 11.352941513061523,
+          "y": 4.526315689086914,
+          "color": 4293734928
+        },
+        {
+          "x": 0.3529411852359772,
+          "y": 11.421052932739258,
+          "color": 4293734928
+        },
+        {
+          "x": -0.23529411852359772,
+          "y": 4.736842155456543,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": "AAAAgDFxl0CmpTVBlNeQQLW0tD6ivDZBAAAAgAkj7UA="
+    },
+    {
+      "triangle": [
+        {
+          "x": 63,
+          "y": 112,
+          "color": 4293734928
+        },
+        {
+          "x": 179,
+          "y": 269,
+          "color": 4293734928
+        },
+        {
+          "x": 162,
+          "y": 227,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    },
+    {
+      "triangle": [
+        {
+          "x": 206,
+          "y": -96,
+          "color": 4293734928
+        },
+        {
+          "x": 262,
+          "y": 243,
+          "color": 4293734928
+        },
+        {
+          "x": 77,
+          "y": 234,
+          "color": 4293734928
+        }
+      ],
+      "rectangle": [0, 0, 128, 96],
+      "expected": ""
+    }
+  ],
+  "division": [
+    {
+      "triangles": [
+        [
+          {
+            "x": 1.692307710647583,
+            "y": 11.363636016845703,
+            "z": 0,
+            "color": 1135439199
+          },
+          {
+            "x": 3.846153736114502,
+            "y": 0.09090909361839294,
+            "z": 0,
+            "color": 2261516035
+          },
+          {
+            "x": 0.4615384638309479,
+            "y": 0.4545454680919647,
+            "z": 0,
+            "color": 3138091239
+          }
+        ],
+        [
+          {
+            "x": -5.384615421295166,
+            "y": 15.363636016845703,
+            "z": 0,
+            "color": 985677579
+          },
+          {
+            "x": 2,
+            "y": 9.909090995788574,
+            "z": 0,
+            "color": 2582836591
+          },
+          {
+            "x": 2,
+            "y": 1.545454502105713,
+            "z": 0,
+            "color": 25460755
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [12, 8],
+        "cellSize": [6, 4],
+        "cells": [2, 8]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAADFTuw+L7roPgAAAABfba1D2YkdPS+6aD1iJ3ZAjC66PQAAAABfba1DQRqkPowuOjw0WkZAAACAQAAAAABfba1DIzyEPgAAAD8AAAAAAAAAAMVO7D4vuug+AAAAAF9trUPZiR09L7poPTRaRkAAAIBAAAAAAF9trUMjPIQ+AAAAP8mNXD8AAIBAAAAAAF9trUMxCZM9AAAAPwAAAAAAAAAAyY1cPwAAgEAAAAAAX22tQzEJkz0AAAA/NFpGQAAAgEAAAAAAX22tQyM8hD4AAAA/b3AVQAAAAEEAAAAAX22tQ5RARz4AAIA/AAAAAAAAAADJjVw/AACAQAAAAABfba1DMQmTPQAAAD9vcBVAAAAAQQAAAABfba1DlEBHPgAAgD+BCqg/AAAAQQAAAABfba1DAQ7gPQAAgD8AAAAAAQAAAIEKqD8AAABBAAAAAF9trUMBDuA9AAAAAG9wFUAAAABBAAAAAF9trUOUQEc+AAAAAIqd2D900TVBAAAAAF9trUMHaRA+0EXXPgEAAAAAAAAAvjEwPwAAgEAAAAAACz/AOv3saj0AAAA/AAAAQHTRxT8AAAAACz/AOquqKj500UU+AAAAQAAAgEAAAAAACz/AOquqKj4AAAA/AQAAAAAAAAAAAACATTapQAAAAAALP8A6AAAAgE02KT++MTA/AACAQAAAAAALP8A6/exqPQAAAD8AAABAAACAQAAAAAALP8A6q6oqPgAAAD8BAAAAAAAAAAAAAIBNNqlAAAAAAAs/wDoAAACATTYpPwAAAEAAAIBAAAAAAAs/wDqrqio+AAAAPwAAAEAAAABBAAAAAAs/wDqrqio+AACAPwEAAAAAAAAAAAAAgE02qUAAAAAACz/AOgAAAIBNNik/AAAAQAAAAEEAAAAACz/AOquqKj4AAIA/AAAAAAAAAEEAAAAACz/AOgAAAAAAAIA/AQAAAAEAAAAAAAAAAAAAQQAAAAALP8A6AAAAAAAAAAAAAABAAAAAQQAAAAALP8A6q6oqPgAAAAAAAABAo4seQQAAAAALP8A6q6oqPhhddD4BAAAAAQAAAAAAAAAAAABBAAAAAAs/wDoAAAAAAAAAAAAAAECjix5BAAAAAAs/wDqrqio+GF10PgAAAICMLjZBAAAAAAs/wDoAAACAMLrYPg=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": -5.849213600158691,
+            "y": 30.192745208740234,
+            "z": 15,
+            "color": 1135439199
+          },
+          {
+            "x": -8.427447319030762,
+            "y": 17.275348663330078,
+            "z": 15,
+            "color": 2261516035
+          },
+          {
+            "x": -10.882430076599121,
+            "y": 18.05463409423828,
+            "z": 15,
+            "color": 3138091239
+          }
+        ],
+        [
+          {
+            "x": -9.76748275756836,
+            "y": 35.46678161621094,
+            "z": 15,
+            "color": 985677579
+          },
+          {
+            "x": -6.159090995788574,
+            "y": 28.522727966308594,
+            "z": 15,
+            "color": 2582836591
+          },
+          {
+            "x": -9.295454025268555,
+            "y": 19.113636016845703,
+            "z": 15,
+            "color": 25460755
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [12, 8],
+        "cellSize": [6, 4],
+        "cells": [2, 8]
+      },
+      "position": [-11, 14, 15],
+      "expected": ""
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 6.07692289352417,
+            "y": 14.727272987365723,
+            "z": 1,
+            "color": 2800061396
+          },
+          {
+            "x": 21.153846740722656,
+            "y": 5.2727274894714355,
+            "z": 1,
+            "color": 3747467848
+          },
+          {
+            "x": 21.461538314819336,
+            "y": 7.090909004211426,
+            "z": 1,
+            "color": 3286525436
+          }
+        ],
+        [
+          {
+            "x": 4.538461685180664,
+            "y": -4.181818008422852,
+            "z": 1,
+            "color": 3346627312
+          },
+          {
+            "x": -2.538461446762085,
+            "y": 3.454545497894287,
+            "z": 1,
+            "color": 3492185380
+          },
+          {
+            "x": -4.692307472229004,
+            "y": 3.8181817531585693,
+            "z": 1,
+            "color": 2230466712
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [16, 28],
+        "cellSize": [16, 28],
+        "cells": [2, 1]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAndsJA6aJrQQAAAADUi+WmJ3bCPjymBj8AAIBB/xIIQQAAAADUi+WmAACAP22Dmz4AAIBBQdQcQQAAAADUi+WmAACAP7g7sz4AAAAAAQAAAAAAgEH/EghBAAAAANSL5aYAAAAAbYObPhQ7qUEvuqhAAAAAANSL5aZQ7KQ+yNRAPjuxq0G66OJAAAAAANSL5absxK4+j6mBPgAAAAABAAAAAACAQf8SCEEAAAAA1IvlpgAAAABtg5s+O7GrQbro4kAAAAAA1IvlpuzErj6PqYE+AACAQUHUHEEAAAAA1IvlpgAAAAC4O7M+AQAAAAAAAAAAAAAAAAAAAAAAAADwennHAAAAAAAAAACfuik/AAAAgAAAAADwennHn7opPQAAAIAAAACAdCU3PwAAAADwennHAAAAgGBP0Tw="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 6.139750957489014,
+            "y": 29.832714080810547,
+            "z": -14,
+            "color": 2800061396
+          },
+          {
+            "x": 4.6246724128723145,
+            "y": 17.513439178466797,
+            "z": -14,
+            "color": 3747467848
+          },
+          {
+            "x": 5.442198276519775,
+            "y": 19.80736541748047,
+            "z": -14,
+            "color": 3286525436
+          }
+        ],
+        [
+          {
+            "x": -2.089925765991211,
+            "y": 5.936954021453857,
+            "z": -14,
+            "color": 3346627312
+          },
+          {
+            "x": -0.029392480850219727,
+            "y": 15.76759147644043,
+            "z": -14,
+            "color": 3492185380
+          },
+          {
+            "x": -0.22934865951538086,
+            "y": 16.27829933166504,
+            "z": -14,
+            "color": 2230466712
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [16, 28],
+        "cellSize": [16, 28],
+        "cells": [2, 1]
+      },
+      "position": [-1, 10, -15],
+      "expected": "AAAAAAAAAABR/bNAGG7wQAAAAADUi+WmUf2TPnUfID99Js5A+OocQQAAAADUi+WmfSauPo4YNT82ZOBAAQCQQQAAAADUi+WmNmTAPgEAgD8AAAAAAAAAAFH9s0AYbvBAAAAAANSL5aZR/ZM+dR8gPzZk4EABAJBBAAAAANSL5aY2ZMA+AQCAP2VC3UAAAJBBAAAAANSL5aZlQr0+AACAPw=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 4,
+            "y": 26.454545974731445,
+            "z": 0,
+            "color": 4121640045
+          },
+          {
+            "x": 6.153846263885498,
+            "y": 6.454545497894287,
+            "z": 0,
+            "color": 3103909873
+          },
+          {
+            "x": -0.3076923191547394,
+            "y": 9.727272987365723,
+            "z": 0,
+            "color": 1195452853
+          }
+        ],
+        [
+          {
+            "x": 3.076923131942749,
+            "y": 7.181818008422852,
+            "z": 0,
+            "color": 3876668857
+          },
+          {
+            "x": 2.461538553237915,
+            "y": 45.3636360168457,
+            "z": 0,
+            "color": 2535243773
+          },
+          {
+            "x": 9.230769157409668,
+            "y": 48.6363639831543,
+            "z": 0,
+            "color": 3608435841
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [4, 32],
+        "cellSize": [2, 16],
+        "cells": [6, 4]
+      },
+      "position": [0, 0, 0],
+      "expected": "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"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 11.265625,
+            "y": 26.015625,
+            "z": 14,
+            "color": 4121640045
+          },
+          {
+            "x": 11.36177921295166,
+            "y": 15.198317527770996,
+            "z": 14,
+            "color": 3103909873
+          },
+          {
+            "x": 1.323317289352417,
+            "y": 18.400239944458008,
+            "z": 14,
+            "color": 1195452853
+          }
+        ],
+        [
+          {
+            "x": 6.438702583312988,
+            "y": 16.294471740722656,
+            "z": 14,
+            "color": 3876668857
+          },
+          {
+            "x": 11.991586685180664,
+            "y": 36.12620162963867,
+            "z": 14,
+            "color": 2535243773
+          },
+          {
+            "x": 23.659854888916016,
+            "y": 36.22716522216797,
+            "z": 14,
+            "color": 3608435841
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [4, 32],
+        "cellSize": [2, 16],
+        "cells": [6, 4]
+      },
+      "position": [-2, 12, 14],
+      "expected": "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"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 4.07692289352417,
+            "y": 16.727272033691406,
+            "z": 1,
+            "color": 2385165818
+          },
+          {
+            "x": 4.384615421295166,
+            "y": 42.90909194946289,
+            "z": 1,
+            "color": 1472562126
+          },
+          {
+            "x": 7.153846263885498,
+            "y": 33.45454406738281,
+            "z": 1,
+            "color": 640015586
+          }
+        ],
+        [
+          {
+            "x": 24.69230842590332,
+            "y": 11.272727012634277,
+            "z": 1,
+            "color": 3381484854
+          },
+          {
+            "x": 5.307692527770996,
+            "y": 4,
+            "z": 1,
+            "color": 1470945482
+          },
+          {
+            "x": 8.076923370361328,
+            "y": 18.545454025268555,
+            "z": 1,
+            "color": 3707265950
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [8, 20],
+        "cellSize": [8, 20],
+        "cells": [4, 3]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAndoJAdNGFQQAAAAD6vSqOJ3YCP+0bVj/MuZVAAACgQQAAAAD6vSqOzLkVPwAAgD87sYNAAACgQQAAAAD6vSqOO7EDPwAAgD8AAAAABAAAADuxg0AAAKBBAAAAAPq9Ko47sQM/AAAAAMy5lUAAAKBBAAAAAPq9Ko7MuRU/AAAAAE/s5EB00QVCAAAAAPq9Ko5P7GQ/2jcsPwAAAAAEAAAAO7GDQAAAoEEAAAAA+r0qjjuxAz8AAAAAT+zkQHTRBUIAAAAA+r0qjk/sZD/aNyw/85KnQAAAIEIAAAAA+r0qjvOSJz8AAIA/AAAAAAQAAAA7sYNAAACgQQAAAAD6vSqOO7EDPwAAAADzkqdAAAAgQgAAAAD6vSqO85InPwAAgD+0NotAAAAgQgAAAAD6vSqOtDYLPwAAgD8AAAAACAAAALQ2i0AAACBCAAAAAPq9Ko60Ngs/AAAAAPOSp0AAACBCAAAAAPq9Ko7zkic/AAAAAMVOjEDpoitCAAAAAPq9Ko7FTgw/DfIUPgEAAAAAAAAAntipQAAAgEAAAAAANl2NyZ7YKT/NzEw+AAAAQb9SoEAAAAAANl2NyQAAgD8yQoA+AAAAQZwhkUEAAAAANl2NyQAAgD/GNWg/AQAAAAEAAAAAAABBv1KgQAAAAAA2XY3JAAAAADJCgD4AAIBBSS8AQQAAAAA2XY3JAACAP3UYzT4AAIBBMj1xQQAAAAA2XY3JAACAP8L9QD8BAAAAAQAAAAAAAEG/UqBAAAAAADZdjckAAAAAMkKAPgAAgEEyPXFBAAAAADZdjckAAIA/wv1APxQ7AUEXXZRBAAAAADZdjckAih08vmFtPwEAAAABAAAAAAAAQb9SoEAAAAAANl2NyQAAAAAyQoA+FDsBQRddlEEAAAAANl2NyQCKHTy+YW0/AAAAQZwhkUEAAAAANl2NyQAAAADGNWg/AQAAAAIAAAAAAIBBSS8AQQAAAAA2XY3JAAAAAHUYzT4BAMBBMjUwQQAAAAA2XY3JAgCAP1v3DD8AAMBBTjY5QQAAAAA2XY3JAACAP3IrFD8BAAAAAgAAAAAAgEFJLwBBAAAAADZdjckAAAAAdRjNPgAAwEFONjlBAAAAADZdjckAAIA/cisUPwAAgEEyPXFBAAAAADZdjckAAAAAwv1APw=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 11.058948516845703,
+            "y": 14.06747055053711,
+            "z": -9,
+            "color": 2385165818
+          },
+          {
+            "x": 19.868608474731445,
+            "y": 39.8089485168457,
+            "z": -9,
+            "color": 1472562126
+          },
+          {
+            "x": 18.735084533691406,
+            "y": 30.22087860107422,
+            "z": -9,
+            "color": 640015586
+          }
+        ],
+        [
+          {
+            "x": 23.925426483154297,
+            "y": 6.604403018951416,
+            "z": -9,
+            "color": 3381484854
+          },
+          {
+            "x": 7.7578125,
+            "y": 1.4140625,
+            "z": -9,
+            "color": 1470945482
+          },
+          {
+            "x": 14.499289512634277,
+            "y": 15.450994491577148,
+            "z": -9,
+            "color": 3707265950
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [8, 20],
+        "cellSize": [8, 20],
+        "cells": [4, 3]
+      },
+      "position": [3, -1, -10],
+      "expected": "AAAAAAEAAAB08QBBXBRxQQAAAAD6vSqO0MXDPkoQND+0DC5BAACoQQAAAAD6vSqOaBk8PwAAgD+qbSFBAQCoQQAAAAD6vSqOVNsiPwEAgD8AAAAABQAAAKptIUEBAKhBAAAAAPq9Ko5U2yI/zczMM7QMLkEAAKhBAAAAAPq9Ko5oGTw/AAAAAAAAUEHYuMtBAAAAAPq9Ko4AAIA/AJ9kPgAAAAAFAAAAqm0hQQEAqEEAAAAA+r0qjlTbIj/NzMwzAABQQdi4y0EAAAAA+r0qjgAAgD8An2Q+AABQQU0K7EEAAAAA+r0qjgAAgD+Qutk+AAAAAAYAAAAAAFBB2LjLQQAAAAD6vSqOAAAAAACfZD7owntBXMT5QQAAAAD6vSqOoAuvPsbTAj/p8oZBXTwjQgAAAAD6vSqOSJf3PvaNfT8AAAAABgAAAAAAUEHYuMtBAAAAAPq9Ko4AAAAAAJ9kPunyhkFdPCNCAAAAAPq9Ko5Il/c+9o19PwAAUEFNCuxBAAAAAPq9Ko4AAAAAkLrZPgEAAAAAAAAAAECYQACAGkAAAAAANl2NyQBAeD/NzJA9AACgQNt5H0AAAAAANl2NyQAAgD/4wpg9AACgQA7GOkAAAAAANl2NyQAAgD8WcMQ9AQAAAAEAAAAAAKBA23kfQAAAAAA2XY3JAAAAAPjCmD0AAFBBKOyhQAAAAAA2XY3JAACAP0DgTz4AAFBBSq5wQQAAAAA2XY3JAACAP6K+Mz8BAAAAAQAAAAAAoEDbeR9AAAAAADZdjckAAAAA+MKYPQAAUEFKrnBBAAAAADZdjckAAIA/or4zPxf9N0Gjm4NBAAAAADZdjcku+k8/0sVFPwEAAAABAAAAAACgQNt5H0AAAAAANl2NyQAAAAD4wpg9F/03QaObg0EAAAAANl2NyS76Tz/SxUU/AACgQA7GOkAAAAAANl2NyQAAAAAWcMQ9AQAAAAIAAAAAAFBBKOyhQAAAAAA2XY3JAAAAAEDgTz5GZ6dBRVfzQAAAAAA2XY3JGJ19P54SqT4AAFBBSq5wQQAAAAA2XY3JAAAAAKK+Mz8="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 10,
+            "y": -0.6363636255264282,
+            "z": 0,
+            "color": 738838411
+          },
+          {
+            "x": -2.923076868057251,
+            "y": -6.090909004211426,
+            "z": 0,
+            "color": 2739193327
+          },
+          {
+            "x": -7.230769157409668,
+            "y": 52.45454406738281,
+            "z": 0,
+            "color": 679418003
+          }
+        ],
+        [
+          {
+            "x": -7.538461685180664,
+            "y": 70.2727279663086,
+            "z": 0,
+            "color": 312337271
+          },
+          {
+            "x": -9.692307472229004,
+            "y": 29.909090042114258,
+            "z": 0,
+            "color": 1625721499
+          },
+          {
+            "x": -0.7692307829856873,
+            "y": 33.181819915771484,
+            "z": 0,
+            "color": 2330112511
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [28, 24],
+        "cellSize": [14, 12],
+        "cells": [2, 8]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAAAAAAAAAAAAAAAACLxwksAAAAAAAAAAAKshxBAAAAgAAAAACLxwksnhSzPgAAAIBOw7xAAABAQQAAAACLxwksorpXPgAAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAIvHCSwAAAAAAAAAAE7DvEAAAEBBAAAAAIvHCSyiulc+AAAAPwAAAAAAAEBBAAAAAIvHCSwAAAAAAAAAPwAAAAAAAAAAAAAAAAAAQEEAAAAAi8cJLAAAAAAAAAA/TsO8QAAAQEEAAAAAi8cJLKK6Vz4AAAA/DEUAQAAAwEEAAAAAi8cJLA6Ykj0AAIA/AAAAAAAAAAAAAAAAAABAQQAAAACLxwksAAAAAAAAAD8MRQBAAADAQQAAAACLxwksDpiSPQAAgD8AAAAAAADAQQAAAACLxwksAAAAAAAAgD8AAAAAAQAAAAAAAAAAAMBBAAAAAIvHCSwAAAAAAAAAAAxFAEAAAMBBAAAAAIvHCSwOmJI9AAAAAAAAAIAOZ/FBAAAAAIvHCSwAAACAe72DPg=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 4.520596504211426,
+            "y": -17.110084533691406,
+            "z": 15,
+            "color": 738838411
+          },
+          {
+            "x": -12.160346984863281,
+            "y": -16.06637954711914,
+            "z": 15,
+            "color": 2739193327
+          },
+          {
+            "x": -13.004753112792969,
+            "y": -1.5707502365112305,
+            "z": 15,
+            "color": 679418003
+          }
+        ],
+        [
+          {
+            "x": -11.999727249145508,
+            "y": 2.660675048828125,
+            "z": 15,
+            "color": 312337271
+          },
+          {
+            "x": -17.86227035522461,
+            "y": -6.412532806396484,
+            "z": 15,
+            "color": 1625721499
+          },
+          {
+            "x": -6.383030891418457,
+            "y": -7.248852252960205,
+            "z": 15,
+            "color": 2330112511
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [28, 24],
+        "cellSize": [14, 12],
+        "cells": [2, 8]
+      },
+      "position": [-4, -15, 15],
+      "expected": ""
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 10.692307472229004,
+            "y": 5.636363506317139,
+            "z": 1,
+            "color": 1569729904
+          },
+          {
+            "x": 23.30769157409668,
+            "y": -0.9090909361839294,
+            "z": 1,
+            "color": 747839396
+          },
+          {
+            "x": 45.769229888916016,
+            "y": -3.8181817531585693,
+            "z": 1,
+            "color": 1683962648
+          }
+        ],
+        [
+          {
+            "x": 4.230769157409668,
+            "y": -1.6363636255264282,
+            "z": 1,
+            "color": 966030284
+          },
+          {
+            "x": 36.53845977783203,
+            "y": -4.545454502105713,
+            "z": 1,
+            "color": 603454912
+          },
+          {
+            "x": 34.38461685180664,
+            "y": -4.545454502105713,
+            "z": 1,
+            "color": 2150124788
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [32, 12],
+        "cellSize": [32, 12],
+        "cells": [2, 1]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAACxEytBF120QAAAAABwLZBdsROrPh988D7GcaxBAAAAgAAAAABwLZBdxnEsPwAAAIAS1PxBAAAAgAAAAABwLZBdEtR8PwAAAIA="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 0.96875,
+            "y": -6.09375,
+            "z": 4,
+            "color": 1569729904
+          },
+          {
+            "x": -0.15625,
+            "y": -9.46875,
+            "z": 4,
+            "color": 747839396
+          },
+          {
+            "x": -0.65625,
+            "y": -10.96875,
+            "z": 4,
+            "color": 1683962648
+          }
+        ],
+        [
+          {
+            "x": -0.28125,
+            "y": -9.84375,
+            "z": 4,
+            "color": 966030284
+          },
+          {
+            "x": -0.78125,
+            "y": -11.34375,
+            "z": 4,
+            "color": 603454912
+          },
+          {
+            "x": -0.78125,
+            "y": -11.34375,
+            "z": 4,
+            "color": 2150124788
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [32, 12],
+        "cellSize": [32, 12],
+        "cells": [2, 1]
+      },
+      "position": [0, -9, 3],
+      "expected": ""
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 21.230770111083984,
+            "y": 20.272727966308594,
+            "z": 0,
+            "color": 1000237625
+          },
+          {
+            "x": -4.307692527770996,
+            "y": 11.909090995788574,
+            "z": 0,
+            "color": 2541612157
+          },
+          {
+            "x": -1.5384615659713745,
+            "y": 6.454545497894287,
+            "z": 0,
+            "color": 1170608385
+          }
+        ],
+        [
+          {
+            "x": 27.384614944458008,
+            "y": 24.272727966308594,
+            "z": 0,
+            "color": 4227455941
+          },
+          {
+            "x": 5.538461685180664,
+            "y": -4.454545497894287,
+            "z": 0,
+            "color": 2783613129
+          },
+          {
+            "x": 33.230770111083984,
+            "y": 22.090909957885742,
+            "z": 0,
+            "color": 3447436301
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [20, 16],
+        "cellSize": [10, 8],
+        "cells": [6, 4]
+      },
+      "position": [0, 0, 0],
+      "expected": "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"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 32.721153259277344,
+            "y": 22.307693481445312,
+            "z": -4,
+            "color": 1000237625
+          },
+          {
+            "x": 1.9134613275527954,
+            "y": 17.673076629638672,
+            "z": -4,
+            "color": 2541612157
+          },
+          {
+            "x": 3.067307710647583,
+            "y": 11.615385055541992,
+            "z": -4,
+            "color": 1170608385
+          }
+        ],
+        [
+          {
+            "x": 40.82692337036133,
+            "y": 25.471155166625977,
+            "z": -4,
+            "color": 4227455941
+          },
+          {
+            "x": 7.057692527770996,
+            "y": -0.740384578704834,
+            "z": -4,
+            "color": 2783613129
+          },
+          {
+            "x": 46.471153259277344,
+            "y": 22.307693481445312,
+            "z": -4,
+            "color": 3447436301
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [20, 16],
+        "cellSize": [10, 8],
+        "cells": [6, 4]
+      },
+      "position": [0, 4, -4],
+      "expected": "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"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 11.15384578704834,
+            "y": 8.363636016845703,
+            "z": 1,
+            "color": 840686518
+          },
+          {
+            "x": -10.692307472229004,
+            "y": -0.3636363744735718,
+            "z": 1,
+            "color": 1862795082
+          },
+          {
+            "x": 70.84615325927734,
+            "y": 8.363636016845703,
+            "z": 1,
+            "color": 165065246
+          }
+        ],
+        [
+          {
+            "x": 44.07692337036133,
+            "y": 5.454545497894287,
+            "z": 1,
+            "color": 914049074
+          },
+          {
+            "x": 17.30769157409668,
+            "y": 6.909090995788574,
+            "z": 1,
+            "color": 2794739078
+          },
+          {
+            "x": -7,
+            "y": 4.363636493682861,
+            "z": 1,
+            "color": 8367642
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [24, 4],
+        "cellSize": [24, 4],
+        "cells": [4, 3]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAAAACAyeFHPwAAAAC22xsyAAAAgMnhRz4AAMBBX19WQAAAAAC22xsyAACAP19fVj8AAMBBAACAQAAAAAC22xsyAACAPwAAgD8AAAAAAAAAAAAAAIDJ4Uc/AAAAALbbGzIAAACAyeFHPgAAwEEAAIBAAAAAALbbGzIAAIA/AACAP89ObD4AAIBAAAAAALbbGzLfiR08AACAPwAAAAAAAAAAAAAAgMnhRz8AAAAAttsbMgAAAIDJ4Uc+z05sPgAAgEAAAAAAttsbMt+JHTwAAIA/AAAAgJAZekAAAAAAttsbMgAAAICQGXo/AAAAAAEAAAAAAMBBX19WQAAAAAC22xsyAAAAAF9fVj+MnfBBAACAQAAAAAC22xsyIKSBPgAAgD8AAMBBAACAQAAAAAC22xsyAAAAAAAAgD8AAAAABAAAAM9ObD4AAIBAAAAAALbbGzLfiR08AAAAAAAAwEEAAIBAAAAAALbbGzIAAIA/AAAAAAAAwEEAAABBAAAAALbbGzIAAIA/AACAPwAAAAAEAAAAz05sPgAAgEAAAAAAttsbMt+JHTwAAAAAAADAQQAAAEEAAAAAttsbMgAAgD8AAIA/v+UjQQAAAEEAAAAAttsbMqmH2j4AAIA/AAAAAAUAAAAAAMBBAACAQAAAAAC22xsyAAAAAAAAAACMnfBBAACAQAAAAAC22xsyIKSBPgAAAAAAAEBCJmO9QAAAAAC22xsyAACAP5iM9T4AAAAABQAAAAAAwEEAAIBAAAAAALbbGzIAAAAAAAAAAAAAQEImY71AAAAAALbbGzIAAIA/mIz1PgAAQEIAAABBAAAAALbbGzIAAIA/AACAPwAAAAAFAAAAAADAQQAAgEAAAAAAttsbMgAAAAAAAAAAAABAQgAAAEEAAAAAttsbMgAAgD8AAIA/AADAQQAAAEEAAAAAttsbMgAAAAAAAIA/AAAAAAYAAAAAAEBCJmO9QAAAAAC22xsyAAAAAJiM9T7A5YZCAAAAQQAAAAC22xsyAHRPPwAAgD8AAEBCAAAAQQAAAAC22xsyAAAAAAAAgD8BAAAABAAAAAAAAICta5BAAAAAADJIezYAAACAaF0DPgAAwEHc0qBAAAAAADJIezYAAIA/cEuDPgAAwEFcdNFAAAAAADJIezYAAIA/uOgiPwEAAAAEAAAAAAAAgK1rkEAAAAAAMkh7NgAAAIBoXQM+AADAQVx00UAAAAAAMkh7NgAAgD+46CI/J3aKQUYX3UAAAAAAMkh7NomdOD+MLjo/AQAAAAQAAAAAAACArWuQQAAAAAAySHs2AAAAgGhdAz4ndopBRhfdQAAAAAAySHs2iZ04P4wuOj8AAACA3RejQAAAAAAySHs2AAAAgHRfjD4BAAAABQAAAAAAwEHc0qBAAAAAADJIezYAAAAAcEuDPsVOMEKji65AAAAAADJIezZjJ1Y/jC66PgAAwEFcdNFAAAAAADJIezYAAAAAuOgiPw=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 14.448535919189453,
+            "y": -6.827469348907471,
+            "z": 3,
+            "color": 840686518
+          },
+          {
+            "x": -5.075939178466797,
+            "y": -5.323972702026367,
+            "z": 3,
+            "color": 1862795082
+          },
+          {
+            "x": 66.67930603027344,
+            "y": -14.289007186889648,
+            "z": 3,
+            "color": 165065246
+          }
+        ],
+        [
+          {
+            "x": 43.11986541748047,
+            "y": -11.351944923400879,
+            "z": 3,
+            "color": 914049074
+          },
+          {
+            "x": 19.764968872070312,
+            "y": -7.80124568939209,
+            "z": 3,
+            "color": 2794739078
+          },
+          {
+            "x": -1.623579502105713,
+            "y": -5.120738506317139,
+            "z": 3,
+            "color": 8367642
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [24, 4],
+        "cellSize": [24, 4],
+        "cells": [4, 3]
+      },
+      "position": [6, -7, 2],
+      "expected": ""
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 3.846153736114502,
+            "y": 22.272727966308594,
+            "z": 0,
+            "color": 3948594167
+          },
+          {
+            "x": -4.153846263885498,
+            "y": -3.545454502105713,
+            "z": 0,
+            "color": 787821339
+          },
+          {
+            "x": 2.615384578704834,
+            "y": -0.27272728085517883,
+            "z": 0,
+            "color": 2679874175
+          }
+        ],
+        [
+          {
+            "x": 1.076923131942749,
+            "y": 8.818181991577148,
+            "z": 0,
+            "color": 3102209571
+          },
+          {
+            "x": 2.307692289352417,
+            "y": 20.81818199157715,
+            "z": 0,
+            "color": 1191203335
+          },
+          {
+            "x": 2,
+            "y": 12.454545021057129,
+            "z": 0,
+            "color": 813373995
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [12, 8],
+        "cellSize": [6, 4],
+        "cells": [2, 8]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAAAAAAAAAAAAAAAAD3w1rrAAAAAAAAAABkVihAAAAAgAAAAAD3w1rrMHNgPgAAAIAJUDZAAACAQAAAAAD3w1rrYRVzPgAAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAPfDWusAAAAAAAAAAAlQNkAAAIBAAAAAAPfDWuthFXM+AAAAPwAAAAAAAIBAAAAAAPfDWusAAAAAAAAAPwAAAAAAAAAAAAAAAAAAgEAAAAAA98Na6wAAAAAAAAA/CVA2QAAAgEAAAAAA98Na62EVcz4AAAA/r0lEQAAAAEEAAAAA98Na68rbgj4AAIA/AAAAAAAAAAAAAAAAAACAQAAAAAD3w1rrAAAAAAAAAD+vSURAAAAAQQAAAAD3w1rrytuCPgAAgD8AAAAAAAAAQQAAAAD3w1rrAAAAAAAAgD8AAAAAAQAAAAAAAAAAAABBAAAAAPfDWusAAAAAAAAAAK9JREAAAABBAAAAAPfDWuvK24I+AAAAAFVDUkAAAEBBAAAAAPfDWuvjLIw+AAAAPwAAAAABAAAAAAAAAAAAAEEAAAAA98Na6wAAAAAAAAAAVUNSQAAAQEEAAAAA98Na6+MsjD4AAAA/+r0pPwAAQEEAAAAA98Na66NSYj0AAAA/AAAAAAEAAAAAAAAAAAAAQQAAAAD3w1rrAAAAAAAAAAD6vSk/AABAQQAAAAD3w1rro1JiPQAAAD8AAACAI8MdQQAAAAD3w1rrAAAAgBgZbj4AAAAAAQAAAPq9KT8AAEBBAAAAAPfDWuujUmI9AAAAP1VDUkAAAEBBAAAAAPfDWuvjLIw+AAAAP/s8YEAAAIBBAAAAAPfDWuv9fZU+AACAPwAAAAABAAAA+r0pPwAAQEEAAAAA98Na66NSYj0AAAA/+zxgQAAAgEEAAAAA98Na6/19lT4AAIA/2YTzPwAAgEEAAAAA98Na65FYIj4AAIA/AAAAAAIAAADZhPM/AACAQQAAAAD3w1rrkVgiPgAAAAD7PGBAAACAQQAAAAD3w1rr/X2VPgAAAACgNm5AAACgQQAAAAD3w1rrFc+ePgAAAD8AAAAAAgAAANmE8z8AAIBBAAAAAPfDWuuRWCI+AAAAAKA2bkAAAKBBAAAAAPfDWusVz54+AAAAP1sVSUAAAKBBAAAAAPfDWus9DoY+AAAAPwAAAAACAAAAWxVJQAAAoEEAAAAA98Na6z0Ohj4AAAA/oDZuQAAAoEEAAAAA98Na6xXPnj4AAAA/Yid2QIwuskEAAAAA98Na60EapD4wukg/AQAAAAEAAACe2Ik/RhcNQQAAAAAj9ue4fcu3PWB00T0TO/E/AABAQQAAAAAj9ue4DdIgPgAAAD8jnrM/AABAQQAAAAAj9ue4hH3vPQAAAD8BAAAAAQAAACOesz8AAEBBAAAAACP257iEfe89AAAAPxM78T8AAEBBAAAAACP257gN0iA+AAAAPwAAAEDRRUdBAAAAACP257irqio+oosOPwEAAAABAAAAI56zPwAAQEEAAAAAI/bnuIR97z0AAAA/AAAAQNFFR0EAAAAAI/bnuKuqKj6iiw4/C1kIQAAAgEEAAAAAI/bnuA/MNT4AAIA/AQAAAAEAAAAjnrM/AABAQQAAAAAj9ue4hH3vPQAAAD8LWQhAAACAQQAAAAAj9ue4D8w1PgAAgD9rIeg/AACAQQAAAAAj9ue48sAaPgAAgD8BAAAAAgAAAGsh6D8AAIBBAAAAACP257jywBo+AAAAAAtZCEAAAIBBAAAAACP257gPzDU+AAAAABHEEUD//59BAAAAACP257jBWkI++P//PgEAAAACAAAAayHoPwAAgEEAAAAAI/bnuPLAGj4AAAAAEcQRQP//n0EAAAAAI/bnuMFaQj74//8+WVIOQAAAoEEAAAAAI/bnuCHDPT4AAAA/"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 16.020105361938477,
+            "y": 8.925699234008789,
+            "z": 8,
+            "color": 3948594167
+          },
+          {
+            "x": -2.6844406127929688,
+            "y": -8.687936782836914,
+            "z": 8,
+            "color": 787821339
+          },
+          {
+            "x": 8.499126434326172,
+            "y": -7.714160919189453,
+            "z": 8,
+            "color": 2679874175
+          }
+        ],
+        [
+          {
+            "x": 8.416084289550781,
+            "y": -0.5594406127929688,
+            "z": 8,
+            "color": 3102209571
+          },
+          {
+            "x": 13.300699234008789,
+            "y": 8.171329498291016,
+            "z": 8,
+            "color": 1191203335
+          },
+          {
+            "x": 10.738636016845703,
+            "y": 1.9659090042114258,
+            "z": 8,
+            "color": 813373995
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [12, 8],
+        "cellSize": [6, 4],
+        "cells": [2, 8]
+      },
+      "position": [1, -8, 8],
+      "expected": "AAAAAAAAAACwVLFAAAAAQQAAAAD3w1rry40LPwAAAIDpxS9BAAAAQQAAAAD3w1rrjLJ/PwAAAIAAADBBhoAAQQAAAAD3w1rrAACAPxqGgDsAAAAAAAAAALBUsUAAAABBAAAAAPfDWuvLjQs/AAAAgAAAMEGGgABBAAAAAPfDWusAAIA/GoaAOwAAMEEAAEBBAAAAAPfDWusAAIA/AAAAPwAAAAAAAAAAsFSxQAAAAEEAAAAA98Na68uNCz8AAACAAAAwQQAAQEEAAAAA98Na6wAAgD8AAAA/GaEcQQAAQEEAAAAA98Na6yEsZj8AAAA/AAAAAAAAAAAZoRxBAABAQQAAAAD3w1rrISxmPwAAAD8AADBBAABAQQAAAAD3w1rrAACAPwAAAD8AADBBsD1SQQAAAAD3w1rrAACAP197JD8BAAAAAAAAAJZU90AAAABBAAAAACP257hkODo/AAAAgHjH/UAAAABBAAAAACP257j7hD4/AAAAgHTRG0FddB9BAAAAACP257hFF2U/6KJ7PgEAAAAAAAAAllT3QAAAAEEAAAAAI/bnuGQ4Oj8AAACAdNEbQV10H0EAAAAAI/bnuEUXZT/oons+YkEpQQAAQEEAAAAAI/bnuNgBdz8AAAA/AQAAAAAAAACWVPdAAAAAQQAAAAAj9ue4ZDg6PwAAAIBiQSlBAABAQQAAAAAj9ue42AF3PwAAAD+reB9BAABAQQAAAAAj9ue4OfZpPwAAAD8BAAAAAAAAAKt4H0EAAEBBAAAAACP257g59mk/AAAAP2JBKUEAAEBBAAAAACP257jYAXc/AAAAPwAAMEHyVVBBAAAAACP257gAAIA/5KsgPwEAAAAAAAAAq3gfQQAAQEEAAAAAI/bnuDn2aT8AAAA/AAAwQfJVUEEAAAAAI/bnuAAAgD/kqyA/AAAwQReLXUEAAAAAI/bnuAAAgD8uFjs/"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 0.5384615659713745,
+            "y": 3.454545497894287,
+            "z": 1,
+            "color": 1838767692
+          },
+          {
+            "x": -1.615384578704834,
+            "y": -10.363636016845703,
+            "z": 1,
+            "color": 1624920128
+          },
+          {
+            "x": 18.384614944458008,
+            "y": -8.909090995788574,
+            "z": 1,
+            "color": 3008006004
+          }
+        ],
+        [
+          {
+            "x": 1.4615384340286255,
+            "y": -4.545454502105713,
+            "z": 1,
+            "color": 2453518312
+          },
+          {
+            "x": 11.615385055541992,
+            "y": 6.7272725105285645,
+            "z": 1,
+            "color": 1166595484
+          },
+          {
+            "x": -0.38461539149284363,
+            "y": 4.545454502105713,
+            "z": 1,
+            "color": 4176876688
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [16, 28],
+        "cellSize": [16, 28],
+        "cells": [2, 1]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAAAAAAAAAAAAAAAAAAAAABMXpltAAAAAAAAAADgy7BAAAAAgAAAAABMXplt4MuwPgAAAICe2Ak/RhddQAAAAABMXpltntgJPeKs/D0BAAAAAAAAAAAAAIBssilAAAAAAOi3PZIAAACAe/DBPZ3YCT8AAACAAAAAAOi3PZKd2Ak9AAAAgF/JsUAAAACAAAAAAOi3PZJfybE+AAAAgAEAAAAAAAAAAAAAgGyyKUAAAAAA6Lc9kgAAAIB78ME9X8mxQAAAAIAAAAAA6Lc9kl/JsT4AAACAntg5QdFF10AAAAAA6Lc9kp7YOT+mBnY+AQAAAAAAAAAAAACAbLIpQAAAAADotz2SAAAAgHvwwT2e2DlB0UXXQAAAAADotz2Sntg5P6YGdj4AAACAO7GTQAAAAADotz2SAAAAgI3KKD4="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": -3.325284004211426,
+            "y": 15.117897987365723,
+            "z": 15,
+            "color": 1838767692
+          },
+          {
+            "x": -6.3678975105285645,
+            "y": 10.802556991577148,
+            "z": 15,
+            "color": 1624920128
+          },
+          {
+            "x": 8.009943008422852,
+            "y": 9.248579025268555,
+            "z": 15,
+            "color": 3008006004
+          }
+        ],
+        [
+          {
+            "x": -3.544034242630005,
+            "y": 12.399147987365723,
+            "z": 15,
+            "color": 2453518312
+          },
+          {
+            "x": 4.907670974731445,
+            "y": 15.066761016845703,
+            "z": 15,
+            "color": 1166595484
+          },
+          {
+            "x": -3.862215995788574,
+            "y": 15.569602012634277,
+            "z": 15,
+            "color": 4176876688
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [16, 28],
+        "cellSize": [16, 28],
+        "cells": [2, 1]
+      },
+      "position": [-6, 15, 14],
+      "expected": "AAAAAAAAAAAAAMBAnFecwAAAAABMXpltAAAAgILyuD66KGBBpAu4wAAAAABMXpltuigAP+sdqT4AAMBAGE3NvwAAAABMXpltAAAAgP309D4BAAAAAAAAAAAAwEBIur2/AAAAAOi3PZIAAACAiC73PtKFLkEAuog9AAAAAOi3PZKkC50+1cAJPwAAwEAAQbI+AAAAAOi3PZIAAACAclMMPw=="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 4.92307710647583,
+            "y": -12.090909004211426,
+            "z": 0,
+            "color": 2615777349
+          },
+          {
+            "x": 0.9230769276618958,
+            "y": 20.272727966308594,
+            "z": 0,
+            "color": 676058441
+          },
+          {
+            "x": 9.538461685180664,
+            "y": 11.909090995788574,
+            "z": 0,
+            "color": 1273168013
+          }
+        ],
+        [
+          {
+            "x": 8.615385055541992,
+            "y": -13.909090995788574,
+            "z": 0,
+            "color": 3014712849
+          },
+          {
+            "x": 7.384615421295166,
+            "y": 1,
+            "z": 0,
+            "color": 2576445909
+          },
+          {
+            "x": 1.8461538553237915,
+            "y": 45,
+            "z": 0,
+            "color": 784269273
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [4, 32],
+        "cellSize": [2, 16],
+        "cells": [6, 4]
+      },
+      "position": [0, 0, 0],
+      "expected": "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"
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": -18.336318969726562,
+            "y": -13.054633140563965,
+            "z": -13,
+            "color": 2615777349
+          },
+          {
+            "x": -9.029500961303711,
+            "y": 18.990821838378906,
+            "z": -13,
+            "color": 676058441
+          },
+          {
+            "x": -8.94689655303955,
+            "y": 10.354021072387695,
+            "z": -13,
+            "color": 1273168013
+          }
+        ],
+        [
+          {
+            "x": -17.721372604370117,
+            "y": -15.01748275756836,
+            "z": -13,
+            "color": 3014712849
+          },
+          {
+            "x": -13.233173370361328,
+            "y": -0.2836538553237915,
+            "z": -13,
+            "color": 2576445909
+          },
+          {
+            "x": -0.612980842590332,
+            "y": 43.28845977783203,
+            "z": -13,
+            "color": 784269273
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [4, 32],
+        "cellSize": [2, 16],
+        "cells": [6, 4]
+      },
+      "position": [-15, 1, -13],
+      "expected": ""
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 25.615385055541992,
+            "y": 45.09090805053711,
+            "z": 1,
+            "color": 3856154290
+          },
+          {
+            "x": 16.076923370361328,
+            "y": 40.3636360168457,
+            "z": 1,
+            "color": 3744035846
+          },
+          {
+            "x": 23.769229888916016,
+            "y": 49.45454406738281,
+            "z": 1,
+            "color": 2247849114
+          }
+        ],
+        [
+          {
+            "x": 16.69230842590332,
+            "y": 47.6363639831543,
+            "z": 1,
+            "color": 4217853038
+          },
+          {
+            "x": 14.538461685180664,
+            "y": 37.818180084228516,
+            "z": 1,
+            "color": 330131330
+          },
+          {
+            "x": 19.769229888916016,
+            "y": 29.81818199157715,
+            "z": 1,
+            "color": 3339272662
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [8, 20],
+        "cellSize": [8, 20],
+        "cells": [4, 3]
+      },
+      "position": [0, 0, 0],
+      "expected": "AAAAAAoAAACKnYBBXXQhQgAAAACyPtjlAIodPADylDwAAMBBSSkxQgAAAACyPtjlAACAPw2qWz4AAMBB9KJDQgAAAACyPtjlAACAP+YS5D4AAAAACgAAAIqdgEFddCFCAAAAALI+2OUAih08APKUPAAAwEH0okNCAAAAALI+2OUAAIA/5hLkPmInvkF00UVCAAAAALI+2OWInXg/TQnyPgAAAAALAAAAAADAQUkpMUIAAAAAsj7Y5QAAAAANqls+T+zMQRddNEIAAAAAsj7Y5fDETj7GU4I+AADAQfSiQ0IAAAAAsj7Y5QAAAADmEuQ+AQAAAAUAAACKnWhB0UUXQgAAAABuVGf7FDtRP50SZD8AAIBB31QOQgAAAABuVGf7AACAP/11Rz8AAIBBAAAgQgAAAABuVGf7AACAPwAAgD8BAAAABQAAAIqdaEHRRRdCAAAAAG5UZ/sUO1E/nRJkPwAAgEEAACBCAAAAAG5UZ/sAAIA/AACAPwdGcEEAACBCAAAAAG5UZ/sOjGA/AACAPwEAAAAGAAAAAACAQd9UDkIAAAAAblRn+wAAAAD9dUc/YieeQaOL7kEAAAAAblRn+xA78T5wWPs+ghaQQQAAIEIAAAAAblRn+xC0gD4AAIA/AQAAAAYAAAAAAIBB31QOQgAAAABuVGf7AAAAAP11Rz+CFpBBAAAgQgAAAABuVGf7ELSAPgAAgD8AAIBBAAAgQgAAAABuVGf7AAAAAAAAgD8BAAAACQAAAAdGcEEAACBCAAAAAG5UZ/sOjGA/AAAAAAAAgEEAACBCAAAAAG5UZ/sAAIA/AAAAAAAAgEEL7DFCAAAAAG5UZ/sAAIA/82ZlPgEAAAAKAAAAAACAQQAAIEIAAAAAblRn+wAAAAAAAAAAghaQQQAAIEIAAAAAblRn+xC0gD4AAAAA2YmFQaOLPkIAAAAAblRn+yA7sT2tfcM+AQAAAAoAAAAAAIBBAAAgQgAAAABuVGf7AAAAAAAAAADZiYVBo4s+QgAAAABuVGf7IDuxPa19wz4AAIBBC+wxQgAAAABuVGf7AAAAAPNmZT4="
+    },
+    {
+      "triangles": [
+        [
+          {
+            "x": 8.02491283416748,
+            "y": -6.146416187286377,
+            "z": -1,
+            "color": 3856154290
+          },
+          {
+            "x": 3.5563812255859375,
+            "y": -6.436625957489014,
+            "z": -1,
+            "color": 3744035846
+          },
+          {
+            "x": 7.489947319030762,
+            "y": -5.2128496170043945,
+            "z": -1,
+            "color": 2247849114
+          }
+        ],
+        [
+          {
+            "x": 4.280158042907715,
+            "y": -5.111451148986816,
+            "z": -1,
+            "color": 4217853038
+          },
+          {
+            "x": 2.7242136001586914,
+            "y": -6.817745208740234,
+            "z": -1,
+            "color": 330131330
+          },
+          {
+            "x": 4.512674331665039,
+            "y": -8.644667625427246,
+            "z": -1,
+            "color": 3339272662
+          }
+        ]
+      ],
+      "layout": {
+        "pageSize": [8, 20],
+        "cellSize": [8, 20],
+        "cells": [4, 3]
+      },
+      "position": [-6, -13, -2],
+      "expected": ""
+    }
+  ]
+}
