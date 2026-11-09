@@ -265,7 +265,18 @@ for (const [profile, variable] of [
           await world.objects.tick(frame);
           await world.objects.drawTick(frame);
         }
-        const machine = { memory: new Uint8Array(16), shared: new Uint8Array(), blocks: [], fp: 0 };
+        const machine = { memory: new Uint8Array(16), shared: new Uint8Array(), blocks: [], fp: 0 },
+          p = world.engine.process,
+          color = (id) => p.load(world.graphics.get(id).pointer + 1880),
+          id = world.nativeTaskID(a);
+        assert.equal(color(a), 0xff000000);
+        assert.equal(color(b), 0xff000000);
+        assert.deepEqual(await runtime.apply(0x22d, [id, 0xfedcba98], machine, { id: topA }), {
+          control: 2,
+        });
+        await runtime.apply(0x22d, [id, 0x123456], machine, { id: topB });
+        assert.equal(color(a), 0xfedcba98);
+        assert.equal(color(b), 0x123456);
         for (const [id, top] of [
           [a, topA],
           [b, topB],

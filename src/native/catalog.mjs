@@ -1413,6 +1413,7 @@ const extendedDescriptions = [
   [0xed, 'memory.freeVoid', ['pointer block'], 'void'],
   [0x187, 'legacyText.query119', ['handle task'], 'word'],
   [0x1c8, 'legacyText.message120', ['handle task', 'word value'], 'void'],
+  [0x22d, 'legacyText.setSecondaryColor', ['handle task', 'word color'], 'void'],
   [0x1d0, 'draw.refreshEntry', ['handle task', 'word entry'], 'void'],
   [0x1d2, 'plane.setCoordinateMode', ['nativeID target', 'word mode'], 'void'],
   [0x40f, 'clipboard.copyUTF8', ['format* UTF8Text'], 'void'],
@@ -3239,7 +3240,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
       0x2c5,
     ].includes(id) ||
     [0x11d, 0x11e, 0x183, 0x184].includes(id) ||
-    [0x18b, 0x18c, 0xed, 0x187, 0x1c8, 0x1d0].includes(id) ||
+    [0x18b, 0x18c, 0xed, 0x187, 0x1c8, 0x1d0, 0x22d].includes(id) ||
     [0x8c, 0x8e, 0x225].includes(id) ||
     [
       0x8f, 0x23a, 0x23b, 0x23c, 0x207, 0x109, 0x10a, 0x10b, 0x10c, 0x10d, 0x10e, 0x1a1, 0x314,

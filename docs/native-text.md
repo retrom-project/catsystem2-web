@@ -32,6 +32,11 @@ helpers. The image-font wrapper marshals a browser bitmap into an original
 native bitmap; the original font setter owns its deep copy. A temporary image
 container here exposes the bitmap getter boundary, not a replacement task.
 
+Main `22D` runs the original secondary glyph color wrapper (`51F860` /
+`652C60`). SDK message 119 and game message 121 store the full word at task
+offset 1880. The glyph renderer reads its three low bytes. The two-profile
+task test sends different packed words to equal-number text tasks in two Tops.
+
 `NativeTextTask` and `NativeNVTextTask` port the later task's message/frame
 protocol while executing their original writer engines. NV retains independent
 main/sub-text section parsers. `insert` creates a section; `str` clears sections
