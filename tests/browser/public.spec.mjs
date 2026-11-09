@@ -1,5 +1,78 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { basename, dirname, resolve } from 'node:path';
+import { kcsProgram } from '../helpers.mjs';
+
+const sdkProfile = 'sdk-4.01-engine-2.6.1.74',
+  gameProfile = 'nekopara-vol3-engine-2.6.1.76';
+
+async function gameApplication(executable) {
+  const directory = dirname(executable);
+  // The fixture may mount the original tree or its separated analysis PE.
+  for (const path of [
+    resolve(directory, 'config/startup.xml'),
+    resolve(directory, '../../original/config/startup.xml'),
+  ]) {
+    let startup;
+    try {
+      startup = await readFile(path, 'utf8');
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      continue;
+    }
+    const app = /<APP>([\s\S]*?)<\/APP>/i.exec(startup)?.[1],
+      identity = /<v_code>[^<]+<\/v_code>/i.exec(app ?? '')?.[0];
+    if (!identity) throw new Error(`Original game APP identity is missing in ${path}`);
+    return `<APP>${identity}</APP>`;
+  }
+  throw new Error('The original game startup.xml is required alongside the frozen engine fixture');
+}
+
+async function mountOriginalEngines(page, profiles) {
+  const { CATSYSTEM2_SDK_EXE, CATSYSTEM2_ENGINE_EXE, CATSYSTEM2_EMOTE_DLL } = process.env;
+  test.skip(
+    (profiles.includes(sdkProfile) && !CATSYSTEM2_SDK_EXE) ||
+      (profiles.includes(gameProfile) && (!CATSYSTEM2_ENGINE_EXE || !CATSYSTEM2_EMOTE_DLL)),
+    'Mount the frozen CatSystem2 EXE and its original E-mote driver for the game profile',
+  );
+  test.setTimeout(180000);
+  const assets = new Map(),
+    fixtures = [];
+  for (const profile of profiles) {
+    const sdk = profile === sdkProfile,
+      executable = sdk ? CATSYSTEM2_SDK_EXE : CATSYSTEM2_ENGINE_EXE,
+      files = [[basename(executable), executable]];
+    if (!sdk) files.push(['emotedriver.dll', CATSYSTEM2_EMOTE_DLL]);
+    const mounted = files.map(([name, path]) => {
+      const url = `/public-native-fixtures/${profile}/${encodeURIComponent(name)}`;
+      assets.set(url, path);
+      return [name, url];
+    });
+    fixtures.push({ profile, files: mounted, app: sdk ? '' : await gameApplication(executable) });
+  }
+  await page.route('**/public-native-fixtures/**', (route) => {
+    const path = assets.get(new URL(route.request().url()).pathname);
+    return route.fulfill(
+      path ? { path, contentType: 'application/octet-stream' } : { status: 404 },
+    );
+  });
+  await page.goto('/');
+  await page.evaluate(async (fixtures) => {
+    const { BlobFile } = await import('/src/files.mjs');
+    window.publicNativeFixtures = new Map();
+    for (const { profile, files, app } of fixtures) {
+      const mounted = await Promise.all(
+        files.map(async ([name, url]) => {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Could not mount original engine fixture ${name}`);
+          return [name, new BlobFile(await response.blob())];
+        }),
+      );
+      window.publicNativeFixtures.set(profile, { files: mounted, app });
+    }
+  }, fixtures);
+}
 
 test('native platform state persists in its own game namespace and rolls back failed writes', async ({
   page,
@@ -76,9 +149,6 @@ test('native platform state persists in its own game namespace and rolls back fa
     remainingFiles: 0,
   });
 });
-import { kcsProgram } from '../helpers.mjs';
-import { readFile } from 'node:fs/promises';
-
 test('native persistent files retain metadata and namespaces, keep mounted sources intact, and roll back an aborted move transaction', async ({
   page,
 }) => {
@@ -246,7 +316,7 @@ test('native persistent files retain metadata and namespaces, keep mounted sourc
 test('browser window services apply native preferences, manage real save files, confirm exit and release the complete engine', async ({
   page,
 }) => {
-  await page.goto('/');
+  await mountOriginalEngines(page, [sdkProfile]);
   const program = [...kcsProgram([[37, 1024], [43, 0x47, 4], [59]])];
   await page.evaluate(async (program) => {
     const { CatSystem2 } = await import('/src/engine.mjs'),
@@ -257,7 +327,8 @@ test('browser window services apply native preferences, manage real save files, 
         '<?xml version="1.0" encoding="Shift_JIS"?><document><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
       game = new GameFiles(
         new Map([
-          ['startup.xml', file(new TextEncoder().encode(xml))],
+          ...window.publicNativeFixtures.get(profile).files,
+          ['config/startup.xml', file(new TextEncoder().encode(xml))],
           ['main.kcs', file(Uint8Array.from(program))],
         ]),
       );
@@ -556,7 +627,7 @@ test('native movie decoding, audible PCM, loop completion and fresh decoder rest
 test('full native movie calls preserve view gates and active video across a fresh CatSystem2 world', async ({
   page,
 }) => {
-  await page.goto('/');
+  await mountOriginalEngines(page, [sdkProfile, gameProfile]);
   await page.locator('body').click({ position: { x: 5, y: 5 } });
   const program = [
       ...kcsProgram(
@@ -583,15 +654,18 @@ test('full native movie calls preserve view gates and active video across a fres
         { GameFiles, BlobFile } = await import('/src/files.mjs'),
         { serializeCheckpoint, deserializeCheckpoint } = await import('/src/checkpoint.mjs'),
         results = [];
-      for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+      for (const [profile, fixture] of window.publicNativeFixtures) {
         const file = (bytes) => new BlobFile(new Blob([bytes])),
           xml =
             '<?xml version="1.0" encoding="' +
             (profile.startsWith('sdk-') ? 'Shift_JIS' : 'UTF-8') +
-            '"?><document><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>movie</name><ext>webm</ext></int01></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
+            '"?><document>' +
+            fixture.app +
+            '<SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>movie</name><ext>webm</ext></int01></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
           game = new GameFiles(
             new Map([
-              ['startup.xml', file(new TextEncoder().encode(xml))],
+              ...fixture.files,
+              ['config/startup.xml', file(new TextEncoder().encode(xml))],
               ['main.kcs', file(Uint8Array.from(program))],
               ['authored.webm', file(Uint8Array.from(media))],
               ['profile.txt', file(new TextEncoder().encode(profile))],
@@ -994,7 +1068,7 @@ test('the pinned native zlib library loads in the browser and preserves original
 test('native engine checkpoints restore through a fresh world, reject a broken candidate atomically, and persist original preferences', async ({
   page,
 }) => {
-  await page.goto('/');
+  await mountOriginalEngines(page, [gameProfile]);
   await page.locator('body').click({ position: { x: 5, y: 5 } });
   const program = [
     ...kcsProgram(
@@ -1024,12 +1098,16 @@ test('native engine checkpoints restore through a fresh world, reject a broken c
       { GameFiles, BlobFile } = await import('/src/files.mjs'),
       { serializeCheckpoint, deserializeCheckpoint } = await import('/src/checkpoint.mjs'),
       { NativeSoundPacket } = await import('/src/native/sound.mjs');
-    const xml =
-        '<?xml version="1.0" encoding="UTF-8"?><document><SCREEN><width>32</width><height>32</height><v_width>32</v_width><v_height>32</v_height></SCREEN><SOUNDCONFIG>sound-options.xml</SOUNDCONFIG><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
+    const fixture = window.publicNativeFixtures.get('nekopara-vol3-engine-2.6.1.76'),
+      xml =
+        '<?xml version="1.0" encoding="UTF-8"?><document>' +
+        fixture.app +
+        '<SCREEN><width>32</width><height>32</height><v_width>32</v_width><v_height>32</v_height></SCREEN><SOUNDCONFIG>sound-options.xml</SOUNDCONFIG><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
       soundXML =
         '<?xml version="1.0" encoding="UTF-8"?><document><MASTER><volume>80</volume><play>1</play><sysplay>1</sysplay><mute>0</mute></MASTER></document>',
       sampleRate = 8000,
-      samples = sampleRate * 2,
+      // The original device uses a static buffer for clips up to four seconds.
+      samples = sampleRate * 5,
       bytes = new Uint8Array(44 + samples * 2),
       wav = new DataView(bytes.buffer);
     for (const [at, text] of [
@@ -1059,8 +1137,9 @@ test('native engine checkpoints restore through a fresh world, reject a broken c
     const file = (bytes) => new BlobFile(new Blob([bytes])),
       game = new GameFiles(
         new Map([
+          ...fixture.files,
           ['main.kcs', file(Uint8Array.from(program))],
-          ['startup.xml', file(new TextEncoder().encode(xml))],
+          ['config/startup.xml', file(new TextEncoder().encode(xml))],
           ['sound-options.xml', file(new TextEncoder().encode(soundXML))],
           ['sound/tone.wav', file(bytes)],
         ]),
@@ -1092,7 +1171,7 @@ test('native engine checkpoints restore through a fresh world, reject a broken c
         oldSource = oldAudio.channels.get('native:0').source,
         bad = structuredClone(state);
       bad.world.objects.objects.find((r) => r.kind === 11).kind = 0x7fffffff;
-      bad.world.random.seed = 99;
+      bad.world.random.integer.words[0] = (bad.world.random.integer.words[0] + 1) >>> 0;
       let rejected = false;
       try {
         await engine.restore(bad);
