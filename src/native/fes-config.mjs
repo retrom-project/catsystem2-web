@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // FES getconf/setconf: SDK 616610/617310, game 77CDB0/77DD20.
 // Global configuration and the Emote manager have distinct field namespaces.
-const SDK = 'sdk-4.01-engine-2.6.1.74';
-const GAME = 'nekopara-vol3-engine-2.6.1.76';
 const legacyVolumeFields = ['vol_bgm', 'vol_se', 'vol_pcm'];
 const blockFields = Object.freeze({
   vol_master: [0, 1397],
@@ -86,14 +85,13 @@ const write = (bytes, index, value) =>
 
 export class NativeFESConfiguration {
   constructor({ configuration, languages = () => [], isWindow, emit, changed, m2 } = {}) {
-    if (!configuration || ![SDK, GAME].includes(configuration.profile))
-      throw new Error('FES configuration requires a recovered native configuration profile');
+    this.abi = nativeABI(configuration?.profile);
     Object.assign(this, { configuration, languages, isWindow, emit, changed, m2 });
   }
   recognized(name) {
     return (
       FES_CONFIGURATION_FIELDS.includes(name) &&
-      (this.configuration.profile !== SDK || !gameFields.has(name))
+      (this.abi.configuration.extendedPreferences || !gameFields.has(name))
     );
   }
   get(name, ex1 = 0, ex2 = 0, { legacyVolume = false } = {}) {
@@ -135,7 +133,7 @@ export class NativeFESConfiguration {
     if (recognized) {
       const word = value >>> 0;
       if (name === 'screen')
-        pending = this.emit?.([config.profile === SDK ? 0x15 : 0x12, word, 0, 0, 0], context);
+        pending = this.emit?.([this.abi.messages.screenEvent, word, 0, 0, 0], context);
       else if (name === 'lang_ui' || name === 'lang_text_main' || name === 'lang_text_sub') {
         const languages = this.languages(),
           count = typeof languages === 'number' ? languages : languages.length,

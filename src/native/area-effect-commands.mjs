@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original KCS wrappers for the task effect initializer and playback controls.
+import { nativeABI } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 
 export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
   [
@@ -73,7 +75,7 @@ export class NativeAreaEffectCommands {
       world = this.world,
       origin = this.engine.currentTaskID,
       query = this.engine.currentMessageContext,
-      message = this.sdk && raw >= 252 ? raw + 5 : raw;
+      message = mapABIMessage(this.engine.profile, 'areaCommand', 'canonical', raw);
     if (origin == null || w || flags || (message !== 13 && (message < 257 || message > 278)))
       throw new Error('Unexpected original area effect envelope');
     const record = world.objects.objects.get(world.resolveTaskID(target, origin)),
@@ -82,7 +84,10 @@ export class NativeAreaEffectCommands {
       schema = areaTask ? bitmapPackets.get(message) : null,
       // C7 can target arbitrary tasks. Only the SDK area receivers use the
       // five-slot offset for this raw packet.
-      delivered = this.sdk && message === 262 && record && !areaTask ? raw + 2 : message,
+      delivered =
+        message === nativeABI(this.engine.profile).messages.areaNonReceiver && record && !areaTask
+          ? mapABIMessage(this.engine.profile, 'base', 'canonical', raw)
+          : message,
       copy = schema ? await this.bitmapPacket(l, schema) : 0;
     try {
       const context = {
@@ -135,7 +140,7 @@ export class NativeAreaEffectCommands {
       p.store(out, NATIVE_RESULT_SENTINEL);
       const address = spec.handlers[Number(this.sdk)],
         // The original GCALL leaves ECX pointing at the dispatch slot.
-        slot = NATIVE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
+        slot = NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
         parameters = [bridge.pointer, host, argv, out],
         query = id === 0xc8 ? { written: false } : null,
         options = { task: task.id, messageContext: query },

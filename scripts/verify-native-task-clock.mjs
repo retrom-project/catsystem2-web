@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { Binary } from '../src/binary.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { nativeTask } from '../src/native/task.mjs';
 import { nativeFES } from '../src/native/fes.mjs';
@@ -18,7 +18,7 @@ if (!exe || !output)
   throw new Error('Usage: node scripts/verify-native-task-clock.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(exe)),
   sha256 = createHash('sha256').update(bytes).digest('hex'),
-  profile = Object.entries(NATIVE_PROFILES).find(([, p]) => p.sha256 === sha256);
+  profile = Object.entries(NATIVE_EXE_PROFILES).find(([, p]) => p.sha256 === sha256);
 if (!profile) throw new Error('Task-clock oracle requires a fixed executable');
 const b = new Binary(bytes),
   pe = b.u32(60),

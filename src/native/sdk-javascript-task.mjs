@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // The SDK's kind 55 is a Base-derived task with an original V8 isolate.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
@@ -103,7 +104,7 @@ class NativeSDKJavaScriptTasks {
         if (link) p.store(caller + 104, this.banks.interpreter(bank));
       }
       p.store(result, NATIVE_RESULT_SENTINEL);
-      const slot = NATIVE_PROFILES[SDK].tables.main.va + 4 * id,
+      const slot = NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
         control = await this.call(handler, [bridge.pointer, caller, words, result], slot, {
           task: task.id,
         });
@@ -259,7 +260,7 @@ class NativeSDKJavaScriptTask {
 }
 
 export function installNativeSDKJavaScriptTasks(world) {
-  if (world.profile !== SDK) return;
+  if (!nativeABI(world.profile).capabilities.embeddedJavaScript) return;
   world.registerNativeFeature('sdk-javascript-tasks', async (engine) => {
     const tasks = await world.getNativeFeature('task-memory'),
       platform = await world.getNativeFeature('graphics-platform');

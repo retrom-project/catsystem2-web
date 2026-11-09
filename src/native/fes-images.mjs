@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original CPU image objects and frame drivers. FES owns the source wrapper;
 // retained renderer entries borrow its decoded pixels through native messages.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { runNativeFESObjectMotion } from './fes-controls.mjs';
 import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
@@ -9,50 +11,48 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 
 const ABI = {
   game: {
-    wrapper: 0x68e9f0,
-    wrapperBytes: 0x218,
-    loadCache: 0x62bfb0,
-    dataCache: 0x62bda0,
-    copyWrapper: 0x68eac0,
-    compound: 0x6746a0,
-    display: 0x7496b0,
-    headerCache: 0x62b410,
-    header: 0x68f810,
-    1: { construct: 0x748d60, apply: 0x768020, driver: 0x65cd40, size: 0x2a8 },
-    2: { construct: 0x74a170, apply: 0x768190, driver: 0x65e110, size: 0x6e8 },
-    6: { construct: 0x74bb00, apply: 0x768730, driver: 0x65c750, size: 0x7fc },
-    11: { construct: 0x75cb10, apply: 0x768920, driver: 0x660620, size: 0x6f4 },
-    12: { construct: 0x762570, apply: 0x768930, driver: 0x662210, size: 0xb1c },
-    16: { construct: 0x7633d0, apply: 0x768bd0, driver: 0x65c740, size: 0x6f0 },
-    17: { construct: 0x7637f0, apply: 0x768c50, driver: 0x65c740, size: 0x6f0 },
-    18: { construct: 0x763c10, apply: 0x768c90, driver: 0x65c740, size: 0x6ec },
-    19: { construct: 0x763ef0, apply: 0x768d10, driver: 0x65c740, size: 0x6ec },
-    20: { construct: 0x764230, apply: 0x768d50, driver: 0x65c740, size: 0x6ec },
-    22: { construct: 0x764580, apply: 0x768f40, driver: 0x65f2d0, size: 0x6e8 },
-    25: { construct: 0x750230, apply: 0x759650, driver: 0x65d5e0, size: 0x3c0 },
+    1: { construct: 7638368, apply: 7766048, driver: 6671680 },
+    2: { construct: 7643504, apply: 7766416, driver: 6676752 },
+    6: { construct: 7650048, apply: 7767856, driver: 6670160 },
+    11: { construct: 7719696, apply: 7768352, driver: 6686240 },
+    12: { construct: 7742832, apply: 7768368, driver: 6693392 },
+    16: { construct: 7746512, apply: 7769040, driver: 6670144 },
+    17: { construct: 7747568, apply: 7769168, driver: 6670144 },
+    18: { construct: 7748624, apply: 7769232, driver: 6670144 },
+    19: { construct: 7749360, apply: 7769360, driver: 6670144 },
+    20: { construct: 7750192, apply: 7769424, driver: 6670144 },
+    22: { construct: 7751040, apply: 7769920, driver: 6681296 },
+    25: { construct: 7668272, apply: 7706192, driver: 6673888 },
+    wrapper: 6875632,
+    loadCache: 6471600,
+    dataCache: 6471072,
+    copyWrapper: 6875840,
+    compound: 6768288,
+    display: 7640752,
+    headerCache: 6468624,
+    header: 6879248,
   },
   sdk: {
-    wrapper: 0x565560,
-    wrapperBytes: 0x114,
-    loadCache: 0x503250,
-    dataCache: 0x503460,
-    copyWrapper: 0x565620,
-    compound: 0x54b790,
-    display: 0x5e9d10,
-    headerCache: 0x502a90,
-    header: 0x5661e0,
-    1: { construct: 0x5e93c0, apply: 0x6042b0, driver: 0x52cca0, size: 0x2a8 },
-    2: { construct: 0x5ea7a0, apply: 0x604420, driver: 0x52dd00, size: 0x5e8 },
-    6: { construct: 0x5ec030, apply: 0x6049c0, driver: 0x52c6c0, size: 0x6fc },
-    11: { construct: 0x5fac00, apply: 0x604bb0, driver: 0x530030, size: 0x5f4 },
-    12: { construct: 0x5fe4a0, apply: 0x604bc0, driver: 0x531c00, size: 0x81c },
-    16: { construct: 0x5ff250, apply: 0x604e60, driver: 0x52c6b0, size: 0x5f0 },
-    17: { construct: 0x5ff5f0, apply: 0x604ee0, driver: 0x52c6b0, size: 0x5f0 },
-    18: { construct: 0x5ff990, apply: 0x604f20, driver: 0x52c6b0, size: 0x5ec },
-    19: { construct: 0x5ffc40, apply: 0x604fa0, driver: 0x52c6b0, size: 0x5ec },
-    20: { construct: 0x5fff50, apply: 0x604fe0, driver: 0x52c6b0, size: 0x5ec },
-    22: { construct: 0x600270, apply: 0x6051d0, driver: 0x52eec0, size: 0x5e8 },
-    25: { construct: 0x5f03e0, apply: 0x5f77d0, driver: 0x52d540, size: 0x3c0 },
+    1: { construct: 6198208, apply: 6308528, driver: 5426336 },
+    2: { construct: 6203296, apply: 6308896, driver: 5430528 },
+    6: { construct: 6209584, apply: 6310336, driver: 5424832 },
+    11: { construct: 6269952, apply: 6310832, driver: 5439536 },
+    12: { construct: 6284448, apply: 6310848, driver: 5446656 },
+    16: { construct: 6287952, apply: 6311520, driver: 5424816 },
+    17: { construct: 6288880, apply: 6311648, driver: 5424816 },
+    18: { construct: 6289808, apply: 6311712, driver: 5424816 },
+    19: { construct: 6290496, apply: 6311840, driver: 5424816 },
+    20: { construct: 6291280, apply: 6311904, driver: 5424816 },
+    22: { construct: 6292080, apply: 6312400, driver: 5435072 },
+    25: { construct: 6226912, apply: 6256592, driver: 5428544 },
+    wrapper: 5657952,
+    loadCache: 5255760,
+    dataCache: 5256288,
+    copyWrapper: 5658144,
+    compound: 5552016,
+    display: 6200592,
+    headerCache: 5253776,
+    header: 5661152,
   },
 };
 const layout = (runtime) => ABI[runtime.sdk ? 'sdk' : 'game'];
@@ -75,7 +75,7 @@ function pull(runtime, object, pointer) {
   object.enable = !!p.load(pointer + 20);
   object.disp = !!p.load(pointer + 296);
   if (![1, 25].includes(object.nativeType))
-    object.idIndex = p.load(pointer + (runtime.sdk ? 1064 : 1320)) | 0;
+    object.idIndex = p.load(pointer + nativeABI(runtime.engine.profile).fes.imageIndexOffset) | 0;
 }
 
 export function installNativeFESImageCaches(runtime) {
@@ -135,7 +135,7 @@ export function installNativeFESImageCaches(runtime) {
               ? file
               : `@cat/image/${file}`;
         if (resolved === null) return 0;
-        const wide = !runtime.sdk,
+        const wide = nativeABI(runtime.engine.profile).text.settingsCharacterBytes === 2,
           path = p.allocate(
             wide ? (resolved.length + 1) * 2 : encodeCP932(resolved + '\0').length,
             true,
@@ -188,7 +188,10 @@ export class NativeFESImages {
       const input = instance.player.nativeInput;
       if (!input) throw new Error('Native FES button initialization requires its input mapping');
       const [, id] = await input.initializeObject(object);
-      runtime.process.store(pointer + (runtime.sdk ? 1512 : 1768), this.world.nativeTaskID(id));
+      runtime.process.store(
+        pointer + nativeABI(runtime.engine.profile).fes.imageTaskOffset,
+        this.world.nativeTaskID(id),
+      );
     }
     return pointer;
   }
@@ -260,7 +263,7 @@ export class NativeFESImages {
 export function nativeFESImageAdapter(runtime, type) {
   installNativeFESImageCaches(runtime);
   const abi = layout(runtime),
-    item = abi[type];
+    item = { ...abi[type], ...nativeABI(runtime.engine.profile).fes.images[type] };
   return {
     construct: item.construct,
     size: item.size,
@@ -276,10 +279,11 @@ export function nativeFESImageAdapter(runtime, type) {
               name = record?.context.contextName;
             if (typeof name !== 'string')
               throw new Error('Native SAVEPANEL constructor requires the FES parent context name');
-            const bytes = runtime.sdk
-              ? encodeCP932(name + '\0')
-              : new Uint8Array((name.length + 1) * 2);
-            if (!runtime.sdk) {
+            const bytes =
+              nativeABI(runtime.engine.profile).text.settingsCharacterBytes === 1
+                ? encodeCP932(name + '\0')
+                : new Uint8Array((name.length + 1) * 2);
+            if (nativeABI(runtime.engine.profile).text.settingsCharacterBytes === 2) {
               const view = new DataView(bytes.buffer);
               for (let i = 0; i < name.length; i++) view.setUint16(i * 2, name.charCodeAt(i), true);
             }
@@ -289,16 +293,7 @@ export function nativeFESImageAdapter(runtime, type) {
           }
         : null,
     canonicalMessage: (message) =>
-      runtime.sdk
-        ? (new Map([
-            [275, 280],
-            [276, 281],
-            [284, 289],
-            [288, 293],
-            [290, 295],
-            [294, 299],
-          ]).get(message) ?? (message >= 37 ? message + 2 : message))
-        : message,
+      mapABIMessage(runtime.engine.profile, 'fesImage', 'canonical', message),
     async initialize(runtime, instance, object, pointer) {
       await runtime.world.getNativeFeature('engine-files');
       if (type === 25) {
@@ -307,7 +302,10 @@ export function nativeFESImageAdapter(runtime, type) {
         pull(runtime, object, pointer);
         return;
       }
-      const wrapper = runtime.process.allocate(abi.wrapperBytes, true);
+      const wrapper = runtime.process.allocate(
+        nativeABI(runtime.engine.profile).fes.images.wrapperBytes,
+        true,
+      );
       try {
         await runtime.call(abi.wrapper, [], wrapper, instance.runtimeID);
       } catch (error) {
@@ -355,7 +353,7 @@ export function nativeFESImageAdapter(runtime, type) {
         if (id == null) throw new Error('Original FES button driver requires its real input child');
         object.nativeInputTaskID = id;
         runtime.process.store(
-          pointer + (runtime.sdk ? 1512 : 1768),
+          pointer + nativeABI(runtime.engine.profile).fes.imageTaskOffset,
           runtime.world.nativeTaskID(id),
         );
       }

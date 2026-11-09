@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original UTF-8/UTF-16 conversion, percent escaping and CRT logging execute
 // unchanged. Only the wrapper's private OS calls cross to browser services.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_UNICODE_OUTPUT_IDS = Object.freeze([0x40f, 0x410]);
-const PROFILE = 'nekopara-vol3-engine-2.6.1.76';
 const HANDLERS = Object.freeze({ 0x40f: 0x64fc70, 0x410: 0x650ad0 });
 const LOG_GLOBALS = [0xb8f188, 0xb8f194, 0xb8f18c];
 // Every boundary is one CALL [IAT] instruction inside the reviewed handler.
@@ -27,7 +27,7 @@ const boolean = (value, label) => {
 
 export class NativeUnicodeOutput {
   constructor(engine, world) {
-    if (engine.profile !== PROFILE)
+    if (!nativeABI(engine.profile).capabilities.unicodeOutput)
       throw new Error('Unicode output requires its reviewed game profile');
     Object.assign(this, { engine, world, process: engine.process });
     this.globalAllocations = new Map();
@@ -225,7 +225,7 @@ export class NativeUnicodeOutput {
 }
 
 export function installNativeUnicodeOutput(world) {
-  if (world.profile !== PROFILE) return;
+  if (!nativeABI(world.profile).capabilities.unicodeOutput) return;
   world.registerNativeFeature('unicode-output', (engine) => new NativeUnicodeOutput(engine, world));
   for (const id of NATIVE_UNICODE_OUTPUT_IDS)
     world.runtime.register('main', id, async (args, machine, task) =>

@@ -25,6 +25,9 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
 当前页面使用 `web/transitional-entry.mjs` 注入原 EXE 后端；纯入口的静态依赖图
 由 `scripts/check-native-entry.mjs` 检查。领域模块中的剩余地址随第 3–9 阶段迁移。
 共享 Windows 服务位于 `src/native/windows-services.mjs`，独立 DLL 宿主可直接使用。
+运行时版本行为读取 `src/native/abi/` 的冻结数据。字符宽度、配置布局、声音协议、
+消息映射和 capability 都由当前 ABI 声明。剩余纯 EXE 地址选择继续随领域迁移，
+盘点的 `remainingProfileSelections` 单独列出它们及对应阶段。
 scalar-math 通过语义名调用 `oracle/transitional-exe.mjs`，该层也接管游戏启动中
 accelerator 的有界 WinMain 区间。`scripts/transitional-runtime.json` 明确列出
 产品使用的过渡模块，开发服务器按此清单提供文件，构建按此复制 oracle 模块。

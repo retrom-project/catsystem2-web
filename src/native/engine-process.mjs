@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original EXE backend, reached only through an explicitly injected host.
+import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
 import { loadUnicorn } from '../ppi/backend.mjs';
 import { readEngineVersion, readPEVersionResource } from './profile.mjs';
@@ -39,8 +40,14 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     heap: 0xb91b6c,
     ownerGlobal: 0xb91bf8,
     settingsGlobal: 0xb91bfc,
-    settingsOffset: 0x418,
-    ownerBootstrap: [0x7148f0, 0x714970, 0xb91c00, 0x140e4, 0x27ed0],
+    settingsOffset: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.engineImage.settingsOffset,
+    ownerBootstrap: [
+      0x7148f0,
+      0x714970,
+      0xb91c00,
+      nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.engineImage.ownerBootstrapOffsets[0],
+      nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.engineImage.ownerBootstrapOffsets[1],
+    ],
     comImports: [0x8c6798, 0x8c679c],
     readGameDefaults: 0x7129d0,
     crtHelpers: [0x7a8807, 0x7ab2e1, 0x7ab24e, 0x79f8fb, 0x7ad3bb],
@@ -49,8 +56,8 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     d3dxBaseline: [0xb32f30, 0xb32e08],
     affineTrig: 0x5c3310,
     allocations: [
-      [0x79ea57, 1],
-      [0x5cac7e, 1],
+      [0x79ea57, nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.engineImage.allocationWords[0]],
+      [0x5cac7e, nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.engineImage.allocationWords[1]],
     ],
     frees: [0x6f81d0],
   }),
@@ -60,8 +67,14 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     heap: 0xc9656c,
     ownerGlobal: 0xc965d0,
     settingsGlobal: 0xc965d4,
-    settingsOffset: 0x210,
-    ownerBootstrap: [0x5c5790, 0x5c57e0, 0xc965d8, 0x10924, 0x2114c],
+    settingsOffset: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.engineImage.settingsOffset,
+    ownerBootstrap: [
+      0x5c5790,
+      0x5c57e0,
+      0xc965d8,
+      nativeABI('sdk-4.01-engine-2.6.1.74').layouts.engineImage.ownerBootstrapOffsets[0],
+      nativeABI('sdk-4.01-engine-2.6.1.74').layouts.engineImage.ownerBootstrapOffsets[1],
+    ],
     comImports: [0x98e618, 0x98e624],
     readGameDefaults: 0x5c4180,
     crtHelpers: [0x63e90c, 0x64044e, 0x6403bb, 0x637b5b, 0x6427db],
@@ -70,8 +83,8 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     d3dxBaseline: [0xc3bcd0, 0xc3bba8],
     affineTrig: 0x49fa90,
     allocations: [
-      [0x636cc0, 1],
-      [0x4a7bc0, 3],
+      [0x636cc0, nativeABI('sdk-4.01-engine-2.6.1.74').layouts.engineImage.allocationWords[0]],
+      [0x4a7bc0, nativeABI('sdk-4.01-engine-2.6.1.74').layouts.engineImage.allocationWords[1]],
     ],
     frees: [0x49c240, 0x4a7c70],
   }),
@@ -155,7 +168,8 @@ export class NativeEngineProcess {
         installNativeApplicationWindowBoundary(engine);
         if (options.bootstrapOwner.executableResources) {
           engine.executableResources = new NativeExecutableResources(engine);
-          if (profile.startsWith('sdk-')) await engine.executableResources.initialize();
+          if (nativeABI(profile).startup.resourceCheck === 'before-defaults')
+            await engine.executableResources.initialize();
         }
         if (options.bootstrapOwner.mountFiles) {
           await options.bootstrapOwner.mountFiles(engine);

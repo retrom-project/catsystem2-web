@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Scroll, Scroll2 and Slider retain their original Base-derived tasks. Their
 // image slicing, button children, drag arithmetic and repeat timer run in PE32.
+import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { installNativeTaskMemory } from './task-memory.mjs';
@@ -21,18 +22,10 @@ const ABI = Object.freeze({
   },
 });
 export function canonicalMessage(profile, kind, message) {
-  if (!profile.startsWith('sdk-')) return message;
-  // The Top and Sound receivers translate their own profile-specific packets.
-  if (kind === 1 || kind === 13) return message;
-  const start = { 15: 267, 34: 326, 40: 348, 41: 363, 42: 354, 48: 444 }[kind];
-  if (start !== undefined && message >= start) return message + 5;
-  if (kind === 49 && message >= 463) return message + 26;
-  return message >= 37 ? message + 2 : message;
+  return mapABIMessage(profile, 'control', 'canonical', message, kind);
 }
 function rawMessage(profile, kind, message) {
-  if (!profile.startsWith('sdk-')) return message;
-  const start = { 40: 353, 41: 368, 42: 359 }[kind];
-  return message >= start ? message - 5 : message >= 39 ? message - 2 : message;
+  return mapABIMessage(profile, 'control', 'raw', message, kind);
 }
 
 export class NativeControlRuntime {

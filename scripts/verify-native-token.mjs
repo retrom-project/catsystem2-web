@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 const [filename, output] = process.argv.slice(2);
@@ -19,7 +19,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   memory = p.allocate(8192, true),
   argv = p.allocate(12, true),
   out = p.allocate(4, true),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   local = new Uint8Array(8192),
   machine = {
     load: (at) => local[at],

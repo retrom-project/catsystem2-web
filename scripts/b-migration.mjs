@@ -424,7 +424,7 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
     [...world.nativeFeatureFactories].map(([name, fn]) => [name, functionLocation(fn, modules)]),
   );
   const entries = [];
-  for (const [table, declaration] of Object.entries(api.NATIVE_PROFILES[profile].tables)) {
+  for (const [table, declaration] of Object.entries(api.NATIVE_ABIS[profile].tables)) {
     for (const entry of api.nativeCatalog(profile, table)) {
       const reasons = [];
       let implementation,
@@ -754,6 +754,147 @@ function tally(items, key) {
   return counts;
 }
 
+// Remaining selections are tracked until the owning phase removes its EXE path.
+const addressSelectorModules = new Set(
+  'area-effect-commands bitmap-factory bitmap-operations configuration-query content-databases draw-commands effect-commands engine-files fes-objects geometry image-commands image-composite image-file image-owner input-browser input-commands nametable particle-commands plane-model-command plane-movie-command rectangles registry render-sources retained-draw screen-capture script-replacements-bridge task-dump task-memory text tile-plane-command view-geometry window-events'.split(
+    ' ',
+  ),
+);
+function profileSelections(modules) {
+  function isExeLayout(facts, binding, visited = new Set()) {
+    const key = facts.file + '/' + binding;
+    if (visited.has(key)) return false;
+    visited.add(key);
+    const imported = facts.imports.get(binding);
+    if (imported && modules.has(imported)) {
+      const declaration = facts.tree.body.find(
+        (node) =>
+          node.type === 'ImportDeclaration' &&
+          node.specifiers.some((spec) => spec.local.name === binding),
+      );
+      const specifier = declaration.specifiers.find((spec) => spec.local.name === binding);
+      return isExeLayout(modules.get(imported), specifier.imported?.name ?? binding, visited);
+    }
+    let initializer;
+    walk(facts.tree, (node) => {
+      if (node.type === 'VariableDeclarator' && node.id.name === binding) initializer = node.init;
+    });
+    if (!initializer) return false;
+    let addresses = false;
+    walk(initializer, (node) => {
+      if (
+        node.type === 'Literal' &&
+        typeof node.value === 'number' &&
+        IMAGE_RANGES.some(({ start, end }) => node.value >= start && node.value < end)
+      )
+        addresses = true;
+    });
+    if (addresses) return true;
+    if (initializer.type === 'Identifier') return isExeLayout(facts, initializer.name, visited);
+    if (initializer.type === 'CallExpression' && initializer.arguments[0]?.type === 'Identifier')
+      return isExeLayout(facts, initializer.arguments[0].name, visited);
+    return false;
+  }
+  const profileIndexSites = [],
+    versionGuards = [],
+    addressSelections = [],
+    identityChecks = [];
+  const isProfile = (node) =>
+    node?.type === 'ChainExpression'
+      ? isProfile(node.expression)
+      : (node?.type === 'Identifier' && node.name === 'profile') ||
+        (node?.type === 'MemberExpression' &&
+          ['profile', 'nativeProfile'].includes(property(node)));
+  for (const facts of modules.values()) {
+    const found = new Map();
+    const add = (kind, node, target) => {
+      const row = {
+        kind,
+        file: facts.file,
+        line: node.loc.start.line,
+        expression: facts.source.slice(...node.range).replace(/\s+/g, ' '),
+        domain: domain(facts.file),
+      };
+      const key = (target === addressSelections ? 'va' : kind) + ':' + row.line;
+      if (!found.has(key) || found.get(key).row.expression.length < row.expression.length)
+        found.set(key, { row, target });
+    };
+    walk(facts.tree, (node) => {
+      if (node.type === 'Identifier' && node.name === 'profileIndex')
+        add('index', node, profileIndexSites);
+      if (node.type === 'MemberExpression' && property(node) === 'profileIndex')
+        add('index', node, profileIndexSites);
+      if (
+        node.type === 'CallExpression' &&
+        property(node.callee) === 'startsWith' &&
+        isProfile(node.callee.object)
+      )
+        add('guard', node, versionGuards);
+      if (
+        node.type === 'BinaryExpression' &&
+        ['===', '!==', '==', '!='].includes(node.operator) &&
+        (isProfile(node.left) || isProfile(node.right))
+      ) {
+        if (isProfile(node.left) && isProfile(node.right)) add('identity', node, identityChecks);
+        else if (
+          ['string', 'undefined'].includes(typeof node.left.value) &&
+          ['string', 'undefined'].includes(typeof node.right.value)
+        )
+          add('guard', node, versionGuards);
+      }
+      if (
+        ['ConditionalExpression', 'IfStatement'].includes(node.type) &&
+        /\b(?:sdk|profileIndex)\b/.test(facts.source.slice(...node.test.range))
+      ) {
+        let addresses = false;
+        walk(node, (child) => {
+          if (
+            child.type === 'Literal' &&
+            typeof child.value === 'number' &&
+            IMAGE_RANGES.some(({ start, end }) => child.value >= start && child.value < end)
+          )
+            addresses = true;
+        });
+        if (addresses) add('va-condition', node.test, addressSelections);
+      }
+      if (node.type !== 'MemberExpression' || !node.computed) return;
+      if (
+        isProfile(node.property) &&
+        node.object.type === 'Identifier' &&
+        isExeLayout(facts, node.object.name)
+      )
+        add('exe-layout', node, addressSelections);
+      const selection = facts.source.slice(...node.property.range);
+      const table = facts.source.slice(...node.object.range);
+      if (
+        (/\b(?:profileIndex|sdk)\b/.test(selection) &&
+          /\b(?:ABI|LOG_ABI|handlers|addresses|wrapperLayouts|destroy)\b/.test(table)) ||
+        (/\bNATIVE_EXE_PROFILES\b/.test(table) && /\bprofile\b/.test(selection))
+      )
+        add('va', node, addressSelections);
+    });
+    for (const { row, target } of found.values()) {
+      const reviewed =
+        target === addressSelections ||
+        addressSelectorModules.has(basename(row.file)) ||
+        row.file.startsWith('oracle/');
+      if (target === identityChecks) target.push(row);
+      else
+        target.push({
+          ...row,
+          review: reviewed ? 'deferred-domain-migration' : 'needs-review',
+          reason: reviewed
+            ? '保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。'
+            : '新增或未审查的版本条件，需要确认其是否仅选择 EXE 地址。',
+        });
+    }
+  }
+  const order = (a, b) => a.file.localeCompare(b.file, 'en') || a.line - b.line;
+  for (const list of [profileIndexSites, versionGuards, addressSelections, identityChecks])
+    list.sort(order);
+  return { profileIndexSites, versionGuards, addressSelections, identityChecks };
+}
+
 async function build() {
   const modules = new Map();
   for (const file of [...(await filesBelow('src')), ...(await transitionalRuntimeFiles(root))])
@@ -784,6 +925,7 @@ async function build() {
       {},
       await import('../src/native/world.mjs'),
       await import('../src/native/catalog.mjs'),
+      await import('../src/native/abi/index.mjs'),
       await import('../src/native/config.mjs'),
       await import('../src/motion/library.mjs'),
       await import('../src/ppi/random.mjs'),
@@ -794,14 +936,14 @@ async function build() {
   }
   const profiles = [];
   try {
-    for (const profile of Object.keys(api.NATIVE_PROFILES)) {
+    for (const profile of Object.keys(api.NATIVE_ABIS)) {
       const world = await registrationWorld(profile, true, api);
       const unmounted = await registrationWorld(profile, false, api);
       const inventory = await nativeEntries(profile, world, unmounted, api, modules, docs);
       profiles.push({
         profile,
         tables: Object.fromEntries(
-          Object.entries(api.NATIVE_PROFILES[profile].tables).map(([name, table]) => [
+          Object.entries(api.NATIVE_ABIS[profile].tables).map(([name, table]) => [
             name,
             table.count,
           ]),
@@ -895,6 +1037,22 @@ async function build() {
       '余下执行站点可能由 native 本体或生命周期调用，全部保留以供逐函数迁移，不能以未命中分组为由漏掉。',
   });
   const entries = profiles.flatMap((profile) => profile.entries);
+  const profileAudit = profileSelections(modules);
+  const remaining = new Map();
+  for (const row of [...profileAudit.versionGuards, ...profileAudit.addressSelections]) {
+    const key = row.file + ':' + row.line;
+    if (!remaining.has(key) || remaining.get(key).expression.length < row.expression.length)
+      remaining.set(key, row);
+  }
+  profileAudit.totals = {
+    profileIndexSites: profileAudit.profileIndexSites.length,
+    exeVASelectionSites: remaining.size,
+    needsReview: [
+      ...profileAudit.profileIndexSites,
+      ...profileAudit.versionGuards,
+      ...profileAudit.addressSelections,
+    ].filter((row) => row.review === 'needs-review').length,
+  };
   return {
     kind: 'B migration inventory',
     generation: {
@@ -907,8 +1065,12 @@ async function build() {
       baselineComparison: comparison,
     },
     domains,
+    remainingProfileSelections: profileAudit,
     summary: {
       nativeSlots: entries.length,
+      remainingProfileIndexSites: profileAudit.totals.profileIndexSites,
+      remainingExeVASelectionSites: profileAudit.totals.exeVASelectionSites,
+      profileSelectionNeedsReview: profileAudit.totals.needsReview,
       implementations: {
         ...Object.fromEntries(
           [

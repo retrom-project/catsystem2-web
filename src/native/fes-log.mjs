@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // LOGSTRING owns layout/display slots and creates STRING children. Its first
 // fields after the 44-byte base are not the plane/KX2 record.
 
@@ -78,7 +79,8 @@ function pullLog(runtime, object, pointer) {
   object.disp = !!p.load(pointer + 368);
 }
 export function nativeFESLogAdapter(runtime, type) {
-  if (type === 38 && runtime.sdk) throw new Error('The frozen SDK has no LOGSTRING8 constructor');
+  if (type === 38 && !nativeABI(runtime.engine.profile).capabilities.utf8Text)
+    throw new Error('The frozen SDK has no LOGSTRING8 constructor');
   const abi = LOG_ABI[runtime.sdk ? 'sdk' : type === 38 ? 'utf8' : 'game'];
   return {
     construct: abi.construct,

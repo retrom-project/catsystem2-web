@@ -1,8 +1,19 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Keep the original class record alive for the application's virtual window.
 const layouts = {
-  'sdk-4.01-engine-2.6.1.74': [0x5c0040, 0x5bfaa0, 0xae78a0, 'A'],
-  'nekopara-vol3-engine-2.6.1.76': [0x70ed40, 0x70e720, 0x9e2f98, 'W'],
+  'sdk-4.01-engine-2.6.1.74': [
+    0x5c0040,
+    0x5bfaa0,
+    0xae78a0,
+    nativeABI('sdk-4.01-engine-2.6.1.74').layouts.windowClass.suffix,
+  ],
+  'nekopara-vol3-engine-2.6.1.76': [
+    0x70ed40,
+    0x70e720,
+    0x9e2f98,
+    nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.windowClass.suffix,
+  ],
 };
 
 export async function initializeNativeWindowClass(engine) {

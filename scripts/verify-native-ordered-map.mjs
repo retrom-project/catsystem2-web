@@ -8,7 +8,7 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { nativeOrderedMap } from '../src/native/ordered-map.mjs';
 import { nativeDictionary } from '../src/native/dictionary.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine, formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 
@@ -42,7 +42,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   argv = p.allocate(16),
   out = p.allocate(4),
   packed = p.allocate(65536),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   services = {
     handles: runtime.handles,
     formatBytes: formatNativeAt,

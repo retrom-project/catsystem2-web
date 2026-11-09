@@ -6,7 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeMatrices } from '../src/native/matrix.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { KCSMachine, floatBits } from '../src/kcs/vm.mjs';
 import { Binary } from '../src/binary.mjs';
@@ -16,7 +16,7 @@ if (!exe || !output)
   throw new Error('Usage: node scripts/verify-native-matrices.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(exe)),
   sha256 = createHash('sha256').update(bytes).digest('hex'),
-  profile = Object.entries(NATIVE_PROFILES).find(([, p]) => p.sha256 === sha256);
+  profile = Object.entries(NATIVE_EXE_PROFILES).find(([, p]) => p.sha256 === sha256);
 if (!profile) throw new Error('Native matrix oracle requires a frozen engine image');
 const engine = await NativeEngineProcess.open({
     bytes,

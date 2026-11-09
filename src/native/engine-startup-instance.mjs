@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The original startup mutex belongs to the static WinMain record. Each
 // emulated process has its own instance namespace.
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 const layouts = {
-  'sdk-4.01-engine-2.6.1.74': [0x635d60, 0x432070, 1088],
-  'nekopara-vol3-engine-2.6.1.76': [0x79d1f0, 0x79d280, 1608],
+  'sdk-4.01-engine-2.6.1.74': [
+    0x635d60,
+    0x432070,
+    nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupInstance.nameOffset,
+  ],
+  'nekopara-vol3-engine-2.6.1.76': [
+    0x79d1f0,
+    0x79d280,
+    nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupInstance.nameOffset,
+  ],
 };
 
 export async function initializeNativeStartupInstance(engine) {

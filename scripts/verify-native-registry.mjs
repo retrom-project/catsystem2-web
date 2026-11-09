@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NATIVE_REGISTRY_CONTRACTS, NativeRegistry } from '../src/native/registry.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { configurationQueryMachine } from '../tests/fixtures/configuration-query-fixture.mjs';
 
@@ -39,7 +39,7 @@ const check = (actual, expected, label) => {
 check(block, otherBlock, 'same extended VM block');
 for (const spec of NATIVE_REGISTRY_CONTRACTS)
   check(
-    raw.process.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+    raw.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
     spec.handlers[index],
     'actual frozen table slot',
   );

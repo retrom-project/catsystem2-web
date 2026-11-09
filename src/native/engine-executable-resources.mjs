@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The reviewed WinMain helper starts with a self-contained block that checks
 // KEY_CODE/V_CODE and copies V_CODE2 into the original Settings. Its next
 // block opens desktop registration and device services, which are outside
@@ -10,13 +11,13 @@ const LAYOUTS = {
     entry: 0x4406d0,
     afterResources: 0x440b5d,
     returnSuccess: 0x440faf,
-    wide: false,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.executableResources.wide,
   },
   'nekopara-vol3-engine-2.6.1.76': {
     entry: 0x52ea10,
     afterResources: 0x52ee7d,
     returnSuccess: 0x52f221,
-    wide: true,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.executableResources.wide,
   },
 };
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // WinMain owns the original MainWndMenu at +36 in the startup block.
+import { nativeABI, NATIVE_ABIS } from './abi/index.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
 import {
   NATIVE_STARTUP_BLOCKS,
@@ -13,17 +14,14 @@ const layouts = {
 };
 
 // WinMain consults the active Settings after translating the resource.
-const optionalCommands = {
-  'sdk-4.01-engine-2.6.1.74': [
-    [46104, 118],
-    [47368, 40034],
-  ],
-  'nekopara-vol3-engine-2.6.1.76': [
-    [47924, 118],
-    [50032, 40034],
-    [57540, 40063],
-  ],
-};
+const optionalCommands = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [
+      profile,
+      abi.layouts.optionalMenuCommands,
+    ]),
+  ),
+);
 
 // The game builds all three language groups from its original Settings.
 function runGameLanguageMenu(engine, remove) {
@@ -57,8 +55,7 @@ export async function initializeNativeStartupMenu(engine) {
     const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
     for (const [offset, id] of optionalCommands[engine.profile])
       if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);
-    if (engine.profile === 'nekopara-vol3-engine-2.6.1.76')
-      await runGameLanguageMenu(engine, remove);
+    if (nativeABI(engine.profile).language.dynamicMenus) await runGameLanguageMenu(engine, remove);
   } finally {
     if (p.load(slot) !== owner) p.free(owner);
   }
@@ -80,7 +77,7 @@ export async function releaseNativeStartupMenu(engine) {
 }
 
 export async function refreshNativeLanguageMenu(engine) {
-  if (engine.profile !== 'nekopara-vol3-engine-2.6.1.76') return;
+  if (!nativeABI(engine.profile).language.dynamicMenus) return;
   const block = NATIVE_STARTUP_BLOCKS[engine.profile];
   if (!engine.process.load(block + 36)) return;
   // The original checkmark pass reads the live Settings and writes only the

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Main188 uses the original rich-text parser, including its default state.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 const bindings = {
@@ -35,7 +36,7 @@ export async function nativePlainText(id, args, machine, world) {
     runtime = await world.getNativeFeature('text'),
     p = runtime.process,
     layout =
-      id === 0x419 && !world.profile.startsWith('sdk')
+      id === 0x419 && nativeABI(world.profile).capabilities.utf8Text
         ? utf8
         : id === 0x188
           ? bindings[world.profile]
@@ -76,7 +77,7 @@ export async function nativePlainText(id, args, machine, world) {
   }
 }
 export function installNativePlainText(world) {
-  for (const id of world.profile.startsWith('sdk') ? [0x188] : [0x188, 0x419])
+  for (const id of nativeABI(world.profile).capabilities.utf8Text ? [0x188, 0x419] : [0x188])
     world.runtime.register('main', id, (args, machine) =>
       nativePlainText(id, args, machine, world),
     );

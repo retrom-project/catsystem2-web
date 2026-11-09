@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Script175 exposes two distinct original objects. Their browser-facing state
 // remains the existing NativeSceneData reader/history, rather than a second
 // persistent scene model.
@@ -7,7 +8,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
-    readerBytes: 324,
+    readerBytes: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.sceneMemory.readerBytes,
     readerCtor: 0x72b270,
     readerDtor: 0x72b3a0,
     readerLoad: 0x72b580,
@@ -18,7 +19,7 @@ const layouts = {
     historyExport: 0x72d480,
   },
   'sdk-4.01-engine-2.6.1.74': {
-    readerBytes: 304,
+    readerBytes: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.sceneMemory.readerBytes,
     readerCtor: 0x5db920,
     readerDtor: 0x5db970,
     readerLoad: 0x5dba80,

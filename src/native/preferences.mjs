@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original preference writers: SDK 5D1440/5D18F0; newer engine 721000/721510.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { parseNativeXML } from './xml.mjs';
 
-const SDK = 'sdk-4.01-engine-2.6.1.74';
-const GAME = 'nekopara-vol3-engine-2.6.1.76';
 const two = (index) => String(index).padStart(2, '0');
 const blockWord = (configuration, block, word) => {
   const bytes = configuration.blocks[block];
@@ -25,9 +24,9 @@ const fields = (configuration, pairs) =>
 const words = (configuration, block, pairs) =>
   pairs.map(([tag, index]) => leaf(tag, blockWord(configuration, block, index)));
 
-function system(configuration, game) {
+function system(configuration, extended) {
   const result = [];
-  if (game)
+  if (extended)
     result.push(
       node('language', [
         node(
@@ -124,7 +123,7 @@ function system(configuration, game) {
   return result;
 }
 
-function objects(configuration, game) {
+function objects(configuration, extended) {
   const keyRows = [];
   for (let row = 79; row >= 0; row--)
     if (configuration.keys.rows[row].enabled)
@@ -145,13 +144,13 @@ function objects(configuration, game) {
           );
   keyRows.push(leaf('enable_joypad', configuration.keys.enableJoypad));
   const message = [
-    ...(game ? [['enable_read_sel', 17]] : []),
+    ...(extended ? [['enable_read_sel', 17]] : []),
     ['wipe', 14],
     ['contskip', 13],
     ['skipspeed', 12],
     ['read_color', 11],
     ['enable_read', 10],
-    ...(game
+    ...(extended
       ? [
           ['autoleft', 16],
           ['ctrlmode', 15],
@@ -176,7 +175,7 @@ function objects(configuration, game) {
       ),
     ),
     node('GAME', [
-      ...(game
+      ...(extended
         ? fields(configuration, [
             ['enable_scene_anm', 'scene.animation'],
             ['always_active', 'window.active'],
@@ -192,7 +191,7 @@ function objects(configuration, game) {
     node(
       'EFFECT',
       words(configuration, 2, [
-        ...(game ? [['skipmot', 7]] : []),
+        ...(extended ? [['skipmot', 7]] : []),
         ['dramatic', 6],
         ['auto_cds', 5],
         ['auto_cd', 4],
@@ -253,25 +252,23 @@ function serialize(node, depth = 0) {
 }
 
 export function serializeNativePreferences(configuration, { flags = 3 } = {}) {
-  if (![SDK, GAME].includes(configuration?.profile))
-    throw new Error('Native preferences require a recovered configuration profile');
-  const game = configuration.profile === GAME;
+  const abi = nativeABI(configuration?.profile);
+  const extended = abi.configuration.extendedPreferences;
   const document = node('document', [
-    ...(flags & 2 ? objects(configuration, game) : []),
-    ...(flags & 1 ? system(configuration, game) : []),
+    ...(flags & 2 ? objects(configuration, extended) : []),
+    ...(flags & 1 ? system(configuration, extended) : []),
   ]);
   // Both original serializers write string contents verbatim, including XML
   // punctuation. Escaping these strings would change the native file format.
-  const text = `<?xml version="1.0" encoding="${game ? 'UTF-8' : 'Shift_JIS'}"?>\r\n${serialize(document)}`;
-  return game ? new TextEncoder().encode(text) : encodeCP932(text);
+  const text = `<?xml version="1.0" encoding="${abi.xmlEncoding}"?>\r\n${serialize(document)}`;
+  return abi.xmlEncoding === 'UTF-8' ? new TextEncoder().encode(text) : encodeCP932(text);
 }
 
 export function applyNativePreferences(configuration, bytes, { flags = 3 } = {}) {
-  if (![SDK, GAME].includes(configuration?.profile))
-    throw new Error('Native preferences require a recovered configuration profile');
+  const abi = nativeABI(configuration?.profile);
   let root;
   try {
-    root = parseNativeXML(bytes, configuration.profile === GAME ? 'utf-8' : 'shift_jis');
+    root = parseNativeXML(bytes, abi.xmlEncoding);
   } catch {
     return false;
   }

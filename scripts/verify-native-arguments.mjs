@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';
 import { nativeArguments } from '../src/native/arguments.mjs';
@@ -34,7 +34,7 @@ const sdk = profile.startsWith('sdk-'),
   },
   machine = new KCSMachine(script, undefined, new Uint8Array(4096)),
   model = new KCSMachine(script, undefined, new Uint8Array(4096)),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   state = (m) => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) => b.slice())];
 machine.fp = 8192;
 machine.allocate(4096);

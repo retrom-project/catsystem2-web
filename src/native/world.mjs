@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
@@ -212,7 +213,7 @@ export class NativeWorld {
       },
       emit: (event) => {
         const [type, value] = event,
-          screenEvent = profile === 'sdk-4.01-engine-2.6.1.74' ? 0x15 : 0x12;
+          screenEvent = nativeABI(profile).messages.screenEvent;
         const message =
           type === screenEvent ? 0x467 : type === 0x2b ? 0x46e : type === 0x2c ? 0x46f : null;
         if (message === null) throw new Error(`Unimplemented FES configuration event ${type}`);
@@ -416,7 +417,7 @@ export class NativeWorld {
     installNativeRenderSources(this);
     installNativeUnicodeOutput(this);
     installNativeFormattedFileOutput(this);
-    if (this.profile === 'nekopara-vol3-engine-2.6.1.76')
+    if (nativeABI(this.profile).capabilities.windowReturnTitle)
       this.runtime.register('main', 0x41e, (args) => {
         if (args.length) throw new Error('Native return-title window request expects no arguments');
         this.window.post(0x468);
@@ -864,12 +865,15 @@ export class NativeWorld {
       );
       // The game WinMain reads setup.xml before checking the EXE resources;
       // the SDK does its resource check before loading game defaults.
-      if (this.profile === 'nekopara-vol3-engine-2.6.1.76' && engine.executableResources) {
+      if (
+        nativeABI(this.profile).startup.resourceCheck === 'after-preferences' &&
+        engine.executableResources
+      ) {
         await loadNativeGameStartupLanguage(engine);
         await engine.executableResources.initialize();
       }
     }
-    if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
+    if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     if (this.bootstrapOwner) {
       await checkNativeDirectXStartup(this.nativeEngine);
       await (await this.getNativeFeature('renderer')).initializeCapabilities();
@@ -1011,7 +1015,7 @@ export class NativeWorld {
   async restore(state) {
     if (this.running || this.objects.objects.size)
       throw new Error('Native world restore requires a fresh, idle world');
-    if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
+    if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The original kcXml document and its node storage belong to the guest heap.
 import { nativeReply } from '../kcs/vm.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
@@ -33,7 +33,7 @@ class NativeScriptXML {
   call(id, args, task) {
     const engine = this.engine,
       p = this.process,
-      table = NATIVE_PROFILES[engine.profile].tables.main.va,
+      table = NATIVE_EXE_PROFILES[engine.profile].tables.main.va,
       address = p.load(table + id * 4);
     return p.asyncEnabled
       ? engine.callFromHost(address, args, undefined, { task })

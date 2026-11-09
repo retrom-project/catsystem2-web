@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Main 1BD retains the original VM formatter and crosses the browser boundary
 // only at its own MessageBox call, independently of other USER32 callers.
 import { nativeReply } from '../kcs/vm.mjs';
@@ -6,8 +7,18 @@ import { NativeKCSMemory } from './kcs-memory.mjs';
 import { registryDecodeANSI } from './registry-codepage.mjs';
 
 export const NATIVE_SCRIPT_MESSAGE_BOX = Object.freeze({
-  'sdk-4.01-engine-2.6.1.74': { handler: 0x51b460, site: 0x51b487, iat: 0x98e3c8, wide: false },
-  'nekopara-vol3-engine-2.6.1.76': { handler: 0x64fdb0, site: 0x64fe07, iat: 0x8c641c, wide: true },
+  'sdk-4.01-engine-2.6.1.74': {
+    handler: 0x51b460,
+    site: 0x51b487,
+    iat: 0x98e3c8,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.scriptMessageBox.wide,
+  },
+  'nekopara-vol3-engine-2.6.1.76': {
+    handler: 0x64fdb0,
+    site: 0x64fe07,
+    iat: 0x8c641c,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.scriptMessageBox.wide,
+  },
 });
 const trapName = 'native Script MessageBox';
 

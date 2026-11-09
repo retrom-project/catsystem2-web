@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   NativeScriptReplacements,
   nativeScriptReplacement,
@@ -26,7 +26,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   memory = p.allocate(8192),
   argv = p.allocate(8),
   out = p.allocate(4),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   local = new Uint8Array(8192),
   machine = { bytes: (at, size) => local.subarray(at, at + size) };
 p.store(sdk ? 0xc965d0 : 0xb91bf8, root);

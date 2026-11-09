@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeVariableBank, nativeBank } from '../src/native/bank.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 
@@ -15,12 +15,14 @@ if (!exe || !output)
   );
 const bytes = new Uint8Array(await readFile(exe)),
   sha256 = createHash('sha256').update(bytes).digest('hex'),
-  profile = Object.keys(NATIVE_PROFILES).find((key) => NATIVE_PROFILES[key].sha256 === sha256);
+  profile = Object.keys(NATIVE_EXE_PROFILES).find(
+    (key) => NATIVE_EXE_PROFILES[key].sha256 === sha256,
+  );
 if (!profile) throw new Error('Variable primitive oracle requires a frozen engine');
 const sdk = profile.startsWith('sdk-'),
   engine = await NativeEngineProcess.open({ profile, bytes, standardLibraries: false }),
   p = engine.process,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   handlers = [0xd1, 0xd2, 0xd3, 0xd4, 0xd5].map((id) => p.load(table + id * 4)),
   machine = new KCSMachine(
     { codeSize: 1, data: new Uint8Array(512), stackSize: 32 },

@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // System language tables: game 5AB510/5AB7A0/5ABE00, SDK 47E690/47E770/47ECF0.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
-const game = 'nekopara-vol3-engine-2.6.1.76',
-  sdk = 'sdk-4.01-engine-2.6.1.74',
-  utf8 = new TextDecoder('utf-8', { ignoreBOM: true }),
+const utf8 = new TextDecoder('utf-8', { ignoreBOM: true }),
   cp932 = new TextDecoder('shift_jis');
 const byteKey = (bytes) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 function terminated(bytes) {
@@ -54,24 +53,23 @@ const marker = (bytes, text) =>
 
 export function parseNativeGlobalStrings(source, profile) {
   if (!(source instanceof Uint8Array)) throw new TypeError('Native language tables require bytes');
-  if (profile !== game && profile !== sdk)
-    throw new Error(`Unrecovered language profile ${profile}`);
+  const language = nativeABI(profile).language;
   const rows = sourceRows(source),
     entries = new Map();
   for (let at = 0; at + 1 < rows.length; at += 2) {
     let value = rows[at + 1];
     if (marker(value, '$nr$')) continue;
     if (marker(value, '$empty$')) value = new Uint8Array();
-    const key = profile === game ? utf8.decode(rows[at]) : byteKey(rows[at]);
-    if (!entries.has(key)) entries.set(key, profile === game ? utf8.decode(value) : value.slice());
+    const key = language.storage === 'text' ? utf8.decode(rows[at]) : byteKey(rows[at]);
+    if (!entries.has(key))
+      entries.set(key, language.storage === 'text' ? utf8.decode(value) : value.slice());
   }
   return entries;
 }
 
 export class NativeGlobalStrings {
   constructor({ profile, read, readArchive, configuration } = {}) {
-    if (profile !== game && profile !== sdk)
-      throw new Error(`Unrecovered language profile ${profile}`);
+    this.abi = nativeABI(profile);
     this.profile = profile;
     this.read = read;
     this.readArchive = readArchive;
@@ -82,7 +80,7 @@ export class NativeGlobalStrings {
   tableID(id) {
     if (!Number.isInteger(id) || id < -0x80000000 || id > 0xffffffff)
       throw new RangeError('Native language table ID requires a 32-bit word');
-    if (this.profile === sdk && id !== 0)
+    if (this.abi.language.singleTable && id !== 0)
       throw new RangeError('The SDK has one global language table');
     return id | 0;
   }
@@ -98,15 +96,15 @@ export class NativeGlobalStrings {
   async reload(id, filename) {
     id = this.tableID(id);
     if (typeof this.read !== 'function') throw new Error('Native language file service is missing');
-    if (this.profile === sdk && filename !== 'language.txt')
+    if (this.abi.language.fixedFilename && filename !== this.abi.language.fixedFilename)
       throw new Error('The SDK language loader reads language.txt');
     filename = String(filename).split('\0', 1)[0];
-    if (this.profile === game) {
+    if (this.abi.language.resetOnReload) {
       this.tables.delete(id);
       this.filenames.delete(id);
     }
     let bytes = await this.read(filename);
-    if (bytes === null && this.profile === game && this.readArchive)
+    if (bytes === null && this.abi.language.archiveFallback && this.readArchive)
       bytes = await this.readArchive(filename, 3);
     if (bytes === null) return false;
     this.parse(id, bytes);
@@ -139,12 +137,14 @@ export class NativeGlobalStrings {
     return filename;
   }
   async initialize() {
-    if (this.profile === sdk) return [await this.reload(0, 'language.txt')];
+    if (this.abi.language.fixedFilename)
+      return [await this.reload(0, this.abi.language.fixedFilename)];
     return [await this.reload(0, this.uiFilename()), await this.reload(1, this.optionFilename())];
   }
   // Call after the Windows language handler has updated the shared settings.
   async languageChanged(field) {
-    if (this.profile === sdk) throw new Error('The SDK has no language-switch window protocol');
+    if (!this.abi.language.switchWindowProtocol)
+      throw new Error('The ABI has no language-switch window protocol');
     if (field === 'ui') return this.initialize();
     if (field === 'main') return [await this.reload(1, this.optionFilename())];
     if (field === 'sub') return [];
@@ -153,7 +153,8 @@ export class NativeGlobalStrings {
   get(text) {
     if (typeof text !== 'string') throw new TypeError('Native global string lookup requires text');
     text = text.split('\0', 1)[0];
-    if (this.profile === sdk) return cp932.decode(this.getBytes(encodeCP932(text)));
+    if (this.abi.language.storage === 'bytes')
+      return cp932.decode(this.getBytes(encodeCP932(text)));
     const delimiter = text[0];
     if (delimiter !== '$' && delimiter !== '#') return text;
     const end = text.indexOf(delimiter, 1);
@@ -166,7 +167,8 @@ export class NativeGlobalStrings {
     return text.slice(end + 1);
   }
   getBytes(bytes) {
-    if (this.profile !== sdk) throw new Error('The game system translator accepts UTF16 text');
+    if (this.abi.language.storage !== 'bytes')
+      throw new Error('The game system translator accepts UTF16 text');
     if (!(bytes instanceof Uint8Array))
       throw new TypeError('Native global string lookup requires bytes');
     bytes = terminated(bytes);
@@ -182,7 +184,10 @@ export class NativeGlobalStrings {
       filenames: [...this.filenames],
       tables: [...this.tables].map(([id, entries]) => [
         id,
-        [...entries].map(([key, value]) => [key, this.profile === sdk ? [...value] : value]),
+        [...entries].map(([key, value]) => [
+          key,
+          this.abi.language.storage === 'bytes' ? [...value] : value,
+        ]),
       ]),
     };
   }
@@ -196,7 +201,7 @@ export class NativeGlobalStrings {
         new Map(
           entries.map(([key, value]) => [
             key,
-            this.profile === sdk ? Uint8Array.from(value) : value,
+            this.abi.language.storage === 'bytes' ? Uint8Array.from(value) : value,
           ]),
         ),
       ]),

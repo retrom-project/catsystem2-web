@@ -507,7 +507,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
           ]),
         ),
       );
-    if (NATIVE_ABIS[options.profile]) installNativeEntropy(this);
+    if (NATIVE_ABIS[options.profile]?.capabilities.systemEntropy) installNativeEntropy(this);
   }
   path(value) {
     let path = value.replaceAll('\\', '/');

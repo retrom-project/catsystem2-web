@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { NativeMT19937, ParticleRandom } from '../src/ppi/random.mjs';
 import { NativeRandomMemory, NATIVE_RANDOM_LAYOUTS } from '../src/native/random-memory.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 test('MT providers reacquire words after an index read grows RAM and preserve one shared state', () => {
@@ -97,7 +97,7 @@ for (const [profile, variable] of [
       const raw = async (id) => {
         p.store(out, 0xcccccccc);
         assert.equal(
-          await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4), [
+          await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4), [
             0,
             0,
             0,

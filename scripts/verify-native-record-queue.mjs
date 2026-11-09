@@ -6,7 +6,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeRecordQueues } from '../src/native/record-queue.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 const [filename, output] = process.argv.slice(2),
@@ -41,7 +41,7 @@ const engine = await NativeEngineProcess.open({
   model = make(),
   argv = p.allocate(8),
   out = p.allocate(4),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   state = (m) => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) => b.slice())],
   task = { id: 19 };
 let passed = 0,

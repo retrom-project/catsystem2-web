@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeDictionary } from '../src/native/dictionary.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
@@ -24,7 +24,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   memory = p.allocate(65536, true),
   args = p.allocate(16, true),
   out = p.allocate(4, true),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   machine = {
     load: (at, size = 4) => (size === 1 ? p.read(memory + at, 1)[0] : p.load(memory + at)),
     region: (at) => {

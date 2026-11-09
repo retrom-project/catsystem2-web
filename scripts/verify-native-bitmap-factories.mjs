@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NATIVE_BITMAP_FACTORY_CONTRACTS } from '../src/native/bitmap-factory.mjs';
 import { bitmapFactoryFixture } from '../tests/fixtures/bitmap-factory-fixture.mjs';
@@ -49,7 +49,10 @@ for (const fixture of [raw, f]) {
   };
 }
 for (const spec of specs.values())
-  assert.equal(p.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4), spec.handlers[index]);
+  assert.equal(
+    p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
+    spec.handlers[index],
+  );
 const block = a.allocate(1024);
 check(b.allocate(1024), block, 'same extended block');
 async function run(id, args) {

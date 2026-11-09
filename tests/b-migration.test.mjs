@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
 
 test('B inventory reproduces the actual overrides, separate tables and complete file counts', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url));
@@ -19,7 +19,7 @@ test('B inventory reproduces the actual overrides, separate tables and complete 
     await readFile(new URL('../scripts/exe-dependency-baseline.json', import.meta.url), 'utf8'),
   );
   for (const profile of inventory.profiles) {
-    for (const [table, { count }] of Object.entries(NATIVE_PROFILES[profile.profile].tables)) {
+    for (const [table, { count }] of Object.entries(NATIVE_ABIS[profile.profile].tables)) {
       const entries = profile.entries.filter((entry) => entry.table === table);
       assert.equal(entries.length, count);
       assert.deepEqual(
@@ -50,6 +50,14 @@ test('B inventory reproduces the actual overrides, separate tables and complete 
   assert.equal(
     inventory.summary.nativeSlots,
     inventory.profiles.reduce((sum, profile) => sum + profile.entries.length, 0),
+  );
+  assert.equal(inventory.remainingProfileSelections.totals.needsReview, 0);
+  assert.ok(inventory.remainingProfileSelections.profileIndexSites.length > 0);
+  assert.ok(inventory.remainingProfileSelections.addressSelections.length > 0);
+  assert.ok(
+    !inventory.remainingProfileSelections.versionGuards.some(
+      (row) => row.file.includes('scalar-math') || row.file.includes('config-fields'),
+    ),
   );
   assert.ok(inventory.nonNativeEntries.some((entry) => entry.name === 'winmain-regions'));
   assert.ok(

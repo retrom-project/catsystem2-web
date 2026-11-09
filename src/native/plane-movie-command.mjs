@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The Plane owns kcVideo. KCS can borrow that identity through the original
 // load/query packets, then use the ordinary movie controls on that object.
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
@@ -36,7 +37,7 @@ export class NativePlaneMovieCommands {
         7,
         async ([sender, target, raw, w, l, flags, out]) => {
           const origin = engine.currentTaskID,
-            message = raw + this.sdk * 2;
+            message = mapABIMessage(engine.profile, 'planeCommand', 'canonical', raw);
           if (
             origin == null ||
             sender !== world.nativeTaskID(origin) ||

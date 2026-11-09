@@ -2,14 +2,14 @@
 // Game main3F2..3F5/400 use a deque of separately allocated fixed-size records.
 // The original wrappers retain deque block growth, popped allocation lifetime
 // and their always-one status query in the shared native process.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 export const NATIVE_RECORD_QUEUE_IDS = Object.freeze([0x3f2, 0x3f3, 0x3f4, 0x3f5, 0x400]);
-const PROFILE = 'nekopara-vol3-engine-2.6.1.76';
 export class NativeRecordQueues {
   constructor(engine, world) {
-    if (engine.profile !== PROFILE)
+    if (!nativeABI(engine.profile).capabilities.recordQueues)
       throw new Error('Native record queues require the reviewed game engine');
     this.engine = engine;
     this.world = world;
@@ -43,7 +43,7 @@ export class NativeRecordQueues {
       words.forEach((value, i) => p.store(argv + i * 4, value));
       p.store(out, 0xcccccccc);
       const control = await this.engine.call(
-        p.load(NATIVE_PROFILES[PROFILE].tables.main.va + id * 4),
+        p.load(NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + id * 4),
         [bridge.pointer, 0, argv, out],
         undefined,
         { task: task.id },
@@ -71,7 +71,7 @@ export class NativeRecordQueues {
   restore() {}
 }
 export function installNativeRecordQueues(world) {
-  if (world.profile !== PROFILE) return;
+  if (!nativeABI(world.profile).capabilities.recordQueues) return;
   world.registerNativeFeature('record-queues', (engine) => new NativeRecordQueues(engine, world));
   for (const id of NATIVE_RECORD_QUEUE_IDS)
     world.runtime.register('main', id, async (args, machine, task) =>

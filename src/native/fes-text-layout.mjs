@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original layout handlers 60D280 (2.6.1.74) / 771730 (2.6.1.76).
 // These records describe layout; glyph rasterization is a separate service.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
 export const FES_TEXT_LAYOUT_MODES = Object.freeze(
   'view color vcolor acolor vacolor pcolor vpcolor margin move ruby frame font fontind fontind_sub shadow size rsize indent weight d_prof c_prof prof shift shift_sub scrolltype wipewidth fontfix profmode profmode_sub prof_enable prof_enable_sub c_prof_sub prof_sub escape'.split(
-    ' ',
-  ),
-);
-const SDK_MODES = new Set(
-  'view color vcolor acolor vacolor pcolor vpcolor margin move ruby frame font fontind shadow size rsize indent weight d_prof prof shift scrolltype wipewidth fontfix'.split(
     ' ',
   ),
 );
@@ -18,62 +14,10 @@ const NATIVE_NOOP = new Set(
     ' ',
   ),
 );
-const ABI = Object.freeze({
-  sdk: {
-    dirty: 241,
-    colors: 329,
-    fontIndex: 236,
-    flags: 318,
-    weight: 231,
-    shadow: 232,
-    fix: 234,
-    wipe: 235,
-    profile: 333,
-    shift: 338,
-    category: null,
-    fontBytes: 32,
-    configBytes: 184,
-  },
-  string: {
-    dirty: 249,
-    colors: 337,
-    fontIndex: 244,
-    flags: 326,
-    weight: 239,
-    shadow: 240,
-    fix: 242,
-    wipe: 243,
-    profile: 341,
-    shift: 346,
-    category: 349,
-    fontBytes: 64,
-    configBytes: 216,
-  },
-  string8: {
-    dirty: 266,
-    colors: 354,
-    fontIndex: 260,
-    flags: 343,
-    weight: 255,
-    shadow: 256,
-    fix: 258,
-    wipe: 259,
-    profile: 358,
-    shift: 363,
-    category: 367,
-    fontBytes: 128,
-    configBytes: 284,
-  },
-});
-const validProfile = (profile) => {
-  if (!['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'].includes(profile))
-    throw new Error(`Unrecovered FES text layout profile ${profile}`);
-};
-
 export class NativeFESTextLayout {
   constructor({ profile, type = 21, bytes, profiles = {}, revision = 0 } = {}) {
-    validProfile(profile);
-    if (![21, 37].includes(type) || (type === 37 && profile.startsWith('sdk-')))
+    const definition = nativeABI(profile);
+    if (!Object.hasOwn(definition.text.fesLayouts, type))
       throw new Error(`Unrecovered FES text layout object type ${type} for ${profile}`);
     this.profile = profile;
     this.type = type;
@@ -81,7 +25,8 @@ export class NativeFESTextLayout {
     if (this.bytes.length !== 0x800) throw new Error('Invalid FES text layout record');
     this.profiles = structuredClone(profiles);
     this.revision = revision;
-    this.abi = ABI[profile.startsWith('sdk-') ? 'sdk' : type === 37 ? 'string8' : 'string'];
+    this.abi = definition.text.fesLayouts[type];
+    this.definition = definition;
   }
   word(index, value) {
     const view = new DataView(this.bytes.buffer, this.bytes.byteOffset, this.bytes.byteLength);
@@ -96,7 +41,7 @@ export class NativeFESTextLayout {
   }
   fontName() {
     const face = this.bytes.subarray(892, 892 + this.abi.fontBytes);
-    if (this.profile.startsWith('sdk-')) {
+    if (this.definition.text.settingsCharacterBytes === 1) {
       const end = face.indexOf(0);
       return new TextDecoder('shift_jis').decode(end < 0 ? face : face.subarray(0, end));
     }
@@ -110,14 +55,15 @@ export class NativeFESTextLayout {
     return result;
   }
   setFont(name, index) {
-    const bytes = this.profile.startsWith('sdk-')
-      ? encodeCP932(`${name}\0`)
-      : new Uint8Array(
-          Uint16Array.from(
-            { length: String(name).length + 1 },
-            (_, i) => String(name).charCodeAt(i) || 0,
-          ).buffer,
-        );
+    const bytes =
+      this.definition.text.settingsCharacterBytes === 1
+        ? encodeCP932(`${name}\0`)
+        : new Uint8Array(
+            Uint16Array.from(
+              { length: String(name).length + 1 },
+              (_, i) => String(name).charCodeAt(i) || 0,
+            ).buffer,
+          );
     if (bytes.length > this.abi.fontBytes)
       throw new RangeError('FES font name exceeds the native font record');
     // The original setter writes the terminator, retaining bytes after it.
@@ -126,20 +72,16 @@ export class NativeFESTextLayout {
     this.word(this.abi.fontIndex, index);
   }
   apply(mode, args = [], evaluate = (value) => Number(value), defaults = {}) {
-    const sdk = this.profile.startsWith('sdk-'),
+    const admitted = this.definition.text.layoutModes.includes(mode),
       abi = this.abi,
       p = (index, fallback = 0) =>
         args[index] === undefined ? fallback | 0 : evaluate(args[index]) | 0,
       dirty = () => this.word(abi.dirty, 1);
     // Both native handlers intentionally ignore unknown layout modes and
     // modes whose type dispatch does not include STRING/STRING8.
-    if (
-      !FES_TEXT_LAYOUT_MODES.includes(mode) ||
-      (sdk && !SDK_MODES.has(mode)) ||
-      NATIVE_NOOP.has(mode)
-    )
+    if (!FES_TEXT_LAYOUT_MODES.includes(mode) || !admitted || NATIVE_NOOP.has(mode))
       return {
-        recognized: FES_TEXT_LAYOUT_MODES.includes(mode) && (!sdk || SDK_MODES.has(mode)),
+        recognized: FES_TEXT_LAYOUT_MODES.includes(mode) && admitted,
         applied: false,
       };
     let applied = true;

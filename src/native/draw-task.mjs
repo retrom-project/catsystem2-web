@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Drawing task constructor/message entry: game 5F3C00/5F3F50.
+import { mapABIMessage } from './abi/messages.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
@@ -307,7 +308,7 @@ export class NativeDrawTask {
     );
   }
   soundMessage(target, message, bank, value = 0) {
-    const raw = this.world.profile.startsWith('sdk-') ? message - 2 : message;
+    const raw = mapABIMessage(this.world.profile, 'draw', 'raw', message);
     return this.world.sendNativeEngine(target, this.record.id, raw, bank, value);
   }
   async tick() {

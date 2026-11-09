@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 import { Binary } from '../binary.mjs';
 
 export function readPEVersionResource(bytes) {
@@ -77,25 +78,19 @@ export function readEngineVersion(bytes) {
   return [ms >>> 16, ms & 65535, ls >>> 16, ls & 65535].join('.');
 }
 
-const profiles = new Map([
-  ['2.6.1.74', 'sdk-4.01-engine-2.6.1.74'],
-  ['2.6.1.76', 'nekopara-vol3-engine-2.6.1.76'],
-]);
 export async function selectNativeProfile(game, explicit) {
-  if (explicit) {
-    if (![...profiles.values()].includes(explicit))
-      throw new Error(`Unimplemented engine ABI ${explicit}`);
-    return explicit;
-  }
-  const found = new Map();
+  if (explicit) return nativeABI(explicit).profile;
+  const found = [],
+    observed = [];
   for (const name of game.names('exe')) {
-    const bytes = await game.require(name),
-      version = readEngineVersion(bytes);
-    if (profiles.has(version)) found.set(version, name);
+    const version = readEngineVersion(await game.require(name));
+    observed.push({ name, version });
+    const abi = Object.values(NATIVE_ABIS).find((candidate) => candidate.engineVersion === version);
+    if (abi) found.push({ name, abi });
   }
-  if (found.size !== 1)
+  if (found.length !== 1)
     throw new Error(
-      'A unique supported CatSystem2 executable version or an explicit native profile is required',
+      `A unique supported CatSystem2 executable version is required. Found ${JSON.stringify(observed)}. Provide an explicit registered ABI or reviewed per-version ABI data.`,
     );
-  return profiles.get([...found.keys()][0]);
+  return found[0].abi.profile;
 }

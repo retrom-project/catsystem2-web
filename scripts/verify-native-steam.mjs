@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeSteam, nativeSteam } from '../src/native/steam.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine, formatNativeAt } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 const [filename, output] = process.argv.slice(2),
@@ -30,7 +30,7 @@ const engine = await NativeEngineProcess.open({ profile, bytes }),
     data: new Uint8Array(8192),
     stackSize: 1024,
   }),
-  table = NATIVE_PROFILES[profile].tables.main.va;
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va;
 let ready = false,
   original = [],
   model = [],

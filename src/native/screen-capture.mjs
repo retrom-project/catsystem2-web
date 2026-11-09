@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original view screenshot/recording state, backed by the shared actual device.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { formatNativeAt } from '../kcs.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
@@ -14,17 +15,17 @@ export const NATIVE_SCREEN_CAPTURE_CONTRACTS = Object.freeze([
 export const NATIVE_SCREEN_CAPTURE_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
     capture: 0x6758e0,
-    recording: 164,
-    counter: 168,
-    prefix: 172,
+    recording: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.recording,
+    counter: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.counter,
+    prefix: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.prefix,
     menuHandler: 0x530200,
     menuCapture: 0x5305ef,
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     capture: 0x54ca70,
-    recording: 132,
-    counter: 136,
-    prefix: 140,
+    recording: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.recording,
+    counter: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.counter,
+    prefix: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.prefix,
     menuHandler: 0x442080,
     menuCapture: 0x44240a,
   }),
@@ -98,8 +99,10 @@ export class NativeScreenCapture {
     if (id === 0x1b9) {
       const bytes = (this.world.runtime.services.formatBytes ?? formatNativeAt)(words[1], machine);
       if (
-        (this.sdk ? bytes.length : new TextDecoder('shift_jis').decode(bytes).length) >=
-        (this.sdk ? 64 : 32)
+        (nativeABI(this.engine.profile).text.recordingPrefix.units === 'bytes'
+          ? bytes.length
+          : new TextDecoder('shift_jis').decode(bytes).length) >=
+        nativeABI(this.engine.profile).text.recordingPrefix.limit
       )
         throw new RangeError('Native recording prefix exceeds its original view field');
     }

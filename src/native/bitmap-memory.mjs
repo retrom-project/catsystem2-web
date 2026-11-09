@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Persistent bitmap wrappers. Guest kcBitmap storage is authoritative after
 // materialization; host RGBA and Canvas objects are derived presentation views.
 import { installNativeBitmapOperations } from './bitmap-operations.mjs';
@@ -17,7 +18,7 @@ const layouts = {
     attribute: 0x68b5c0,
     clearAttributes: 0x68b870,
     resize: 0x68d450,
-    wrapperBytes: 536,
+    wrapperBytes: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.bitmapMemory.wrapperBytes,
     wrapperConstruct: 0x68e9f0,
     wrapperRelease: 0x690050,
   },
@@ -28,7 +29,7 @@ const layouts = {
     attribute: 0x562120,
     clearAttributes: 0x5623d0,
     resize: 0x563fc0,
-    wrapperBytes: 276,
+    wrapperBytes: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.bitmapMemory.wrapperBytes,
     wrapperConstruct: 0x565560,
     wrapperRelease: 0x5668f0,
   },

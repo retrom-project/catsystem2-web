@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 // Public FES object bridge. Native state lives once in the shared engine.
 export const FES_TEXT_VERBS = new Set(
   'str apend apendmark clear draw isdraw isdrawmark skip reset layout linecnt endpos userfontobj userfont insert getdiv'.split(
@@ -27,16 +29,7 @@ export class NativeFESText {
         creator: instance.runtimeID,
         name: object.nativeType === 37 ? 'FE string UTF8' : 'FE string',
       });
-    const taskAt =
-      object.nativeType === 29
-        ? runtime.sdk
-          ? 297
-          : 313
-        : runtime.sdk
-          ? 240
-          : object.nativeType === 37
-            ? 265
-            : 248;
+    const taskAt = nativeABI(runtime.engine.profile).fes.textTaskWords[object.nativeType];
     runtime.process.store(
       object.nativeObjectPointer + taskAt * 4,
       this.world.nativeTaskID ? this.world.nativeTaskID(object.nativeTaskID) : object.nativeTaskID,
@@ -64,7 +57,7 @@ export class NativeFESText {
 }
 
 export function nativeFESTextAdapter(bridge, type) {
-  if (type === 37 && bridge.sdk)
+  if (!Object.hasOwn(nativeABI(bridge.engine.profile).text.fesLayouts, type) && type !== 29)
     throw new Error('The frozen SDK has no STRING8 object constructor');
   return {
     construct:
@@ -100,13 +93,12 @@ export function nativeFESTextAdapter(bridge, type) {
     verbs: FES_TEXT_VERBS,
     vramOffset: 740,
     canonicalMessage: (message) =>
-      bridge.sdk
-        ? message >= (type === 29 ? 463 : 444)
-          ? message + (type === 29 ? 26 : 5)
-          : message >= 37
-            ? message + 2
-            : message
-        : message,
+      mapABIMessage(
+        bridge.engine.profile,
+        type === 29 ? 'fesNvText' : 'fesText',
+        'canonical',
+        message,
+      ),
     definitionApply: bridge.sdk
       ? type === 29
         ? 0x605410

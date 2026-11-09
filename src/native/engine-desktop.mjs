@@ -1,12 +1,19 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The original startup queries the virtual desktop through USER32/GDI32.
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 const DESKTOP_WINDOW = 2;
 const DESKTOP_DEPTH = 32;
 const layouts = {
-  'sdk-4.01-engine-2.6.1.74': [0x4a2750, 0x10788],
-  'nekopara-vol3-engine-2.6.1.76': [0x5c5b10, 0x13d40],
+  'sdk-4.01-engine-2.6.1.74': [
+    0x4a2750,
+    nativeABI('sdk-4.01-engine-2.6.1.74').layouts.desktop.fields,
+  ],
+  'nekopara-vol3-engine-2.6.1.76': [
+    0x5c5b10,
+    nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.desktop.fields,
+  ],
 };
 
 export function nativeSystemMetric(index, size, touchPoints) {

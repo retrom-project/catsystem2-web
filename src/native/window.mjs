@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
+import { nativeABI } from './abi/index.mjs';
 import {
   isNativeWindowCommandMessage,
   NATIVE_WINDOW_COMMAND_CALLBACKS,
@@ -52,7 +53,7 @@ export class NativeWindow {
       return (
         commands.has(command) ||
         command === 40030 ||
-        (command === 40096 && this.world.profile === 'nekopara-vol3-engine-2.6.1.76') ||
+        (command === 40096 && nativeABI(this.world.profile).capabilities.windowReturnTitle) ||
         Boolean(this.world.configuration.language && nativeWindowLanguageCommand(command))
       );
     }
@@ -109,7 +110,7 @@ export class NativeWindow {
   }
   async broadcast() {
     const world = this.world;
-    if (world.profile !== 'nekopara-vol3-engine-2.6.1.76')
+    if (!nativeABI(world.profile).capabilities.broadcast)
       throw new Error('This engine has no native broadcast flag');
     if (world.steamService.managerExists) {
       await world.steamService.observeBroadcastQuery();
@@ -137,7 +138,7 @@ export class NativeWindow {
       if (world.nativeEngine) await (await world.getNativeFeature('screen-capture')).menuBitmap();
       return true;
     }
-    if (command === 40096 && world.profile === 'nekopara-vol3-engine-2.6.1.76') {
+    if (command === 40096 && nativeABI(world.profile).capabilities.windowReturnTitle) {
       const engine = await world.ensureNativeEngine(),
         old = await engine.call(0x713f70, [], engine.refs.owner),
         next = Number(!old);

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original task 8 keeps its own forty-byte character records, parser, ruby,
 // reveal schedule and bitmap. It does not share the later STRING writer ABI.
+import { mapABIMessage } from './abi/messages.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeTaskMemory } from './task-memory.mjs';
@@ -61,8 +62,7 @@ export class NativeLegacyTextRuntime {
     if (senderWorldID == null)
       throw new Error(`Legacy native text sender ${sender} is outside its Top namespace`);
     if (!record || record.state !== 'active') return 0;
-    const message =
-        this.engine.profile.startsWith('sdk-') && rawMessage >= 37 ? rawMessage + 2 : rawMessage,
+    const message = mapABIMessage(this.engine.profile, 'base', 'canonical', rawMessage),
       context = {
         payload: this.platform.memory,
         nativePointer: true,
@@ -253,8 +253,7 @@ export class NativeLegacyTextTask {
     if (!context.nativeResult) owned.push(out);
     const writes = p.watchWrites(out, 4);
     try {
-      const rawMessage =
-          this.owner.engine.profile.startsWith('sdk-') && message >= 37 ? message - 2 : message,
+      const rawMessage = mapABIMessage(this.owner.engine.profile, 'textLegacy', 'raw', message),
         unhandled = await this.invoke(this.owner.abi.message, [
           sender,
           rawMessage,

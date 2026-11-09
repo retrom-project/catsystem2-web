@@ -3,7 +3,7 @@
 // process global shared by all 32-byte contexts, not a per-script JS copy.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 
 export const NATIVE_TILE_GAME_IDS = Object.freeze(
   Array.from({ length: 44 }, (_, index) => 0x1d6 + index),
@@ -94,7 +94,7 @@ export class NativeTileGame {
       words.forEach((value, index) => p.store(argv + index * 4, value));
       p.store(out, 0xcccccccc);
       const control = await this.engine.call(
-        p.load(NATIVE_PROFILES[this.engine.profile].tables.main.va + id * 4),
+        p.load(NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + id * 4),
         [bridge.pointer, 0, argv, out],
         undefined,
         { task: task.id },
@@ -140,7 +140,7 @@ export class NativeTileGame {
       try {
         p.store(argv, pointer);
         await this.engine.call(
-          p.load(NATIVE_PROFILES[this.engine.profile].tables.main.va + 0x1d7 * 4),
+          p.load(NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 0x1d7 * 4),
           [0, 0, argv, 0],
         );
         this.refs.contexts.delete(pointer);

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { appendSceneCheckpoint, pruneSceneCheckpoints } from '../src/native/scene-checkpoint.mjs';
 import { NativeSceneHistory, nativeSceneData } from '../src/native/scene-data.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
@@ -125,7 +125,7 @@ try {
         p.store(argv, f.pair);
         p.store(argv + 4, alias ? f.pair : sourcePair);
         const control = await engine.call(
-            p.load(NATIVE_PROFILES[profile].tables.main.va + 0x3e1 * 4),
+            p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x3e1 * 4),
             [0, f.caller, argv, out],
           ),
           reply = nativeSceneData(0x3e1, [destHandle, alias ? destHandle : sourceHandle], machine, {

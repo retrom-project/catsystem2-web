@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // The soundconf tree is separate from the older four startup configuration blocks.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { findNativeXML, parseNativeXML } from './xml.mjs';
 import { parseNativeInteger } from './standard.mjs';
 
 const profile76 = 'nekopara-vol3-engine-2.6.1.76';
-const profile74 = 'sdk-4.01-engine-2.6.1.74';
 const mutable = ['volume', 'play', 'sysplay', 'voicevol', 'skipvol', 'mute'];
 const resetFields = ['volume', 'play', 'sysplay', 'mute', 'voicevol'];
 const inherited = [
@@ -156,8 +156,7 @@ export class NativeSoundConfiguration {
     loaded = !!document,
     filename = '',
   } = {}) {
-    if (![profile74, profile76].includes(profile))
-      throw new Error(`Unrecovered sound configuration profile ${profile}`);
+    this.abi = nativeABI(profile);
     this.profile = profile;
     this.loaded = !!loaded;
     this.filename = String(filename);
@@ -239,8 +238,7 @@ export class NativeSoundConfiguration {
     if (!node) {
       if (selector.by === 'idPath') {
         if (field === 'mute') return 0;
-        if (this.profile === profile74 && ['volume', 'play', 'sysplay', 'voicevol'].includes(field))
-          return -1;
+        if (this.abi.sound.missingIdPathFields.includes(field)) return -1;
       }
       return missing[field];
     }
@@ -341,8 +339,7 @@ export function nativeSoundConfigurationFilename(startup) {
 }
 
 export function serializeNativeSoundPreferences(configuration) {
-  if (![profile74, profile76].includes(configuration?.profile))
-    throw new Error('Native sound preferences require a recovered configuration profile');
+  const abi = nativeABI(configuration?.profile);
   configuration.requireTree();
   const document = { name: 'document', text: '', children: [] };
   const put = (path, value) => {
@@ -371,17 +368,16 @@ export function serializeNativeSoundPreferences(configuration) {
     if (!node.children.length) return `${indent}<${node.name}>${node.text}</${node.name}>\r\n`;
     return `${indent}<${node.name}>\r\n${node.children.map((child) => serialize(child, depth + 1)).join('')}${indent}</${node.name}>\r\n`;
   };
-  const game = configuration.profile === profile76,
-    text = `<?xml version="1.0" encoding="${game ? 'UTF-8' : 'Shift_JIS'}"?>\r\n${serialize(document)}`;
-  return game ? new TextEncoder().encode(text) : encodeCP932(text);
+  const encoding = abi.xmlEncoding,
+    text = `<?xml version="1.0" encoding="${encoding}"?>\r\n${serialize(document)}`;
+  return encoding === 'UTF-8' ? new TextEncoder().encode(text) : encodeCP932(text);
 }
 
 export function applyNativeSoundPreferences(configuration, bytes) {
-  if (![profile74, profile76].includes(configuration?.profile))
-    throw new Error('Native sound preferences require a recovered configuration profile');
+  const abi = nativeABI(configuration?.profile);
   let root;
   try {
-    root = parseNativeXML(bytes, configuration.profile === profile76 ? 'utf-8' : 'shift_jis');
+    root = parseNativeXML(bytes, abi.xmlEncoding);
   } catch {
     return false;
   }
@@ -393,7 +389,7 @@ export function nativeSoundConfiguration(id, args, machine, services) {
   if (!((id >= 0x3aa && id <= 0x3c4) || [0x3e3, 0x3e8, 0x3e9].includes(id))) return undefined;
   const sound = services.soundConfiguration;
   if (!sound) return undefined;
-  if (![profile74, profile76].includes(sound.profile)) return undefined;
+  nativeABI(sound.profile);
   const expected = id <= 0x3ae ? 0 : 1;
   if (args.length !== expected)
     throw new Error(

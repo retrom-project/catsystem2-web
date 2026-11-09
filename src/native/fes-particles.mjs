@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { mapABIMessage } from './abi/messages.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 
 class NativeFESParticles {
@@ -41,7 +42,7 @@ export function installNativeFESParticles(world) {
       categoryFilenameCapacity: 128,
       verbs: new Set(runtime.table.keys()),
       canonicalMessage: (message) =>
-        runtime.sdk && message >= 309 && message <= 316 ? message + 5 : message,
+        mapABIMessage(runtime.engine.profile, 'fesParticle', 'canonical', message),
       initialize: (runtime, instance, object, pointer) =>
         runtime.applyDefinition(instance, object, pointer, apply),
       syncObject() {},

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { encodeCP932, formatNativeAt } from '../src/kcs.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
@@ -38,12 +38,10 @@ const fixture = await sceneCheckpointFixture(bytes, profile),
     try {
       args.forEach((word, i) => p.store(argv + i * 4, word));
       p.store(out, 0xcccccccc);
-      const control = await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4), [
-        bridge.pointer,
-        caller,
-        argv,
-        out,
-      ]);
+      const control = await engine.call(
+        p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
+        [bridge.pointer, caller, argv, out],
+      );
       return { control, value: p.load(out) };
     } finally {
       bridge.close();

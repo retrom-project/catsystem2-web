@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 
@@ -41,7 +41,7 @@ for (const [profile, variable] of [
           timer = expected;
           p.write(out, new Uint8Array(12).fill(0xa5));
           const control = await engine.call(
-            p.load(NATIVE_PROFILES[profile].tables.main.va + 4 * 4),
+            p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 4 * 4),
             [0, 0, 0, out + 4],
           );
           assert.deepEqual(nativeStandard(4, [], null, { clock: () => platform }), {

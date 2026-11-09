@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 const layouts = {
@@ -9,7 +10,7 @@ const layouts = {
     next: 0x5bfc1e,
     quit: 0x5bfc3a,
     exit: 0x5bfc3e,
-    mask: 0x4ff,
+    mask: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.windowPump.mask,
   },
   'nekopara-vol3-engine-2.6.1.76': {
     entry: 0x70e7e0,
@@ -18,7 +19,7 @@ const layouts = {
     next: 0x70e8fe,
     quit: 0x70e91a,
     exit: 0x70e91e,
-    mask: 0x1cff,
+    mask: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.windowPump.mask,
   },
 };
 

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeTilePlaneCommand } from '../src/native/tile-plane-command.mjs';
 
 const [file, report] = process.argv.slice(2);
@@ -20,7 +20,7 @@ if (!profile) throw new Error('The tiled-plane oracle requires a frozen engine i
 const engine = await NativeEngineProcess.open({ profile, bytes }),
   p = engine.process,
   sdk = profile.startsWith('sdk-'),
-  main = NATIVE_PROFILES[profile].tables.main.va,
+  main = NATIVE_EXE_PROFILES[profile].tables.main.va,
   address = p.load(main + 0x1b1 * 4),
   task = { id: 701 },
   canaries = new Uint8Array(12).fill(0xa5),

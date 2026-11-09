@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -30,7 +30,7 @@ const raw = await renderSourceFixture(bytes, profile),
   { stride, wrapperBytes, retainedBytes, retainedRetain } = raw.layout,
   block = a.allocate(2048),
   blockB = b.allocate(2048),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   sdk = profile.startsWith('sdk-'),
   load = p.load(table + 0x2bf * 4),
   release = p.load(table + 0x2c0 * 4),

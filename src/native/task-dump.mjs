@@ -1,13 +1,20 @@
 // SPDX-License-Identifier: MPL-2.0
 // The SDK writes its original task dump through the shared task graph and IFile.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { NATIVE_ENGINE_MESSAGE_LAYOUTS } from './engine-message.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_TASK_DUMP = Object.freeze({
   id: 0xd0,
-  game: Object.freeze({ address: 0x643a30, message: 36 }),
-  sdk: Object.freeze({ address: 0x52a1a0, message: 34 }),
+  game: Object.freeze({
+    address: 0x643a30,
+    message: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.taskDumpWrapper,
+  }),
+  sdk: Object.freeze({
+    address: 0x52a1a0,
+    message: nativeABI('sdk-4.01-engine-2.6.1.74').messages.taskDumpWrapper,
+  }),
 });
 
 export class NativeTaskDump {
@@ -43,7 +50,9 @@ export class NativeTaskDump {
       origin == null ||
       target ||
       flags ||
-      (wrapper ? message !== this.spec.message : w || (message !== 15 && message !== 16))
+      (wrapper
+        ? message !== nativeABI(this.engine.profile).messages.taskDumpWrapper
+        : w || (message !== 15 && message !== 16))
     )
       throw new Error('Unexpected original task dump envelope');
     const context = {
@@ -53,7 +62,7 @@ export class NativeTaskDump {
       flags,
       fromHost: true,
     };
-    if (wrapper && this.sdk)
+    if (wrapper && nativeABI(this.engine.profile).capabilities.taskDumpTopWriter)
       context.writeNativeTaskDump = async (record) => {
         const memory = await this.world.getNativeFeature('task-memory'),
           top = await memory.pointer(record.id),

@@ -6,7 +6,7 @@ import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   nativeMesh,
   packNativeMesh,
@@ -19,7 +19,7 @@ import { identity } from '../src/motion/matrix.mjs';
 import { nativeGraphics } from '../src/native/graphics.mjs';
 
 const [root, profile, output] = process.argv.slice(2);
-if (!root || !output || !NATIVE_PROFILES[profile])
+if (!root || !output || !NATIVE_EXE_PROFILES[profile])
   throw new Error(
     'Usage: node scripts/verify-native-mesh.mjs FIXED_GAME_DIRECTORY PROFILE IGNORED_REPORT',
   );
@@ -81,7 +81,7 @@ try {
     p.write(source + 256, input);
     [8, 256, count].forEach((word, i) => p.store(argsPointer + i * 4, word));
     const original = await engine.call(
-      p.load(NATIVE_PROFILES[profile].tables.main.va + 0x1d3 * 4),
+      p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x1d3 * 4),
       [vm, sender, argsPointer, result],
     );
     let actual;
@@ -106,7 +106,7 @@ try {
   for (const word of [0, 1, 2, 3, 0x80000000, 0xffffffff]) {
     [8, word].forEach((value, i) => p.store(argsPointer + i * 4, value));
     const original = await engine.call(
-      p.load(NATIVE_PROFILES[profile].tables.main.va + 0x1d2 * 4),
+      p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x1d2 * 4),
       [vm, sender, argsPointer, result],
     );
     let actual;
@@ -163,7 +163,7 @@ try {
       for (let i = 0; i < 16; i++) p.store(source + 256 + 4 * i, next());
       parameters.forEach((value, i) => p.store(argsPointer + i * 4, value));
       const before = p.read(source, 8192),
-        control = await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4), [
+        control = await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4), [
           vm,
           sender,
           argsPointer,
@@ -265,7 +265,7 @@ try {
     JSON.stringify(
       {
         profile,
-        sha256: NATIVE_PROFILES[profile].sha256,
+        sha256: NATIVE_EXE_PROFILES[profile].sha256,
         passed,
         scope:
           'Original main157/158/159/192/1D2/1D3 message packing and kc2DDivModel affine transform. Host engine-message delivery is explicit; wrapper uninitialized color words are excluded.',

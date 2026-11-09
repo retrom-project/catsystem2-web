@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   NativeConfigurationQueries,
   NATIVE_CONFIGURATION_QUERY_CONTRACTS,
@@ -88,7 +88,10 @@ const covered = new Map(),
   };
 check(block, otherBlock, 'same extended allocation');
 for (const spec of NATIVE_CONFIGURATION_QUERY_CONTRACTS)
-  assert.equal(p.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4), spec.handlers[index]);
+  assert.equal(
+    p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
+    spec.handlers[index],
+  );
 async function run(spec, args) {
   const words = Array.from(args);
   while (words.length < spec.words) words.push(a.nativeArgument(words.length));

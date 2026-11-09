@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeImages, nativeImage } from '../src/native/image.mjs';
 const [filename, output] = process.argv.slice(2);
@@ -16,7 +16,7 @@ const bytes = new Uint8Array(await readFile(filename)),
 if (!profile) throw new Error('Image creation oracle requires a frozen engine image');
 const engine = await NativeEngineProcess.open({ bytes, profile }),
   p = engine.process,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   task = p.allocate(200, true),
   list = p.allocate(8, true),
   head = p.allocate(12, true),

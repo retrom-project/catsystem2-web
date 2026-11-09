@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nativeUTF8 } from '../src/native/utf8.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 const [filename, output] = process.argv.slice(2),
@@ -52,7 +52,7 @@ async function run(id, args) {
     args.forEach((word, i) => p.store(argv + i * 4, word));
     p.store(out, 0xcccccccc);
     expected = {
-      control: await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4), [
+      control: await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4), [
         bridge.pointer,
         0,
         argv,

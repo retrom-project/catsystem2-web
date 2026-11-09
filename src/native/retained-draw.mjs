@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Native retained image/ANM records execute in the shared mounted PE. Only
 // bitmap presentation and the background image-prefetch worker are host APIs.
+import { nativeABI } from './abi/index.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
 import { installNativeRasterKernels } from './raster-kernel.mjs';
@@ -8,58 +9,56 @@ import { installNativeEngineWorkers } from './engine-workers.mjs';
 
 const ABI = {
   game: {
-    construct: 0x745930,
-    release: 0x745c60,
-    bytes: 0xd4,
-    bitmap: 0x745cb0,
-    imageOwner: 0x745e60,
-    data: 0x745f60,
-    load: 0x7468f0,
-    start: 0x7468c0,
-    enable: 0x746be0,
-    setAnimationVariable: 0x746c50,
-    step: 0x746a50,
-    getBitmap: 0x746400,
-    alpha: 0x7467a0,
-    shown: 0x746830,
-    clip: 0x746850,
-    refresh: 0x746c00,
-    rendererConstruct: 0x742a10,
-    rendererDestroy: 0x742cf0,
-    rendererBitmap: 0x742e20,
-    rendererRetained: 0x743270,
-    rendererFind: 0x744c90,
-    rendererRemove: 0x743390,
-    rendererDraw: 0x7439b0,
-    rendererClip: 0x7441f0,
-    rendererLayer: 0x744340,
+    construct: 7625008,
+    release: 7625824,
+    bitmap: 7625904,
+    imageOwner: 7626336,
+    data: 7626592,
+    load: 7629040,
+    start: 7628992,
+    enable: 7629792,
+    setAnimationVariable: 7629904,
+    step: 7629392,
+    getBitmap: 7627776,
+    alpha: 7628704,
+    shown: 7628848,
+    clip: 7628880,
+    refresh: 7629824,
+    rendererConstruct: 7612944,
+    rendererDestroy: 7613680,
+    rendererBitmap: 7613984,
+    rendererRetained: 7615088,
+    rendererFind: 7621776,
+    rendererRemove: 7615376,
+    rendererDraw: 7616944,
+    rendererClip: 7619056,
+    rendererLayer: 7619392,
   },
   sdk: {
-    construct: 0x5e68a0,
-    release: 0x5e6b20,
-    bytes: 0xc4,
-    bitmap: 0x5e6b70,
-    imageOwner: 0x5e6cf0,
-    data: 0x5e6df0,
-    load: 0x5e7580,
-    start: 0x5e7550,
-    enable: 0x5e77d0,
-    setAnimationVariable: 0x5e7840,
-    step: 0x5e7690,
-    getBitmap: 0x5e70a0,
-    alpha: 0x5e7430,
-    shown: 0x5e74c0,
-    clip: 0x5e74e0,
-    refresh: 0x5e77f0,
-    rendererConstruct: 0x5e3720,
-    rendererDestroy: 0x5e39e0,
-    rendererBitmap: 0x5e3b10,
-    rendererRetained: 0x5e3ea0,
-    rendererFind: 0x5e5860,
-    rendererRemove: 0x5e3fc0,
-    rendererDraw: 0x5e45e0,
-    rendererClip: 0x5e4e20,
-    rendererLayer: 0x5e4f70,
+    construct: 6187168,
+    release: 6187808,
+    bitmap: 6187888,
+    imageOwner: 6188272,
+    data: 6188528,
+    load: 6190464,
+    start: 6190416,
+    enable: 6191056,
+    setAnimationVariable: 6191168,
+    step: 6190736,
+    getBitmap: 6189216,
+    alpha: 6190128,
+    shown: 6190272,
+    clip: 6190304,
+    refresh: 6191088,
+    rendererConstruct: 6174496,
+    rendererDestroy: 6175200,
+    rendererBitmap: 6175504,
+    rendererRetained: 6176416,
+    rendererFind: 6183008,
+    rendererRemove: 6176704,
+    rendererDraw: 6178272,
+    rendererClip: 6180384,
+    rendererLayer: 6180720,
   },
 };
 const readFloat = (p, at) => new DataView(p.read(at, 4).buffer).getFloat32(0, true);
@@ -73,7 +72,7 @@ export class NativeRetainedDraw {
     this.renderers = new Map();
     for (const [name, definition] of nativeRectangleDefinitions(this.process))
       engine.registerWindows('USER32.dll', name, definition);
-    if (!this.sdk) installNativeEngineWorkers(engine);
+    if (nativeABI(engine.profile).capabilities.engineWorkers) installNativeEngineWorkers(engine);
     engine.registerFeature('retained-draw', this);
   }
   call(address, args, pointer, task, rasterBudget) {
@@ -92,7 +91,7 @@ export class NativeRetainedDraw {
     const id = this.key(draw, key);
     if (this.items.has(id)) return this.items.get(id);
     const p = this.process,
-      pointer = p.allocate(this.abi.bytes, true);
+      pointer = p.allocate(nativeABI(this.engine.profile).graphics.retainedBytes, true);
     try {
       await this.call(
         this.abi.construct,

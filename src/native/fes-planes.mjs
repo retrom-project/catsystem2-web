@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MPL-2.0
 // CPLANE / PLANE use the original FES records and complete frame drivers.
 // Their child SimplePlane task is allocated by the original first-frame path.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { runNativeFESObjectMotion } from './fes-controls.mjs';
 import { installNativeFESImageCaches } from './fes-images.mjs';
 
 const ABI = {
   game: {
-    3: { construct: 0x74a850, size: 0x2e4, driver: 0x65d1d0 },
-    4: { construct: 0x74b940, size: 0x2fc, driver: 0x661940 },
-    5: { construct: 0x7484a0, size: 0x2c },
-    apply: 0x759650,
-    offset: 1108,
+    3: { construct: 7645264, driver: 6672848 },
+    4: { construct: 7649600, driver: 6691136 },
+    5: { construct: 7636128 },
+    apply: 7706192,
   },
   sdk: {
-    3: { construct: 0x5eade0, size: 0x2e4, driver: 0x52d130 },
-    4: { construct: 0x5ebea0, size: 0x2fc, driver: 0x531330 },
-    5: { construct: 0x5e8ac0, size: 0x2c },
-    apply: 0x5f77d0,
-    offset: 852,
+    3: { construct: 6204896, driver: 5427504 },
+    4: { construct: 6209184, driver: 5444400 },
+    5: { construct: 6195904 },
+    apply: 6256592,
   },
 };
 function pull(runtime, object, pointer) {
@@ -112,11 +112,13 @@ export function installNativeFESPlanes(world) {
       const abi = ABI[runtime.sdk ? 'sdk' : 'game'];
       return {
         ...abi[type],
+        ...nativeABI(runtime.engine.profile).fes.planes[type],
         definitionApply: abi.apply,
         definitionIncludesParent: true,
         vramOffset: null,
         verbs: new Set(runtime.table.keys()),
-        canonicalMessage: (message) => (runtime.sdk && message >= 37 ? message + 2 : message),
+        canonicalMessage: (message) =>
+          mapABIMessage(runtime.engine.profile, 'base', 'canonical', message),
         async initialize(runtime, instance, object, pointer) {
           await world.getNativeFeature('engine-files');
           installNativeFESImageCaches(runtime);
@@ -135,7 +137,10 @@ export function installNativeFESPlanes(world) {
           await world.planesFES.advance(instance, object);
           const offset = instance.player.nativeDraw?.offset ?? [0, 0];
           offset.forEach((word, i) =>
-            runtime.process.store(runtime.driver + abi.offset + i * 4, word),
+            runtime.process.store(
+              runtime.driver + nativeABI(runtime.engine.profile).fes.planes.offset + i * 4,
+              word,
+            ),
           );
           if (instance.player.nativeInput?.state.sleeping) {
             object.nativePlaneDriverDisplay = runtime.process.load(pointer + 188);

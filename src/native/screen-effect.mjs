@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Screen-effect tasks keep their original constructors, receivers, animation
 // and renderer callbacks. The platform owns the one view/device/target set.
+import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { installNativeTaskMemory } from './task-memory.mjs';
@@ -55,18 +56,10 @@ const PAYLOAD_BYTES = Object.freeze({
   521: 28,
 });
 export function screenEffectRawMessage(profile, message) {
-  if (!profile.startsWith('sdk-')) return message;
-  if (message >= 516 && message <= 523) return message - 26;
-  if (message >= 377 && message <= 395) return message - 5;
-  return message >= 39 ? message - 2 : message;
+  return mapABIMessage(profile, 'screen', 'raw', message);
 }
 function canonicalMessage(profile, kind, message) {
-  if (!profile.startsWith('sdk-') || kind === 1) return message;
-  if (kinds.has(kind)) {
-    if (message >= 490 && message <= 497) return message + 26;
-    if (message >= 372 && message <= 390) return message + 5;
-  }
-  return message >= 37 ? message + 2 : message;
+  return mapABIMessage(profile, 'screen', 'canonical', message, kind);
 }
 export class NativeScreenEffects {
   static async open(engine, world) {

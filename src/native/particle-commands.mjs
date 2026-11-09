@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original main wrappers send controls to the shared PTCL/PPI task.
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_EXE_PROFILES } from './catalog.mjs';
 
 export const NATIVE_PARTICLE_COMMANDS = Object.freeze(
   [
@@ -37,7 +38,7 @@ export class NativeParticleCommands {
   }
   async send([sender, target, raw, w, l, flags, out]) {
     const origin = this.engine.currentTaskID,
-      message = this.sdk ? raw + 5 : raw;
+      message = mapABIMessage(this.engine.profile, 'particleCommand', 'canonical', raw);
     if (origin == null || !messages.has(message) || w || flags)
       throw new Error('Unexpected original particle control envelope');
     const context = {
@@ -87,7 +88,7 @@ export class NativeParticleCommands {
       p.store(scratch + 4, this.world.nativeTaskID(task.id));
       p.store(out, NATIVE_RESULT_SENTINEL);
       const address = spec.handlers[Number(this.sdk)],
-        slot = NATIVE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
+        slot = NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
         parameters = [bridge.pointer, scratch, argv, out],
         options = {
           task: task.id,

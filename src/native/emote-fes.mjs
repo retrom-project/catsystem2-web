@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Both profiles use their original M2PLANE constructor, command handlers and
 // frame driver. The SDK's actual task is a SimplePlane without a model driver.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 
@@ -21,7 +22,7 @@ export class NativeFESM2 {
     return this.world.getNativeFeature('fes-objects');
   }
   async prepare() {
-    if (this.world.profile.startsWith('sdk-')) return;
+    if (!nativeABI(this.world.profile).capabilities.emoteFes) return;
     await (await this.world.getNativeFeature('m2')).initialize();
   }
   async update(instance, object, { configurationDirty = false } = {}) {

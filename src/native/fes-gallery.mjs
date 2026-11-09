@@ -1,9 +1,22 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The original loadlist commands read a kcCGList from the FES interpreter.
 // Bind the current instance's list and registration bytes for that call.
 const layouts = {
-  'sdk-4.01-engine-2.6.1.74': [1740, 0x628d80, 0x628e10, 0x629080, 0x629050],
-  'nekopara-vol3-engine-2.6.1.76': [2000, 0x790ba0, 0x790c30, 0x790ea0, 0x790e70],
+  'sdk-4.01-engine-2.6.1.74': [
+    nativeABI('sdk-4.01-engine-2.6.1.74').layouts.fesGallery.listOffset,
+    0x628d80,
+    0x628e10,
+    0x629080,
+    0x629050,
+  ],
+  'nekopara-vol3-engine-2.6.1.76': [
+    nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.fesGallery.listOffset,
+    0x790ba0,
+    0x790c30,
+    0x790ea0,
+    0x790e70,
+  ],
 };
 
 export async function withNativeFESGallery(runtime, instance, execute) {

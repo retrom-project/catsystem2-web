@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import {
   NativeTileGame,
@@ -42,7 +42,7 @@ const original = await NativeEngineProcess.open({ profile, bytes, now: () => 123
   a = new KCSMachine(program, {}, new Uint8Array(1024)),
   b = new KCSMachine(program, {}, new Uint8Array(1024)),
   p = original.process,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   contexts = new Map(),
   operations = [],
   events = new Map(),

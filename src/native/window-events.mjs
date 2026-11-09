@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original application-to-root event envelopes, sharing the canonical router.
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 export class NativeWindowEvents {
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
@@ -37,7 +38,7 @@ export class NativeWindowEvents {
       throw new Error('Window event uses an unexpected envelope');
     const p = this.process,
       raw = p.load(packet + 8),
-      canonical = this.sdk && [156, 160].includes(raw) ? raw + 2 : raw,
+      canonical = mapABIMessage(this.engine.profile, 'window', 'canonical', raw),
       memory = {
         load: (address) => (address === packet + 8 ? canonical : p.load(address)),
         read: (address, size) => p.read(address, size),
@@ -66,7 +67,7 @@ export class NativeWindowEvents {
       filtered = taskType !== undefined;
     p.store(core + 8, root);
     try {
-      const raw = this.sdk && [158, 162].includes(event) ? event - 2 : event;
+      const raw = mapABIMessage(this.engine.profile, 'window', 'raw', event);
       return await this.engine.call(
         this.helpers[Number(filtered)],
         filtered ? [taskType, raw, w, l] : [raw, w, l],
@@ -90,7 +91,6 @@ export class NativeWindowEvents {
   }
 }
 export function installNativeWindowEvents(world) {
-  if (!NATIVE_PROFILES[world.profile])
-    throw new Error('Window events require a reviewed engine profile');
+  nativeABI(world.profile);
   world.registerNativeFeature('window-events', (engine) => new NativeWindowEvents(engine, world));
 }

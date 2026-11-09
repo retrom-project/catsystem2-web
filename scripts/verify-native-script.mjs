@@ -10,7 +10,7 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from '../tests/helpers.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -141,7 +141,7 @@ try {
     p.store(memory.pointer + 16, task.machine.pc);
     p.store(memory.pointer + 24, task.machine.sp);
     p.store(memory.pointer + 28, task.machine.floor);
-    p.store(memory.pointer + 56, NATIVE_PROFILES[profile].tables.main.va);
+    p.store(memory.pointer + 56, NATIVE_EXE_PROFILES[profile].tables.main.va);
     p.store(memory.pointer + 60, script);
     p.store(memory.pointer + 64, 1);
     p.store(memory.pointer + 68, p.load(memory.pointer + 20) + 128);

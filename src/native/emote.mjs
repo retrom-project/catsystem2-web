@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // All model/profile/action/lip/inertia execution belongs to the mounted engine
 // and driver. This module supplies the browser's task/file/graphics boundaries.
+import { nativeABI } from './abi/index.mjs';
 import { NativeEmoteDevice } from '../emote/native-device.mjs';
 import { NativeEmoteBlocks } from '../emote/native-blocks.mjs';
 import { NativeEmoteGraphics } from './emote-graphics.mjs';
@@ -15,7 +16,6 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
 import { installNativeRasterKernels } from './raster-kernel.mjs';
-const GAME = 'nekopara-vol3-engine-2.6.1.76';
 export const NATIVE_M2_IDS = Object.freeze([
   ...Array.from({ length: 28 }, (_, i) => 906 + i),
   965,
@@ -74,7 +74,8 @@ export class NativeM2 {
     return owner;
   }
   constructor(engine, world) {
-    if (engine.profile !== GAME) throw new Error('This engine profile has no native E-mote driver');
+    if (nativeABI(engine.profile).plugins.emoteDriver !== 'native')
+      throw new Error('This engine profile has no native E-mote driver');
     Object.assign(this, { engine, world, process: engine.process });
     this.tasks = new Map();
     this.sidecars = new Map();
@@ -528,7 +529,7 @@ export class NativeM2Task {
 }
 export function installNativeM2(world) {
   installNativeTaskMemory(world);
-  if (world.profile === GAME) {
+  if (nativeABI(world.profile).plugins.emoteDriver === 'native') {
     world.registerNativeFeature('m2', (engine) => NativeM2.open(engine, world));
     world.objects.register(54, async (record, _objects, options) =>
       (await world.getNativeFeature('m2')).create(record, options),
@@ -537,7 +538,7 @@ export function installNativeM2(world) {
       world.runtime.register('main', id, async (args, machine, task) =>
         (await world.getNativeFeature('m2')).apply(id, args, machine, task),
       );
-  } else if (world.profile === 'sdk-4.01-engine-2.6.1.74') {
+  } else if (nativeABI(world.profile).plugins.emoteDriver === 'placeholder') {
     world.registerNativeFeature('m2-task', (engine) => NativeSDKM2Tasks.open(engine, world));
     world.objects.register(54, async (record, _objects, options) =>
       (await world.getNativeFeature('m2-task')).create(record, options),

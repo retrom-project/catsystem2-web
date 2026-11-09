@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
@@ -21,7 +21,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   p = engine.process,
   handles = new NativeHandles(),
   buffers = new NativeDataBuffers(engine, { handles }),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   args = p.allocate(32, true),
   result = p.allocate(4, true),
   sizeOut = p.allocate(4, true),

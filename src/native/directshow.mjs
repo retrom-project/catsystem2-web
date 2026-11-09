@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // DirectShow connection boundary for the original renderless SimplePlane movie.
+import { nativeABI } from './abi/index.mjs';
 import { binaryIdentity as nativeImageIdentity } from '../identity.mjs';
 import { NativeHapDriver, NativeHapPlayback } from './movie-hap-playback.mjs';
 import { writeMoviePixels } from './movie-texture-renderer.mjs';
@@ -13,7 +14,6 @@ import {
   NativeWindowsMediaReader,
   WM_READER_CONTRACTS,
   WM_READER_GUIDS,
-  WM_READER_PROFILE,
 } from './movie-wmreader.mjs';
 
 const E_NOINTERFACE = 0x80004002;
@@ -110,7 +110,8 @@ export class NativeDirectShow {
       engine.kernel.registerCOMClass(guid, (iid, output) => this.createInstance(kind, iid, output));
     this.splitFilters = new NativeMovieFilters(this, UNKNOWN);
     this.hapDriver = new NativeHapDriver(engine);
-    if (engine.profile === WM_READER_PROFILE) this.wmReader = new NativeWindowsMediaReader(this);
+    if (nativeABI(engine.profile).capabilities.windowsMediaReader)
+      this.wmReader = new NativeWindowsMediaReader(this);
     engine.registerFeature('directshow', this);
   }
   guid(address, value) {

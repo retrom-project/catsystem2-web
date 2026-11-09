@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The SDK embeds V8 3.26.16. Execute its original static initializers and the
 // JavaScript portion of WinMain's platform setup in the virtual x86 process.
-const SDK = 'sdk-4.01-engine-2.6.1.74',
-  MOTION_CACHE = 0xc967ec,
+const MOTION_CACHE = 0xc967ec,
   DEFAULT_MUTEX = 0xc981e4,
   DEFAULT_ISOLATE = 0xc981cc,
   ALLOCATOR = 0xc73b60,
@@ -12,7 +12,8 @@ const SDK = 'sdk-4.01-engine-2.6.1.74',
 
 export async function initializeSDKJavaScript(engine) {
   const p = engine.process;
-  if (engine.profile !== SDK) throw new Error('No original JavaScript platform for this profile');
+  if (!nativeABI(engine.profile).capabilities.embeddedJavaScript)
+    throw new Error('No original JavaScript platform for this profile');
   if (
     engine.refs.sdkJavaScript ||
     p.load(MOTION_CACHE) ||
@@ -65,7 +66,7 @@ export async function releaseSDKJavaScript(engine) {
   const p = engine.process,
     { isolate, allocator, motionCache } = state;
   if (
-    engine.profile !== SDK ||
+    !nativeABI(engine.profile).capabilities.embeddedJavaScript ||
     p.load(MOTION_CACHE) !== motionCache ||
     p.allocations.get(motionCache) !== 0x114 ||
     p.load(DEFAULT_ISOLATE) !== isolate ||

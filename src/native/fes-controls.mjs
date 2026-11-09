@@ -1,84 +1,65 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES control objects keep their own native records; their child tasks own the
 // input planes and renderer descriptors created by the original drivers.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { motionRegisters } from '../motion/definitions.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 const ABI = {
   game: {
     13: {
-      construct: 0x74d120,
-      apply: 0x768940,
-      driver: 0x662580,
-      size: 0x1fc,
-      task: 492,
-      value: 328,
-      priority: 484,
-      display: 0x74d300,
-      setValue: 0x74d390,
+      construct: 7655712,
+      apply: 7768384,
+      driver: 6694272,
+      display: 7656192,
+      setValue: 7656336,
     },
     14: {
-      construct: 0x74d740,
-      apply: 0x768a70,
-      driver: 0x662220,
-      size: 0x234,
-      task: 524,
-      value: 364,
-      priority: 520,
-      display: 0x74d8f0,
-      setValue: 0x74d980,
+      construct: 7657280,
+      apply: 7768688,
+      driver: 6693408,
+      display: 7657712,
+      setValue: 7657856,
     },
     15: {
-      construct: 0x74de60,
-      apply: 0x768b20,
-      driver: 0x6627f0,
-      size: 0x230,
-      task: 520,
-      value: 364,
-      priority: 516,
-      display: 0x74e010,
-      setValue: 0x74e0a0,
+      construct: 7659104,
+      apply: 7768864,
+      driver: 6694896,
+      display: 7659536,
+      setValue: 7659680,
     },
   },
   sdk: {
     13: {
-      construct: 0x5ed570,
-      apply: 0x604bd0,
-      driver: 0x531f70,
-      size: 0x1fc,
-      task: 492,
-      value: 328,
-      priority: 484,
-      display: 0x5ed750,
-      setValue: 0x5ed7e0,
+      construct: 6215024,
+      apply: 6310864,
+      driver: 5447536,
+      display: 6215504,
+      setValue: 6215648,
     },
     14: {
-      construct: 0x5edb60,
-      apply: 0x604d00,
-      driver: 0x531c10,
-      size: 0x234,
-      task: 524,
-      value: 364,
-      priority: 520,
-      display: 0x5edd10,
-      setValue: 0x5edda0,
+      construct: 6216544,
+      apply: 6311168,
+      driver: 5446672,
+      display: 6216976,
+      setValue: 6217120,
     },
     15: {
-      construct: 0x5ee250,
-      apply: 0x604db0,
-      driver: 0x5321e0,
-      size: 0x230,
-      task: 520,
-      value: 364,
-      priority: 516,
-      display: 0x5ee400,
-      setValue: 0x5ee490,
+      construct: 6218320,
+      apply: 6311344,
+      driver: 5448160,
+      display: 6218752,
+      setValue: 6218896,
     },
   },
 };
-const layout = (runtime, object) => ABI[runtime.sdk ? 'sdk' : 'game'][object.nativeType];
+const layout = (runtime, type) => ({
+  ...ABI[runtime.sdk ? 'sdk' : 'game'][type],
+  ...nativeABI(runtime.engine.profile).fes.controls[type],
+});
 function pull(runtime, object, pointer) {
   const p = runtime.process,
-    abi = layout(runtime, object);
+    abi = layout(runtime, object.nativeType);
   object.value = p.load(pointer + abi.value) | 0;
   object.pri = p.load(pointer + abi.priority) | 0;
   object.alpha = p.load(pointer + { 13: 500, 14: 536, 15: 532 }[object.nativeType]);
@@ -121,7 +102,7 @@ export class NativeFESControls {
               : 'FE scroll',
       });
     runtime.process.store(
-      pointer + layout(runtime, object).task,
+      pointer + layout(runtime, object.nativeType).task,
       this.world.nativeTaskID(object.nativeTaskID),
     );
     return runtime;
@@ -163,7 +144,12 @@ export class NativeFESControls {
         if (message === 27) {
           const runtime = await this.runtime(),
             pointer = await runtime.create(instance, object);
-          await runtime.call(layout(runtime, object).setValue, [value, 0], pointer, record.id);
+          await runtime.call(
+            layout(runtime, object.nativeType).setValue,
+            [value, 0],
+            pointer,
+            record.id,
+          );
           pull(runtime, object, pointer);
           await player.nativeEvent(object.key, 'SCRL_P');
         } else await player.nativeEvent(object.key, value === 0 ? 'UNFOCUS' : 'FOCUS');
@@ -181,7 +167,7 @@ export class NativeFESControls {
   }
 }
 export function nativeFESControlAdapter(runtime, type) {
-  const abi = ABI[runtime.sdk ? 'sdk' : 'game'][type];
+  const abi = layout(runtime, type);
   return {
     construct: abi.construct,
     size: abi.size,
@@ -190,13 +176,7 @@ export function nativeFESControlAdapter(runtime, type) {
     verbs: new Set(runtime.table.keys()),
     vramOffset: null,
     canonicalMessage: (message) =>
-      runtime.sdk
-        ? message >= 348
-          ? message + 5
-          : message >= 37
-            ? message + 2
-            : message
-        : message,
+      mapABIMessage(runtime.engine.profile, 'fesControl', 'canonical', message),
     async initialize(runtime, instance, object, pointer) {
       await runtime.applyDefinition(instance, object, pointer, abi.apply);
       pull(runtime, object, pointer);
@@ -267,10 +247,13 @@ export async function runNativeFESObjectMotion(service, instance, object, defini
       instance.value(expression, current),
     ),
     name = `@cat/mot/${definition.file}`,
-    fileBytes = runtime.sdk ? encodeCP932(name + '\0') : new Uint8Array((name.length + 1) * 2),
+    fileBytes =
+      nativeABI(runtime.engine.profile).text.settingsCharacterBytes === 1
+        ? encodeCP932(name + '\0')
+        : new Uint8Array((name.length + 1) * 2),
     file = p.allocate(fileBytes.length, true),
     values = p.allocate(Math.max(4, registers.length * 4), true);
-  if (!runtime.sdk) {
+  if (nativeABI(runtime.engine.profile).text.settingsCharacterBytes === 2) {
     const view = new DataView(fileBytes.buffer);
     for (let i = 0; i < name.length; i++) view.setUint16(i * 2, name.charCodeAt(i), true);
   }

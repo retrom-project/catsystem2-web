@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original 64-byte image collections, their Script-owned list and all wrappers.
 // Pixel/decoder/retained-renderer state remains in the shared engine process.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
@@ -77,7 +78,7 @@ export class NativeImageOwners {
         const senderWorldID = world.resolveTaskID ? world.resolveTaskID(sender, origin) : sender;
         if (senderWorldID == null)
           throw new Error('Native image draw sender is outside its Top namespace');
-        const message = this.sdk ? rawMessage + 5 : rawMessage;
+        const message = rawMessage + nativeABI(this.engine.profile).messages.imageOwnerOffset;
         if (message !== 280 && message !== 282)
           throw new Error('Unexpected native image owner draw message');
         const context = {

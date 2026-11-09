@@ -5,7 +5,7 @@ import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeInput } from '../src/native/input.mjs';
 import { nativeInputControl, nativeInputControlMessage } from '../src/native/input-control.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -30,7 +30,7 @@ const sdk = profile.startsWith('sdk-'),
   renderer = p.allocate(200, true),
   packet = p.allocate(40, true),
   handler = sdk ? 0x4c38f0 : 0x5e7680,
-  main = NATIVE_PROFILES[profile].tables.main.va;
+  main = NATIVE_EXE_PROFILES[profile].tables.main.va;
 let passed = 0,
   calls = [];
 const compare = (a, b, label) => {

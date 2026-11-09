@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   NativeScreenCapture,
   NATIVE_SCREEN_CAPTURE_LAYOUTS,
@@ -56,7 +56,7 @@ const compare = (a, b, label) => {
 try {
   for (const spec of NATIVE_SCREEN_CAPTURE_CONTRACTS)
     compare(
-      p.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+      p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
       spec.handlers[Number(sdk)],
       'original handler table',
     );
@@ -103,7 +103,7 @@ try {
             let control;
             try {
               control = await engine.call(
-                p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+                p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
                 [bridge.pointer, host, argv, out + 4],
                 undefined,
                 { task: 17 },

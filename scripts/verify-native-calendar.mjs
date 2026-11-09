@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeCalendar } from '../src/native/calendar.mjs';
 
 const [filename, output, fixtureFile] = process.argv.slice(2);
@@ -17,7 +17,7 @@ const engine = await NativeEngineProcess.open({ profile, bytes, standardLibrarie
   p = engine.process,
   args = p.allocate(12),
   out = p.allocate(12),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   fn = p.load(table + 0x312 * 4),
   cases = [];
 for (const y of [

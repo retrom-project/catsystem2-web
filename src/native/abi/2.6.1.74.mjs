@@ -1,11 +1,860 @@
 // SPDX-License-Identifier: MPL-2.0
-// Reviewed per-version declarations. Unknown facts remain explicit.
+// Reviewed per-version declarations and script-visible behavior.
 export default {
   id: 'cs2-2.6.1.74',
   profile: 'sdk-4.01-engine-2.6.1.74',
   engineVersion: '2.6.1.74',
   xmlEncoding: 'Shift_JIS',
-  sound: { banks: 32, controlBytes: 120, firstMessage: 177, lastMessage: 218 },
+  text: {
+    settingsCharacterBytes: 1,
+    pathBytes: 260,
+    recordingPrefix: {
+      units: 'bytes',
+      limit: 64,
+    },
+    configurationLayout: {
+      encoding: 'CP932',
+      fontBytes: 64,
+      keyNameBytes: 32,
+      keyStride: 36,
+      bytes: 5592,
+      ownerOffset: 53288,
+    },
+    fesLayouts: {
+      21: {
+        dirty: 241,
+        colors: 329,
+        fontIndex: 236,
+        flags: 318,
+        weight: 231,
+        shadow: 232,
+        fix: 234,
+        wipe: 235,
+        profile: 333,
+        shift: 338,
+        category: null,
+        fontBytes: 32,
+        configBytes: 184,
+      },
+    },
+    layoutModes: [
+      'view',
+      'color',
+      'vcolor',
+      'acolor',
+      'vacolor',
+      'pcolor',
+      'vpcolor',
+      'margin',
+      'move',
+      'ruby',
+      'frame',
+      'font',
+      'fontind',
+      'shadow',
+      'size',
+      'rsize',
+      'indent',
+      'weight',
+      'd_prof',
+      'prof',
+      'shift',
+      'scrolltype',
+      'wipewidth',
+      'fontfix',
+    ],
+    resourceMessages: {
+      first: {
+        nv: 463,
+        cp932: 444,
+        utf8: 444,
+      },
+      clearCategory: false,
+      maxOperation: 18,
+    },
+  },
+  configuration: {
+    blockSizes: [5628, 60, 28, 12],
+    memory: {
+      layout: {
+        settingsOffset: 528,
+        font: 53288,
+        blocks: [58880, 64508, 64568, 64596],
+        systemVoice: 64608,
+        first: 52320,
+        second: 53188,
+        virtualSize: 1050,
+        sizes: 1056,
+        noSkip: 46960,
+        frameImage: 49336,
+        authorMode: 47888,
+        autoPresets: 47916,
+        variableCount: 49600,
+        variableRanges: 49604,
+        alphaPercent: 47532,
+        soundGroups: 47620,
+        autoSelect: 67872,
+        pathBytes: 260,
+        texture: 46204,
+        log: 48960,
+      },
+      scalarFields: [
+        ['screen.width', 52320, 2],
+        ['screen.height', 52322, 2],
+        ['screen.fullWidth', 52324, 2],
+        ['screen.fullHeight', 52326, 2],
+        ['screen.currentWidth', 52328, 2],
+        ['screen.currentHeight', 52330, 2],
+        ['screen.fullWide', 52332, 4],
+        ['screen.limit', 52336, 4],
+        ['screen.fps', 52340, 4],
+        ['screen.cursorMode', 52344, 4],
+        ['texture.bpp', 52348, 4],
+        ['texture.min', 52352, 4],
+        ['texture.mag', 52356, 4],
+        ['texture.dither', 52360, 4],
+        ['sound.use3d', 52364, 4],
+        ['sound.sticky', 52368, 4],
+        ['sound.stereo', 52372, 4],
+        ['general.imageCache', 52376, 4],
+        ['screen.screensaver', 52380, 4],
+        ['screen.camouflage', 52384, 4],
+        ['general.gdiCap', 52388, 4],
+        ['general.z32', 52392, 4],
+        ['general.useZ', 52396, 4],
+        ['screen.outInfo', 52400, 4],
+        ['general.cache', 52404, 4],
+        ['screen.mode', 53188, 4],
+        ['screen.fullscreen', 53192, 4],
+        ['screen.bpp', 53196, 4],
+        ['d3d.hardTnL', 53200, 4],
+        ['d3d.backBuffer', 53204, 4],
+        ['d3d.light', 53208, 4],
+        ['d3d.vsync', 53212, 4],
+        ['d3d.antialias', 53216, 4],
+        ['d3d.fogType', 53220, 4],
+        ['d3d.textureSize', 53224, 4],
+        ['d3d.textureCompression', 53228, 4],
+        ['general.dualCore', 53236, 4],
+        ['general.disableMovie', 53240, 4],
+        ['general.disablePixelShader', 53244, 4],
+        ['screen.fullSize', 53248, 4],
+        ['screen.fullPosition', 53252, 4],
+        ['screen.multiWindowPosition', 53256, 4],
+        ['screen.wall', 53260, 4],
+        ['general.waitD3DCommand', 53264, 4],
+        ['screen.noFullResolution', 53268, 4],
+        ['screen.setMode', 52316, 4],
+        ['configuration.type', 53280, 4],
+        ['window.drag', 53284, 4],
+        ['screen.virtualWidth', 1050, 2],
+        ['screen.virtualHeight', 1052, 2],
+        ['screen.noSkip', 46960, 4],
+        ['scene.autoSelect', 67872, 4],
+        ['scene.staticLog', 49064, 4],
+        ['application.touch', 52044, 4],
+        ['general.renderTargetCount', 47892, 4],
+        ['log.type', 48960, 4],
+        ['log.col', 48964, 4],
+        ['log.prof', 48968, 4],
+        ['log.nameline', 48972, 4],
+        ['log.indent', 49040, 4],
+        ['log.nameindent', 49044, 4],
+        ['log.dispMes', 49048, 4],
+        ['log.dispName', 49052, 4],
+        ['log.space', 49056, 4],
+        ['log.escape', 49060, 4],
+        ['log.crNext', 49068, 4],
+      ],
+      autoSelectBytes: 4,
+    },
+    extendedPreferences: false,
+    language: false,
+    keyHide: false,
+    windowActive: false,
+    sceneAnimation: false,
+    fontPreferenceLimit: null,
+    extendedQueries: false,
+  },
+  sound: {
+    banks: 32,
+    controlBytes: 120,
+    firstMessage: 177,
+    lastMessage: 218,
+    missingIdPathFields: ['volume', 'play', 'sysplay', 'voicevol'],
+    allowQuotedFesNames: false,
+    crossfade: false,
+    delegateFrom: 219,
+    fesExtensions: false,
+    fesLoadParameters: false,
+    completionFrame: true,
+  },
+  language: {
+    storage: 'bytes',
+    singleTable: true,
+    fixedFilename: 'language.txt',
+    resetOnReload: false,
+    archiveFallback: false,
+    switchWindowProtocol: false,
+    dynamicMenus: false,
+  },
+  plugins: {
+    emoteDriver: 'placeholder',
+    requiredRenderer: false,
+  },
+  capabilities: {
+    embeddedJavaScript: true,
+    steam: false,
+    windowReturnTitle: false,
+    broadcast: false,
+    recordQueues: false,
+    unicodeOutput: false,
+    utf8Primitives: false,
+    utf8Text: false,
+    emoteFes: false,
+    engineWorkers: false,
+    windowsMediaReader: false,
+    systemEntropy: true,
+    inputNullText: true,
+    taskDumpTopWriter: true,
+  },
+  startup: {
+    resourceCheck: 'before-defaults',
+    accelerators: 'ansi-resource',
+  },
+  fes: {
+    variableBankOffset: 1800,
+    imageBlockOffset: 1500,
+    imageIndexOffset: 1064,
+    imageTaskOffset: 1512,
+    textTaskWords: {
+      21: 240,
+      29: 297,
+    },
+    controls: {
+      13: {
+        size: 508,
+        task: 492,
+        value: 328,
+        priority: 484,
+      },
+      14: {
+        size: 564,
+        task: 524,
+        value: 364,
+        priority: 520,
+      },
+      15: {
+        size: 560,
+        task: 520,
+        value: 364,
+        priority: 516,
+      },
+    },
+    images: {
+      1: {
+        size: 680,
+      },
+      2: {
+        size: 1512,
+      },
+      6: {
+        size: 1788,
+      },
+      11: {
+        size: 1524,
+      },
+      12: {
+        size: 2076,
+      },
+      16: {
+        size: 1520,
+      },
+      17: {
+        size: 1520,
+      },
+      18: {
+        size: 1516,
+      },
+      19: {
+        size: 1516,
+      },
+      20: {
+        size: 1516,
+      },
+      22: {
+        size: 1512,
+      },
+      25: {
+        size: 960,
+      },
+      wrapperBytes: 276,
+    },
+    planes: {
+      3: {
+        size: 740,
+      },
+      4: {
+        size: 764,
+      },
+      5: {
+        size: 44,
+      },
+      offset: 852,
+    },
+    effects: {
+      objects: {
+        26: {
+          size: 76,
+        },
+        27: {
+          size: 144,
+        },
+        30: {
+          size: 92,
+        },
+        31: {
+          size: 84,
+        },
+        32: {
+          size: 88,
+        },
+      },
+    },
+  },
+  graphics: {
+    renderSources: {
+      stride: 72,
+      bytes: 276,
+    },
+    deviceField: null,
+    synchronization: null,
+    retainedBytes: 196,
+    graphTypes: 188,
+  },
+  floatingPoint: {
+    x87ControlWord: 127,
+    mxcsr: 8064,
+    precisionBits: 24,
+    rounding: 'nearest',
+    evidence: 'ordinary Direct3D9 initialization; docs/ppi-compatibility.md',
+  },
+  messages: {
+    screenEvent: 21,
+    root: {
+      start: 30,
+      captionWide: false,
+      field: 392,
+      soundReset: 192,
+    },
+    scriptBaseOnly: [30, 31],
+    movieInput: {
+      query: 32,
+      gate: 141,
+    },
+    imageOwnerOffset: 5,
+    taskDumpWrapper: 34,
+    areaNonReceiver: 262,
+    channels: {
+      fesSound: {
+        raw: [
+          {
+            min: null,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      fesControl: {
+        canonical: [
+          {
+            min: 348,
+            max: null,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesImage: {
+        canonical: [
+          {
+            min: 275,
+            max: 275,
+            offset: 5,
+          },
+          {
+            min: 276,
+            max: 276,
+            offset: 5,
+          },
+          {
+            min: 284,
+            max: 284,
+            offset: 5,
+          },
+          {
+            min: 288,
+            max: 288,
+            offset: 5,
+          },
+          {
+            min: 290,
+            max: 290,
+            offset: 5,
+          },
+          {
+            min: 294,
+            max: 294,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesParticle: {
+        canonical: [
+          {
+            min: 309,
+            max: 316,
+            offset: 5,
+          },
+        ],
+      },
+      fesText: {
+        canonical: [
+          {
+            min: 444,
+            max: null,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesNvText: {
+        canonical: [
+          {
+            min: 463,
+            max: null,
+            offset: 26,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      window: {
+        canonical: [
+          {
+            min: 156,
+            max: 156,
+            offset: 2,
+          },
+          {
+            min: 160,
+            max: 160,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 158,
+            max: 158,
+            offset: -2,
+          },
+          {
+            min: 162,
+            max: 162,
+            offset: -2,
+          },
+        ],
+      },
+      sound: {
+        canonical: [
+          {
+            min: 177,
+            max: 218,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 179,
+            max: 220,
+            offset: -2,
+          },
+        ],
+      },
+      textLegacy: {
+        raw: [
+          {
+            min: 37,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      drawCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      effectCommand: {
+        canonical: [
+          {
+            min: 490,
+            max: 497,
+            offset: 26,
+          },
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      areaCommand: {
+        canonical: [
+          {
+            min: 252,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      particleCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      planeCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      base: {
+        canonical: [
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+            exceptKinds: [1],
+          },
+        ],
+        raw: [
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      draw: {
+        raw: [
+          {
+            min: null,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      control: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 0,
+            kinds: [1, 13],
+          },
+          {
+            min: 267,
+            max: null,
+            offset: 5,
+            kinds: [15],
+          },
+          {
+            min: 326,
+            max: null,
+            offset: 5,
+            kinds: [34],
+          },
+          {
+            min: 348,
+            max: null,
+            offset: 5,
+            kinds: [40],
+          },
+          {
+            min: 363,
+            max: null,
+            offset: 5,
+            kinds: [41],
+          },
+          {
+            min: 354,
+            max: null,
+            offset: 5,
+            kinds: [42],
+          },
+          {
+            min: 444,
+            max: null,
+            offset: 5,
+            kinds: [48],
+          },
+          {
+            min: 463,
+            max: null,
+            offset: 26,
+            kinds: [49],
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 353,
+            max: null,
+            offset: -5,
+            kinds: [40],
+          },
+          {
+            min: 368,
+            max: null,
+            offset: -5,
+            kinds: [41],
+          },
+          {
+            min: 359,
+            max: null,
+            offset: -5,
+            kinds: [42],
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      area: {
+        canonical: [
+          {
+            min: 252,
+            max: 273,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 257,
+            max: 278,
+            offset: -5,
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      screen: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 0,
+            kinds: [1],
+          },
+          {
+            min: 490,
+            max: 497,
+            offset: 26,
+            kinds: [35, 36, 37, 38, 39, 50, 51, 52, 57, 58],
+          },
+          {
+            min: 372,
+            max: 390,
+            offset: 5,
+            kinds: [35, 36, 37, 38, 39, 50, 51, 52, 57, 58],
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 516,
+            max: 523,
+            offset: -26,
+          },
+          {
+            min: 377,
+            max: 395,
+            offset: -5,
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+    },
+    tilePlaneCommand: 44,
+  },
+  layouts: {
+    motionCheckpoint: {
+      size: 1076,
+      group: 36,
+      registers: 40,
+      nameBytes: 32,
+      wide: false,
+    },
+    bitmapMemory: {
+      wrapperBytes: 276,
+    },
+    configurationQuery: {
+      archive: 3192,
+      soundLoaded: 135236,
+      soundParts: 135272,
+      soundMaster: 135284,
+      query24D: 48172,
+    },
+    desktop: {
+      fields: 67464,
+    },
+    executableResources: {
+      wide: false,
+    },
+    fileServer: {
+      size: 79140,
+    },
+    memoryFile: {
+      size: 288,
+      data: 272,
+      length: 276,
+      wide: false,
+    },
+    languageBank: {
+      size: 64,
+    },
+    preferences: {
+      directory: 2672,
+      filename: 260,
+      wide: false,
+    },
+    engineImage: {
+      settingsOffset: 528,
+      ownerBootstrapOffsets: [67876, 135500],
+      allocationWords: [1, 3],
+    },
+    startupApplication: {
+      graphicsBytes: 84,
+    },
+    startupInstance: {
+      nameOffset: 1088,
+    },
+    optionalMenuCommands: [
+      [46104, 118],
+      [47368, 40034],
+    ],
+    startupSound: {
+      directory: 2672,
+      base: 135236,
+      wide: false,
+    },
+    startupWindow: {
+      menuFlag: 48804,
+      titleOffset: 828,
+    },
+    systemInformation: {
+      size: 1408,
+      memory: 1372,
+      directX: 408,
+      manufacturer: 860,
+      model: 1116,
+      cpu: {
+        fields: 540,
+      },
+      wide: false,
+    },
+    windowClass: {
+      suffix: 'A',
+    },
+    windowPump: {
+      mask: 1279,
+    },
+    fesGallery: {
+      listOffset: 1740,
+    },
+    rasterKernel: {
+      copyMMX: 580,
+    },
+    renderer: {
+      bitmap: 116,
+      bits: 120,
+    },
+    sceneMemory: {
+      readerBytes: 304,
+    },
+    screenCapture: {
+      recording: 132,
+      counter: 136,
+      prefix: 140,
+    },
+    scriptMessageBox: {
+      wide: false,
+    },
+    textCores: {
+      nv: {
+        size: 488,
+        configSize: 408,
+        packetSize: 456,
+        bitmapAt: 420,
+        dirtyAt: 424,
+      },
+      cp932: {
+        size: 72,
+        defaultAt: 196,
+        configSize: 184,
+      },
+    },
+  },
   tables: {
     main: {
       count: 1009,

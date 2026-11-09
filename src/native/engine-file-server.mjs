@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The original platform prelude owns a kcFileServer before creating Settings.
 export const NATIVE_FILE_SERVER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
     global: 0xb8fb08,
-    size: 0x26228,
+    size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.fileServer.size,
     construct: 0x5d3060,
     destroy: 0x5d33e0,
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     global: 0xc94630,
-    size: 0x13524,
+    size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.fileServer.size,
     construct: 0x4b0020,
     destroy: 0x4b0330,
   }),

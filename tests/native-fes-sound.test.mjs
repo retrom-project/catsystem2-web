@@ -15,6 +15,7 @@ function fixture(legacy = false) {
     locals = {},
     values = { master: 70, category: 90, file: 60, play: 1, sysplay: 1 },
     world = {
+      profile: legacy ? 'sdk-4.01-engine-2.6.1.74' : 'nekopara-vol3-engine-2.6.1.76',
       frame: 20,
       game: { resolveCategory: (name, category) => `${category}/${name}` },
       soundConfiguration: {

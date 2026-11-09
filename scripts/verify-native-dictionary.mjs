@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { Binary } from '../src/binary.mjs';
 import { NativeDictionary, nativeDictionary } from '../src/native/dictionary.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { PE32Process } from '../src/ppi/pe32.mjs';
@@ -17,7 +17,7 @@ if (!exe || !output)
   throw new Error('Usage: node scripts/verify-native-dictionary.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(exe)),
   sha256 = createHash('sha256').update(bytes).digest('hex'),
-  profile = Object.entries(NATIVE_PROFILES).find(([, profile]) => profile.sha256 === sha256);
+  profile = Object.entries(NATIVE_EXE_PROFILES).find(([, profile]) => profile.sha256 === sha256);
 if (!profile) throw new Error('Dictionary oracle requires a frozen engine image');
 const sdk = profile[0].startsWith('sdk'),
   b = new Binary(bytes),

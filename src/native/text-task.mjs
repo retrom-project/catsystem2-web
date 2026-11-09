@@ -2,6 +2,7 @@
 // String tasks 48 / 63: game 634D00 / 6359F0; SDK 50BE90.
 // Task messages here use the World's canonical game numbering. SDK wrappers
 // translate their independently recovered message numbers at the boundary.
+import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime } from './text.mjs';
@@ -159,7 +160,10 @@ export class NativeTextTask {
     }
     const [sender, message, w, l] = words,
       operation = message - this.firstMessage;
-    if (operation < 0 || operation > (this.world.profile?.startsWith('sdk-') ? 18 : 19)) {
+    if (
+      operation < 0 ||
+      operation > nativeABI(this.world.profile).text.resourceMessages.maxOperation
+    ) {
       if (message === 47 && !this.text.output) return 0;
       return this.plane.message(words, context);
     }
@@ -542,9 +546,9 @@ export function installNativeText(world, { glyphs } = {}) {
   registerNativeFESObjectType(world, 21, (bridge) => nativeFESTextAdapter(bridge, 21));
   registerNativeFESObjectType(world, 29, (bridge) => nativeFESTextAdapter(bridge, 29));
   registerNativeFESObjectType(world, 24, (bridge) => nativeFESLogAdapter(bridge, 24));
-  if (!world.profile.startsWith('sdk-'))
+  if (nativeABI(world.profile).capabilities.utf8Text)
     registerNativeFESObjectType(world, 37, (bridge) => nativeFESTextAdapter(bridge, 37));
-  if (!world.profile.startsWith('sdk-'))
+  if (nativeABI(world.profile).capabilities.utf8Text)
     registerNativeFESObjectType(world, 38, (bridge) => nativeFESLogAdapter(bridge, 38));
   const service = new NativeTextService(world);
   world.text = service;

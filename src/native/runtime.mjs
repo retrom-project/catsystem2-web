@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { readKCS, nativeReply, formatNative, formatNativeAt, encodeCP932 } from '../kcs.mjs';
 import { KCSScheduler } from '../kcs/scheduler.mjs';
-import { nativeCatalog, NATIVE_PROFILES } from './catalog.mjs';
+import { nativeCatalog } from './catalog.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeHandles } from './handles.mjs';
 import { nativeStandard } from './standard.mjs';
 import { nativeTask } from './task.mjs';
@@ -47,23 +48,20 @@ export class UnsupportedKCSNative extends Error {
 // an explicit control reply or report an unsupported call with its guest state.
 export class NativeRuntime {
   constructor({ profile, read, services = {}, shared, budget }) {
-    if (!NATIVE_PROFILES[profile]) throw new Error(`Unknown CatSystem2 native profile ${profile}`);
+    const abi = nativeABI(profile);
     this.profile = profile;
     this.read = read;
     this.handles = this.createHandles();
     this.handlers = new Map();
     this.calls = new Map();
     this.tables = new Map(
-      Object.keys(NATIVE_PROFILES[profile].tables).map((table) => [
-        table,
-        nativeCatalog(profile, table),
-      ]),
+      Object.keys(abi.tables).map((table) => [table, nativeCatalog(profile, table)]),
     );
     this.services = {
       ...services,
       handles: this.handles,
       read,
-      xmlEncoding: NATIVE_PROFILES[profile].xmlEncoding,
+      xmlEncoding: abi.xmlEncoding,
       format:
         services.format || ((address, machine) => formatNative(machine.string(address), machine)),
       formatBytes:

@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { encodeMotionRecords, decodeMotionRecords } from '../src/motion/checkpoint.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
@@ -114,7 +114,7 @@ try {
     p.store(argv, envelope);
     p.store(argv + 4, frame);
     assert.equal(
-      await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + 0x13c * 4), [
+      await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x13c * 4), [
         0,
         0,
         argv,

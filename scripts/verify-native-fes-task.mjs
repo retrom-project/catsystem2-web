@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { nativeFES, NATIVE_FES_IDS } from '../src/native/fes.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
@@ -52,7 +52,7 @@ for (const [flag, profile] of [
       vtable = p.allocate(32, true),
       out = p.allocate(4, true);
     const handles = new NativeHandles(),
-      table = NATIVE_PROFILES[profile].tables.main.va,
+      table = NATIVE_EXE_PROFILES[profile].tables.main.va,
       localBank = Uint8Array.from({ length: 2048 }, (_, i) => Math.imul(i, 0x6792) >>> 4);
     let traces = [],
       id,

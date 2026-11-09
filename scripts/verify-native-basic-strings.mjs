@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { Binary } from '../src/binary.mjs';
 import { KCSMachine, encodeCP932, formatNative, formatNativeAt } from '../src/kcs.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
@@ -20,7 +20,7 @@ if (!profile) throw new Error('String oracle requires a frozen engine image');
 
 const engine = await NativeEngineProcess.open({ profile, bytes }),
   p = engine.process,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   make = () => {
     const m = new KCSMachine(
       {

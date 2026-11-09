@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES getsndconfex/setsndconfex: game 783630/783FD0, SDK 61C6B0/61D050.
 // Tokens have already passed the FES string and language substitutions.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 
@@ -18,7 +19,7 @@ export function tokenizeNativeFESSoundConfiguration(line, profile) {
     previous = 0;
   while (input < source.length && source[input]) {
     const byte = source[input];
-    if (byte === 40 || (byte === 34 && profile === 'nekopara-vol3-engine-2.6.1.76')) {
+    if (byte === 40 || (byte === 34 && nativeABI(profile).sound.allowQuotedFesNames)) {
       if (((previous >= 65 && previous <= 90) || (previous >= 97 && previous <= 122)) && !boundary)
         output[at++] = 0;
       const start = input,

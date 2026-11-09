@@ -2,6 +2,7 @@
 // Reviewed FES object constructors, built-in command handlers and frame drivers
 // execute from the mounted engine image. Only script storage/variable access,
 // file metadata and native task message transport cross into the host.
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { planeState } from './fes-graphics.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
@@ -402,7 +403,7 @@ export class NativeFESObjectRuntime {
         }
       }
     }
-    const bankOffset = this.sdk ? 1800 : 2064,
+    const bankOffset = nativeABI(this.engine.profile).fes.variableBankOffset,
       previous = p.load(this.interpreter + bankOffset);
     p.store(this.interpreter + bankOffset, pointer);
     try {
@@ -691,7 +692,7 @@ export class NativeFESObjectRuntime {
       if (bytes) {
         image.block = this.buffers.createPointer(bytes);
       }
-      p.store(image.pointer + (this.sdk ? 0x5dc : 439 * 4), image.block);
+      p.store(image.pointer + nativeABI(this.engine.profile).fes.imageBlockOffset, image.block);
     }
     return image.pointer;
   }
@@ -868,12 +869,18 @@ export class NativeFESObjectRuntime {
     p.write(source, bytes);
     try {
       return await this.withContext({ ...context, instance, sourceTokens: true }, async () => {
-        const previous = p.read(this.interpreter + 1480, this.sdk ? 260 : 520),
+        const previous = p.read(
+            this.interpreter + 1480,
+            nativeABI(this.engine.profile).text.pathBytes,
+          ),
           previousView = p.load(this.interpreter + 8),
           name = context.contextName ?? '';
         if (typeof name !== 'string') throw new TypeError('Native FES context name requires text');
-        const encoded = this.sdk ? encodeCP932(name + '\0') : new Uint8Array((name.length + 1) * 2);
-        if (!this.sdk) {
+        const encoded =
+          nativeABI(this.engine.profile).text.settingsCharacterBytes === 1
+            ? encodeCP932(name + '\0')
+            : new Uint8Array((name.length + 1) * 2);
+        if (nativeABI(this.engine.profile).text.settingsCharacterBytes === 2) {
           const view = new DataView(encoded.buffer);
           for (let i = 0; i < name.length; i++) view.setUint16(i * 2, name.charCodeAt(i), true);
         }

@@ -381,7 +381,10 @@ for (const [profile, path, decrement] of [
   );
 
 test('Top device IDs remain in the raw prefix while later siblings are being destroyed', async () => {
-  const engine = new NativeEngineProcess(await loadUnicorn(), { profile: 'authored' }),
+  const engine = new NativeEngineProcess(await loadUnicorn(), {
+      profile: 'nekopara-vol3-engine-2.6.1.76',
+      executableHeap: true,
+    }),
     root = {
       id: 100,
       nativeID: 7,

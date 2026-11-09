@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -457,7 +458,7 @@ export function createNativeScriptTask(world, record) {
         [20, 0xffff0012],
         [21, 0xffff0013],
       ]);
-      if (world.profile.startsWith('sdk-') && [30, 31].includes(id))
+      if (nativeABI(world.profile).messages.scriptBaseOnly.includes(id))
         return implementation.baseMessage(words, context);
       if (immediate.has(id)) {
         if (!this.task) return [9, 10, 30, 31, 65].includes(id) ? 1 : NATIVE_UNWRITTEN_WORD;

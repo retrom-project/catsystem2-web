@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../src/native/scalar-math.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
@@ -46,7 +46,7 @@ export async function verifyScalarMath(bytes, profile) {
   for (const spec of NATIVE_SCALAR_MATH_CONTRACTS)
     assert.equal(
       scalarHandler(profile, spec.id),
-      original.process.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+      original.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
       `semantic handler ${profile}/${spec.name}`,
     );
   let calls = 0,

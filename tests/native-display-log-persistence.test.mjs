@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
@@ -75,7 +75,7 @@ for (const [profile, fixture] of [
         assert.deepEqual(await invoke(original, 0x352, [fileHandle, tag, handle]), ok);
         const engine = original.nativeEngine,
           p = engine.process,
-          table = NATIVE_PROFILES[profile].tables.main.va,
+          table = NATIVE_EXE_PROFILES[profile].tables.main.va,
           argv = p.allocate(12, true),
           out = p.allocate(4, true),
           guest = (id, args) => {

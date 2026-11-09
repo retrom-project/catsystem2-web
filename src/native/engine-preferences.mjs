@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // WinMain loads the user's setup after copying the game defaults.
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
-    directory: 3972,
-    filename: 0x208,
-    wide: true,
+    directory: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.preferences.directory,
+    filename: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.preferences.filename,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.preferences.wide,
     read: 0x71fda0,
     volumes: 0x714270,
   },
   'sdk-4.01-engine-2.6.1.74': {
-    directory: 2672,
-    filename: 0x104,
-    wide: false,
+    directory: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.preferences.directory,
+    filename: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.preferences.filename,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.preferences.wide,
     read: 0x5d0400,
     volumes: 0x5c50e0,
   },

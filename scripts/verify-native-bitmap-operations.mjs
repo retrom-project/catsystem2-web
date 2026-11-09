@@ -8,7 +8,7 @@ import { NATIVE_BITMAP_OPERATION_CONTRACTS } from '../src/native/bitmap-operatio
 import { bitmapMemoryFixture } from '../tests/fixtures/bitmap-memory-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';
 import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 const [filename, output] = process.argv.slice(2);
 if (!output) throw new Error('Usage: verify-native-bitmap-operations.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(filename)),
@@ -27,7 +27,7 @@ const raw = await bitmapMemoryFixture(bytes, profile, { uploadBoundary: true }),
 installNativeRasterKernels(f.engine);
 for (const spec of NATIVE_BITMAP_OPERATION_CONTRACTS.filter((item) => item.handlers[index]))
   assert.equal(
-    p.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+    p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
     spec.handlers[index],
     `frozen native table slot ${spec.id.toString(16)}`,
   );

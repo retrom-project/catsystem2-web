@@ -1,143 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 // Settings is an interior pointer into Engine, never a second allocation.
+import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
-const SDK = 'sdk-4.01-engine-2.6.1.74',
-  GAME = 'nekopara-vol3-engine-2.6.1.76';
-export const NATIVE_CONFIGURATION_MEMORY_LAYOUTS = Object.freeze({
-  [SDK]: Object.freeze({
-    settingsOffset: 528,
-    font: 53288,
-    blocks: [58880, 64508, 64568, 64596],
-    systemVoice: 64608,
-    first: 52320,
-    second: 53188,
-    virtualSize: 1050,
-    sizes: 1056,
-    noSkip: 46960,
-    frameImage: 49336,
-    authorMode: 47888,
-    autoPresets: 47916,
-    variableCount: 49600,
-    variableRanges: 49604,
-    alphaPercent: 47532,
-    soundGroups: 47620,
-    autoSelect: 67872,
-    pathBytes: 260,
-    texture: 46204,
-    log: 48960,
-  }),
-  [GAME]: Object.freeze({
-    settingsOffset: 1048,
-    font: 64528,
-    blocks: [73128, 78756, 78828, 78860],
-    systemVoice: 78872,
-    first: 62768,
-    second: 64416,
-    virtualSize: 1570,
-    sizes: 1576,
-    noSkip: 49624,
-    frameImage: 52256,
-    authorMode: 51072,
-    autoPresets: 51100,
-    variableCount: 53304,
-    variableRanges: 53308,
-    alphaPercent: 50716,
-    soundGroups: 50804,
-    autoSelect: 82136,
-    pathBytes: 520,
-    texture: 48284,
-    log: 52144,
-    languageVector: 58596,
-    optionTable: 58600,
-  }),
-});
+export const NATIVE_CONFIGURATION_MEMORY_LAYOUTS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.configuration.memory.layout]),
+  ),
+);
 
-function scalars(layout, game) {
-  const a = layout.first,
-    b = layout.second;
-  return [
-    ...['width', 'height', 'fullWidth', 'fullHeight', 'currentWidth', 'currentHeight'].map(
-      (name, i) => [`screen.${name}`, a + i * 2, 2],
-    ),
-    ...[
-      ['screen.fullWide', 12],
-      ['screen.limit', 16],
-      ['screen.fps', 20],
-      ['screen.cursorMode', 24],
-      ['texture.bpp', 28],
-      ['texture.min', 32],
-      ['texture.mag', 36],
-      ['texture.dither', 40],
-      ['sound.use3d', 44],
-      ['sound.sticky', 48],
-      ['sound.stereo', 52],
-      ['general.imageCache', 56],
-      ['screen.screensaver', 60],
-      ['screen.camouflage', 64],
-      ['general.gdiCap', 68],
-      ['general.z32', 72],
-      ['general.useZ', 76],
-      ['screen.outInfo', 80],
-      ['general.cache', 84],
-    ].map(([name, offset]) => [name, a + offset, 4]),
-    ...[
-      ['screen.mode', 0],
-      ['screen.fullscreen', 4],
-      ['screen.bpp', 8],
-      ['d3d.hardTnL', 12],
-      ['d3d.backBuffer', 16],
-      ['d3d.light', 20],
-      ['d3d.vsync', 24],
-      ['d3d.antialias', 28],
-      ['d3d.fogType', 32],
-      ['d3d.textureSize', 36],
-      ['d3d.textureCompression', 40],
-      ['general.dualCore', 48],
-      ['general.disableMovie', 52],
-      ['general.disablePixelShader', 56],
-      ['screen.fullSize', 60],
-      ['screen.fullPosition', 64],
-      ['screen.multiWindowPosition', 68],
-      ['screen.wall', 72],
-      ['general.waitD3DCommand', 76],
-      ['screen.noFullResolution', 80],
-    ].map(([name, offset]) => [name, b + offset, 4]),
-    ['screen.setMode', a - 4, 4],
-    ['configuration.type', layout.font - 8, 4],
-    ['window.drag', layout.font - 4, 4],
-    ['screen.virtualWidth', layout.virtualSize, 2],
-    ['screen.virtualHeight', layout.virtualSize + 2, 2],
-    ['screen.noSkip', layout.noSkip, 4],
-    ['scene.autoSelect', layout.autoSelect, 4],
-    ['scene.staticLog', game ? 52248 : 49064, 4],
-    ['application.touch', game ? 58056 : 52044, 4],
-    ['general.renderTargetCount', game ? 51076 : 47892, 4],
-    ...[
-      ['type', 0],
-      ['col', 4],
-      ['prof', 8],
-      ['nameline', 12],
-      ['indent', 80],
-      ['nameindent', 84],
-      ['dispMes', 88],
-      ['dispName', 92],
-      ['space', 96],
-      ['escape', 100],
-      ['crNext', 108],
-    ].map(([name, offset]) => [`log.${name}`, layout.log + offset, 4]),
-    ...(game
-      ? [
-          ['language.ui', 64508, 4],
-          ['language.main', 64512, 4],
-          ['language.sub', 64516, 4],
-          ['language.default', 58592, 4],
-          ['window.active', 82140, 4],
-          ['scene.animation', 82144, 4],
-        ]
-      : []),
-  ];
-}
 function scalarRuns(fields) {
   const runs = [];
   for (const [name, offset, width] of fields) {
@@ -166,7 +37,9 @@ export class NativeConfigurationMemory {
   constructor(process, configuration, { owner, settings } = {}) {
     this.process = process;
     this.configuration = configuration;
-    this.layout = NATIVE_CONFIGURATION_MEMORY_LAYOUTS[configuration?.profile];
+    const abi = nativeABI(configuration?.profile);
+    this.abi = abi;
+    this.layout = abi.configuration.memory.layout;
     if (!this.layout)
       throw new Error('Native settings memory requires a recovered configuration profile');
     if (!Number.isInteger(owner) || owner <= 0)
@@ -175,9 +48,9 @@ export class NativeConfigurationMemory {
     this.settings = (settings ?? this.owner + this.layout.settingsOffset) >>> 0;
     if (this.settings !== this.owner + this.layout.settingsOffset)
       throw new Error('Native Settings must alias the recovered interior Engine address');
-    this.scalarRuns = scalarRuns(scalars(this.layout, configuration.profile === GAME));
+    this.scalarRuns = scalarRuns(abi.configuration.memory.scalarFields);
     // Confirm that the supplied owner covers the fields this codec owns.
-    process.read(this.owner + this.layout.autoSelect, configuration.profile === GAME ? 12 : 4);
+    process.read(this.owner + this.layout.autoSelect, abi.configuration.memory.autoSelectBytes);
   }
   arrays() {
     const c = this.configuration,
@@ -240,7 +113,7 @@ export class NativeConfigurationMemory {
   }
   stringFields() {
     const l = this.layout,
-      wide = this.configuration.profile === GAME;
+      wide = this.abi.text.settingsCharacterBytes === 2;
     return [
       ['application.title', wide ? 2136 : 1356, wide],
       ...['picture', 'export', 'imageImport'].map((name, i) => [

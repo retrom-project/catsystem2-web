@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original render-source arrays stay in KCS memory with their PE pointers.
+import { nativeABI } from './abi/index.mjs';
 import { NATIVE_RESULT_SENTINEL, nativeReply } from '../kcs/vm.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
@@ -12,8 +13,8 @@ export const NATIVE_RENDER_SOURCE_CONTRACTS = Object.freeze([
 ]);
 
 const wrapperLayouts = [
-  { stride: 136, bytes: 536, arrayResult: 0x64c5c1, frameResult: 0x644492 },
-  { stride: 72, bytes: 276, arrayResult: 0x5190c9, frameResult: 0x51cb42 },
+  { arrayResult: 0x64c5c1, frameResult: 0x644492 },
+  { arrayResult: 0x5190c9, frameResult: 0x51cb42 },
 ];
 
 export class NativeRenderSources {
@@ -24,7 +25,8 @@ export class NativeRenderSources {
     if (!this.sdk && engine.profile !== 'nekopara-vol3-engine-2.6.1.76')
       throw new Error('Native render sources require a reviewed engine profile');
     const p = engine.process,
-      { stride, bytes, arrayResult, frameResult } = wrapperLayouts[Number(this.sdk)],
+      { stride, bytes } = nativeABI(engine.profile).graphics.renderSources,
+      { arrayResult, frameResult } = wrapperLayouts[Number(this.sdk)],
       eax = () => p.cpu.reg_read_i32(p.uc.X86_REG_EAX) >>> 0;
     this.wrapperBytes = bytes;
     this.wrappers = new Map();

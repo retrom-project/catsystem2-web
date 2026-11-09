@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // InputTask: game 5E69A0/5E6DF0/5E7680, SDK 4C2C60/4C30B0/4C38F0.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -656,7 +657,10 @@ export class NativeInput {
       case 147: {
         let text;
         if (context.nativePointer && w === 0) {
-          if (this.configuration?.profile !== 'sdk-4.01-engine-2.6.1.74')
+          if (
+            !this.configuration ||
+            !nativeABI(this.configuration.profile).capabilities.inputNullText
+          )
             throw new Error(
               'Game Input147 NULL source leaves the UTF16 conversion buffer uninitialized',
             );

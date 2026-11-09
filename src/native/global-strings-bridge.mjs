@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Shared native callers use the World's language tables. Pointer identity for
 // plain strings and the fallback suffix follows game 5ABE00 / SDK 47ECF0.
 const keyOf = (bytes) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -11,7 +12,7 @@ const utf16 = (text) => {
 export class NativeGlobalStringsBridge {
   constructor(engine, strings) {
     Object.assign(this, { engine, strings, cache: new Map() });
-    this.wide = !engine.profile.startsWith('sdk-');
+    this.wide = nativeABI(engine.profile).language.storage === 'text';
     engine.patch(this.wide ? 0x5abe00 : 0x47ecf0, 'system language lookup', 1, ([input]) =>
       this.lookup(input),
     );

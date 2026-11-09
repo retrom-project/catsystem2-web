@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Optional browser Steam provider; no Windows Steam entry point is executed.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 const identity = (bytes) =>
@@ -105,8 +106,7 @@ export class NativeSteam {
   }
 }
 export async function nativeSteam(id, args, machine, world) {
-  if (world.profile !== 'nekopara-vol3-engine-2.6.1.76' || id < 0x411 || id > 0x414)
-    return undefined;
+  if (!nativeABI(world.profile).capabilities.steam || id < 0x411 || id > 0x414) return undefined;
   const count = id === 0x412 || id === 0x413 ? 1 : 0;
   if (args.length !== count)
     throw new Error(`Native Steam 0x${id.toString(16)} expects ${count} arguments`);
@@ -133,7 +133,7 @@ export async function nativeSteam(id, args, machine, world) {
 export function installNativeSteam(world, provider) {
   world.ownsSteam = !(provider instanceof NativeSteam);
   world.steamService = provider instanceof NativeSteam ? provider : new NativeSteam(provider);
-  if (world.profile !== 'nekopara-vol3-engine-2.6.1.76') return;
+  if (!nativeABI(world.profile).capabilities.steam) return;
   for (let id = 0x411; id <= 0x414; id++)
     world.runtime.register('main', id, (args, machine) => nativeSteam(id, args, machine, world));
 }

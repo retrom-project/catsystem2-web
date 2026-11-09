@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeDrawCommands, NATIVE_DRAW_COMMAND_CONTRACTS } from '../src/native/draw-commands.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeRenderSources } from '../src/native/render-sources.mjs';
 import { imageOwnerFixture } from '../tests/fixtures/image-owner-fixture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -76,7 +76,7 @@ try {
   });
   assert.equal(m.load(1024), 2);
   const retainedPointer = m.load(1028),
-    table = NATIVE_PROFILES[profile].tables.main.va;
+    table = NATIVE_EXE_PROFILES[profile].tables.main.va;
   p.store(host, vtable);
   p.store(host + 4, 17);
   p.store(host + 116, platform.refs.view);

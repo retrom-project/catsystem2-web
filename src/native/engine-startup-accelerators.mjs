@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { requireTransitionalHost } from './transitional-exe.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
@@ -7,7 +8,7 @@ export async function initializeNativeAccelerators(engine) {
     owner = p.load(NATIVE_STARTUP_BLOCKS[engine.profile]);
   if (!owner || p.load(owner + 12))
     throw new Error('Original accelerators require their unused window owner');
-  if (engine.profile.startsWith('sdk-')) {
+  if (nativeABI(engine.profile).startup.accelerators === 'ansi-resource') {
     const load = engine.kernel.resolve({ dll: 'USER32.dll', name: 'LoadAcceleratorsA' }),
       handle = await engine.call(load, [engine.module.base, 101]);
     if (handle) await engine.call(0x5bfc50, [handle], owner);

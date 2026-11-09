@@ -13,6 +13,20 @@ IDs use the engine version. Existing profile keys identify the remaining
 transition layouts. EXE table locations remain in the catalog's transition
 metadata while the owning domains migrate.
 
+`nativeABI(profile)` supplies text widths, configuration layouts, language
+behavior, sound protocol fields, startup ordering, plugin capabilities and
+ordered message rules. `layouts` holds the remaining non-address memory-layout
+fields used during the transition. `mapABIMessage` applies rules by channel,
+direction and task kind, retaining the root/sound exceptions and overlapping
+ranges. These records contain JSON-serializable data and are deeply frozen.
+`NATIVE_EXE_PROFILES` identifies the catalog's remaining EXE fingerprints and
+table locations. Runtime declarations use `NATIVE_ABIS` and `nativeABI`.
+
+Automatic selection requires one executable with an exactly registered engine
+version. Unknown-only, missing and multiple matching candidates report the
+observed filenames and versions. A utility executable with an unrelated version
+can coexist with the selected engine. An explicit profile must also be registered.
+
 The 277 unresolved semantic names, including 160 slots with an implementation
 route, retain their explicit review state. The data extraction preserves every
 existing declaration and does not infer a contract from another ABI's slot.
@@ -42,6 +56,14 @@ there are no patches. File counts reuse the phase 0 checker's exact AST scanner,
 whose syntactic counts also include independent DLL-host execution. Scalar
 entries retain their original-handler classification and list the semantic
 transition operation and both oracle dependencies after the 2.3 relocation.
+
+`remainingProfileSelections` lists the retained `profileIndex` sites, EXE version
+guards and VA selections with their owning migration phase. Counts use unique
+file/line locations. The VA total is the union of guards and address selections,
+so a same-line pair counts once. The AST audit follows literal address arrays
+and imported/local EXE layout bindings. Identity checks are listed separately.
+Dynamic execution targets retain the inventory's ordinary `needs-review` state.
+Review new selectors and update their ownership rules with each domain change.
 
 All 135 files in the local planning attachment are included. Nine have zero
 dependencies under the phase 0 scanner, and five other files have nonzero counts,

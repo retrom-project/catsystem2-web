@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original file-model and trail wrappers. The Plane receiver owns the
 // loaded model, its history and the auxiliary graphs used to draw it.
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
@@ -22,7 +23,7 @@ export class NativePlaneModelCommands {
         7,
         async ([sender, target, raw, w, l, flags, out]) => {
           const origin = engine.currentTaskID,
-            message = raw + 2 * this.sdk;
+            message = mapABIMessage(engine.profile, 'planeCommand', 'canonical', raw);
           if (
             origin == null ||
             sender !== world.nativeTaskID(origin) ||

@@ -2,6 +2,8 @@
 // These five base FES objects create native screen-effect tasks in the original
 // allocation phase. Their complete resource-list frame driver owns activation,
 // completion, object deletion and the subsequent child-task cleanup pass.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { installNativeScreenEffects } from './screen-effect.mjs';
 import { runNativeFESObjectMotion } from './fes-controls.mjs';
@@ -11,37 +13,25 @@ export const NATIVE_FES_EFFECT_COMMANDS = new Set(['rdraw', 'rwipe', 'wbreak', '
 const ABI = {
   game: {
     objects: {
-      26: { construct: 0x750590, size: 0x4c },
-      27: { construct: 0x7507d0, size: 0x90 },
-      30: { construct: 0x7526a0, size: 0x5c },
-      31: { construct: 0x752970, size: 0x54 },
-      32: { construct: 0x752c00, size: 0x58 },
+      26: { construct: 7669136 },
+      27: { construct: 7669712 },
+      30: { construct: 7677600 },
+      31: { construct: 7678320 },
+      32: { construct: 7678976 },
     },
-    commands: {
-      rdraw: 0x780830,
-      rwipe: 0x780a30,
-      wbreak: 0x780d60,
-      rwmos: 0x781b60,
-      rfmos: 0x781dc0,
-    },
-    apply: 0x759650,
+    commands: { rdraw: 7866416, rwipe: 7866928, wbreak: 7867744, rwmos: 7871328, rfmos: 7871936 },
+    apply: 7706192,
   },
   sdk: {
     objects: {
-      26: { construct: 0x5f0710, size: 0x4c },
-      27: { construct: 0x5f0920, size: 0x90 },
-      30: { construct: 0x5f2890, size: 0x5c },
-      31: { construct: 0x5f2b30, size: 0x54 },
-      32: { construct: 0x5f2d90, size: 0x58 },
+      26: { construct: 6227728 },
+      27: { construct: 6228256 },
+      30: { construct: 6236304 },
+      31: { construct: 6236976 },
+      32: { construct: 6237584 },
     },
-    commands: {
-      rdraw: 0x619ac0,
-      rwipe: 0x619cb0,
-      wbreak: 0x619fc0,
-      rwmos: 0x61ad40,
-      rfmos: 0x61af90,
-    },
-    apply: 0x5f77d0,
+    commands: { rdraw: 6396608, rwipe: 6397104, wbreak: 6397888, rwmos: 6401344, rfmos: 6401936 },
+    apply: 6256592,
   },
 };
 
@@ -129,7 +119,10 @@ export function installNativeFESEffects(world) {
   for (const type of [26, 27, 30, 31, 32])
     registerNativeFESObjectType(world, type, (runtime) => {
       const abi = ABI[runtime.sdk ? 'sdk' : 'game'],
-        object = abi.objects[type];
+        object = {
+          ...abi.objects[type],
+          ...nativeABI(runtime.engine.profile).fes.effects.objects[type],
+        };
       return {
         ...object,
         definitionApply: abi.apply,
@@ -137,15 +130,7 @@ export function installNativeFESEffects(world) {
         verbs: new Set(runtime.table.keys()),
         vramOffset: null,
         canonicalMessage: (message) =>
-          runtime.sdk
-            ? message >= 490 && message <= 497
-              ? message + 26
-              : message >= 372 && message <= 390
-                ? message + 5
-                : message >= 37
-                  ? message + 2
-                  : message
-            : message,
+          mapABIMessage(runtime.engine.profile, 'screen', 'canonical', message, 35),
         async initialize(runtime, instance, object, pointer) {
           await runtime.applyDefinition(instance, object, pointer, abi.apply);
         },

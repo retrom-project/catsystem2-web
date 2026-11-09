@@ -23,7 +23,7 @@ import { NativeWorld } from './native/world.mjs';
 import { NativeConfiguration } from './native/config.mjs';
 import { NativeFileStorage } from './native/storage.mjs';
 import { parseNativeXML } from './native/xml.mjs';
-import { NATIVE_PROFILES } from './native/catalog.mjs';
+import { nativeABI } from './native/abi/index.mjs';
 import { NativeInputBindings } from './native/input-bindings.mjs';
 import { browserWindowsLanguageID } from './native/windows-language-ids.mjs';
 import { NativeSteam } from './native/steam.mjs';
@@ -121,9 +121,7 @@ export class CatSystem2 {
       const bytes = await (mounted && this.game.readNative
         ? this.game.readNative(name, 3)
         : this.game.read(name));
-      return bytes
-        ? parseNativeXML(bytes, NATIVE_PROFILES[this.nativeProfile].xmlEncoding)
-        : undefined;
+      return bytes ? parseNativeXML(bytes, nativeABI(this.nativeProfile).xmlEncoding) : undefined;
     };
     const [startup, gamedef] = await Promise.all([
       nativeXML('startup.xml'),
@@ -161,7 +159,7 @@ export class CatSystem2 {
       profile: this.nativeProfile,
       bootstrapOwner: {
         executableResources: true,
-        embeddedJavaScript: this.nativeProfile.startsWith('sdk-'),
+        embeddedJavaScript: nativeABI(this.nativeProfile).capabilities.embeddedJavaScript,
         seedFromClock: this.randomSeed === undefined,
         glyphs: new CanvasTextGlyphs({
           family: (name) => this.renderer.fonts.get(name.toLowerCase()) ?? name,

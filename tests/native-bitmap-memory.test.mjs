@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { bitmapMemoryFixture } from './fixtures/bitmap-memory-fixture.mjs';
 import { imageOwnerFiles } from './fixtures/image-owner-fixture.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
@@ -33,7 +33,7 @@ for (const [profile, variable] of [
         assert.equal(p.load(pointer + 80), 2);
         const frame = await bitmap.frame(),
           revision = bitmap.state.revision;
-        await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va), [0, 0, 0, 0]);
+        await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va), [0, 0, 0, 0]);
         assert.equal(await bitmap.frame(), frame);
         assert.equal(bitmap.state.revision, revision);
         bitmap.state.offsetX = -3;
@@ -54,7 +54,7 @@ for (const [profile, variable] of [
         bitmap.state.baseY = 0;
         bitmap.state.clip = [0, 0, 3, 2];
         [wrapper, 0, 0, 1, 1, 0xffaabbcc].forEach((v, i) => p.store(argv + i * 4, v));
-        await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + 0x75 * 4), [
+        await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x75 * 4), [
           0,
           0,
           argv,

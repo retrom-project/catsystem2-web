@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The original view owns its view3D, graph manager, D3D core and GDI bitmap.
 // The browser owns one COM device and the Windows services those objects use.
+import { nativeABI } from './abi/index.mjs';
 import { EmoteD3D9 } from '../emote/native-d3d.mjs';
 import { NativeGraphicsPlatform } from './graphics-process.mjs';
 import { installNativeDirectSound } from './windows-directsound.mjs';
@@ -13,8 +14,8 @@ export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
     capsConstruct: 0x5c62e0,
     capsDestroy: 0x5c63f0,
     capsGlobal: 0xb8f074,
-    bitmap: 148,
-    bits: 152,
+    bitmap: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.renderer.bitmap,
+    bits: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.renderer.bits,
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     viewConstruct: 0x54ad10,
@@ -23,8 +24,8 @@ export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
     capsConstruct: 0x4a30e0,
     capsDestroy: 0x4a31f0,
     capsGlobal: 0xc93b94,
-    bitmap: 116,
-    bits: 120,
+    bitmap: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.renderer.bitmap,
+    bits: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.renderer.bits,
   }),
 });
 
@@ -150,7 +151,7 @@ export class NativeRenderer {
     // The game view constructor enters its original M2 manager initializer.
     // Load the driver/platform imports first; initialize that manager only
     // once, as part of the original view constructor below.
-    if (!this.engine.profile.startsWith('sdk-')) await world.getNativeFeature('m2');
+    if (nativeABI(this.engine.profile).plugins.requiredRenderer) await world.getNativeFeature('m2');
     await this.initializeCapabilities();
     p.store(layout.coreGlobal, 0);
     this.refs.viewStarted = true;

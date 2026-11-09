@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Sound object 74C550/74C700..74CDB0 and FES driver 662B50; SDK 532540.
 // The adapter sends the native task protocol and shares its hardware banks.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeSoundPacket } from './sound.mjs';
 import { nativeLegacySoundIndex, nativeLegacySoundGroup } from './sound-values.mjs';
@@ -254,7 +256,7 @@ export class NativeFESSound {
       value = await this.world.sendNativeEngine(
         target,
         sender,
-        this.world.sound.legacy ? id - 2 : id,
+        mapABIMessage(this.world.profile, 'fesSound', 'raw', id),
         w >>> 0,
         l >>> 0,
         payload ? { payload } : {},
@@ -436,7 +438,7 @@ export class NativeFESSound {
         args[i] === undefined ? fallback : instance.value(args[i], fallback),
       text = (i) => instance.text(args[i] ?? '');
     const isTable = object.type === 'SNDTABLE';
-    if (this.world.sound.legacy && gameExtensions.has(verb))
+    if (!nativeABI(this.world.profile).sound.fesExtensions && gameExtensions.has(verb))
       return this.subcommand(instance, object, verb, args);
     if (context.index === -1 && indexedOnly.has(verb)) return;
     if (context.index === -1 && (verb === 'exist' || verb === 'max'))
@@ -447,8 +449,8 @@ export class NativeFESSound {
         if (object.type === 'SOUND')
           state.load(
             text(0),
-            this.world.sound.legacy ? 0 : value(1, 0),
-            this.world.sound.legacy ? 0 : value(2, 60),
+            nativeABI(this.world.profile).sound.fesLoadParameters ? value(1, 0) : 0,
+            nativeABI(this.world.profile).sound.fesLoadParameters ? value(2, 60) : 0,
           );
         return;
       case 'play':

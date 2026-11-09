@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The first word of WinMain's static startup block owns kcWindow.
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
@@ -10,9 +11,9 @@ const layouts = {
     construct: 0x5bf430,
     destroy: 0x5bf510,
     open: 0x5bf870,
-    menuFlag: 48804,
+    menuFlag: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupWindow.menuFlag,
     caption: 0x5bfd80,
-    titleOffset: 828,
+    titleOffset: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupWindow.titleOffset,
     hook: 0xc9659c,
     releaseHook: 0x5c01c0,
   },
@@ -20,9 +21,9 @@ const layouts = {
     construct: 0x70e080,
     destroy: 0x70e160,
     open: 0x70e4c0,
-    menuFlag: 51728,
+    menuFlag: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupWindow.menuFlag,
     caption: 0x70ea60,
-    titleOffset: 1088,
+    titleOffset: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupWindow.titleOffset,
     resolveCaption: 0x5abe00,
     hook: 0xb91bc4,
     releaseHook: 0x70eed0,

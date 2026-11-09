@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { imageFileFixture } from '../tests/fixtures/image-file-fixture.mjs';
@@ -70,7 +70,7 @@ let comparisons = 0,
   calls = 0;
 check(block, other, 'same extended VM block');
 check(
-  raw.process.load(NATIVE_PROFILES[profile].tables.main.va + 0x1ae * 4),
+  raw.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x1ae * 4),
   raw.layout.handler,
   'independent frozen slot',
 );

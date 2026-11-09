@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The mounted SimplePlane/BasePlane packet receiver owns task state. Host
 // clients marshal packets; original graph/model methods retain their ABI.
+import { mapABIMessage } from './abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 
 export function conditionalNativeGraphicsBoundary(engine, address, name, count, accepts, callback) {
@@ -149,7 +150,7 @@ export class NativePlaneReceiver {
       [
         record.nativeID ?? record.id,
         sender,
-        this.engine.profile.startsWith('sdk-') && message >= 39 ? message - 2 : message,
+        mapABIMessage(this.engine.profile, 'base', 'raw', message),
         w,
         l,
         context.flags ?? 0,

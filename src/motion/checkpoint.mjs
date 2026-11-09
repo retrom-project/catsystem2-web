@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NATIVE_ABIS } from '../native/abi/index.mjs';
 // Native 78A2F0/78A420 record format. This guest-visible checkpoint rebuilds
 // scripts from registers/extra data; emulator checkpoints also retain VM heaps.
 import { MOTION_ABI } from './abi.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
-const layouts = {
-  'nekopara-vol3-engine-2.6.1.76': {
-    size: 1108,
-    group: 68,
-    registers: 72,
-    nameBytes: 64,
-    wide: true,
-  },
-  'sdk-4.01-engine-2.6.1.74': { size: 1076, group: 36, registers: 40, nameBytes: 32, wide: false },
-};
+const layouts = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts.motionCheckpoint]),
+  ),
+);
 const layoutFor = (profile) => {
   const layout = layouts[profile];
   if (!layout) throw new Error(`Native MOT checkpoint profile is unavailable: ${profile}`);

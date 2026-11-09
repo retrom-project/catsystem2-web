@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Execute the original tiled SimplePlane KCS packet producer.
 import { nativeReply } from '../kcs/vm.mjs';
 
@@ -7,8 +8,14 @@ export const NATIVE_TILE_PLANE_COMMAND = Object.freeze({
   words: 5,
   control: 2,
   message: 46,
-  game: Object.freeze({ address: 0x6405e0, rawMessage: 46 }),
-  sdk: Object.freeze({ address: 0x512cc0, rawMessage: 44 }),
+  game: Object.freeze({
+    address: 0x6405e0,
+    rawMessage: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.tilePlaneCommand,
+  }),
+  sdk: Object.freeze({
+    address: 0x512cc0,
+    rawMessage: nativeABI('sdk-4.01-engine-2.6.1.74').messages.tilePlaneCommand,
+  }),
 });
 
 export class NativeTilePlaneCommand {

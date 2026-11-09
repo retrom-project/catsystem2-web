@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original Settings queries use the same configuration and archive declarations
 // as the host. Their guest records are projections, not another settings model.
+import { nativeABI, NATIVE_ABIS } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
@@ -18,22 +19,11 @@ export const NATIVE_CONFIGURATION_QUERY_CONTRACTS = Object.freeze(
     Object.freeze({ id, words, control, handlers: [game, sdk] }),
   ),
 );
-export const NATIVE_CONFIGURATION_QUERY_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    archive: 5012,
-    soundLoaded: 163260,
-    soundParts: 163296,
-    soundMaster: 163308,
-    query24D: 51356,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    archive: 3192,
-    soundLoaded: 135236,
-    soundParts: 135272,
-    soundMaster: 135284,
-    query24D: 48172,
-  }),
-});
+export const NATIVE_CONFIGURATION_QUERY_LAYOUTS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts.configurationQuery]),
+  ),
+);
 const byID = new Map(NATIVE_CONFIGURATION_QUERY_CONTRACTS.map((spec) => [spec.id, spec]));
 const defaults = ['volume', 'play', 'sysplay', 'voicevol', 'mute', 'skipvol'];
 const current = ['volume', 'play', 'sysplay', 'voicevol', 'skipvol', 'mute'];
@@ -56,7 +46,9 @@ export class NativeConfigurationQueries {
   }
   encode(value) {
     if (value instanceof Uint8Array) return value;
-    return this.sdk ? encodeCP932(String(value)) : new TextEncoder().encode(String(value));
+    return nativeABI(this.engine.profile).xmlEncoding === 'Shift_JIS'
+      ? encodeCP932(String(value))
+      : new TextEncoder().encode(String(value));
   }
   allocate(size) {
     const pointer = this.process.allocate(size, true);

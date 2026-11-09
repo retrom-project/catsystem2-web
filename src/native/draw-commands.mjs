@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original retained-source draw packets and animation file/enable commands.
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
@@ -36,7 +37,7 @@ export class NativeDrawCommands {
       async ([sender, target, rawMessage, w, l, flags, out]) => {
         const origin = engine.currentTaskID,
           senderWorldID = world.resolveTaskID ? world.resolveTaskID(sender, origin) : sender,
-          message = this.sdk ? rawMessage + 5 : rawMessage;
+          message = mapABIMessage(this.engine.profile, 'drawCommand', 'canonical', rawMessage);
         if (origin == null || senderWorldID == null)
           throw new Error('Native retained draw command has no calling task namespace');
         if (![280, 282, 293, 295, 311, 312, 313].includes(message))

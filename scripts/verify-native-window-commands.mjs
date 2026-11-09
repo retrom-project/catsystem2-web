@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   installNativeWindowCommands,
   NATIVE_WINDOW_COMMAND_CALLBACKS,
@@ -20,7 +20,7 @@ const engine = await NativeEngineProcess.open({
   }),
   sdk = profile.startsWith('sdk-'),
   p = engine.process,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   wndProc = NATIVE_WINDOW_COMMAND_CALLBACKS[profile],
   context = p.allocate(124, true),
   out = p.allocate(4, true),

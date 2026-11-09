@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeTaskCommand, NATIVE_TASK_COMMAND_IDS } from '../src/native/task-command.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
@@ -34,7 +34,7 @@ const engine = await NativeEngineProcess.open({ profile, bytes }),
   vft = p.allocate(32, true),
   argv = p.allocate(16, true),
   result = p.allocate(12, true),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   vm = () => [
     machine.memory.slice(),
     machine.shared.slice(),

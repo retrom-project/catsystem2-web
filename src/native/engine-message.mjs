@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Task packet routing: game 5DD130..5DEC70; SDK 4B9360..4BB030.
 import { encodeCP932 } from '../kcs/strings.mjs';
 
@@ -22,10 +23,10 @@ export const NATIVE_ENGINE_MESSAGE_LAYOUTS = Object.freeze({
     root: 0x4baba0,
     rootCtor: 0x4b9d50,
     baseCtor: 0x4b8cd0,
-    rootStart: 30,
-    captionWide: false,
-    rootField: 392,
-    soundReset: 192,
+    rootStart: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.start,
+    captionWide: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.captionWide,
+    rootField: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.field,
+    soundReset: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.soundReset,
   }),
   [GAME]: Object.freeze({
     base: 0x5dd130,
@@ -37,10 +38,10 @@ export const NATIVE_ENGINE_MESSAGE_LAYOUTS = Object.freeze({
     root: 0x5deac0,
     rootCtor: 0x5ddaf0,
     baseCtor: 0x5dcab0,
-    rootStart: 32,
-    captionWide: true,
-    rootField: 652,
-    soundReset: 194,
+    rootStart: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.start,
+    captionWide: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.captionWide,
+    rootField: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.field,
+    soundReset: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.soundReset,
   }),
 });
 const idOf = (record) => nativeEngineWord(record.nativeID ?? record.id, 'Native task identity');

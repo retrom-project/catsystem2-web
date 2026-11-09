@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The original lookup helpers require their static tree even with no files.
 const LANGUAGE = {
   'sdk-4.01-engine-2.6.1.74': {
     global: 0xcc2bf8,
     constructHead: 0x47dbb0,
-    size: 64,
+    size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.languageBank.size,
     load: 0x47e690,
     destroy: 0x98cf90,
   },
   'nekopara-vol3-engine-2.6.1.76': {
     global: 0xbc3880,
     constructHead: 0x5ad7a0,
-    size: 28,
+    size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.languageBank.size,
     destroy: 0x8c1050,
   },
 };
@@ -67,7 +68,7 @@ export async function loadNativeGameStartupLanguage(engine) {
     p = engine.process,
     state = engine.refs.startupLanguage;
   if (
-    engine.profile !== 'nekopara-vol3-engine-2.6.1.76' ||
+    !nativeABI(engine.profile).language.switchWindowProtocol ||
     !state ||
     p.load(layout.global) !== state.head ||
     state.filename !== undefined

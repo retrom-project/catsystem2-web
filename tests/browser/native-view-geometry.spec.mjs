@@ -51,7 +51,7 @@ for (const [profile, variable] of [
               '/tests/fixtures/browser-native-world.mjs'
             ),
             { floatBits } = await import('/src/kcs.mjs'),
-            { NATIVE_PROFILES } = await import('/src/native/catalog.mjs'),
+            { NATIVE_EXE_PROFILES } = await import('/src/native/catalog.mjs'),
             files = new Map(
               await Promise.all(
                 names.map(async (name) => {
@@ -78,7 +78,7 @@ for (const [profile, variable] of [
                 entries = [],
                 detach = [0x2e3, 0x2e4].map((id) =>
                   p.beforeInstruction(
-                    p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+                    p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
                     'original view position wrapper',
                     () => {
                       const esp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;

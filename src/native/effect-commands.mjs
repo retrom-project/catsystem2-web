@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Complete KCS screen-effect wrappers use the original packet layouts and view.
+import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
@@ -57,7 +58,7 @@ export class NativeEffectCommands {
       async ([sender, target, raw, w, l, flags, out]) => {
         const origin = engine.currentTaskID,
           senderWorldID = world.resolveTaskID ? world.resolveTaskID(sender, origin) : sender,
-          message = !this.sdk ? raw : raw >= 490 && raw <= 497 ? raw + 26 : raw + 5;
+          message = mapABIMessage(this.engine.profile, 'effectCommand', 'canonical', raw);
         if (origin == null || senderWorldID == null)
           throw new Error('Native effect command has no calling task namespace');
         if (!((message >= 377 && message <= 395) || (message >= 516 && message <= 523)))

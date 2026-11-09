@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { MotionLibrary } from '../src/motion/library.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
@@ -74,7 +74,7 @@ for (const [profile, { handler }] of Object.entries(NATIVE_SCRIPT_MESSAGE_BOX)) 
         assert.equal(initial.owner, world);
         assert.deepEqual(initial.action, expected(0));
         assert.equal(
-          world.nativeEngine.process.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+          world.nativeEngine.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
           handler,
         );
         assert.throws(() => world.snapshot(), /settled frame/);

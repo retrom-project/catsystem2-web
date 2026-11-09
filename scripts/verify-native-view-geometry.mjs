@@ -7,7 +7,7 @@ import {
   NativeViewGeometry,
   NATIVE_VIEW_GEOMETRY_CONTRACTS,
 } from '../src/native/view-geometry.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
@@ -178,7 +178,7 @@ try {
   ];
   for (const spec of NATIVE_VIEW_GEOMETRY_CONTRACTS) {
     compare(
-      p.load(NATIVE_PROFILES[profile].tables.main.va + 4 * spec.id),
+      p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 4 * spec.id),
       spec.handlers[Number(sdk)],
       'frozen original table handler',
     );

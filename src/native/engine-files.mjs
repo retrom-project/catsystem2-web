@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The reviewed engine readers share one category/path boundary. Native parsers
 // still consume the original bytes; providers may supply a live temporary view.
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -7,20 +8,20 @@ export const NATIVE_MEMORY_FILE_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
     open: 0x5d57a0,
     construct: 0x5d8a70,
-    size: 0x220,
-    data: 528,
-    length: 532,
-    wide: true,
+    size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.memoryFile.size,
+    data: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.memoryFile.data,
+    length: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.memoryFile.length,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.memoryFile.wide,
     read: 0x5d50f0,
     readWide: 0x5d5160,
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     open: 0x4b22c0,
     construct: 0x4b5140,
-    size: 0x120,
-    data: 272,
-    length: 276,
-    wide: false,
+    size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.memoryFile.size,
+    data: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.memoryFile.data,
+    length: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.memoryFile.length,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.memoryFile.wide,
     read: 0x4b1ca0,
   }),
 });

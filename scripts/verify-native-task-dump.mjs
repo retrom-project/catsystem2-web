@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
   NATIVE_ENGINE_MESSAGE_LAYOUTS,
   NATIVE_UNWRITTEN_WORD,
@@ -24,7 +24,7 @@ const bytes = new Uint8Array(await readFile(filename)),
 if (!profile) throw new Error('Task dump oracle requires a frozen engine');
 const sdk = profile.startsWith('sdk-'),
   spec = sdk ? NATIVE_TASK_DUMP.sdk : NATIVE_TASK_DUMP.game,
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   opcodes = sdk ? 0xc53d00 : 0xb49a00,
   raw = await NativeEngineProcess.open({ profile, bytes }),
   model = await NativeEngineProcess.open({ profile, bytes }),

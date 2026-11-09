@@ -7,7 +7,7 @@ import { KCSMachine, formatNativeAt } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
 import { parseNativeResourceSelection } from '../src/native/resource-selection.mjs';
 const [filename, output] = process.argv.slice(2);
@@ -75,7 +75,7 @@ async function run(id, args) {
   try {
     args.forEach((v, i) => p.store(argv + i * 4, v));
     p.store(out, 0xcccccccc);
-    control = await engine.call(p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4), [
+    control = await engine.call(p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4), [
       bridge.pointer,
       0,
       argv,

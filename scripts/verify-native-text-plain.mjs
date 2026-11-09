@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeTextRuntime } from '../src/native/text.mjs';
 import { nativePlainText } from '../src/native/text-plain.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { Binary } from '../src/binary.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -105,7 +105,7 @@ try {
         p.store(argv + 4, 16);
         p.store(out, 0xcafebabe);
         const control = await engine.call(
-            p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+            p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
             [0, 0, argv, out],
           ),
           expected = await nativePlainText(id, [destination, 16], machine, world);

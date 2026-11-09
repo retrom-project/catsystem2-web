@@ -6,12 +6,16 @@ import { findNativeXML } from './xml.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { NativeConfigurationFields } from './config-fields.mjs';
 import { NativeScriptReplacements } from './script-replacement.mjs';
-import { NATIVE_PROFILES } from './catalog.mjs';
+import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 
-export const NATIVE_CONFIGURATION_LAYOUTS = Object.freeze({
-  'sdk-4.01-engine-2.6.1.74': { sizes: [0x15fc, 0x3c, 0x1c, 0x0c] },
-  'nekopara-vol3-engine-2.6.1.76': { sizes: [0x15fc, 0x48, 0x20, 0x0c] },
-});
+export const NATIVE_CONFIGURATION_LAYOUTS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [
+      profile,
+      { sizes: abi.configuration.blockSizes },
+    ]),
+  ),
+);
 
 const words = (bytes) => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 const get = (bytes, index) => words(bytes).getUint32(index * 4, true);
@@ -92,7 +96,7 @@ export class NativeConfiguration {
     // These startup rules are immutable engine input, independent of mutable
     // preference words. A fresh World reads them from its same frozen source.
     this.scriptReplacements = new NativeScriptReplacements(startup, {
-      encoding: NATIVE_PROFILES[profile].xmlEncoding,
+      encoding: nativeABI(profile).xmlEncoding,
     });
     this.authorMode = authorMode >>> 0;
     this.variableCount = 1024;
@@ -367,7 +371,10 @@ export function nativeConfiguration(id, args, machine, services = {}) {
     throw new Error(`KCS configuration native 0x${id.toString(16)} expects ${count} arguments`);
   const config = services.configuration;
   if (!config) return undefined;
-  if ([0x40c, 0x41a, 0x41d].includes(id) && config.profile !== 'nekopara-vol3-engine-2.6.1.76')
+  if (
+    [0x40c, 0x41a, 0x41d].includes(id) &&
+    !nativeABI(config.profile).configuration.extendedQueries
+  )
     return undefined;
   if (id === 0x1d1) return nativeReply(1, config.authorMode);
   if (id === 0x315) return nativeReply(1, config.variableCount);

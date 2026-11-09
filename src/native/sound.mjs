@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Sound task 5EA210/5EB670/5EABC0. The 64 device banks are shared by all
 // sound tasks; each task owns its own 140-byte control and auxiliary records.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import {
@@ -184,8 +186,8 @@ export class NativeSound {
     this.world = world;
     this.audio = world.audio;
     this.tasks = new Map();
-    this.legacy = (world.profile || world.configuration.profile) === 'sdk-4.01-engine-2.6.1.74';
-    this.bankCount = this.legacy ? 32 : 64;
+    this.abi = nativeABI(world.profile || world.configuration.profile);
+    this.bankCount = this.abi.sound.banks;
     this.device = Array.from({ length: this.bankCount }, deviceBank);
     this.master = 100;
     this.volumeGroups = new Map();
@@ -494,7 +496,7 @@ export class NativeSoundTask {
       control.plv = plv.slice(16, 16 + count * 2);
     }
     control.lpb = (await this.sound.readAux(filename, 'lpb'))?.slice() ?? null;
-    if (!control.lpb && !this.sound.legacy)
+    if (!control.lpb && this.sound.abi.sound.crossfade)
       control.lv = (await this.sound.readAux(filename, 'lv'))?.slice() ?? null;
     for (const [field, offset, lengthOffset] of [
       ['lpb', C.lpb, C.lpbSize],
@@ -509,7 +511,7 @@ export class NativeSoundTask {
   }
   async load(packet, type, allocated = false) {
     const bank = packet.load(0),
-      crossfade = this.sound.legacy ? 0 : packet.load(280),
+      crossfade = this.sound.abi.sound.crossfade ? packet.load(280) : 0,
       target = bank + (crossfade ? 32 : 0);
     if (!this.valid(bank) || !this.valid(target)) return 0;
     const file = packet.string(12),
@@ -521,7 +523,7 @@ export class NativeSoundTask {
     for (const at of [C.releasePending, C.stopPending, C.pausePending, C.endAfterPlayback])
       control.word(at, 0);
     control.word(C.crossfade, crossfade);
-    control.word(C.crossfadeMilliseconds, this.sound.legacy ? 0 : packet.load(284));
+    control.word(C.crossfadeMilliseconds, this.sound.abi.sound.crossfade ? packet.load(284) : 0);
     control.word(C.linkedBank, allocated && crossfade ? target : -1);
     if (crossfade && (!allocated || type !== 1)) this.controls[bank].word(C.linkedBank, target);
     control.loopStart = 0n;
@@ -642,7 +644,7 @@ export class NativeSoundTask {
           );
         if (control.word(C.flags) & 2)
           fade(C.currentPan, C.targetPan, C.panRemaining, 2, (n) => this.sound.setPan(bank, n));
-        if (!this.sound.legacy && control.word(C.lastTimeFrame) === 0xffffffff)
+        if (!this.sound.abi.sound.completionFrame && control.word(C.lastTimeFrame) === 0xffffffff)
           control.word(C.lastTimeFrame, frame - 1);
         control.word(
           C.elapsedFrames,
@@ -679,8 +681,9 @@ export class NativeSoundTask {
   async message(words, context = {}) {
     const [sender, rawID, w, l] = words,
       bank = w >>> 0;
-    const id = this.sound.legacy && rawID >= 177 && rawID <= 218 ? rawID + 2 : rawID;
-    if (this.sound.legacy && rawID >= 219) return this.base.message(words, context);
+    const id = mapABIMessage(this.sound.abi.profile, 'sound', 'canonical', rawID);
+    if (this.sound.abi.sound.delegateFrom !== null && rawID >= this.sound.abi.sound.delegateFrom)
+      return this.base.message(words, context);
     if (!this.sound.audio) return 0;
     const memory = () => this.memory(sender, context);
     const selected = this.select(bank),
@@ -718,7 +721,7 @@ export class NativeSoundTask {
       const allocated = this.allocate(group.min, group.max);
       packet.store(0, allocated);
       return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true))
-        ? allocated + (!this.sound.legacy && packet.load(280) ? 32 : 0)
+        ? allocated + (this.sound.abi.sound.crossfade && packet.load(280) ? 32 : 0)
         : 0xffffffff;
     }
     if (id === 194) {
@@ -825,7 +828,7 @@ export class NativeSoundTask {
         c.word(C.stopPending, 0);
         c.word(C.pausePending, 0);
         if (c.word(C.wallStart) === 0xffffffff) c.word(C.wallStart, this.sound.now());
-        c.word(C.lastTimeFrame, this.sound.legacy ? this.frame : -1);
+        c.word(C.lastTimeFrame, this.sound.abi.sound.completionFrame ? this.frame : -1);
         return 0;
       }
       case 185:
@@ -1054,7 +1057,7 @@ export async function nativeSound(id, args, machine, task, world) {
     receiver.message(
       [
         world.nativeTaskID(task.id),
-        sound.legacy && message >= 179 && message <= 220 ? message - 2 : message,
+        mapABIMessage(sound.abi.profile, 'sound', 'raw', message),
         w >>> 0,
         l >>> 0,
       ],

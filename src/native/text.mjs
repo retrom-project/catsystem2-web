@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { NativeDataBuffers } from './data-buffer.mjs';
@@ -7,7 +8,7 @@ import { NativeFESTextLayout } from './fes-text-layout.mjs';
 export const NATIVE_TEXT_CORES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': {
     cp932: {
-      size: 0x48,
+      size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.cp932.size,
       construct: 0x696c20,
       destroy: 0x696d70,
       configure: 0x697690,
@@ -23,11 +24,11 @@ export const NATIVE_TEXT_CORES = Object.freeze({
       position: 0x6975d0,
       lines: 0x694880,
       defaultPacket: 0x6353d0,
-      defaultAt: 228,
-      configSize: 216,
+      defaultAt: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.cp932.defaultAt,
+      configSize: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.cp932.configSize,
     },
     nv: {
-      size: 0x228,
+      size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.nv.size,
       construct: 0x69d740,
       destroy: 0x69d930,
       configure: 0x69e3a0,
@@ -41,17 +42,17 @@ export const NATIVE_TEXT_CORES = Object.freeze({
       speed: 0x69e800,
       position: 0x69e2d0,
       defaultPacket: 0x636fd0,
-      configSize: 472,
-      packetSize: 520,
-      bitmapAt: 484,
-      dirtyAt: 488,
+      configSize: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.nv.configSize,
+      packetSize: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.nv.packetSize,
+      bitmapAt: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.nv.bitmapAt,
+      dirtyAt: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.nv.dirtyAt,
       section: 0x69dcf0,
       redraw: 0x69e720,
       reflow: 0x69e790,
       erase: 0x69e1c0,
     },
     utf8: {
-      size: 0x248,
+      size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.utf8.size,
       construct: 0x69c4e0,
       destroy: 0x69c5f0,
       configure: 0x69ce50,
@@ -67,13 +68,13 @@ export const NATIVE_TEXT_CORES = Object.freeze({
       position: 0x69cd80,
       lines: 0x69a260,
       defaultPacket: 0x636190,
-      defaultAt: 296,
-      configSize: 284,
+      defaultAt: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.utf8.defaultAt,
+      configSize: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.textCores.utf8.configSize,
     },
   },
   'sdk-4.01-engine-2.6.1.74': {
     nv: {
-      size: 0x1e8,
+      size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.nv.size,
       construct: 0x56eeb0,
       destroy: 0x56f0a0,
       configure: 0x56fab0,
@@ -87,17 +88,17 @@ export const NATIVE_TEXT_CORES = Object.freeze({
       speed: 0x56fea0,
       position: 0x56f9f0,
       defaultPacket: 0x50d400,
-      configSize: 408,
-      packetSize: 456,
-      bitmapAt: 420,
-      dirtyAt: 424,
+      configSize: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.nv.configSize,
+      packetSize: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.nv.packetSize,
+      bitmapAt: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.nv.bitmapAt,
+      dirtyAt: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.nv.dirtyAt,
       section: 0x56f460,
       redraw: 0x56fdc0,
       reflow: 0x56fe30,
       erase: 0x56f8e0,
     },
     cp932: {
-      size: 0x48,
+      size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.cp932.size,
       construct: 0x56db50,
       destroy: 0x56dc90,
       configure: 0x56e620,
@@ -113,8 +114,8 @@ export const NATIVE_TEXT_CORES = Object.freeze({
       profile: 0x569ad0,
       lines: 0x56b400,
       defaultPacket: 0x50c650,
-      defaultAt: 196,
-      configSize: 184,
+      defaultAt: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.cp932.defaultAt,
+      configSize: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.textCores.cp932.configSize,
     },
   },
 });
@@ -262,7 +263,8 @@ export class NativeTextRuntime {
         `Native text resource operation ${operation} is not a pure resource boundary`,
       );
     const sdk = this.engine.profile.startsWith('sdk-');
-    if (sdk && operation === 19) throw new Error('SDK text task has no category-clear message');
+    if (!nativeABI(this.engine.profile).text.resourceMessages.clearCategory && operation === 19)
+      throw new Error('SDK text task has no category-clear message');
     const handler =
         writer.mode === 'nv'
           ? sdk
@@ -274,7 +276,8 @@ export class NativeTextRuntime {
               ? 0x6359f0
               : 0x634d00,
       first =
-        writer.mode === 'nv' ? (sdk ? 463 : 489) : sdk ? 444 : writer.mode === 'utf8' ? 469 : 449,
+        nativeABI(this.engine.profile).text.resourceMessages.first[writer.mode] ??
+        nativeABI(this.engine.profile).text.resourceMessages.first.cp932,
       message = first + operation + Number(writer.mode === 'nv'),
       p = this.process,
       task = p.allocate(0x600, true),

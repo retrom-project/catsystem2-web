@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Integer CPU raster loops for the reviewed engine images. The mounted PE
 // still dispatches, clips and prepares each descriptor. Its last scanline
 // executes unchanged, including the original register/flags epilogue.
@@ -11,7 +12,7 @@ const profiles = {
     copyWrapper: 0x6a7210,
     copyGetCaps: 0x5c50b0,
     copyCaps: 0xb8f04c,
-    copyMMX: 0x444,
+    copyMMX: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.rasterKernel.copyMMX,
     copyCRTFlags: 0xb925e8,
     copyCRTAlignedSIMD: 0xb2acf0,
     stosByte: 0x79fc44,
@@ -32,7 +33,7 @@ const profiles = {
     copyWrapper: 0x576df0,
     copyGetCaps: 0x4a1cb0,
     copyCaps: 0xc93b6c,
-    copyMMX: 0x244,
+    copyMMX: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.rasterKernel.copyMMX,
     copyCRTFlags: 0xc96f78,
     copyCRTAlignedSIMD: 0xc35df0,
     stosByte: 0x637ea4,

@@ -7,7 +7,7 @@ import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeTexturePages, negotiateNativeTextureLayout } from '../src/native/texture-layout.mjs';
 
 const [root, profile, output] = process.argv.slice(2);
@@ -28,7 +28,7 @@ const game = await nodeGame(root),
   parameters = p.allocate(16, true),
   outputWord = p.allocate(4, true),
   textures = new Map(),
-  main = NATIVE_PROFILES[profile].tables.main.va;
+  main = NATIVE_EXE_PROFILES[profile].tables.main.va;
 let seed = 0x5df0391a,
   passed = 0,
   created = 0,

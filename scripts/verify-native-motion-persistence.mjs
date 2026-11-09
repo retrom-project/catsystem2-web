@@ -8,7 +8,7 @@ import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { nativeMotionPersistence } from '../src/native/motion-persistence.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 const [filename, output] = process.argv.slice(2);
 if (!output)
   throw new Error(
@@ -22,7 +22,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   p = engine.process,
   buffers = new NativeDataBuffers(engine),
   handles = new NativeHandles(),
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   argv = p.allocate(32, true),
   out = p.allocate(4, true),
   envelope = p.allocate(12, true),

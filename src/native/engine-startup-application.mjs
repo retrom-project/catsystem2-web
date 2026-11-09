@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { NATIVE_STARTUP_BLOCKS, runNativeStackSpan } from './engine-startup-block.mjs';
 import {
   isNativeWindowCommandMessage,
@@ -19,7 +20,7 @@ const layouts = {
     soundReady: 0x442e77,
     graphicsReady: 0x442fac,
     servicesReturn: 0x44381b,
-    graphicsBytes: 0x54,
+    graphicsBytes: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupApplication.graphicsBytes,
     findTask: 0x4b9690,
     destroyGraphics: 0x4b7f10,
     destroySound: 0x4a8f90,
@@ -38,7 +39,8 @@ const layouts = {
     soundReady: 0x531bab,
     graphicsReady: 0x531ce7,
     servicesReturn: 0x5325b8,
-    graphicsBytes: 0x254,
+    graphicsBytes: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupApplication
+      .graphicsBytes,
     findTask: 0x5dd450,
     destroyGraphics: 0x5dba30,
     destroySound: 0x5cbee0,

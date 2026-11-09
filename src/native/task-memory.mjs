@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // The common native task prefix is a view of the World's task graph. A base
 // prefix never stands in for an implemented derived task factory.
+import { nativeABI } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
@@ -65,7 +67,7 @@ export class NativeTaskMemory {
       pointer = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0,
       id = this.worldID(pointer),
       record = this.world.objects.objects.get(id),
-      message = this.sdk && rawMessage >= 37 ? rawMessage + 2 : rawMessage;
+      message = mapABIMessage(this.engine.profile, 'base', 'canonical', rawMessage);
     if (message === 3 && this.releasingPrefixes.has(pointer)) {
       p.store(pointer + 84, 1);
       return 0;
@@ -288,14 +290,16 @@ export class NativeTaskMemory {
           if (child) p.store(at + offset, child.nativeID ?? id);
         }
         const caption = root.caption ?? '.',
-          bytes = this.sdk ? encodeCP932(caption + '\0') : new Uint8Array((caption.length + 1) * 2);
-        if (!this.sdk)
+          bytes = nativeABI(this.engine.profile).messages.root.captionWide
+            ? new Uint8Array((caption.length + 1) * 2)
+            : encodeCP932(caption + '\0');
+        if (nativeABI(this.engine.profile).messages.root.captionWide)
           for (let i = 0; i < caption.length; i++)
             new DataView(bytes.buffer).setUint16(i * 2, caption.charCodeAt(i), true);
-        if (bytes.length > (this.sdk ? 260 : 520))
+        if (bytes.length > nativeABI(this.engine.profile).text.pathBytes)
           throw new RangeError('Native Top caption exceeds its original record');
         p.write(at + 128, bytes);
-        p.store(at + (this.sdk ? 392 : 652), root.field ?? 0);
+        p.store(at + nativeABI(this.engine.profile).messages.root.field, root.field ?? 0);
       }
     }
   }

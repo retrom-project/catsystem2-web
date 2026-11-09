@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
+import { nativeABI } from './abi/index.mjs';
 export const NATIVE_CONTROL_CODES = Object.freeze({
   0: 'suspend without a result',
   1: 'push a word result and continue',
@@ -30,18 +30,7 @@ const executableTables = {
     },
   },
 };
-export const NATIVE_PROFILES = Object.freeze(
-  Object.fromEntries(
-    Object.entries(executableTables).map(([profile, exe]) => [
-      profile,
-      {
-        ...exe,
-        xmlEncoding: NATIVE_ABIS[profile].xmlEncoding,
-        sound: NATIVE_ABIS[profile].sound,
-      },
-    ]),
-  ),
-);
+export const NATIVE_EXE_PROFILES = Object.freeze(executableTables);
 export function nativeCatalog(profile, table = 'main') {
   const definition = nativeABI(profile).tables[table];
   if (!definition) throw new Error(`Unknown native profile/table ${profile}/${table}`);

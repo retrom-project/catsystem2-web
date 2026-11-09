@@ -2,6 +2,8 @@
 // The original task regions share one view/renderer record set and cross this
 // boundary for graph state and CPU-bitmap uploads. Their parsers and animation
 // code continue in the mounted executable.
+import { nativeABI } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { NativeBitmap } from './image.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { bitsFloat } from '../kcs.mjs';
@@ -11,34 +13,32 @@ import { NativeGraphRendering } from './graphics-render.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
-    baseMessage: 0x5e0920,
-    planeBroadcast: 0x5dfbd0,
-    taskSend: 0x5dd860,
-    graphDestroy: 0x675ea0,
-    graphShown: 0x676910,
-    graphTypes: 252,
-    graphDisplay: 0x6776f0,
-    bitmapCopy: 0x677690,
-    bitmapClear: 0x6745b0,
-    graphBase: 0x677100,
-    rendererGlobal: 0xb90778,
-    bitmapConstruct: 0x68b3e0,
-    bitmapConfigure: 0x68be00,
-    bitmapRelease: 0x68cf20,
+    baseMessage: 6162720,
+    planeBroadcast: 6159312,
+    taskSend: 6150240,
+    graphDestroy: 6774432,
+    graphShown: 6777104,
+    graphDisplay: 6780656,
+    bitmapCopy: 6780560,
+    bitmapClear: 6768048,
+    graphBase: 6779136,
+    rendererGlobal: 12126072,
+    bitmapConstruct: 6861792,
+    bitmapConfigure: 6864384,
+    bitmapRelease: 6868768,
   },
   'sdk-4.01-engine-2.6.1.74': {
-    baseMessage: 0x4bcc70,
-    planeBroadcast: 0x4bbf70,
-    taskSend: 0x4b9aa0,
-    graphDestroy: 0x54cfb0,
-    graphShown: 0x54da30,
-    graphTypes: 188,
-    graphDisplay: 0x54e7f0,
-    bitmapCopy: 0x54e790,
-    bitmapClear: 0x54b6a0,
-    bitmapConstruct: 0x561f40,
-    bitmapConfigure: 0x562970,
-    bitmapRelease: 0x563a90,
+    baseMessage: 4967536,
+    planeBroadcast: 4964208,
+    taskSend: 4954784,
+    graphDestroy: 5558192,
+    graphShown: 5560880,
+    graphDisplay: 5564400,
+    bitmapCopy: 5564304,
+    bitmapClear: 5551776,
+    bitmapConstruct: 5644096,
+    bitmapConfigure: 5646704,
+    bitmapRelease: 5651088,
   },
 };
 
@@ -214,7 +214,11 @@ export class NativeGraphicsPlatform {
       descriptor = this.descriptor(nativeID);
     if (
       !descriptor ||
-      findUnsignedTreeWord(p, p.load(this.refs.view + this.abi.graphTypes), nativeID >>> 0) !== 1
+      findUnsignedTreeWord(
+        p,
+        p.load(this.refs.view + nativeABI(this.engine.profile).graphics.graphTypes),
+        nativeID >>> 0,
+      ) !== 1
     )
       return null;
     const model = [16, 20, 24, 12, 8].map((at) => p.load(descriptor + at)).find(Boolean);
@@ -234,8 +238,7 @@ export class NativeGraphicsPlatform {
       targetID = raw !== 1 ? this.world.resolveTaskID(target, origin) : null,
       record = this.world.objects.objects.get(targetID);
     if (raw !== 1 && (!record || record.state !== 'active')) return 0;
-    const message =
-        this.engine.profile.startsWith('sdk-') && record?.kind !== 1 && raw >= 37 ? raw + 2 : raw,
+    const message = mapABIMessage(this.engine.profile, 'base', 'canonical', raw, record?.kind),
       context = {
         payload: this.memory,
         nativePointer: true,
@@ -255,8 +258,7 @@ export class NativeGraphicsPlatform {
     const p = this.process,
       pointer = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0,
       task = this.task(pointer),
-      message =
-        this.engine.profile.startsWith('sdk-') && rawMessage >= 37 ? rawMessage + 2 : rawMessage,
+      message = mapABIMessage(this.engine.profile, 'base', 'canonical', rawMessage),
       senderWorldID = this.world.resolveTaskID
         ? this.world.resolveTaskID(sender, task.record.id)
         : sender,
@@ -292,10 +294,13 @@ export class NativeGraphicsPlatform {
       previous = nativeID | 0;
       const target = protocol.lookupPointer(owner, nativeID);
       if (!target) continue;
-      const message =
-          this.engine.profile.startsWith('sdk-') && target.kind !== 1 && rawMessage >= 37
-            ? rawMessage + 2
-            : rawMessage,
+      const message = mapABIMessage(
+          this.engine.profile,
+          'base',
+          'canonical',
+          rawMessage,
+          target.kind,
+        ),
         packet = [nativeID, sender, message, w, l, flags],
         output = { value: NATIVE_UNWRITTEN_WORD };
       packet.senderWorldID = owner.id;
@@ -309,9 +314,10 @@ export class NativeGraphicsPlatform {
     }
   }
   attachDevice(device) {
-    if (!this.engine.profile.startsWith('nekopara-'))
+    const field = nativeABI(this.engine.profile).graphics.deviceField;
+    if (field === null)
       throw new Error('This graphics profile has no recovered native device record');
-    this.process.store(this.refs.renderer + 308, device);
+    this.process.store(this.refs.renderer + field, device);
   }
   async ensureRenderer() {
     const renderer = await this.world.getNativeFeature('renderer');
@@ -585,27 +591,35 @@ export class NativeGraphicsPlatform {
     const p = this.process,
       graphics = this.world.graphics,
       projection = graphics.projection();
-    if (!this.engine.profile.startsWith('sdk-')) {
+    const layout = nativeABI(this.engine.profile).graphics.synchronization;
+    if (layout) {
       p.write(
-        this.refs.manager + 96,
+        this.refs.manager + layout.managerMatrix,
         new Uint8Array(Float32Array.from(projection.screenMatrix).buffer),
       );
       p.write(
-        this.refs.manager + 228,
+        this.refs.manager + layout.managerShift,
         new Uint8Array(Float32Array.from(projection.screenShift).buffer),
       );
-      p.store(this.refs.manager + 484, 0x3f800000);
-      p.store(this.refs.renderer + 340, graphics.d3dContext.lastDrawType ?? 0xffffffff);
-      p.store(this.refs.renderer + 344, graphics.d3dContext.lastBlend ?? 0xffffffff);
-      p.store(this.refs.renderer + 1500, Number(graphics.d3dContext.depthStencilEnabled));
+      p.store(this.refs.manager + layout.managerScale, 0x3f800000);
+      p.store(
+        this.refs.renderer + layout.lastDrawType,
+        graphics.d3dContext.lastDrawType ?? 0xffffffff,
+      );
+      p.store(this.refs.renderer + layout.lastBlend, graphics.d3dContext.lastBlend ?? 0xffffffff);
+      p.store(
+        this.refs.renderer + layout.depthStencil,
+        Number(graphics.d3dContext.depthStencilEnabled),
+      );
     }
   }
   pull() {
-    if (this.engine.profile.startsWith('sdk-')) return;
+    const layout = nativeABI(this.engine.profile).graphics.synchronization;
+    if (!layout) return;
     const p = this.process,
       context = this.world.graphics.d3dContext;
-    context.lastDrawType = p.load(this.refs.renderer + 340);
-    context.lastBlend = p.load(this.refs.renderer + 344);
+    context.lastDrawType = p.load(this.refs.renderer + layout.lastDrawType);
+    context.lastBlend = p.load(this.refs.renderer + layout.lastBlend);
   }
   snapshot() {
     if (this.pendingBitmaps)

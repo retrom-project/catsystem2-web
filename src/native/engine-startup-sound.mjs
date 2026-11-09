@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // The opening application callback reads the native SOUNDGROUP/MASTER/PART tree.
 import { initializeNativeApplicationServices } from './engine-startup-application.mjs';
 
@@ -7,17 +8,17 @@ const layouts = {
     load: 0x5c5ef0,
     parsed: 0x5c9542,
     preferencesParsed: 0x5c9c91,
-    directory: 2672,
-    base: 135236,
-    wide: false,
+    directory: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupSound.directory,
+    base: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupSound.base,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupSound.wide,
   },
   'nekopara-vol3-engine-2.6.1.76': {
     load: 0x7150b0,
     parsed: 0x718702,
     preferencesParsed: 0x718e51,
-    directory: 3972,
-    base: 163260,
-    wide: true,
+    directory: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupSound.directory,
+    base: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupSound.base,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupSound.wide,
   },
 };
 const RECORD_BYTES = 196;

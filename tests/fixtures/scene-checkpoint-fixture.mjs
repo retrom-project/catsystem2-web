@@ -9,7 +9,7 @@ import { NativeVariableBank } from '../../src/native/bank.mjs';
 import { NativeStringBank } from '../../src/native/string-bank.mjs';
 import { importStringBank } from '../../src/native/persistence.mjs';
 import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
 import { Binary } from '../../src/binary.mjs';
 import { KCSMachine } from '../../src/kcs.mjs';
 
@@ -147,7 +147,7 @@ export async function sceneCheckpointFixture(bytes, profile) {
         [pair, ...args].forEach((n, i) => p.store(argv + i * 4, n));
         p.store(out, 0xcccccccc);
         const control = await engine.call(
-          p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+          p.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
           [bridge.pointer, caller, argv, out],
         );
         return { control, ...(control === 1 ? { value: p.load(out) } : {}) };

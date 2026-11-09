@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Movie wrappers 655170..655600 / 521590..5219E0. DirectShow is a host boundary.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 
@@ -305,13 +306,17 @@ export function installNativeMovies(world) {
       };
     },
     inputGate: async (owner, enabled) => {
-      const input = await world.sendEngine(0, owner, world.profile.startsWith('sdk-') ? 32 : 34);
+      const input = await world.sendEngine(
+        0,
+        owner,
+        nativeABI(world.profile).messages.movieInput.query,
+      );
       if (input === NATIVE_UNWRITTEN_WORD)
         throw new Error('Native movie has no initialized InputTask identity');
       await world.sendEngine(
         input,
         owner,
-        world.profile.startsWith('sdk-') ? 141 : 143,
+        nativeABI(world.profile).messages.movieInput.gate,
         0,
         enabled,
       );

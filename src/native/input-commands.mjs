@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original input-owner query, bitmap mask and wheel-cancel KCS envelopes.
+import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 
 export const NATIVE_INPUT_COMMAND_CONTRACTS = Object.freeze(
@@ -29,12 +31,16 @@ export class NativeInputCommands {
       'KCS input-command task transport',
       7,
       async ([sender, target, raw, w, l, flags, out]) => {
-        const message = this.sdk && raw >= 37 ? raw + 2 : raw,
+        const message = mapABIMessage(this.engine.profile, 'base', 'canonical', raw),
           origin = engine.currentTaskID,
           senderWorldID = world.resolveTaskID(sender, origin);
         if (senderWorldID == null)
           throw new Error('Native input command sender is outside its Top');
-        if (![this.sdk ? 32 : 34, 89, 97, 133, 157].includes(message))
+        if (
+          ![nativeABI(this.engine.profile).messages.movieInput.query, 89, 97, 133, 157].includes(
+            message,
+          )
+        )
           throw new Error('Native input command emitted an unreviewed task message');
         const context = {
             payload: this.memory,

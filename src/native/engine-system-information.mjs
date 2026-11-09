@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Original system-information owner. These Win32 APIs describe the virtual
 // i686 process and its memory budget, independently of the browser's OS.
 import {
@@ -11,39 +12,39 @@ import { constructNativeSystemSurvey } from './engine-cpu-survey.mjs';
 export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     global: 0xc93b6c,
-    size: 0x580,
+    size: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.size,
     construct: 0x49fbe0,
     destroy: 0x49ffb0,
-    memory: 1372,
-    directX: 408,
+    memory: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.memory,
+    directX: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.directX,
     detectDirectX: 0x47f380,
     checkDirectX: 0x546940,
-    manufacturer: 860,
-    model: 1116,
+    manufacturer: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.manufacturer,
+    model: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.model,
     cpu: Object.freeze({
-      fields: 540,
+      fields: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.cpu.fields,
       counterReturns: [0x4a0cfc, 0x4a0d1b, 0x4a0d65],
       afterTSC: [0x4a0d0a, 0x4a0d79],
     }),
-    wide: false,
+    wide: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.systemInformation.wide,
   }),
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
     global: 0xb8f04c,
-    size: 0xa80,
+    size: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.size,
     construct: 0x5c3460,
     destroy: 0x5c3820,
-    memory: 2652,
-    directX: 792,
+    memory: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.memory,
+    directX: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.directX,
     detectDirectX: 0x5afe20,
     checkDirectX: 0x66f600,
-    manufacturer: 1628,
-    model: 2140,
+    manufacturer: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.manufacturer,
+    model: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.model,
     cpu: Object.freeze({
-      fields: 1052,
+      fields: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.cpu.fields,
       counterReturns: [0x5c41b5, 0x5c41d4, 0x5c421e],
       afterTSC: [0x5c41c3, 0x5c4232],
     }),
-    wide: true,
+    wide: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.systemInformation.wide,
   }),
 });
 

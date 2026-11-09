@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { MotionLibrary } from '../src/motion/library.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
@@ -63,7 +63,7 @@ for (const profile of Object.keys(handlers)) {
       try {
         await first.initialize('main.kcs');
         assert.equal(
-          first.nativeEngine.process.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
+          first.nativeEngine.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + id * 4),
           handlers[profile],
         );
         const version = [2, 6, 1, sdk ? 74 : 76];

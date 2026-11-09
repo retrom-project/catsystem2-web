@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeMovies, nativeMovie } from '../src/native/movie.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -51,7 +51,7 @@ const sdk = profile.startsWith('sdk-'),
         visible: 0x677730,
         clear: 0x66f6c0,
       },
-  table = NATIVE_PROFILES[profile].tables.main.va,
+  table = NATIVE_EXE_PROFILES[profile].tables.main.va,
   settingsPointer = p.allocate(100000, true),
   words = p.allocate(32, true),
   result = p.allocate(4, true),

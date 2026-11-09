@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The display-log cache is an original engine object, separate from the CST
 // history. Rebuilds import a temporary view of that history and discard it.
+import { nativeABI } from './abi/index.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeReply } from '../kcs.mjs';
 import { Binary } from '../binary.mjs';
@@ -13,7 +14,7 @@ export const NATIVE_DISPLAY_LOG_IDS = Object.freeze([
 export const NATIVE_DISPLAY_LOG_ABI = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': {
     main: 0xa2dd38,
-    count: 1055,
+    count: nativeABI('nekopara-vol3-engine-2.6.1.76').tables.main.count,
     historyCtor: 0x72d010,
     historyDtor: 0x72d030,
     historyImport: 0x72d680,
@@ -26,7 +27,7 @@ export const NATIVE_DISPLAY_LOG_ABI = Object.freeze({
   },
   'sdk-4.01-engine-2.6.1.74': {
     main: 0xb3c900,
-    count: 1009,
+    count: nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.count,
     historyCtor: 0x5dbfa0,
     historyDtor: 0x5dbfc0,
     historyImport: 0x5dc610,
@@ -268,7 +269,7 @@ export function installNativeDisplayLogs(world) {
     return new NativeDisplayLogs(engine, world, await world.getNativeFeature('fes-objects'));
   });
   for (const id of NATIVE_DISPLAY_LOG_IDS) {
-    if (world.profile.startsWith('sdk-') && id >= 1009) continue;
+    if (id >= nativeABI(world.profile).tables.main.count) continue;
     world.runtime.register('main', id, async (args, machine, task) =>
       (await world.getNativeFeature('display-logs')).apply(id, args, machine, task),
     );

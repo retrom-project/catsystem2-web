@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Configuration sources: game 71C8D0/71D160/71D3A0/71D760/71EF80/720630;
 // SDK 5CE2F0/5CFB50/5D0BA0. These two builds use different text encodings.
+import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { findNativeXML } from './xml.mjs';
 import { parseNativeInteger } from './standard.mjs';
 
-const game = 'nekopara-vol3-engine-2.6.1.76';
-const sdk = 'sdk-4.01-engine-2.6.1.74';
 const f = Math.fround;
 const node = (root, path) => root && findNativeXML(root, path);
 const integer = (root, path, fallback) =>
@@ -26,24 +25,11 @@ const categories = [
 const modifier = (value) => ({ A: 16, C: 8, S: 4 })[value[1]] ?? 0;
 const accelerator = (value) => [value.charCodeAt(0) || 0, modifier(value)];
 
-export const NATIVE_TEXT_CONFIGURATION_LAYOUTS = Object.freeze({
-  [sdk]: {
-    encoding: 'CP932',
-    fontBytes: 64,
-    keyNameBytes: 32,
-    keyStride: 36,
-    bytes: 5592,
-    ownerOffset: 53288,
-  },
-  [game]: {
-    encoding: 'UTF-16LE',
-    fontBytes: 128,
-    keyNameBytes: 64,
-    keyStride: 40,
-    bytes: 8600,
-    ownerOffset: 64528,
-  },
-});
+export const NATIVE_TEXT_CONFIGURATION_LAYOUTS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.text.configurationLayout]),
+  ),
+);
 
 // 714590 chooses an exact current-format/aspect/rate mode, then the first
 // larger mode in enumeration order, then the desktop mode. No host means the
@@ -97,9 +83,11 @@ export function nativeFullscreenAvailable(width, height, display) {
 
 export class NativeConfigurationFields {
   constructor({ profile, uiLanguage, fontAvailability, displayModes } = {}) {
-    const layout = NATIVE_TEXT_CONFIGURATION_LAYOUTS[profile];
+    const abi = nativeABI(profile),
+      layout = abi.text.configurationLayout;
     if (!layout) throw new Error(`Unrecovered text configuration profile ${profile}`);
     this.profile = profile;
+    this.abi = abi;
     this.layout = layout;
     this.uiLanguage = uiLanguage === undefined ? undefined : uiLanguage & 65535;
     this.fontAvailability = fontAvailability;
@@ -149,10 +137,9 @@ export class NativeConfigurationFields {
       enumerable: true,
       get: () => this.candidates,
     });
-    this.language =
-      profile === game
-        ? { default: 0, ui: 0, main: 0, sub: 0xffffffff, entries: [], optionTable: '' }
-        : undefined;
+    this.language = abi.configuration.language
+      ? { default: 0, ui: 0, main: 0, sub: 0xffffffff, entries: [], optionTable: '' }
+      : undefined;
     this.screen = {
       width: 800,
       height: 600,
@@ -188,9 +175,13 @@ export class NativeConfigurationFields {
         [0, 0],
       ],
     };
-    this.window = { drag: 1, ...(profile === game ? { active: 1 } : {}) };
+    this.window = { drag: 1, ...(abi.configuration.windowActive ? { active: 1 } : {}) };
     this.application = { title: 'CS2', touch: 0 };
-    this.scene = { autoSelect: 0, staticLog: 0, ...(profile === game ? { animation: 1 } : {}) };
+    this.scene = {
+      autoSelect: 0,
+      staticLog: 0,
+      ...(abi.configuration.sceneAnimation ? { animation: 1 } : {}),
+    };
     this.log = {
       type: 1,
       col: 40,
@@ -253,14 +244,14 @@ export class NativeConfigurationFields {
   }
   encode(value) {
     value = String(value);
-    if (this.profile === sdk) return encodeCP932(value);
+    if (this.abi.text.settingsCharacterBytes === 1) return encodeCP932(value);
     const bytes = new Uint8Array(value.length * 2),
       view = new DataView(bytes.buffer);
     for (let i = 0; i < value.length; i++) view.setUint16(i * 2, value.charCodeAt(i), true);
     return bytes;
   }
   readText(offset) {
-    const width = this.profile === sdk ? 1 : 2;
+    const width = this.abi.text.settingsCharacterBytes;
     let end = offset;
     for (; end + width <= this.data.length; end += width)
       if (width === 1 ? this.data[end] === 0 : this.view.getUint16(end, true) === 0) break;
@@ -272,7 +263,7 @@ export class NativeConfigurationFields {
   }
   writeText(offset, value) {
     const bytes = this.encode(value),
-      width = this.profile === sdk ? 1 : 2;
+      width = this.abi.text.settingsCharacterBytes;
     if (offset + bytes.length + width > this.data.length)
       throw new Error('Native text configuration string exceeds its mapped structure');
     this.data.set(bytes, offset);
@@ -297,7 +288,7 @@ export class NativeConfigurationFields {
     });
     for (let group = 0; group < categories.length; group++)
       row[categories[group]] = this.data.subarray(base + 4 + group * 4, base + 8 + group * 4);
-    if (this.profile === game)
+    if (this.abi.configuration.keyHide)
       Object.defineProperty(row, 'hide', {
         enumerable: true,
         get: () => this.view.getUint32(base + 36, true),
@@ -427,7 +418,7 @@ export class NativeConfigurationFields {
         for (let key = 0; key < 4; key++)
           row[category][key] = integer(root, `${path}/${category}${key + 1}`, 0) & 255;
       row.enabled = Number(row.name.length !== 0);
-      if (this.profile === game) row.hide = integer(root, `${path}/hide`, 0);
+      if (this.abi.configuration.keyHide) row.hide = integer(root, `${path}/hide`, 0);
     }
     for (let i = 0; i < 48; i++) {
       const path = `SYSTEMVOICE/ch${two(i)}`;
@@ -557,7 +548,10 @@ export class NativeConfigurationFields {
     ]) {
       const source = node(root, `FONT/${path}`);
       if (!source) continue;
-      if (this.profile === sdk || source.text.length < 126) {
+      if (
+        this.abi.configuration.fontPreferenceLimit === null ||
+        source.text.length < this.abi.configuration.fontPreferenceLimit
+      ) {
         this.font[field] = source.text;
         this.fontOverrides[field] = true;
       }
@@ -592,10 +586,10 @@ export class NativeConfigurationFields {
     for (let i = 0; i < 48; i++)
       this.sysplay[i] = integer(root, `SYSTEMVOICE/play${two(i)}`, this.sysplay[i]);
     this.scene.autoSelect = integer(root, 'GAME/autoselect', this.scene.autoSelect);
-    if (this.profile === game) {
+    if (this.abi.configuration.windowActive)
       this.window.active = integer(root, 'GAME/always_active', this.window.active);
+    if (this.abi.configuration.sceneAnimation)
       this.scene.animation = integer(root, 'GAME/enable_scene_anm', this.scene.animation);
-    }
   }
   getField(name) {
     if (name === 'font.shadow') return this.style.subarray(0, 3);

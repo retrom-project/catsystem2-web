@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NATIVE_RECTANGLE_CONTRACTS } from '../src/native/rectangles.mjs';
 import { rectangleFixture, RECTANGLE_INPUTS } from '../tests/fixtures/rectangle-fixture.mjs';
 
@@ -34,7 +34,7 @@ let comparisons = 0,
 check(block, other, 'same extended VM allocation');
 for (const spec of NATIVE_RECTANGLE_CONTRACTS)
   check(
-    raw.process.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+    raw.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + spec.id * 4),
     spec.handlers[Number(profile.startsWith('sdk-'))],
     'independently recovered frozen native slot',
   );

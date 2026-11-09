@@ -15,7 +15,7 @@ import {
   nativeImageIdentity,
 } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../src/native/scalar-math.mjs';
 
 export async function verifyWordUnpacking(bytes, profile) {
@@ -91,7 +91,7 @@ export async function verifyWordUnpacking(bytes, profile) {
   }
   try {
     check(
-      original.process.load(NATIVE_PROFILES[profile].tables.main.va + 0x36b * 4),
+      original.process.load(NATIVE_EXE_PROFILES[profile].tables.main.va + 0x36b * 4),
       handler,
       'frozen original main table entry',
     );
