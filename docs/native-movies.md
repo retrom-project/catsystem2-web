@@ -158,3 +158,25 @@ texture with its padding intact. The checks cover three buffers,
 continuation after fresh restore, device renegotiation, the original
 offscreen fallback, and release of guest allocations and COM references.
 The frames in these tests are supplied directly at the decoder surface.
+
+## Native source reader events
+
+The movie source filter constructs its own DirectShow `CAsyncReader`
+over the original MemStream. The reader creates four unnamed Win32
+events. The shared Windows kernel preserves their manual or automatic
+reset state and their live handle identities. It supports single waits,
+non-alertable extended waits, wait-any, wait-all and timeouts. A wait-all
+consumes automatic events only once every requested event is signaled.
+The original reader destructor closes these handles through the same
+service that handles file and worker closures.
+[Win32 event contracts](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createeventw)
+[Multiple-object waits](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects)
+
+The original constructors are `0x704CB0` and `0x5BCA60` in the two
+frozen profiles. The tests query the original output pin for its
+`IAsyncReader`, read across a 4 MiB MemStream boundary and verify the
+short read at the end of the file. A fresh process restores the reader
+while its flush event is signaled, ends the flush and releases the
+source interfaces, events, locks and worker. The implemented wait domain
+is unnamed, default-security event objects with no APC delivery. An
+in-flight PE wait requires completion before checkpoint export.

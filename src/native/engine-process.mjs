@@ -12,6 +12,7 @@ import { installWindowsPrintf } from './windows-format.mjs';
 import { installNativeFileSearch } from './file-search.mjs';
 import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
+import { NativeWindowsEvents } from './windows-events.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -75,6 +76,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.directories = new Set(['']);
     this.errorMode = 0;
     this.fileProviders = new Map();
+    this.events = new NativeWindowsEvents(this);
     installNativeFileTimes(this, {
       ...options,
       wallNow: options.wallNow ?? (options.clock ? () => options.clock.utcNow() : undefined),
@@ -458,6 +460,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       return position;
     });
     def('CloseHandle', 1, async ([handle]) => {
+      if (this.events.close(handle)) return 1;
       const file = this.files.get(handle);
       if (!file) {
         this.lastError = 6;
@@ -652,6 +655,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       finds: structuredClone([...this.finds]),
       nextFind: this.nextFind,
       errorMode: this.errorMode,
+      events: this.events.snapshot(),
       ...(this.hostModules ? { hostModules: this.hostModules.snapshot() } : {}),
       nextFile: this.nextFile,
       files: [...this.files].map(([handle, file]) => [handle, { ...file, bytes: [...file.bytes] }]),
@@ -666,6 +670,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.finds = new Map(structuredClone(state.finds));
     this.nextFind = state.nextFind;
     this.errorMode = state.errorMode;
+    this.events.restore(state.events);
     if (state.hostModules) {
       if (!this.hostModules)
         throw new Error('Native checkpoint Windows module providers are absent');
@@ -973,6 +978,7 @@ export class NativeEngineProcess {
           errors.push(error);
         }
     } finally {
+      this.kernel.events.closeAll();
       try {
         this.process.close();
       } catch (error) {
