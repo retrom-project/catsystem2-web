@@ -205,10 +205,28 @@ filter also retires the Notify query the loader stores at record offset
 `0x144`, which the guest destructor leaves unreleased.
 [Wine VMR9 interface ownership](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/quartz/vmr9.c)
 
+The original main `0x2BD` wrapper formats the filename and sends the
+load packet. The matching `0x2BE` sends the movie query and exposes a
+borrowed handle to the Plane's `kcVideo`. Repeated queries return the
+same handle. The original `kcVideo` destructor invalidates it when the
+Plane replaces or releases its model. The movie's ordinary play, stop,
+running and position wrappers call the same native object. The Plane
+owns destruction.
+
+Browser media supplies frames to the shared D3D device while the native
+movie is running. The native GraphManager draws that texture with the
+Plane's geometry and visibility. The browser's end event wakes the
+original completion worker, which updates the running word and repeat
+count. A restored active movie retains its presented texture and
+opens its decoder at the saved position on the first active update.
+[DirectShow playback states](https://learn.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-run)
+[DirectShow completion](https://learn.microsoft.com/en-us/windows/win32/api/control/nf-control-imediaevent-waitforcompletion)
+
 Chromium tests run both original loaders with a generated AVI and its
 WebM sidecar. They check missing and disabled loads, qualified resource
-selection, dimensions, asymmetric pixels, power-of-two padding,
-portable fresh restore and resource release. This connection service
-covers the original renderless loader and paused frame. Continuous
-playback, the main KCS entry point and the separate Plane renderer
-movie message still require integration.
+selection, dimensions, asymmetric pixels, power-of-two padding, active
+portable restore, the final canvas, explicit stop, natural completion
+and resource release. The current renderless path supports a single
+pass. Repeat counts still require the completion worker's running-state
+poll, and the separate Plane renderer movie message requires its own
+adapter.

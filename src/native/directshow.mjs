@@ -4,6 +4,8 @@ import { nativeImageIdentity } from './engine-process.mjs';
 
 const E_NOINTERFACE = 0x80004002;
 const E_POINTER = 0x80004003;
+const E_ABORT = 0x80004004;
+const E_FAIL = 0x80004005;
 const E_INVALIDARG = 0x80070057;
 const E_NOTIMPL = 0x80004001;
 const VFW_E_CANNOT_RENDER = 0x80040218;
@@ -28,7 +30,15 @@ const GUIDS = {
 };
 const CONTRACTS = {
   graph: [18, { 3: ['addFilter', 2], 4: ['removeFilter', 1], 12: ['renderPin', 1] }],
-  control: [16, { 8: ['pause', 0], 9: ['stop', 0], 10: ['getState', 2], 15: ['stop', 0] }],
+  control: [
+    16,
+    {
+      7: ['run', 0],
+      8: ['pause', 0],
+      9: ['stop', 0],
+      10: ['getState', 2],
+    },
+  ],
   seeking: [
     20,
     {
@@ -37,7 +47,7 @@ const CONTRACTS = {
       12: ['getPosition', 1],
     },
   ],
-  event: [16, {}],
+  event: [16, { 9: ['waitForCompletion', 2] }],
   eventSink: [4, { 3: ['notifyEvent', 3] }],
   audio: [11, { 7: ['setVolume', 1], 8: ['getVolume', 1] }],
   video: [39, { 10: ['getWidth', 1], 11: ['getHeight', 1], 34: ['getVideoSize', 2] }],
@@ -68,6 +78,7 @@ export class NativeDirectShow {
     this.interfaces = new Map();
     this.tables = new Map();
     this.decoders = new Map();
+    this.samples = new Map();
     // The application thread owns one COM apartment. The original kcVideo
     // open acquires and releases a nested initialization on that thread.
     this.apartment = 1;
@@ -162,6 +173,7 @@ export class NativeDirectShow {
         video: null,
         sha256: null,
         position: 0n,
+        exhausted: false,
         volume: 0,
         state: 0,
         events: [],
@@ -214,6 +226,8 @@ export class NativeDirectShow {
       const adapter = this.decoders.get(record.primary);
       if (adapter) {
         this.decoders.delete(record.primary);
+        this.samples.delete(record.primary);
+        adapter.ended = adapter.error = null;
         await adapter.close();
       }
       if (record.filter) await this.removeFilter(record, record.filter);
@@ -350,6 +364,22 @@ export class NativeDirectShow {
         throw new Error('Restored DirectShow decoder metadata differs');
       if (graph.position) await adapter.seek(graph.position);
       adapter.volume(graph.volume);
+      const terminal = (code) => {
+        if (this.decoders.get(graph.primary) === adapter && graph.state === 2)
+          this.notifyEvent(graph, code, 0, 0);
+      };
+      adapter.ended = () => {
+        graph.exhausted = true;
+        terminal(1);
+      };
+      adapter.error = (error) => {
+        this.world.host.nativeDiagnostic?.({
+          type: 'movie-error',
+          filename: graph.filename,
+          message: error.message,
+        });
+        terminal(3);
+      };
       Object.assign(graph, { video, sha256 });
       this.decoders.set(graph.primary, adapter);
       return adapter;
@@ -375,8 +405,9 @@ export class NativeDirectShow {
     }
     return result;
   }
-  async presentFrame(graph) {
+  async presentFrame(graph, preroll = false) {
     const decoder = this.decoders.get(graph.primary),
+      stamp = decoder.frameStamp(),
       { notify } = this.objects.get(graph.filter),
       surface = this.vmr.record(notify).surfaces[0],
       frame = await decoder.decodedFrame(),
@@ -414,7 +445,7 @@ export class NativeDirectShow {
         unlocked = await this.call(surface, 14);
       }
       if (FAILED(unlocked)) return unlocked;
-      p.store(info, 0x12); // Preroll and valid source/destination rectangles.
+      p.store(info, preroll ? 0x12 : 0x10);
       [
         frame.width,
         frame.height,
@@ -427,24 +458,42 @@ export class NativeDirectShow {
         frame.width,
         frame.height,
       ].forEach((word, i) => p.store(info + 24 + 4 * i, word));
-      return await this.vmr.present(notify, 0, info);
+      const result = await this.vmr.present(notify, 0, info);
+      if (!FAILED(result)) this.samples.set(graph.primary, stamp);
+      return result;
     } finally {
       p.free(info);
     }
   }
+  resumeDecoder(graph) {
+    return (
+      this.decoders.get(graph.primary) ??
+      this.stream(graph, graph.source + 248).then((bytes) => this.decoder(graph, bytes))
+    );
+  }
+  startPresentation(graph) {
+    const { notify } = this.objects.get(graph.filter);
+    return this.vmr.record(notify).presenting ? 0 : this.vmr.start(notify);
+  }
+  async run(graph) {
+    if (!graph.video) return VFW_E_WRONG_STATE;
+    if (graph.state === 2 && this.decoders.has(graph.primary)) return 0;
+    const decoder = await this.resumeDecoder(graph);
+    if (!decoder) return VFW_E_CANNOT_RENDER;
+    const result = await this.startPresentation(graph);
+    if (FAILED(result)) return result;
+    if (!graph.exhausted && !(await decoder.play())) return E_FAIL;
+    graph.state = 2;
+    return 0;
+  }
   async pause(graph) {
     if (!graph.video) return VFW_E_WRONG_STATE;
-    const decoder =
-      this.decoders.get(graph.primary) ??
-      (await this.decoder(graph, await this.stream(graph, graph.source + 248)));
+    const decoder = await this.resumeDecoder(graph);
     if (!decoder) return VFW_E_CANNOT_RENDER;
     if (!(await decoder.stop())) return VFW_E_WRONG_STATE;
-    const { notify } = this.objects.get(graph.filter);
-    if (!this.vmr.record(notify).presenting) {
-      const result = await this.vmr.start(notify);
-      if (FAILED(result)) return result;
-    }
-    const result = await this.presentFrame(graph);
+    const started = await this.startPresentation(graph);
+    if (FAILED(started)) return started;
+    const result = await this.presentFrame(graph, true);
     if (!FAILED(result)) graph.state = 1;
     return result;
   }
@@ -459,6 +508,7 @@ export class NativeDirectShow {
       }
     }
     graph.state = 0;
+    graph.events.length = 0;
     return 0;
   }
   getState(graph, _timeout, output) {
@@ -506,7 +556,50 @@ export class NativeDirectShow {
     graph.events.push([code, param1, param2]);
     return 0;
   }
+  terminalEvent(graph) {
+    return graph.events.findIndex(([code]) => code >= 1 && code <= 3);
+  }
+  waitForCompletion(graph, _timeout, output) {
+    if (!output) return E_POINTER;
+    if (graph.state !== 2) return VFW_E_WRONG_STATE;
+    const index = this.terminalEvent(graph);
+    if (index < 0) {
+      graph.events.length = 0;
+      return E_ABORT;
+    }
+    const code = graph.events[index][0];
+    graph.events.splice(0, index + 1);
+    return this.word(output, code);
+  }
+  async update(activated) {
+    if (!this.updating)
+      this.updating = this.updateMovies(activated).finally(() => {
+        this.updating = null;
+      });
+    await this.updating;
+  }
+  async updateMovies(activated) {
+    const p = this.process,
+      workers = this.engine.features.get('engine-workers');
+    for (const graph of this.objects.values()) {
+      if (!graph.movie || !p.load(graph.movie + 372) || graph.state !== 2) continue;
+      const decoder = this.decoders.get(graph.primary);
+      if (!decoder) {
+        if (!activated) continue;
+        const result = await this.run(graph);
+        if (FAILED(result))
+          throw new Error(`Restored Plane movie could not resume: ${graph.filename}`);
+      }
+      if (this.decoders.get(graph.primary).frameStamp() !== this.samples.get(graph.primary)) {
+        const result = await this.presentFrame(graph);
+        if (FAILED(result)) throw new Error(`Plane movie presentation failed: ${graph.filename}`);
+      }
+      const thread = p.load(graph.movie + 388);
+      if (thread && this.terminalEvent(graph) >= 0) await workers.step(p.load(thread));
+    }
+  }
   snapshot() {
+    if (this.updating) throw new Error('Cannot checkpoint a running Plane movie update');
     return structuredClone({
       apartment: this.apartment,
       tables: [...this.tables],

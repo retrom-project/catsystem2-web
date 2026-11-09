@@ -75,6 +75,9 @@ export class BrowserNativeMovie {
     ctx.drawImage(this.video, 0, 0);
     return { width, height, rgba: ctx.getImageData(0, 0, width, height).data };
   }
+  frameStamp() {
+    return this.video.getVideoPlaybackQuality?.().totalVideoFrames ?? this.position();
+  }
   volume(decibels) {
     this.video.volume = Math.max(0, Math.min(1, 10 ** (decibels / 2000)));
   }

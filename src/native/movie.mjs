@@ -33,6 +33,7 @@ export class NativeMovies {
     active = () => true,
     audio = () => ({ factor: 100, mute: false }),
     diagnostic = () => {},
+    directShow = () => null,
   }) {
     Object.assign(this, {
       handles,
@@ -45,6 +46,7 @@ export class NativeMovies {
       active,
       audio,
       diagnostic,
+      directShow,
     });
     if (!handles.codecs.has('movie')) handles.registerType('movie', codec);
     this.sessions = new Map();
@@ -64,6 +66,7 @@ export class NativeMovies {
   async settle() {
     await this.pending;
     if (this.failure) throw this.failure;
+    await this.directShow()?.update(this.activated);
   }
   callbacks(handle, adapter, filename) {
     adapter.ended = () => this.exclusive(() => this.ended(handle));
@@ -319,14 +322,21 @@ export function installNativeMovies(world) {
     cursorVisible: (word) => world.graphics.cursor.setVisible(word),
     dimensions: () => [world.graphics.view.clientWidth, world.graphics.view.clientHeight],
     diagnostic: (detail) => world.host.nativeDiagnostic?.(detail),
+    directShow: () => world.nativeEngine?.features.get('directshow'),
   });
   for (const id of NATIVE_MOVIE_IDS)
     world.runtime.register('main', id, (args, machine, task) =>
-      world.movies.exclusive(() =>
-        nativeMovie(id, args, machine, task, world.movies, (at, machine) => {
+      world.movies.exclusive(async () => {
+        if (
+          id !== 0x109 &&
+          id !== 0x3e5 &&
+          world.runtime.handles.records.get(args[0])?.type === 'plane-movie'
+        )
+          return (await world.getNativeFeature('plane-movie-commands')).control(id, args, task);
+        return nativeMovie(id, args, machine, task, world.movies, (at, machine) => {
           const name = world.runtime.services.format(at, machine);
           return world.runtime.services.resourceFilename(name, 'movie') ?? '';
-        }),
-      ),
+        });
+      }),
     );
 }

@@ -6,7 +6,7 @@ import { profiles } from '../fixtures/native-vmr-surface.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
 for (const [profile, variable] of profiles)
-  test(`${profile} original Plane FilterGraph connects its native AVI reader to browser preroll`, async ({
+  test(`${profile} original Plane FilterGraph connects, plays and restores its mounted AVI`, async ({
     page,
   }) => {
     const gamePE = profile.startsWith('nekopara-');
@@ -38,7 +38,7 @@ for (const [profile, variable] of profiles)
           { NativeConfiguration },
           { MotionLibrary },
           { ParticleRandom },
-          { ParticlesGL },
+          { StageRenderer },
           { GameFiles, BlobFile },
           { BrowserNativeMovie },
           { nativeImageIdentity },
@@ -48,7 +48,7 @@ for (const [profile, variable] of profiles)
           import('/src/native/config.mjs'),
           import('/src/motion/library.mjs'),
           import('/src/ppi/random.mjs'),
-          import('/src/render/particles-gl.mjs'),
+          import('/src/render/stage.mjs'),
           import('/src/files.mjs'),
           import('/src/native/movie-browser.mjs'),
           import('/src/native/engine-process.mjs'),
@@ -90,9 +90,12 @@ for (const [profile, variable] of profiles)
           'movie/clip.avi': sidecar,
         };
         const create = () => {
-          const configuration = new NativeConfiguration({ profile }),
+          const canvas = new OffscreenCanvas(64, 64),
+            ctx = canvas.getContext('2d', { willReadFrequently: true }),
+            stage = new StageRenderer({ canvas, ctx }),
+            configuration = new NativeConfiguration({ profile }),
             random = new ParticleRandom(),
-            gpu = new ParticlesGL(64, 64);
+            gpu = stage.gpu;
           for (const field of [
             'width',
             'height',
@@ -120,43 +123,51 @@ for (const [profile, variable] of profiles)
             random,
             motionLibrary: new MotionLibrary(game, { profile, random }),
           });
-          return { world, gpu };
+          world.stageRenderer = stage;
+          return { world, gpu, stage, ctx };
         };
         const original = create();
         let fresh;
         try {
           await original.world.initialize('main.kcs');
-          const attach = async ({ world, gpu }) => {
+          const attach = async (context) => {
+            const { world } = context;
             const renderer = await world.getNativeFeature('renderer'),
-              direct = await world.getNativeFeature('directshow');
-            return { world, gpu, renderer, direct, p: renderer.process, d: renderer.d3d };
+              direct = world.nativeEngine.features.get('directshow');
+            return { ...context, renderer, direct, p: renderer.process, d: renderer.d3d };
           };
           const first = await attach(original),
-            { world, direct, p, d } = first,
+            { world, p, d } = first,
             plane = await world.objects.create({
               kind: 2,
               parent: world.root,
               name: 'movie plane',
             }),
-            packet = p.allocate(272, true),
             info = p.allocate(32, true),
             baseline = d.objects.size,
             eventBaseline =
               p === world.nativeEngine.process && world.nativeEngine.kernel.events.events.size;
-          const load = async (filename) => {
-            p.write(packet + 12, new TextEncoder().encode(filename + '\0'));
-            await world.sendEngine(plane, world.root, 43, 0, packet, {
-              payload: p,
-              nativePointer: true,
-            });
+          const command = (context, id, ...args) => {
+            const { world } = context,
+              task = world.main;
+            return world.runtime.native('main', id, args, task.machine, task);
           };
-          await load('movie.int/missing.avi');
-          const rejected = direct.objects.size === 0;
+          const load = (filename) => {
+            const bytes = new TextEncoder().encode(filename + '\0');
+            world.main.machine.bytes(0x500, bytes.length).set(bytes);
+            return command(first, 0x2bd, world.nativeTaskID(plane), 0x500);
+          };
+          await load('missing');
+          const direct = (first.direct = world.nativeEngine.features.get('directshow'));
+          const rejected =
+            direct.objects.size === 0 &&
+            (await command(first, 0x2be, world.nativeTaskID(plane))).value === 0;
           world.configuration.setField('general.disableMovie', 1);
-          await load('movie.int/clip.avi');
+          await load('clip');
           const disabled = direct.objects.size === 0 && decoders.length === 0;
           world.configuration.setField('general.disableMovie', 0);
-          await load('movie.int/clip.avi');
+          await load('clip');
+          await world.sendEngine(plane, world.main.id, 48, 0, 1);
           const graph = [...direct.objects.values()].find((record) => record.movie);
           if (!graph?.video)
             throw new Error(
@@ -174,6 +185,8 @@ for (const [profile, variable] of profiles)
                 }),
             );
           const graphID = graph.primary;
+          const handle = (await command(first, 0x2be, world.nativeTaskID(plane))).value,
+            stableHandle = (await command(first, 0x2be, world.nativeTaskID(plane))).value;
           const inspect = (context) => {
             const { direct, p, d, gpu } = context,
               record = direct.objects.get(graphID),
@@ -197,18 +210,71 @@ for (const [profile, variable] of profiles)
           };
           const pause = (context) => context.direct.call(graph.interfaces.control, 8);
           const paused = await pause(first),
-            frame = inspect(first);
+            frame = inspect(first),
+            firstBoundMedia = decoders[0].source?.url === url;
           const videoSize = await direct.call(graph.interfaces.video, 34, info, info + 4);
           const [width, height] = [p.load(info), p.load(info + 4)];
+          const wait = async (predicate) => {
+            const deadline = performance.now() + 10000;
+            while (!(await predicate())) {
+              if (performance.now() >= deadline) throw new Error('Plane movie did not advance');
+              await new Promise((resolve) => setTimeout(resolve, 20));
+            }
+          };
+          world.movies.activate();
+          const started = (await command(first, 0x10a, handle, 1)).value;
+          await wait(async () => {
+            await world.movies.settle();
+            return (await command(first, 0x3e6, handle)).value >= 240;
+          });
+          const running = (await command(first, 0x10d, handle)).value,
+            state = world.snapshot(),
+            savedGraph = new Map(state.nativeEngine.features)
+              .get('directshow')
+              .objects.find(([id]) => id === graphID)[1],
+            duringPlayback = inspect(first),
+            stopped = (await command(first, 0x10b, handle)).value,
+            stoppedState = (await command(first, 0x10d, handle)).value;
+          await load('missing');
+          const replaced = !world.runtime.handles.records.has(handle);
           fresh = create();
-          await fresh.world.restore(
-            await deserializeCheckpoint(await serializeCheckpoint(world.snapshot())),
-          );
+          await fresh.world.restore(await deserializeCheckpoint(await serializeCheckpoint(state)));
           const second = await attach(fresh),
-            restoredBeforePause = inspect(second),
-            pausedAfterRestore = await pause(second),
             restored = inspect(second),
-            boundMedia = decoders.map((decoder) => decoder.source?.url === url);
+            restoredHandle = (await command(second, 0x2be, fresh.world.nativeTaskID(plane))).value,
+            restoredTime = (await command(second, 0x3e6, handle)).value;
+          await fresh.world.movies.settle();
+          const reopenedBeforeActivation = decoders.length !== 1;
+          fresh.world.movies.activate();
+          await wait(async () => {
+            await fresh.world.movies.settle();
+            return inspect(second).color[0][1] > 230;
+          });
+          const later = inspect(second),
+            playingAtGreen = (await command(second, 0x10d, handle)).value;
+          await second.stage.render(second.world.graphics.stage);
+          const pixels = second.ctx.getImageData(0, 0, 64, 64).data,
+            bounds = (channel) => {
+              const area = [64, 64, -1, -1];
+              for (let i = 0; i < 64 * 64; i++)
+                if (pixels[i * 4 + channel] > 230) {
+                  const x = i % 64,
+                    y = i >> 6;
+                  area[0] = Math.min(area[0], x);
+                  area[1] = Math.min(area[1], y);
+                  area[2] = Math.max(area[2], x);
+                  area[3] = Math.max(area[3], y);
+                }
+              return area;
+            },
+            screen = [bounds(1), bounds(2)];
+          await wait(async () => {
+            await fresh.world.movies.settle();
+            return (await command(second, 0x10d, handle)).value === 0;
+          });
+          const finishedRepeat = second.p.load(graph.movie + 392),
+            stoppedAfterCompletion = (await command(second, 0x10b, handle)).value,
+            boundMedia = [firstBoundMedia, decoders[1].source?.url === url];
           const released = [];
           for (const context of [first, second]) {
             await context.world.objects.release(plane);
@@ -218,16 +284,32 @@ for (const [profile, variable] of profiles)
               events: context.world.nativeEngine.kernel.events.events.size,
               vmr: context.direct.vmr.records.size,
               deviceObjects: context.d.objects.size,
+              borrowed: context.world.runtime.handles.records.has(handle),
             });
           }
           return {
             rejected,
+            replaced,
             disabled,
             paused,
-            pausedAfterRestore,
             frame,
             restored,
-            restoredBeforePause,
+            duringPlayback,
+            later,
+            screen,
+            handles: [handle, stableHandle, restoredHandle],
+            transitions: [
+              started,
+              running,
+              stopped,
+              stoppedState,
+              playingAtGreen,
+              finishedRepeat,
+              stoppedAfterCompletion,
+            ],
+            restoredTime,
+            savedTime: Number(savedGraph.position / 10000n),
+            reopenedBeforeActivation,
             digest: sha256,
             size: [videoSize, width, height],
             released,
@@ -249,8 +331,9 @@ for (const [profile, variable] of profiles)
       { profile, files, gamePE, movie: [...webm] },
     );
     expect(result.rejected).toBe(true);
+    expect(result.replaced).toBe(true);
     expect(result.disabled).toBe(true);
-    expect([result.paused, result.pausedAfterRestore]).toEqual([0, 0]);
+    expect(result.paused).toBe(0);
     expect(result.frame).toMatchObject({
       mode: 4,
       streams: 1,
@@ -260,15 +343,28 @@ for (const [profile, variable] of profiles)
       notifyOwnedByMovie: true,
       presentCalls: 1,
     });
-    expect(result.frame.duration).toBeGreaterThan(11000000);
-    expect(result.frame.duration).toBeLessThan(13000000);
+    expect(result.frame.duration).toBeGreaterThan(27000000);
+    expect(result.frame.duration).toBeLessThan(29000000);
     expect(result.frame.color[0][0]).toBeGreaterThan(230);
     expect(result.frame.color[0][2]).toBeLessThan(20);
     expect(result.frame.color[1][2]).toBeGreaterThan(230);
     expect(result.frame.color[1][0]).toBeLessThan(20);
     expect(result.frame.color[2]).toEqual([0, 0, 0, 255]);
-    expect(result.restored).toEqual(result.frame);
-    expect(result.restoredBeforePause).toEqual({ ...result.frame, presentCalls: 0 });
+    expect(result.handles[0]).toBeGreaterThan(0);
+    expect(result.handles).toEqual(new Array(3).fill(result.handles[0]));
+    expect(result.transitions).toEqual([1, 1, 1, 0, 1, 0, 0]);
+    expect(result.restoredTime).toBeGreaterThanOrEqual(240);
+    expect(result.restoredTime).toBeLessThan(1400);
+    expect(result.restoredTime).toBe(result.savedTime);
+    expect(result.reopenedBeforeActivation).toBe(false);
+    expect(result.restored).toEqual({ ...result.duringPlayback, presentCalls: 0 });
+    expect(result.later.color[0][1]).toBeGreaterThan(230);
+    expect(result.later.color[0][0]).toBeLessThan(20);
+    expect(result.later.presentCalls).toBeGreaterThan(1);
+    expect(result.screen).toEqual([
+      [0, 0, 31, gamePE ? 11 : 10],
+      [0, gamePE ? 14 : 13, 31, 23],
+    ]);
     expect(result.size).toEqual([0, 32, 24]);
     expect(result.boundMedia).toEqual([true, true]);
     expect(result.released).toEqual(
@@ -278,6 +374,7 @@ for (const [profile, variable] of profiles)
         events: result.eventBaseline,
         vmr: 0,
         deviceObjects: result.baseline,
+        borrowed: false,
       }),
     );
     expect(result.closed).toBe(true);
