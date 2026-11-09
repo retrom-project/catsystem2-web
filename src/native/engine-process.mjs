@@ -914,7 +914,7 @@ export class NativeEngineProcess {
     this.configurationMemory.push();
     return this.configurationMemory;
   }
-  call(address, args = [], thisPointer, { task, messageContext } = {}) {
+  call(address, args = [], thisPointer, { task, messageContext, rasterBudget } = {}) {
     if (this.closed) throw new Error('Native engine process is closed');
     this.pendingCalls++;
     const operation = this.queue.then(async () => {
@@ -927,7 +927,7 @@ export class NativeEngineProcess {
         for (const feature of this.features.values()) await feature.beforeCall?.();
         this.configurationMemory?.push();
         pushed = true;
-        return await this.process.callAsync(address, args, thisPointer);
+        return await this.process.callAsync(address, args, thisPointer, { rasterBudget });
       } finally {
         try {
           if (pushed) {
@@ -948,7 +948,7 @@ export class NativeEngineProcess {
     address,
     args = [],
     thisPointer,
-    { task = this.currentTaskID, messageContext = this.currentMessageContext } = {},
+    { task = this.currentTaskID, messageContext = this.currentMessageContext, rasterBudget } = {},
   ) {
     if (this.closed) throw new Error('Native engine process is closed');
     const previousTask = this.currentTaskID,
@@ -956,7 +956,7 @@ export class NativeEngineProcess {
     this.currentTaskID = task;
     this.currentMessageContext = messageContext;
     try {
-      return await this.process.callFromHost(address, args, thisPointer);
+      return await this.process.callFromHost(address, args, thisPointer, { rasterBudget });
     } finally {
       this.currentTaskID = previousTask;
       this.currentMessageContext = previousMessage;

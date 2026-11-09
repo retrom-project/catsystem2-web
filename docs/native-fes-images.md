@@ -184,6 +184,22 @@ those results. Browser tests take ten asymmetric cases per profile through a
 real native textured plane and StageRenderer's shared GPU; RGB and render-target
 alpha agree within one byte. These tests distinguish top and bottom rows.
 
+Large affine draws can use additional allowance for complete simulated rows
+within the original retained manager call. The scope covers its owned RGBA32
+bitmap, up to 2,073,600 pixels with each dimension at most 1,920. The
+descriptor, original loop and helpers must pass the raster guards. The
+computed final row must fit the remaining native budget. That row and all
+other guest instructions still use the ordinary 200-million-instruction
+limit per execution segment. The scope expires with the call, including
+after a fault.
+
+`native-render-budget.spec.mjs` exercises 720p overlay and 1080p dodge in
+both mounted browser Worlds. It checks the full bitmap and exact instruction
+totals against the original manager with shortcuts disabled. The visible
+texture survives a repeated draw in a fresh World. The affine budget tests
+also compare the native cutoff, registers, stack and memory when a rectangle
+is ineligible and when an unknown guest loop follows a credited draw.
+
 `native-fes-images.test.mjs` uses authored FES, HG2/HG3, ANM and KCS motion to
 check original construction, headers, BUTTON input, frame selection, visibility,
 motion, destruction and continuation after restoring into a new World. Panel

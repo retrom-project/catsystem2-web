@@ -63,7 +63,7 @@ for (const { profile, fixture, kind } of variants)
           if (p.pendingError) throw p.pendingError;
           return { ...state(p), fault };
         },
-        run = (sample, enabled, limit) => {
+        run = (sample, enabled, limit, invoke = execute) => {
           const {
             width = 2,
             height = 2,
@@ -144,7 +144,7 @@ for (const { profile, fixture, kind } of variants)
           p.cpu.reg_write_i32(p.uc.X86_REG_ESP, p.stackTop - 8);
           p.cpu.reg_write_i32(p.uc.X86_REG_EFLAGS, 0x8d7);
           p.cpu.reg_write_i32(p.uc.X86_REG_MXCSR, mxcsr);
-          return execute(enabled, start, limit);
+          return invoke(enabled, start, limit);
         },
         invalidate = () =>
           p.invalidateExecutable(
@@ -381,6 +381,115 @@ for (const { profile, fixture, kind } of variants)
         assert.deepEqual(state(fresh.process), state(p));
         assert.equal(original.fault, undefined);
         assert.equal(restored.hits[kind], 1);
+
+        const rectangle = {
+            width: 4,
+            height: 5,
+            sw: 4,
+            sh: 5,
+            sourceAlphas: [31, 127, 255],
+            destinationAlphas: [127],
+            mode: blendType ? 4 : 0,
+          },
+          trace = originalTrace(rectangle),
+          credit = trace.lastIndexOf(row) - trace.indexOf(row),
+          limit = trace.length - credit,
+          allowance = () => ({
+            destination,
+            width: rectangle.width,
+            height: rectangle.height,
+            pitch: rectangle.width * 4,
+            pixels: rectangle.width * rectangle.height,
+            credited: 0,
+          }),
+          invoke =
+            (rasterBudget, entry = start, args = [descriptor]) =>
+            (enabled, _, cap) => {
+              kernels.enabled = enabled;
+              p.budget = cap;
+              let fault;
+              try {
+                p.call(entry, args, undefined, { rasterBudget });
+              } catch (error) {
+                fault = error.message;
+              }
+              assert.equal(p.rasterBudget, undefined);
+              return { ...state(p), fault };
+            },
+          completed = run(rectangle, false, trace.length, invoke()),
+          scope = allowance(),
+          scoped = run(rectangle, true, limit, invoke(scope)),
+          cutoff = run(rectangle, false, limit, invoke());
+        assert.equal(completed.pc, p.sentinel);
+        assert.equal(completed.fault, undefined);
+        assert.deepEqual(scoped, { ...completed, budget: scoped.budget });
+        assert.equal(scoped.budget.limit, BigInt(limit));
+        assert.equal(scoped.budget.counter + BigInt(scope.credited), BigInt(trace.length));
+        assert.equal(scope.credited, credit);
+        assert.equal(scope.pixels, 0);
+        assert.equal(cutoff.fault, 'PE32 execution instruction budget exhausted');
+        for (const invalid of [
+          undefined,
+          scope,
+          { ...allowance(), destination: destination + 4 },
+          { ...allowance(), width: rectangle.width + 1 },
+          { ...allowance(), height: rectangle.height + 1 },
+          { ...allowance(), pitch: rectangle.width * 4 + 4 },
+        ])
+          assert.deepEqual(run(rectangle, true, limit, invoke(invalid)), cutoff);
+        const short = trace.indexOf(row) + 24 + (blendType ? 142 : 141) * rectangle.width,
+          shortScope = allowance();
+        assert.deepEqual(
+          run(rectangle, true, short, invoke(shortScope)),
+          run(rectangle, false, short, invoke()),
+        );
+        assert.deepEqual(shortScope, allowance());
+        const observedScope = allowance(),
+          detach = p.beforeInstruction(multiply, 'observe the original affine helper', () => {});
+        try {
+          assert.deepEqual(run(rectangle, true, limit, invoke(observedScope)), cutoff);
+          assert.deepEqual(observedScope, allowance());
+        } finally {
+          detach();
+        }
+        const editedScope = allowance(),
+          multiplyOpcode = p.read(multiply + 8, 2);
+        p.write(multiply + 8, [0x09, 0xc1]); // Alternate encoding of the original OR.
+        try {
+          assert.deepEqual(run(rectangle, true, limit, invoke(editedScope)), cutoff);
+          assert.deepEqual(editedScope, allowance());
+        } finally {
+          p.write(multiply + 8, multiplyOpcode);
+        }
+        const faulting = { ...rectangle, input: 0xfed00000 },
+          faultScope = allowance(),
+          originalFault = run(faulting, false, limit, invoke());
+        assert.match(originalFault.fault, /READ_UNMAPPED/i);
+        assert.deepEqual(run(faulting, true, limit, invoke(faultScope)), originalFault);
+        assert.deepEqual(faultScope, allowance());
+
+        // The simulated rows do not give this subsequent guest loop a
+        // larger raw CPU budget. Its original cutoff still stops the call.
+        const loop = 0x50000000,
+          code = Uint8Array.of(0x68, 0, 0, 0, 0, 0xe8, 0, 0, 0, 0, 0x83, 0xc4, 4, 0xeb, 0xfe),
+          codeWords = new DataView(code.buffer);
+        codeWords.setUint32(1, descriptor, true);
+        codeWords.setInt32(6, start - (loop + 10), true);
+        p.map(loop, 4096);
+        p.write(loop, code);
+        const loopScope = allowance(),
+          loopCap = limit + 16,
+          originalLoop = run(rectangle, false, loopCap + credit, invoke(undefined, loop, [])),
+          actualLoop = run(rectangle, true, loopCap, invoke(loopScope, loop, []));
+        assert.equal(actualLoop.pc, loop + 13);
+        assert.equal(actualLoop.fault, 'PE32 execution instruction budget exhausted');
+        assert.equal(loopScope.credited, credit);
+        assert.deepEqual(actualLoop.budget, {
+          active: false,
+          limit: BigInt(loopCap),
+          counter: BigInt(loopCap + 1),
+        });
+        assert.deepEqual(actualLoop, { ...originalLoop, budget: actualLoop.budget });
       } finally {
         await fresh?.close();
         await engine.close();

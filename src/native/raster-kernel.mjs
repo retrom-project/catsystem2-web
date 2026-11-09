@@ -971,7 +971,20 @@ export class NativeRasterKernels {
       total += row;
       if (total > available) return null;
     }
-    return total - row;
+    return { skipped: total - row, tail: row };
+  }
+  originalAffineCode(row, length) {
+    const p = this.process,
+      { base, pe } = this.engine.module;
+    return [
+      [row, length],
+      [this.abi.affineSampler, 0xc2],
+      [this.abi.affineMultiply, 0x34],
+    ].every(([address, size]) => {
+      for (const boundary of p.executionBoundaries.keys())
+        if (boundary !== row && boundary >= address && boundary < address + size) return false;
+      return p.read(address, size).every((byte, i) => byte === pe.image[address - base + i]);
+    });
   }
   affineBtype() {
     return this.affine(true);
@@ -1143,23 +1156,45 @@ export class NativeRasterKernels {
     }
     const { active, counter, limit } = p.instructionBudget(),
       available = limit === 0n ? Infinity : Number(limit - counter) + 1,
-      minimumPixel = blendType ? 142 : 141;
-    if (!active || available < (bottom - top) * (24 + minimumPixel * (right - left))) return false;
+      columns = right - left,
+      rows = bottom - top,
+      pixels = columns * rows,
+      minimumRow = 24 + (blendType ? 142 : 141) * columns,
+      budget = p.rasterBudget;
+    if (!active || available < minimumRow) return false;
+    const allowCredit =
+      // Transform, sampler, weighting and the longest BTYPE branch.
+      available < rows * 24 + pixels * (159 + 61 + 84 + 132) &&
+      budget?.destination === destination &&
+      budget.width === dw &&
+      budget.height === dh &&
+      budget.pitch === ds &&
+      pixels <= budget.pixels &&
+      this.originalAffineCode(rowAddress, layout.codeSize);
+    if (!allowCredit && available < rows * minimumRow) return false;
     p.view(source, sourceSize);
     p.view(destination, destinationSize);
     const input = p.view(source, sourceSize),
       output = p.view(destination, destinationSize),
       words = new DataView(input.buffer, input.byteOffset, input.byteLength),
       locals = new Map(),
-      skipped =
+      cost =
         available === Infinity
-          ? 0
+          ? { skipped: 0, tail: 0 }
           : this.affineInstructions(
               { d, table, input, output, px, py, baseX, baseY, mode },
-              available,
+              allowCredit ? Infinity : available,
             );
     // The final native row replays the sampler calls and all conversions.
-    if (skipped === null || !p.consumeInstructions(skipped)) return false;
+    if (!cost || cost.tail > available) return false;
+    const credit = cost.skipped + cost.tail > available;
+    if ((credit && !allowCredit) || !p.consumeInstructions(credit ? 0 : cost.skipped)) return false;
+    if (credit) {
+      // Only simulated rows get extra allowance. The CPU still has its
+      // ordinary budget for the tail, epilogue and any later guest code.
+      budget.pixels -= pixels;
+      budget.credited += cost.skipped;
+    }
     for (let y = top; y < bottom - 1; y++)
       for (let x = left; x < right; x++) {
         const cx = ((x << 15) - px + d[45]) | 0,

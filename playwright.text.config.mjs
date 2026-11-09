@@ -6,6 +6,7 @@ export default {
     'native-text.spec.mjs',
     'native-screen-effect.spec.mjs',
     'native-retained-owner.spec.mjs',
+    'native-render-budget.spec.mjs',
     'native-graphics-receiver.spec.mjs',
     'native-controls.spec.mjs',
   ],

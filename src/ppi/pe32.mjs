@@ -664,7 +664,7 @@ export class PE32Process {
       throw new Error(`PE32 instruction-budget consumption failed: ${this.uc.strerror(result)}`);
     return this.uc.getValue(pointer + 16, 'i32') !== 0;
   }
-  call(address, args = [], thisPointer, { resume = false } = {}) {
+  call(address, args = [], thisPointer, { resume = false, rasterBudget } = {}) {
     let sp = this.stackTop;
     if (!resume) {
       for (let i = args.length - 1; i >= 0; i--) {
@@ -678,6 +678,8 @@ export class PE32Process {
     }
     this.pendingError = null;
     this.flushBorrowedCode();
+    const previousRasterBudget = this.rasterBudget;
+    this.rasterBudget = rasterBudget;
     try {
       if (this.singleStep) {
         let pc = address >>> 0;
@@ -714,6 +716,8 @@ export class PE32Process {
         throw fault;
       }
       this.pendingError.nativeFault ??= nativeFault;
+    } finally {
+      this.rasterBudget = previousRasterBudget;
     }
     if (this.pendingError) {
       this.pendingError.nativeFault ??= this.faultState();
@@ -748,7 +752,7 @@ export class PE32Process {
       }),
     };
   }
-  async callAsync(address, args = [], thisPointer) {
+  async callAsync(address, args = [], thisPointer, { rasterBudget } = {}) {
     if (this.asyncEnabled)
       throw new Error('PE32 asynchronous native execution cannot be reentered');
     this.asyncEnabled = true;
@@ -756,7 +760,7 @@ export class PE32Process {
     try {
       for (;;) {
         try {
-          return this.call(address, args, thisPointer, { resume });
+          return this.call(address, args, thisPointer, { resume, rasterBudget });
         } catch (error) {
           if (!error.hostSuspended) throw error;
           const pending = this.pendingHost;
@@ -783,7 +787,7 @@ export class PE32Process {
       this.awaitingHost = false;
     }
   }
-  async callFromHost(address, args = [], thisPointer) {
+  async callFromHost(address, args = [], thisPointer, options) {
     // The host callback runs inside Unicorn's code hook until it yields. A
     // microtask lets that hook stop the emulator before entering guest code.
     await Promise.resolve();
@@ -805,7 +809,7 @@ export class PE32Process {
     this.skippingHost = null;
     this.awaitingHost = false;
     try {
-      return await this.callAsync(address, args, thisPointer);
+      return await this.callAsync(address, args, thisPointer, options);
     } finally {
       this.writeRegisters(saved.registers);
       this.stackTop = saved.stackTop;

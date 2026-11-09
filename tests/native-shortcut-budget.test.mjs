@@ -197,11 +197,14 @@ test('instruction accounting follows each nested asynchronous execution segment'
   const p = await smallProcess(),
     outer = p.allocate(64, true),
     inner = p.allocate(32, true),
-    segments = [];
+    segments = [],
+    rasterBudget = { pixels: 16 };
   p.budget = 100;
   const trap = p.trap('nested budget check', 0, async () => {
+    assert.equal(p.rasterBudget, rasterBudget);
     segments.push(['host', p.instructionBudget()]);
     assert.equal(await p.callFromHost(inner), 7);
+    assert.equal(p.rasterBudget, undefined);
     segments.push(['suspended', p.instructionBudget()]);
     assert.equal(p.consumeInstructions(0), false);
     return 9;
@@ -214,16 +217,19 @@ test('instruction accounting follows each nested asynchronous execution segment'
       assert.equal(p.consumeInstructions(5), true);
     }),
     p.beforeInstruction(inner, 'nested initial budget', () => {
+      assert.equal(p.rasterBudget, undefined);
       segments.push(['inner', p.instructionBudget()]);
       assert.equal(p.consumeInstructions(3), true);
     }),
     p.beforeInstruction(outer + 6, 'outer resumed budget', () => {
+      assert.equal(p.rasterBudget, rasterBudget);
       segments.push(['resume', p.instructionBudget()]);
       assert.equal(p.consumeInstructions(2), true);
     }),
   ];
   try {
-    assert.equal(await p.callAsync(outer), 10);
+    assert.equal(await p.callAsync(outer, [], undefined, { rasterBudget }), 10);
+    assert.equal(p.rasterBudget, undefined);
     assert.deepEqual(segments, [
       ['outer', { counter: 1n, limit: 100n, active: true }],
       ['host', { counter: 8n, limit: 100n, active: true }],

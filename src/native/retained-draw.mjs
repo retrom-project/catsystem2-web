@@ -74,10 +74,11 @@ export class NativeRetainedDraw {
     if (!this.sdk) installNativeEngineWorkers(engine);
     engine.registerFeature('retained-draw', this);
   }
-  call(address, args, pointer, task) {
+  call(address, args, pointer, task, rasterBudget) {
+    const options = { task, rasterBudget };
     return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, { task })
-      : this.engine.call(address, args, pointer, { task });
+      ? this.engine.callFromHost(address, args, pointer, options)
+      : this.engine.call(address, args, pointer, options);
   }
   key(draw, key) {
     return `${draw.record.id}:${key >>> 0}`;
@@ -362,6 +363,29 @@ export class NativeRetainedDraw {
       throw error;
     }
   }
+  rasterBudget({ pointer, bitmap, width, height }) {
+    const pixels = width * height;
+    if (width <= 0 || height <= 0 || width > 1920 || height > 1920 || pixels > 1920 * 1080) return;
+    const p = this.process;
+    try {
+      const owner = p.load(pointer + 8);
+      if (
+        !owner ||
+        p.load(owner) !== bitmap ||
+        p.load(bitmap + 4) !== width ||
+        p.load(bitmap + 8) !== height ||
+        p.load(bitmap + 24) !== 4
+      )
+        return;
+      const destination = p.load(bitmap + 12),
+        pitch = p.load(bitmap + 20);
+      if (!destination || pitch !== width * 4) return;
+      return { destination, width, height, pitch, pixels, credited: 0 };
+    } catch {
+      // An unrecognized owner is still handled by the original native call.
+      return;
+    }
+  }
   async rasterize(draw, areas, forceOutput) {
     const renderer = draw.state.renderer,
       p = this.process,
@@ -470,11 +494,17 @@ export class NativeRetainedDraw {
           ]
         : [0, 0, 0, 0];
     area.forEach((value, i) => p.store(dirty + 16 + i * 4, value));
-    await call(this.abi.rendererDraw, [
-      draw.state.enabled || forceOutput ? platform.refs.view : 0,
-      Number(forceOutput || (draw.state.pending && !areas.length)),
-      0,
-    ]);
+    await this.call(
+      this.abi.rendererDraw,
+      [
+        draw.state.enabled || forceOutput ? platform.refs.view : 0,
+        Number(forceOutput || (draw.state.pending && !areas.length)),
+        0,
+      ],
+      pointer,
+      draw.record.id,
+      this.rasterBudget(record),
+    );
     destination.state.rgba = platform.logicalBitmap(bitmap).state.rgba;
     destination.state.source = null;
     destination.changed();
