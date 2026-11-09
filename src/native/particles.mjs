@@ -4,6 +4,7 @@
 import { Particles } from '../particles.mjs';
 import { particleGeometry } from '../ppi/geometry.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
+import { nativeParticleBounds } from './particle-bounds.mjs';
 import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleCommands } from './particle-commands.mjs';
@@ -33,6 +34,7 @@ export class NativeParticles {
       clock: world.clock,
       onDebug: (message) => world.host.nativeLog?.(message),
       nativeThread: () => world.nativeEngine?.process,
+      scriptBounds: (...args) => nativeParticleBounds(world.nativeEngine, ...args),
       projectGeometry: async (particles, geometry) =>
         world.nativeEngine
           ? (await world.getNativeFeature('particle-projection')).geometry(particles, geometry)

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { identity, scaling } from '../motion/matrix.mjs';
+import { roundX87Single } from './x87.mjs';
 
 const f = Math.fround;
 // Scalar D3DX MatrixMultiply and Vec4Transform in both reviewed executables.
@@ -25,16 +26,6 @@ const vectorOrders = [
   [3, 1, 2, 0],
   [3, 1, 0, 2],
 ];
-
-function round24(value) {
-  const magnitude = Math.abs(value);
-  // x87 PC=24 rounds the significand and retains the extended exponent.
-  // Every input to the dot product is float32, so these binary scalings
-  // keep intermediate products and sums in the float32 normal range.
-  if (magnitude && magnitude < 2 ** -126) return f(value * 2 ** 192) * 2 ** -192;
-  if (magnitude >= 2 ** 127 && Number.isFinite(value)) return f(value * 2 ** -192) * 2 ** 192;
-  return f(value);
-}
 
 const round53 = (value) => value;
 const positiveZero = (value) => (value === 0 ? 0 : value);
@@ -78,7 +69,7 @@ export function projectNativeParticle(
   sincos,
   precision,
 ) {
-  const round = precision === 24 ? round24 : round53,
+  const round = precision === 24 ? roundX87Single : round53,
     halfX = (width >>> 0) >>> 1,
     halfY = (height >>> 0) >>> 1,
     near = nativeParticleNear(priority);

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Single-precision operation order recovered from native particle handlers.
+import { roundX87Single } from './x87.mjs';
 const f = Math.fround;
 const pi = f(Math.PI);
 
@@ -50,16 +51,23 @@ export function rotateVector(vector, axis, radians) {
   throw new RangeError(`Unknown particle rotation axis: ${axis}`);
 }
 
-export function projectionBounds(z, width, height, priority) {
+export function projectionBounds(z, width, height, priority, precision = 24) {
   const halfX = f((width >>> 0) >>> 1),
-    halfY = f((height >>> 0) >>> 1);
-  const origin = f(65000 - f(priority));
-  const depth = f(65000 - f(f(priority) + f(z)));
-  const near = f(origin - 1000);
-  const denominator = depth === near ? 1 : f(depth - near);
-  const scale = Math.max(0, f(1000 / denominator));
-  const inverse = scale > 0 ? f(1 / scale) : 0;
-  const x = f(halfX * inverse),
-    y = f(halfY * inverse);
+    halfY = f((height >>> 0) >>> 1),
+    depth = f(65000 - f(f(priority) + f(z))),
+    near = f(f(65000 - f(priority)) - 1000),
+    denominator = depth === near ? 1 : f(depth - near),
+    scale = Math.max(0, f(1000 / denominator)),
+    reciprocalW = f(1 / denominator),
+    round = precision === 24 ? roundX87Single : (value) => value;
+  // The native scalar inverse stores a diagonal cofactor before the
+  // determinant. It then stores the reciprocal determinant and the inverse
+  // scale separately. Collapsing these steps into 1/scale changes the bounds.
+  const cofactor = f(round(round(f(1 / 65000) * reciprocalW) * scale)),
+    determinant = round(cofactor * scale),
+    reciprocal = f(round(1 / determinant)),
+    inverse = determinant && Number.isFinite(reciprocal) ? f(round(cofactor * reciprocal)) : scale;
+  const x = f(round(halfX * inverse)),
+    y = f(round(halfY * inverse));
   return [f(halfX - x), f(halfY - y), f(halfX + x), f(halfY + y)];
 }

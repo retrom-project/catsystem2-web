@@ -1065,13 +1065,20 @@
     },
     "triangleWave": "15 native cases including negative zero/period0",
     "round": "8 native cases including int32 overflow",
-    "projection": "6 original-instruction cases with baseline D3DX table and fixed1280x720 screen",
+    "projection": "PTCL ParsScreen preserves the stored D3DX diagonal cofactors and inverse scale; 216 original callback comparisons cover both PTCL tables and both frozen engines",
+    "ptclFrames": {
+      "programs": ["SDK wind.kcs version 1", "SDK snow.kcs version 2"],
+      "frames": [0, 1, 2, 15, 60, 61],
+      "state": "native vertices, backups, transforms, visibility, VM data and random streams match",
+      "pixels": "SDK snow DrawUP words and full frames match in Chromium with the original atlas supplied to both submissions",
+      "textureGap": "original fg_snow allocates 32x32 for the 21x22 crop and differs in JPEG RGB samples"
+    },
     "textureUV": "2 original-instruction cases verify integer-word vs float-word inputs"
   },
   "sceneParticles": {
     "implementation": "src/particles.mjs",
     "families": ["particle", "particle2", "particle3"],
-    "bankSharing": "all scene families share banks0..3",
+    "bankSharing": "original game sscript shares one table; stop-all walks 4 entries for particle and 8 for particle2 and particle3. The portable path currently supports banks 0 through 3",
     "commands": ["load-and-start executable", "stop", "set", "alpha", "fade"],
     "unverifiedFormerAliases": ["ptcl", "ptclp"],
     "taskMessages": "0x13a..0x141 are task messages, not main GCALL IDs",

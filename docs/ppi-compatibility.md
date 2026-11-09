@@ -158,11 +158,29 @@ Native details that need explicit handling:
   and updates current UVs. Original-instruction probes verify both raw integer
   words and float-encoded inputs; `ParticleScriptInstance` preserves this
   behavior rather than correcting the SDK declaration.
-- `ParsScreen` is a perspective query based on priority, screen center, a
-  1000-unit focal distance, and the engine's 65000 depth origin. Returning the
-  unprojected screen rectangle is incorrect for stock 3D effects. Six native
-  probes with the baseline D3DX function table verify the browser bounds,
-  including the denominator-zero special case and beyond-focal degeneration.
+- `ParsScreen` builds the diagonal perspective matrix, inverts it, then
+  transforms the half-viewport vector. The scalar D3DX inverse rounds the
+  diagonal cofactor, reciprocal determinant and final inverse scale at
+  separate float32 stores. Game `65B190` and SDK `52B0D0` are shared by
+  their version 1 and 2 tables. Mounted tasks use the calling thread's x87
+  and MXCSR settings. Other floating-point modes and dispatch tables run
+  the original callback. The direct oracle covers the zero denominator,
+  singular inverse, large negative depth and six floating-point settings.
+
+The PTCL frame comparison runs the fixed SDK's `snow.kcs` (version 2) and
+`wind.kcs` (version 1) through each original engine's task constructor,
+loader, Start message and frame callback. Both programs match the
+browser's complete quad, backup, transform, visibility, VM data and
+random stream state at the six sampled frames.
+
+The Chromium test takes the original 100-particle arguments from SDK
+`spl2_ptc.cst`, uses its `fg_snow.hg3` texture, and compares the original
+DrawUP quads with the mounted browser World. The original texture loader
+allocates a 32×32 surface for the cropped 21×22 source and leaves transparent
+padding. The cropped browser image has the same alpha and differences in
+JPEG color samples. This test supplies the original atlas bytes to both
+GPU submissions to isolate projection. The matched submissions and fresh
+World produce identical frame pixels.
 
 ## PPI DLL ABI
 
@@ -324,8 +342,11 @@ Load resets resources and counters while retaining the native active flag.
 task graph, preserving interleaved DLL globals/RNG across live tasks.
 
 The actual CST wrappers in frozen `sscript.kcs` recognize `stop`, `set`, `alpha`
-and `fade`. All three particle command families share bank numbers; they do not
-create a separate bank namespace for each verb. `set` clears all 32 registers
+and `fade`. In the frozen game, all three commands index the same bank
+table. The original stop-all loops use four entries for `particle`
+and eight for `particle2` and `particle3` at script PCs `0736D3`,
+`075B74` and `07DB31`. The portable command path currently limits all
+three to the documented four banks. `set` clears all 32 registers
 before copying the supplied values. Alpha defaults to255; fade defaults to
 30 frames, from0 to255. Fade records its origin on the first owner tick and
 clears only the fade flag at its endpoint. It does not destroy a still-active

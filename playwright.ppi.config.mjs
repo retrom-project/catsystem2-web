@@ -2,7 +2,7 @@
 import base from './playwright.config.mjs';
 export default {
   ...base,
-  testMatch: ['ppi.spec.mjs', 'ppi-world.spec.mjs', 'ppi-attachment.spec.mjs'],
+  testMatch: ['ppi.spec.mjs', 'ppi-world.spec.mjs', 'ppi-attachment.spec.mjs', 'ppi-ptcl.spec.mjs'],
   outputDir: '.local/playwright-ppi',
   use: { ...base.use, baseURL: 'http://127.0.0.1:4113' },
   webServer: {

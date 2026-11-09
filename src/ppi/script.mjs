@@ -47,6 +47,7 @@ export class ParticleScriptInstance {
       shared = new Uint8Array(0),
       onDebug = null,
       budget = 5000000,
+      screenBounds = projectionBounds,
     } = options;
     if (!Number.isSafeInteger(count) || count < 0 || count > 1000000)
       throw new RangeError('Invalid PTCL particle count');
@@ -65,6 +66,7 @@ export class ParticleScriptInstance {
     this.random = random;
     this.onDebug = onDebug;
     this.budget = budget;
+    this.screenBounds = screenBounds;
     this.registers = new Float32Array(32);
     this.quads = new Uint8Array(count * PTCL_ABI.quadSize);
     this.backupQuads = new Uint8Array(this.quads.length);
@@ -251,7 +253,7 @@ export class ParticleScriptInstance {
         return real(Math.sqrt(f(f(f(dx * dx) + f(dy * dy)) + f(dz * dz))));
       }
       case 38: {
-        const bounds = projectionBounds(
+        const bounds = this.screenBounds(
           bitsFloat(args[0]),
           this.screenWidth,
           this.screenHeight,

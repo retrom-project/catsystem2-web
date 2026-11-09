@@ -26,6 +26,7 @@ export class Particles {
       onDebug = null,
       nativeThread,
       projectGeometry = particleGeometry,
+      scriptBounds,
     } = {},
   ) {
     this.stage = stage;
@@ -38,6 +39,7 @@ export class Particles {
     this.onDebug = onDebug;
     this.nativeThread = nativeThread;
     this.projectGeometry = projectGeometry;
+    this.scriptBounds = scriptBounds;
     this.clock = clock;
     this.epoch = epoch;
     this.now = clock ? () => clock.now() : now || (() => (this.frame * 1000) / this.fps);
@@ -253,7 +255,10 @@ export class Particles {
     } else {
       const script = await readKCS(bytes);
       script.name = bank.program;
-      bank.instance = new ParticleScriptInstance(script, common);
+      bank.instance = new ParticleScriptInstance(script, {
+        ...common,
+        screenBounds: this.scriptBounds,
+      });
       bank.instance.stop();
     }
     bank.registers.set(bank.instance.registers);
@@ -580,6 +585,7 @@ export class Particles {
           priority: bank.priority,
           fps: this.fps,
           random: this.random,
+          screenBounds: this.scriptBounds,
           attachment: () => bank.attachment,
         });
         bank.instance.restore(saved.script);

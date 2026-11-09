@@ -2,6 +2,7 @@
 import { floatBits } from '../kcs.mjs';
 import { identity } from '../motion/matrix.mjs';
 import { readPTCLQuad, writePTCLQuad } from '../ppi/abi.mjs';
+import { nearestX87Precision } from '../ppi/floating-point.mjs';
 import { particleDepthOrder } from '../ppi/geometry.mjs';
 import { nativeParticleNear, projectNativeParticle } from '../ppi/native-projection-math.mjs';
 
@@ -91,13 +92,8 @@ export class NativeParticleProjection {
     p.cpu.reg_write_i32(register, value);
   }
   precision() {
-    const control = this.reg('FPCW');
-    if (
-      (control !== 0x7f && control !== 0x27f) ||
-      (this.reg('MXCSR') & ~0x3f) !== 0x1f80 ||
-      this.reg('FPTAG') !== 0xffff
-    )
-      return 0;
+    const precision = nearestX87Precision(this.process);
+    if (!precision) return 0;
     const bytes = this.process.read(this.layout.dispatch, 35 * 4),
       dispatch = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     if (
@@ -106,7 +102,7 @@ export class NativeParticleProjection {
       )
     )
       return 0;
-    return control === 0x7f ? 24 : 53;
+    return precision;
   }
   call(address, args) {
     const p = this.process;
