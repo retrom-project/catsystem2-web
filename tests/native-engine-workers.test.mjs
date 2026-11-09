@@ -45,6 +45,45 @@ const exitCode = async (engine, handle, output) => {
   return [result, engine.process.load(output)];
 };
 
+for (const [profile, variable, construct, insert, enter, leave, destroy] of [
+  [PROFILES[0][0], PROFILES[0][1], 0x5db190, 0x5db310, 0x5db550, 0x5db5e0, 0x5db1c0],
+  [PROFILES[1][0], PROFILES[1][1], 0x4b7650, 0x4b77d0, 0x4b7a10, 0x4b7aa0, 0x4b7680],
+])
+  test(
+    `${profile} original CThread transfers its copied lock to the tree node`,
+    { skip: !process.env[variable] },
+    async () => {
+      const engine = await NativeEngineProcess.open({
+          profile,
+          bytes: new Uint8Array(await readFile(process.env[variable])),
+        }),
+        { process: p, kernel } = engine,
+        thread = p.allocate(0x118, true),
+        baseline = kernel.locks.size;
+      try {
+        assert.equal(await engine.call(construct, [], thread), thread);
+        assert.equal(await engine.call(insert, [0], thread), 1);
+        assert.equal(await engine.call(insert, [0], thread), 0);
+        const head = p.load(p.load(thread + 8)),
+          node = p.load(head + 4),
+          lock = node + 20;
+        assert.equal(kernel.locks.size, baseline + 1);
+        assert.equal(kernel.locks.get(lock), 0);
+        await engine.call(enter, [0], thread);
+        await engine.call(enter, [0], thread);
+        assert.equal(kernel.locks.get(lock), 2);
+        assert.equal(kernel.lockOwners.get(lock), 1);
+        await engine.call(leave, [0], thread);
+        await engine.call(leave, [0], thread);
+        await engine.call(destroy, [], thread);
+        assert.equal(kernel.locks.size, baseline);
+        assert.equal(kernel.lockOwners.has(lock), false);
+      } finally {
+        await engine.close();
+      }
+    },
+  );
+
 for (const [profile, variable, abi] of PROFILES) {
   test(
     `${profile} MemStream prefetches across all three native blocks and closes after a fresh restore`,

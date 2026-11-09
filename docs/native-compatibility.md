@@ -193,6 +193,11 @@ restore of a worker blocked in its original x86 wait.
 [CreateThread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread),
 [WaitForMultipleObjects](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects).
 
+Both original CThread classes initialize a critical section on the stack,
+then copy it into their lock tree. The insertion boundary moves the lock
+registration to the original node for every CThread, including threads that
+run through the general Win32 scheduler. The original destructor deletes it.
+
 COM initialization depth and apartment mode belong to the calling thread.
 `CoInitialize` selects STA. `CoInitializeEx` also supports MTA, and a later
 incompatible call returns `RPC_E_CHANGED_MODE`. The apartment records survive

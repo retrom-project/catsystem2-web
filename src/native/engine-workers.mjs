@@ -41,6 +41,22 @@ const ABI = {
   },
 };
 
+export function installNativeCThreadLocks(engine) {
+  const p = engine.process,
+    { lockInserted } = ABI[engine.profile];
+  p.beforeInstruction(lockInserted, 'native CThread copied lock', () => {
+    // CThread inserts a by-value copy of a temporary, unlocked
+    // RTL_CRITICAL_SECTION. Transfer its platform identity to the node.
+    const frame = p.cpu.reg_read_i32(p.uc.X86_REG_EBP) >>> 0,
+      source = frame - 0x2c,
+      result = frame - 0x14,
+      locks = engine.kernel.locks;
+    if (locks.get(source) !== 0) throw new Error('Native CThread did not copy an unlocked lock');
+    locks.delete(source);
+    if (p.load(result + 4) & 255) locks.set(p.load(result) + 20, 0);
+  });
+}
+
 class NativeEngineWorkers {
   constructor(engine) {
     this.engine = engine;
@@ -59,18 +75,6 @@ class NativeEngineWorkers {
         const thread = p.load(sp + 16);
         if (thread && this.abi.entries[p.load(thread + 16)])
           p.cpu.reg_write_i32(p.uc.X86_REG_EIP, this.startTrap);
-      }),
-      p.beforeInstruction(this.abi.lockInserted, 'native CThread copied lock', () => {
-        // The CThread map inserts a by-value copy of a temporary, unlocked
-        // RTL_CRITICAL_SECTION. Transfer the platform identity to the node.
-        const frame = p.cpu.reg_read_i32(p.uc.X86_REG_EBP) >>> 0,
-          source = frame - 0x2c,
-          result = frame - 0x14,
-          locks = engine.kernel.locks;
-        if (locks.get(source) !== 0)
-          throw new Error('Native CThread did not copy an unlocked lock');
-        locks.delete(source);
-        if (p.load(result + 4) & 255) locks.set(p.load(result) + 20, 0);
       }),
     ];
     for (const [address, entry] of Object.entries(this.abi.entries)) {

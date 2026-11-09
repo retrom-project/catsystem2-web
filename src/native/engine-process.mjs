@@ -21,6 +21,7 @@ import { NativeWindowsMessages } from './windows-messages.mjs';
 import { NativeWindowsIME } from './windows-ime.mjs';
 import { NativeWindowsAccelerators } from './windows-accelerators.mjs';
 import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
+import { installNativeCThreadLocks } from './engine-workers.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { installNativeVolumeInformation } from './windows-volume.mjs';
@@ -878,6 +879,7 @@ export class NativeEngineProcess {
       );
       if (engine.module.base !== 0x400000)
         throw new Error('Reviewed engine regions require their preferred image base');
+      installNativeCThreadLocks(engine);
       if (image.heap) engine.process.store(image.heap, 1);
       for (const [address, count] of image.allocations)
         engine.patch(address, 'CRT operator new', count, ([size]) => engine.process.allocate(size));
