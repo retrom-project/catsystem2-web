@@ -408,8 +408,10 @@ for (const [profile, variable] of [
         assert.equal(entry(world, surface, 20).alpha, 128);
         assert.deepEqual(await pixel(world, surface, 20), [60, 0, 150, 255]);
         const retained = world.nativeEngine.features.get('retained-draw');
-        if (!profile.startsWith('sdk-'))
-          assert.ok([...retained.threads.values()].every((thread) => thread.completed));
+        if (!profile.startsWith('sdk-')) {
+          const workers = world.nativeEngine.features.get('engine-workers');
+          assert.ok([...workers.threads.values()].every((thread) => thread.completed));
+        }
         restored = await fixture(profile, exe);
         await restored.restore(structuredClone(world.snapshot()));
         assert.equal(
