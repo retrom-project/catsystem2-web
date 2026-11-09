@@ -57,6 +57,11 @@ to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
 GraphManager callback. Stop or destruction removes that callback. Hydro's
 receiver leaves this message unhandled; the wrapper still completes.
 
+GlassBreak (kind 20) initializes from a 12-byte `C4` packet (graph ID,
+float speed and duration). The original start reads the live graph geometry,
+creates shard records, and installs its vertex callback. Completion, `C6`
+and destruction detach that callback. `CB` does not address this kind.
+
 `C7` translates the VM address, copies exactly 64 bytes to the original stack,
 and sends that copy with zero `w` and flags. The original wrappers fault on a
 failed translation before sending. The original receiver scan found no matrix
@@ -69,9 +74,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 386 receiver checks
-per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3 and
-WipeAlpha3 paths.
+receiver writes, output canaries and unwritten replies. Its 441 receiver checks
+per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
+WipeAlpha3 and GlassBreak paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA

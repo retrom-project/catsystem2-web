@@ -6,6 +6,7 @@ import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
     18: { construct: 0x5ee060, size: 0x94, vtable: 0x8cdcb0, requiresRenderer: true },
+    20: { construct: 0x5ef0d0, size: 0x9c, vtable: 0x8cdd34, requiresRenderer: true },
     25: { construct: 0x5efbd0, size: 0xb4, vtable: 0x8cde20 },
     26: { construct: 0x5efc30, size: 0xc8, vtable: 0x8cde44 },
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
@@ -16,6 +17,7 @@ const ABI = {
   },
   'sdk-4.01-engine-2.6.1.74': {
     18: { construct: 0x4c8990, size: 0x94, vtable: 0x992f90, requiresRenderer: true },
+    20: { construct: 0x4c9a00, size: 0x9c, vtable: 0x993014, requiresRenderer: true },
     25: { construct: 0x4ca500, size: 0xb4, vtable: 0x993100 },
     26: { construct: 0x4ca560, size: 0xc8, vtable: 0x993124 },
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
@@ -45,7 +47,17 @@ export class NativeAreaEffects {
     if (!this.abi) throw new Error('CPU-area effects require a reviewed engine profile');
     this.requiresRenderer = false;
     this.rawMessage = areaEffectRawMessage;
-    this.payloadBytes = { 260: 20, 263: 20, 264: 20, 274: 56, 275: 44, 276: 48, 277: 60, 278: 52 };
+    this.payloadBytes = {
+      260: 20,
+      263: 20,
+      264: 20,
+      267: 12,
+      274: 56,
+      275: 44,
+      276: 48,
+      277: 60,
+      278: 52,
+    };
     this.routeTrap = this.process.trap('native CPU-area effect task router', 7, (args) =>
       this.route(args),
     );
@@ -95,7 +107,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [18, 25, 26, 27, 28, 29, 30, 31])
+  for (const kind of [18, 20, 25, 26, 27, 28, 29, 30, 31])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );

@@ -969,4 +969,224 @@ for (const [profile, variable] of [
       );
     },
   );
+
+  test(
+    profile + ' KCS GlassBreak animates original textured triangles across restore',
+    async ({ page }) => {
+      const sdk = profile.startsWith('sdk-');
+      test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
+      test.setTimeout(180000);
+      const files = new Map([
+          ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
+          [
+            'glass.kcs',
+            kcsProgram(
+              [
+                [37, 20],
+                ...start.slice(1),
+                ...wait,
+                [39, waitingPC],
+                target,
+                [43, 0xc6, 4],
+                target,
+                [43, 0xc8, 4],
+                [38, 136],
+                [59],
+              ],
+              [[64, 'Authored GlassBreak']],
+            ),
+          ],
+        ]),
+        names = await openAreaFixture(page, profile, variable, files);
+      await page.evaluate(
+        async ({ profile, names, sdk }) => {
+          const {
+              browserNativeWorld,
+              browserAssert: assert,
+              placeBrowserNativePlane,
+            } = await import('/tests/fixtures/browser-native-world.mjs'),
+            { floatBits } = await import('/src/kcs.mjs'),
+            files = new Map(
+              await Promise.all(
+                names.map(async (name) => {
+                  const response = await fetch('/area-effect-fixture/' + name);
+                  if (!response.ok) throw new Error('Missing GlassBreak fixture ' + name);
+                  return [name, new Uint8Array(await response.arrayBuffer())];
+                }),
+              ),
+            ),
+            make = () => {
+              const world = browserNativeWorld({
+                  profile,
+                  files,
+                  storage: { read: async () => null, write: async () => true },
+                }),
+                texture = world.configuration.fields.texture;
+              texture.size.set([64, 64]);
+              texture.grid.set([1, 1]);
+              texture.bppY.set([0, 1]);
+              texture.areas[0].set([0, 0, 1, 1]);
+              texture.bpp = 32;
+              return world;
+            },
+            world = make(),
+            call = (owner, id, ...args) =>
+              owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+            render = async (owner) => {
+              const stage = owner.stageRenderer;
+              await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
+              return stage.renderer.ctx.getImageData(0, 0, 64, 48).data;
+            },
+            pixel = (image, x, y) => [...image.slice((64 * y + x) * 4, (64 * y + x) * 4 + 4)],
+            words = (p, address, count) =>
+              Array.from({ length: count }, (_, i) => p.load(address + 4 * i));
+          let fresh, detach;
+          try {
+            await world.initialize('main.kcs');
+            world.random.real.seed(0x8120719);
+            const p = world.nativeEngine.process,
+              platform = await world.getNativeFeature('graphics-platform'),
+              plane = await world.objects.create({
+                kind: 2,
+                parent: world.root,
+                name: 'Textured glass',
+              }),
+              graph = world.nativeTaskID(plane),
+              color = [35, 211, 87, 255];
+            await placeBrowserNativePlane(world, plane, {
+              width: 28,
+              height: 20,
+              position: [12, 8, 0],
+              priority: 300,
+            });
+            const image = (await call(world, 0x70, 28, 20)).value;
+            await call(world, 0x75, image, 0, 0, 28, 20, 0xff23d357);
+            await call(world, 0x73, 0, 0, 0, 28, 20, image, 0, 0, 28, 20);
+            const baseline = await render(world),
+              descriptor = platform.descriptor(graph),
+              [geometry, texture] = words(p, descriptor + 12, 2),
+              callback = sdk ? 0x4ca2a0 : 0x5ef970;
+            assert.ok(geometry && texture, 'original plane has color and textured triangle models');
+            assert.equal(p.load(texture + 396), 2);
+            assert.deepEqual(pixel(baseline, 15, 11), color);
+            assert.deepEqual(pixel(baseline, 10, 11), [0, 0, 0, 255]);
+
+            const script = await world.spawnScript('glass.kcs', { parent: world.main.id }),
+              vm = script.machine,
+              input = vm.allocate(20) + 1,
+              init = [graph, floatBits(6), 4];
+            vm.store(96, world.nativeTaskID(world.main.id));
+            vm.store(100, input);
+            vm.bytes(input, 16).fill(0xa5);
+            init.forEach((word, i) => vm.store(input + 4 * i, word));
+            const packet = vm.bytes(input, 16).slice();
+            await world.runtime.scheduler.execute(script);
+            const id = world.resolveTaskID(vm.load(128), script.id),
+              effect = world.objects.objects.get(id).implementation,
+              pointer = effect.pointer,
+              shards = p.load(pointer + 124);
+            assert.equal(vm.load(132), 1);
+            assert.deepEqual(vm.bytes(input, 16), packet);
+            assert.deepEqual(words(p, pointer + 112, 3), init);
+            assert.equal(p.load(pointer + 108), platform.refs.manager);
+            assert.equal(p.load(pointer + 136), 2);
+            assert.equal(p.load(shards - 4), 1);
+            assert.equal(p.allocations.get(shards - 4), 4 + 2 * 128);
+            assert.deepEqual(words(p, texture + 236, 3), [callback, 0, pointer]);
+
+            const indices = new Set();
+            detach = p.beforeInstruction(
+              callback,
+              'observe original GlassBreak vertex callback',
+              () => {
+                const esp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+                const [actor, count, , triangle] = words(p, esp + 4, 4);
+                assert.equal(actor, pointer);
+                assert.equal(count, 1);
+                indices.add(triangle);
+              },
+            );
+            assert.deepEqual(await render(world), baseline, 'fresh shard transforms are identity');
+            assert.deepEqual(
+              [...indices].sort(),
+              [0, 1],
+              'both original triangles call the effect',
+            );
+            const initial = p.read(shards, 256);
+            await world.tick();
+            const moving = await render(world),
+              state = p.read(shards, 256);
+            assert.notDeepEqual(state, initial);
+            assert.notDeepEqual(
+              moving,
+              baseline,
+              'the original transform changes the visible image',
+            );
+            assert.ok(moving.some((value, i) => i % 4 === 1 && value === color[1]));
+            detach();
+            detach = null;
+
+            fresh = make();
+            await fresh.restore(structuredClone(world.snapshot()));
+            const rp = fresh.nativeEngine.process;
+            assert.equal(fresh.objects.objects.get(id).implementation.pointer, pointer);
+            assert.equal(rp.load(pointer + 124), shards);
+            assert.deepEqual(rp.read(shards, 256), state);
+            assert.deepEqual(words(rp, texture + 236, 3), [callback, 0, pointer]);
+            assert.deepEqual(await render(fresh), moving);
+            await world.tick();
+            await fresh.tick();
+            assert.deepEqual(rp.read(shards, 256), p.read(shards, 256));
+            assert.deepEqual(await render(fresh), await render(world));
+
+            const resumed = await fresh.runtime.scheduler.send(script.id, [1, 2, 3, 4]);
+            assert.equal(resumed.accepted, true);
+            assert.equal(fresh.runtime.scheduler.tasks.get(script.id).machine.load(136), 0);
+            assert.deepEqual(words(rp, texture + 236, 3), [0, 0, 0]);
+            assert.deepEqual(await render(fresh), baseline, 'C6 removes the native deformation');
+            await world.tick();
+            await world.tick();
+            assert.deepEqual(await call(world, 0xc8, world.nativeTaskID(id)), {
+              control: 1,
+              value: 0,
+            });
+            assert.deepEqual(words(p, texture + 236, 3), [0, 0, 0]);
+            assert.deepEqual(await render(world), baseline, 'duration also removes the callback');
+
+            const replacement = Uint32Array.of(graph, floatBits(4), 12);
+            await world.sendEngine(id, world.main.id, 267, 0, 0, {
+              payload: {
+                bytes: (address, size) => {
+                  assert.equal(address, 0);
+                  assert.equal(size, 12);
+                  return new Uint8Array(replacement.buffer);
+                },
+              },
+            });
+            assert.deepEqual(words(p, pointer + 112, 3), [...replacement]);
+            await call(world, 0xc5, world.nativeTaskID(id));
+            const restarted = p.load(pointer + 124);
+            assert.equal(p.load(pointer + 140), 1);
+            assert.deepEqual(words(p, texture + 236, 3), [callback, 0, pointer]);
+            await world.objects.release(id);
+            assert.equal(p.allocations.has(pointer), false);
+            assert.equal(p.allocations.has(restarted - 4), false);
+            assert.deepEqual(words(p, texture + 236, 3), [0, 0, 0]);
+            assert.deepEqual(
+              await render(world),
+              baseline,
+              'active destruction leaves the borrowed plane',
+            );
+            await fresh.objects.release(id);
+            assert.equal(rp.allocations.has(shards - 4), false);
+          } finally {
+            detach?.();
+            await fresh?.close({ flushFiles: false });
+            await world.close({ flushFiles: false });
+          }
+        },
+        { profile, names, sdk },
+      );
+    },
+  );
 }

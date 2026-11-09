@@ -5,6 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { NATIVE_ENGINE_IMAGES, NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeAreaEffectCommands } from '../src/native/area-effect-commands.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
@@ -79,6 +80,7 @@ const equal = (actual, expected, label) => {
 };
 const observedBytes = (message) => {
   if (message === 262) return 64;
+  if (message === 267) return 12;
   if (message === 277) return 60;
   if (message === 278) return 52;
   return [260, 264, 273].includes(message) ? 20 : 56;
@@ -541,6 +543,174 @@ try {
       await engine.call(bitmapRelease, [], bitmap);
       p.free(wrapper);
     }
+    // GlassBreak reads both original plane models, builds its shard state,
+    // then installs the original vertex callback on the textured model.
+    const glass = sdk
+        ? {
+            capsGlobal: 0xc93b94,
+            coreGlobal: 0xc95180,
+            manager: 0x54f8e0,
+            destroy: 0x54fd00,
+            createPlane: 0x551280,
+            lookup: 0x5531b0,
+            table: 0x993014,
+            callback: 0x4ca2a0,
+            seed: 0x49e630,
+            random: [0x656dd0, 0x656df0],
+          }
+        : {
+            capsGlobal: 0xb8f074,
+            coreGlobal: 0xb90778,
+            manager: 0x678b60,
+            destroy: 0x678fb0,
+            createPlane: 0x67a5a0,
+            lookup: 0x67c510,
+            table: 0x8cdd34,
+            callback: 0x5ef970,
+            seed: 0x5c1ff0,
+            random: [0x7c45a0, 0x7c45c0],
+          },
+      graphManager = p.allocate(0x220, true),
+      caps = p.allocate(0x6cc, true),
+      core = p.allocate(0x670, true),
+      rng = p.allocate(1, true),
+      triangle = p.allocate(52, true),
+      glassGraph = 0x80000315,
+      textureLayout = engine.options.configuration.fields.texture;
+    textureLayout.size.set([64, 64]);
+    textureLayout.grid.set([1, 1]);
+    textureLayout.areas.forEach((area) => area.fill(0xffffffff));
+    [4096, 4096].forEach((word, i) => p.store(caps + 88 + 4 * i, word));
+    p.store(glass.capsGlobal, caps);
+    p.store(glass.coreGlobal, core);
+    p.store(view + 4, 1);
+    p.store(view + 8, graphManager);
+    const wordsAt = (address, count) =>
+      Array.from({ length: count }, (_, i) => p.load(address + 4 * i));
+    new NativeEngineFiles(engine, { game: { read: async () => null } });
+    await engine.call(glass.random[0], [], rng);
+    await engine.call(glass.manager, [], graphManager);
+    equal(
+      await engine.call(
+        glass.createPlane,
+        [glassGraph, ...[0, 0, 0, 24, 18].map(floatBits)],
+        graphManager,
+      ),
+      1,
+      'original manager creates the paired color and textured models',
+    );
+    const descriptor = await engine.call(glass.lookup, [glassGraph], graphManager),
+      [geometry, texture] = wordsAt(descriptor + 12, 2);
+    assert.ok(geometry && texture, 'the original graph contains both models');
+    equal(p.load(texture + 396), 2, 'original rectangle has two textured triangles');
+
+    for (const graph of [glassGraph, glassGraph + 1]) {
+      activeEffect = await engine.call(factory, [20, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      equal(p.load(activeEffect), glass.table, 'original GlassBreak factory');
+      equal(p.load(activeEffect + 108), graphManager, 'original GlassBreak capability');
+      const init = [graph, floatBits(6), 4, 0xa5a55a5a];
+      init.forEach((word, i) => p.store(source + 4 * i, word));
+      equal(await callWipe(0xc4, 112), { control: 2 }, 'original GlassBreak initializer');
+      equal(wordsAt(activeEffect + 112, 3), init.slice(0, 3), 'three original input words');
+      equal(wordsAt(source, 4), init, 'initializer preserves the input and its tail');
+      equal(await callWipe(0xc8), { control: 1, value: 0 }, 'initialized GlassBreak is idle');
+      await engine.call(glass.seed, [0x8120719]);
+      equal(await callWipe(0xc5), { control: 2 }, 'original GlassBreak start control');
+      const shards = p.load(activeEffect + 124);
+      if (graph === glassGraph) {
+        equal(p.load(activeEffect + 136), 2, 'original shard count');
+        equal(p.allocations.get(shards - 4), 260, 'two 128-byte shards with the heap header');
+        equal(p.load(shards - 4), 1, 'shards are owned by the original task');
+        equal(wordsAt(texture + 236, 3), [glass.callback, 0, activeEffect], 'native graph binding');
+        equal(await callWipe(0xc8), { control: 1, value: 1 }, 'GlassBreak is active');
+        equal(await callWipe(0xcb), { control: 2 }, 'GlassBreak has no CB receiver branch');
+        equal(await callWipe(0xc8), { control: 1, value: 1 }, 'CB leaves GlassBreak active');
+        const rows = [
+            [0, 0, 0, 1, 24, 0, 0, 1, 24, 18, 0, 1],
+            [0, 0, 0, 1, 0, 18, 0, 1, 24, 18, 0, 1],
+          ],
+          initial = rows.map((vertices, i) => {
+            const pivot = [i ? 8 : 16, i ? 12 : 6, 0].map(floatBits),
+              at = shards + i * 128;
+            equal(wordsAt(at + 32, 3), pivot, 'native color triangle centroid');
+            equal(wordsAt(at + 48, 3), pivot, 'the centroid is the initial translation');
+            const matrix = Array.from({ length: 16 }, (_, index) => (index % 5 ? 0 : floatBits(1)));
+            equal(wordsAt(at + 64, 16), matrix, 'the initial original matrix is identity');
+            return wordsAt(at, 32);
+          });
+        for (const [i, vertices] of rows.entries()) {
+          const input = [...vertices.map(floatBits), 0xa5a55a5a];
+          input.forEach((word, index) => p.store(triangle + 4 * index, word));
+          equal(
+            await engine.call(glass.callback, [activeEffect, 3, triangle, i]),
+            1,
+            'original GlassBreak transforms the three supplied vertices',
+          );
+          equal(wordsAt(triangle, 13), input, 'identity shard and vertex tail are preserved');
+        }
+        await frame(21);
+        for (const [i, vertices] of rows.entries()) {
+          const at = shards + i * 128,
+            float = new Float32Array(Uint32Array.from(initial[i]).buffer),
+            step = p.load(activeEffect + 76),
+            position = [0, 1, 2].map((j) =>
+              Math.fround(float[12 + j] + Math.fround(float[j] * step)),
+            );
+          equal(
+            wordsAt(at + 48, 3),
+            position.map(floatBits),
+            'one original frame advances the shard',
+          );
+          equal(
+            wordsAt(at + 64, 16).some((word, j) => word !== initial[i][16 + j]),
+            true,
+            'rotation advances',
+          );
+          const input = [...vertices.map(floatBits), 0xa5a55a5a];
+          input.forEach((word, index) => p.store(triangle + 4 * index, word));
+          await engine.call(glass.callback, [activeEffect, 3, triangle, i]);
+          equal(p.load(triangle + 48), input[12], 'vertex deformation preserves tail');
+          equal(
+            wordsAt(triangle, 12).some((word, j) => word !== input[j]),
+            true,
+            'actual vertices move',
+          );
+        }
+        await frame(24);
+        equal(await callWipe(0xc8), { control: 1, value: 0 }, 'native duration clears the status');
+        equal(wordsAt(texture + 236, 3), [0, 0, 0], 'native duration detaches the graph');
+        equal(p.allocations.has(shards - 4), true, 'finished task still owns the shard array');
+        await callWipe(0xc5);
+        await callWipe(0xc6);
+        equal(await callWipe(0xc8), { control: 1, value: 0 }, 'original explicit stop status');
+        equal(wordsAt(texture + 236, 3), [0, 0, 0], 'explicit stop detaches the same callback');
+        await callWipe(0xc5);
+      } else {
+        equal(shards, 0, 'absent graph creates no shards');
+        equal(p.load(activeEffect + 108), 0, 'failed start clears the original view capability');
+        equal(await callWipe(0xc8), { control: 1, value: host }, 'failed status remains unwritten');
+      }
+      const last = p.load(activeEffect + 124);
+      await engine.call(p.load(glass.table), [1], activeEffect);
+      equal(p.allocations.has(activeEffect), false, 'native GlassBreak task destructor');
+      equal(p.allocations.has(last - 4), false, 'destructor releases the last shard allocation');
+      equal(
+        wordsAt(texture + 236, 3),
+        [0, 0, 0],
+        'active destruction detaches from the borrowed model',
+      );
+    }
+    await engine.call(glass.destroy, [], graphManager);
+    await engine.call(glass.random[1], [], rng);
+    p.free(rng);
+    p.free(graphManager);
+    p.store(glass.capsGlobal, 0);
+    p.store(glass.coreGlobal, 0);
+    p.free(caps);
+    p.free(core);
+    p.free(triangle);
+
     // Observe the exact original GraphManager callback envelope. The mounted
     // browser regression also runs the actual graph manager and renderer.
     const manager = p.allocate(32, true),
@@ -856,7 +1026,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, Raster/Hydro/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
+          'Original factories, Raster/Hydro/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. GlassBreak uses the original graph manager, paired models and vertex callback with authored display caps and an empty mounted file provider. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,
