@@ -44,3 +44,9 @@ sound task. Its allocated load is 280 bytes, with no crossfade fields. The
 receiver returns the allocated SDK bank without a crossfade offset, and the
 original object sends volume and play to that bank. In Chromium the official
 sample decodes and plays `bgm.int/bgm01.ogg` on its allocated channel.
+
+The official tutorial browser test enters through the original title and
+choice menus. Its original `CsPlane` moves while the soundtrack plays. The
+test restores mid-motion into a fresh process with the same rendered pixels,
+verifies the plane advances and hides at the end of its 300-frame motion,
+then waits for the original sound stop fade and the return to the scene.

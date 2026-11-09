@@ -154,3 +154,91 @@ test('official SDK starts with saved setup and restores the title and tutorial c
   await until(page, 'select#EXIT', 36);
   expect(errors).toEqual([]);
 });
+
+async function advanceSDKDialogue(page) {
+  const canvas = await page.locator('#screen').boundingBox();
+  await page.mouse.move(canvas.x + canvas.width * 0.48, canvas.y + canvas.height * 0.9);
+  await step(page);
+  await page.mouse.down();
+  await step(page, 2);
+  await page.mouse.up();
+  await step(page, 6);
+}
+
+const sdkJavaScriptState = (page) =>
+  page.evaluate(() => {
+    const { world, audio } = window.catSystem2,
+      engine = world.nativeEngine,
+      tasks = world.objects.objects,
+      task = [...tasks.values()].find((record) => record.kind === 55),
+      plane = [...tasks.values()].find((record) => record.parent === task?.id && record.kind === 2),
+      pointer = task?.implementation.pointer,
+      source = [...world.runtime.scheduler.tasks.values()].find(
+        (record) => record.name === 'sscript',
+      ),
+      sceneText = source && world.runtime.stringBank(source, false)?.get(1000),
+      graph = plane && engine.features.get('graphics-platform').attachment(plane.nativeID),
+      channel = [...audio.channels.values()].find(({ file }) => file === 'bgm.int/bgm01.ogg');
+    return {
+      frame: world.frame,
+      loaded: pointer ? engine.process.load(pointer + 140) : 0,
+      running: pointer ? engine.process.load(pointer + 144) : 0,
+      plane: plane?.id ?? null,
+      position: graph?.pos ?? null,
+      shown: graph?.display ?? false,
+      playing: Boolean(channel?.playing && channel.source && channel.buffer),
+      returned: Boolean(sceneText?.includes('シーンに戻りました')),
+    };
+  });
+
+test('official SDK JavaScript tutorial draws its moving plane and resumes original sound and motion', async ({
+  page,
+}) => {
+  await startSDK(page);
+  await until(page, 'title#WAIT', 360);
+  await waitForButton(page, 'btn1[2]');
+  await clickNativeButton(page, 'btn1[2]');
+  await waitForButton(page, 'btn2[2]');
+  await clickNativeButton(page, 'btn2[2]');
+  for (let i = 0; i < 100; i++) {
+    const { stack } = await state(page);
+    if (stack.includes('select#WAIT')) break;
+    if (stack.includes('meswnd_b#WAIT') && !stack.some((label) => label.startsWith('select#')))
+      await advanceSDKDialogue(page);
+    else await step(page, 6);
+  }
+  expect((await state(page)).stack).toContain('select#WAIT');
+  await freshAtSameFrame(page);
+  await clickNativeButton(page, 'fr1[0]');
+  await until(page, 'select#EXIT', 36);
+
+  let start;
+  for (let i = 0; i < 120; i++) {
+    start = await sdkJavaScriptState(page);
+    if (start.running && start.playing) break;
+    const { stack } = await state(page);
+    if (stack.includes('meswnd_b#WAIT') && !stack.some((label) => label.startsWith('select#')))
+      await advanceSDKDialogue(page);
+    else await step(page, 6);
+  }
+  expect(start).toMatchObject({ loaded: 1, running: 1, playing: true, shown: true });
+  expect(start.position).toHaveLength(3);
+  const firstImage = await pixels(page);
+  for (let i = 0; i < 12; i++) await step(page, 6);
+  const moving = await sdkJavaScriptState(page),
+    movingImage = await freshAtSameFrame(page);
+  expect(moving).toMatchObject({ plane: start.plane, running: 1, playing: true, shown: true });
+  expect(moving.position[0]).toBeGreaterThan(start.position[0]);
+  expect(movingImage.sha256).not.toBe(firstImage.sha256);
+  expect(await sdkJavaScriptState(page)).toEqual(moving);
+
+  let end = moving;
+  while (end.running && end.frame < start.frame + 330) {
+    await step(page, 6);
+    end = await sdkJavaScriptState(page);
+  }
+  expect(end).toMatchObject({ loaded: 1, running: 0, returned: true, shown: false });
+  expect(end.frame - start.frame).toBeGreaterThan(275);
+  for (let i = 0; i < 4; i++) await step(page, 6);
+  expect(await sdkJavaScriptState(page)).toMatchObject({ playing: false, returned: true });
+});
