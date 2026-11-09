@@ -14,6 +14,7 @@ import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeResourceAPIs } from './windows-resources.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
+import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { installNativeVolumeInformation } from './windows-volume.mjs';
@@ -96,6 +97,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.errorMode = 0;
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);
+    this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
     this.comDepth = 0;
     this.register('OLE32.dll', 'CoInitialize', {
@@ -494,7 +496,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       return position;
     });
     def('CloseHandle', 1, async ([handle]) => {
-      if (this.events.close(handle)) return 1;
+      if (this.events.close(handle) || this.threadHandles.close(handle)) return 1;
       const file = this.files.get(handle);
       if (!file) {
         this.lastError = 6;
@@ -691,6 +693,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       nextFind: this.nextFind,
       errorMode: this.errorMode,
       events: this.events.snapshot(),
+      threadHandles: this.threadHandles.snapshot(),
       comMemory: this.comMemory.snapshot(),
       comDepth: this.comDepth,
       ...(this.hostModules ? { hostModules: this.hostModules.snapshot() } : {}),
@@ -708,6 +711,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.nextFind = state.nextFind;
     this.errorMode = state.errorMode;
     this.events.restore(state.events);
+    this.threadHandles.restore(state.threadHandles);
     this.comMemory.restore(state.comMemory);
     if (!Number.isSafeInteger(state.comDepth) || state.comDepth < 0)
       throw new Error('Invalid native COM initialization depth');
@@ -1114,6 +1118,7 @@ export class NativeEngineProcess {
       }
     } finally {
       this.kernel.events.closeAll();
+      this.kernel.threadHandles.closeAll();
       try {
         this.process.close();
       } catch (error) {
