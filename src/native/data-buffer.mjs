@@ -2,6 +2,7 @@
 // Raw kcBuffer ownership, distinct from a decoded bitmap and its wrapper.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_ENGINE_IMAGES } from './engine-process.mjs';
+import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -51,6 +52,7 @@ export class NativeDataBuffers {
     Object.assign(this, { engine, process: engine.process, handles, read, diagnostic });
     this.layout = NATIVE_DATA_BUFFER_LAYOUTS[engine.profile];
     this.pointers = new Set();
+    if (engine.module) this.detachHG3Delta = installNativeHG3Delta(engine);
     this.attachServices({ handles, read, diagnostic });
     const p = this.process;
     engine.registerWindows('USER32.dll', 'SetRectEmpty', {
@@ -79,10 +81,11 @@ export class NativeDataBuffers {
       handles.registerType('image-data', nativeDataBufferCodec);
     return this;
   }
-  call(address, args = [], pointer) {
+  call(address, args = [], pointer, messageContext) {
+    const options = { messageContext };
     return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer)
-      : this.engine.call(address, args, pointer);
+      ? this.engine.callFromHost(address, args, pointer, options)
+      : this.engine.call(address, args, pointer, options);
   }
   owns(pointer) {
     return this.pointers.has(pointer) && this.process.allocations.get(pointer) === 20;
@@ -260,7 +263,12 @@ export class NativeDataBuffers {
     this.require(pointer);
     // Returns an original refcounted bitmap wrapper, not another kcBuffer.
     // Its consumer must release it through releaseBitmapPointer().
-    return this.call(this.layout.image, [pointer, selector >>> 0]);
+    return this.call(
+      this.layout.image,
+      [pointer, selector >>> 0],
+      undefined,
+      nativeHG3DecodeContext(),
+    );
   }
   async decodeBitmapPointer(pointer, selector = 0) {
     const wrapper = await this.decodePointer(pointer, selector);
@@ -298,6 +306,9 @@ export class NativeDataBuffers {
   restore(state) {
     this.pointers = new Set(state.pointers);
     for (const pointer of this.pointers) this.require(pointer);
+  }
+  close() {
+    this.detachHG3Delta?.();
   }
 }
 

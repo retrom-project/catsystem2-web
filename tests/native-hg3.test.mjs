@@ -6,6 +6,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
 import { authoredHG3, authoredHG3Frames } from './fixtures/hg3.mjs';
+import { hg3 } from './helpers.mjs';
 
 const metadata = (frame) =>
   ['width', 'height', 'canvasWidth', 'canvasHeight', 'offsetX', 'offsetY', 'baseX', 'baseY'].map(
@@ -70,6 +71,50 @@ for (const [profile, variable, pixelAt] of [
       } finally {
         buffers.releasePointer(source);
         engine.close();
+      }
+    },
+  );
+
+  test(
+    `${profile} decodes a full HG3 bitmap within a bounded native call`,
+    { skip: !process.env[variable] },
+    async () => {
+      const width = 512,
+        height = 512,
+        pitch = width * 4,
+        rgba = new Uint8Array(pitch * height),
+        bottomUp = new Uint8Array(rgba.length);
+      for (let y = 0; y < height; y++)
+        for (let x = 0; x < width; x++) {
+          const r = (x * 53 + y * 19) & 255,
+            g = (x * 7 + y * 29) & 255,
+            b = (x * 13 + y * 31) & 255,
+            a = 255 - ((x + y) & 127);
+          rgba.set([r, g, b, a], y * pitch + x * 4);
+          bottomUp.set([b, g, r, a], (height - y - 1) * pitch + x * 4);
+        }
+      const engine = await NativeEngineProcess.open({
+          profile,
+          bytes: new Uint8Array(await readFile(process.env[variable])),
+        }),
+        p = engine.process,
+        buffers = new NativeDataBuffers(engine),
+        source = buffers.createPointer(hg3(width, height, rgba));
+      let bitmap = 0;
+      try {
+        p.budget = 12000000;
+        bitmap = await buffers.decodeBitmapPointer(source, 0);
+        assert.ok(bitmap);
+        const image = p.load(bitmap);
+        assert.deepEqual(
+          [4, 8, 20].map((at) => p.load(image + at)),
+          [width, height, pitch],
+        );
+        assert.deepEqual(p.read(p.load(image + 12), bottomUp.length), bottomUp);
+      } finally {
+        if (bitmap) await buffers.releaseBitmapPointer(bitmap);
+        buffers.releasePointer(source);
+        await engine.close();
       }
     },
   );

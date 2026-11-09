@@ -4,6 +4,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
+import { nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 const rows = [
   [0x2c6, 1, 1, 0x654110, 0x51ef30],
@@ -99,10 +100,11 @@ export class NativeImageOwners {
   get refs() {
     return this.engine.refs.imageOwners;
   }
-  call(address, args, pointer, task) {
+  call(address, args, pointer, task, messageContext) {
+    const options = { task, messageContext };
     return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, { task })
-      : this.engine.call(address, args, pointer, { task });
+      ? this.engine.callFromHost(address, args, pointer, options)
+      : this.engine.call(address, args, pointer, options);
   }
   pointer(handle) {
     if (!handle) return 0;
@@ -183,6 +185,7 @@ export class NativeImageOwners {
         [bridge.pointer, packetHost || host, argv, out],
         undefined,
         task.id,
+        id === 0x2c6 ? nativeHG3DecodeContext() : undefined,
       );
       if (control !== spec.control)
         throw new Error('Native image wrapper control differs from its reviewed contract');

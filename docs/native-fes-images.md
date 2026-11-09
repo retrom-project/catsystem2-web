@@ -218,6 +218,14 @@ the authored frames. Their names, raw bytes and reports stay ignored. The
 lossless stream's first decoded row is its logical top row. These checks do not
 establish JPEG/WEBP sections or an original HG3 writer.
 
+The lossless HG3 reader uses bounded host work for its vertical delta rows at
+`5733E4` (SDK) and `6A1FF4` (game). The native image-owner loader and bitmap
+decoder supply a per-call byte allowance. Only rows inside the verified
+bitmap, source and lookup ranges are processed in bulk; the final row,
+bitstream handling and all surrounding guest code still execute in x86
+under the ordinary instruction cap. The regression checks the complete BGRA
+bitmap with a cap that stopped both original row loops.
+
 Compound viewport image sources and retained nested-renderer resources still
 have explicit missing adapters. Other image-derived FES object types remain
 separate unfinished contracts. Complete skin/input/scene acceptance is ongoing.
