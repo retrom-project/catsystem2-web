@@ -88,7 +88,9 @@ export class NativeEngineFiles {
       path = p.string(name, this.layout.wide),
       bytes = await this.read(path, mode);
     if (bytes === null) return 0;
-    const buffers = await this.world.getNativeFeature('data-buffers'),
+    const buffers =
+        this.engine.features.get('data-buffers') ??
+        (await this.world.getNativeFeature('data-buffers')),
       pointer = p.allocate(this.layout.size, true);
     let data = 0,
       constructed = false;

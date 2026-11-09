@@ -180,3 +180,11 @@ use its native IFile virtual methods to read a prefix, restore the still-open
 descriptor in a fresh process, read the exact remainder and reach EOF without
 reopening the source. Archive selection and the mounted resource opener keep
 their separate contracts.
+
+The mounted Engine then executes the original game default Settings phase
+at Game `7129D0` and SDK `5C4180`. It resolves `config.int/gamedef.xml` via
+the same archive-qualified file adapter used by scripts, reads it through
+the original IFile methods, and copies the resulting Settings into its
+default block. The browser applies live preferences afterwards. A two-profile
+test distinguishes an unrelated unqualified XML file, the native defaults
+and live preferences, then restores both blocks in a fresh engine.

@@ -10,6 +10,78 @@ import {
   NATIVE_ENGINE_IMAGES,
 } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
+import { NativeWorld } from '../src/native/world.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
+import { memoryGame } from './helpers.mjs';
+
+for (const [profile, variable, encoding] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'Shift_JIS'],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 'UTF-8'],
+])
+  test(
+    `${profile} native game defaults use the qualified config mount before live preferences`,
+    { skip: !process.env[variable] },
+    async () => {
+      const executable = new Uint8Array(await readFile(process.env[variable])),
+        xml = (limit) =>
+          new TextEncoder().encode(
+            `<?xml version="1.0" encoding="${encoding}"?><document><MESSAGE><log_limit>${limit}</log_limit></MESSAGE></document>`,
+          ),
+        game = memoryGame({
+          'engine.exe': executable,
+          'gamedef.xml': xml(117),
+          'config.int/gamedef.xml': xml(321),
+        }),
+        reads = [],
+        make = () => {
+          const random = new ParticleRandom(),
+            configuration = new NativeConfiguration({ profile, uiLanguage: 0x411 });
+          new DataView(configuration.blocks[1].buffer).setUint32(9 * 4, 513, true);
+          return new NativeWorld({
+            profile,
+            game,
+            bootstrapOwner: { glyphs: {} },
+            configuration,
+            images: {},
+            host: {},
+            audio: {},
+            random,
+            motionLibrary: new MotionLibrary(game, { profile, random }),
+            storage: {
+              read: async (path) => {
+                reads.push(path);
+                return game.read(path);
+              },
+            },
+          });
+        },
+        world = make(),
+        fresh = make(),
+        read = (engine, address) => {
+          const offset =
+            NATIVE_CONFIGURATION_MEMORY_LAYOUTS[profile].blocks[1] -
+            NATIVE_ENGINE_IMAGES[profile].settingsOffset;
+          return engine.process.load(address + offset + 9 * 4);
+        };
+      try {
+        const engine = await world.ensureNativeEngine();
+        assert.ok(reads.includes('config.int/gamedef.xml'));
+        assert.ok(!reads.includes('gamedef.xml'));
+        assert.equal(read(engine, engine.refs.defaultSettings), 321);
+        assert.equal(read(engine, engine.refs.settings), 513);
+        const saved = engine.snapshot(),
+          restored = await fresh.ensureNativeEngine();
+        restored.restore(saved);
+        assert.equal(read(restored, restored.refs.defaultSettings), 321);
+        assert.equal(read(restored, restored.refs.settings), 513);
+      } finally {
+        await fresh.close();
+        await world.close();
+      }
+    },
+  );
 
 for (const [profile, variable, openFile, wide] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4b22c0, false],

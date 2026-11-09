@@ -121,13 +121,18 @@ export class CatSystem2 {
     );
     this.names = await this.host.speakerTable();
     await this.renderer.loadFonts(this.game);
-    const nativeXML = async (name) => {
-      const bytes = await this.game.read(name);
+    const nativeXML = async (name, mounted = false) => {
+      const bytes = await (mounted && this.game.readNative
+        ? this.game.readNative(name, 3)
+        : this.game.read(name));
       return bytes
         ? parseNativeXML(bytes, NATIVE_PROFILES[this.nativeProfile].xmlEncoding)
         : undefined;
     };
-    const [startup, gamedef] = await Promise.all(['startup.xml', 'gamedef.xml'].map(nativeXML));
+    const [startup, gamedef] = await Promise.all([
+      nativeXML('startup.xml'),
+      nativeXML('config.int/gamedef.xml', true),
+    ]);
     const soundFilename = nativeSoundConfigurationFilename(startup);
     let sound;
     if (soundFilename) {

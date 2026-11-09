@@ -484,7 +484,15 @@ export class NativeWorld {
         game: this.game,
         profile: this.profile,
         configuration: this.configuration,
-        bootstrapOwner: this.bootstrapOwner,
+        bootstrapOwner: this.bootstrapOwner && {
+          ...this.bootstrapOwner,
+          mountFiles: async (engine) => {
+            // The native game defaults open through the same mounted file
+            // adapter as gameplay. These factories do not await the World.
+            for (const name of ['data-buffers', 'engine-files'])
+              await this.nativeFeatureFactories.get(name)(engine, this);
+          },
+        },
         readFile: (name) => this.storage.read(name),
         writeFile: (name, bytes) => this.storage.write(name, bytes),
         statFile: (name) => this.storage.stat?.(name) ?? null,
