@@ -575,9 +575,15 @@ export class NativeEngineWindows extends PPIWindowsServices {
       return 0;
     });
     if (options.clock)
-      this.registerHostModule('winmm.dll', {
-        timeGetTime: this.resolve({ dll: 'WINMM.dll', name: 'timeGetTime' }),
-      });
+      this.registerHostModule(
+        'winmm.dll',
+        new Map(
+          [...this.winmmDefinitions.keys()].map((name) => [
+            name,
+            this.resolve({ dll: 'WINMM.dll', name }),
+          ]),
+        ),
+      );
     if (NATIVE_ENGINE_IMAGES[options.profile]) installNativeEntropy(this);
   }
   path(value) {

@@ -10,6 +10,11 @@ const TLS_INLINE = 64,
   TEB_LAST_ERROR = 0x34,
   TEB_TLS_SLOTS = 0xe10,
   TEB_TLS_EXPANSION_SLOTS = 0xf94;
+const MIN_TIMER_PERIOD = 1,
+  MAX_TIMER_PERIOD = 0xffff,
+  TIMERR_NOCANDO = 97;
+const validTimerPeriod = (period) =>
+  Number.isInteger(period) && period >= MIN_TIMER_PERIOD && period <= MAX_TIMER_PERIOD;
 
 export class PPIWindowsServices {
   constructor(process, { clock, now = () => performance.now(), epoch } = {}) {
@@ -202,6 +207,37 @@ export class PPIWindowsServices {
     });
     def('GetTickCount', 0, () => (this.clock ? this.clock.tickCount() : Math.trunc(this.now())));
     this.timerDefinition = this.definitions.get('GetTickCount');
+    this.timerPeriods = new Map();
+    this.winmmDefinitions = new Map([
+      ['timeGetTime', this.timerDefinition],
+      [
+        'timeGetDevCaps',
+        {
+          count: 2,
+          fn: ([out, size]) => {
+            if (!out || size < 8) return TIMERR_NOCANDO;
+            process.store(out, MIN_TIMER_PERIOD);
+            process.store(out + 4, MAX_TIMER_PERIOD);
+            return 0;
+          },
+        },
+      ],
+    ]);
+    for (const [name, delta] of [
+      ['timeBeginPeriod', 1],
+      ['timeEndPeriod', -1],
+    ])
+      this.winmmDefinitions.set(name, {
+        count: 1,
+        fn: ([period]) => {
+          if (!validTimerPeriod(period)) return TIMERR_NOCANDO;
+          // The process clock already supplies millisecond resolution.
+          const count = (this.timerPeriods.get(period) ?? 0) + delta;
+          if (count > 0) this.timerPeriods.set(period, count);
+          else this.timerPeriods.delete(period);
+          return 0;
+        },
+      });
     def('QueryPerformanceFrequency', 1, ([pointer]) => {
       this.write64(pointer, 1000000n);
       return 1;
@@ -376,13 +412,13 @@ export class PPIWindowsServices {
     // independent of optional GetProcAddress calls during initialization.
     for (const name of [...this.definitions.keys()].sort())
       this.resolve({ dll: 'KERNEL32.dll', name });
-    this.resolve({ dll: 'WINMM.dll', name: 'timeGetTime' });
+    for (const name of this.winmmDefinitions.keys()) this.resolve({ dll: 'WINMM.dll', name });
   }
   importDefinition({ dll, name }) {
     return /^(kernel32|kernelbase)\.dll$/i.test(dll)
       ? this.definitions.get(name)
-      : /^winmm\.dll$/i.test(dll) && name === 'timeGetTime'
-        ? this.timerDefinition
+      : /^winmm\.dll$/i.test(dll)
+        ? this.winmmDefinitions.get(name)
         : null;
   }
   resolve(symbol) {
@@ -663,6 +699,7 @@ export class PPIWindowsServices {
       tls: [...this.tls],
       locks: [...this.locks],
       lockOwners: [...this.lockOwners],
+      timerPeriods: [...this.timerPeriods],
       exceptionFilter: this.exceptionFilter || 0,
       heaps: [...this.heaps].map(([handle, heap]) => [
         handle,
@@ -686,6 +723,14 @@ export class PPIWindowsServices {
       throw new Error('Invalid native TLS allocation bitmap');
     this.locks = new Map(state.locks);
     this.lockOwners = new Map(state.lockOwners);
+    this.timerPeriods = new Map(state.timerPeriods);
+    if (
+      this.timerPeriods.size !== state.timerPeriods.length ||
+      [...this.timerPeriods].some(
+        ([period, count]) => !validTimerPeriod(period) || !Number.isSafeInteger(count) || count < 1,
+      )
+    )
+      throw new Error('Invalid native timer period checkpoint');
     this.exceptionFilter = state.exceptionFilter;
     this.heaps = new Map(
       state.heaps.map(([handle, heap]) => [handle, { ...heap, blocks: new Set(heap.blocks) }]),

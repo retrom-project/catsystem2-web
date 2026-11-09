@@ -206,6 +206,12 @@ at the buffer boundary. A worker reading the startup window enters its
 procedure on the initial thread's stack and TEB, then resumes the worker.
 [GetWindowTextW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw).
 
+The original frame timers query WinMM capabilities and acquire and release
+a 1 ms period. Period requests are counted per guest process and survive a
+checkpoint. The virtual millisecond clock supplies the reported resolution.
+The supported period range and invalid-argument results match the Wine 8
+reference. [Multimedia timers](https://learn.microsoft.com/en-us/windows/win32/api/timeapi/).
+
 Window and thread timers use the same clock as the emulated engine.
 Retrieval generates a due `WM_TIMER` after checking for matching queued
 messages. A nonremoving peek leaves the generated message available even

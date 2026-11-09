@@ -88,6 +88,52 @@ test('PPI timers share one clock with precise QPC/UTC and retain explicit zero-e
   }
 });
 
+test('WinMM timer capabilities write only TIMECAPS and period requests survive a fresh restore', async () => {
+  const unicorn = await loadUnicorn(),
+    p = new PE32Process(unicorn),
+    restored = new PE32Process(unicorn),
+    kernel = new PPIWindowsServices(p),
+    other = new PPIWindowsServices(restored),
+    out = p.allocate(16, true),
+    call = (k, name, ...args) => k.process.call(k.resolve({ dll: 'WINMM.dll', name }), args);
+  try {
+    p.write(out, new Uint8Array(16).fill(0xa5));
+    kernel.lastError = 0x1234;
+    for (const [pointer, size] of [
+      [0, 8],
+      [out, 7],
+    ]) {
+      assert.equal(call(kernel, 'timeGetDevCaps', pointer, size), 97);
+      assert.deepEqual([...p.read(out, 16)], new Array(16).fill(0xa5));
+    }
+    assert.equal(call(kernel, 'timeGetDevCaps', out + 4, 12), 0);
+    assert.deepEqual(
+      [0, 4, 8, 12].map((offset) => p.load(out + offset)),
+      [0xa5a5a5a5, 1, 65535, 0xa5a5a5a5],
+    );
+    for (const name of ['timeBeginPeriod', 'timeEndPeriod'])
+      for (const period of [0, 65536, 0xffffffff]) assert.equal(call(kernel, name, period), 97);
+    for (const period of [1, 1, 65535]) assert.equal(call(kernel, 'timeBeginPeriod', period), 0);
+    assert.equal(kernel.lastError, 0x1234);
+    other.restore(await deserializeCheckpoint(await serializeCheckpoint(kernel.snapshot())));
+    assert.deepEqual(
+      [...other.timerPeriods],
+      [
+        [1, 2],
+        [65535, 1],
+      ],
+    );
+    for (const period of [1, 2, 65535]) assert.equal(call(other, 'timeEndPeriod', period), 0);
+    assert.deepEqual([...other.timerPeriods], [[1, 1]]);
+    assert.equal(call(other, 'timeEndPeriod', 1), 0);
+    assert.equal(other.timerPeriods.size, 0);
+    assert.equal(other.lastError, 0x1234);
+  } finally {
+    restored.close();
+    p.close();
+  }
+});
+
 function world(host = {}) {
   const profile = 'nekopara-vol3-engine-2.6.1.76',
     game = memoryGame({ 'main.kcs': kcsProgram([[43, 0x41, 0], [59]]) }),
