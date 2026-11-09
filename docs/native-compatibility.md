@@ -5,6 +5,33 @@ The authoritative public catalog is [src/native/catalog.mjs](../src/native/catal
 constant-zero handlers and unresolved contracts. Descriptive names are project
 names; the main compiler's original symbol table has not been recovered.
 
+## B migration inventory
+
+[b-migration.json](b-migration.json) records every slot in both engine ABIs,
+including main, generic/MOT and both particle tables, and every file under `src/`.
+Run `node scripts/b-migration.mjs` to regenerate it and
+`node scripts/b-migration.mjs --check` to verify the committed result. No private
+EXE is required. Update the reviewed route/ownership rules in the script when
+replacing an implementation, then regenerate the inventory in the same commit.
+
+The generator constructs the actual World in mounted and unmounted scenarios,
+reads its registrations and feature factories, and probes the actual fallback
+chain with guarded empty arguments. Generic and particle scripts have separate
+dispatchers. An argument-guard match establishes ownership, not successful
+execution. `needs-review` records unresolved names, input-dependent routes and
+conservative module-level dependencies. It must not be counted as completed JS
+coverage. `pure-js` describes the native body. Its dependency list can still
+include PE-backed state or feature initialization. `original-handler` invokes a
+native wrapper, while `exe-region` invokes EXE helpers or bounded regions.
+Patch/hook sites are recorded separately, including those installed indirectly
+by a feature. Zero native entries classified primarily as `patch` does not mean
+there are no patches. File counts reuse the phase 0 checker's exact AST scanner,
+whose syntactic counts also include independent DLL-host execution.
+
+All 135 files in the local planning attachment are included. Nine have zero
+dependencies under the phase 0 scanner, and five other files have nonzero counts,
+giving 131 dependency-bearing files. The inventory keeps the zero-count files.
+
 The frozen inputs and hashes are recorded in [references.json](../references.json).
 SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 **2.6.1.76**. SDK package version and engine ABI version are separate identifiers.
