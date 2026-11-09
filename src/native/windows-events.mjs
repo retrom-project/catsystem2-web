@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Process-local Win32 events and semaphores share the same wait operations.
+// Process-local Win32 synchronization handles share the same wait operations.
 const BASE = 0x57000000;
 const END = 0x58000000;
 const INFINITE = 0xffffffff;
@@ -8,10 +8,15 @@ const WAIT_TIMEOUT = 0x102;
 const INVALID_HANDLE = 6;
 const INVALID_PARAMETER = 87;
 const TOO_MANY_POSTS = 298;
+const NOT_OWNER = 288;
+const ALREADY_EXISTS = 183;
 
-const available = (object) => ('maximum' in object ? object.count > 0 : object.signaled);
+// The guest exposes one Win32 thread. Its own mutex can be acquired recursively.
+const available = (object) =>
+  'depth' in object || ('maximum' in object ? object.count > 0 : object.signaled);
 function consume(object) {
-  if ('maximum' in object) object.count--;
+  if ('depth' in object) object.depth++;
+  else if ('maximum' in object) object.count--;
   else if (!object.manual) object.signaled = false;
 }
 
@@ -19,6 +24,7 @@ export class NativeWindowsEvents {
   constructor(kernel) {
     this.kernel = kernel;
     this.events = new Map();
+    this.mutexes = new Map();
     this.waiters = new Set();
     this.next = BASE;
     const register = (name, count, fn) => kernel.register('KERNEL32.dll', name, { count, fn });
@@ -36,12 +42,23 @@ export class NativeWindowsEvents {
         if (maximum <= 0 || count < 0 || count > maximum) return this.error(INVALID_PARAMETER);
         return this.allocate({ count, maximum });
       });
+      register(`CreateMutex${suffix}`, 3, ([attributes, owner, name]) => {
+        if (attributes) return this.error(INVALID_PARAMETER);
+        return this.createMutex(owner, name ? kernel.process.string(name, suffix === 'W') : '');
+      });
     }
     register('SetEvent', 1, ([handle]) => this.signal(handle, true));
     register('ResetEvent', 1, ([handle]) => this.signal(handle, false));
     register('ReleaseSemaphore', 3, ([handle, count, previous]) =>
       this.release(handle, count | 0, previous),
     );
+    register('ReleaseMutex', 1, ([handle]) => {
+      const mutex = this.mutexes.get(this.events.get(handle)?.mutex);
+      if (!mutex) return this.error(INVALID_HANDLE);
+      if (!mutex.depth) return this.error(NOT_OWNER);
+      mutex.depth--;
+      return 1;
+    });
     register('WaitForSingleObject', 2, ([handle, timeout]) => this.wait([handle], false, timeout));
     register('WaitForSingleObjectEx', 3, ([handle, timeout, alertable]) => {
       if (alertable) throw new Error('Native event waits do not have an APC provider');
@@ -65,6 +82,14 @@ export class NativeWindowsEvents {
   create(manual, signaled) {
     return this.allocate({ manual: Boolean(manual), signaled: Boolean(signaled) });
   }
+  createMutex(owner, name) {
+    const existing = name && [...this.mutexes].find(([, record]) => record.name === name);
+    const handle = this.allocate({ mutex: existing ? existing[0] : this.next });
+    if (!handle) return 0;
+    if (existing) this.kernel.lastError = ALREADY_EXISTS;
+    else this.mutexes.set(handle, { name, depth: Number(Boolean(owner)) });
+    return handle;
+  }
   allocate(record) {
     if (this.next >= END) return this.error(8);
     const handle = this.next++;
@@ -74,7 +99,7 @@ export class NativeWindowsEvents {
   }
   signal(handle, signaled) {
     const event = this.events.get(handle);
-    if (!event || 'maximum' in event) return this.error(INVALID_HANDLE);
+    if (!event || 'maximum' in event || 'mutex' in event) return this.error(INVALID_HANDLE);
     event.signaled = signaled;
     if (signaled) this.wake();
     return 1;
@@ -90,7 +115,10 @@ export class NativeWindowsEvents {
     return 1;
   }
   poll(handles, all) {
-    const events = handles.map((handle) => this.events.get(handle));
+    const events = handles.map((handle) => {
+      const record = this.events.get(handle);
+      return record?.mutex ? this.mutexes.get(record.mutex) : record;
+    });
     if (events.some((event) => !event)) return this.failed(INVALID_HANDLE);
     if (all) {
       if (!events.every(available)) return null;
@@ -136,44 +164,75 @@ export class NativeWindowsEvents {
     }
   }
   close(handle) {
+    const mutex = this.events.get(handle)?.mutex;
     if (!this.events.delete(handle)) return false;
+    if (mutex && ![...this.events.values()].some((record) => record.mutex === mutex))
+      this.mutexes.delete(mutex);
     this.wake();
     return true;
   }
   snapshot() {
     if (this.waiters.size) throw new Error('Cannot checkpoint a pending native event wait');
-    return { next: this.next, events: structuredClone([...this.events]) };
+    return {
+      next: this.next,
+      events: structuredClone([...this.events]),
+      mutexes: structuredClone([...this.mutexes]),
+    };
   }
   restore(state) {
     if (this.waiters.size) throw new Error('Cannot restore over a pending native event wait');
-    const events = new Map(structuredClone(state.events));
+    const events = new Map(structuredClone(state.events)),
+      mutexes = new Map(structuredClone(state.mutexes)),
+      mutexHandles = new Set(),
+      names = new Set();
     if (
       !Number.isInteger(state.next) ||
       state.next < BASE ||
       state.next > END ||
-      events.size !== state.events.length
+      events.size !== state.events.length ||
+      mutexes.size !== state.mutexes.length
     )
       throw new Error('Invalid native event checkpoint');
     for (const [handle, object] of events) {
       const valid =
         object &&
         typeof object === 'object' &&
-        ('maximum' in object
-          ? Number.isInteger(object.count) &&
-            Number.isInteger(object.maximum) &&
-            object.count >= 0 &&
-            object.maximum > 0 &&
-            object.maximum <= 0x7fffffff &&
-            object.count <= object.maximum
-          : typeof object.manual === 'boolean' && typeof object.signaled === 'boolean');
+        ('mutex' in object
+          ? mutexes.has(object.mutex)
+          : 'maximum' in object
+            ? Number.isInteger(object.count) &&
+              Number.isInteger(object.maximum) &&
+              object.count >= 0 &&
+              object.maximum > 0 &&
+              object.maximum <= 0x7fffffff &&
+              object.count <= object.maximum
+            : typeof object.manual === 'boolean' && typeof object.signaled === 'boolean');
       if (!Number.isInteger(handle) || handle < BASE || handle >= state.next || !valid)
         throw new Error('Invalid native event checkpoint record');
+      if ('mutex' in object) mutexHandles.add(object.mutex);
+    }
+    for (const [id, record] of mutexes) {
+      if (
+        !Number.isInteger(id) ||
+        id < BASE ||
+        id >= state.next ||
+        !mutexHandles.has(id) ||
+        !record ||
+        typeof record.name !== 'string' ||
+        !Number.isSafeInteger(record.depth) ||
+        record.depth < 0 ||
+        (record.name && names.has(record.name))
+      )
+        throw new Error('Invalid native mutex checkpoint record');
+      if (record.name) names.add(record.name);
     }
     this.next = state.next;
     this.events = events;
+    this.mutexes = mutexes;
   }
   closeAll() {
     this.events.clear();
+    this.mutexes.clear();
     this.wake();
   }
 }

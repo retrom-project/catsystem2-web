@@ -29,6 +29,7 @@ import {
 import { NativeExecutableResources } from './engine-executable-resources.mjs';
 import { initializeSDKJavaScript, releaseSDKJavaScript } from './engine-sdk-javascript.mjs';
 import { installNativeDesktopAPIs } from './engine-desktop.mjs';
+import { releaseNativeStartupInstance } from './engine-startup-instance.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -895,6 +896,7 @@ export class NativeEngineProcess {
   }
   async releaseOwner() {
     if (!this.refs.nativeOwner) return;
+    await releaseNativeStartupInstance(this);
     const image = NATIVE_ENGINE_IMAGES[this.profile],
       [, destroy, defaultsGlobal] = image.ownerBootstrap,
       p = this.process;

@@ -64,6 +64,16 @@ reads its 32-bit color depth and releases it. The static WinMain block
 device and startup use the same metrics. Tests verify the original calls and
 packed dimensions after a fresh restore.
 
+The WinMain block also owns the original instance mutex. SDK `635D60`
+and game `79D1F0` construct it from the active Settings, and their original
+destructors close it. The virtual Windows instance uses the
+[CreateMutex contract](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexw):
+opening a duplicate name returns its own handle and sets
+`ERROR_ALREADY_EXISTS`. Mutexes belong to each emulated process, so loading
+another World cannot lock out the current one. Tests cover the original
+constructor and destructor, repeated acquisition on the virtual Win32
+thread, shared handles and fresh restore.
+
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
 UTF-8 file in the original code. The browser caches the end of that immutable

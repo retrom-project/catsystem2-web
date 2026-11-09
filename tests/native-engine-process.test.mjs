@@ -20,6 +20,10 @@ import { readNativeStartupPreferences } from '../src/native/engine-preferences.m
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
+import {
+  initializeNativeStartupInstance,
+  releaseNativeStartupInstance,
+} from '../src/native/engine-startup-instance.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -110,6 +114,15 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         );
         assert.equal(first.kernel.comDepth, 1, 'DxDiag released its nested apartment');
         await checkNativeDirectXStartup(first);
+        await initializeNativeStartupInstance(first);
+        const instance = first.process.load(startupBlock + 28),
+          mutex = first.process.load(instance);
+        assert.equal(first.process.allocations.get(instance), 4);
+        assert.ok(first.kernel.events.mutexes.has(mutex));
+        assert.equal(
+          first.kernel.calls.get(`kernel32.dll!CreateMutex${layout.wide ? 'W' : 'A'}`),
+          1,
+        );
         first.process.store(startupBlock + 44, 1);
         const engineFlag = first.process.load(first.refs.owner + 44);
         const desktop = (engine) => {
@@ -132,6 +145,17 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         fresh.restore(first.snapshot());
         assert.deepEqual(read(fresh), info);
         assert.deepEqual(desktop(fresh), [1391, 703]);
+        assert.equal(fresh.process.load(startupBlock + 28), instance);
+        assert.equal(fresh.process.load(instance), mutex);
+        assert.ok(fresh.kernel.events.mutexes.has(mutex));
+        await releaseNativeStartupInstance(fresh);
+        assert.equal(fresh.process.load(startupBlock + 28), 0);
+        assert.equal(fresh.process.allocations.has(instance), false);
+        assert.equal(fresh.kernel.events.mutexes.has(mutex), false);
+        assert.ok(
+          first.kernel.events.mutexes.has(mutex),
+          'restored Worlds own their handles independently',
+        );
         const p = fresh.process,
           probe = p.allocate(64, true),
           query = fresh.kernel.resolve({ dll: 'KERNEL32.dll', name: 'GlobalMemoryStatusEx' }),

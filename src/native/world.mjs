@@ -34,6 +34,7 @@ import { NativeFESSourceArena } from './fes-source.mjs';
 import { NativeEngineProcess } from './engine-process.mjs';
 import { checkNativeDirectXStartup } from './engine-system-information.mjs';
 import { initializeNativeDesktop } from './engine-desktop.mjs';
+import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
@@ -814,6 +815,7 @@ export class NativeWorld {
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     if (this.bootstrapOwner) {
       await checkNativeDirectXStartup(this.nativeEngine);
+      await initializeNativeStartupInstance(this.nativeEngine);
       await initializeNativeDesktop(this.nativeEngine);
     }
     this.graphics.initializeTextures();

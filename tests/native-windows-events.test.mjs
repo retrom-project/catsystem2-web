@@ -11,6 +11,55 @@ const api =
   (name, ...args) =>
     engine.call(engine.resolve({ dll: 'KERNEL32.dll', name }), args);
 
+test('named mutex handles share ownership through the native wait APIs and fresh restore', async () => {
+  const unicorn = await loadUnicorn(),
+    engine = new NativeEngineProcess(unicorn),
+    { process: p, kernel } = engine,
+    call = api(engine),
+    ansi = p.allocate(64, true),
+    wide = p.allocate(128, true);
+  kernel.writeString(ansi, '起動 mutex');
+  kernel.writeString(wide, '起動 mutex', true);
+  let fresh;
+  try {
+    const first = await call('CreateMutexA', 0, 0, ansi),
+      other = await call('CreateMutexW', 0, 1, wide);
+    assert.ok(first && other && first !== other);
+    assert.equal(await call('GetLastError'), 183);
+    assert.equal(
+      await call('ReleaseMutex', other),
+      0,
+      'opening an existing mutex ignores initial owner',
+    );
+    assert.equal(await call('GetLastError'), 288);
+    assert.equal(await call('WaitForSingleObject', first, 0), 0);
+    assert.equal(await call('WaitForSingleObject', other, 0), 0);
+    assert.equal(await call('SetEvent', other), 0);
+    assert.equal(await call('GetLastError'), 6);
+    assert.equal(await call('CloseHandle', first), 1);
+    fresh = new NativeEngineProcess(unicorn);
+    fresh.restore(engine.snapshot());
+    const replay = api(fresh);
+    assert.equal(await replay('ReleaseMutex', other), 1);
+    const duplicate = await replay('CreateMutexA', 0, 0, ansi);
+    assert.equal(await replay('GetLastError'), 183);
+    assert.equal(await replay('ReleaseMutex', duplicate), 1);
+    assert.equal(await replay('ReleaseMutex', other), 0);
+    assert.equal(await replay('GetLastError'), 288);
+    assert.equal(await replay('CloseHandle', duplicate), 1);
+    assert.equal(await replay('CloseHandle', other), 1);
+    assert.ok(await replay('CreateMutexW', 0, 1, wide));
+    assert.equal(
+      await replay('GetLastError'),
+      0,
+      'the name is available after its last handle closes',
+    );
+  } finally {
+    await fresh?.close();
+    await engine.close();
+  }
+});
+
 test('native unnamed Win32 event waits preserve auto-reset, manual-reset and handle order', async () => {
   const unicorn = await loadUnicorn(),
     engine = new NativeEngineProcess(unicorn),
