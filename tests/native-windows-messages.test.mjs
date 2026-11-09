@@ -187,3 +187,64 @@ test('GetMessage waits for its matching post and can be cancelled at process exi
     p.close();
   }
 });
+
+test('message waits share event priority and preserve unread queue categories', async () => {
+  const { p, kernel, queue, call, root, peek } = await desktop(),
+    event = kernel.events.create(0, 0),
+    handles = p.allocate(4),
+    timeout = 0x102,
+    wait = (mask = 0x4ff, all = 0) => call('MsgWaitForMultipleObjects', 1, handles, all, 0, mask);
+  p.store(handles, event);
+  try {
+    assert.equal(wait(), timeout);
+    queue.post(root, 0x4201, 0, 0);
+    assert.equal(wait(1), timeout);
+    kernel.events.signal(event, true);
+    assert.equal(wait(), 0);
+    assert.equal(wait(), 1);
+    assert.equal(wait(), 1);
+    assert.equal(peek(root, 0x4202, 0x420f), 0);
+    assert.equal(wait(8), timeout);
+    assert.equal(wait(0x100), 1);
+    assert.equal(peek(), 1);
+    assert.equal(wait(), timeout);
+    assert.equal(peek(0, 0, 0, 1), 1);
+
+    kernel.events.signal(event, true);
+    assert.equal(wait(0x4ff, 1), timeout);
+    queue.post(root, 0x4202, 0, 0);
+    assert.equal(wait(0x4ff, 1), 0);
+    assert.equal(kernel.events.wait([event], false, 0), timeout);
+    assert.equal(call('MsgWaitForMultipleObjects', 0, 0, 0, 0, 0x4ff), 0);
+    assert.equal(call('GetQueueStatus', 0x108), 0x1080108);
+    assert.equal(wait(), timeout);
+    assert.equal(call('GetQueueStatus', 0x108), 0x1080000);
+    assert.equal(peek(0, 0, 0, 1), 1);
+    call('PostQuitMessage', 5);
+    assert.equal(wait(1), timeout);
+    assert.equal(wait(8), 1);
+    assert.equal(peek(0, 0, 0, 1), 1);
+
+    const start = () =>
+      p.callAsync(kernel.resolve({ dll: 'USER32.dll', name: 'MsgWaitForMultipleObjects' }), [
+        1,
+        handles,
+        0,
+        0xffffffff,
+        0x1cff,
+      ]);
+    const posting = start();
+    queue.post(root, 0x4203, 0, 0);
+    assert.equal(await posting, 1);
+    assert.equal(peek(0, 0, 0, 1), 1);
+    const signaling = start();
+    kernel.events.signal(event, true);
+    assert.equal(await signaling, 0);
+    const closing = start();
+    assert.equal(queue.cancelWaits(), true);
+    assert.equal(await closing, 0xffffffff);
+  } finally {
+    queue.cancelWaits();
+    p.close();
+  }
+});

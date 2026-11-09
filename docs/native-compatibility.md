@@ -162,6 +162,12 @@ last received message independently of the original process. The queue
 contracts cover explicit posts and dispatch, with timer callbacks and
 generated input handled separately.
 
+[`MsgWaitForMultipleObjects`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-msgwaitformultipleobjects)
+waits on the same synchronization handles as the kernel and on the queue's
+newly posted messages. Wine probes verify handle priority, automatic-reset
+consumption, and the separate changes observed by filtered and unfiltered
+peeks. The changed queue flags survive a settled checkpoint.
+
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The
 virtual Windows namespace shares the event state across handles in one

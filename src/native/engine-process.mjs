@@ -1150,10 +1150,7 @@ export class NativeEngineProcess {
   }
   async close() {
     if (this.closed) return;
-    if (this.kernel.messageQueue.waiters.size) {
-      this.kernel.messageQueue.cancelWaits();
-      await this.queue;
-    }
+    if (this.kernel.messageQueue.cancelWaits()) await this.queue;
     const errors = [];
     try {
       for (const feature of [...this.features.values()].reverse())

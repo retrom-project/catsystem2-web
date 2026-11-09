@@ -146,7 +146,7 @@ export class NativeWindowsEvents {
     this.wake();
     return 1;
   }
-  poll(handles, all) {
+  poll(handles, all, consumeReady = true) {
     const records = handles.map((handle) => this.events.get(handle));
     if (records.some((record) => !record)) return this.failed(INVALID_HANDLE);
     if (records.some((record) => record.event && !(record.access & SYNCHRONIZE)))
@@ -160,22 +160,24 @@ export class NativeWindowsEvents {
     );
     if (all) {
       if (!events.every(available)) return null;
-      for (const event of events) consume(event);
+      if (consumeReady) for (const event of events) consume(event);
       return 0;
     }
     const index = events.findIndex(available);
     if (index < 0) return null;
-    consume(events[index]);
+    if (consumeReady) consume(events[index]);
     return index;
   }
   wait(handles, all, timeout) {
-    const status = this.poll(handles, all);
+    return this.waitUntil(() => this.poll(handles, all), timeout);
+  }
+  waitUntil(poll, timeout) {
+    const status = poll();
     if (status !== null) return status;
     if (!timeout) return WAIT_TIMEOUT;
     return new Promise((resolve) => {
       const waiter = {
-        handles,
-        all,
+        poll,
         timer: null,
         finish: (value) => {
           clearTimeout(waiter.timer);
@@ -197,7 +199,7 @@ export class NativeWindowsEvents {
   }
   wake() {
     for (const waiter of this.waiters) {
-      const result = this.poll(waiter.handles, waiter.all);
+      const result = waiter.poll();
       if (result !== null) waiter.finish(result);
     }
   }
