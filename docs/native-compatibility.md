@@ -12,8 +12,10 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 Cold startup executes each original executable resource block, including its
 identity comparison against startup settings and its copy into the live
 settings. The original resource objects are released before returning through
-the original function epilogue. The following desktop registration and device
-checks stay outside this block; the browser still mounts prepared archives.
+the original function epilogue. The SDK runs the check before loading game
+defaults; the game runs it after reading setup preferences. The following
+desktop registration and device checks stay outside this block; the browser
+still mounts prepared archives.
 The Unicode startup error path resolves fallback text through the original
 game language tree.
 

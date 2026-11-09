@@ -796,6 +796,10 @@ export class NativeWorld {
         (name) => this.storage.readSaved?.(name),
         (detail) => this.host.nativeDiagnostic?.(detail),
       );
+      // The game WinMain reads setup.xml before checking the EXE resources;
+      // the SDK does its resource check before loading game defaults.
+      if (this.profile === 'nekopara-vol3-engine-2.6.1.76')
+        await engine.executableResources?.initialize();
     }
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     this.graphics.initializeTextures();

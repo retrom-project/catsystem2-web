@@ -20,7 +20,7 @@ import { installNativeVolumeInformation } from './windows-volume.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeNativeLanguage, releaseNativeLanguage } from './engine-language.mjs';
 import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
-import { initializeNativeExecutableResources } from './engine-executable-resources.mjs';
+import { NativeExecutableResources } from './engine-executable-resources.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -798,9 +798,10 @@ export class NativeEngineProcess {
         await initializeNativeFileServer(engine);
         await initializeNativeLanguage(engine);
         await engine.initializeOwner(image, options.bootstrapOwner);
-        const loadResources = options.bootstrapOwner.executableResources;
-        if (loadResources && profile.startsWith('sdk-'))
-          await initializeNativeExecutableResources(engine);
+        if (options.bootstrapOwner.executableResources) {
+          engine.executableResources = new NativeExecutableResources(engine);
+          if (profile.startsWith('sdk-')) await engine.executableResources.initialize();
+        }
         if (options.bootstrapOwner.mountFiles) {
           await options.bootstrapOwner.mountFiles(engine);
           // WinMain reads config.int/gamedef.xml and copies the active
@@ -808,8 +809,6 @@ export class NativeEngineProcess {
           // Apply the browser's live preference projection after this copy.
           await engine.process.callAsync(image.readGameDefaults, [], engine.refs.owner);
         }
-        if (loadResources && !profile.startsWith('sdk-'))
-          await initializeNativeExecutableResources(engine);
       } else {
         engine.refs.owner = engine.process.allocate(0x30000, true);
         engine.refs.settings = engine.refs.owner + image.settingsOffset;
