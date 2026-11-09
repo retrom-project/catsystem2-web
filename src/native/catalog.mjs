@@ -1410,6 +1410,39 @@ const extendedDescriptions = [
   [0x11e, 'input.refreshRegions', [], 'void'],
   [0x18b, 'input.setCursorImage', ['VMptr CP932Filename', 'u16 hotspotX', 'u16 hotspotY'], 'void'],
   [0x18c, 'input.cursorVisible', [], 'word'],
+  [
+    0x18e,
+    'plane.configureTrail',
+    [
+      'nativeID target',
+      'i32 samples',
+      'i32 interval',
+      'f32 offsetX',
+      'f32 offsetY',
+      'f32 offsetZ',
+      'word alpha',
+      'f32 scaleX',
+      'f32 scaleY',
+      'f32 scaleZ',
+      'word mode',
+      'word depth',
+    ],
+    'void',
+  ],
+  [
+    0x18f,
+    'plane.pushTrailSample',
+    [
+      'nativeID target',
+      'VMptr vector1',
+      'VMptr vector2',
+      'VMptr vector3',
+      'VMptr matrix4',
+      'word state',
+      'word attributes',
+    ],
+    'void',
+  ],
   [0xed, 'memory.freeVoid', ['pointer block'], 'void'],
   [0x187, 'legacyText.query119', ['handle task'], 'word'],
   [0x1c8, 'legacyText.message120', ['handle task', 'word value'], 'void'],
@@ -3277,7 +3310,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e, 0x3df, 0x3e0, 0x3e2].includes(id) ||
     (id >= 0x7b && id <= 0x8b) ||
     (id >= 0x90 && id <= 0x9a) ||
-    [0x51, 0x5f, 0x15a, 0x191, 0x193, 0x194, 0x1d2].includes(id) ||
+    [0x51, 0x5f, 0x15a, 0x18e, 0x18f, 0x191, 0x193, 0x194, 0x1d2].includes(id) ||
     (id >= 0x1b2 && id <= 0x1b6) ||
     [0x185, 0x186].includes(id) ||
     [0xee, 0xf4, 0xf6, 0x1d4, 0x1d5, 0x281].includes(id) ||

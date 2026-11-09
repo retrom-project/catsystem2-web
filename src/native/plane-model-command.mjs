@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original file-model commands retain their VM formatter, category path and
-// shared filename scratch. The Plane receiver owns the loaded model.
+// Original file-model and trail wrappers. The Plane receiver owns the
+// loaded model, its history and the auxiliary graphs used to draw it.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
 const commands = new Map([
   [0x51, { words: 2, message: 69, addresses: [0x640ce0, 0x5133c0] }],
   [0x15a, { words: 3, message: 71, addresses: [0x640c40, 0x513320] }],
+  [0x18e, { words: 12, message: 79, addresses: [0x640fc0, 0x5136a0] }],
+  [0x18f, { words: 7, message: 80, addresses: [0x640e60, 0x513540] }],
 ]);
+const messages = new Set([...commands.values()].map(({ message }) => message));
 
 export class NativePlaneModelCommands {
   constructor(engine, world) {
@@ -15,7 +18,7 @@ export class NativePlaneModelCommands {
     this.sdk = Number(engine.profile.startsWith('sdk-'));
     const p = this.process,
       transport = p.trap(
-        'original plane file-model task transport',
+        'original Plane model and trail task transport',
         7,
         async ([sender, target, raw, w, l, flags, out]) => {
           const origin = engine.currentTaskID,
@@ -23,8 +26,8 @@ export class NativePlaneModelCommands {
           if (
             origin == null ||
             sender !== world.nativeTaskID(origin) ||
-            !target ||
-            ![69, 71].includes(message) ||
+            (!target && message !== 80) ||
+            !messages.has(message) ||
             flags
           )
             throw new Error('Original Plane model command sent an unexpected packet');
@@ -48,12 +51,21 @@ export class NativePlaneModelCommands {
   async apply(id, args, machine, task) {
     const spec = commands.get(id),
       target = args[0] ?? machine.nativeArgument(0),
+      dispatch = target || id === 0x18f,
       p = this.process,
-      argv = p.allocate(target ? spec.words * 4 : 4);
+      argv = p.allocate(dispatch ? spec.words * 4 : 4);
     let bridge, host;
     try {
       p.store(argv, target);
-      if (target) {
+      if (dispatch) {
+        if (id === 0x18f)
+          for (const [index, length] of [
+            [1, 12],
+            [2, 12],
+            [3, 12],
+            [4, 64],
+          ])
+            machine.bytes(args[index] ?? machine.nativeArgument(index), length);
         const memory =
           this.world.objects.machine(task.id) === machine
             ? await this.world.getNativeFeature('task-memory')

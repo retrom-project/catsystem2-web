@@ -7,6 +7,7 @@ export default {
     'native-image-composite.spec.mjs',
     'native-render-sources.spec.mjs',
     'native-tile-plane.spec.mjs',
+    'native-plane-trail.spec.mjs',
     'native-view-geometry.spec.mjs',
     'native-area-effect.spec.mjs',
   ],
