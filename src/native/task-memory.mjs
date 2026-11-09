@@ -157,7 +157,7 @@ export class NativeTaskMemory {
     entry.ready = true;
     await this.sync(record, entry);
   }
-  async pointer(id) {
+  async pointer(id, synchronized) {
     if (id === null) return 0;
     const record = this.world.objects.objects.get(id);
     if (!record) throw new Error(`Native task prefix refers to missing World task ${id}`);
@@ -165,6 +165,7 @@ export class NativeTaskMemory {
     const actual = record.implementation?.pointer;
     if (actual && entry?.pointer !== actual) {
       if (entry?.owned) {
+        synchronized?.clear();
         await this.release(entry);
         this.refs.entries.delete(id);
       }
@@ -182,6 +183,8 @@ export class NativeTaskMemory {
         pointer = p.allocate(0x400, true);
       p.write(source, name);
       try {
+        // An original constructor can call back into the task graph.
+        synchronized?.clear();
         await this.call(
           this.sdk ? 0x4b8cd0 : 0x5dcab0,
           [record.nativeID ?? id, source, record.frameRate],
@@ -197,15 +200,18 @@ export class NativeTaskMemory {
       this.refs.entries.set(id, entry);
       this.refs.byPointer.set(pointer, id);
     }
-    if (entry.ready) await this.sync(record, entry);
+    if (entry.ready && !synchronized?.has(entry)) {
+      await this.sync(record, entry, synchronized);
+      synchronized?.add(entry);
+    }
     return entry.pointer;
   }
-  async sync(record, entry = this.refs.entries.get(record.id)) {
+  async sync(record, entry = this.refs.entries.get(record.id), synchronized) {
     if (!entry?.ready) return;
     const p = this.process,
       at = entry.pointer;
     p.store(at + 4, record.nativeID ?? record.id);
-    p.store(at + 12, await this.pointer(record.parent));
+    p.store(at + 12, await this.pointer(record.parent, synchronized));
     for (const [offset, value] of [
       [64, record.flags ?? record.kind],
       [72, record.frameRate],
@@ -841,9 +847,12 @@ export class NativeTaskMemory {
       }
       this.pullHostBindings();
       await this.prune();
+      // Siblings share ancestors. Sync each ready prefix once in this pass;
+      // the next native call must see current World state again.
+      const synchronized = new Set();
       for (const record of this.world.objects.objects.values())
         if (record.state === 'active') {
-          await this.pointer(record.id);
+          await this.pointer(record.id, synchronized);
           const machine = this.machine(record.id);
           if (machine) this.mapMachine(record.id, machine);
         }

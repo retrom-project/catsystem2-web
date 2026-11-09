@@ -45,6 +45,52 @@ test('Root and Script prefixes acquire the same ready renderer view without crea
   }
 });
 
+test('native calls see the current ancestor and its World fields after a prefix is rebound', async () => {
+  const engine = new NativeEngineProcess(await loadUnicorn(), { profile: 'authored' }),
+    p = engine.process,
+    records = new Map(),
+    world = { objects: { objects: records, machine: () => null } },
+    memory = new NativeTaskMemory(engine, world);
+  try {
+    // Put leaves before their ancestors so the native preparation discovers
+    // shared prefixes both recursively and in its active-task pass.
+    for (const [id, parent] of [
+      [3, 2],
+      [4, 2],
+      [2, 1],
+      [1, null],
+    ]) {
+      const record = { id, parent, kind: 0, state: 'active', userValue: 7 };
+      records.set(id, record);
+      memory.bind(record, p.allocate(128, true));
+    }
+    const a = memory.refs.entries.get(3).pointer,
+      b = memory.refs.entries.get(4).pointer,
+      inspect = p.trap('read and change an authored native prefix', 3, ([a, b, expected]) => {
+        const parent = p.load(a + 12),
+          root = p.load(parent + 12);
+        assert.equal(p.load(b + 12), parent);
+        assert.equal(root, expected);
+        const result = p.load(root + 92);
+        p.store(root + 92, 0xffffffff);
+        return result;
+      }),
+      oldRoot = memory.refs.entries.get(1).pointer;
+    assert.equal(await engine.call(inspect, [a, b, oldRoot]), 7);
+    assert.equal(p.load(oldRoot + 92), 0xffffffff);
+    assert.equal(await engine.call(inspect, [a, b, oldRoot]), 7);
+
+    const newRoot = p.allocate(128, true);
+    records.get(1).userValue = 83;
+    memory.unbind(1);
+    memory.bind(records.get(1), newRoot);
+    assert.equal(await engine.call(inspect, [a, b, newRoot]), 83);
+    assert.equal(p.load(oldRoot + 92), 0xffffffff);
+  } finally {
+    await engine.close();
+  }
+});
+
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(`the shared raw Base packet receiver uses the canonical graph and preserves unwritten output in ${profile}`, async () => {
     const engine = new NativeEngineProcess(await loadUnicorn(), { profile }),
