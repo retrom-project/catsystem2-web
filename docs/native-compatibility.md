@@ -90,8 +90,8 @@ unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    655 |             82 |                     19 |                     253 |
-| Game / 2.6.1.76 | 1,055 |                    905 |             58 |                     17 |                      75 |
+| SDK / 2.6.1.74  | 1,009 |                    656 |             82 |                     19 |                     252 |
+| Game / 2.6.1.76 | 1,055 |                    906 |             58 |                     17 |                      74 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -254,8 +254,8 @@ The four [registry interfaces](native-registry.md) execute the original A/W
 wrapper families with 112,788 comparisons. The browser's private HKCU hive uses
 separate platform persistence; 914 isolated Wine API cases and 81,152 NT CP932
 conversion inputs validate that boundary independently. Shared Win32 NLS
-coverage is stated separately. The additional three
-[input-owner/mask/wheel interfaces](native-input-commands.md) have 2,716
+coverage is stated separately. Four additional
+[plane and input interfaces](native-input-commands.md) have 3,686
 comparisons plus independent-Top and fresh-World device coverage.
 
 ## Native call ABI
@@ -519,7 +519,7 @@ bodies are included in public tests or documentation.
 | Configuration scalar/voice wrappers  |                  1,088 | Both builds' getters, fullscreen/multi-window condition and system-voice read/write/random selection. Full Engine bytes, result/control and RNG draw count; RNG words are authored inputs.                                                                                      |
 | Shared configuration memory          |                    326 | Codec push, both original FES field dispatchers and codec pull; complete observed byte projection. Host parser, expressions, variable/string banks and queued events are boundaries.                                                                                            |
 | Registry wrappers                    |                112,788 | Two profiles, 9,398 complete wrappers/56,394 checks each. ADVAPI32 is separately checked against 914 pinned Wine cases; NT CP932 against 81,152 conversion inputs. Shared name-conversion NLS remains an explicit boundary.                                                     |
-| Input owner/mask/wheel wrappers      |                  2,716 | Two profiles, 291 calls/1,358 comparisons each, plus real bitmap-mask/device ownership and fresh-World coverage.                                                                                                                                                                |
+| Plane and input wrappers             |                  3,686 | Two profiles, 388 calls/1,843 comparisons each, plus separate Graph rectangle, bitmap-mask/device ownership and fresh-World coverage.                                                                                                                                           |
 | Language prefixes/updates            |                     60 | Original game-only 0x40C/41D wrappers, fallback indices, single terminators, dirty marker and PostMessageW packets. Windows text conversion is a host boundary.                                                                                                                 |
 | Global language tables               |                  8,040 | SDK 3,928 and game 4,112 comparisons of original file loaders, parsers, complete maps and prefix lookup; game also covers original filename helpers. CRT, file I/O and Win32 NLS are explicit boundaries.                                                                       |
 | Frozen game language resources       |                  1,855 | Additional native i386 ELF execution compares both complete language maps (934 Chinese/921 English entries) and every corresponding lookup; no proprietary table text is distributed.                                                                                           |

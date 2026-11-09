@@ -267,6 +267,9 @@ export class NativeGraphicsPlatform {
         flags,
         fromHost: true,
         nativeSenderWorldID: senderWorldID,
+        // The legacy text task enters the original Graph message dispatcher.
+        // Its registration word is a flag, even if it came through a raw send.
+        graphInputRegistration: task.record.kind === 8 && message === 89,
       },
       value = await (task.plane || task).message([sender, message, w, l], context);
     if (out && Number.isInteger(value)) p.store(out, value);

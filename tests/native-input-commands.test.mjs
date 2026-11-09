@@ -3,24 +3,104 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { verifyInputCommands } from '../scripts/verify-native-input-commands.mjs';
+import { verifyNativePlaneInput } from '../scripts/verify-native-plane-input.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
+import { floatBits } from '../src/kcs.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
-])
+]) {
   test(
     `${profile} complete input command wrappers preserve task packets and unwritten outputs`,
     { skip: !process.env[variable] },
     async () => {
-      await verifyInputCommands(new Uint8Array(await readFile(process.env[variable])), profile);
+      const bytes = new Uint8Array(await readFile(process.env[variable]));
+      await verifyInputCommands(bytes, profile);
+      await verifyNativePlaneInput(bytes, profile);
     },
   );
+  test(
+    `${profile} original 5F binds the moving legacy text graph with a literal flag word`,
+    { skip: !process.env[variable] },
+    async () => {
+      const game = memoryGame({
+          'engine.exe': new Uint8Array(await readFile(process.env[variable])),
+          'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
+        }),
+        make = () => {
+          const random = new ParticleRandom();
+          return new NativeWorld({
+            game,
+            profile,
+            random,
+            images: {},
+            host: {},
+            configuration: new NativeConfiguration({ profile }),
+            motionLibrary: new MotionLibrary(game, { profile, random }),
+            storage: { read: async () => null, write: async () => true },
+          });
+        },
+        send = async (world, id, message, fields) => {
+          const p = world.nativeEngine.process,
+            pointer = p.allocate(32, true);
+          try {
+            fields.forEach((field, i) => p.store(pointer + 4 * i, field));
+            await world.sendEngine(id, world.main.id, message, 0, pointer, {
+              nativePointer: true,
+              payload: p,
+            });
+          } finally {
+            p.free(pointer);
+          }
+        },
+        first = make(),
+        fresh = make();
+      try {
+        // Build the original legacy-text task without opening the game's
+        // independent E-mote view.
+        await first.ensureNativeEngine();
+        first.root = await first.objects.create({ kind: 1, name: 'BASE TASK' });
+        first.main = await first.spawnScript('main.kcs');
+        const id = await first.objects.create({ kind: 8, parent: first.root }),
+          target = first.nativeTaskID(id),
+          { main } = first,
+          apply = (args) => first.runtime.native('main', 0x5f, args, main.machine, main);
+        await send(first, id, 41, [0, 0, 0, floatBits(20), floatBits(15), 0, 0, 0]);
+        await send(first, id, 49, [3.5, 5.5, -8.5].map(floatBits));
+        await send(first, id, 51, [11.25, 2.25, 1].map(floatBits));
+        assert.deepEqual(await apply([0]), { control: 2 });
+        assert.deepEqual(await apply([target, 0xf2345678]), { control: 2 });
+        const region = first.inputFor(id).get(id);
+        assert.deepEqual(region.bounds, [7, -3, 27, 11]);
+        assert.equal(region.priority | 0, -8);
+        assert.equal(region.flags, 0xf2345678);
+        assert.equal(region.receiver, first.nativeTaskID(main.id));
+        assert.equal(region.mask, 7);
+        await apply([target, 3]);
+        assert.equal(first.inputFor(id).regions.filter((r) => r.owner === id).length, 1);
+        assert.equal(region.flags, 0xf2345678);
+        await fresh.restore(structuredClone(first.snapshot()));
+        const restored = fresh.inputFor(id).get(id);
+        assert.deepEqual(restored, region);
+        await send(fresh, id, 51, [20.75, 16.125, 2].map(floatBits));
+        assert.deepEqual(restored.bounds, [17, 10, 37, 25]);
+        assert.equal(restored.priority | 0, -8);
+        assert.deepEqual(region.bounds, [7, -3, 27, 11]);
+        await send(fresh, id, 90, []);
+        assert.equal(fresh.inputFor(id).get(id), null);
+      } finally {
+        await fresh.close({ flushFiles: false });
+        await first.close({ flushFiles: false });
+      }
+    },
+  );
+}
 
 test(
   'SDK input commands use the caller Top, original bitmap mask and real wheel device across fresh restore',

@@ -2750,6 +2750,7 @@ const hostDescriptions = [
     'void',
   ],
   [0x5e, 'plane.setAlpha', ['handle task', 'u32 alpha'], 'void'],
+  [0x5f, 'plane.registerGraphInput', ['nativeID target', 'word flags'], 'void'],
   [0x62, 'plane.hasBitmap', ['handle task'], 'bool'],
   [0x63, 'plane.clear', ['handle task'], 'void'],
   [0x64, 'plane.setColor', ['handle task', 'word colorARGB', 'word override'], 'void'],
@@ -3276,7 +3277,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e, 0x3df, 0x3e0, 0x3e2].includes(id) ||
     (id >= 0x7b && id <= 0x8b) ||
     (id >= 0x90 && id <= 0x9a) ||
-    [0x51, 0x15a, 0x191, 0x193, 0x194, 0x1d2].includes(id) ||
+    [0x51, 0x5f, 0x15a, 0x191, 0x193, 0x194, 0x1d2].includes(id) ||
     (id >= 0x1b2 && id <= 0x1b6) ||
     [0x185, 0x186].includes(id) ||
     [0xee, 0xf4, 0xf6, 0x1d4, 0x1d5, 0x281].includes(id) ||

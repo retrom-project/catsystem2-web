@@ -4,6 +4,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 
 export const NATIVE_INPUT_COMMAND_CONTRACTS = Object.freeze(
   [
+    [0x5f, 2, 2, 0x6411b0, 0x513890],
     [0x6b, 1, 1, 0x649010, 0x5157e0],
     [0x18a, 2, 2, 0x649070, 0x515840],
     [0x3a9, 0, 2, 0x656ab0, 0x521c20],
@@ -33,7 +34,7 @@ export class NativeInputCommands {
           senderWorldID = world.resolveTaskID(sender, origin);
         if (senderWorldID == null)
           throw new Error('Native input command sender is outside its Top');
-        if (![this.sdk ? 32 : 34, 97, 133, 157].includes(message))
+        if (![this.sdk ? 32 : 34, 89, 97, 133, 157].includes(message))
           throw new Error('Native input command emitted an unreviewed task message');
         const context = {
             payload: this.memory,
@@ -41,6 +42,7 @@ export class NativeInputCommands {
             nativeResult: out,
             fromHost: true,
             nativeSenderWorldID: senderWorldID,
+            graphInputRegistration: message === 89,
             flags,
           },
           value = await world.sendNativeEngine(target, senderWorldID, message, w, l, context);
@@ -58,7 +60,9 @@ export class NativeInputCommands {
     const spec = byID.get(id);
     if (!spec) return undefined;
     const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
+    if (id === 0x5f && !words.length) words.push(machine.nativeArgument(0));
+    const count = id === 0x5f && !words[0] ? 1 : spec.words;
+    while (words.length < count) words.push(machine.nativeArgument(words.length));
     if (id === 0x18a && words[1])
       words[1] = await (await this.world.getNativeFeature('bitmap-memory')).wrapper(words[1]);
     const p = this.process,

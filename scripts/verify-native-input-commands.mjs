@@ -147,14 +147,17 @@ export async function verifyInputCommands(bytes, profile) {
         Object.assign(raw.state, mode);
         Object.assign(host.state, mode);
         const args =
-          spec.id === 0x6b
-            ? [[0, 1, 0x80000000, 0xffffffff][n % 4]]
-            : spec.id === 0x18a
-              ? [[0, 17, 0xffffffff][n % 3], [0, 11, 12, 13][n % 4]]
-              : [];
+          spec.id === 0x5f
+            ? [[0, 17, 0xffffffff][n % 3], [0, 19, 0x80000000, 0xffffffff][n % 4]]
+            : spec.id === 0x6b
+              ? [[0, 1, 0x80000000, 0xffffffff][n % 4]]
+              : spec.id === 0x18a
+                ? [[0, 17, 0xffffffff][n % 3], [0, 11, 12, 13][n % 4]]
+                : [];
         await run(spec, args);
       }
-      await run(spec, spec.id === 0x6b ? [0xffffffff] : spec.id === 0x18a ? [0, 12] : [], true);
+      const adjacent = { 0x5f: [17, 0xf2345678], 0x6b: [0xffffffff], 0x18a: [0, 12] };
+      await run(spec, adjacent[spec.id] ?? [], true);
     }
     return {
       profile,
@@ -162,7 +165,7 @@ export async function verifyInputCommands(bytes, profile) {
       comparisons,
       covered: Object.fromEntries([...covered].map(([id, n]) => [id.toString(16), n])),
       scope:
-        'Three complete original input wrappers. An explicit authored task receiver covers returned/unwritten Root and input queries, successful/failed routes, zero/missing targets, signed DWORD boundaries, optional source bitmap prefixes and aliases, original output canaries and adjacent argument reads. The raw stack is explicitly seeded CC for uninitialized locals. Actual device/bitmap-mask/freshWorld are separate public integration tests.',
+        'Four complete original input wrappers. An explicit authored task receiver covers returned/unwritten Root and input queries, successful/failed routes, zero/missing targets, signed DWORD boundaries, literal plane registration flags, optional bitmap prefixes and aliases, output canaries and adjacent argument reads. The raw stack is seeded CC for uninitialized locals. Actual device/bitmap-mask/plane/freshWorld are separate integration tests.',
     };
   } finally {
     await host.engine.close();

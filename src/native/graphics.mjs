@@ -47,6 +47,7 @@ import { NativeVMR9 } from './vmr9.mjs';
 import { NativeDirectShow } from './directshow.mjs';
 import { installNativePlaneMovieCommands } from './plane-movie-command.mjs';
 import { installNativePlaneModelCommands } from './plane-model-command.mjs';
+import { nativePlaneInputGeometry } from './plane-input-geometry.mjs';
 import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
@@ -450,6 +451,7 @@ export class NativeGraphicTask {
       bindFlags: 0,
       bindArea: [0, 0, 0, 0],
       bindExtra: 0,
+      inputTracksGraph: false,
       rect: [0, 0, 0, 0],
       imageIndex: -1,
       shown: true,
@@ -670,12 +672,14 @@ export class NativeGraphicTask {
         if (this.state.inheritPosition && !w) this.inheritTransform();
         else setVector(MOTION_ABI.base, floats(l, 3));
         this.sync();
+        this.updateGraphInputArea();
         await this.broadcast(50, w, l, context);
         return 0;
       case 50:
       case 52:
         if (this.state.inheritPosition && !w) this.inheritTransform();
         this.sync();
+        if (id === 50 || bitsFloat(w) === 0) this.updateGraphInputArea();
         await this.broadcast(id, w, l, context);
         return 0;
       case 54:
@@ -685,6 +689,7 @@ export class NativeGraphicTask {
         if (this.state.inheritPosition && !w) this.inheritTransform();
         else setVector(MOTION_ABI.pos, floats(l, 3));
         this.sync();
+        this.updateGraphInputArea();
         await this.broadcast(52, w, l, context);
         return 0;
       case 53:
@@ -697,6 +702,7 @@ export class NativeGraphicTask {
         setVector(MOTION_ABI.rotation, floats(l, 3));
         if (this.graph) this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = false;
         this.sync();
+        this.updateGraphInputArea();
         await this.broadcast(56, w, l, context);
         return 0;
       case 56:
@@ -712,6 +718,7 @@ export class NativeGraphicTask {
           } else setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
           this.sync();
         }
+        this.updateGraphInputArea();
         await this.broadcast(id, w, l, context);
         return 0;
       case 57:
@@ -720,6 +727,7 @@ export class NativeGraphicTask {
           this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
         }
         this.sync();
+        this.updateGraphInputArea();
         await this.broadcast(58, w, l, context);
         return 0;
       case 59:
@@ -754,6 +762,7 @@ export class NativeGraphicTask {
         // 6774E0 always selects the geometry graph, ignoring message wParam.
         if (this.graph) setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
         this.sync();
+        this.updateGraphInputArea();
         await this.broadcast(67, w, l, context);
         return 0;
       case 68:
@@ -809,10 +818,14 @@ export class NativeGraphicTask {
         this.state.vramType = l;
         return 0;
       case 89: {
-        if (this.state.receiver !== -1) return 0;
+        const tracksGraph = context.graphInputRegistration && this.record.kind !== 6;
+        if (tracksGraph) this.state.inputTracksGraph = true;
+        if (this.state.receiver !== -1) return tracksGraph ? undefined : 0;
         if (!this.input?.register)
           throw new Error('Native plane input registration is unavailable');
-        const fields = Array.from({ length: 6 }, (_, i) => load(l + i * 4));
+        const fields = tracksGraph
+          ? this.graphInputFields(l)
+          : Array.from({ length: 6 }, (_, i) => load(l + i * 4));
         const bounds = fields.slice(0, 4).map((v) => v | 0);
         const full =
           bounds[0] <= 0 &&
@@ -832,7 +845,7 @@ export class NativeGraphicTask {
         this.state.bindFlags = fields[5];
         this.state.receiver = sender;
         this.state.changed = 1;
-        return 1;
+        return tracksGraph ? undefined : 1;
       }
       case 90:
         if (this.state.receiver !== -1) {
@@ -841,6 +854,7 @@ export class NativeGraphicTask {
           this.state.receiver = -1;
           this.state.changed = 1;
         }
+        this.state.inputTracksGraph = false;
         return 0;
       case 94:
         this.state.changed = l;
@@ -910,6 +924,26 @@ export class NativeGraphicTask {
           throw new Error(`Native graphic message ${id} requires its complete plane adapter`);
         return this.base.message(words, context);
     }
+  }
+  graphInputFields(flags) {
+    const motion = this.graph?.kx2,
+      vector = (offset) => (motion ? motionVector(motion, offset) : [0, 0, 0]),
+      { bounds, priority } = nativePlaneInputGeometry(
+        vector(MOTION_ABI.base),
+        vector(MOTION_ABI.pos),
+        this.state.rect.slice(2, 4),
+      );
+    return [...bounds, priority, flags];
+  }
+  updateGraphInputArea() {
+    if (!this.state.inputTracksGraph) return;
+    const input = this.input,
+      region = input?.get(this.record.id);
+    if (!region) return;
+    const bounds = this.graphInputFields(0).slice(0, 4);
+    region.bounds = bounds;
+    this.state.bindArea = bounds.slice();
+    input.changed = true;
   }
   async forwardInput(message, w, l, context = {}) {
     if (this.state.receiver === -1) return;
