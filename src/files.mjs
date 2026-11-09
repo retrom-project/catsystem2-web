@@ -336,16 +336,18 @@ export class GameFiles {
       return canPlayType(converted.mime) ? { url: converted.url } : null;
     }
     const extension = name.split('.').at(-1).toLowerCase(),
-      mime = {
-        mp4: 'video/mp4',
-        m4v: 'video/mp4',
-        webm: 'video/webm',
-        ogv: 'video/ogg',
-        wmv: 'video/x-ms-wmv',
-        avi: 'video/x-msvideo',
-        mpg: 'video/mpeg',
-        mpeg: 'video/mpeg',
-      }[extension];
+      mime =
+        stream?.mime ??
+        {
+          mp4: 'video/mp4',
+          m4v: 'video/mp4',
+          webm: 'video/webm',
+          ogv: 'video/ogg',
+          wmv: 'video/x-ms-wmv',
+          avi: 'video/x-msvideo',
+          mpg: 'video/mpeg',
+          mpeg: 'video/mpeg',
+        }[extension];
     if (!mime || !canPlayType(mime)) return null;
     if (hit && hit.offset === 0 && hit.size === hit.file.size && hit.file.url)
       return { url: hit.file.url };

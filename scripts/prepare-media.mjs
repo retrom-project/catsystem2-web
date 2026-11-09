@@ -28,7 +28,7 @@ const digest = async (stream) => {
     createReadStream(hit.file.path, { start: hit.offset, end: hit.offset + hit.size - 1 });
 // Qualified resources keep archives with duplicate basenames independent.
 for (const [name, hit] of [...game.qualifiedIndex, ...game.index]) {
-  if (!/\.(wmv|avi|mpg|mpeg)$/i.test(name)) continue;
+  if (!/\.(wmv|avi|mpg|mpeg|ogv)$/i.test(name)) continue;
   const key = JSON.stringify([hit.file.path, hit.offset, hit.size]);
   if (!groups.has(key)) groups.set(key, { hit, sources: [] });
   groups.get(key).sources.push(name);

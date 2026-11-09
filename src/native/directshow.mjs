@@ -2,7 +2,12 @@
 // DirectShow connection boundary for the original renderless SimplePlane movie.
 import { nativeImageIdentity } from './engine-process.mjs';
 import { writeMoviePixels } from './movie-texture-renderer.mjs';
-import { NativeWebMFilters, WEBM_CONTRACTS, WEBM_CONVERTERS, WEBM_GUIDS } from './movie-webm.mjs';
+import { WEBM_CONVERTERS } from './movie-webm.mjs';
+import {
+  MOVIE_FILTER_CONTRACTS,
+  MOVIE_FILTER_GUIDS,
+  NativeMovieFilters,
+} from './movie-split-filters.mjs';
 
 const E_NOINTERFACE = 0x80004002;
 const E_POINTER = 0x80004003;
@@ -20,7 +25,7 @@ const NOTIFY = [0xdca3f5df, 0x4d03bb3a, 0x618481bd, 0x0cfafb4b];
 const directShow = (word) => [word, 0x11ce0ad4, 0x20003ab0, 0x70a70baf];
 const ASYNC_READER = directShow(0x56a868aa);
 const GUIDS = {
-  ...WEBM_GUIDS,
+  ...MOVIE_FILTER_GUIDS,
   graph: [directShow(0x56a8689f), directShow(0x56a868a9)],
   control: [directShow(0x56a868b1)],
   seeking: [[0x36b73880, 0x11cfc2c8, 0x8000468b, 0x60ef6c5f]],
@@ -32,7 +37,7 @@ const GUIDS = {
   config: [[0x5a804648, 0x48674f66, 0x5c4f439c, 0xb8f12c82]],
 };
 const CONTRACTS = {
-  ...WEBM_CONTRACTS,
+  ...MOVIE_FILTER_CONTRACTS,
   graph: [
     18,
     { 3: ['addFilter', 2], 4: ['removeFilter', 1], 7: ['connectDirect', 3], 12: ['renderPin', 1] },
@@ -92,7 +97,7 @@ export class NativeDirectShow {
       count: 5,
       fn: (args) => this.createInstance(...args),
     });
-    this.webm = new NativeWebMFilters(this, UNKNOWN);
+    this.splitFilters = new NativeMovieFilters(this, UNKNOWN);
     engine.registerFeature('directshow', this);
   }
   guid(address, value) {
@@ -100,7 +105,7 @@ export class NativeDirectShow {
   }
   definition(kind, slot) {
     const [name, count] = IUNKNOWN[slot] ?? CONTRACTS[kind][1][slot] ?? [null, 0],
-      service = slot >= 3 && WEBM_CONTRACTS[kind] ? this.webm : this;
+      service = slot >= 3 && MOVIE_FILTER_CONTRACTS[kind] ? this.splitFilters : this;
     return {
       name: `DirectShow ${kind} slot ${slot}`,
       args: count + 1,
@@ -194,7 +199,7 @@ export class NativeDirectShow {
       const converter = [...WEBM_CONVERTERS].find(([, guid]) => this.guid(clsid, guid));
       if (!converter) throw new Error('Unimplemented native DirectShow COM class');
       if (!this.guid(iid, GUIDS.filter[0])) return E_NOINTERFACE;
-      record = this.webm.createFilter(converter[0]);
+      record = this.splitFilters.createFilter(converter[0]);
     }
     p.store(output, record.primary);
     return 0;
@@ -244,9 +249,9 @@ export class NativeDirectShow {
       if (record.filter) await this.removeFilter(record, record.filter);
       if (record.textureFilter) await this.removeFilter(record, record.textureFilter);
       if (record.source) await this.removeFilter(record, record.source);
-      for (const pointer of Object.values(record.webmFilters ?? {}))
+      for (const pointer of Object.values(record.splitFilters ?? {}))
         await this.removeFilter(record, pointer);
-    } else await this.webm.destroy(record);
+    } else await this.splitFilters.destroy(record);
     this.freeInterfaces(record);
   }
   freeInterfaces(record) {
@@ -259,7 +264,7 @@ export class NativeDirectShow {
   async addFilter(graph, pointer, name) {
     if (!pointer) return E_POINTER;
     const filter = this.objects.get(pointer);
-    if (filter?.role) return this.webm.addFilter(graph, filter, name);
+    if (filter?.role) return this.splitFilters.addFilter(graph, filter, name);
     if (filter?.notify) {
       if (
         graph.filter ||
@@ -296,7 +301,7 @@ export class NativeDirectShow {
   async removeFilter(graph, pointer) {
     if (!pointer) return E_POINTER;
     const filter = this.objects.get(pointer);
-    if (filter?.role) return this.webm.removeFilter(graph, filter);
+    if (filter?.role) return this.splitFilters.removeFilter(graph, filter);
     if (graph.filter === pointer) {
       await this.vmr.disconnect(filter.notify);
       graph.filter = 0;
@@ -305,7 +310,7 @@ export class NativeDirectShow {
       return 0;
     }
     if (graph.source !== pointer && graph.textureFilter !== pointer) return E_INVALIDARG;
-    if (graph.source === pointer) await this.webm.disconnectSource(graph);
+    if (graph.source === pointer) await this.splitFilters.disconnectSource(graph);
     const result = await this.call(pointer, 13, 0, 0);
     if (!FAILED(result)) {
       if (graph.source === pointer) graph.source = 0;
@@ -382,7 +387,12 @@ export class NativeDirectShow {
     const adapter = await this.world.host.nativeMovie(graph.filename, graph.owner, this.world);
     try {
       if (
-        !(await adapter.open(graph.filename, { bytes, sha256, audioEnabled: graph.audioEnabled }))
+        !(await adapter.open(graph.filename, {
+          bytes,
+          sha256,
+          audioEnabled: graph.audioEnabled,
+          mime: graph.mime,
+        }))
       ) {
         await adapter.close();
         return null;
@@ -425,12 +435,12 @@ export class NativeDirectShow {
     if (!pin || !graph.source || (!graph.filter && !graph.textureFilter))
       return VFW_E_CANNOT_RENDER;
     const output = this.objects.get(pin);
-    if (output?.parentFilter) return this.webm.renderPin(graph, output);
+    if (output?.parentFilter) return this.splitFilters.renderPin(graph, output);
     if (pin !== graph.source + 248) return VFW_E_CANNOT_RENDER;
     return this.connectMedia(graph, pin);
   }
   connectDirect(graph, source, input, mediaType) {
-    return this.webm.connectDirect(graph, source, input, mediaType);
+    return this.splitFilters.connectDirect(graph, source, input, mediaType);
   }
   async connectMedia(graph, pin) {
     if (graph.video) return VFW_E_WRONG_STATE;

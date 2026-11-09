@@ -7,7 +7,7 @@ import { kcsProgram } from '../helpers.mjs';
 
 for (const [profile, variable, texture, format] of profiles.flatMap(([profile, variable]) =>
   [false, true].flatMap((texture) =>
-    (texture ? ['avi', 'vp8'] : ['avi', 'vp8', 'vp9']).map((format) => [
+    (texture ? ['avi', 'vp8', 'ogv'] : ['avi', 'vp8', 'vp9', 'ogv']).map((format) => [
       profile,
       variable,
       texture,
@@ -15,7 +15,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     ]),
   ),
 ))
-  test(`${profile} original Plane ${texture ? 'Texture Renderer' : 'VMR9'} plays and restores its mounted ${format === 'avi' ? 'AVI' : 'WebM ' + format.toUpperCase()}`, async ({
+  test(`${profile} original Plane ${texture ? 'Texture Renderer' : 'VMR9'} plays and restores its mounted ${['avi', 'ogv'].includes(format) ? format.toUpperCase() : 'WebM ' + format.toUpperCase()}`, async ({
     page,
   }) => {
     const gamePE = profile.startsWith('nekopara-');
@@ -24,9 +24,10 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       'Requires the frozen engine and its imported driver',
     );
     test.setTimeout(90000);
-    const directWebM = format !== 'avi',
-      extension = directWebM ? 'webm' : 'avi';
-    const [exe, source, webm] = await Promise.all([
+    const split = format !== 'avi',
+      ogg = format === 'ogv',
+      extension = split && !ogg ? 'webm' : format;
+    const [exe, source, converted] = await Promise.all([
       readFile(process.env[variable]),
       readFile(
         new URL(
@@ -34,11 +35,17 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             avi: '../fixtures/native-plane-movie.avi',
             vp8: '../fixtures/native-plane-movie-vp8.webm',
             vp9: '../fixtures/native-plane-movie.webm',
+            ogv: '../fixtures/native-plane-movie.ogv',
           }[format],
           import.meta.url,
         ),
       ),
-      readFile(new URL('../fixtures/native-plane-movie.webm', import.meta.url)),
+      readFile(
+        new URL(
+          ogg ? '../fixtures/native-plane-movie-ogv.mp4' : '../fixtures/native-plane-movie.webm',
+          import.meta.url,
+        ),
+      ),
     ]);
     await page.route('**/test/engine.exe', (route) => route.fulfill({ body: exe }));
     if (gamePE) {
@@ -50,11 +57,13 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     );
     files['main.kcs'] = [...kcsProgram([[37, 1024], [43, 0x47, 4], [59]])];
     files['movie/clip.' + extension] = [...source];
-    if (directWebM) files['movie/invalid.webm'] = [0x1a, 0x45, 0xdf, 0xa3, 0x9f, 1];
+    if (split) files['movie/invalid.' + extension] = [0x1a, 0x45, 0xdf, 0xa3, 0x9f, 1];
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, files, gamePE, movie, texture, extension, format }) => {
-        const directWebM = extension === 'webm';
+        const directWebM = extension === 'webm',
+          ogg = format === 'ogv',
+          split = directWebM || ogg;
         const [
           { NativeWorld },
           { NativeConfiguration },
@@ -104,25 +113,31 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         // A stale same-name sidecar cannot replace the bytes selected by the
         // original IFile. The valid converted copy has a qualified alias.
         if (!directWebM) {
-          const movieBytes = Uint8Array.from(movie);
-          url = URL.createObjectURL(new Blob([movieBytes], { type: 'video/webm' }));
+          const movieBytes = Uint8Array.from(movie),
+            mime = ogg ? 'video/mp4' : 'video/webm';
+          url = URL.createObjectURL(new Blob([movieBytes], { type: mime }));
           const sidecar = {
             sourceIdentity: await game.fingerprint(),
             sourceSize: sourceBytes.length,
             sourceSha256: sha256,
             outputSha256: await nativeImageIdentity(movieBytes),
-            mime: 'video/webm',
+            mime,
             url,
           };
           game.media = {
-            'movie.int/clip.avi': { ...sidecar, sourceSha256: '0'.repeat(64), url: '/wrong.webm' },
-            'movie/clip.avi': sidecar,
+            ['movie.int/clip.' + extension]: {
+              ...sidecar,
+              sourceSha256: '0'.repeat(64),
+              url: '/wrong',
+            },
+            ['movie/clip.' + extension]: sidecar,
           };
         }
         const moduleReferences = (world) =>
-          ['webmsplit.dll', 'vpxdecoder.dll', 'webmvorbisdecoder.dll'].map(
-            (name) => world.nativeEngine.kernel.hostModules.modules.get(name).references,
-          );
+          (ogg
+            ? ['dsfoggdemux2.dll', 'dsftheoradecoder.dll', 'dsfvorbisdecoder.dll']
+            : ['webmsplit.dll', 'vpxdecoder.dll', 'webmvorbisdecoder.dll']
+          ).map((name) => world.nativeEngine.kernel.hostModules.modules.get(name).references);
         const create = () => {
           const canvas = new OffscreenCanvas(64, 64),
             ctx = canvas.getContext('2d', { willReadFrequently: true }),
@@ -206,7 +221,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             world.configuration.setField('general.disableMovie', 0);
           }
           let rejectedCodec, rejectedHandle, rejectedHandleReleased;
-          if (directWebM) {
+          if (split) {
             await load(first, plane, 'invalid');
             rejectedHandle = (await command(first, lookup, world.nativeTaskID(plane))).value;
             const rejectedMovie = world.runtime.handles.get(rejectedHandle, 'plane-movie');
@@ -225,8 +240,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             };
           }
           await load(first, plane, 'clip');
-          if (directWebM)
-            rejectedHandleReleased = !world.runtime.handles.records.has(rejectedHandle);
+          if (split) rejectedHandleReleased = !world.runtime.handles.records.has(rejectedHandle);
           await world.sendEngine(plane, world.main.id, 48, 0, 1);
           const graph = [...direct.objects.values()].find((record) => record.movie);
           if (!graph?.video)
@@ -245,11 +259,49 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
                 }),
             );
           const graphID = graph.primary;
-          const webmFilters = async (context) => {
-            if (!directWebM) return null;
+          const oggMediaType = async (context, pin) => {
+            const { direct, p } = context,
+              engine = context.world.nativeEngine,
+              scratch = p.allocate(8, true),
+              free = (pointer) =>
+                engine.call(engine.resolve({ dll: 'OLE32.dll', name: 'CoTaskMemFree' }), [pointer]);
+            let enumeration, type, format;
+            try {
+              if (await direct.call(pin.primary, 12, scratch))
+                throw new Error('Ogg pin did not enumerate its media type');
+              enumeration = p.load(scratch);
+              if (
+                (await direct.call(enumeration, 3, 1, scratch, scratch + 4)) ||
+                p.load(scratch + 4) !== 1
+              )
+                throw new Error('Ogg media type enumeration did not return one descriptor');
+              type = p.load(scratch);
+              format = p.load(type + 68);
+              const words = Array.from({ length: 17 }, (_, i) => p.load(type + 4 * i)),
+                length = words[16];
+              return {
+                major: words.slice(0, 4),
+                subtype: words.slice(4, 8),
+                format: words.slice(11, 15),
+                length,
+                identifier: format ? [...p.read(format, Math.min(length, 7))] : [],
+                exhausted:
+                  (await direct.call(enumeration, 3, 1, scratch, scratch + 4)) === 1 &&
+                  p.load(scratch + 4) === 0 &&
+                  p.load(scratch) === type,
+              };
+            } finally {
+              if (format) await free(format);
+              if (type) await free(type);
+              if (enumeration) await direct.call(enumeration, 2);
+              p.free(scratch);
+            }
+          };
+          const splitFilters = async (context) => {
+            if (!split) return null;
             const { direct, p } = context,
               record = direct.objects.get(graphID),
-              filters = Object.values(record.webmFilters).map((id) => direct.objects.get(id)),
+              filters = Object.values(record.splitFilters).map((id) => direct.objects.get(id)),
               [splitter] = filters,
               pins = splitter.pins.map((id) => direct.objects.get(id)),
               loader = p.load(record.movie + 424),
@@ -262,21 +314,26 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             } finally {
               p.free(scratch);
             }
+            const types = [];
+            if (ogg) for (const pin of pins) types.push(await oggMediaType(context, pin));
             return {
               names: filters.map(({ name }) => name),
-              tracks: pins.slice(1).map(({ track }) => track),
+              tracks: pins
+                .slice(1)
+                .map(({ track: { type, codec, index } }) => ({ type, codec, index })),
               peers: pins
                 .slice(1)
                 .map(({ peer }) => direct.objects.get(direct.objects.get(peer).parentFilter).role),
               source: pins[0].peer === record.source + 248,
               nativePeer,
-              filterIdentities: [24, 36, 40, 44, 48].every(
+              filterIdentities: (ogg ? [24, 28, 32] : [24, 36, 40, 44, 48]).every(
                 (offset, index) => p.load(loader + offset) === filters[index].primary,
               ),
               moduleReferences: moduleReferences(context.world),
+              ...(ogg ? { types } : {}),
             };
           };
-          const connectedWebM = await webmFilters(first);
+          const connectedFilters = await splitFilters(first);
           const handle = (await command(first, lookup, world.nativeTaskID(plane))).value,
             stableHandle = (await command(first, lookup, world.nativeTaskID(plane))).value,
             otherHandle = (await command(first, texture ? 0x2be : 0x3dd, world.nativeTaskID(plane)))
@@ -334,7 +391,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             }
           };
           let analyser;
-          if (format === 'vp8') {
+          if (format === 'vp8' || ogg) {
             audio = new AudioContext({ sampleRate: 48000 });
             const source = audio.createMediaElementSource(decoders[0].video);
             analyser = audio.createAnalyser();
@@ -406,7 +463,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             await fresh.world.movies.settle();
             return (await command(second, 0x10d, handle)).value === 0;
           });
-          const freshWebM = await webmFilters(second),
+          const freshFilters = await splitFilters(second),
             finishedRepeat = second.p.load(graph.movie + 392),
             stoppedAfterCompletion = (await command(second, 0x10b, handle)).value,
             boundMedia = [firstBoundMedia, await decoderUsesSource(decoders[1])];
@@ -421,8 +478,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               deviceObjects: context.d.objects.size,
               borrowed: context.world.runtime.handles.records.has(handle),
               modulesReleased:
-                !directWebM ||
-                moduleReferences(context.world).every((references) => references === 1),
+                !split || moduleReferences(context.world).every((references) => references === 1),
             });
           }
           const loopPlane = await second.world.objects.create({
@@ -493,7 +549,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             savedTime: Number(savedGraph.position / 10000n),
             reopenedBeforeActivation,
             digest: sha256,
-            webm: [connectedWebM, freshWebM],
+            splitFilters: [connectedFilters, freshFilters],
             rejectedCodec,
             rejectedHandleReleased,
             vorbis,
@@ -530,7 +586,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
           if (url) URL.revokeObjectURL(url);
         }
       },
-      { profile, files, gamePE, movie: [...webm], texture, extension, format },
+      { profile, files, gamePE, movie: [...converted], texture, extension, format },
     );
     expect(result.rejected).toBe(true);
     expect(result.replaced).toBe(true);
@@ -573,7 +629,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     ]);
     expect(result.size).toEqual([0, 32, 24]);
     expect(result.boundMedia).toEqual([true, true]);
-    if (directWebM) {
+    if (split) {
       expect(result.rejectedCodec).toEqual({
         filters: texture ? [] : [['filter', 1, 0]],
         graph: 0,
@@ -585,24 +641,51 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       });
       expect(result.rejectedHandleReleased).toBe(true);
       expect(result.muted).toEqual([format === 'vp9', format === 'vp9']);
-      if (format === 'vp8') {
+      if (format === 'vp8' || ogg) {
         expect(result.vorbis.amplitude).toBeGreaterThan(0.025);
         expect(result.vorbis.hz).toBeGreaterThan(420);
         expect(result.vorbis.hz).toBeLessThan(460);
       }
-      expect(result.webm[0]).toEqual({
-        names: ['webm_splitter', 'webm_vxdecoder', 'webm_vorbisdecoder', 'AVI Dec', 'CS Converter'],
-        tracks: [
-          { type: 1, codec: format === 'vp8' ? 'V_VP8' : 'V_VP9', index: 1 },
-          ...(format === 'vp8' ? [{ type: 2, codec: 'A_VORBIS', index: 2 }] : []),
-        ],
-        peers: format === 'vp8' ? ['vpx', 'vorbis'] : ['vpx'],
+      expect(result.splitFilters[0]).toMatchObject({
+        names: ogg
+          ? ['theora_splitter', 'theora_decoder', 'vorbisdecoder']
+          : ['webm_splitter', 'webm_vxdecoder', 'webm_vorbisdecoder', 'AVI Dec', 'CS Converter'],
+        tracks: ogg
+          ? [
+              { type: 1, codec: 'theora', index: 2580911609 },
+              { type: 2, codec: 'vorbis', index: 2092013126 },
+            ]
+          : [
+              { type: 1, codec: format === 'vp8' ? 'V_VP8' : 'V_VP9', index: 1 },
+              ...(format === 'vp8' ? [{ type: 2, codec: 'A_VORBIS', index: 2 }] : []),
+            ],
+        peers: ogg ? ['theora', 'ogg-vorbis'] : format === 'vp8' ? ['vpx', 'vorbis'] : ['vpx'],
         source: true,
         filterIdentities: true,
         moduleReferences: [2, 2, 2],
         nativePeer: true,
       });
-      expect(result.webm[0]).toEqual(result.webm[1]);
+      expect(result.splitFilters[0]).toEqual(result.splitFilters[1]);
+      if (ogg) {
+        const packet = {
+          major: [0x60891713, 0x4767c24f, 0xa06cc9b6, 0xfc38335b],
+          subtype: [0xe436eb8e, 0x11ce524f, 0x2000539f, 0x70a70baf],
+          format: [0x95388704, 0x42a9162c, 0x57c34981, 0xf9aa127c],
+          exhausted: true,
+        };
+        expect(result.splitFilters[0].types).toEqual([
+          {
+            major: [0xe436eb83, 0x11ce524f, 0x2000539f, 0x70a70baf],
+            subtype: [0xdd142c1e, 0x43810c1e, 0x2d0b4ea2, 0x8a09b680],
+            format: [0, 0, 0, 0],
+            length: 0,
+            identifier: [],
+            exhausted: true,
+          },
+          { ...packet, length: 42, identifier: [0x80, 116, 104, 101, 111, 114, 97] },
+          { ...packet, length: 30, identifier: [1, 118, 111, 114, 98, 105, 115] },
+        ]);
+      }
     }
     expect(result.released).toEqual(
       new Array(2).fill({

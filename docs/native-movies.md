@@ -30,7 +30,7 @@ the saved position to become seekable, seeks, and defers presentation/playback
 until the candidate World becomes active. A source that cannot seek to the saved
 position fails restoration; a silently reset time is not accepted.
 
-`prepare:media` converts WMV/AVI/MPEG resources outside the original game tree.
+`prepare:media` converts WMV, AVI, MPEG and OGV resources outside the original game tree.
 Its provenance records the complete source identity, qualified archive aliases,
 source size/SHA-256 and output SHA-256. The development server verifies output
 hashes before exposing sidecars; the client checks the mounted identity and
@@ -318,3 +318,50 @@ including a 440 Hz PCM sample. The VP9/Opus file exercises the original
 VMR9 path on both profiles and remains silent. The cases check failed
 connection, native pin and module identities, presented pixels, repeat
 and stop, and a new instance restored during playback.
+
+## Original Ogg Theora filters
+
+Both frozen Plane loaders take the original OGV branch. The constructors
+at `0x7065E0` and `0x5BE420` acquire the Xiph splitter, Theora decoder
+and Vorbis decoder class factories. The connection entries at
+`0x706860` and `0x5BE6A0` add the three original named filters and
+connect the original CAsyncReader output. WebM and Ogg use the same
+DirectShow graph and COM identity service.
+[Xiph DirectShow filters](https://www.xiph.org/dshow/downloads/)
+
+The Ogg input advertises its original Stream and Ogg subtype. Each
+logical stream carries its initial identification packet as the
+format block of the original Ogg packet media type. Pin discovery
+reads the mounted source's Ogg pages and validates the lacing and
+page checksums. Skeleton metadata produces no pin. The supported
+rendering path is one Theora track and optional Vorbis audio. An
+additional unsupported logical stream still produces a pin and
+causes the graph to reject the connection with the supplied decoders.
+[Ogg framing](https://xiph.org/ogg/doc/framing.html)
+
+Chromium 149 requires a prepared sidecar for Theora. The existing
+`prepare:media` tool uses FFmpeg to decode the OGV and prepare H.264 and AAC, tied to
+the mounted file's size and SHA-256. A browser that supports the
+declared Theora MIME can use the mounted stream directly. Both
+paths keep the original Plane renderer and playback controls.
+[Chromium Theora removal](https://chromestatus.com/feature/5158654475239424)
+
+The pinned Wine comparison uses Xiph OpenCodecs 0.85.17777, installer
+SHA-256
+`fcec3cea637e806501aff447d902de3b5bfef226b629e43ab67e46dbb23f13e7`.
+The x86 files are comparison inputs for the original classes.
+[Xiph OpenCodecs releases](https://www.xiph.org/dshow/downloads/)
+
+| Module                 | SHA-256                                                            |
+| ---------------------- | ------------------------------------------------------------------ |
+| `dsfOggDemux2.dll`     | `f5368e01e9bc0e58b41e8cc1d20746efc4b7b802771956d3bbb3b994beebaa52` |
+| `dsfTheoraDecoder.dll` | `c593cff519126f30fb4a09c8f6df3f8d593d558a3b711c0e23549a5972095e19` |
+| `dsfVorbisDecoder.dll` | `528c0656751b336c10cb4c49b703eae9c3863f7f416d0e09b198b082cc54aeb8` |
+
+The real filters connect the authored Theora and Vorbis streams.
+The comparison also observes an Opus output pin whose connection
+to the registered Vorbis decoder fails. Chromium exercises the
+Theora and Vorbis fixture with the original VMR9 and Texture Renderer
+on both profiles. It checks defined media type words, sample pixels
+and a 440 Hz signal, fresh decoder and COM identity restoration,
+the original stop and repeat worker, and resource release.
