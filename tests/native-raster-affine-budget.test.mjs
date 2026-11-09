@@ -8,12 +8,16 @@ import { NativeRasterKernels } from '../src/native/raster-kernel.mjs';
 
 const identity = [32768, 0, 0, 32768];
 
-for (const [profile, fixture] of [
+const profiles = [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
-])
+];
+const variants = profiles.flatMap(([profile, fixture]) =>
+  ['affine', 'affineBtype'].map((kind) => ({ profile, fixture, kind })),
+);
+for (const { profile, fixture, kind } of variants)
   test(
-    profile + ' ordinary affine preserves original sampling cutoffs, CPU faults and restoration',
+    profile + ' ' + kind + ' preserves original sampling cutoffs, CPU faults and restoration',
     { skip: !process.env[fixture] },
     async () => {
       const options = {
@@ -24,7 +28,9 @@ for (const [profile, fixture] of [
         engine = await NativeEngineProcess.open(options),
         p = engine.process,
         kernels = new NativeRasterKernels(engine),
-        { affine: row, affineSampler: sampler, affineMultiply: multiply } = kernels.abi,
+        blendType = kind === 'affineBtype',
+        row = kernels.abi[kind],
+        { affineSampler: sampler, affineMultiply: multiply } = kernels.abi,
         start = row - 0x233,
         pixels = Uint8Array.from({ length: 0x7000 }, (_, i) => (i * 43 + (i >>> 7) + 17) & 255),
         arena = p.allocate(pixels.length),
@@ -74,6 +80,8 @@ for (const [profile, fixture] of [
             correction = [0, 0],
             sourceAlphas = [255],
             destinationAlphas = [0, 85, 255],
+            destinationColors,
+            mode = blendType ? 1 : 0,
             opacity = 255,
             input = source,
             output = destination,
@@ -98,6 +106,7 @@ for (const [profile, fixture] of [
             [17, opacity],
             [26, floatBits(base[0])],
             [27, floatBits(base[1])],
+            [31, mode],
             [32, left],
             [33, top],
             [34, width],
@@ -122,8 +131,11 @@ for (const [profile, fixture] of [
           if (output < arena + pixels.length)
             for (let y = 0; y < height; y++)
               for (let x = 0; x < width; x++) {
-                const alpha = destinationAlphas[(x + y * width) % destinationAlphas.length],
-                  color = 0x17659c - x * 0x030701 + y * 0x010405;
+                const index = x + y * width,
+                  alpha = destinationAlphas[index % destinationAlphas.length],
+                  color = destinationColors
+                    ? destinationColors[index % destinationColors.length]
+                    : 0x17659c - x * 0x030701 + y * 0x010405;
                 p.store(output + y * dp + x * 4, (alpha << 24) | color);
               }
           p.store(p.stackTop - 8, p.sentinel);
@@ -154,7 +166,7 @@ for (const [profile, fixture] of [
             invalidate();
           }
         },
-        cases = [
+        ordinaryCases = [
           { body: row + 0x45f },
           {
             width: 3,
@@ -206,12 +218,65 @@ for (const [profile, fixture] of [
           { height: 1 },
           { matrix: [0x400000, 0, 0, 32768] },
           { input: destination - 4 },
-        ];
+        ],
+        btypeCases = [
+          { width: 1, sh: 1, body: row + 0x32b },
+          {
+            mode: 2,
+            width: 1,
+            matrix: [-32768, 0, 0, -32768],
+            translate: [65536, 65536],
+            sourceAlphas: [127],
+            body: row + 0x479,
+          },
+          {
+            mode: 3,
+            width: 2,
+            left: 1,
+            position: [0.25, -0.75],
+            base: [0.2, -0.9],
+            matrix: [23170, -23170, 23170, 23170],
+            mxcsr: 0x5f80,
+            body: row + 0x4cb,
+          },
+          {
+            mode: 4,
+            destinationColors: [0x7f807f, 0x807f80, 0x808080, 0x7f7f7f],
+            body: row + 0x535,
+          },
+          {
+            mode: 5,
+            destinationColors: [0xfeffff, 0xfffefe, 0xfffeff, 0xfffffe],
+            body: row + 0x67a,
+          },
+          {
+            mode: 5,
+            opacity: 171,
+            sp: 13,
+            dp: 9,
+            translate: [16384, 16384],
+            sourceAlphas: [1, 31, 127, 255],
+            destinationAlphas: [67],
+            input: source + 1,
+            output: destination + 3,
+            body: row + 0x67a,
+          },
+          { width: 1, sourceAlphas: [0], body: row + 0x1a3 },
+          { width: 1, opacity: 0, body: row + 0x741 },
+          { width: 1, base: [8.75, 0], body: sampler + 0xbc },
+          { width: 1, base: [0, 8.75], body: sampler + 0x14 },
+          { width: 1, mode: 0 },
+          { width: 1, mode: 6 },
+          { width: 1, height: 0, input: 0xfee00000, output: 0xfed00000 },
+          { width: 1, height: 1 },
+          { width: 1, input: destination - 4 },
+        ],
+        cases = blendType ? btypeCases : ordinaryCases;
       try {
         for (const [index, sample] of cases.entries()) {
           const trace = originalTrace(sample),
             first = trace.indexOf(row),
-            tail = trace.lastIndexOf(row + 0x4cc),
+            tail = trace.lastIndexOf(row + (blendType ? 0x7c2 : 0x4cc)),
             limits =
               first < 0
                 ? [0, 1, trace.length - 1, trace.length, trace.length + 1]
@@ -219,7 +284,7 @@ for (const [profile, fixture] of [
           if (sample.body) assert.ok(trace.includes(sample.body), 'original affine path ' + index);
           for (const limit of limits) {
             const original = run(sample, false, limit),
-              hits = kernels.hits.affine,
+              hits = kernels.hits[kind],
               label = 'rectangle ' + index + ', budget ' + limit;
             assert.equal(original.pc, (limit && trace[limit]) || p.sentinel, label);
             assert.equal(
@@ -229,7 +294,7 @@ for (const [profile, fixture] of [
             );
             assert.deepEqual(run(sample, true, limit), original, label);
             assert.equal(
-              kernels.hits.affine - hits,
+              kernels.hits[kind] - hits,
               Number(Boolean(sample.body) && (!limit || limit > tail)),
               label,
             );
@@ -243,20 +308,20 @@ for (const [profile, fixture] of [
               [readFault ? 'input' : 'output']: page - (readFault ? 8 : 4),
             },
             trace = originalTrace(sample),
-            faultPC = readFault ? sampler + 0x91 : row + 0x465,
+            faultPC = readFault ? sampler + 0x91 : row + (blendType ? 0x40d : 0x465),
             faultIndex = trace.indexOf(faultPC, trace.lastIndexOf(row));
           p.cpu.mem_protect(page, 4096, readFault ? 0 : p.uc.PROT_READ);
           try {
             const beforeFault = run(sample, false, faultIndex),
               fault = run(sample, false, faultIndex + 1),
-              hits = kernels.hits.affine;
+              hits = kernels.hits[kind];
             assert.equal(beforeFault.pc, faultPC);
             assert.equal(beforeFault.fault, undefined);
-            assert.equal(p.load(sample.output ?? destination), 0xff314a65);
+            assert.equal(p.load(sample.output ?? destination), blendType ? 0xff304964 : 0xff314a65);
             assert.match(fault.fault, readFault ? /READ_PROT/i : /WRITE_PROT/i);
             assert.deepEqual(run(sample, true, faultIndex), beforeFault);
             assert.deepEqual(run(sample, true, faultIndex + 1), fault);
-            assert.equal(kernels.hits.affine, hits);
+            assert.equal(kernels.hits[kind], hits);
           } finally {
             p.cpu.mem_protect(page, 4096, p.uc.PROT_READ | p.uc.PROT_WRITE);
           }
@@ -265,19 +330,33 @@ for (const [profile, fixture] of [
         p.cpu.mem_protect(mulPage, 4096, p.uc.PROT_READ);
         try {
           const original = run(cases[0], false, 10000),
-            hits = kernels.hits.affine;
+            hits = kernels.hits[kind];
           assert.match(original.fault, /FETCH_PROT/i);
           assert.deepEqual(run(cases[0], true, 10000), original);
-          assert.equal(kernels.hits.affine, hits);
+          assert.equal(kernels.hits[kind], hits);
         } finally {
           p.cpu.mem_protect(mulPage, 4096, p.uc.PROT_ALL);
+        }
+        if (blendType) {
+          const jumpTable = row + 0x7e1,
+            target = p.load(jumpTable);
+          p.store(jumpTable, p.load(jumpTable + 4));
+          try {
+            const trace = originalTrace(cases[0]),
+              hits = kernels.hits[kind];
+            assert.ok(trace.includes(row + 0x479));
+            assert.deepEqual(run(cases[0], true, trace.length), run(cases[0], false, trace.length));
+            assert.equal(kernels.hits[kind], hits);
+          } finally {
+            p.store(jumpTable, target);
+          }
         }
         const sample = { ...cases[5], base: [0.25, 0.75] },
           entryBudget = originalTrace(sample).indexOf(row);
         for (const [register, value, limit] of [
-          ['EBX', 0xfee00000, 1],
+          [blendType ? 'ESI' : 'EBX', 0xfee00000, 1],
           ['EBP', 0xfee00000, 3],
-          ['ESI', 0xfee00000, 1000],
+          [blendType ? 'EBX' : 'ESI', 0xfee00000, 1000],
           ['MXCSR', 0x0f80, 10000],
         ]) {
           const resume = (enabled) => {
@@ -286,9 +365,9 @@ for (const [profile, fixture] of [
             return execute(enabled, row, limit);
           };
           const original = resume(false),
-            hits = kernels.hits.affine;
+            hits = kernels.hits[kind];
           assert.deepEqual(resume(true), original, register);
-          assert.equal(kernels.hits.affine, hits, register);
+          assert.equal(kernels.hits[kind], hits, register);
         }
         const partial = run(sample, true, entryBudget),
           saved = engine.snapshot();
@@ -301,7 +380,7 @@ for (const [profile, fixture] of [
         if (fresh.process.pendingError) throw fresh.process.pendingError;
         assert.deepEqual(state(fresh.process), state(p));
         assert.equal(original.fault, undefined);
-        assert.equal(restored.hits.affine, 1);
+        assert.equal(restored.hits[kind], 1);
       } finally {
         await fresh?.close();
         await engine.close();

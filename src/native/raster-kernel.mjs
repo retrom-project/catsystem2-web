@@ -883,7 +883,7 @@ export class NativeRasterKernels {
     this.reg('EDI', destination);
     return true;
   }
-  affineInstructions({ d, table, input, output, px, py, baseX, baseY }, available) {
+  affineInstructions({ d, table, input, output, px, py, baseX, baseY, mode }, available) {
     const left = d[32],
       top = d[33],
       right = d[34],
@@ -892,7 +892,8 @@ export class NativeRasterKernels {
       sh = d[15],
       ss = d[16],
       nextSourceRow = ss & ~3,
-      ds = d[10];
+      ds = d[10],
+      btypeMix = [0, 95, 93, 99, 121, 85][mode];
     let total = 0,
       row;
     for (let y = top; y < bottom; y++) {
@@ -911,11 +912,11 @@ export class NativeRasterKernels {
           iy = ((v >> 15) + baseY) | 0;
         row += rowTransform + 8 * (Number(cx < 0 || d[36] < 0) + Number(cx < 0 || d[37] < 0));
         if (ix >>> 0 >= sw) {
-          row += 14;
+          row += mode ? 15 : 14;
           continue;
         }
         if (iy >>> 0 >= sh) {
-          row += 17;
+          row += mode ? 18 : 17;
           continue;
         }
         const at = iy * ss + ix * 4 + 3,
@@ -927,9 +928,9 @@ export class NativeRasterKernels {
           a3 = input[hasRight && hasBottom ? at + nextSourceRow + 4 : at];
         // Both right-edge paths have the same cost. The lower-edge path
         // costs one fewer instruction before the four-alpha test.
-        row += hasBottom ? 60 : 59;
+        row += (mode ? 60 : 59) + Number(hasBottom);
         if (!(a0 + a1 + a2 + a3)) {
-          row++;
+          row += mode ? 2 : 1;
           continue;
         }
         const fx = u & 32767,
@@ -941,11 +942,31 @@ export class NativeRasterKernels {
               a3 * ((fx * fy) >> 15)) >>>
             15,
           alpha = table[sampleAlpha & 255],
-          oldAlpha = output[y * ds + x * 4 + 3];
-        row += 89;
-        if (!alpha) row += oldAlpha ? 2 : 5;
-        else if (alpha === 255) row += 5;
-        else row += !oldAlpha ? 9 : oldAlpha === 255 ? 31 : 65;
+          destination = y * ds + x * 4,
+          oldAlpha = output[destination + 3];
+        if (mode) {
+          row += 84;
+          if (!alpha) row += oldAlpha ? 4 : 7;
+          else {
+            row += btypeMix;
+            if (mode === 4)
+              row +=
+                4 * (output[destination] >>> 7) +
+                4 * (output[destination + 1] >>> 7) +
+                3 * (output[destination + 2] >>> 7);
+            // Each dodge channel has its own path through the division.
+            else if (mode === 5)
+              row +=
+                9 * Number(output[destination] !== 255) +
+                10 * Number(output[destination + 1] !== 255) +
+                11 * Number(output[destination + 2] !== 255);
+          }
+        } else {
+          row += 89;
+          if (!alpha) row += oldAlpha ? 2 : 5;
+          else if (alpha === 255) row += 5;
+          else row += !oldAlpha ? 9 : oldAlpha === 255 ? 31 : 65;
+        }
       }
       total += row;
       if (total > available) return null;
@@ -959,6 +980,13 @@ export class NativeRasterKernels {
     const layout = blendType
       ? {
           pointer: 'ESI',
+          descriptor: 0x114,
+          stack: 0x188,
+          leftRegister: 'EBX',
+          left: 0x16c,
+          right: 0x174,
+          bottom: 0x154,
+          codeSize: 0x7c8,
           position: [0x164, 0x17c],
           row: 0x140,
           rowFixed: 0x150,
@@ -978,6 +1006,13 @@ export class NativeRasterKernels {
         }
       : {
           pointer: 'EBX',
+          descriptor: 0x124,
+          stack: 0x174,
+          leftRegister: 'ESI',
+          left: 0x158,
+          right: 0x160,
+          bottom: 0x150,
+          codeSize: 0x4d2,
           position: [0x15c, 0x154],
           row: 0x130,
           rowFixed: 0x138,
@@ -997,7 +1032,7 @@ export class NativeRasterKernels {
     const p = this.process,
       frame = this.reg('EBP'),
       pointer = this.reg(layout.pointer),
-      regions = blendType ? undefined : this.repeatRegions();
+      regions = this.repeatRegions();
     if (
       !this.range(pointer, 200, false, regions) ||
       !this.range(frame - 0x1c0, 0x1d0, true, regions)
@@ -1018,7 +1053,8 @@ export class NativeRasterKernels {
       destination = d[1] >>> 0,
       source = d[13] >>> 0,
       destinationSize = ds * dh,
-      sourceSize = ss * sh;
+      sourceSize = ss * sh,
+      mode = blendType ? d[31] : 0;
     if (
       this.reg('ECX') !== top ||
       bottom - top < 2 ||
@@ -1039,7 +1075,7 @@ export class NativeRasterKernels {
       overlaps(destination, destinationSize, pointer, 200) ||
       overlaps(destination, destinationSize, frame - 0x1c0, 0x1d0) ||
       overlaps(source, sourceSize, frame - 0x1c0, 0x1d0) ||
-      (blendType && (d[31] < 1 || d[31] > 5)) ||
+      (blendType && (mode < 1 || mode > 5)) ||
       [36, 37, 39, 40].some((i) => Math.abs(d[i]) > 0x3fffff)
     )
       return false;
@@ -1056,66 +1092,74 @@ export class NativeRasterKernels {
     const px = p.load(frame - layout.position[0]) | 0,
       py = p.load(frame - layout.position[1]) | 0,
       alphaSpill = blendType ? p.load(frame - 0x138) & 0xffffff : 0,
-      nextSourceRow = blendType ? ss : ss & ~3;
-    let available = Infinity;
-    if (!blendType) {
-      const code = (address, size) =>
-          regions.some(
-            ({ begin, end, perms }) =>
-              (perms & 5) === 5 && address >= Number(begin) && address + size - 1 <= Number(end),
-          ),
-        contiguous = (address, size) =>
-          p.regions.some(
-            (region) => address >= region.address && address + size <= region.address + region.size,
-          );
-      if (
-        this.reg('ESP') !== frame - 0x174 ||
-        this.reg('ESI') !== left ||
-        this.reg('EDI') !== right ||
-        this.reg('EDX') !== (top << 15) >>> 0 ||
-        this.reg('EFLAGS') & 0x50100 ||
-        this.reg('DS') !== 0 ||
-        this.reg('SS') !== 0 ||
-        (this.reg('MXCSR') & 0x1f80) !== 0x1f80 ||
-        overlaps(pointer, 200, frame - 0x1c0, 0x1c0) ||
-        !destination ||
-        !contiguous(source, sourceSize) ||
-        !contiguous(destination, destinationSize) ||
-        !code(this.abi.affine, 0x4d2) ||
-        !code(this.abi.affineSampler, 0xc2) ||
-        !code(this.abi.affineMultiply, 0x34)
-      )
-        return false;
-      const locals = new DataView(p.read(frame - 0x168, 0x48).buffer),
-        local = (offset) => locals.getUint32(0x168 - offset, true);
-      if (
-        local(0x124) !== pointer ||
-        local(0x130) !== top ||
-        local(0x138) !== (top << 15) >>> 0 ||
-        local(0x150) !== bottom ||
-        local(0x158) !== left ||
-        local(0x160) !== right ||
-        local(0x168) !== (left << 2) >>> 0
-      )
-        return false;
-      const { active, counter, limit } = p.instructionBudget();
-      available = limit === 0n ? Infinity : Number(limit - counter) + 1;
-      if (!active || available < (bottom - top) * (24 + 141 * (right - left))) return false;
+      nextSourceRow = ss & ~3,
+      rowAddress = blendType ? this.abi.affineBtype : this.abi.affine,
+      code = (address, size) =>
+        regions.some(
+          ({ begin, end, perms }) =>
+            (perms & 5) === 5 && address >= Number(begin) && address + size - 1 <= Number(end),
+        ),
+      contiguous = (address, size) =>
+        p.regions.some(
+          (region) => address >= region.address && address + size <= region.address + region.size,
+        );
+    if (
+      this.reg('ESP') !== frame - layout.stack ||
+      this.reg(layout.leftRegister) !== left ||
+      this.reg('EDI') !== right ||
+      this.reg('EDX') !== (top << 15) >>> 0 ||
+      this.reg('EFLAGS') & 0x50100 ||
+      this.reg('DS') !== 0 ||
+      this.reg('SS') !== 0 ||
+      (this.reg('MXCSR') & 0x1f80) !== 0x1f80 ||
+      overlaps(pointer, 200, frame - 0x1c0, 0x1c0) ||
+      !destination ||
+      !contiguous(source, sourceSize) ||
+      !contiguous(destination, destinationSize) ||
+      !code(rowAddress, layout.codeSize) ||
+      !code(this.abi.affineSampler, 0xc2) ||
+      !code(this.abi.affineMultiply, 0x34)
+    )
+      return false;
+    const firstLocal = Math.max(0x168, layout.right),
+      localsView = new DataView(
+        p.read(frame - firstLocal, firstLocal - layout.descriptor + 4).buffer,
+      ),
+      local = (offset) => localsView.getUint32(firstLocal - offset, true);
+    if (
+      local(layout.descriptor) !== pointer ||
+      local(layout.row) !== top ||
+      local(layout.rowFixed) !== (top << 15) >>> 0 ||
+      local(layout.bottom) !== bottom ||
+      local(layout.left) !== left ||
+      local(layout.right) !== right ||
+      local(0x168) !== (left << 2) >>> 0
+    )
+      return false;
+    if (blendType) {
+      const entry = rowAddress + 0x7e1 + (mode - 1) * 4,
+        target = rowAddress + [0, 0x32b, 0x479, 0x4cb, 0x535, 0x67a][mode];
+      if (!this.range(entry, 4, false, regions) || p.load(entry) !== target) return false;
     }
+    const { active, counter, limit } = p.instructionBudget(),
+      available = limit === 0n ? Infinity : Number(limit - counter) + 1,
+      minimumPixel = blendType ? 142 : 141;
+    if (!active || available < (bottom - top) * (24 + minimumPixel * (right - left))) return false;
     p.view(source, sourceSize);
     p.view(destination, destinationSize);
     const input = p.view(source, sourceSize),
       output = p.view(destination, destinationSize),
       words = new DataView(input.buffer, input.byteOffset, input.byteLength),
-      locals = new Map();
-    if (!blendType) {
-      const skipped =
+      locals = new Map(),
+      skipped =
         available === Infinity
           ? 0
-          : this.affineInstructions({ d, table, input, output, px, py, baseX, baseY }, available);
-      // The final native row replays the sampler calls and all conversions.
-      if (skipped === null || !p.consumeInstructions(skipped)) return false;
-    }
+          : this.affineInstructions(
+              { d, table, input, output, px, py, baseX, baseY, mode },
+              available,
+            );
+    // The final native row replays the sampler calls and all conversions.
+    if (skipped === null || !p.consumeInstructions(skipped)) return false;
     for (let y = top; y < bottom - 1; y++)
       for (let x = left; x < right; x++) {
         const cx = ((x << 15) - px + d[45]) | 0,
@@ -1180,8 +1224,7 @@ export class NativeRasterKernels {
               reciprocal = Math.floor(65536 / total);
             for (let channel = 0; channel < 3; channel++) {
               const s = sample[channel],
-                t = output[at + channel],
-                mode = d[31];
+                t = output[at + channel];
               let color;
               if (mode === 1) color = Math.min(255, s + t);
               else if (mode === 2) color = (s * (t + 1)) >> 8;
