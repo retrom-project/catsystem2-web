@@ -35,8 +35,20 @@ handles the route.
 not reconstructed from the graph during sends. Factory registration updates
 ancestors; manually sending registration to a cached branch need not do so.
 Snapshots preserve this difference. Browser factory results normalize the
-original task pointer to a native task ID. PE callers resolve that ID and obtain
-a real pointer from the shared task-memory feature.
+original task pointer to a native task ID. The raw PE reply carries the newly
+allocated pointer from shared task memory, even when a lookup by that ID misses.
+
+The Top factory allocates a task and initializes its clock before routing
+registration message 2. The new task's parent stays null until the target
+receiver accepts registration through Base. When a receiver such as UnderWater
+consumes the message, the original ancestors still insert their first branch
+for the new key. That key makes the Top existence query succeed, and the
+frame walk can visit the same direct child twice. Ordinary routing still misses
+the unattached allocation. A new factory call can reuse the number because it
+checks the result of the recursive lookup. Base rejects a direct duplicate with
+a null reply, leaving the Main42 GCALL word at its original sentinel. A different
+parent can attach the new task in its own map while the ancestor retains the
+first branch. A missing parent leaves the allocated task unattached.
 
 ## Base and Top contracts
 
@@ -82,6 +94,14 @@ frees its map. Child messages use the parent's native sender ID and zero
 parameters/flags. Derived cleanup and the World's lifecycle driver preserve
 these phases; module evidence alone does not establish their integration.
 
+Destroying a branch clears its own registration key. A key left by a rejected
+child registration can still point at the released branch. The two original
+lookups reach a null task map and fault with the low page protected. With the
+emulator's low page mapped the same probe exhausts its instruction budget. The
+World records a released branch and reports that error when traversal reaches
+it, including after restore or reuse of the internal World ID. Explicit World
+cleanup can still release the live tasks.
+
 ## Evidence
 
 The World integrates these maps with its task lifecycle. Script destruction
@@ -124,3 +144,11 @@ instrumentation calls the complete original wrapper. Nine public tests retain
 native result digests, scoped identities, context identity, shared aliases,
 fresh restore and lifecycle phases. No proprietary assets, binary bytes or
 decompiler bodies are distributed.
+
+`scripts/verify-native-task-registration.mjs FIXED_EXE IGNORED_REPORT` adds 100
+comparisons per profile through the original Main42, Top, Base and UnderWater
+paths. It checks the distinct lookup, existence and child-enumeration results,
+first-inserted routes, two visits to an aliased child and both fault probes.
+`tests/native-task-registration.test.mjs` runs the same task topology through
+authored KCS and the native task packet boundary. It restores the unattached
+allocations, live routes and released-branch failures into fresh Worlds.

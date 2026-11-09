@@ -65,9 +65,9 @@ export class NativeControlRuntime {
     const senderWorldID = this.world.resolveTaskID(sender, this.engine.currentTaskID);
     if (senderWorldID == null)
       throw new Error(`Native control sender ${sender} is outside its Top namespace`);
-    const targetWorldID = this.world.resolveTaskID(target, senderWorldID),
+    const targetWorldID = raw !== 1 ? this.world.resolveTaskID(target, senderWorldID) : null,
       record = this.world.objects.objects.get(targetWorldID);
-    if (!record || record.state !== 'active') return 0;
+    if (raw !== 1 && (!record || record.state !== 'active')) return 0;
     const context = {
         payload: this.platform.memory,
         nativePointer: true,
@@ -76,16 +76,10 @@ export class NativeControlRuntime {
         fromHost: true,
         nativeSenderWorldID: senderWorldID,
       },
-      message = canonicalMessage(this.engine.profile, record.kind, raw),
+      message = canonicalMessage(this.engine.profile, record?.kind, raw),
       value = await this.world.sendNativeEngine(target, senderWorldID, message, w, l, context);
-    if (raw === 1) {
-      if (Number.isInteger(value)) {
-        const child = this.world.resolveTaskID(value, senderWorldID);
-        if (child == null) throw new Error('Original control child task is outside its Top');
-        if (out) this.process.store(out, await this.taskMemory.pointer(child));
-      }
-    } else if (out && Number.isInteger(value)) this.process.store(out, value);
-    return 1;
+    if (raw !== 1 && out && Number.isInteger(value)) this.process.store(out, value);
+    return raw === 1 ? Number(Boolean(context.nativeRouted)) : 1;
   }
   snapshot() {
     return { routeTrap: this.routeTrap };

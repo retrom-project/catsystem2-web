@@ -1,12 +1,24 @@
 // SPDX-License-Identifier: MPL-2.0
 // Main ABI task/message bridge, recovered from 0x65A430..0x65A876.
-import { nativeReply } from '../kcs/vm.mjs';
+import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 
 const result = (value) => nativeReply(1, value >>> 0);
 const voidResult = () => nativeReply(2);
 const then = (value, map) =>
   value && typeof value.then === 'function' ? value.then(map) : map(value);
+const taskString = (bytes) => {
+  const source = new Uint8Array(bytes.length + 1);
+  source.set(bytes);
+  return {
+    payload: {
+      bytes: (address, size) => source.subarray(address, address + size),
+      string: (address) =>
+        new TextDecoder('shift_jis').decode(source.subarray(address, source.indexOf(0, address))),
+    },
+  };
+};
 
 export function nativeTask(id, args, machine, task, services) {
   const check = (count) => {
@@ -21,8 +33,24 @@ export function nativeTask(id, args, machine, task, services) {
     case 0x42:
       check(3);
       if (!objects?.create || !services.format) return undefined;
-      if (world && resolve(args[1]) === null)
-        throw new Error(`Missing native parent task ${args[1]}`);
+      if (world) {
+        const name =
+            services.formatBytes?.(args[2], machine) ??
+            encodeCP932(services.format(args[2], machine)),
+          context = taskString(name);
+        return then(
+          world.sendNativeEngine(args[1], task.id, 1, args[0], 0, context),
+          async (value) => {
+            if (context.nativeCreatedTask === null) return result(NATIVE_RESULT_SENTINEL);
+            if (context.nativeCreatedTask === undefined)
+              throw new Error('Native task creation did not reach its Top factory');
+            const path =
+              task.context?.contextNameBytes ?? encodeCP932(task.context?.contextName || '');
+            await world.sendNativeEngine(value, task.id, 26, 0, 0, taskString(path));
+            return result(value);
+          },
+        );
+      }
       return then(
         objects.create({
           kind: args[0],

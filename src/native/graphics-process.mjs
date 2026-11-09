@@ -231,11 +231,11 @@ export class NativeGraphicsPlatform {
   async routeTask([sender, target, raw, w, l, flags, out]) {
     const p = this.process,
       origin = this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0).record.id,
-      targetID = this.world.resolveTaskID(target, origin),
+      targetID = raw !== 1 ? this.world.resolveTaskID(target, origin) : null,
       record = this.world.objects.objects.get(targetID);
-    if (!record || record.state !== 'active') return 0;
+    if (raw !== 1 && (!record || record.state !== 'active')) return 0;
     const message =
-        this.engine.profile.startsWith('sdk-') && record.kind !== 1 && raw >= 37 ? raw + 2 : raw,
+        this.engine.profile.startsWith('sdk-') && record?.kind !== 1 && raw >= 37 ? raw + 2 : raw,
       context = {
         payload: this.memory,
         nativePointer: true,
@@ -245,15 +245,7 @@ export class NativeGraphicsPlatform {
         fromHost: true,
       },
       value = await this.world.sendNativeEngine(target, origin, message, w, l, context);
-    if (out && Number.isInteger(value)) {
-      const word =
-        raw === 1
-          ? await this.engine.features
-              .get('task-memory')
-              .pointer(this.world.resolveTaskID(value, origin))
-          : value;
-      this.process.store(out, word);
-    }
+    if (raw !== 1 && out && Number.isInteger(value)) this.process.store(out, value);
     return Number(Boolean(context.nativeRouted));
   }
   enableOriginalTask(task) {

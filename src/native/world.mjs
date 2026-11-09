@@ -165,11 +165,12 @@ export class NativeWorld {
     this.engineMessages = new NativeEngineMessages(this);
     this.objects.releaseIdentity = (record) => this.engineMessages.release(record);
     this.objects.unregisterIdentity = (record) => this.engineMessages.unregister(record);
+    this.objects.markReleasedIdentity = (record) => this.engineMessages.markReleased(record);
     this.objects.pruneRoutes = (record) => this.engineMessages.pruneNullRoutes(record);
     this.objects.notify = (...args) => this.sendEngine(...args);
     this.objects.childrenProvider = (record) => this.engineMessages.children(record);
-    this.objects.eachChildProvider = (record, callback) =>
-      this.engineMessages.eachChild(record, callback);
+    this.objects.eachChildProvider = (record, callback, options) =>
+      this.engineMessages.eachChild(record, callback, options);
     this.objects.identity = ({ parent }) =>
       parent === null ? {} : this.engineMessages.creation(parent);
     this.menu = new Map();

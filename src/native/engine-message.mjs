@@ -9,7 +9,8 @@ export function nativeEngineWord(value, label = 'Native engine query') {
   return value >>> 0;
 }
 const SDK = 'sdk-4.01-engine-2.6.1.74',
-  GAME = 'nekopara-vol3-engine-2.6.1.76';
+  GAME = 'nekopara-vol3-engine-2.6.1.76',
+  RELEASED_BRANCH = 'released native task branch';
 export const NATIVE_ENGINE_MESSAGE_LAYOUTS = Object.freeze({
   [SDK]: Object.freeze({
     base: 0x4b9360,
@@ -106,7 +107,7 @@ export class NativeEngineMessages {
       .map((id) => this.lookupPointer(record, id))
       .filter((child) => child?.parent === record.id);
   }
-  async eachChild(record, callback) {
+  async eachChild(record, callback, { teardown = false } = {}) {
     let previous = -Infinity;
     for (;;) {
       const key = [...this.registry(record).keys()]
@@ -114,7 +115,7 @@ export class NativeEngineMessages {
         .sort(nativeTaskKeyOrder)[0];
       if (key === undefined) break;
       previous = key | 0;
-      const child = this.lookupPointer(record, key);
+      const child = this.lookupPath(record, key, teardown).pointer;
       if (child?.parent === record.id) await callback(child);
     }
   }
@@ -140,6 +141,11 @@ export class NativeEngineMessages {
   release(record) {
     this.unregister(record, { erase: true });
   }
+  markReleased(record) {
+    const routes = this.records.get(record.parent)?.nativeTaskRoutes;
+    for (const [key, branch] of routes ?? [])
+      if (branch === record.id) routes.set(key, RELEASED_BRANCH);
+  }
   unregister(record, { erase = false } = {}) {
     const parents = [];
     let parent = this.records.get(record.parent);
@@ -154,36 +160,42 @@ export class NativeEngineMessages {
       else owner.nativeTaskRoutes.set(idOf(record), null);
     }
   }
-  lookupPointer(record, nativeID) {
-    let last = null;
+  branch(record, nativeID, teardown = false) {
+    const branch = record.nativeTaskRoutes?.get(nativeID);
+    if (branch === RELEASED_BRANCH) {
+      if (teardown) return null;
+      throw new Error(
+        `Native task route ${nativeID} crosses a released branch of task ${record.id}`,
+      );
+    }
+    return this.records.get(branch) ?? null;
+  }
+  lookupPath(record, nativeID, teardown = false) {
+    let pointer = null;
     const visited = new Set();
     while (record) {
-      if (idOf(record) === nativeID) return record;
+      if (idOf(record) === nativeID) return { found: true, pointer: record };
       if (visited.has(record.id)) throw new Error('Native task route cycle');
       visited.add(record.id);
-      const entry = this.registry(record).get(nativeID);
-      if (entry === undefined) return last;
-      record = this.records.get(entry) ?? null;
-      last = record;
+      if (!record.nativeTaskRoutes?.has(nativeID)) break;
+      pointer = this.branch(record, nativeID, teardown);
+      if (!pointer) return { found: true, pointer: null };
+      record = pointer;
     }
-    return last;
+    // The original lookup returns false while leaving the last branch in
+    // its output word. A present null entry instead returns true.
+    return { found: false, pointer };
+  }
+  lookupPointer(record, nativeID) {
+    return this.lookupPath(record, nativeID).pointer;
   }
   pruneNullRoutes(record) {
     for (const key of this.registry(record).keys())
       if (!this.lookupPointer(record, key)) record.nativeTaskRoutes.delete(key);
   }
   lookup(record, nativeID) {
-    if (idOf(record) === nativeID) return record;
-    const visited = new Set();
-    while (record) {
-      if (visited.has(record.id)) throw new Error('Native task route cycle');
-      visited.add(record.id);
-      const pointer = this.registry(record).get(nativeID);
-      if (pointer === undefined || pointer === null) return null;
-      record = this.records.get(pointer);
-      if (record && idOf(record) === nativeID) return record;
-    }
-    return null;
+    const { found, pointer } = this.lookupPath(record, nativeID);
+    return found ? pointer : null;
   }
   resolve(senderWorldID, nativeID) {
     nativeID = nativeEngineWord(nativeID, 'Native task lookup');
@@ -192,9 +204,9 @@ export class NativeEngineMessages {
     while (record) {
       if (seen.has(record.id)) throw new Error('Native task parent cycle');
       seen.add(record.id);
-      const found = this.lookup(record, nativeID);
-      if (found) return found.id;
-      if (record.kind === 1) return null;
+      const { found, pointer } = this.lookupPath(record, nativeID);
+      if (found && pointer) return pointer.id;
+      if (pointer || record.kind === 1) return null;
       record = this.records.get(record.parent);
     }
     return null;
@@ -203,9 +215,8 @@ export class NativeEngineMessages {
     const top = this.records.get(topWorldID);
     if (!top || top.kind !== 1)
       throw new Error('Native task ID allocation requires its owning Top');
-    const registered = this.registry(top);
     let id = 0;
-    while (id === idOf(top) || registered.has(id)) {
+    while (this.lookupPath(top, id).found) {
       if (++id > 0xffffffff) throw new Error('Native task ID space exhausted');
     }
     return id;
@@ -370,18 +381,22 @@ export class NativeEngineMessages {
           case 2: {
             const child = protocol.records.get(l),
               existing = protocol.registry(record).get(w);
-            if (
-              existing !== undefined &&
-              existing !== null &&
-              (context.nativeNewTask === undefined || context.nativeNewTask !== child?.id)
-            )
-              return 0;
+            if (existing !== undefined && existing !== null) return 0;
             if (!child || idOf(child) !== w)
               throw new Error('Native task registration requires its actual task identity');
+            const previousParent = child.parent;
             child.parent = record.id;
             record.nativeTaskRoutes.set(w, child.id);
-            if (context.nativeNewTask !== child.id)
+            try {
+              await protocol.world.nativeEngine?.features.get('task-memory')?.sync(child);
               await child.implementation.parentAssigned?.(record.id);
+            } catch (error) {
+              child.parent = previousParent;
+              if (existing === undefined) record.nativeTaskRoutes.delete(w);
+              else record.nativeTaskRoutes.set(w, existing);
+              throw error;
+            }
+            delete child.detached;
             return NATIVE_UNWRITTEN_WORD;
           }
           case 3:
@@ -595,53 +610,78 @@ export class NativeEngineMessages {
         await this.eachChild(record, async (child) => {
           packet[0] = idOf(child);
           await this.route(child, packet, context, output);
-          if (packet[2] === 2) record.nativeTaskRoutes.set(packet[3], child.id);
+          if (packet[2] === 2 && !record.nativeTaskRoutes.has(packet[3]))
+            record.nativeTaskRoutes.set(packet[3], child.id);
         });
       return 1;
     }
-    const child = this.records.get(this.registry(record).get(packet[0]));
+    const child = this.branch(record, packet[0]);
     if (!child) return 0;
     const control = await this.route(child, packet, context, output);
-    if (packet[2] === 2) record.nativeTaskRoutes.set(packet[3], child.id);
+    if (packet[2] === 2 && !record.nativeTaskRoutes.has(packet[3]))
+      record.nativeTaskRoutes.set(packet[3], child.id);
     return control;
+  }
+  async registerTask(top, packet, context, output) {
+    const name = readString(this.memory(packet.senderWorldID, context), packet[4], false),
+      id = await this.world.objects.create({
+        kind: packet[3],
+        name,
+        creator: packet.senderWorldID,
+        detached: true,
+        effectiveFrame: ((top.effectiveFrame ?? 0) - (top.pausedFrames ?? 0)) >>> 0,
+        fromHost: context.fromHost,
+        ...this.creation(top.id),
+      }),
+      nativeID = idOf(this.records.get(id)),
+      hadNewTask = Object.hasOwn(context, 'nativeNewTask'),
+      oldNewTask = context.nativeNewTask;
+    context.nativeNewTask = id;
+    packet[2] = 2;
+    packet[3] = nativeID;
+    packet[4] = id;
+    try {
+      // The PE reply starts with the allocated pointer, even if routing
+      // cannot find the parent. It must survive an ID lookup miss.
+      const out = context.nativePointer && context.nativeResult,
+        p = out && this.world.nativeEngine.process;
+      if (p) {
+        const tasks = await this.world.getNativeFeature('task-memory');
+        p.store(out, await tasks.pointer(id));
+      }
+      const control = await this.route(top, packet, context, output);
+      if (output.value === NATIVE_UNWRITTEN_WORD) {
+        output.value = nativeID;
+        context.nativeCreatedTask = id;
+      } else {
+        if (output.value !== 0) throw new Error('Unexpected native task registration result');
+        if (p) p.store(out, 0);
+        context.nativeCreatedTask = null;
+      }
+      return control;
+    } catch (error) {
+      try {
+        await this.world.objects.release(id, { rollback: true, fromHost: context.fromHost });
+      } catch (cleanup) {
+        error.cleanup = cleanup;
+      }
+      throw error;
+    } finally {
+      if (hadNewTask) context.nativeNewTask = oldNewTask;
+      else delete context.nativeNewTask;
+    }
   }
   async upward(record, packet, context, output) {
     if (record.kind === 1) {
-      if (packet[2] === 1) {
-        const parent = this.lookup(record, packet[0]);
-        if (!parent) throw new Error('Native task creation targets a missing parent');
-        const name = readString(this.memory(packet.senderWorldID, context), packet[4], false),
-          child = await this.world.objects.create({
-            kind: packet[3],
-            parent: parent.id,
-            name,
-            creator: packet.senderWorldID,
-            ...this.creation(record.id),
-          });
-        const hadNewTask = Object.hasOwn(context, 'nativeNewTask'),
-          oldNewTask = context.nativeNewTask;
-        context.nativeNewTask = child;
-        packet[2] = 2;
-        packet[3] = idOf(this.records.get(child));
-        packet[4] = child;
-        // The browser protocol exposes a native task ID at this pointer
-        // boundary. A PE caller must marshal it through task-memory.pointer.
-        output.value = idOf(this.records.get(child));
-        try {
-          return await this.route(record, packet, context, output);
-        } finally {
-          if (hadNewTask) context.nativeNewTask = oldNewTask;
-          else delete context.nativeNewTask;
-        }
-      }
+      if (packet[2] === 1) return this.registerTask(record, packet, context, output);
       return this.route(record, packet, context, output);
     }
     const parent = this.records.get(record.parent);
     if (!parent) return 0;
     if (packet[2] !== 1 && (packet[2] <= 10 || packet[2] > 12) && packet[0] === idOf(record))
       return this.route(record, packet, context, output);
-    const branch = this.records.get(this.registry(record).get(packet[0]));
-    if (packet[2] !== 1 && branch) return this.route(branch, packet, context, output);
+    const branch = packet[2] !== 1 && this.branch(record, packet[0]);
+    if (branch) return this.route(branch, packet, context, output);
     return this.upward(parent, packet, context, output);
   }
   async dispatchNative(senderWorldID, targetNativeID, message, w = 0, l = 0, context = {}) {
@@ -663,11 +703,10 @@ export class NativeEngineMessages {
     if (message !== 1 && (message <= 10 || message > 12) && packet[0] === idOf(origin))
       control = await this.route(origin, packet, context, output);
     else {
-      const branch = this.records.get(this.registry(origin).get(packet[0]));
-      control =
-        message !== 1 && branch
-          ? await this.route(branch, packet, context, output)
-          : await this.upward(origin, packet, context, output);
+      const branch = message !== 1 && this.branch(origin, packet[0]);
+      control = branch
+        ? await this.route(branch, packet, context, output)
+        : await this.upward(origin, packet, context, output);
     }
     return { routed: !!control, handled: !context.nativeUnhandled, result: output.value };
   }

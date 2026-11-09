@@ -80,13 +80,7 @@ export class NativeAreaEffects {
   async route([sender, target, raw, w, l, flags, out]) {
     const senderID = this.world.resolveTaskID(sender, this.engine.currentTaskID);
     if (senderID === null) throw new Error('CPU-area effect sender is outside its Top');
-    const value = await this.world.sendNativeEngine(
-      target,
-      senderID,
-      areaEffectCanonicalMessage(this.engine.profile, raw),
-      w,
-      l,
-      {
+    const context = {
         nativePointer: true,
         nativeResult: out,
         nativeSenderWorldID: senderID,
@@ -94,9 +88,16 @@ export class NativeAreaEffects {
         flags,
         fromHost: true,
       },
-    );
-    if (out && Number.isInteger(value)) this.process.store(out, value);
-    return this.world.resolveTaskID(target, senderID) === null ? 0 : 1;
+      value = await this.world.sendNativeEngine(
+        target,
+        senderID,
+        areaEffectCanonicalMessage(this.engine.profile, raw),
+        w,
+        l,
+        context,
+      );
+    if (raw !== 1 && out && Number.isInteger(value)) this.process.store(out, value);
+    return Number(Boolean(context.nativeRouted));
   }
   snapshot() {
     return { routeTrap: this.routeTrap };

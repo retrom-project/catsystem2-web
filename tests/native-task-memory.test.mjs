@@ -172,7 +172,8 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         ),
         0,
       );
-      assert.equal(p.load(out), 0x12345678);
+      // A transient factory context cannot register an existing key again.
+      assert.equal(p.load(out), 0);
       assert.equal(creationContext.nativeUnhandled, false);
       assert.equal(await call(15), 0);
       assert.equal(p.load(out), 120);

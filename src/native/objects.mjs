@@ -64,6 +64,8 @@ export class NativeObjects {
     frameRate,
     nativeID,
     namespace,
+    detached = false,
+    effectiveFrame,
     fromHost = false,
   }) {
     if (parent !== null && !this.objects.has(parent))
@@ -89,10 +91,13 @@ export class NativeObjects {
       state: 'creating',
       implementation: null,
       frameRate: frameRate ?? identity.frameRate ?? owner?.frameRate ?? 60,
-      effectiveFrame: owner ? ((owner.effectiveFrame ?? 0) - (owner.pausedFrames ?? 0)) >>> 0 : 0,
+      effectiveFrame:
+        effectiveFrame ??
+        (owner ? ((owner.effectiveFrame ?? 0) - (owner.pausedFrames ?? 0)) >>> 0 : 0),
       pausedFrames: 0,
       lastFrame: 0,
     };
+    if (detached) record.detached = true;
     this.objects.set(id, record);
     try {
       const implementation = await factory(record, this, {
@@ -119,8 +124,8 @@ export class NativeObjects {
       .filter((child) => child.parent === record.id)
       .sort((a, b) => ((a.nativeID ?? a.id) | 0) - ((b.nativeID ?? b.id) | 0));
   }
-  async eachChild(record, callback) {
-    if (this.eachChildProvider) return this.eachChildProvider(record, callback);
+  async eachChild(record, callback, options) {
+    if (this.eachChildProvider) return this.eachChildProvider(record, callback, options);
     let previous = -Infinity;
     for (;;) {
       const child = this.children(record).find(
@@ -146,13 +151,17 @@ export class NativeObjects {
     if (fromHost) this.nativeHostDepth = (this.nativeHostDepth || 0) + 1;
     try {
       await attempt(() => this.unregisterIdentity?.(record));
-      await this.eachChild(record, (child) =>
-        attempt(() => this.destroy(child.id, id, { fromHost })),
+      await this.eachChild(
+        record,
+        (child) => attempt(() => this.destroy(child.id, id, { fromHost })),
+        { teardown: true },
       );
       // The C++ base destructor has installed its own vtable before sending
       // this packet to itself, so derived notifications must not run again.
       record.destroyRequested = true;
-      await this.eachChild(record, (child) => attempt(() => this.release(child.id, { fromHost })));
+      await this.eachChild(record, (child) => attempt(() => this.release(child.id, { fromHost })), {
+        teardown: true,
+      });
       record.nativeTaskRoutes?.clear();
     } finally {
       if (fromHost) this.nativeHostDepth--;
@@ -182,6 +191,7 @@ export class NativeObjects {
       errors.push(error);
     } finally {
       this.objects.delete(id);
+      this.markReleasedIdentity?.(record);
       this.queue = this.queue.filter((q) => q.target !== id);
     }
     if (errors.length) throw new AggregateError(errors, `Native task ${id} cleanup failed`);
@@ -255,7 +265,7 @@ export class NativeObjects {
     let rootID = -1;
     for (;;) {
       const root = [...this.objects.values()]
-        .filter((r) => r.parent === null && r.id > rootID)
+        .filter((r) => r.parent === null && !r.detached && r.id > rootID)
         .sort((a, b) => a.id - b.id)[0];
       if (!root) break;
       rootID = root.id;
@@ -277,7 +287,7 @@ export class NativeObjects {
     let rootID = -1;
     for (;;) {
       const root = [...this.objects.values()]
-        .filter((r) => r.parent === null && r.id > rootID)
+        .filter((r) => r.parent === null && !r.detached && r.id > rootID)
         .sort((a, b) => a.id - b.id)[0];
       if (!root) break;
       rootID = root.id;

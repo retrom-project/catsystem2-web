@@ -96,16 +96,10 @@ export class NativeScreenEffects {
   async route([sender, target, raw, w, l, flags, out]) {
     const senderID = this.world.resolveTaskID(sender, this.engine.currentTaskID);
     if (senderID === null) throw new Error('Original screen-effect sender is outside its Top');
-    const targetID = this.world.resolveTaskID(target, senderID),
+    const targetID = raw !== 1 ? this.world.resolveTaskID(target, senderID) : null,
       record = this.world.objects.objects.get(targetID);
-    if (!record || record.state !== 'active') return 0;
-    const value = await this.world.sendNativeEngine(
-      target,
-      senderID,
-      canonicalMessage(this.engine.profile, record.kind, raw),
-      w,
-      l,
-      {
+    if (raw !== 1 && (!record || record.state !== 'active')) return 0;
+    const context = {
         payload: this.platform.memory,
         nativePointer: true,
         nativeResult: out,
@@ -113,15 +107,16 @@ export class NativeScreenEffects {
         fromHost: true,
         nativeSenderWorldID: senderID,
       },
-    );
-    if (out && Number.isInteger(value)) {
-      const word =
-        raw === 1
-          ? await this.taskMemory.pointer(this.world.resolveTaskID(value, senderID))
-          : value;
-      this.process.store(out, word);
-    }
-    return 1;
+      value = await this.world.sendNativeEngine(
+        target,
+        senderID,
+        canonicalMessage(this.engine.profile, record?.kind, raw),
+        w,
+        l,
+        context,
+      );
+    if (raw !== 1 && out && Number.isInteger(value)) this.process.store(out, value);
+    return raw === 1 ? Number(Boolean(context.nativeRouted)) : 1;
   }
   snapshot() {
     return { routeTrap: this.routeTrap };
