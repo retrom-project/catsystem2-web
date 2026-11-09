@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineWindows } from '../src/native/engine-process.mjs';
+import { NativeEngineWindows } from '../src/native/windows-services.mjs';
 import { nativeFileTime } from '../src/native/file-time.mjs';
-import { SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 
 async function fixture(files = new SaveSlotFiles()) {
   const p = new PE32Process(await loadUnicorn()),

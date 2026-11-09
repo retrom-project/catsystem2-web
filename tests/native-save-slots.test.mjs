@@ -12,7 +12,8 @@ import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.m
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
-import { saveSlotFixture, SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { saveSlotFixture } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

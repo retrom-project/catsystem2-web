@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineWindows } from '../src/native/engine-process.mjs';
+import { NativeEngineWindows } from '../src/native/windows-services.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 test('USER32 cdecl and va_list formatting match 371 pinned Wine full-buffer results including truncation and 64-bit argument consumption', async () => {

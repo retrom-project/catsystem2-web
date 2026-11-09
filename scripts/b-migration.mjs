@@ -2,6 +2,7 @@
 // Offline inventory. Only constructors/registration and guarded fallback probes
 // run here. No engine, DLL, resource, task or browser is opened.
 import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { nativeTestGroups } from './test-native.mjs';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -1053,6 +1054,7 @@ async function build() {
       ...profileAudit.addressSelections,
     ].filter((row) => row.review === 'needs-review').length,
   };
+  const testMigration = await nativeTestGroups(root);
   return {
     kind: 'B migration inventory',
     generation: {
@@ -1065,6 +1067,7 @@ async function build() {
       baselineComparison: comparison,
     },
     domains,
+    testMigration,
     remainingProfileSelections: profileAudit,
     summary: {
       nativeSlots: entries.length,

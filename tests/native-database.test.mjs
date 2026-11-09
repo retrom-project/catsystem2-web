@@ -14,7 +14,7 @@ import {
   compiledDatabase,
   DATABASE_ROWS,
 } from './fixtures/database-fixture.mjs';
-import { SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
 
 for (const [profile, variable] of [

@@ -10,7 +10,7 @@ import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.m
 import { NativeRandomMemory } from '../src/native/random-memory.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 for (const [profile, variable] of [

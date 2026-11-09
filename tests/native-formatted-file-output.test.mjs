@@ -11,7 +11,7 @@ import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.m
 import { NATIVE_FORMATTED_FILE_OUTPUT } from '../src/native/storage.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 const { id, handlers } = NATIVE_FORMATTED_FILE_OUTPUT;

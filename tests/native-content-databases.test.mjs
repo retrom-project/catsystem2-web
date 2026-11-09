@@ -10,7 +10,7 @@ import { NativeRandomMemory } from '../src/native/random-memory.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { contentFiles, contentFixture } from './fixtures/content-databases-fixture.mjs';
-import { SaveSlotFiles } from './fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
 
 for (const [profile, variable] of [

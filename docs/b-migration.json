@@ -16,6 +16,1111 @@
     "8": "启动、平台、输入、音视频",
     "9": "插件边界"
   },
+  "testMigration": {
+    "targets": { "oracle": 33, "differential": 51, "js": 23 },
+    "counts": { "js": 101, "oracle": 135, "differential": 0 },
+    "groups": {
+      "js": [
+        "tests/audio-contracts.test.mjs",
+        "tests/b-migration.test.mjs",
+        "tests/bicubic-kernel.test.mjs",
+        "tests/check-no-exe-addresses.test.mjs",
+        "tests/checkpoint-portable.test.mjs",
+        "tests/emote.test.mjs",
+        "tests/exe-baseline-relocation.test.mjs",
+        "tests/fes-contracts.test.mjs",
+        "tests/font.test.mjs",
+        "tests/formats.test.mjs",
+        "tests/gallery-contracts.test.mjs",
+        "tests/kcs-contracts.test.mjs",
+        "tests/kcs-debug.test.mjs",
+        "tests/motion-contracts.test.mjs",
+        "tests/native-abi-behavior.test.mjs",
+        "tests/native-abi.test.mjs",
+        "tests/native-arguments.test.mjs",
+        "tests/native-audio-pcm.test.mjs",
+        "tests/native-bank.test.mjs",
+        "tests/native-bitmap-upload.test.mjs",
+        "tests/native-calendar.test.mjs",
+        "tests/native-character-names.test.mjs",
+        "tests/native-clipboard-browser.test.mjs",
+        "tests/native-config-fields.test.mjs",
+        "tests/native-config-memory.test.mjs",
+        "tests/native-config.test.mjs",
+        "tests/native-cpu-budget.test.mjs",
+        "tests/native-cursor.test.mjs",
+        "tests/native-d3d9-adapter.test.mjs",
+        "tests/native-divided-model.test.mjs",
+        "tests/native-draw.test.mjs",
+        "tests/native-engine-message.test.mjs",
+        "tests/native-entry.test.mjs",
+        "tests/native-fes-config.test.mjs",
+        "tests/native-fes-input.test.mjs",
+        "tests/native-fes-motion-restore.test.mjs",
+        "tests/native-fes-sound.test.mjs",
+        "tests/native-fes-source.test.mjs",
+        "tests/native-file-pattern.test.mjs",
+        "tests/native-file-time.test.mjs",
+        "tests/native-format.test.mjs",
+        "tests/native-geometry.test.mjs",
+        "tests/native-global-strings.test.mjs",
+        "tests/native-graphics.test.mjs",
+        "tests/native-history-cursor.test.mjs",
+        "tests/native-image.test.mjs",
+        "tests/native-input-bindings.test.mjs",
+        "tests/native-input.test.mjs",
+        "tests/native-motion-persistence.test.mjs",
+        "tests/native-motion.test.mjs",
+        "tests/native-movie-asf-samples.test.mjs",
+        "tests/native-movie-asf.test.mjs",
+        "tests/native-movie-hap.test.mjs",
+        "tests/native-movie-ogg.test.mjs",
+        "tests/native-movie-source.test.mjs",
+        "tests/native-movie-webm.test.mjs",
+        "tests/native-movie.test.mjs",
+        "tests/native-multibyte.test.mjs",
+        "tests/native-ordered-map.test.mjs",
+        "tests/native-pe32-thread.test.mjs",
+        "tests/native-persistence.test.mjs",
+        "tests/native-pixel-checkpoint.test.mjs",
+        "tests/native-preferences.test.mjs",
+        "tests/native-ram-view.test.mjs",
+        "tests/native-record-stack.test.mjs",
+        "tests/native-resource-cache.test.mjs",
+        "tests/native-resource-contracts.test.mjs",
+        "tests/native-resource-search.test.mjs",
+        "tests/native-runtime.test.mjs",
+        "tests/native-scene-data.test.mjs",
+        "tests/native-scene-history.test.mjs",
+        "tests/native-script-replacement.test.mjs",
+        "tests/native-sound-config.test.mjs",
+        "tests/native-sound-math.test.mjs",
+        "tests/native-sound-values.test.mjs",
+        "tests/native-sound.test.mjs",
+        "tests/native-sparse-bytes.test.mjs",
+        "tests/native-sse.test.mjs",
+        "tests/native-standard.test.mjs",
+        "tests/native-string-bank.test.mjs",
+        "tests/native-token.test.mjs",
+        "tests/native-view.test.mjs",
+        "tests/native-windows-accelerators.test.mjs",
+        "tests/native-windows-dib.test.mjs",
+        "tests/native-windows-files.test.mjs",
+        "tests/native-windows-format.test.mjs",
+        "tests/native-windows-gdi.test.mjs",
+        "tests/native-windows-language.test.mjs",
+        "tests/native-windows-menus.test.mjs",
+        "tests/native-windows-messages.test.mjs",
+        "tests/native-windows-version.test.mjs",
+        "tests/native-windows-views.test.mjs",
+        "tests/native-xml.test.mjs",
+        "tests/native-zlib.test.mjs",
+        "tests/oracle-fixtures.test.mjs",
+        "tests/particles.test.mjs",
+        "tests/ppi-contracts.test.mjs",
+        "tests/psd.test.mjs",
+        "tests/raster.test.mjs",
+        "tests/scene-contracts.test.mjs",
+        "tests/transitional-serving.test.mjs"
+      ],
+      "oracle": [
+        "tests/execution.test.mjs",
+        "tests/hg2.test.mjs",
+        "tests/native-area-task-lifecycle.test.mjs",
+        "tests/native-bank-world.test.mjs",
+        "tests/native-bitmap-factory.test.mjs",
+        "tests/native-bitmap-import.test.mjs",
+        "tests/native-bitmap-memory.test.mjs",
+        "tests/native-bitmap-mirror.test.mjs",
+        "tests/native-bitmap-operations.test.mjs",
+        "tests/native-casync-reader.test.mjs",
+        "tests/native-clock.test.mjs",
+        "tests/native-comma-fields.test.mjs",
+        "tests/native-configuration-query.test.mjs",
+        "tests/native-content-databases.test.mjs",
+        "tests/native-controls.test.mjs",
+        "tests/native-d3d9-surface.test.mjs",
+        "tests/native-data-buffer.test.mjs",
+        "tests/native-database.test.mjs",
+        "tests/native-dictionary.test.mjs",
+        "tests/native-display-log-persistence.test.mjs",
+        "tests/native-draw-commands.test.mjs",
+        "tests/native-effect-commands.test.mjs",
+        "tests/native-emote-blocks.test.mjs",
+        "tests/native-emote-bootstrap.test.mjs",
+        "tests/native-emote-mesh.test.mjs",
+        "tests/native-emote.test.mjs",
+        "tests/native-engine-executable-resources.test.mjs",
+        "tests/native-engine-files.test.mjs",
+        "tests/native-engine-language.test.mjs",
+        "tests/native-engine-process.test.mjs",
+        "tests/native-engine-workers.test.mjs",
+        "tests/native-fes-data.test.mjs",
+        "tests/native-fes-factory.test.mjs",
+        "tests/native-fes-images.test.mjs",
+        "tests/native-fes-planes.test.mjs",
+        "tests/native-fes-sound-config.test.mjs",
+        "tests/native-fes-task.test.mjs",
+        "tests/native-formatted-file-output.test.mjs",
+        "tests/native-gallery-tables.test.mjs",
+        "tests/native-global-strings-bridge.test.mjs",
+        "tests/native-graphics-broadcast.test.mjs",
+        "tests/native-graphics-receiver.test.mjs",
+        "tests/native-heap-data.test.mjs",
+        "tests/native-hg3.test.mjs",
+        "tests/native-image-commands.test.mjs",
+        "tests/native-image-composite.test.mjs",
+        "tests/native-image-file.test.mjs",
+        "tests/native-image-owners.test.mjs",
+        "tests/native-input-commands.test.mjs",
+        "tests/native-input-control.test.mjs",
+        "tests/native-input-device.test.mjs",
+        "tests/native-input-world.test.mjs",
+        "tests/native-m2-blocks.test.mjs",
+        "tests/native-m2-lip.test.mjs",
+        "tests/native-m2.test.mjs",
+        "tests/native-matrix-view.test.mjs",
+        "tests/native-mesh.test.mjs",
+        "tests/native-nametable.test.mjs",
+        "tests/native-particle-controls.test.mjs",
+        "tests/native-particle-files.test.mjs",
+        "tests/native-particle-projection.test.mjs",
+        "tests/native-particles.test.mjs",
+        "tests/native-ptcl-bounds.test.mjs",
+        "tests/native-random-memory.test.mjs",
+        "tests/native-raster-affine-budget.test.mjs",
+        "tests/native-raster-alpha-budget.test.mjs",
+        "tests/native-raster-btype-budget.test.mjs",
+        "tests/native-raster-copy-budget.test.mjs",
+        "tests/native-raster-kernel.test.mjs",
+        "tests/native-raster-mask-budget.test.mjs",
+        "tests/native-raster-normal-budget.test.mjs",
+        "tests/native-raster-rep-budget.test.mjs",
+        "tests/native-record-queue.test.mjs",
+        "tests/native-rectangles.test.mjs",
+        "tests/native-registry.test.mjs",
+        "tests/native-render-sources.test.mjs",
+        "tests/native-renderer.test.mjs",
+        "tests/native-retained-owner.test.mjs",
+        "tests/native-retained-raster.test.mjs",
+        "tests/native-save-slots.test.mjs",
+        "tests/native-scalar-math.test.mjs",
+        "tests/native-scene-checkpoint.test.mjs",
+        "tests/native-scene-memory.test.mjs",
+        "tests/native-screen-effect.test.mjs",
+        "tests/native-script-message-box.test.mjs",
+        "tests/native-script-task.test.mjs",
+        "tests/native-script-xml.test.mjs",
+        "tests/native-sdk-javascript-sound.test.mjs",
+        "tests/native-sdk-javascript-world.test.mjs",
+        "tests/native-sdk-javascript.test.mjs",
+        "tests/native-section-table.test.mjs",
+        "tests/native-shared-memory.test.mjs",
+        "tests/native-shortcut-budget.test.mjs",
+        "tests/native-sound-clock-world.test.mjs",
+        "tests/native-startup-accelerators.test.mjs",
+        "tests/native-startup-application.test.mjs",
+        "tests/native-startup-menu.test.mjs",
+        "tests/native-startup-sound.test.mjs",
+        "tests/native-startup-window-owner.test.mjs",
+        "tests/native-steam.test.mjs",
+        "tests/native-system-clock.test.mjs",
+        "tests/native-task-commands.test.mjs",
+        "tests/native-task-memory.test.mjs",
+        "tests/native-task-registration.test.mjs",
+        "tests/native-text-plain.test.mjs",
+        "tests/native-text.test.mjs",
+        "tests/native-texture-memory.test.mjs",
+        "tests/native-tile-game.test.mjs",
+        "tests/native-unicode-output.test.mjs",
+        "tests/native-utf8.test.mjs",
+        "tests/native-vector-matrix.test.mjs",
+        "tests/native-version-query.test.mjs",
+        "tests/native-view-geometry.test.mjs",
+        "tests/native-vmr9.test.mjs",
+        "tests/native-widechar.test.mjs",
+        "tests/native-window-events.test.mjs",
+        "tests/native-window-pump.test.mjs",
+        "tests/native-window.test.mjs",
+        "tests/native-windows-com-memory.test.mjs",
+        "tests/native-windows-directsound.test.mjs",
+        "tests/native-windows-entropy.test.mjs",
+        "tests/native-windows-events.test.mjs",
+        "tests/native-windows-folders.test.mjs",
+        "tests/native-windows-fonts.test.mjs",
+        "tests/native-windows-modules.test.mjs",
+        "tests/native-windows-resources.test.mjs",
+        "tests/native-windows-system.test.mjs",
+        "tests/native-windows-thread-handles.test.mjs",
+        "tests/native-windows-tls.test.mjs",
+        "tests/native-windows-volume.test.mjs",
+        "tests/native-world.test.mjs",
+        "tests/ppi-floating-point.test.mjs",
+        "tests/ppi-native.test.mjs",
+        "tests/ppi-particle-order.test.mjs",
+        "tests/transitional-template.test.mjs"
+      ],
+      "differential": []
+    },
+    "original": [
+      {
+        "file": "tests/browser/native-text.spec.mjs",
+        "target": "differential",
+        "reason": "对照实际绘制/媒体任务结果与 fresh restore，使用领域容差和事件轨迹",
+        "role": "browser",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/browser/native-vmr-filtergraph.spec.mjs",
+        "target": "differential",
+        "reason": "对照实际绘制/媒体任务结果与 fresh restore，使用领域容差和事件轨迹",
+        "role": "browser",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/bitmap-memory-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/content-databases-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/database-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/data-buffer-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/image-file-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/image-owner-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/name-table-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/native-vmr-surface.mjs",
+        "target": "oracle",
+        "reason": "原 VMR/Direct3D surface fixture，随 oracle 集成组",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/fixtures/rectangle-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/save-slots-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/scene-checkpoint-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/section-table-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/fixtures/unicode-output-fixture.mjs",
+        "target": "differential",
+        "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态",
+        "role": "fixture",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-bitmap-import.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-casync-reader.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-clock.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-configuration-query.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-content-databases.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-database.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-data-buffer.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-display-log-persistence.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-emote-bootstrap.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-engine-executable-resources.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-engine-files.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-engine-language.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-engine-process.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-engine-workers.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-fes-factory.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-fes-images.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-file-time.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-formatted-file-output.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-gallery-tables.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-global-strings-bridge.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-graphics-receiver.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-hg3.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-input-device.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-m2-blocks.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-m2-lip.test.mjs",
+        "target": "oracle",
+        "reason": "原 DLL/EXE 组合的 x86 集成证据，后续独立插件宿主继续承接",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-m2.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-matrix-view.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-particle-files.test.mjs",
+        "target": "oracle",
+        "reason": "原 DLL/EXE 组合的 x86 集成证据，后续独立插件宿主继续承接",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-particle-projection.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-ptcl-bounds.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-random-memory.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-affine-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-alpha-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-btype-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-copy-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-kernel.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-mask-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-normal-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-raster-rep-budget.test.mjs",
+        "target": "oracle",
+        "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-record-queue.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-rectangles.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-registry.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-retained-raster.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-save-slots.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-scene-checkpoint.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-scene-memory.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-screen-effect.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-script-message-box.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-script-xml.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-sdk-javascript.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-section-table.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-shared-memory.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-startup-accelerators.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-startup-application.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-startup-menu.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-startup-sound.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-startup-window-owner.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-system-clock.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-task-memory.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-text-plain.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-text.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-tile-game.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-unicode-output.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-utf8.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-vector-matrix.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-version-query.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-vmr9.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-widechar.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-window-events.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-window-pump.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-accelerators.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-com-memory.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-dib.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-directsound.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-entropy.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-events.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-files.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-folders.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-fonts.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-format.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-gdi.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-menus.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-messages.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-modules.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-resources.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-system.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/native-windows-thread-handles.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-tls.test.mjs",
+        "target": "oracle",
+        "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-version.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-views.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "js",
+        "state": "current"
+      },
+      {
+        "file": "tests/native-windows-volume.test.mjs",
+        "target": "js",
+        "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      },
+      {
+        "file": "tests/ppi-particle-order.test.mjs",
+        "target": "differential",
+        "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用",
+        "role": "node",
+        "currentGroup": "oracle",
+        "state": "pending-domain-migration"
+      }
+    ]
+  },
   "remainingProfileSelections": {
     "profileIndexSites": [
       {

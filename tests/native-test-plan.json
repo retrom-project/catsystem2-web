@@ -1,0 +1,541 @@
+{
+  "version": 1,
+  "sourceCommit": "f4c38d5b9fa23016591a8e38b7624392189e22f8",
+  "files": [
+    {
+      "file": "tests/browser/native-text.spec.mjs",
+      "target": "differential",
+      "reason": "对照实际绘制/媒体任务结果与 fresh restore，使用领域容差和事件轨迹"
+    },
+    {
+      "file": "tests/browser/native-vmr-filtergraph.spec.mjs",
+      "target": "differential",
+      "reason": "对照实际绘制/媒体任务结果与 fresh restore，使用领域容差和事件轨迹"
+    },
+    {
+      "file": "tests/fixtures/bitmap-memory-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/content-databases-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/database-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/data-buffer-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/image-file-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/image-owner-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/name-table-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/native-vmr-surface.mjs",
+      "target": "oracle",
+      "reason": "原 VMR/Direct3D surface fixture，随 oracle 集成组"
+    },
+    {
+      "file": "tests/fixtures/rectangle-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/save-slots-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/scene-checkpoint-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/section-table-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/fixtures/unicode-output-fixture.mjs",
+      "target": "differential",
+      "reason": "fixture 随对应领域差分组，拆出 oracle 创建与 JS 初态"
+    },
+    {
+      "file": "tests/native-bitmap-import.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-casync-reader.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-clock.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-configuration-query.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-content-databases.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-database.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-data-buffer.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-display-log-persistence.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-emote-bootstrap.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-engine-executable-resources.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-engine-files.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-engine-language.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-engine-process.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-engine-workers.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-fes-factory.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-fes-images.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-file-time.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-formatted-file-output.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-gallery-tables.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-global-strings-bridge.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-graphics-receiver.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-hg3.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-input-device.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-m2-blocks.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-m2-lip.test.mjs",
+      "target": "oracle",
+      "reason": "原 DLL/EXE 组合的 x86 集成证据，后续独立插件宿主继续承接"
+    },
+    {
+      "file": "tests/native-m2.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-matrix-view.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-particle-files.test.mjs",
+      "target": "oracle",
+      "reason": "原 DLL/EXE 组合的 x86 集成证据，后续独立插件宿主继续承接"
+    },
+    {
+      "file": "tests/native-particle-projection.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-ptcl-bounds.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-random-memory.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-raster-affine-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-alpha-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-btype-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-copy-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-kernel.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-mask-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-normal-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-raster-rep-budget.test.mjs",
+      "target": "oracle",
+      "reason": "保留逐指令预算、寄存器、flags、故障与原循环边界"
+    },
+    {
+      "file": "tests/native-record-queue.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-rectangles.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-registry.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-retained-raster.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-save-slots.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-scene-checkpoint.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-scene-memory.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-screen-effect.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-script-message-box.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-script-xml.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-sdk-javascript.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-section-table.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-shared-memory.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-startup-accelerators.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-startup-application.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-startup-menu.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-startup-sound.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-startup-window-owner.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-system-clock.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-task-memory.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-text-plain.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-text.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-tile-game.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-unicode-output.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-utf8.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-vector-matrix.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-version-query.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-vmr9.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-widechar.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-window-events.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    },
+    {
+      "file": "tests/native-window-pump.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-windows-accelerators.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-com-memory.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-dib.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-directsound.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-entropy.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-events.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-files.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-folders.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-fonts.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-format.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-gdi.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-menus.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-messages.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-modules.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-resources.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-system.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-thread-handles.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-windows-tls.test.mjs",
+      "target": "oracle",
+      "reason": "保留原 EXE/CPU、初始化或原始进程恢复的证据"
+    },
+    {
+      "file": "tests/native-windows-version.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-views.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/native-windows-volume.test.mjs",
+      "target": "js",
+      "reason": "直接测试真实 JS 平台服务，原 EXE import smoke 拆到 oracle companion"
+    },
+    {
+      "file": "tests/ppi-particle-order.test.mjs",
+      "target": "differential",
+      "reason": "以同一 authored 输入对照 JS 行为与原 wrapper/receiver 的状态和副作用"
+    }
+  ]
+}

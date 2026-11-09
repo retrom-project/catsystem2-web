@@ -10,7 +10,8 @@ import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NATIVE_FES_SAVE_HANDLERS } from '../src/native/save-slots.mjs';
 import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { saveSlotFixture, SaveSlotFiles } from '../tests/fixtures/save-slots-fixture.mjs';
+import { saveSlotFixture } from '../tests/fixtures/save-slots-fixture.mjs';
+import { SaveSlotFiles } from '../tests/fixtures/save-slot-files.mjs';
 
 const [filename, output] = process.argv.slice(2);
 if (!output)

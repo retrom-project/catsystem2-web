@@ -10,16 +10,20 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node scripts/check-no-exe-addresses.mjs && node scripts/check-native-entry.mjs && eslint . && prettier --check .",
+    "check": "node scripts/check-no-exe-addresses.mjs && node scripts/check-native-entry.mjs && node scripts/test-native.mjs --check-plan && eslint . && prettier --check .",
     "format": "prettier --write .",
     "test:browser": "playwright test",
     "test:game": "playwright test --config playwright.game.config.mjs",
     "test:native-game": "playwright test --config playwright.native-game.config.mjs",
     "test:native-sdk": "playwright test --config playwright.native-sdk.config.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node scripts/test-native.mjs",
     "corpus": "node scripts/corpus.mjs",
     "prepare:media": "node scripts/prepare-media.mjs",
-    "test:route": "playwright test --config playwright.route.config.mjs"
+    "test:route": "playwright test --config playwright.route.config.mjs",
+    "test:js": "node scripts/test-native.mjs --group js",
+    "test:oracle": "node scripts/test-native.mjs --group oracle",
+    "test:differential": "node scripts/test-native.mjs --group differential",
+    "test:full": "node scripts/test-native.mjs --require-fixtures"
   },
   "devDependencies": {
     "@eslint/js": "9.39.0",

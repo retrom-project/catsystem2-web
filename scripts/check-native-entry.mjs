@@ -5,44 +5,64 @@ import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
 import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 
-export async function nativeEntryGraph(root, entry = 'src/engine.mjs') {
+export async function nativeEntryGraph(root, entry = 'src/engine.mjs', importCache = new Map()) {
   const visited = new Set();
   async function visit(file) {
     if (visited.has(file)) return;
     visited.add(file);
-    const source = await readFile(resolve(root, file), 'utf8'),
-      imports = [];
-    const messages = new Linter().verify(
-      source,
-      [
-        {
-          plugins: {
-            graph: {
-              rules: {
-                imports: {
-                  create() {
-                    return {
-                      ImportDeclaration: (node) => imports.push(node.source.value),
-                      ExportNamedDeclaration: (node) => {
-                        if (node.source) imports.push(node.source.value);
-                      },
-                      ExportAllDeclaration: (node) => imports.push(node.source.value),
-                      ImportExpression: (node) => {
-                        if (typeof node.source.value === 'string') imports.push(node.source.value);
-                      },
-                    };
+    let facts = importCache.get(file);
+    if (!facts) {
+      const source = await readFile(resolve(root, file), 'utf8');
+      facts = { imports: [], privateFixtureReads: false };
+      const messages = new Linter().verify(
+        source,
+        [
+          {
+            plugins: {
+              graph: {
+                rules: {
+                  imports: {
+                    create() {
+                      return {
+                        ImportDeclaration: (node) => facts.imports.push(node.source.value),
+                        ExportNamedDeclaration: (node) => {
+                          if (node.source) facts.imports.push(node.source.value);
+                        },
+                        ExportAllDeclaration: (node) => facts.imports.push(node.source.value),
+                        ImportExpression: (node) => {
+                          if (typeof node.source.value === 'string')
+                            facts.imports.push(node.source.value);
+                        },
+                        MemberExpression(node) {
+                          const object = node.object;
+                          if (
+                            object.type !== 'MemberExpression' ||
+                            object.object.name !== 'process'
+                          )
+                            return;
+                          const property = object.computed
+                            ? object.property.value
+                            : object.property.name;
+                          if (property !== 'env') return;
+                          const name = node.computed ? node.property.value : node.property.name;
+                          if (typeof name !== 'string' || name.startsWith('CATSYSTEM2_'))
+                            facts.privateFixtureReads = true;
+                        },
+                      };
+                    },
                   },
                 },
               },
             },
+            rules: { 'graph/imports': 'error' },
           },
-          rules: { 'graph/imports': 'error' },
-        },
-      ],
-      { filename: file },
-    );
-    if (messages.length) throw new Error(`${file}: ${messages[0].message}`);
-    for (const target of imports.filter((target) => target.startsWith('.')))
+        ],
+        { filename: file },
+      );
+      if (messages.length) throw new Error(`${file}: ${messages[0].message}`);
+      importCache.set(file, facts);
+    }
+    for (const target of facts.imports.filter((target) => target.startsWith('.')))
       await visit(relative(root, resolve(root, dirname(file), target)));
   }
   await visit(entry);

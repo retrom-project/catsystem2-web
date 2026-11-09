@@ -52,6 +52,31 @@ npm run test:browser
 npm run build
 ```
 
+Node 测试可按当前依赖分组执行，`npm test` 运行全部组。
+
+```sh
+npm run test:js
+npm run test:oracle
+npm run test:differential
+node scripts/test-native.mjs --list
+```
+
+JS/golden 组清除私有 fixture 环境变量，平台服务使用自制 PE32 内存与调用宿主。
+oracle 组保留原 EXE 及私有插件回归。差分组接入独立 JS/oracle 用例前会明确报空组错误。
+默认模式明确报告缺少私有资源的跳过原因。完整私有验收使用以下变量，并要求通过指纹校验。
+两份 EXE 的相邻目录都需有 `config/startup.xml`。
+
+```sh
+CATSYSTEM2_ENGINE_EXE=/path/to/prepared-game/NEKOPARAvol3.exe \
+CATSYSTEM2_SDK_EXE=/path/to/sdk/system/cs2_open.exe \
+CATSYSTEM2_EMOTE_DLL=/path/to/emotedriver.dll \
+CATSYSTEM2_PPI_FIXTURES=/path/to/ptclpi \
+npm run test:full
+```
+
+测试归属和当前可执行分组见盘点中的 `testMigration`。分组与 fixture 规则见
+[问题定位](docs/debugging.md)。
+
 `dist/` 是可直接静态托管的浏览器文件及内容摘要，不包含游戏。
 公共测试使用自制数据，覆盖解析边界、VM、FES、CST、E-mote、WebGL 遮罩、Range 读取和 IndexedDB。
 私有游戏验证与公共测试分开运行。先按上文挂载游戏、转换影片，再执行：

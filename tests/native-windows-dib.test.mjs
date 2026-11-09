@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineWindows } from '../src/native/engine-process.mjs';
+import { NativeEngineWindows } from '../src/native/windows-services.mjs';
 import { NativeTextWindows } from '../src/native/text-windows.mjs';
 
 async function fixture() {

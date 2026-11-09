@@ -65,6 +65,11 @@ and imported/local EXE layout bindings. Identity checks are listed separately.
 Dynamic execution targets retain the inventory's ordinary `needs-review` state.
 Review new selectors and update their ownership rules with each domain change.
 
+`testMigration` records the original 107 files' target ownership and the current
+executable groups. Pending domains retain their oracle regressions. Regenerate
+the inventory when adding a test or changing its import/fixture dependencies.
+The maintained source plan is `tests/native-test-plan.json`.
+
 All 135 files in the local planning attachment are included. Nine have zero
 dependencies under the phase 0 scanner, and five other files have nonzero counts,
 giving 131 dependency-bearing files. The inventory keeps the zero-count files.

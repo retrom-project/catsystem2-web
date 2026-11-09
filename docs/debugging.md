@@ -48,6 +48,24 @@ FES 标签切换可能在同一帧继续执行，不能自行补一帧。CST 由
 将临时证据写入 `.local/`。保存修复时说明差分范围、未比较的原始未初始化字节和平台限制。
 再运行相应公共用例、新实例恢复及真实系统路径。
 
+`scripts/test-native.mjs` 按实际字面量导入闭包及私有 `process.env` 读取选择当前分组。
+指向 EXE 后端、oracle 或私有 fixture 的文件进入 oracle 组。未解析的动态环境变量
+读取也保守进入该组。`tests/differential/` 中的测试使用差分入口，其他可独立执行的
+文件进入 JS/golden 组。JS 平台服务测试可使用自制 PE32 内存、trap 和已固定的 WASM
+测试后端。每个 Node 测试文件只归入一个执行组。
+
+`tests/native-test-plan.json` 固定原 107 个文件的目标归属，其中 oracle 33、
+differential 51、JS 23，包含 92 个 Node 测试、2 个浏览器测试和 13 个辅助模块。
+仍混有原 EXE 回归的文件继续实际运行在 oracle 组，状态为
+`pending-domain-migration`。所属领域迁移时再调整其执行路径。盘点同时记录目标
+与当前分组，`npm run check` 校验原始集合和数量。
+
+`tests/fixtures/oracle-fixtures.mjs` 校验两份 EXE 的版本和 SHA-256，并校验指定的
+E-mote/PPI DLL。提供路径但文件缺失或指纹错误时直接失败。默认模式对未提供的
+资源报告具体变量及 ABI。`npm run test:full` 要求完整资源和后端齐备，缺少资源时
+在执行测试前失败。完整模式仍保留明确标出的 GPU 专用 Node 跳过项，其浏览器
+用例需单独按对应配置运行。
+
 [native 契约](native-compatibility.md)、[FES/CST](fes-cst-compatibility.md)、
 [PPI/PTCL](ppi-compatibility.md) 和 [完成标准](completion.md) 分别记录各层验收边界。
 标题、主线、资源遍历、声明覆盖率和一次截图均不能代替通用模拟器验收。

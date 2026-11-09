@@ -2,7 +2,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { NativeEngineProcess, NativeEngineWindows } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineWindows } from '../src/native/windows-services.mjs';
 import { readPEVersionResource } from '../src/native/profile.mjs';
 import { installNativeResourceAPIs } from '../src/native/windows-resources.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
