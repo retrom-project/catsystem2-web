@@ -8,7 +8,8 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
-import { floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
+import { bitsFloat, floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
 
 const [filename, output] = process.argv.slice(2);
@@ -80,6 +81,7 @@ const equal = (actual, expected, label) => {
 };
 const observedBytes = (message) => {
   if (message === 262) return 64;
+  if (message === 266) return 40;
   if (message === 267) return 12;
   if (message === 277) return 60;
   if (message === 278) return 52;
@@ -701,6 +703,179 @@ try {
         'active destruction detaches from the borrowed model',
       );
     }
+    const rain = sdk
+        ? { table: 0x992fec, callback: 0x4c9220, lines: 0x5530f0, create: 0x550490 }
+        : { table: 0x8cdd0c, callback: 0x5ee8f0, lines: 0x67c450, create: 0x679760 },
+      lineBatches = [],
+      f = Math.fround,
+      seed = 0x8120719,
+      color = 0xff60c4f4,
+      viewBounds = [0, 0, 64, 48];
+    p.store(core + 312, 1);
+    engine.registerWindows('USER32.dll', 'GetClientRect', {
+      count: 2,
+      fn: ([hwnd, address]) => {
+        assert.equal(hwnd, 1);
+        viewBounds.forEach((word, i) => p.store(address + 4 * i, word));
+        return 1;
+      },
+    });
+    engine.patch(
+      rain.lines,
+      'original RainDrop final line submission',
+      6,
+      (args) => {
+        assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0, graphManager);
+        lineBatches.push({ args, bytes: p.read(args[2], args[3] * 40) });
+        return Number(args[3] !== 0);
+      },
+      { calleePops: true },
+    );
+    const createRain = async () => {
+      activeEffect = await engine.call(factory, [19, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      equal(p.load(activeEffect), rain.table, 'original RainDrop factory');
+      equal(p.load(activeEffect + 64), 19, 'original RainDrop task kind');
+      return activeEffect;
+    };
+    const initializeRain = async (count, capacity, speed = 42) => {
+      const input = [
+        ...[64, 16, 48].map(floatBits),
+        300,
+        ...[14, 7, speed].map(floatBits),
+        count,
+        capacity,
+        color,
+        0xa5a55a5a,
+      ];
+      input.forEach((word, i) => p.store(source + 4 * i, word));
+      equal(await callWipe(0xc4, 112), { control: 2 }, 'original RainDrop initializer');
+      equal(wordsAt(source, input.length), input, 'RainDrop VM packet and canary');
+      if (p.load(activeEffect + 108))
+        equal(wordsAt(activeEffect + 120, 10), input.slice(0, 10), 'all RainDrop input words');
+    };
+    for (const count of [0, 6]) {
+      const actor = await createRain(),
+        random = new ParticleRandom(seed),
+        capacity = count,
+        drop = (initial) => {
+          const y = f(random.frand() * 48 * (initial ? -5 : -1)),
+            x = f(random.frand() * 64),
+            z = f(random.frand() * 16 - 8),
+            length = f(f(random.frand() * 7) + 7);
+          return [
+            ...[x, f(y - length), z, 1].map(floatBits),
+            color,
+            ...[x, y, z, 1].map(floatBits),
+            color,
+          ];
+        };
+      await engine.call(glass.seed, [seed]);
+      equal(p.load(actor + 108), graphManager, 'RainDrop uses the original graph manager');
+      await initializeRain(count, capacity);
+      const [vertices, projected] = wordsAt(actor + 112, 2),
+        graph = await engine.call(glass.lookup, [nativeID], graphManager),
+        model = p.load(graph + 8);
+      assert.ok(graph && model, 'the original factory adds a custom model');
+      for (const pointer of [vertices, projected]) {
+        equal(p.load(pointer - 4), 1, 'original reference header');
+        equal(p.allocations.get(pointer - 4), 4 + capacity * 40, 'original capacity');
+      }
+      equal(
+        wordsAt(actor + 172, 8),
+        [32, 24, 300, 1, 32, 24, 0, 1].map(floatBits),
+        'original projection centers',
+      );
+      let expected = Array.from({ length: count }, () => drop(true)).flat();
+      equal(wordsAt(vertices, count * 10), expected, 'every initial XYZW/diffuse word');
+      await initializeRain(count ? count + 2 : 0, capacity);
+      equal(wordsAt(actor + 112, 2), [vertices, projected], 'repeat C4 preserves both arrays');
+      equal(wordsAt(vertices, count * 10), expected, 'repeat C4 does not re-seed drops');
+      equal(await callWipe(0xc8), { control: 1, value: 0 });
+      await callWipe(0xc5);
+      equal(await callWipe(0xc8), { control: 1, value: 1 });
+      equal(p.load(graph + 4), 1, 'C5 shows the custom model');
+      equal(wordsAt(model + 236, 3), [0, rain.callback, actor], 'C5 binds the original callback');
+      const clock = p.load(actor + 168),
+        step = p.load(actor + 76);
+      let last = clock,
+        respawns = 0;
+      for (const at of [clock, clock + 1, clock + 2, clock + 9]) {
+        const speed = f(f(f(at - last) * f(step)) * 42);
+        for (let offset = 0; offset < expected.length; offset += 10) {
+          for (const y of [1, 6])
+            expected[offset + y] = floatBits(f(bitsFloat(expected[offset + y]) + speed));
+          if (bitsFloat(expected[offset + 1]) > 48) {
+            expected.splice(offset, 10, ...drop(false));
+            respawns++;
+          }
+        }
+        await frame(at);
+        equal(p.load(actor + 168), at, 'original update clock');
+        equal(wordsAt(vertices, count * 10), expected, 'every moved or respawned word');
+        last = at;
+      }
+      assert.equal(respawns > 0, count !== 0, 'non-empty original rain recycles expired drops');
+      const before = p.read(projected, count * 40);
+      equal(await engine.call(rain.callback, [actor, 0]), 1);
+      equal(lineBatches.length, 0, 'the original callback visibility gate');
+      equal(p.read(projected, count * 40), before);
+      equal(await engine.call(rain.callback, [actor, 1]), 1);
+      equal(lineBatches.length, 1);
+      equal(lineBatches.pop(), {
+        args: [68, 2, projected, count, 0, 1],
+        bytes: p.read(projected, count * 40),
+      });
+      equal(wordsAt(graphManager + 160, 4), viewBounds, 'original callback marks client damage');
+      for (let i = 0; i < count; i++) {
+        const [x, y, z, w, a, x2, y2, z2, w2, b] = wordsAt(projected + i * 40, 10);
+        equal([x, z, w, a], [x2, z2, w2, b], 'the original projected endpoints share X/Z/W');
+        equal([a, b], [color, color], 'projection preserves diffuse');
+        assert.ok([x, y, z, w, y2].every((word) => Number.isFinite(bitsFloat(word))));
+        assert.ok(bitsFloat(y) < bitsFloat(y2));
+      }
+      await callWipe(0xcb);
+      equal(await callWipe(0xc8), { control: 1, value: 1 }, 'CB leaves RainDrop running');
+      await callWipe(0xc6);
+      equal(await callWipe(0xc8), { control: 1, value: 0 }, 'C6 stops the original task');
+      equal(p.load(graph + 4), 0, 'C6 hides the original graph');
+      equal(wordsAt(model + 236, 3), [0, 0, actor], 'C6 detaches the original callback');
+      await frame(last + 1);
+      equal(wordsAt(vertices, count * 10), expected, 'stopped task leaves source unchanged');
+      await callWipe(0xc5);
+      equal(await callWipe(0xc8), { control: 1, value: 1 });
+      await engine.call(p.load(rain.table), [1], actor);
+      equal(p.allocations.has(actor), false, 'original task destructor releases the actor');
+      equal(await engine.call(glass.lookup, [nativeID], graphManager), 0, 'original graph removed');
+      equal(p.allocations.has(vertices - 4), false, 'native destructor releases source vertices');
+      equal(p.allocations.has(projected - 4), true, 'projected buffer survives native destructor');
+    }
+    for (const mounted of [true, false]) {
+      p.store(view + 4, Number(mounted));
+      const actor = await createRain();
+      if (mounted)
+        equal(
+          await engine.call(rain.create, [nativeID], graphManager),
+          1,
+          'duplicate graph fixture',
+        );
+      const before = await engine.call(glass.lookup, [nativeID], graphManager);
+      await initializeRain(1, 1);
+      equal(wordsAt(actor + 108, 3), [0, 0, 0], 'failed init leaves both arrays absent');
+      await callWipe(0xc5);
+      equal(
+        await callWipe(0xc8),
+        { control: 1, value: host },
+        'failed capability leaves C8 unwritten',
+      );
+      equal(p.load(actor + 164), 0, 'failed capability cannot start');
+      await engine.call(p.load(rain.table), [1], actor);
+      equal(
+        await engine.call(glass.lookup, [nativeID], graphManager),
+        before,
+        'borrowed graph survives',
+      );
+    }
     await engine.call(glass.destroy, [], graphManager);
     await engine.call(glass.random[1], [], rng);
     p.free(rng);
@@ -1026,7 +1201,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, Raster/Hydro/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. GlassBreak uses the original graph manager, paired models and vertex callback with authored display caps and an empty mounted file provider. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
+          'Original factories, Raster/Hydro/RainDrop/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,

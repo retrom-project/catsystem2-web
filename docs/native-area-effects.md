@@ -57,6 +57,11 @@ to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
 GraphManager callback. Stop or destruction removes that callback. Hydro's
 receiver leaves this message unhandled; the wrapper still completes.
 
+RainDrop (kind 19) takes the original 40-byte `C4` packet and updates its
+separate source and projected arrays using the native clock and shared random
+stream. The original graph callback draws pretransformed diffuse line lists.
+`C6` stops the effect; `CB` leaves it active.
+
 GlassBreak (kind 20) initializes from a 12-byte `C4` packet (graph ID,
 float speed and duration). The original start reads the live graph geometry,
 creates shard records, and installs its vertex callback. Completion, `C6`
@@ -74,9 +79,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 441 receiver checks
+receiver writes, output canaries and unwritten replies. Its 562 receiver checks
 per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
-WipeAlpha3 and GlassBreak paths.
+WipeAlpha3, RainDrop and GlassBreak paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
@@ -89,7 +94,6 @@ stop and active destruction. It also verifies that the original `C7` packet is a
 stack copy and has no visual effect. Source ownership stays with the KCS resource
 list or bitmap owner. Frozen executables and raw reports stay outside version control.
 
-The wrapper checks cover the routing envelope for every `C4` kind. The original
-initializer and browser pixel checks here cover kinds 18 and 29. The remaining
-effect work includes other `C4` receiver types. Wipe3 and WipeAlpha3 have
-additional original frame comparisons for kinds 30 and 31 across fresh restore.
+The wrapper checks cover the routing envelope for every `C4` kind. Native
+initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak
+and Wipe2 through WipeAlpha3. Other `C4` receiver types still require verification.

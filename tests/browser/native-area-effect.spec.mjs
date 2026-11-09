@@ -1189,4 +1189,215 @@ for (const [profile, variable] of [
       );
     },
   );
+
+  test(
+    profile + ' KCS RainDrop draws the original line list and resumes after restore',
+    async ({ page }) => {
+      const sdk = profile.startsWith('sdk-');
+      test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
+      test.setTimeout(180000);
+      const files = new Map([
+          ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
+          [
+            'rain.kcs',
+            kcsProgram(
+              [
+                [37, 19],
+                ...start.slice(1),
+                ...wait,
+                [39, waitingPC],
+                target,
+                [43, 0xc6, 4],
+                target,
+                [43, 0xc8, 4],
+                [38, 136],
+                [59],
+              ],
+              [[64, 'Authored RainDrop']],
+            ),
+          ],
+        ]),
+        names = await openAreaFixture(page, profile, variable, files);
+      await page.evaluate(
+        async ({ profile, names, sdk }) => {
+          const { browserNativeWorld, browserAssert: assert } = await import(
+              '/tests/fixtures/browser-native-world.mjs'
+            ),
+            { floatBits, bitsFloat } = await import('/src/kcs.mjs'),
+            files = new Map(
+              await Promise.all(
+                names.map(async (name) => {
+                  const response = await fetch('/area-effect-fixture/' + name);
+                  if (!response.ok) throw new Error('Missing RainDrop fixture ' + name);
+                  return [name, new Uint8Array(await response.arrayBuffer())];
+                }),
+              ),
+            ),
+            make = () =>
+              browserNativeWorld({
+                profile,
+                files,
+                storage: { read: async () => null, write: async () => true },
+              }),
+            world = make(),
+            call = (owner, id, ...args) =>
+              owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+            render = async (owner) => {
+              const stage = owner.stageRenderer,
+                renderer = await owner.getNativeFeature('renderer'),
+                d3d = renderer.d3d,
+                lines = [];
+              d3d.onDrawRaw = (draw) => {
+                if (draw.type === 2) lines.push(draw);
+              };
+              try {
+                await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
+                return {
+                  pixels: stage.renderer.ctx.getImageData(0, 0, 64, 48).data,
+                  lines,
+                };
+              } finally {
+                d3d.onDrawRaw = undefined;
+              }
+            },
+            words = (p, address, count) =>
+              Array.from({ length: count }, (_, i) => p.load(address + 4 * i));
+          let fresh;
+          try {
+            await world.initialize('main.kcs');
+            const p = world.nativeEngine.process,
+              platform = await world.getNativeFeature('graphics-platform');
+            await platform.ensureRenderer();
+            world.random.real.seed(0x8120719);
+            const baseline = await render(world),
+              script = await world.spawnScript('rain.kcs', { parent: world.main.id }),
+              vm = script.machine,
+              address = vm.allocate(48) + 1,
+              count = 12,
+              capacity = 16,
+              color = 0xff60c4f4,
+              init = [
+                ...[64, 0, 48].map(floatBits),
+                300,
+                ...[14, 7, 42].map(floatBits),
+                count,
+                capacity,
+                color,
+              ];
+            vm.store(96, world.nativeTaskID(world.main.id));
+            vm.store(100, address);
+            vm.bytes(address, 44).fill(0xa5);
+            init.forEach((word, i) => vm.store(address + 4 * i, word));
+            const packet = vm.bytes(address, 44).slice();
+            await world.runtime.scheduler.execute(script);
+            const nativeID = vm.load(128),
+              id = world.resolveTaskID(nativeID, script.id),
+              actor = world.objects.objects.get(id).implementation.pointer,
+              [source, projected] = words(p, actor + 112, 2),
+              descriptor = platform.descriptor(nativeID),
+              model = p.load(descriptor + 8),
+              callback = sdk ? 0x4c9220 : 0x5ee8f0;
+            assert.equal(vm.load(132), 1);
+            assert.deepEqual(vm.bytes(address, 44), packet);
+            assert.deepEqual(words(p, actor + 120, 10), init);
+            assert.equal(p.load(actor + 108), platform.refs.manager);
+            for (const pointer of [source, projected]) {
+              assert.equal(p.load(pointer - 4), 1);
+              assert.equal(p.allocations.get(pointer - 4), 4 + capacity * 40);
+            }
+            assert.equal(p.load(descriptor + 4), 1);
+            assert.deepEqual(words(p, model + 236, 3), [0, callback, actor]);
+            assert.equal(world.random.real.index, count * 4);
+            const initial = p.read(source, count * 40);
+            await world.tick();
+            const moving = await render(world),
+              state = p.read(source, count * 40);
+            assert.notDeepEqual(state, initial, 'the original tick advances source vertices');
+            assert.equal(p.load(actor + 168), world.frame);
+            assert.equal(moving.lines.length, 1);
+            assert.deepEqual(moving.lines[0], {
+              slot: 83,
+              type: 2,
+              count,
+              stride: 20,
+              fvf: 68,
+              bytes: p.read(projected, count * 40),
+            });
+            for (let i = 0; i < count; i++) {
+              const [x, top, z, w, topColor, x2, bottom, z2, w2, bottomColor] = words(
+                p,
+                projected + i * 40,
+                10,
+              );
+              assert.deepEqual([x, z, w, topColor], [x2, z2, w2, bottomColor]);
+              assert.equal(topColor, color);
+              assert.ok(bitsFloat(top) < bitsFloat(bottom), 'each original line is vertical');
+            }
+            const visiblePixels = moving.pixels.filter((_, index) => index % 4 === 0);
+            assert.ok(visiblePixels.includes(0x60), 'the native line list reaches visible pixels');
+            assert.notDeepEqual(moving.pixels, baseline.pixels);
+
+            fresh = make();
+            await fresh.restore(structuredClone(world.snapshot()));
+            const rp = fresh.nativeEngine.process,
+              restored = fresh.runtime.scheduler.tasks.get(script.id);
+            assert.equal(fresh.objects.objects.get(id).implementation.pointer, actor);
+            assert.deepEqual(words(rp, actor + 112, 2), [source, projected]);
+            assert.deepEqual(rp.read(source, count * 40), state);
+            assert.deepEqual(words(rp, model + 236, 3), [0, callback, actor]);
+            assert.deepEqual(await render(fresh), moving);
+            for (let frame = 0; frame < 3; frame++) {
+              await world.tick();
+              await fresh.tick();
+              assert.deepEqual(rp.read(source, count * 40), p.read(source, count * 40));
+              assert.deepEqual(await render(fresh), await render(world));
+            }
+            assert.ok(world.random.real.index > count * 4, 'expired drops consume original RNG');
+            assert.deepEqual(fresh.random.real.snapshot(), world.random.real.snapshot());
+
+            assert.equal(
+              (await fresh.runtime.scheduler.send(restored.id, [1, 2, 3, 4])).accepted,
+              true,
+            );
+            assert.equal(restored.machine.load(136), 0);
+            assert.equal(rp.load(descriptor + 4), 0);
+            assert.deepEqual(words(rp, model + 236, 3), [0, 0, actor]);
+            assert.deepEqual(await render(fresh), baseline, 'C6 removes the line list');
+            const saved = rp.read(source, count * 40),
+              replacement = Uint32Array.from(init);
+            replacement[6] = floatBits(18);
+            await fresh.sendEngine(id, fresh.main.id, 266, 0, 0, {
+              payload: {
+                bytes: (address, size) => {
+                  assert.equal(address, 0);
+                  assert.equal(size, 40);
+                  return new Uint8Array(replacement.buffer);
+                },
+              },
+            });
+            assert.deepEqual(words(rp, actor + 120, 10), [...replacement]);
+            assert.deepEqual(words(rp, actor + 112, 2), [source, projected]);
+            assert.deepEqual(rp.read(source, count * 40), saved, 'reinit preserves seeded drops');
+            assert.deepEqual(await call(world, 0xcb, nativeID), { control: 2 });
+            assert.deepEqual(await call(world, 0xc8, nativeID), { control: 1, value: 1 });
+
+            for (const owner of [world, fresh]) {
+              const memory = owner.nativeEngine.process,
+                scene = await owner.getNativeFeature('graphics-platform');
+              await owner.objects.release(id);
+              assert.equal(memory.allocations.has(actor), false);
+              assert.equal(memory.allocations.has(source - 4), false);
+              assert.equal(memory.allocations.has(projected - 4), true);
+              assert.equal(scene.descriptor(nativeID), 0);
+              assert.deepEqual(await render(owner), baseline);
+            }
+          } finally {
+            await fresh?.close({ flushFiles: false });
+            await world.close({ flushFiles: false });
+          }
+        },
+        { profile, names, sdk },
+      );
+    },
+  );
 }
