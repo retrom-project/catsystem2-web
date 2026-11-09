@@ -17,6 +17,7 @@ import { NativeWindowsEvents } from './windows-events.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { installNativeVolumeInformation } from './windows-volume.mjs';
+import { installNativeEntropy } from './windows-entropy.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeNativeLanguage, releaseNativeLanguage } from './engine-language.mjs';
 import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
@@ -526,6 +527,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       this.registerHostModule('winmm.dll', {
         timeGetTime: this.resolve({ dll: 'WINMM.dll', name: 'timeGetTime' }),
       });
+    if (NATIVE_ENGINE_IMAGES[options.profile]) installNativeEntropy(this);
   }
   path(value) {
     let path = value.replaceAll('\\', '/');
