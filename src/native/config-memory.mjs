@@ -138,6 +138,22 @@ function scalars(layout, game) {
       : []),
   ];
 }
+function scalarRuns(fields) {
+  const runs = [];
+  for (const [name, offset, width] of fields) {
+    let run = runs.at(-1);
+    if (!run || run.offset + run.length !== offset) {
+      run = { offset, length: 0, fields: [] };
+      runs.push(run);
+    }
+    run.fields.push([name, run.length, width]);
+    run.length += width;
+  }
+  return runs.map(({ offset, length, fields }) => {
+    const bytes = new Uint8Array(length);
+    return { offset, fields, bytes, view: new DataView(bytes.buffer) };
+  });
+}
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 function wideBytes(text) {
   const bytes = new Uint8Array((text.length + 1) * 2),
@@ -159,7 +175,7 @@ export class NativeConfigurationMemory {
     this.settings = (settings ?? this.owner + this.layout.settingsOffset) >>> 0;
     if (this.settings !== this.owner + this.layout.settingsOffset)
       throw new Error('Native Settings must alias the recovered interior Engine address');
-    this.scalarFields = scalars(this.layout, configuration.profile === GAME);
+    this.scalarRuns = scalarRuns(scalars(this.layout, configuration.profile === GAME));
     // Confirm that the supplied owner covers the fields this codec owns.
     process.read(this.owner + this.layout.autoSelect, configuration.profile === GAME ? 12 : 4);
   }
@@ -243,8 +259,16 @@ export class NativeConfigurationMemory {
       c = this.configuration,
       l = this.layout;
     for (const [offset, bytes] of this.arrays()) p.write(this.owner + offset, bytes);
-    for (const [name, offset, width] of this.scalarFields)
-      this.store(this.owner + offset, this.getScalar(name), width);
+    // Transfer adjacent canonical fields together. Bytes in the gaps are
+    // owned by the original engine and must never be included in a write.
+    for (const { offset, fields, bytes, view } of this.scalarRuns) {
+      for (const [name, at, width] of fields) {
+        const value = this.getScalar(name);
+        if (width === 2) view.setUint16(at, value, true);
+        else view.setUint32(at, value, true);
+      }
+      p.write(this.owner + offset, bytes);
+    }
     // The original startup/preference readers copy windowed SCREEN width and
     // height into these interior Settings words before constructing kcView.
     // They are derived mirrors, rather than another independently writable
@@ -367,11 +391,15 @@ export class NativeConfigurationMemory {
     }
     for (const name of ['name', 'ruby'])
       if (c.font[name] !== previousFonts[name]) c.fields.fontOverrides[name] = true;
-    for (const [name, offset, width] of this.scalarFields) {
-      const value = this.load(this.owner + offset, width);
-      if (this.getScalar(name) !== value) {
-        this.setScalar(name, value);
-        changed = true;
+    for (const { offset, fields, bytes } of this.scalarRuns) {
+      const input = p.read(this.owner + offset, bytes.length),
+        view = new DataView(input.buffer, input.byteOffset, input.byteLength);
+      for (const [name, at, width] of fields) {
+        const value = width === 2 ? view.getUint16(at, true) : view.getUint32(at, true);
+        if (this.getScalar(name) !== value) {
+          this.setScalar(name, value);
+          changed = true;
+        }
       }
     }
     for (const [name, offset] of [

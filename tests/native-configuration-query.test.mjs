@@ -83,6 +83,33 @@ for (const [profile, variable] of [
           count,
           'read-only projections reuse their allocations',
         );
+
+        const settings = engine.configurationMemory,
+          first = engine.refs.owner + settings.layout.first,
+          second = engine.refs.owner + settings.layout.second;
+        p.store(second + 44, 0xdec0de42);
+        state.configuration.setField('screen.width', 1234);
+        state.configuration.setField('screen.height', 567);
+        state.configuration.setField('d3d.textureCompression', 3);
+        state.configuration.setField('general.dualCore', 1);
+        settings.push();
+        assert.deepEqual(
+          [p.load(first), p.load(second + 40), p.load(second + 44), p.load(second + 48)],
+          [(567 << 16) | 1234, 3, 0xdec0de42, 1],
+        );
+        p.store(first, (678 << 16) | 1444);
+        p.store(second + 40, 2);
+        p.store(second + 48, 0);
+        assert.equal(settings.pull(), true);
+        assert.deepEqual(
+          [
+            state.configuration.screen.width,
+            state.configuration.screen.height,
+            state.configuration.getField('d3d.textureCompression'),
+            state.configuration.getField('general.dualCore'),
+          ],
+          [1444, 678, 2, 0],
+        );
       } finally {
         await engine.close();
       }
