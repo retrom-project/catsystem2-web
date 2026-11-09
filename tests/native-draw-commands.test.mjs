@@ -87,9 +87,22 @@ test(
         record = retained.record(draw, key);
       m.writeString('@cat/image/anim.hg3', 256);
       await call(0x270, [nativeID, 0, 256]);
-      assert.ok(
-        p.load(record.pointer + 72),
-        'the original filename helper resolves and loads the ANM',
+      const animation = p.load(record.pointer + 72);
+      assert.ok(animation, 'the original filename helper resolves and loads the ANM');
+      assert.deepEqual(await call(0x370, [nativeID, 0, 0, 0x81234567]), { control: 2 });
+      await call(0x370, [nativeID, 0, 63, 0xfedcba98]);
+      const variables = () => Array.from({ length: 64 }, (_, i) => p.load(animation + 32 + i * 4));
+      const expected = variables();
+      assert.equal(expected[0], 0x81234567);
+      assert.equal(expected[63], 0xfedcba98);
+      for (const badIndex of [64, 0xffffffff])
+        await call(0x370, [nativeID, 0, badIndex, 0xcccccccc]);
+      assert.deepEqual(variables(), expected);
+      await call(0x370, [nativeID, 1, 0, 0]);
+      assert.deepEqual(
+        variables(),
+        expected,
+        'an absent drawing key cannot overwrite another entry',
       );
       await call(0x271, [nativeID, 0, 0]);
       assert.equal(p.load(record.pointer + 80), 0);
@@ -112,6 +125,14 @@ test(
       assert.equal(rr.pointer, record.pointer);
       assert.equal(fp.allocations.has(pointer), false);
       assert.equal(fp.load(rr.pointer + 80), 1);
+      assert.equal(fp.load(rr.pointer + 72), animation);
+      assert.deepEqual(
+        Array.from({ length: 64 }, (_, i) => fp.load(animation + 32 + i * 4)),
+        expected,
+      );
+      await invoke(0x370, [nativeID, 0, 63, 1000]);
+      assert.equal(fp.load(animation + 32 + 63 * 4), 1000);
+      assert.equal(p.load(animation + 32 + 63 * 4), expected[63]);
       await invoke(0x271, [nativeID, 0, 0]);
       assert.equal(fp.load(rr.pointer + 80), 0);
       assert.equal(p.load(record.pointer + 80), 1, 'fresh controls have independent native RAM');

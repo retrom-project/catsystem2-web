@@ -326,6 +326,15 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     assert.equal(references, 2, 'rasterization does not retain the same object again');
     assert.equal(bitmapReferences, 2, 'the wrapper and Draw each own one bitmap reference');
 
+    m.writeString('sequence.hg3', 256);
+    await call(world, 0x270, [nativeSurface, 0, 256]);
+    const animation = p.load(animated.pointer + 72),
+      variable = animation + 32 + 63 * 4;
+    assert.equal(Boolean(animation), true, 'the original render source loaded its ANM script');
+    await call(world, 0x370, [nativeSurface, 0, 63, 0xf1234567]);
+    assert.equal(p.load(variable), 0xf1234567);
+    await call(world, 0x370, [nativeSurface, 1, 63, 42]);
+    assert.equal(p.load(variable), 0xf1234567, 'the other Draw key has no effect on the ANM');
     const preview = inspectFrame ? await inspectFrame(world) : null;
     fresh = make();
     await fresh.restore(structuredClone(world.snapshot()));
@@ -333,6 +342,11 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
       fp = fresh.nativeEngine.process,
       restored = fresh.graphics.drawTasks.get(surface),
       fmMemory = await fresh.getNativeFeature('task-memory');
+    assert.equal(fp.load(animated.pointer + 72), animation);
+    assert.equal(fp.load(variable), 0xf1234567);
+    await call(fresh, 0x370, [nativeSurface, 0, 63, 42]);
+    assert.equal(fp.load(variable), 42);
+    assert.equal(p.load(variable), 0xf1234567, 'the restored ANM has independent memory');
     assert.deepEqual(fm.bytes(block, sourceBytes.length), sourceBytes);
     assert.equal(fp.load(fmMemory.guestAddress(fresh.main.id, fm, block + 4)), animated.pointer);
     assert.equal(fp.load(fmMemory.guestAddress(fresh.main.id, fm, shared + 4)), manifest.pointer);

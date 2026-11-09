@@ -242,6 +242,12 @@ export class NativeDrawTask {
         }
         return 0;
       }
+      case 312:
+        if (this.state.renderer)
+          await (
+            await this.world.getNativeFeature('retained-draw')
+          ).setAnimationVariable(this, key, load(l), load(l + 4));
+        return 0;
       case 307:
         store(l, this.entry(key)?.image || 0);
         return 0;

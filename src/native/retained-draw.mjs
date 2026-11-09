@@ -17,6 +17,7 @@ const ABI = {
     load: 0x7468f0,
     start: 0x7468c0,
     enable: 0x746be0,
+    setAnimationVariable: 0x746c50,
     step: 0x746a50,
     getBitmap: 0x746400,
     alpha: 0x7467a0,
@@ -43,6 +44,7 @@ const ABI = {
     load: 0x5e7580,
     start: 0x5e7550,
     enable: 0x5e77d0,
+    setAnimationVariable: 0x5e7840,
     step: 0x5e7690,
     getBitmap: 0x5e70a0,
     alpha: 0x5e7430,
@@ -243,6 +245,16 @@ export class NativeRetainedDraw {
     await this.call(this.abi.start, [frame], record.pointer, draw.record.id);
     await this.call(this.abi.enable, [value, frame], record.pointer, draw.record.id);
     await this.update(draw, frame);
+  }
+  async setAnimationVariable(draw, key, index, value) {
+    const record = this.record(draw, key);
+    if (record)
+      await this.call(
+        this.abi.setAnimationVariable,
+        [index, value],
+        record.pointer,
+        draw.record.id,
+      );
   }
   visible(draw, key, value) {
     const record = this.record(draw, key);

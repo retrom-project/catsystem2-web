@@ -36,8 +36,12 @@ all unused fields are initialized. These resources are separate from decoded
 
 Main `270` formats its filename through the caller VM, resolves the original
 ANM filename through the shared view and mounted file service, then sends
-message 293. Main `271` sends the raw enable word through message 295. All six
-wrappers route zero targets through the caller's Top namespace. Missing targets
+message 293. Main `271` sends the raw enable word through message 295.
+Main `370` packages an index and value into eight bytes (SDK message 307,
+game message 312). The original retained object applies the word to its
+ANM register bank and nested retained animations. An unsigned index above
+63 leaves the bank unchanged. All seven wrappers route zero targets through
+the caller's Top namespace. Missing targets
 retain the original routing result and control code 2.
 
 The complete wrappers execute in the mounted PE. Their task transport maps the
@@ -47,8 +51,8 @@ shared original retained-image decoder, animation and raster routines. A
 single-frame image decodes without retaining its raw buffer descriptor; the
 decoded retained object owns its resulting bitmap independently.
 
-`scripts/verify-native-draw-commands.mjs` passes 9,907 comparisons across 1,650
-complete calls per frozen PE. It checks all six wrappers, every packet byte,
+`scripts/verify-native-draw-commands.mjs` passes 11,283 comparisons across 1,925
+complete calls per frozen PE. It checks all seven wrappers, every packet byte,
 raw retained pointers and opaque buffer translation, signed and unsigned limits,
 float bits, formatting and ANM resolution from data, shared and extended-block
 addresses, complete VM state, reference counts and output canaries. Device
@@ -57,7 +61,9 @@ initialization is an explicit boundary in this transport probe.
 The render-source World tests also call both complete original Draw receivers
 and compare the retained record bytes after insertion and updates. They
 exercise both destruction paths and compare the actual Draw pixels and
-independent references after restoring into a fresh World.
+independent references after restoring into a fresh World. They write an ANM
+register through its original drawing key and check that the same live bank
+continues independently after restore.
 
 The public SDK World test uses complete native view/device initialization,
 decodes an authored HG2 resource, binds and updates its actual pixels, loads an

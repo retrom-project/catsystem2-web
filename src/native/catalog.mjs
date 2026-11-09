@@ -1863,6 +1863,12 @@ const extendedDescriptions = [
   ],
   [0x270, 'draw.loadAnimation', ['nativeID target', 'word entry', 'format* filename'], 'void'],
   [0x271, 'draw.animationEnabled', ['nativeID target', 'word entry', 'word enabled'], 'void'],
+  [
+    0x370,
+    'draw.setAnimationVariable',
+    ['handle task', 'word key', 'u32 index', 'word value'],
+    'void',
+  ],
   [0x2c7, 'imageOwner.release', ['handle image'], 'void'],
   [0x2c8, 'imageOwner.size', ['handle image', 'VMptr width', 'VMptr height'], 'void'],
   [0x2c9, 'imageOwner.scaleRGB', ['handle image', 'word blue', 'word green', 'word red'], 'void'],
@@ -3237,7 +3243,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
       0xc0, 0xc1, 0xc2, 0xc3, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0x6b, 0x18a, 0x3a9, 0x141, 0x18d, 0x1cd,
       0x36a, 0x36b, 0x6f, 0x70, 0x72, 0x75, 0x76, 0x77, 0x79,
     ].includes(id) ||
-    [0x71, 0xd0, 0x1b9, 0x235, 0x236, 0x2e3, 0x2e4].includes(id) ||
+    [0x71, 0xd0, 0x1b9, 0x235, 0x236, 0x2e3, 0x2e4, 0x370].includes(id) ||
     [
       0x24d, 0x25d, 0x25e, 0x25f, 0x2a2, 0x34c, 0x73, 0x74, 0x78, 0x1be, 0x218, 0x219, 0x21a,
     ].includes(id) ||
