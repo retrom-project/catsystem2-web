@@ -24,6 +24,7 @@ const ABI = {
 export const NATIVE_LEGACY_TEXT_IDS = Object.freeze([
   ...Array.from({ length: 17 }, (_, i) => 0x7b + i),
   0x187,
+  0x1a2,
   0x1c8,
   0x22d,
 ]);
@@ -78,7 +79,8 @@ export class NativeLegacyTextRuntime {
     return 1;
   }
   async apply(id, args, machine, task) {
-    if ([0x187, 0x1c8, 0x22d].includes(id) && args.length !== (id === 0x187 ? 1 : 2))
+    const count = { 0x187: 1, 0x1a2: 4, 0x1c8: 2, 0x22d: 2 }[id];
+    if (count && args.length !== count)
       throw new Error(`Legacy text native 0x${id.toString(16)} has an invalid argument count`);
     if (id === 0x88 && args[1]) {
       const bitmap = this.world.graphics.images.get(args[1]);

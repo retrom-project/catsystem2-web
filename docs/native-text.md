@@ -32,6 +32,12 @@ helpers. The image-font wrapper marshals a browser bitmap into an original
 native bitmap; the original font setter owns its deep copy. A temporary image
 container here exposes the bitmap getter boundary, not a replacement task.
 
+Main `1A2` executes the original SDK `51F360` and game `652760` wrappers.
+They copy the 96-byte font record and turn two CP932 strings into independent
+counted lists of 16-bit character codes. Message 99 in the SDK and 101 in the
+game install the same 1116-byte layout. The character parser uses both lists
+when wrapping lines; `7B` supplies only the first list.
+
 Main `22D` runs the original secondary glyph color wrapper (`51F860` /
 `652C60`). SDK message 119 and game message 121 store the full word at task
 offset 1880. The glyph renderer reads its three low bytes. The two-profile

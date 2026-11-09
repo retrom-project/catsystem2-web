@@ -293,6 +293,64 @@ for (const [profile, variable] of [
             (value, i) => i % 4 === 3 && value,
           ),
         );
+        const data = new Uint8Array(256),
+          layout = new DataView(data.buffer);
+        for (const [offset, value] of [
+          [8, 32],
+          [12, 64],
+          [16, 4],
+          [20, 1],
+          [24, 16],
+          [60, 128],
+          [64, 0xffffff],
+          [68, 1],
+          [72, 1],
+          [88, 1],
+        ])
+          layout.setUint32(offset, value, true);
+        data.set(encodeCP932('、ｱ\0'), 128);
+        data.set(encodeCP932('A（\0'), 160);
+        data.set(encodeCP932('BA、\0'), 192);
+        const configVM = { ...machine, memory: data },
+          legacy = (cmd, top, args) => runtime.apply(cmd, [id, ...args], configVM, { id: top });
+        assert.deepEqual(await legacy(0x1a2, topA, [0, 128, 160]), { control: 2 });
+        await legacy(0x7b, topB, [0, 128]);
+        const configured = world.graphics.get(a).pointer + 708,
+          lists = new DataView(p.read(configured, 1116).buffer);
+        assert.deepEqual(p.read(configured, 96), data.slice(0, 96));
+        assert.equal(lists.getUint32(96, true), 2);
+        assert.deepEqual(
+          [100, 102, 104].map((offset) => lists.getUint16(offset, true)),
+          [0x8141, 0xffb1, 0],
+        );
+        assert.equal(lists.getUint32(612, true), 2);
+        assert.deepEqual(
+          [616, 618, 620].map((offset) => lists.getUint16(offset, true)),
+          [0x41, 0x8169, 0],
+        );
+        assert.equal(p.load(world.graphics.get(b).pointer + 1320), 0);
+        await legacy(0x7c, topA, [192]);
+        await legacy(0x7c, topB, [192]);
+        const rows = (id) => {
+          const bytes = world.graphics.get(id).characters(),
+            records = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+          return Array.from({ length: bytes.length / 40 }, (_, i) => [
+            records.getUint16(i * 40, true),
+            records.getInt32(i * 40 + 12, true),
+          ]);
+        };
+        assert.deepEqual(rows(a), [
+          [0x42, 0],
+          [0, 0],
+          [0x41, 0],
+          [0x8141, 16],
+        ]);
+        assert.deepEqual(rows(b), [
+          [0x42, 0],
+          [0x41, 0],
+          [0, 0],
+          [0x8141, 16],
+        ]);
       } finally {
         await world.close();
       }

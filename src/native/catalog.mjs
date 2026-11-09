@@ -2034,6 +2034,12 @@ const extendedDescriptions = [
   [0x36d, 'database.dirty', ['handle database'], 'word'],
   [0x36e, 'database.clearDirty', ['handle database'], 'void'],
   [0x7b, 'legacyText.configure', ['handle task', 'VMptr font96', 'VMptr CP932Characters'], 'void'],
+  [
+    0x1a2,
+    'legacyText.configureLineBreaks',
+    ['handle task', 'VMptr font96', 'VMptr firstCP932List', 'VMptr secondCP932List'],
+    'void',
+  ],
   [0x7c, 'legacyText.append', ['handle task', 'format* text', '...formatArguments'], 'void'],
   [0x7d, 'legacyText.message104', ['handle task'], 'void'],
   [0x7e, 'legacyText.message106', ['handle task', 'word wParam', 'word lParam'], 'void'],
@@ -3240,7 +3246,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
       0x2c5,
     ].includes(id) ||
     [0x11d, 0x11e, 0x183, 0x184].includes(id) ||
-    [0x18b, 0x18c, 0xed, 0x187, 0x1c8, 0x1d0, 0x22d].includes(id) ||
+    [0x18b, 0x18c, 0xed, 0x187, 0x1a2, 0x1c8, 0x1d0, 0x22d].includes(id) ||
     [0x8c, 0x8e, 0x225].includes(id) ||
     [
       0x8f, 0x23a, 0x23b, 0x23c, 0x207, 0x109, 0x10a, 0x10b, 0x10c, 0x10d, 0x10e, 0x1a1, 0x314,
