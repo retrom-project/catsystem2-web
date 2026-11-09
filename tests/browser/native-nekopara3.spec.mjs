@@ -94,7 +94,68 @@ async function pixels(page) {
   });
 }
 
-test('cold native language and title flow survives export and import into a fresh World', async ({
+async function waitForLine(page, line, { drawn = true } = {}) {
+  for (let i = 0; i < 100; i++) {
+    const ready = await page.evaluate(
+      ({ line, drawn }) => {
+        const { world } = window.catSystem2,
+          record = [...world.objects.objects.values()].find((task) => task.name === 'meswnd'),
+          object = record?.implementation.player?.root.byKey.get('str'),
+          task = world.objects.objects.get(object?.nativeTaskID)?.implementation;
+        return (
+          task?.text.source.includes(line) && (!drawn || (task.state.shown && !task.text.active))
+        );
+      },
+      { line, drawn },
+    );
+    if (ready) return;
+    await step(page, 6);
+  }
+  throw new Error(`Native writer did not reach the expected dialogue: ${line}`);
+}
+
+async function openingPixels(page) {
+  return page.evaluate(async () => {
+    const e = window.catSystem2,
+      { world } = e,
+      { graphics } = world,
+      record = [...world.objects.objects.values()].find((task) => task.name === 'meswnd'),
+      { player, surface } = record.implementation,
+      body = player.root.byKey.get('str'),
+      background = player.root.byKey.get('bg'),
+      task = world.objects.objects.get(body.nativeTaskID).implementation,
+      draw = graphics.drawTasks.get(surface),
+      entry = draw.entry((record.nativeID | (background.nativeRenderID << 16)) >>> 0),
+      { canvas, context } = e.renderer,
+      { width, height } = canvas;
+    await e.render();
+    const frame = context.getImageData(0, 0, width, height).data,
+      sha256 = new Uint8Array(await crypto.subtle.digest('SHA-256', frame)).toHex(),
+      enabled = task.graph.renderEnabled;
+    // The same frame rendered without its writer graph identifies pixels
+    // contributed by the native text, independently of the story background.
+    let glyphPixels = 0;
+    try {
+      task.graph.renderEnabled = false;
+      await e.render();
+      const hidden = context.getImageData(0, 0, width, height).data;
+      for (let i = 0; i < frame.length; i += 4)
+        if (
+          frame[i] !== hidden[i] ||
+          frame[i + 1] !== hidden[i + 1] ||
+          frame[i + 2] !== hidden[i + 2]
+        )
+          glyphPixels++;
+    } finally {
+      if (enabled === undefined) delete task.graph.renderEnabled;
+      else task.graph.renderEnabled = enabled;
+      await e.render();
+    }
+    return { width, height, sha256, glyphPixels, backgroundClip: [...entry.clip] };
+  });
+}
+
+test('cold native language, title and opening dialogue continue in a fresh World', async ({
   page,
 }) => {
   const errors = [];
@@ -142,5 +203,42 @@ test('cold native language and title flow survives export and import into a fres
   expect(await pixels(page)).toEqual(image);
   await clickNativeButton(page, 'decide');
   await until(page, 'title#WAIT', 240);
+
+  await clickNativeButton(page, 'btn1[0]');
+  await until(page, 'meswnd#WAIT', 900);
+  await waitForLine(page, 'Welcome to La Soleil!');
+  const opening = await openingPixels(page);
+  expect(opening).toMatchObject({
+    width: 1280,
+    height: 720,
+    backgroundClip: [0, 0, 1280, 260],
+  });
+  expect(opening.glyphPixels).toBeGreaterThan(1000);
+  const openingFrame = await state(page),
+    openingFile = page.waitForEvent('download', { timeout: 180_000 });
+  await page.click('#export');
+  await step(page, 0);
+  await page.evaluate(() => {
+    window.preImportWorld = new WeakRef(window.catSystem2.world);
+  });
+  await page.locator('#save-file').setInputFiles(await (await openingFile).path());
+  expect(await step(page, 0)).toMatchObject({
+    frame: openingFrame.frame,
+    stack: openingFrame.stack,
+  });
+  expect(await page.evaluate(() => window.catSystem2.world !== window.preImportWorld.deref())).toBe(
+    true,
+  );
+  expect(await openingPixels(page)).toEqual(opening);
+
+  const canvas = await page.locator('#screen').boundingBox();
+  await page.mouse.move(canvas.x + canvas.width * 0.6, canvas.y + canvas.height * 0.65);
+  await step(page, 2);
+  await page.mouse.down();
+  await step(page, 2);
+  await page.mouse.up();
+  await step(page, 2);
+  await waitForLine(page, 'Will you be dining in today?', { drawn: false });
+  expect((await state(page)).unsupported).toEqual([]);
   expect(errors).toEqual([]);
 });
