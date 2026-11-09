@@ -37,6 +37,7 @@ const CONTRACTS = {
       8: ['pause', 0],
       9: ['stop', 0],
       10: ['getState', 2],
+      15: ['stopWhenReady', 0],
     },
   ],
   seeking: [
@@ -45,6 +46,7 @@ const CONTRACTS = {
       9: ['setTimeFormat', 1],
       10: ['getDuration', 1],
       12: ['getPosition', 1],
+      14: ['setPositions', 4],
     },
   ],
   event: [16, { 9: ['waitForCompletion', 2] }],
@@ -511,6 +513,10 @@ export class NativeDirectShow {
     graph.events.length = 0;
     return 0;
   }
+  async stopWhenReady(graph) {
+    const result = await this.pause(graph);
+    return FAILED(result) ? result : this.stop(graph);
+  }
   getState(graph, _timeout, output) {
     return this.word(output, graph.state);
   }
@@ -529,6 +535,22 @@ export class NativeDirectShow {
       output,
       this.decoders.get(graph.primary)?.position() ?? graph.position,
     );
+    return 0;
+  }
+  async setPositions(graph, current, currentFlags, stop, stopFlags) {
+    if (stop || stopFlags || ![1, 5].includes(currentFlags)) return E_NOTIMPL;
+    if (!current) return E_POINTER;
+    if (!graph.video) return VFW_E_WRONG_STATE;
+    const p = this.process,
+      position = BigInt.asIntN(64, (BigInt(p.load(current + 4)) << 32n) | BigInt(p.load(current)));
+    if (position < 0n || position > graph.video.duration) return E_INVALIDARG;
+    const decoder = await this.resumeDecoder(graph);
+    if (!decoder) return VFW_E_CANNOT_RENDER;
+    await decoder.seek(position);
+    graph.position = position;
+    graph.exhausted = position === graph.video.duration;
+    graph.events.length = 0;
+    this.samples.delete(graph.primary);
     return 0;
   }
   setVolume(graph, word) {
@@ -582,20 +604,25 @@ export class NativeDirectShow {
     const p = this.process,
       workers = this.engine.features.get('engine-workers');
     for (const graph of this.objects.values()) {
-      if (!graph.movie || !p.load(graph.movie + 372) || graph.state !== 2) continue;
+      if (!graph.movie || !p.load(graph.movie + 372)) continue;
       const decoder = this.decoders.get(graph.primary);
-      if (!decoder) {
-        if (!activated) continue;
-        const result = await this.run(graph);
-        if (FAILED(result))
-          throw new Error(`Restored Plane movie could not resume: ${graph.filename}`);
+      if (!decoder && !activated) continue;
+      if (graph.state === 2) {
+        if (!decoder) {
+          const result = await this.run(graph);
+          if (FAILED(result))
+            throw new Error(`Restored Plane movie could not resume: ${graph.filename}`);
+        }
+        if (this.decoders.get(graph.primary).frameStamp() !== this.samples.get(graph.primary)) {
+          const result = await this.presentFrame(graph);
+          if (FAILED(result)) throw new Error(`Plane movie presentation failed: ${graph.filename}`);
+        }
       }
-      if (this.decoders.get(graph.primary).frameStamp() !== this.samples.get(graph.primary)) {
-        const result = await this.presentFrame(graph);
-        if (FAILED(result)) throw new Error(`Plane movie presentation failed: ${graph.filename}`);
-      }
-      const thread = p.load(graph.movie + 388);
-      if (thread && this.terminalEvent(graph) >= 0) await workers.step(p.load(thread));
+      const thread = p.load(graph.movie + 388),
+        handle = thread && p.load(thread),
+        worker = workers.threads.get(handle);
+      if (worker && (worker.polling ? graph.state !== 2 : this.terminalEvent(graph) >= 0))
+        await workers.step(handle);
     }
   }
   snapshot() {

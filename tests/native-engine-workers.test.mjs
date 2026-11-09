@@ -131,14 +131,24 @@ for (const [profile, variable, abi] of PROFILES) {
   );
 
   test(
-    `${profile} original kcVideo completion repeats, exits and joins its native worker`,
+    `${profile} original kcVideo completion resumes its running-state poll and joins after stop`,
     { skip: !process.env[variable] },
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable])),
         make = async () => {
           const result = await workerEngine(profile, bytes),
             { engine, p } = result,
-            host = { pending: [], waits: [], seeks: [], runs: 0, stops: 0, position: 0n },
+            host = {
+              pending: [],
+              waits: [],
+              seeks: [],
+              states: [],
+              runs: 0,
+              stops: 0,
+              state: 0,
+              runState: 0,
+              position: 0n,
+            },
             com = (name, methods) => {
               const pointer = p.allocate(4, true),
                 table = p.allocate(64, true);
@@ -156,6 +166,7 @@ for (const [profile, variable, abi] of PROFILES) {
                 1,
                 () => {
                   host.runs++;
+                  host.state = host.runState;
                   return 0;
                 },
               ],
@@ -170,11 +181,18 @@ for (const [profile, variable, abi] of PROFILES) {
               40: [
                 3,
                 ([, , out]) => {
-                  p.store(out, 0);
+                  p.store(out, host.state);
+                  host.states.push(host.state);
                   return 0;
                 },
               ],
-              60: [1, () => 0],
+              60: [
+                1,
+                () => {
+                  host.state = 0;
+                  return 0;
+                },
+              ],
             }),
             event = com('event', {
               36: [
@@ -223,22 +241,36 @@ for (const [profile, variable, abi] of PROFILES) {
         p.store(movie + 368, 1);
         assert.equal(await engine.call(abi.play, [2], movie), 1);
         const thread = p.load(movie + 388),
-          handle = p.load(thread);
+          handle = p.load(thread),
+          initialRuns = host.runs;
         assert.deepEqual(await exitCode(engine, handle, output), [1, 259]);
         assert.equal(await workers.step(handle), true);
         assert.deepEqual(host.waits, [200]);
         assert.equal(p.load(movie + 392), 2);
+        host.position = 18400000n;
+        host.runState = 2;
+        host.pending.push(1);
+        assert.equal(await workers.step(handle), true);
+        assert.deepEqual(host.waits, [200, 200]);
+        assert.deepEqual(host.seeks, [0n]);
+        assert.deepEqual(host.states, [0, 2]);
+        assert.equal(host.runs, initialRuns + 1);
+        assert.equal(p.load(movie + 372), 1);
+        assert.equal(p.load(movie + 392), 1);
+        assert.equal(workers.threads.get(handle).polling, true);
         fresh = await make();
         fresh.engine.restore(engine.snapshot());
+        fresh.host.state = 2;
         for (const { p, workers, host } of [original, fresh]) {
           host.waits.length = 0;
-          host.position = 18400000n;
+          host.states.length = 0;
           host.pending.push(1);
           const before = host.runs;
           assert.equal(await workers.step(handle), true);
-          assert.deepEqual(host.waits, [200]);
-          assert.deepEqual(host.seeks, [0n]);
-          assert.ok(host.runs > before);
+          assert.deepEqual(host.waits, []);
+          assert.deepEqual(host.states, [2]);
+          assert.deepEqual(host.pending, [1]);
+          assert.equal(host.runs, before);
           assert.equal(p.load(movie + 372), 1);
           assert.equal(p.load(movie + 392), 1);
         }
@@ -248,13 +280,19 @@ for (const [profile, variable, abi] of PROFILES) {
         assert.equal(fresh.p.allocations.has(thread), false);
         assert.deepEqual(fresh.workers.snapshot().threads, []);
         assert.deepEqual(await exitCode(fresh.engine, handle, output), [0, 0xabcdef01]);
-        host.pending.push(1);
+        host.state = 1;
+        assert.equal(await workers.step(handle), true);
+        assert.deepEqual(host.states, [2, 1]);
+        assert.deepEqual(host.waits, []);
+        assert.deepEqual(host.seeks, [0n]);
+        assert.equal(host.runs, initialRuns + 2);
+        assert.equal(workers.threads.get(handle).polling, undefined);
         assert.equal(await workers.step(handle), false);
         assert.deepEqual(await exitCode(engine, handle, output), [1, 0]);
         assert.equal(p.load(movie + 372), 0);
         assert.equal(p.load(movie + 392), 0);
         assert.equal(await workers.step(handle), false);
-        assert.deepEqual(host.waits, [200, 200]);
+        assert.deepEqual(host.waits, [200]);
       } finally {
         await fresh?.engine.close();
         await original.engine.close();

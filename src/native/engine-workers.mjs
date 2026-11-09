@@ -12,7 +12,14 @@ const ABI = {
     entries: {
       0x747d40: { kind: 'image' },
       0x705d50: { kind: 'stream', check: 0x705df1, end: 0x705dfe, stop: 368, stopped: 1 },
-      0x6fca90: { kind: 'completion', check: 0x6fcb54, end: 0x6fcb61, stop: 372, stopped: 0 },
+      0x6fca90: {
+        kind: 'completion',
+        check: 0x6fcb54,
+        end: 0x6fcb61,
+        stop: 372,
+        stopped: 0,
+        poll: { resume: 0x6fca96, query: 0x6fcb17, again: 0x6fcb3c },
+      },
     },
   },
   'sdk-4.01-engine-2.6.1.74': {
@@ -22,7 +29,14 @@ const ABI = {
     streamWait: 0x5bda3a,
     entries: {
       0x5bdb90: { kind: 'stream', check: 0x5bdc31, end: 0x5bdc3e, stop: 368, stopped: 1 },
-      0x5bafc0: { kind: 'completion', check: 0x5bb084, end: 0x5bb091, stop: 372, stopped: 0 },
+      0x5bafc0: {
+        kind: 'completion',
+        check: 0x5bb084,
+        end: 0x5bb091,
+        stop: 372,
+        stopped: 0,
+        poll: { resume: 0x5bafc6, query: 0x5bb047, again: 0x5bb06c },
+      },
     },
   },
 };
@@ -70,6 +84,26 @@ class NativeEngineWorkers {
           p.cpu.reg_write_i32(p.uc.X86_REG_EIP, entry.end);
         }),
       );
+      if (entry.poll)
+        this.detachers.push(
+          p.beforeInstruction(entry.poll.again, 'native movie running-state poll', () => {
+            const worker = this.running;
+            if (worker?.entry !== Number(address)) return;
+            // The only live local in the polling loop is the next
+            // GetState output. Park at the original epilogue while running.
+            worker.polling = true;
+            this.yielded = true;
+            p.cpu.reg_write_i32(p.uc.X86_REG_EIP, entry.end);
+          }),
+          p.beforeInstruction(entry.poll.resume, 'native movie running-state resume', () => {
+            const worker = this.running;
+            if (worker?.entry !== Number(address) || !worker.polling) return;
+            // The original prologue has rebuilt ESP and the owner in ESI.
+            // The pending GetState writes its scratch local before use.
+            delete worker.polling;
+            if (!this.stopped(worker)) p.cpu.reg_write_i32(p.uc.X86_REG_EIP, entry.poll.query);
+          }),
+        );
     }
     const kernel = engine.kernel,
       closeFile = kernel.overrides.get('kernel32.dll!CloseHandle'),
@@ -201,6 +235,7 @@ class NativeEngineWorkers {
         this.abi.entries[worker.entry]?.kind !== worker.kind ||
         typeof worker.completed !== 'boolean' ||
         typeof worker.open !== 'boolean' ||
+        (worker.polling && (worker.completed || !this.abi.entries[worker.entry].poll)) ||
         (!worker.completed &&
           (!p.allocations.has(worker.thread) ||
             p.load(worker.thread) !== handle ||

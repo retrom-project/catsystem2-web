@@ -93,8 +93,6 @@ export class NativePlaneMovieCommands {
     const spec = MOVIE_CONTROLS.get(id);
     if (!spec || args.length !== spec.words)
       throw new Error(`Invalid Plane movie control 0x${id.toString(16)}`);
-    if (id === 0x10a && args[1] !== 1)
-      throw new Error('Repeating Plane movies require the original completion worker poll');
     const pointer = this.handles.get(args[0], HANDLE_TYPE);
     return this.call(spec, [pointer, ...args.slice(1)], null, task);
   }

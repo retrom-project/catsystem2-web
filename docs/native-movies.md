@@ -69,10 +69,18 @@ The movie MemStream in each profile prefetches three 4 MiB blocks using its
 original reader, file cursor and ring. When the native reader sleeps for a
 missing block, the original producer runs one iteration. The completion
 callback also runs one iteration at a time. Its original code owns the
-running word, repeat count, rewind and restart. The worker checks the native
-stop condition before yielding, so the original destructor can join and
-release its thread. The host preserves the parked handles across fresh
-restore, with buffer contents and cursors in the guest checkpoint.
+running word, repeat count, rewind and restart. The host preserves the
+parked handles across fresh restore, with buffer contents and cursors
+in the guest checkpoint.
+
+After a rewind, the original completion worker polls `GetState` again
+while the filter graph reports Running. At that branch the worker
+returns through the original epilogue and saves its pending poll. On
+resume the original prologue rebuilds the stack and owner register,
+then continues at the state query. The saved stop flag still takes
+the original exit path. The two-profile tests cover a fresh restore at
+the pending query, an unchanged Running result, resumption after an
+actual state change and the original stop/join path.
 
 The two-profile worker tests read and seek across block boundaries and verify
 the live allocation and lock counts after native destruction. A supplied
@@ -226,7 +234,8 @@ Chromium tests run both original loaders with a generated AVI and its
 WebM sidecar. They check missing and disabled loads, qualified resource
 selection, dimensions, asymmetric pixels, power-of-two padding, active
 portable restore, the final canvas, explicit stop, natural completion
-and resource release. The current renderless path supports a single
-pass. Repeat counts still require the completion worker's running-state
-poll, and the separate Plane renderer movie message requires its own
-adapter.
+and resource release. The repeated playback test observes the original
+rewind and a second decoder pass after fresh restore. The graph remains
+Running after that pass ends, so the original worker's state poll
+remains parked until Stop or another state transition. The separate
+Plane renderer movie message requires its own adapter.

@@ -127,7 +127,7 @@ for (const [profile, variable] of profiles)
           return { world, gpu, stage, ctx };
         };
         const original = create();
-        let fresh;
+        let fresh, repeated;
         try {
           await original.world.initialize('main.kcs');
           const attach = async (context) => {
@@ -152,21 +152,22 @@ for (const [profile, variable] of profiles)
               task = world.main;
             return world.runtime.native('main', id, args, task.machine, task);
           };
-          const load = (filename) => {
+          const load = (context, target, filename) => {
+            const { world } = context;
             const bytes = new TextEncoder().encode(filename + '\0');
             world.main.machine.bytes(0x500, bytes.length).set(bytes);
-            return command(first, 0x2bd, world.nativeTaskID(plane), 0x500);
+            return command(context, 0x2bd, world.nativeTaskID(target), 0x500);
           };
-          await load('missing');
+          await load(first, plane, 'missing');
           const direct = (first.direct = world.nativeEngine.features.get('directshow'));
           const rejected =
             direct.objects.size === 0 &&
             (await command(first, 0x2be, world.nativeTaskID(plane))).value === 0;
           world.configuration.setField('general.disableMovie', 1);
-          await load('clip');
+          await load(first, plane, 'clip');
           const disabled = direct.objects.size === 0 && decoders.length === 0;
           world.configuration.setField('general.disableMovie', 0);
-          await load('clip');
+          await load(first, plane, 'clip');
           await world.sendEngine(plane, world.main.id, 48, 0, 1);
           const graph = [...direct.objects.values()].find((record) => record.movie);
           if (!graph?.video)
@@ -235,7 +236,7 @@ for (const [profile, variable] of profiles)
             duringPlayback = inspect(first),
             stopped = (await command(first, 0x10b, handle)).value,
             stoppedState = (await command(first, 0x10d, handle)).value;
-          await load('missing');
+          await load(first, plane, 'missing');
           const replaced = !world.runtime.handles.records.has(handle);
           fresh = create();
           await fresh.world.restore(await deserializeCheckpoint(await serializeCheckpoint(state)));
@@ -287,6 +288,45 @@ for (const [profile, variable] of profiles)
               borrowed: context.world.runtime.handles.records.has(handle),
             });
           }
+          const loopPlane = await second.world.objects.create({
+            kind: 2,
+            parent: second.world.root,
+            name: 'repeat movie plane',
+          });
+          await load(second, loopPlane, 'clip');
+          const loopHandle = (await command(second, 0x2be, second.world.nativeTaskID(loopPlane)))
+              .value,
+            loopMovie = second.world.runtime.handles.get(loopHandle, 'plane-movie'),
+            loopStarted = (await command(second, 0x10a, loopHandle, 2)).value,
+            thread = second.p.load(second.p.load(loopMovie + 388)),
+            worker = (context) =>
+              context.world.nativeEngine.features.get('engine-workers').threads.get(thread);
+          await wait(async () => {
+            await second.world.movies.settle();
+            return worker(second)?.polling;
+          });
+          const replayedAt = (await command(second, 0x3e6, loopHandle)).value,
+            replayCount = second.p.load(loopMovie + 392),
+            repeatState = second.world.snapshot(),
+            loopStopped = (await command(second, 0x10b, loopHandle)).value;
+          await second.world.objects.release(loopPlane);
+          repeated = create();
+          await repeated.world.restore(
+            await deserializeCheckpoint(await serializeCheckpoint(repeatState)),
+          );
+          const third = await attach(repeated),
+            parkedAfterRestore = worker(third)?.polling,
+            restoredRepeat = third.p.load(loopMovie + 392);
+          repeated.world.movies.activate();
+          await wait(async () => {
+            await repeated.world.movies.settle();
+            return [...third.direct.objects.values()].some((movie) => movie.exhausted);
+          });
+          const parkedAfterSecondEnd = worker(third)?.polling,
+            runningAfterSecondEnd = (await command(third, 0x10d, loopHandle)).value,
+            joined = (await command(third, 0x10b, loopHandle)).value,
+            stoppedThread = worker(third) === undefined && !third.p.load(loopMovie + 388);
+          await third.world.objects.release(loopPlane);
           return {
             rejected,
             replaced,
@@ -317,10 +357,23 @@ for (const [profile, variable] of profiles)
             eventBaseline,
             boundMedia,
             closed: decoders.every((decoder) => decoder.source === null),
-            errors: [original.gpu.gl.getError(), fresh.gpu.gl.getError()],
+            errors: [original, fresh, repeated].map(({ gpu }) => gpu.gl.getError()),
+            repeat: {
+              loopStarted,
+              loopStopped,
+              replayedAt,
+              replayCount,
+              parkedAfterRestore,
+              restoredRepeat,
+              parkedAfterSecondEnd,
+              runningAfterSecondEnd,
+              joined,
+              stoppedThread,
+              leaked: third.direct.objects.size || third.direct.vmr.records.size,
+            },
           };
         } finally {
-          for (const context of [fresh, original])
+          for (const context of [repeated, fresh, original])
             if (context) {
               await context.world.close({ flushFiles: false });
               context.gpu.close();
@@ -378,5 +431,18 @@ for (const [profile, variable] of profiles)
       }),
     );
     expect(result.closed).toBe(true);
-    expect(result.errors).toEqual([0, 0]);
+    expect(result.errors).toEqual([0, 0, 0]);
+    expect(result.repeat.replayedAt).toBeLessThan(1400);
+    expect(result.repeat).toMatchObject({
+      loopStarted: 1,
+      loopStopped: 1,
+      replayCount: 1,
+      parkedAfterRestore: true,
+      restoredRepeat: 1,
+      parkedAfterSecondEnd: true,
+      runningAfterSecondEnd: 1,
+      joined: 1,
+      stoppedThread: true,
+      leaked: 0,
+    });
   });
