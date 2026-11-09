@@ -90,8 +90,11 @@ empty label, or the resource's fallback. Tests cover both code pages and
 nested labels. The WinMain settings checks then remove disabled manual,
 message-window reset and, in the game profile, social commands through
 [DeleteMenu](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-deletemenu).
-Attaching the resulting menu to the browser window remains
-a separate step.
+The game also executes WinMain `52C72F..52CCFE` with its original
+language vector, using the original strings and USER32 item mutations.
+It fills the UI, primary and secondary language groups, with accelerators
+and checked selections, or removes the submenu for one language.
+Attaching the resulting menu to the browser window remains a separate step.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original

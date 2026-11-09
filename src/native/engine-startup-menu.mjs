@@ -21,6 +21,46 @@ const optionalCommands = {
   ],
 };
 
+// The game builds all three language groups inside WinMain. This exact span
+// reads its already initialized Settings and ends before allocating kcWindow.
+async function runGameLanguageMenu(engine, remove) {
+  const p = engine.process,
+    { cpu, uc } = p,
+    first = 0x52c72f,
+    after = 0x52ccfe,
+    frameSize = 0x6270,
+    registers = [uc.X86_REG_ESP, uc.X86_REG_EBX, uc.X86_REG_ESI, uc.X86_REG_EDI],
+    wsprintf = p.load(0x8c64dc);
+  let caller,
+    finished = false;
+  const enter = p.beforeInstruction(first, 'WinMain language menu entry', () => {
+    if (caller) throw new Error('Original language menu block entered twice');
+    caller = registers.map((id) => cpu.reg_read_i32(id));
+    const stack = ((caller[0] >>> 0) - frameSize) & ~7;
+    if (stack >>> 0 < p.stackBottom + 0x1000)
+      throw new Error('Original language menu exhausted its guest stack');
+    p.zero(stack >>> 0, frameSize);
+    cpu.reg_write_i32(uc.X86_REG_ESP, stack);
+    cpu.reg_write_i32(uc.X86_REG_ESI, remove);
+    cpu.reg_write_i32(uc.X86_REG_EDI, wsprintf);
+  });
+  try {
+    const leave = p.beforeInstruction(after, 'WinMain language menu exit', () => {
+      registers.forEach((id, i) => cpu.reg_write_i32(id, caller[i]));
+      finished = true;
+      cpu.reg_write_i32(uc.X86_REG_EIP, p.sentinel);
+    });
+    try {
+      await engine.call(first);
+      if (!finished) throw new Error('Original language menu did not reach the window boundary');
+    } finally {
+      leave();
+    }
+  } finally {
+    enter();
+  }
+}
+
 export async function initializeNativeStartupMenu(engine) {
   const p = engine.process,
     slot = NATIVE_STARTUP_BLOCKS[engine.profile] + 36,
@@ -41,6 +81,8 @@ export async function initializeNativeStartupMenu(engine) {
     const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
     for (const [offset, id] of optionalCommands[engine.profile])
       if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);
+    if (engine.profile === 'nekopara-vol3-engine-2.6.1.76')
+      await runGameLanguageMenu(engine, remove);
   } finally {
     if (p.load(slot) !== owner) p.free(owner);
   }

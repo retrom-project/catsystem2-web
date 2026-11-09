@@ -65,6 +65,8 @@ export class NativeWindowsMenus {
       register('LoadMenu' + suffix, 2, ([instance, name]) => this.load(instance, name, suffix));
       register('GetMenuItemInfo' + suffix, 4, (args) => this.itemInfo(args, wide, false));
       register('SetMenuItemInfo' + suffix, 4, (args) => this.itemInfo(args, wide, true));
+      register('InsertMenu' + suffix, 5, (args) => this.change(args, wide, false));
+      register('ModifyMenu' + suffix, 5, (args) => this.change(args, wide, true));
     }
     register('DestroyMenu', 1, ([handle]) => this.destroy(handle));
     register('DeleteMenu', 3, ([handle, item, flags]) => this.remove(handle, item, flags));
@@ -137,6 +139,31 @@ export class NativeWindowsMenus {
     if (this.menus.has(submenu)) this.destroy(submenu);
     return 1;
   }
+  change([handle, item, flags, id, text], wide, replace) {
+    const menu = this.menus.get(handle);
+    if (!menu) return this.error(MENU_MISSING);
+    const byPosition = flags & 0x400,
+      location =
+        !replace && byPosition && (item === 0xffffffff || item === menu.length)
+          ? [menu, menu.length]
+          : this.locate(menu, item, byPosition);
+    if (!location) return this.error(ITEM_MISSING);
+    if (flags & (MENU_POPUP | 0x104))
+      throw new Error('Native menu mutation requires a text or separator item');
+    const [items, index] = location,
+      type = flags & TYPE_FLAGS,
+      separator = Boolean(type & MENU_SEPARATOR),
+      entry = {
+        id: separator ? 0 : id,
+        label: separator || !text ? '' : this.kernel.process.string(text, wide),
+        type,
+        state: flags & STATE_FLAGS,
+        submenu: 0,
+      },
+      [old] = items.splice(index, replace ? 1 : 0, entry);
+    if (old?.submenu && this.menus.has(old.submenu)) this.destroy(old.submenu);
+    return 1;
+  }
   itemInfo([handle, item, byPosition, at], wide, write) {
     const p = this.kernel.process,
       menu = this.menus.get(handle);
@@ -147,12 +174,13 @@ export class NativeWindowsMenus {
     const [items, index] = location,
       entry = items[index],
       mask = p.load(at + 4),
-      supported = write ? MIIM_STRING : 0x147;
+      supported = write ? MIIM_STRING | 1 : 0x147;
     if (mask & ~supported)
       throw new Error(`Unsupported native menu item information mask 0x${mask.toString(16)}`);
     if (!write)
       for (const [field, offset, key] of ITEM_WORDS)
         if (mask & field) p.store(at + offset, entry[key] ?? entry.submenu);
+    if (write && mask & 1) entry.state = p.load(at + 12) & (STATE_FLAGS | 0x80);
     if (mask & MIIM_STRING) {
       const pointer = p.load(at + 36);
       if (write) entry.label = pointer ? p.string(pointer, wide) : '';

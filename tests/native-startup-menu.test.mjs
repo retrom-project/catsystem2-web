@@ -16,7 +16,7 @@ import {
 
 for (const [profile, variable, normalCount, load, suffix] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 4, 0x5bf3c0, 'A'],
-  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 5, 0x70e000, 'W'],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 4, 0x70e000, 'W'],
 ]) {
   test(
     `${profile} owns its original standard and author menus and restores their handles`,
@@ -173,6 +173,11 @@ for (const [profile, variable, normalCount, load, suffix] of [
                 [57540, 40063],
               ];
       try {
+        if (suffix === 'W')
+          engine.options.configuration.language.entries = [
+            { code: 1033, prefix: 'en', lang: 'English', accel: [0, 0], accelsub: [0, 0] },
+            { code: 1041, prefix: 'jp', lang: '日本語', accel: [0, 0], accelsub: [0, 0] },
+          ];
         p.store(out, 48);
         for (let enabled = 0; enabled < 1 << flags.length; enabled++) {
           for (const [i, [offset]] of flags.entries())
@@ -191,3 +196,66 @@ for (const [profile, variable, normalCount, load, suffix] of [
     },
   );
 }
+
+test(
+  'game WinMain builds language menu labels, accelerators and the original checked selections',
+  { skip: !process.env.CATSYSTEM2_ENGINE_EXE },
+  async () => {
+    const profile = 'nekopara-vol3-engine-2.6.1.76',
+      bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_ENGINE_EXE)),
+      configuration = new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+      engine = await NativeEngineProcess.open({
+        profile,
+        bytes,
+        bootstrapOwner: {},
+        configuration,
+        readFile: async () => null,
+      }),
+      p = engine.process,
+      top = () => {
+        const owner = p.load(NATIVE_STARTUP_BLOCKS[profile] + 36);
+        return engine.kernel.windowMenus.menus.get(p.load(owner + 8));
+      };
+    try {
+      configuration.language.entries = [
+        { code: 1033, prefix: 'en', lang: 'English', accel: [69, 0], accelsub: [69, 4] },
+        {
+          code: 1041,
+          prefix: 'jp',
+          lang: '日本語 with a long native buffer',
+          accel: [74, 8],
+          accelsub: [74, 16],
+        },
+        { code: 1028, prefix: 'cn', lang: '繁体中文', accel: [0, 0], accelsub: [67, 0] },
+      ];
+      Object.assign(configuration.language, { default: 1, ui: 8, main: 0, sub: 0xffffffff });
+      await initializeNativeStartupMenu(engine);
+      const choices = engine.kernel.windowMenus.menus.get(top()[3].submenu);
+      assert.deepEqual(
+        choices.map(({ id, label, type, state }) => [id, label, type, state]),
+        [
+          [40065, 'UI : English', 0, 0],
+          [40066, 'UI : 日本語 with a long native buffer', 0, 8],
+          [40067, 'UI : 繁体中文', 0, 0],
+          [0, '', 0x800, 0],
+          [40075, 'Main : English\tE', 0, 8],
+          [40076, 'Main : 日本語 with a long native buffer\tCtrl + J', 0, 0],
+          [40077, 'Main : 繁体中文', 0, 0],
+          [0, '', 0x800, 0],
+          [40085, 'Sub : English\tShift + E', 0, 0],
+          [40086, 'Sub : 日本語 with a long native buffer\tAlt + J', 0, 0],
+          [40087, 'Sub : 繁体中文\tC', 0, 0],
+          [40088, 'Sub : OFF\tShift + N', 0, 8],
+        ],
+      );
+      await releaseNativeStartupMenu(engine);
+      configuration.language.entries = configuration.language.entries.slice(0, 1);
+      Object.assign(configuration.language, { default: 0, ui: 0, main: 0 });
+      await initializeNativeStartupMenu(engine);
+      assert.equal(top().length, 4);
+      assert.equal(top()[3].label, 'ヘルプ(&H)');
+    } finally {
+      await engine.close();
+    }
+  },
+);
