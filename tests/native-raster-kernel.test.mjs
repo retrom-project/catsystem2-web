@@ -109,10 +109,9 @@ for (const [profile, variable, normal, mask, copy, btype] of [
           };
           const address = [normal, mask, copy, btype][n % 4],
             original = await run(false, address, bytes, stackBytes, setup),
-            rasterBudget = address !== btype && p.instructionBudget(),
+            rasterBudget = p.instructionBudget(),
             accelerated = await run(true, address, bytes, stackBytes, setup);
-          if (rasterBudget)
-            assert.deepEqual(p.instructionBudget(), rasterBudget, `raster ${n} budget`);
+          assert.deepEqual(p.instructionBudget(), rasterBudget, `raster ${n} budget`);
           for (const key of ['image', 'stack']) {
             const index = original[key].findIndex((value, i) => value !== accelerated[key][i]);
             assert.equal(

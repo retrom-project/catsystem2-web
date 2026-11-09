@@ -705,45 +705,127 @@ export class NativeRasterKernels {
     this.reg('EIP', this.abi.alpha + 8);
     return true;
   }
+  btypeInstructions(raster, table, available) {
+    const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
+      width = d[16],
+      height = d[17],
+      mode = d[28],
+      nonzeroAlphaCost = [0, 101, 98, 104, 125, 94][mode];
+    let s = raster.source,
+      t = raster.destination,
+      total = 0,
+      row,
+      unchanged = true;
+    for (let y = 0; y < height; y++, s += sourceStep, t += destinationStep) {
+      row = 20;
+      for (let x = 0, a = s, b = t; x < width; x++, a += 4, b += 4) {
+        if (!table[input[a + 3]]) {
+          row += output[b + 3] ? 15 : 17;
+        } else {
+          row += nonzeroAlphaCost;
+          // The overlay path branches on the high bit of each destination
+          // channel. The first two channels have an extra branch at the join.
+          if (mode === 4)
+            row += 4 * (output[b] >>> 7) + 4 * (output[b + 1] >>> 7) + 3 * (output[b + 2] >>> 7);
+          // The dodge path skips the division when a channel is already 255.
+          else if (mode === 5)
+            row +=
+              9 *
+              (Number(output[b] !== 255) +
+                Number(output[b + 1] !== 255) +
+                Number(output[b + 2] !== 255));
+        }
+      }
+      // Only the transparent source over nonzero destination alpha costs
+      // fifteen instructions. That path leaves the destination untouched.
+      if (y < height - 1 && row !== 20 + 15 * width) unchanged = false;
+      total += row;
+      if (total > available) return null;
+    }
+    return { skipped: total - row, unchanged };
+  }
   btype() {
     const p = this.process,
       frame = this.reg('EBP'),
-      pointer = this.reg('EDX');
-    if (p.load(frame - 0x128) !== 0) return false;
-    const table = p.read(frame - 0x104, 256),
-      raster = this.raster(pointer, frame, this.reg('ESI'), this.reg('EDI'));
+      regions = this.repeatRegions();
+    if (!this.range(frame - 0x128, 4, false, regions) || p.load(frame - 0x128) !== 0) return false;
+    const pointer = this.reg('EDX'),
+      sourceRow = this.reg('ESI'),
+      destinationRow = this.reg('EDI');
+    if (
+      this.reg('ESP') !== frame - 0x14c ||
+      this.reg('EFLAGS') & 0x50100 ||
+      this.reg('DS') !== 0 ||
+      this.reg('SS') !== 0 ||
+      !this.range(frame - 0x13c, 0x138, false, regions) ||
+      !this.range(pointer, 128, false, regions) ||
+      overlaps(pointer, 128, frame - 0x140, 0x140)
+    )
+      return false;
+    const locals = p.read(frame - 0x13c, 0x138),
+      view = new DataView(locals.buffer),
+      local = (offset) => view.getUint32(0x13c - offset, true),
+      table = locals.subarray(0x38),
+      descriptor = new Int32Array(p.read(pointer, 128).buffer),
+      mode = descriptor[28],
+      contiguous = (address, size) =>
+        p.regions.some(
+          (region) => address >= region.address && address + size <= region.address + region.size,
+        );
+    if (
+      mode < 1 ||
+      mode > 5 ||
+      local(0x138) !== pointer ||
+      local(0x120) !== sourceRow ||
+      local(0x11c) !== destinationRow ||
+      local(0x13c) !== descriptor[8] >>> 0 ||
+      local(0x134) !== (descriptor[20] ? -descriptor[18] : descriptor[18]) >>> 0 ||
+      !contiguous(descriptor[1] >>> 0, descriptor[8] * descriptor[3]) ||
+      !contiguous(descriptor[11] >>> 0, descriptor[18] * descriptor[13])
+    )
+      return false;
+    const row = this.abi.btype,
+      entry = row + 0x48c + (mode - 1) * 4,
+      target = row + [0, 0x5e, 0xa9, 0xef, 0x14d, 0x274][mode];
+    if (!this.range(entry, 4, false, regions) || p.load(entry) !== target) return false;
+    const { active, counter, limit } = p.instructionBudget(),
+      available = limit === 0n ? Infinity : Number(limit - counter) + 1;
+    if (!active || available < descriptor[17] * (20 + 15 * descriptor[16])) return false;
+    const raster = this.raster(pointer, frame, sourceRow, destinationRow, descriptor, regions);
     if (!raster) return false;
     const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
-      mode = d[28],
-      rows = d[17] - 1;
-    if (mode < 1 || mode > 5) return false;
+      rows = d[17] - 1,
+      sourcePixels = new DataView(input.buffer, input.byteOffset, input.byteLength),
+      destinationPixels = new DataView(output.buffer, output.byteOffset, output.byteLength),
+      instructions = this.btypeInstructions(raster, table, available);
+    // Leave the full final native row to restore its registers and locals.
+    if (!instructions || !p.consumeInstructions(instructions.skipped)) return false;
+    const blendWidth = instructions.unchanged ? 0 : d[16];
     let s = raster.source,
       t = raster.destination,
       lastColors,
       lastTotal,
       lastOverlap;
     for (let y = 0; y < rows; y++, s += sourceStep, t += destinationStep)
-      for (let x = 0, a = s, b = t; x < d[16]; x++, a += 4, b += 4) {
-        const alpha = table[input[a + 3]],
-          oldAlpha = output[b + 3];
+      for (let x = 0, a = s, b = t; x < blendWidth; x++, a += 4, b += 4) {
+        const sourceWord = sourcePixels.getUint32(a, true),
+          destinationWord = destinationPixels.getUint32(b, true),
+          alpha = table[sourceWord >>> 24],
+          oldAlpha = destinationWord >>> 24;
         if (!alpha) {
-          if (!oldAlpha) {
-            output[b] = input[a];
-            output[b + 1] = input[a + 1];
-            output[b + 2] = input[a + 2];
-            output[b + 3] = 0;
-          }
+          if (!oldAlpha) destinationPixels.setUint32(b, sourceWord & 0xffffff, true);
           continue;
         }
         const overlap = (alpha * oldAlpha) >> 8,
           sourceOnly = (alpha * (256 - oldAlpha)) >> 8,
           destinationOnly = (oldAlpha * (256 - alpha)) >> 8,
           total = (overlap + sourceOnly + destinationOnly) | 1,
-          reciprocal = Math.floor(65536 / total),
-          colors = [];
-        for (let c = 0; c < 3; c++) {
-          const sourceChannel = input[a + c],
-            destinationChannel = output[b + c];
+          reciprocal = Math.floor(65536 / total);
+        let colors = 0,
+          result = total << 24;
+        for (let shift = 0; shift < 24; shift += 8) {
+          const sourceChannel = (sourceWord >>> shift) & 255,
+            destinationChannel = (destinationWord >>> shift) & 255;
           let color;
           if (mode === 1) color = Math.min(255, sourceChannel + destinationChannel);
           else if (mode === 2) color = (destinationChannel * (sourceChannel + 1)) >> 8;
@@ -766,22 +848,23 @@ export class NativeRasterKernels {
               destinationChannel === 255
                 ? 255
                 : Math.min(255, Math.trunc((255 * sourceChannel) / (255 - destinationChannel)));
-          colors[c] = color;
-          output[b + c] =
-            (Math.imul(
+          colors |= color << shift;
+          const mixed =
+            Math.imul(
               reciprocal,
               color * overlap + sourceOnly * sourceChannel + destinationOnly * destinationChannel,
-            ) >>>
-              16) &
-            255;
+            ) >>> 16;
+          result |= (mixed & 255) << shift;
         }
-        output[b + 3] = total;
+        destinationPixels.setUint32(b, result, true);
         lastColors = colors;
         lastTotal = total;
         lastOverlap = overlap;
       }
-    if (lastColors) {
-      [0x10c, 0x114, 0x110].forEach((offset, c) => p.store(frame - offset, lastColors[c]));
+    if (lastColors !== undefined) {
+      [0x10c, 0x114, 0x110].forEach((offset, c) =>
+        p.store(frame - offset, (lastColors >>> (c * 8)) & 255),
+      );
       p.store(frame - 0x12c, lastTotal);
       p.store(frame - 0x124, lastOverlap);
     }
