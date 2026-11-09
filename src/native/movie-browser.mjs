@@ -24,6 +24,7 @@ export class BrowserNativeMovie {
   }
   async open(name, stream = null) {
     if (!this.game.movieSource) throw new Error('Native movie source service is unavailable');
+    if (stream?.audioEnabled !== undefined) this.video.muted = !stream.audioEnabled;
     this.source = await this.game.movieSource(name, (type) => this.video.canPlayType(type), stream);
     if (!this.source) {
       this.diagnostic({ type: 'movie-codec-unavailable', filename: name });

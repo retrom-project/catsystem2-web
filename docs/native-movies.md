@@ -270,3 +270,48 @@ profile. The Texture Renderer cases verify the distinct resource
 category and handle registry, asymmetric RGB32 samples, transparent
 texture padding, final canvas pixels, active and repeat-poll restore,
 and teardown of the original filter, events and texture.
+
+## Original WebM filters
+
+The frozen WebM constructors at `0x705E80` and `0x5BDCC0` acquire
+`webmsplit.dll`, `vpxdecoder.dll` and `webmvorbisdecoder.dll` through
+the original DLL and class factory sequence. The Web platform supplies
+those COM factories. The connection entries at `0x706130` and
+`0x5BDF70` insert the filters and ask the shared device whether it
+supports YV12 to X8R8G8B8 conversion. With the current device they add
+the AVI Decompressor and Color Space Converter. Browser decoding
+supplies the RGB samples for the original renderer.
+[WebM DirectShow filters](https://www.webmproject.org/tools/)
+
+The original source pin connects to the splitter input through
+`ConnectDirect` and `IPin::Connect`. The splitter reads the mounted
+source, validates its EBML headers and exposes the declared VP8 or VP9
+track and optional Vorbis track. The original EXE enumerates and renders
+those pins. Other audio codecs have no output pin. With no Vorbis pin,
+the browser leaves the movie silent even when its decoder can play the
+encoded audio. A source that would require choosing between multiple
+video tracks or ambiguous audio tracks fails the connection.
+[WebM container format](https://www.webmproject.org/docs/container/)
+
+The reference comparison uses the published WebMDShow 1.0.4.1 ZIP
+with SHA-256
+`7e560facc0833cd48afaf8b7f8a1dcd92846552cae0fc81f4fadb5eee971a728`.
+The x86 DLLs are reference inputs in the pinned Wine probe.
+[WebMDShow 1.0.4.1 release](https://storage.googleapis.com/downloads.webmproject.org/releases/webm/index.html)
+
+| Module                  | SHA-256                                                            |
+| ----------------------- | ------------------------------------------------------------------ |
+| `webmsplit.dll`         | `6ea17cf203433c1e21ca0a1288b05becc72f709e6260e51fafddfb639e82f3e2` |
+| `vpxdecoder.dll`        | `d4bd32fbeda234e01d2b3b30e3accfdf200c5f382c248c15a999d2d6a6796337` |
+| `webmvorbisdecoder.dll` | `6338ea9979b74daf3424904affd277a335928947ebba037805d4a517f8aa9b3d` |
+
+The probe acquires all three factories using the original class IDs.
+It observes an empty preferred-type enumeration on the splitter input,
+a connected source pin, VP8 and Vorbis outputs for one sample, and
+a sole VP9 output for the VP9/Opus sample. The actual VPx and Vorbis
+decoders accept the corresponding output pins. Chromium exercises
+the mounted VP8/Vorbis file on both original renderers and profiles,
+including a 440 Hz PCM sample. The VP9/Opus file exercises the original
+VMR9 path on both profiles and remains silent. The cases check failed
+connection, native pin and module identities, presented pixels, repeat
+and stop, and a new instance restored during playback.
