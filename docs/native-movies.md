@@ -237,5 +237,28 @@ portable restore, the final canvas, explicit stop, natural completion
 and resource release. The repeated playback test observes the original
 rewind and a second decoder pass after fresh restore. The graph remains
 Running after that pass ends, so the original worker's state poll
-remains parked until Stop or another state transition. The separate
-Plane renderer movie message requires its own adapter.
+remains parked until Stop or another state transition.
+
+## Plane Texture Renderer
+
+Main `0x3DC` formats a filename in the `veff` category and sends the
+other original Plane movie message. Main `0x3DD` retrieves its
+borrowed `kcVideo` handle from the Texture Renderer registry. Its
+loader adds the original Texture Renderer filter to the graph and
+uses the same original MemStream and source pin as the VMR9 loader.
+
+The browser submits an RGB32 `AM_MEDIA_TYPE` and `VIDEOINFOHEADER`.
+The original filter checks that type and creates its own A8R8G8B8
+texture. The browser then presents each decoded frame as a bottom-up
+RGB32 sample through the two `IMediaSample` methods used by the
+original upload routine. The guest controls the row reversal, pitch,
+texture padding, dirty state and final Plane draw. The actual filter
+is released with the graph and its destructor releases the texture.
+[DirectShow media types](https://learn.microsoft.com/en-us/windows/win32/api/strmif/ns-strmif-am_media_type)
+[DirectShow media samples](https://learn.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-imediasample)
+
+The mounted Chromium cases exercise both movie types in each frozen
+profile. The Texture Renderer cases verify the distinct resource
+category and handle registry, asymmetric RGB32 samples, transparent
+texture padding, final canvas pixels, active and repeat-poll restore,
+and teardown of the original filter, events and texture.

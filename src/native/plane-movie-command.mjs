@@ -5,8 +5,10 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 
 const PLANE_COMMANDS = new Map([
-  [0x2bd, { words: 2, control: 2, message: 43, addresses: [0x640670, 0x512d50] }],
+  [0x2bd, { words: 2, control: 2, message: 43, load: true, addresses: [0x640670, 0x512d50] }],
   [0x2be, { words: 1, control: 1, message: 87, addresses: [0x640ae0, 0x5131c0] }],
+  [0x3dc, { words: 2, control: 2, message: 44, load: true, addresses: [0x640720, 0x512e00] }],
+  [0x3dd, { words: 1, control: 1, message: 88, addresses: [0x640b20, 0x513200] }],
 ]);
 const MOVIE_CONTROLS = new Map(
   [
@@ -38,7 +40,7 @@ export class NativePlaneMovieCommands {
           if (
             origin == null ||
             sender !== world.nativeTaskID(origin) ||
-            ![43, 87].includes(message) ||
+            ![43, 44, 87, 88].includes(message) ||
             w ||
             flags
           )
@@ -100,16 +102,15 @@ export class NativePlaneMovieCommands {
     const p = this.process,
       words = Array.from(args);
     // The original load wrapper skips the formatter when target is zero.
-    const count = spec.message === 43 && !(words[0] ?? machine.nativeArgument(0)) ? 1 : spec.words;
+    const count = spec.load && !(words[0] ?? machine.nativeArgument(0)) ? 1 : spec.words;
     while (words.length < count) words.push(machine.nativeArgument(words.length));
     let mapping;
-    if (spec.message === 43 && words[0] && this.world.objects.machine(task.id) === machine) {
+    if (spec.load && words[0] && this.world.objects.machine(task.id) === machine) {
       const taskMemory = await this.world.getNativeFeature('task-memory');
       taskMemory.vmPointer(task.id);
       mapping = taskMemory.mapMachine(task.id, machine);
     }
-    const bridge =
-        spec.message === 43 && words[0] ? new NativeKCSMemory(p, machine, mapping) : null,
+    const bridge = spec.load && words[0] ? new NativeKCSMemory(p, machine, mapping) : null,
       argv = p.allocate(words.length * 4),
       out = p.allocate(4, true),
       host = spec.message ? p.allocate(8, true) : 0;
@@ -130,7 +131,7 @@ export class NativePlaneMovieCommands {
         throw new Error('Original Plane movie command changed its KCS control');
       if (control === 2) return nativeReply(2);
       const result = p.load(out);
-      return nativeReply(1, spec.message === 87 ? this.borrow(result) : result);
+      return nativeReply(1, spec.message ? this.borrow(result) : result);
     } finally {
       try {
         bridge?.close();

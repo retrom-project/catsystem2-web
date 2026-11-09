@@ -114,6 +114,10 @@ export class NativePlaneReceiver {
       };
     let writes;
     try {
+      if (record.kind === 2 && (message === 43 || message === 44)) {
+        await this.world.getNativeFeature('directshow');
+        if (message === 44) await this.world.getNativeFeature('texture-movie-renderer');
+      }
       if (!context.nativePointer) {
         if (message === 16)
           l = copy(l, await this.world.engineMessages.dumpSize(record, context), true);

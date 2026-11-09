@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // DirectShow connection boundary for the original renderless SimplePlane movie.
 import { nativeImageIdentity } from './engine-process.mjs';
+import { writeMoviePixels } from './movie-texture-renderer.mjs';
 
 const E_NOINTERFACE = 0x80004002;
 const E_POINTER = 0x80004003;
@@ -172,6 +173,7 @@ export class NativeDirectShow {
         owner: this.engine.currentTaskID,
         source: 0,
         filter: 0,
+        textureFilter: 0,
         video: null,
         sha256: null,
         position: 0n,
@@ -233,6 +235,7 @@ export class NativeDirectShow {
         await adapter.close();
       }
       if (record.filter) await this.removeFilter(record, record.filter);
+      if (record.textureFilter) await this.removeFilter(record, record.textureFilter);
       if (record.source) await this.removeFilter(record, record.source);
     }
     for (const pointer of Object.values(record.interfaces)) {
@@ -245,7 +248,13 @@ export class NativeDirectShow {
     if (!pointer) return E_POINTER;
     const filter = this.objects.get(pointer);
     if (filter?.notify) {
-      if (graph.filter || filter.graph || filter.mode !== 4 || filter.streams !== 1)
+      if (
+        graph.filter ||
+        graph.textureFilter ||
+        filter.graph ||
+        filter.mode !== 4 ||
+        filter.streams !== 1
+      )
         return VFW_E_WRONG_STATE;
       this.addRef(filter);
       graph.filter = pointer;
@@ -260,11 +269,15 @@ export class NativeDirectShow {
       this.vmr.bindEventSink(filter.notify, graph.interfaces.eventSink);
       return 0;
     }
-    if (graph.source || pointer !== this.process.load(graph.movie + 384) + 12) return E_NOTIMPL;
+    const source = !graph.source && pointer === this.process.load(graph.movie + 384) + 12,
+      texture = this.engine.features.get('texture-movie-renderer')?.matches(pointer);
+    if (!source && !texture) return E_NOTIMPL;
+    if (texture && (graph.filter || graph.textureFilter)) return VFW_E_WRONG_STATE;
     await this.call(pointer, 1);
     const result = await this.call(pointer, 13, graph.primary, name);
     if (FAILED(result)) await this.call(pointer, 2);
-    else graph.source = pointer;
+    else if (source) graph.source = pointer;
+    else graph.textureFilter = pointer;
     return result;
   }
   async removeFilter(graph, pointer) {
@@ -277,10 +290,11 @@ export class NativeDirectShow {
       await this.release(filter);
       return 0;
     }
-    if (graph.source !== pointer) return E_INVALIDARG;
+    if (graph.source !== pointer && graph.textureFilter !== pointer) return E_INVALIDARG;
     const result = await this.call(pointer, 13, 0, 0);
     if (!FAILED(result)) {
-      graph.source = 0;
+      if (graph.source === pointer) graph.source = 0;
+      else graph.textureFilter = 0;
       await this.call(pointer, 2);
     }
     return result;
@@ -391,14 +405,22 @@ export class NativeDirectShow {
     }
   }
   async renderPin(graph, pin) {
-    if (!pin || !graph.source || !graph.filter || pin !== graph.source + 248)
+    if (
+      !pin ||
+      !graph.source ||
+      (!graph.filter && !graph.textureFilter) ||
+      pin !== graph.source + 248
+    )
       return VFW_E_CANNOT_RENDER;
     if (graph.video) return VFW_E_WRONG_STATE;
     const bytes = await this.stream(graph, pin),
       decoder = await this.decoder(graph, bytes);
     if (!decoder) return VFW_E_CANNOT_RENDER;
-    const filter = this.objects.get(graph.filter),
-      result = await this.vmr.initialize(filter.notify, graph.video);
+    const result = graph.textureFilter
+      ? await this.engine.features
+          .get('texture-movie-renderer')
+          .configure(graph.textureFilter, graph.video)
+      : await this.vmr.initialize(this.objects.get(graph.filter).notify, graph.video);
     if (FAILED(result)) {
       this.decoders.delete(graph.primary);
       graph.video = null;
@@ -410,9 +432,18 @@ export class NativeDirectShow {
   async presentFrame(graph, preroll = false) {
     const decoder = this.decoders.get(graph.primary),
       stamp = decoder.frameStamp(),
-      { notify } = this.objects.get(graph.filter),
-      surface = this.vmr.record(notify).surfaces[0],
       frame = await decoder.decodedFrame(),
+      result = graph.textureFilter
+        ? await this.engine.features
+            .get('texture-movie-renderer')
+            .present(graph.textureFilter, frame)
+        : await this.presentVMRFrame(graph, frame, preroll);
+    if (!FAILED(result)) this.samples.set(graph.primary, stamp);
+    return result;
+  }
+  async presentVMRFrame(graph, frame, preroll) {
+    const { notify } = this.objects.get(graph.filter),
+      surface = this.vmr.record(notify).surfaces[0],
       p = this.process,
       data = this.vmr.device.surfaceData(surface);
     if (
@@ -430,19 +461,7 @@ export class NativeDirectShow {
       if (FAILED(locked)) return locked;
       let unlocked;
       try {
-        const pitch = p.load(lock),
-          address = p.load(lock + 4),
-          row = new Uint8Array(frame.width * 4);
-        for (let y = 0; y < frame.height; y++) {
-          for (let x = 0; x < row.length; x += 4) {
-            const at = y * row.length + x;
-            row[x] = frame.rgba[at + 2];
-            row[x + 1] = frame.rgba[at + 1];
-            row[x + 2] = frame.rgba[at];
-            row[x + 3] = 255;
-          }
-          p.write(address + y * pitch, row);
-        }
+        writeMoviePixels(p, frame, p.load(lock + 4), p.load(lock));
       } finally {
         unlocked = await this.call(surface, 14);
       }
@@ -460,9 +479,7 @@ export class NativeDirectShow {
         frame.width,
         frame.height,
       ].forEach((word, i) => p.store(info + 24 + 4 * i, word));
-      const result = await this.vmr.present(notify, 0, info);
-      if (!FAILED(result)) this.samples.set(graph.primary, stamp);
-      return result;
+      return await this.vmr.present(notify, 0, info);
     } finally {
       p.free(info);
     }
@@ -474,6 +491,7 @@ export class NativeDirectShow {
     );
   }
   startPresentation(graph) {
+    if (graph.textureFilter) return 0;
     const { notify } = this.objects.get(graph.filter);
     return this.vmr.record(notify).presenting ? 0 : this.vmr.start(notify);
   }

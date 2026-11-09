@@ -5,8 +5,10 @@ import { nativeM2Files } from '../fixtures/native-m2-fixture.mjs';
 import { profiles } from '../fixtures/native-vmr-surface.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
-for (const [profile, variable] of profiles)
-  test(`${profile} original Plane FilterGraph connects, plays and restores its mounted AVI`, async ({
+for (const [profile, variable, texture] of profiles.flatMap(([profile, variable]) =>
+  [false, true].map((texture) => [profile, variable, texture]),
+))
+  test(`${profile} original Plane ${texture ? 'Texture Renderer' : 'VMR9'} plays and restores its mounted AVI`, async ({
     page,
   }) => {
     const gamePE = profile.startsWith('nekopara-');
@@ -32,7 +34,7 @@ for (const [profile, variable] of profiles)
     files['movie/clip.avi'] = [...avi];
     await page.goto('/');
     const result = await page.evaluate(
-      async ({ profile, files, gamePE, movie }) => {
+      async ({ profile, files, gamePE, movie, texture }) => {
         const [
           { NativeWorld },
           { NativeConfiguration },
@@ -66,7 +68,8 @@ for (const [profile, variable] of profiles)
           '<?xml version="1.0" encoding="UTF-8"?><document><SCREEN>' +
           '<width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height>' +
           '</SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00>' +
-          '<int01><name>movie</name><int>movie.int</int><ext>avi</ext><dir>movie</dir></int01></INT></document>';
+          '<int01><name>movie</name><int>movie.int</int><ext>avi</ext><dir>movie</dir></int01>' +
+          '<int02><name>veff</name><int>veff.int</int><ext>avi</ext><dir>movie</dir></int02></INT></document>';
         resources.set('startup.xml', new BlobFile(new Blob([xml])));
         const game = new GameFiles(resources);
         await game.open();
@@ -152,21 +155,25 @@ for (const [profile, variable] of profiles)
               task = world.main;
             return world.runtime.native('main', id, args, task.machine, task);
           };
+          const lookup = texture ? 0x3dd : 0x2be;
           const load = (context, target, filename) => {
             const { world } = context;
             const bytes = new TextEncoder().encode(filename + '\0');
             world.main.machine.bytes(0x500, bytes.length).set(bytes);
-            return command(context, 0x2bd, world.nativeTaskID(target), 0x500);
+            return command(context, texture ? 0x3dc : 0x2bd, world.nativeTaskID(target), 0x500);
           };
           await load(first, plane, 'missing');
           const direct = (first.direct = world.nativeEngine.features.get('directshow'));
           const rejected =
             direct.objects.size === 0 &&
-            (await command(first, 0x2be, world.nativeTaskID(plane))).value === 0;
-          world.configuration.setField('general.disableMovie', 1);
-          await load(first, plane, 'clip');
-          const disabled = direct.objects.size === 0 && decoders.length === 0;
-          world.configuration.setField('general.disableMovie', 0);
+            (await command(first, lookup, world.nativeTaskID(plane))).value === 0;
+          let disabled;
+          if (!texture) {
+            world.configuration.setField('general.disableMovie', 1);
+            await load(first, plane, 'clip');
+            disabled = direct.objects.size === 0 && decoders.length === 0;
+            world.configuration.setField('general.disableMovie', 0);
+          }
           await load(first, plane, 'clip');
           await world.sendEngine(plane, world.main.id, 48, 0, 1);
           const graph = [...direct.objects.values()].find((record) => record.movie);
@@ -186,27 +193,40 @@ for (const [profile, variable] of profiles)
                 }),
             );
           const graphID = graph.primary;
-          const handle = (await command(first, 0x2be, world.nativeTaskID(plane))).value,
-            stableHandle = (await command(first, 0x2be, world.nativeTaskID(plane))).value;
+          const handle = (await command(first, lookup, world.nativeTaskID(plane))).value,
+            stableHandle = (await command(first, lookup, world.nativeTaskID(plane))).value,
+            otherHandle = (await command(first, texture ? 0x2be : 0x3dd, world.nativeTaskID(plane)))
+              .value;
           const inspect = (context) => {
             const { direct, p, d, gpu } = context,
               record = direct.objects.get(graphID),
               filter = direct.objects.get(record.filter),
-              vmr = direct.vmr.record(filter.notify),
-              target = p.load(p.load(vmr.allocator + 16) + 20),
-              frame = gpu.pixels(d.gpuTarget(d.objects.get(target).surface)),
-              pixel = (x, y) => [...frame.slice((y * 32 + x) * 4, (y * 32 + x + 1) * 4)];
+              vmr = filter && direct.vmr.record(filter.notify),
+              target = p.load(
+                p.load(vmr ? vmr.allocator + 16 : record.textureFilter - 12 + 388) + 20,
+              ),
+              decoded = d.frame(target),
+              frame = texture
+                ? decoded.rgba
+                : gpu.pixels(d.gpuTarget(d.objects.get(target).surface)),
+              pixel = (x, y) =>
+                y >= decoded.height
+                  ? null
+                  : [...frame.slice((y * decoded.width + x) * 4, (y * decoded.width + x + 1) * 4)];
             return {
-              mode: filter.mode,
-              streams: filter.streams,
+              mode: filter?.mode ?? 'texture',
+              streams: filter?.streams ?? null,
+              filename: record.filename,
               size: [record.video.width, record.video.height],
+              textureFormat: d.textureData(target).format,
+              decoderSurfaceFormat: vmr ? d.surfaceData(vmr.surfaces[0]).format : null,
               duration: Number(record.video.duration),
               digest: record.sha256,
               state: record.state,
               pin: record.source,
-              notifyOwnedByMovie: filter.movieNotify,
+              notifyOwnedByMovie: Boolean(filter?.movieNotify),
               color: [pixel(4, 4), pixel(4, 18), pixel(4, 30)],
-              presentCalls: d.calls.get('Device9.StretchRect') ?? 0,
+              presentCalls: d.calls.get(texture ? 'Texture9.LockRect' : 'Device9.StretchRect') ?? 0,
             };
           };
           const pause = (context) => context.direct.call(graph.interfaces.control, 8);
@@ -226,10 +246,10 @@ for (const [profile, variable] of profiles)
           const started = (await command(first, 0x10a, handle, 1)).value;
           await wait(async () => {
             await world.movies.settle();
-            return (await command(first, 0x3e6, handle)).value >= 240;
+            return direct.decoders.get(graphID).position() >= 2400000n;
           });
-          const running = (await command(first, 0x10d, handle)).value,
-            state = world.snapshot(),
+          const state = world.snapshot(),
+            running = (await command(first, 0x10d, handle)).value,
             savedGraph = new Map(state.nativeEngine.features)
               .get('directshow')
               .objects.find(([id]) => id === graphID)[1],
@@ -242,7 +262,7 @@ for (const [profile, variable] of profiles)
           await fresh.world.restore(await deserializeCheckpoint(await serializeCheckpoint(state)));
           const second = await attach(fresh),
             restored = inspect(second),
-            restoredHandle = (await command(second, 0x2be, fresh.world.nativeTaskID(plane))).value,
+            restoredHandle = (await command(second, lookup, fresh.world.nativeTaskID(plane))).value,
             restoredTime = (await command(second, 0x3e6, handle)).value;
           await fresh.world.movies.settle();
           const reopenedBeforeActivation = decoders.length !== 1;
@@ -294,7 +314,7 @@ for (const [profile, variable] of profiles)
             name: 'repeat movie plane',
           });
           await load(second, loopPlane, 'clip');
-          const loopHandle = (await command(second, 0x2be, second.world.nativeTaskID(loopPlane)))
+          const loopHandle = (await command(second, lookup, second.world.nativeTaskID(loopPlane)))
               .value,
             loopMovie = second.world.runtime.handles.get(loopHandle, 'plane-movie'),
             loopStarted = (await command(second, 0x10a, loopHandle, 2)).value,
@@ -305,7 +325,11 @@ for (const [profile, variable] of profiles)
             await second.world.movies.settle();
             return worker(second)?.polling;
           });
-          const replayedAt = (await command(second, 0x3e6, loopHandle)).value,
+          const loopGraph = [...second.direct.objects.values()].find(
+              ({ movie }) => movie === loopMovie,
+            ),
+            rewindPosition = Number(loopGraph.position),
+            replayedAt = Number(second.direct.decoders.get(loopGraph.primary).position() / 10000n),
             replayCount = second.p.load(loopMovie + 392),
             repeatState = second.world.snapshot(),
             loopStopped = (await command(second, 0x10b, loopHandle)).value;
@@ -338,6 +362,7 @@ for (const [profile, variable] of profiles)
             later,
             screen,
             handles: [handle, stableHandle, restoredHandle],
+            otherHandle,
             transitions: [
               started,
               running,
@@ -362,6 +387,7 @@ for (const [profile, variable] of profiles)
               loopStarted,
               loopStopped,
               replayedAt,
+              rewindPosition,
               replayCount,
               parkedAfterRestore,
               restoredRepeat,
@@ -381,19 +407,22 @@ for (const [profile, variable] of profiles)
           URL.revokeObjectURL(url);
         }
       },
-      { profile, files, gamePE, movie: [...webm] },
+      { profile, files, gamePE, movie: [...webm], texture },
     );
     expect(result.rejected).toBe(true);
     expect(result.replaced).toBe(true);
-    expect(result.disabled).toBe(true);
+    if (!texture) expect(result.disabled).toBe(true);
     expect(result.paused).toBe(0);
     expect(result.frame).toMatchObject({
-      mode: 4,
-      streams: 1,
+      mode: texture ? 'texture' : 4,
+      streams: texture ? null : 1,
+      filename: texture ? 'veff.int/clip.avi' : 'movie.int/clip.avi',
       size: [32, 24],
+      textureFormat: 21,
+      decoderSurfaceFormat: texture ? null : 22,
       digest: result.digest,
       state: 1,
-      notifyOwnedByMovie: true,
+      notifyOwnedByMovie: !texture,
       presentCalls: 1,
     });
     expect(result.frame.duration).toBeGreaterThan(27000000);
@@ -402,12 +431,13 @@ for (const [profile, variable] of profiles)
     expect(result.frame.color[0][2]).toBeLessThan(20);
     expect(result.frame.color[1][2]).toBeGreaterThan(230);
     expect(result.frame.color[1][0]).toBeLessThan(20);
-    expect(result.frame.color[2]).toEqual([0, 0, 0, 255]);
+    expect(result.frame.color[2]).toEqual([0, 0, 0, texture ? 0 : 255]);
     expect(result.handles[0]).toBeGreaterThan(0);
     expect(result.handles).toEqual(new Array(3).fill(result.handles[0]));
+    expect(result.otherHandle).toBe(0);
     expect(result.transitions).toEqual([1, 1, 1, 0, 1, 0, 0]);
     expect(result.restoredTime).toBeGreaterThanOrEqual(240);
-    expect(result.restoredTime).toBeLessThan(1400);
+    expect(result.restoredTime).toBeLessThan(result.frame.duration / 10000);
     expect(result.restoredTime).toBe(result.savedTime);
     expect(result.reopenedBeforeActivation).toBe(false);
     expect(result.restored).toEqual({ ...result.duringPlayback, presentCalls: 0 });
@@ -432,11 +462,12 @@ for (const [profile, variable] of profiles)
     );
     expect(result.closed).toBe(true);
     expect(result.errors).toEqual([0, 0, 0]);
-    expect(result.repeat.replayedAt).toBeLessThan(1400);
+    expect(result.repeat.replayedAt).toBeLessThan(result.frame.duration / 10000);
     expect(result.repeat).toMatchObject({
       loopStarted: 1,
       loopStopped: 1,
       replayCount: 1,
+      rewindPosition: 0,
       parkedAfterRestore: true,
       restoredRepeat: 1,
       parkedAfterSecondEnd: true,
