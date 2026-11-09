@@ -10,7 +10,10 @@ import {
   NATIVE_ENGINE_IMAGES,
 } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_SYSTEM_INFORMATION } from '../src/native/engine-system-information.mjs';
+import {
+  NATIVE_SYSTEM_INFORMATION,
+  checkNativeDirectXStartup,
+} from '../src/native/engine-system-information.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
@@ -46,6 +49,8 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
             system: Array.from({ length: 5 }, (_, i) => p.load(pointer + i * 4)),
             name: p.string(pointer + 20, layout.wide),
             edition: p.string(pointer + (layout.wide ? 536 : 280), layout.wide),
+            directX: p.load(pointer + layout.directX),
+            directXName: p.string(pointer + layout.directX + 4, layout.wide),
             memory: Array.from({ length: 4 }, (_, i) => p.load(pointer + layout.memory + 4 * i)),
           };
         };
@@ -56,6 +61,8 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           system: [97, 6, 1, 7601, 32],
           name: 'Windows 7 (x86)',
           edition: 'Professional',
+          directX: 0x90003,
+          directXName: '9.0c',
           memory: [127, 128, 127, 128],
         });
         for (const name of [
@@ -64,8 +71,14 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           'kernel32.dll!IsWow64Process',
           'kernel32.dll!GetProductInfo',
           'kernel32.dll!GlobalMemoryStatusEx',
+          'ole32.dll!CoCreateInstance',
+          'oleaut32.dll!#8', // VariantInit
+          'oleaut32.dll!#7', // SysStringLen
         ])
           assert.equal(first.kernel.calls.get(name), 1, name);
+        assert.equal(first.kernel.calls.get('oleaut32.dll!#9'), 3); // VariantClear
+        assert.equal(first.kernel.comDepth, 1, 'DxDiag released its nested apartment');
+        await checkNativeDirectXStartup(first);
         fresh = await open();
         fresh.restore(first.snapshot());
         assert.deepEqual(read(fresh), info);
@@ -82,6 +95,18 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         assert.equal(available(), before - 16n * 1024n * 1024n);
         p.free(reservation);
         assert.equal(available(), before);
+        const allocations = [...p.allocations.keys()].sort((a, b) => a - b);
+        assert.equal(await fresh.call(layout.detectDirectX, [probe + 4, probe + 8, probe + 12]), 0);
+        assert.deepEqual(
+          [p.load(probe + 4), p.load(probe + 8), p.string(probe + 12, true)],
+          [9, 0, 'c'],
+        );
+        assert.deepEqual(
+          [...p.allocations.keys()].sort((a, b) => a - b),
+          allocations,
+        );
+        assert.equal(fresh.kernel.comDepth, 1);
+        await checkNativeDirectXStartup(fresh);
         p.free(probe);
       } finally {
         await fresh?.close();

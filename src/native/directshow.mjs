@@ -102,10 +102,12 @@ export class NativeDirectShow {
     this.tables = new Map();
     this.decoders = new Map();
     this.samples = new Map();
-    engine.registerWindows('OLE32.dll', 'CoCreateInstance', {
-      count: 5,
-      fn: (args) => this.createInstance(...args),
-    });
+    engine.kernel.registerCOMClass(FILTER_GRAPH, (iid, output) =>
+      this.createInstance('graph', iid, output),
+    );
+    engine.kernel.registerCOMClass(VMR9, (iid, output) => this.createInstance('vmr9', iid, output));
+    for (const [kind, guid] of WEBM_CONVERTERS)
+      engine.kernel.registerCOMClass(guid, (iid, output) => this.createInstance(kind, iid, output));
     this.splitFilters = new NativeMovieFilters(this, UNKNOWN);
     this.hapDriver = new NativeHapDriver(engine);
     if (engine.profile === WM_READER_PROFILE) this.wmReader = new NativeWindowsMediaReader(this);
@@ -177,15 +179,10 @@ export class NativeDirectShow {
     this.objects.set(primary, record);
     return record;
   }
-  createInstance(clsid, outer, context, iid, output) {
-    if (!output) return E_POINTER;
+  createInstance(kind, iid, output) {
     const p = this.process;
-    p.store(output, 0);
-    if (!clsid || !iid) return E_POINTER;
-    if (outer || ![1, 3].includes(context)) return E_INVALIDARG;
-    if (!this.engine.kernel.comDepth) return 0x800401f0;
     let record;
-    if (this.guid(clsid, FILTER_GRAPH)) {
+    if (kind === 'graph') {
       if (!GUIDS.graph.some((guid) => this.guid(iid, guid))) return E_NOINTERFACE;
       // The reviewed kcVideo passes its first field as the out parameter.
       if (p.allocations.get(output) !== 0x1b4)
@@ -205,7 +202,7 @@ export class NativeDirectShow {
         state: 0,
         events: [],
       });
-    } else if (this.guid(clsid, VMR9)) {
+    } else if (kind === 'vmr9') {
       if (!this.guid(iid, GUIDS.filter[0])) return E_NOINTERFACE;
       record = this.create(FILTER_INTERFACES, {
         notify: this.vmr.create(),
@@ -214,10 +211,8 @@ export class NativeDirectShow {
         graph: 0,
       });
     } else {
-      const converter = [...WEBM_CONVERTERS].find(([, guid]) => this.guid(clsid, guid));
-      if (!converter) throw new Error('Unimplemented native DirectShow COM class');
       if (!this.guid(iid, GUIDS.filter[0])) return E_NOINTERFACE;
-      record = this.splitFilters.createFilter(converter[0]);
+      record = this.splitFilters.createFilter(kind);
     }
     p.store(output, record.primary);
     return 0;

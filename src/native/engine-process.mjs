@@ -105,6 +105,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
     this.comDepth = 0;
+    this.comClasses = new Map();
     this.register('OLE32.dll', 'CoInitialize', {
       count: 1,
       fn: ([reserved]) => {
@@ -116,6 +117,20 @@ export class NativeEngineWindows extends PPIWindowsServices {
       count: 0,
       fn: () => {
         if (this.comDepth) this.comDepth--;
+      },
+    });
+    this.register('OLE32.dll', 'CoCreateInstance', {
+      count: 5,
+      fn: ([clsid, outer, context, iid, out]) => {
+        if (!out) return 0x80004003; // E_POINTER
+        process.store(out, 0);
+        if (!clsid || !iid) return 0x80004003;
+        if (outer) return 0x80040110; // CLASS_E_NOAGGREGATION
+        if (!context) return 0x80070057; // E_INVALIDARG
+        if (!this.comDepth) return 0x800401f0; // CO_E_NOTINITIALIZED
+        const key = Array.from({ length: 4 }, (_, i) => process.load(clsid + i * 4)).join(',');
+        const factory = context & 1 && this.comClasses.get(key);
+        return factory ? factory(iid, out) : 0x80040154; // REGDB_E_CLASSNOTREG
       },
     });
     installNativeFileTimes(this, {
@@ -630,6 +645,11 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.hostModules ??= new NativeWindowsModules(this);
     return this.hostModules.register(name, exports);
   }
+  registerCOMClass(guid, factory) {
+    const key = guid.join(',');
+    if (this.comClasses.has(key)) throw new Error('Duplicate native COM class');
+    this.comClasses.set(key, factory);
+  }
   moduleHandle(name) {
     return this.hostModules?.handle(name) || super.moduleHandle(name);
   }
@@ -661,7 +681,9 @@ export class NativeEngineWindows extends PPIWindowsServices {
   }
   resolve(symbol) {
     const override = this.overrides?.get(windowsKey(symbol));
-    return override ? this.register(symbol.dll, symbol.name, override) : super.resolve(symbol);
+    return override
+      ? this.register(symbol.dll, symbol.name ?? `#${symbol.ordinal}`, override)
+      : super.resolve(symbol);
   }
   recoverTrap(trap) {
     const key = trap.name.replace(/^engine:/, ''),

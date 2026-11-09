@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original system-information owner. These Win32 APIs describe the virtual
 // i686 process and its memory budget, independently of the browser's OS.
+import {
+  installNativeDxDiagnostics,
+  releaseNativeDxDiagnostics,
+} from './windows-dx-diagnostics.mjs';
+
 export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     global: 0xc93b6c,
@@ -8,6 +13,9 @@ export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
     construct: 0x49fbe0,
     destroy: 0x49ffb0,
     memory: 1372,
+    directX: 408,
+    detectDirectX: 0x47f380,
+    checkDirectX: 0x546940,
     wide: false,
   }),
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -16,6 +24,9 @@ export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
     construct: 0x5c3460,
     destroy: 0x5c3820,
     memory: 2652,
+    directX: 792,
+    detectDirectX: 0x5afe20,
+    checkDirectX: 0x66f600,
     wide: true,
   }),
 });
@@ -93,15 +104,21 @@ export async function initializeNativeSystemInformation(engine) {
   if (!layout || p.load(layout.global))
     throw new Error('Original system information already has an owner');
   installSystemInformationAPIs(engine);
+  installNativeDxDiagnostics(engine);
   const pointer = p.allocate(layout.size, true);
-  // The original flag mask includes DirectX diagnostics, sound and OEM
-  // discovery. These two flags select the OS and memory queries.
+  // Select the original OS, DirectX and memory branches.
   if (
-    (await p.callAsync(layout.construct, [0x05, 1], pointer)) !== pointer ||
+    (await p.callAsync(layout.construct, [0x07, 1], pointer)) !== pointer ||
     p.load(layout.global) !== pointer
   )
     throw new Error('Original system information did not establish its singleton');
   engine.refs.systemInformation = pointer;
+}
+
+export async function checkNativeDirectXStartup(engine) {
+  const layout = NATIVE_SYSTEM_INFORMATION[engine.profile];
+  if ((await engine.call(layout.checkDirectX)) !== 1)
+    throw new Error('Original startup rejected the virtual Direct3D runtime');
 }
 
 export async function releaseNativeSystemInformation(engine) {
@@ -115,4 +132,5 @@ export async function releaseNativeSystemInformation(engine) {
   if (p.load(layout.global) || !p.free(pointer))
     throw new Error('Original system information did not release its singleton');
   delete engine.refs.systemInformation;
+  releaseNativeDxDiagnostics(engine);
 }

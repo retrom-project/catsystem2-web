@@ -18,14 +18,28 @@ desktop registration and device checks stay outside this block; the browser
 still mounts prepared archives.
 The original platform prelude also constructs the system information record
 (SDK `49FBE0`, game `5C3460`) before file-server and Settings startup. The
-version and memory branches run in the original code. Their Windows imports
-describe the virtual 32-bit Windows 7 SP1 environment and its guest memory
-budget. The record and its DLL export bindings survive a fresh process.
-The original destructor clears the singleton on close. DirectX, sound,
-and OEM discovery in the same constructor still require separate services.
+version, DirectX and memory branches run in the original code. Their Windows
+imports describe the virtual 32-bit Windows 7 SP1 environment, the Direct3D 9
+adapter and its guest memory budget. The record and its DLL export bindings
+survive a fresh process. The original destructor clears the singleton on
+close. CPU and OEM discovery in the same constructor still require
+separate services.
 The Windows boundaries follow the
 [version structure](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw)
 and [memory status structure](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex).
+
+SDK `47F380` and game `5AFE20` read the virtual DirectX version from
+`DxDiag_SystemInfo` through the original COM vtables and the three OLE
+Automation imports by ordinal. The browser provider supplies two `VT_UI4`
+properties and the version letter as a length-prefixed
+[BSTR](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/automat/bstr).
+Each original release path balances the nested COM initialization and frees
+the provider, containers and string. World startup also runs the original
+DirectX/D3DX gate (SDK `546940`, game `66F600`). Tests verify the original
+`9.0c` record and repeat the full query after restoring into a fresh process
+without leaking guest allocations. The virtual adapter exposes Direct3D 9;
+the original DLL-version fallback and the optional Direct3D 11 probe remain
+outside this path.
 
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
