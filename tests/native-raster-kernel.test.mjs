@@ -109,7 +109,7 @@ for (const [profile, variable, normal, mask, copy, btype] of [
           };
           const address = [normal, mask, copy, btype][n % 4],
             original = await run(false, address, bytes, stackBytes, setup),
-            rasterBudget = (address === mask || address === copy) && p.instructionBudget(),
+            rasterBudget = address !== btype && p.instructionBudget(),
             accelerated = await run(true, address, bytes, stackBytes, setup);
           if (rasterBudget)
             assert.deepEqual(p.instructionBudget(), rasterBudget, `raster ${n} budget`);

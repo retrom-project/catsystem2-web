@@ -204,67 +204,146 @@ export class NativeRasterKernels {
       destinationStep: d[8],
     };
   }
+  normalInstructions(raster, destination, table, available) {
+    const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
+      width = d[16],
+      height = d[17],
+      left = d[4] > 0,
+      right = d[4] + width < d[2];
+    let s = raster.source,
+      t = raster.destination,
+      total = 0,
+      row,
+      unchanged = true;
+    for (let y = 0; y < height; y++, s += sourceStep, t += destinationStep) {
+      row = 0;
+      for (let x = 0, a = s + 3, b = t + 3; x < width; x++, a += 4, b += 4) {
+        const alpha = table[input[a]];
+        if (alpha === 255) row += 20;
+        else if (!alpha) row += destination.getUint32(b - 3, true) ? 18 : 20;
+        else {
+          const destinationAlpha = output[b];
+          row += !destinationAlpha ? 26 : destinationAlpha === 255 ? 45 : 77;
+        }
+      }
+      // Eighteen instructions are unique to a pixel left unchanged by
+      // zero source alpha. The transparent padding still runs on that row.
+      if (y < height - 1 && row !== 18 * width) unchanged = false;
+      row += 27;
+      if (left) row += destination.getUint32(t - 4, true) ? 6 : 8;
+      if (right) row += destination.getUint32(t + width * 4, true) ? 8 : 10;
+      total += row;
+      if (total > available) return null;
+    }
+    // The original tail scanline runs in full and restores its register and
+    // local state. Its first instruction is the one counted at this hook.
+    return { skipped: total - row, unchanged };
+  }
   normal() {
     const p = this.process,
       frame = this.reg('EBP'),
-      pointer = this.reg('EDI');
-    if (p.load(frame - 0x120) !== 0) return false;
-    const table = p.read(frame - 0x104, 256);
-    const raster = this.raster(pointer, frame, this.reg('EBX'), this.reg('ESI'));
+      regions = this.repeatRegions();
+    if (!this.range(frame - 0x120, 4, false, regions) || p.load(frame - 0x120) !== 0) return false;
+    const pointer = this.reg('EDI'),
+      sourceRow = this.reg('EBX'),
+      destinationRow = this.reg('ESI');
+    if (
+      this.reg('ESP') !== frame - 0x140 ||
+      this.reg('EFLAGS') & 0x50100 ||
+      this.reg('DS') !== 0 ||
+      this.reg('SS') !== 0 ||
+      !this.range(frame - 0x12c, 0x128, false, regions) ||
+      !this.range(pointer, 128, false, regions) ||
+      overlaps(pointer, 128, frame - 0x134, 0x134)
+    )
+      return false;
+    const locals = p.read(frame - 0x12c, 0x128),
+      view = new DataView(locals.buffer),
+      local = (offset) => view.getUint32(0x12c - offset, true),
+      table = locals.subarray(0x28),
+      descriptor = new Int32Array(p.read(pointer, 128).buffer),
+      contiguous = (address, size) =>
+        p.regions.some(
+          (region) => address >= region.address && address + size <= region.address + region.size,
+        );
+    if (
+      local(0x128) !== pointer ||
+      local(0x118) !== sourceRow ||
+      local(0x11c) !== destinationRow ||
+      local(0x12c) !== descriptor[8] >>> 0 ||
+      local(0x124) !== (descriptor[20] ? -descriptor[18] : descriptor[18]) >>> 0 ||
+      !contiguous(descriptor[1] >>> 0, descriptor[8] * descriptor[3]) ||
+      !contiguous(descriptor[11] >>> 0, descriptor[18] * descriptor[13])
+    )
+      return false;
+    const { active, counter, limit } = p.instructionBudget(),
+      available = limit === 0n ? Infinity : Number(limit - counter) + 1;
+    if (!active || available < descriptor[17] * (27 + 18 * descriptor[16])) return false;
+    const raster = this.raster(pointer, frame, sourceRow, destinationRow, descriptor, regions);
     if (!raster) return false;
     const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
       count = d[16],
-      rows = d[17] - 1;
+      rows = d[17] - 1,
+      sourcePixels = new DataView(input.buffer, input.byteOffset, input.byteLength),
+      destinationPixels = new DataView(output.buffer, output.byteOffset, output.byteLength),
+      instructions = this.normalInstructions(raster, destinationPixels, table, available);
+    if (!instructions || !p.consumeInstructions(instructions.skipped)) return false;
+    const blendWidth = instructions.unchanged ? 0 : count;
     let s = raster.source,
       t = raster.destination,
       lastOnly,
       lastTotal;
     for (let y = 0; y < rows; y++, s += sourceStep, t += destinationStep) {
       // This transparent RGB padding is an observable original-engine quirk.
-      if (d[4] > 0 && !(output[t - 4] | output[t - 3] | output[t - 2] | output[t - 1])) {
-        output[t - 4] = input[s];
-        output[t - 3] = input[s + 1];
-        output[t - 2] = input[s + 2];
-      }
-      for (let x = 0, a = s, b = t; x < count; x++, a += 4, b += 4) {
-        const alpha = table[input[a + 3]],
-          oldAlpha = output[b + 3];
-        if (
-          alpha === 255 ||
-          (alpha && !oldAlpha) ||
-          (!alpha && !(output[b] | output[b + 1] | output[b + 2] | oldAlpha))
-        ) {
-          output[b] = input[a];
-          output[b + 1] = input[a + 1];
-          output[b + 2] = input[a + 2];
-          output[b + 3] = alpha;
-        } else if (alpha && oldAlpha === 255) {
-          for (let c = 0; c < 3; c++)
-            output[b + c] += ((input[a + c] - output[b + c]) * alpha) >> 8;
-        } else if (alpha) {
+      if (d[4] > 0 && !destinationPixels.getUint32(t - 4, true))
+        destinationPixels.setUint32(t - 4, sourcePixels.getUint32(s, true) & 0xffffff, true);
+      for (let x = 0, a = s, b = t; x < blendWidth; x++, a += 4, b += 4) {
+        const color = sourcePixels.getUint32(a, true),
+          alpha = table[color >>> 24];
+        if (alpha === 255) {
+          destinationPixels.setUint32(b, color | 0xff000000, true);
+          continue;
+        }
+        const previous = destinationPixels.getUint32(b, true),
+          oldAlpha = previous >>> 24;
+        if (!alpha && previous) continue;
+        if (!oldAlpha) {
+          destinationPixels.setUint32(b, (color & 0xffffff) | (alpha << 24), true);
+        } else if (oldAlpha === 255) {
+          const inverse = 256 - alpha;
+          // The red and blue 16-bit products cannot carry into one another.
+          const redBlue =
+              ((Math.imul(color & 0xff00ff, alpha) + Math.imul(previous & 0xff00ff, inverse)) >>>
+                8) &
+              0xff00ff,
+            green =
+              ((Math.imul(color & 0xff00, alpha) + Math.imul(previous & 0xff00, inverse)) >>> 8) &
+              0xff00;
+          destinationPixels.setUint32(b, 0xff000000 | redBlue | green, true);
+        } else {
           const overlap = (alpha * oldAlpha) >> 8,
             only = ((256 - alpha) * oldAlpha) >> 8,
             weight = (((256 - oldAlpha) * alpha) >> 8) + overlap,
             total = (only + weight) | 1,
             reciprocal = Math.floor(65536 / total);
-          for (let c = 0; c < 3; c++)
-            output[b + c] =
-              (Math.imul(input[a + c] * weight + output[b + c] * only, reciprocal) >>> 16) & 255;
-          output[b + 3] = total;
+          let result = total << 24;
+          for (let shift = 0; shift < 24; shift += 8) {
+            const from = (color >>> shift) & 255,
+              to = (previous >>> shift) & 255;
+            result |= ((Math.imul(from * weight + to * only, reciprocal) >>> 16) & 255) << shift;
+          }
+          destinationPixels.setUint32(b, result, true);
           lastOnly = only;
           lastTotal = total;
         }
       }
-      const end = t + count * 4,
-        last = s + (count - 1) * 4;
-      if (
-        d[4] + count < d[2] &&
-        !(output[end] | output[end + 1] | output[end + 2] | output[end + 3])
-      ) {
-        output[end] = input[last];
-        output[end + 1] = input[last + 1];
-        output[end + 2] = input[last + 2];
-      }
+      const end = t + count * 4;
+      if (d[4] + count < d[2] && !destinationPixels.getUint32(end, true))
+        destinationPixels.setUint32(
+          end,
+          sourcePixels.getUint32(s + (count - 1) * 4, true) & 0xffffff,
+          true,
+        );
     }
     if (lastOnly !== undefined) {
       p.store(frame - 0x130, lastOnly);
