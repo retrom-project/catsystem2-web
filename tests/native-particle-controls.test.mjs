@@ -6,6 +6,8 @@ import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { floatBits } from '../src/kcs.mjs';
+import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 for (const [profile, variable, receiver, offset] of [
@@ -20,6 +22,8 @@ for (const [profile, variable, receiver, offset] of [
           'engine.exe': new Uint8Array(await readFile(process.env[variable])),
           'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
           'controls.kcs': kcsProgram([[37, [0x14, 48]], [37, [0x14, 52]], [43, 0x113, 8], [59]]),
+          'ptcl/emitter.kcs': kcsProgram([[59]]),
+          'ptclpi/emitter.ppi': nativeParticleFixture(),
         }),
         make = () => {
           const random = new ParticleRandom();
@@ -98,6 +102,28 @@ for (const [profile, variable, receiver, offset] of [
         assert.deepEqual(await call(fresh, 0x112, target), { control: 1, value: 1 });
         assert.deepEqual(await call(fresh, 0x111, target), { control: 2 });
         assert.deepEqual(await call(fresh, 0x112, target), { control: 1, value: 0 });
+        await call(fresh, 0x1ab, target, 0);
+        const m = fresh.main.machine,
+          values = Float32Array.from({ length: 32 }, (_, i) => 7.5 - i * 1.25);
+        m.writeString('emitter', 160);
+        m.writeString('', 192);
+        values.forEach((value, i) => m.store(256 + 4 * i, floatBits(value)));
+        for (const [id, family, file] of [
+          [0x10f, 'script', 'ptcl/emitter.kcs'],
+          [0x2b5, 'plugin', 'ptclpi/emitter.ppi'],
+        ]) {
+          assert.deepEqual(await call(fresh, id, target, 160, 192, 2, floatBits(12.25), 256), {
+            control: 1,
+            value: 1,
+          });
+          const bank = fresh.particles.get(particle).bank;
+          assert.equal(bank.program, file);
+          assert.equal(bank.family, family);
+          assert.equal(bank.priority, 12.25);
+          assert.equal(bank.count, 2);
+          assert.equal(bank.started, false);
+          assert.deepEqual(bank.registers, values);
+        }
       } finally {
         await fresh?.close();
         await world.close();

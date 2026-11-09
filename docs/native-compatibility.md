@@ -11,7 +11,7 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    637 |             82 |                     19 |                     271 |
+| SDK / 2.6.1.74  | 1,009 |                    639 |             82 |                     19 |                     269 |
 | Game / 2.6.1.76 | 1,055 |                    893 |             58 |                     17 |                      87 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
@@ -57,6 +57,12 @@ active query returns zero if no task writes its output. The original
 particle receivers store signed opacity values at or above 255 as 256,
 and graph ID zero as -1. The live VM payload and task state are checked
 against both original receivers.
+
+Main `10F` and `2B5` run the original PTCL and PPI load wrappers. The guest
+formatter and VM translator build the original particle packet, including the
+32 registers and float priority. PTCL scripts and textures use the native
+archive namespace; PPI modules use the physical library resolver. The fixed
+filenames in this packet each have a 128-byte destination.
 
 The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
 wrappers and VM translators with 40,612 comparisons across both engines.

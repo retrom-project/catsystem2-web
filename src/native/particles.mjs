@@ -118,7 +118,9 @@ export class NativeParticleTask {
           string = (at) => {
             const part = bytes.subarray(at, at + 128),
               end = part.indexOf(0);
-            return new TextDecoder('shift_jis').decode(end < 0 ? part : part.subarray(0, end));
+            return new TextDecoder('shift_jis')
+              .decode(end < 0 ? part : part.subarray(0, end))
+              .replace(/^@cat\/(?:ptcl|ptclpi|image)\//, '');
           };
         await this.load({
           family: view.getUint32(0, true) ? 'plugin' : 'script',

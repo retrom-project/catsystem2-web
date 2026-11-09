@@ -31,16 +31,21 @@ export class NativeEngineFiles {
     this.world = world;
     const p = engine.process,
       sdk = engine.profile.startsWith('sdk-');
-    const categoryFilename = ([out, source, category], wide = false) => {
+    const categoryFilename = ([out, source, category], { wide = false, loose = false } = {}) => {
       const name = p.string(source, wide),
         kind = p.string(category),
-        filename = world.game.nativeResources
-          ? world.game.nativeResources.resolve(name, kind)
-          : /[\\/]/.test(name)
-            ? name
-            : `@cat/${kind}/${name}`;
+        { nativeResources } = world.game;
+      let filename;
+      if (loose)
+        filename = nativeResources
+          ? nativeResources.resolveLoose(name, kind)
+          : (world.game.resolveCategory?.(name, kind) ?? name);
+      else if (nativeResources) filename = nativeResources.resolve(name, kind);
+      else filename = /[\\/]/.test(name) ? name : `@cat/${kind}/${name}`;
       if (filename === null) {
-        p.zero(out, wide ? 2 : 1);
+        if (!loose) p.zero(out, wide ? 2 : 1);
+        else if (engine.currentMessageContext?.categoryFilenameCapacity)
+          throw new Error(`Native particle library mount is absent: ${kind}`);
         return 0;
       }
       const bytes = wide ? new Uint8Array((filename.length + 1) * 2) : encodeCP932(filename + '\0');
@@ -49,10 +54,9 @@ export class NativeEngineFiles {
         for (let i = 0; i < filename.length; i++)
           view.setUint16(i * 2, filename.charCodeAt(i), true);
       }
-      if (bytes.length > (wide ? 520 : 260))
-        throw new RangeError(
-          'Native category filename exceeds its original 260-character destination',
-        );
+      const capacity = engine.currentMessageContext?.categoryFilenameCapacity ?? (wide ? 520 : 260);
+      if (bytes.length > capacity)
+        throw new RangeError('Native category filename exceeds its original destination');
       p.write(out, bytes);
       return 1;
     };
@@ -63,10 +67,23 @@ export class NativeEngineFiles {
       (args) => categoryFilename(args),
       { calleePops: true },
     );
+    engine.patch(
+      sdk ? 0x4b0710 : 0x5d3810,
+      'loose category filename',
+      3,
+      (args) => categoryFilename(args, { loose: true }),
+      { calleePops: true },
+    );
     if (!sdk)
-      engine.patch(0x5d3b30, 'wide category filename', 3, (args) => categoryFilename(args, true), {
-        calleePops: true,
-      });
+      engine.patch(
+        0x5d3b30,
+        'wide category filename',
+        3,
+        (args) => categoryFilename(args, { wide: true }),
+        {
+          calleePops: true,
+        },
+      );
     // The original byte readers clear bit 0x10 before opening, preserve the
     // remaining search mode, and handle size-only reads, failure logging and
     // destruction themselves. Keep those wrappers and their IFile calls in

@@ -4,24 +4,26 @@ import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { NATIVE_PROFILES } from './catalog.mjs';
 
-export const NATIVE_PARTICLE_CONTROLS = Object.freeze(
+export const NATIVE_PARTICLE_COMMANDS = Object.freeze(
   [
+    [0x10f, 6, 314, 0x657380, 0x523e90],
     [0x110, 1, 315, 0x657860, 0x524370],
     [0x111, 1, 316, 0x657890, 0x5243a0],
     [0x112, 1, 318, 0x657780, 0x524290],
     [0x113, 2, 319, 0x657820, 0x524330],
     [0x1aa, 2, 320, 0x6577c0, 0x5242d0],
     [0x1ab, 2, 321, 0x6577f0, 0x524300],
+    [0x2b5, 6, 314, 0x657580, 0x524090],
   ].map(([id, words, message, game, sdk]) =>
     Object.freeze({ id, words, message, handlers: [game, sdk] }),
   ),
 );
-const controls = new Map(NATIVE_PARTICLE_CONTROLS.map((entry) => [entry.id, entry])),
-  messages = new Set(NATIVE_PARTICLE_CONTROLS.map((entry) => entry.message));
+const commands = new Map(NATIVE_PARTICLE_COMMANDS.map((entry) => [entry.id, entry])),
+  messages = new Set(NATIVE_PARTICLE_COMMANDS.map((entry) => entry.message));
 
 export class NativeParticleCommands {
   static has(id) {
-    return controls.has(id);
+    return commands.has(id);
   }
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
@@ -53,8 +55,16 @@ export class NativeParticleCommands {
     return Number(context.nativeRouted);
   }
   async apply(id, args, machine, task) {
-    const spec = controls.get(id);
+    const spec = commands.get(id);
     if (!spec) return undefined;
+    const loading = spec.message === 314;
+    if (loading) {
+      // The original loaders dereference all three translations. Do not let
+      // an unmapped VM address read from the emulator's low system page.
+      for (const index of [1, 2, 5])
+        machine.bytes(args[index] ?? machine.nativeArgument(index), index === 5 ? 128 : 1);
+      await this.world.getNativeFeature('engine-files');
+    }
     const p = this.process,
       memory =
         this.world.objects.machine(task.id) === machine
@@ -79,12 +89,18 @@ export class NativeParticleCommands {
       const address = spec.handlers[Number(this.sdk)],
         slot = NATIVE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
         parameters = [bridge.pointer, scratch, argv, out],
-        options = { task: task.id },
+        options = {
+          task: task.id,
+          ...(loading ? { messageContext: { categoryFilenameCapacity: 128 } } : {}),
+        },
         control = p.asyncEnabled
           ? await this.engine.callFromHost(address, parameters, slot, options)
           : await this.engine.call(address, parameters, slot, options),
         value = p.load(out);
-      if (control !== (id === 0x112 ? 1 : 2) || (control === 2 && value !== NATIVE_RESULT_SENTINEL))
+      if (
+        control !== (loading || id === 0x112 ? 1 : 2) ||
+        (control === 2 && value !== NATIVE_RESULT_SENTINEL)
+      )
         throw new Error('Unexpected original particle control result');
       return nativeReply(control, control === 1 ? value : undefined);
     } finally {
