@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary } from '../binary.mjs';
 
-export function readEngineVersion(bytes) {
+export function readPEVersionResource(bytes) {
   const b = new Binary(bytes, 'PE version');
   if (!b.magic('MZ')) return null;
   const pe = b.u32(0x3c);
@@ -52,10 +52,14 @@ export function readEngineVersion(bytes) {
     at = base + offset;
   }
   if (dataAt === null) throw new Error('PE version resource nesting exceeds native layout');
-  const value = new Binary(
-    b.range(map(b.u32(dataAt), b.u32(dataAt + 4)), b.u32(dataAt + 4)),
-    'VS_VERSION_INFO',
-  );
+  const size = b.u32(dataAt + 4);
+  return b.range(map(b.u32(dataAt), size), size);
+}
+
+export function readEngineVersion(bytes) {
+  const resource = readPEVersionResource(bytes);
+  if (!resource) return null;
+  const value = new Binary(resource, 'VS_VERSION_INFO');
   const length = value.u16(0),
     valueLength = value.u16(2);
   value.range(0, length);

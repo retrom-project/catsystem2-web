@@ -4,13 +4,14 @@
 import { PE32Process } from '../ppi/pe32.mjs';
 import { PPIWindowsServices } from '../ppi/native-services.mjs';
 import { loadUnicorn } from '../ppi/backend.mjs';
-import { readEngineVersion } from './profile.mjs';
+import { readEngineVersion, readPEVersionResource } from './profile.mjs';
 import { NativeConfigurationMemory } from './config-memory.mjs';
 import { nativeInflate, nativeDeflate } from './zlib.mjs';
 import { installNativeFileTimes } from './file-time.mjs';
 import { installWindowsPrintf } from './windows-format.mjs';
 import { installNativeFileSearch } from './file-search.mjs';
 import { NativeWindowsModules } from './windows-modules.mjs';
+import { installNativeVersionAPIs } from './windows-version.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -704,6 +705,7 @@ export class NativeEngineProcess {
     try {
       engine.identity = identity;
       engine.name = name ?? 'engine.exe';
+      installNativeVersionAPIs(engine.kernel, engine.name, readPEVersionResource(bytes).slice());
       // Only the private loader input receives IMAGE_FILE_DLL. The original
       // bytes and all executable instructions retain their user-mounted source.
       const mapped = new Uint8Array(bytes),

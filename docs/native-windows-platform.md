@@ -73,3 +73,21 @@ File mutation and metadata share one native storage namespace. Writable overlays
 The reviewed `CreateFile`, read/write/close, copy/move/delete, attributes, directory, search and quota boundaries use real provider outcomes. Open file and search handles have independent lifetimes; in-flight file bytes, pending explicit times, directory state, search cursors and error mode survive process checkpoints. Storage quota comes from `navigator.storage.estimate`; an unavailable provider returns a platform failure without fabricated capacity.
 
 `scripts/native-file-pattern-oracle.py` runs 72 authored `FindFirstFileA/W` searches against pinned Wine. Both the shared pattern helper and the public import tests reproduce long-name and explicitly supplied short-name matches, return fields, terminators, canaries, end-of-search and released-handle failures. The virtual mount does not fabricate host filesystem 8.3 aliases. The `update??.INT` scan matches exactly two suffix characters in this fixed reference; `update.INT` and `update1.INT` are excluded. Search results have a deterministic order in the virtual namespace; callers must not assume host filesystem enumeration order. These are scoped service contracts rather than a claim to reproduce every Windows filesystem or OS revision. See [Microsoft FindFirstFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew).
+
+The `VERSION.dll` imports copy the mounted PE's actual version resource into
+caller memory. `VerQueryValueW` returns a pointer into that buffer for the
+fixed info, translation array or localized string. The ANSI form converts
+only text and returns a pointer into the same buffer's reserved space using
+the [Windows CP932 conversion](native-widechar.md). Module handle zero
+resolves the main image's actual mounted filename.
+
+A pinned Japanese Wine probe compared 32 calls over both reference EXEs:
+size queries, full and truncated copies, root/translation/text lookups and
+missing names. The 115,124 bytes of return values, pointer offsets, error
+words and whole output buffers matched. Public tests cover the same buffer
+ownership, case matching, and CP932 text with an authored resource. The mount
+supports the PE version resource; it does not merge Windows MUI files or
+load 16-bit NE resources.
+[Microsoft version buffer reference](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfow),
+[version queries](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew),
+[Wine 8.0 version API](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/kernelbase/version.c).

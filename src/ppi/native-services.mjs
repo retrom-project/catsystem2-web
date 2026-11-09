@@ -200,7 +200,7 @@ export class PPIWindowsServices {
             : this.moduleHandle(process.string(name, suffix === 'W')),
       );
       def('GetModuleFileName' + suffix, 3, ([handle, pointer, capacity]) => {
-        const module = process.modules.find((m) => m.base === handle),
+        const module = process.modules.find((m) => m.base === (handle || 0x400000)),
           text = `C:\\catsystem2-web\\${module?.name || 'engine.exe'}`;
         this.writeString(pointer, text.slice(0, Math.max(0, capacity - 1)), suffix === 'W');
         return Math.min(text.length, capacity);
