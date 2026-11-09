@@ -188,6 +188,14 @@ source interfaces, events, locks and worker. The implemented wait domain
 is unnamed, default-security event objects with no APC delivery. An
 in-flight PE wait requires completion before checkpoint export.
 
+The original output pin's media-type enumerator allocates its 72-byte
+descriptor through the Win32 COM task allocator. The shared kernel
+tracks those allocations in the PE heap and carries their ownership
+through checkpoint restore. The caller releases the descriptor with
+`CoTaskMemFree`. Tests execute the original enumerator on both profiles
+and release the same saved descriptor in two independent processes.
+[COM task memory](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cotaskmemalloc)
+
 ## Renderless Plane source connection
 
 SimplePlane runs the original movie load and destruction code on both

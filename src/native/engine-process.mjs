@@ -14,6 +14,7 @@ import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeResourceAPIs } from './windows-resources.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
+import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeSDKLanguage, releaseSDKLanguage } from './engine-language.mjs';
@@ -89,6 +90,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.errorMode = 0;
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);
+    this.comMemory = new NativeCOMTaskMemory(this);
     installNativeFileTimes(this, {
       ...options,
       wallNow: options.wallNow ?? (options.clock ? () => options.clock.utcNow() : undefined),
@@ -668,6 +670,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       nextFind: this.nextFind,
       errorMode: this.errorMode,
       events: this.events.snapshot(),
+      comMemory: this.comMemory.snapshot(),
       ...(this.hostModules ? { hostModules: this.hostModules.snapshot() } : {}),
       nextFile: this.nextFile,
       files: [...this.files].map(([handle, file]) => [handle, { ...file, bytes: [...file.bytes] }]),
@@ -683,6 +686,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.nextFind = state.nextFind;
     this.errorMode = state.errorMode;
     this.events.restore(state.events);
+    this.comMemory.restore(state.comMemory);
     if (state.hostModules) {
       if (!this.hostModules)
         throw new Error('Native checkpoint Windows module providers are absent');

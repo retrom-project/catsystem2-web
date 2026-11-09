@@ -61,6 +61,7 @@ for (const [profile, variable, streamCtor, readerCtor, readerSize] of PROFILES)
           outputs = p.allocate(16, true),
           destination = p.allocate(32, true),
           iid = p.allocate(16, true),
+          media = p.allocate(8, true),
           baselineLocks = engine.kernel.locks.size;
         p.write(name, encodeCP932(movie + '\0'));
         assert.equal(await engine.call(streamCtor, [name, -1, outputs, 1], stream), stream);
@@ -83,6 +84,15 @@ for (const [profile, variable, streamCtor, readerCtor, readerSize] of PROFILES)
         assert.equal(await virtual(engine, filter, 1), 1);
         const pin = await engine.call(p.load(p.load(reader) + 28), [0], reader);
         assert.equal(pin, reader + 248);
+        assert.equal(await virtual(engine, pin + 12, 12, media), 0);
+        const mediaTypes = p.load(media);
+        assert.equal(await virtual(engine, mediaTypes, 3, 1, media, media + 4), 0);
+        assert.equal(p.load(media + 4), 1);
+        const mediaType = p.load(media),
+          mediaBytes = p.read(mediaType, 72);
+        assert.deepEqual(engine.kernel.comMemory.snapshot(), [mediaType]);
+        assert.equal(p.allocations.get(mediaType), mediaBytes.length);
+        assert.equal(await virtual(engine, mediaTypes, 2), 0);
         asyncReader.forEach((word, i) => p.store(iid + i * 4, word));
         assert.equal(await virtual(engine, pin + 12, 0, iid, outputs), 0);
         const access = p.load(outputs);
@@ -100,6 +110,12 @@ for (const [profile, variable, streamCtor, readerCtor, readerSize] of PROFILES)
         assert.deepEqual(fresh.engine.kernel.events.snapshot(), events.snapshot());
         for (const { engine, workers } of [original, fresh]) {
           const p = engine.process;
+          assert.deepEqual(p.read(mediaType, 72), mediaBytes);
+          await engine.call(engine.resolve({ dll: 'OLE32.dll', name: 'CoTaskMemFree' }), [
+            mediaType,
+          ]);
+          assert.deepEqual(engine.kernel.comMemory.snapshot(), []);
+          assert.equal(p.allocations.has(mediaType), false);
           assert.equal(await virtual(engine, access, 10), 0);
           assert.equal(engine.kernel.events.events.get(handles[1]).signaled, false);
           assert.equal(
