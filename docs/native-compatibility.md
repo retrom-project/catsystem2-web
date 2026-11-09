@@ -11,7 +11,7 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    611 |             82 |                     19 |                     297 |
+| SDK / 2.6.1.74  | 1,009 |                    616 |             82 |                     19 |                     292 |
 | Game / 2.6.1.76 | 1,055 |                    878 |             58 |                     17 |                     102 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
@@ -23,6 +23,15 @@ The paired `36B` integer-unpacking interface executes both original wrappers
 and VM translators. Signed halves, aliased/overlapping destinations, all VM
 storage classes and fresh live backing have 15,464 differential checks plus
 separate World coverage; see [scalar and word contracts](native-scalar-math.md).
+
+The five variable primitives `D1..D5` have 309 full original calls and
+13,946 comparisons per fixed profile, including the constructor guard, zero
+capacity, unsigned get/set bounds, dirty state and context word. The original
+expression wrapper accepts VM address zero, data, shared and allocated blocks;
+an unmapped expression address produces a zero result. The evaluator still
+requires mapped variable references: the original interpreter can access
+unchecked indices inside the expression. See
+[the differential runner](../scripts/verify-native-variable-primitives.mjs).
 
 The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
 wrappers and VM translators with 40,612 comparisons across both engines.

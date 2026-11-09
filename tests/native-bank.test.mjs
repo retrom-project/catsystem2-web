@@ -92,6 +92,7 @@ test('native D5 removes a trailing percentage marker and passes context through 
   nativeBank(0xd4, [8], m, services);
   m.writeString('@ + 2%', 0);
   assert.deepEqual(nativeBank(0xd5, [0], m, services), nativeReply(1, 10));
+  assert.deepEqual(nativeBank(0xd5, [0xffffffff], m, services), nativeReply(1, 0));
   assert.equal(nativeBank(0xd1, [5], m), undefined);
   assert.equal(nativeBank(0xfff, [], m, services), undefined);
 });

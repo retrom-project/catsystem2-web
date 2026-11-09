@@ -168,7 +168,15 @@ export function nativeBank(id, args, machine, services = {}) {
   if (bank === null) return [0xd2, 0xd5, 0x292].includes(id) ? nativeReply(1, 0) : nativeReply(2);
   if (id === 0xd5) {
     if (!bank.words) return nativeReply(1, 0);
-    let text = machine.string(args[0]);
+    const address = args[0] >>> 0;
+    try {
+      machine.region(address, 1);
+    } catch {
+      // Both original wrappers return zero when their VM translator returns
+      // NULL. A mapped source still goes through the expression parser.
+      return nativeReply(1, 0);
+    }
+    let text = machine.string(address);
     if (text.endsWith('%')) text = text.slice(0, -1);
     return nativeReply(1, evaluateNativeExpression(text, bank, services.variableExpressionContext));
   }

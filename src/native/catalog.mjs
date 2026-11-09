@@ -3280,6 +3280,11 @@ for (let id = 0x279; id <= 0x280; id++) {
     evidence: 'both-pinned-original-name-table-wrappers-and-15684-differential-comparisons',
   });
 }
+for (let id = 0xd1; id <= 0xd5; id++)
+  recovered74.set(id, {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-variable-primitive-wrappers-and-27892-differential-comparisons',
+  });
 for (let id = 0x32; id <= 0x40; id++)
   recovered74.set(id, {
     ...recovered76.get(id),
