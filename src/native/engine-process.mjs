@@ -14,6 +14,7 @@ import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
+import { NativeTextWindows } from './text-windows.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -23,6 +24,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     ownerGlobal: 0xb91bf8,
     settingsGlobal: 0xb91bfc,
     settingsOffset: 0x418,
+    ownerBootstrap: [0x7148f0, 0x714970, 0xb91c00, 0x140e4, 0x27ed0],
     crtHelpers: [0x7a8807, 0x7ab2e1, 0x7ab24e, 0x79f8fb, 0x7ad3bb],
     zlib: 0x82c550,
     deflate: 0x82c3c0,
@@ -41,6 +43,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     ownerGlobal: 0xc965d0,
     settingsGlobal: 0xc965d4,
     settingsOffset: 0x210,
+    ownerBootstrap: [0x5c5790, 0x5c57e0, 0xc965d8, 0x10924, 0x2114c],
     crtHelpers: [0x63e90c, 0x64044e, 0x6403bb, 0x637b5b, 0x6427db],
     zlib: 0x869e70,
     deflate: 0x869ce0,
@@ -751,10 +754,13 @@ export class NativeEngineProcess {
         image.d3dxBaseline[1],
         engine.process.read(image.d3dxBaseline[0], 74 * 4),
       );
-      engine.refs.owner = engine.process.allocate(0x30000, true);
-      engine.refs.settings = engine.refs.owner + image.settingsOffset;
-      engine.process.store(image.ownerGlobal, engine.refs.owner);
-      engine.process.store(image.settingsGlobal, engine.refs.settings);
+      if (options.bootstrapOwner) await engine.initializeOwner(image, options.bootstrapOwner);
+      else {
+        engine.refs.owner = engine.process.allocate(0x30000, true);
+        engine.refs.settings = engine.refs.owner + image.settingsOffset;
+        engine.process.store(image.ownerGlobal, engine.refs.owner);
+        engine.process.store(image.settingsGlobal, engine.refs.settings);
+      }
       if (options.configuration) engine.attachConfiguration(options.configuration);
       if (options.standardLibraries !== false) engine.installStandardLibraries();
       return engine;
@@ -762,6 +768,49 @@ export class NativeEngineProcess {
       engine.process.close();
       throw error;
     }
+  }
+  async initializeOwner(image, text) {
+    if (!this.options.configuration)
+      throw new Error('Original engine startup requires its browser configuration');
+    const p = this.process,
+      windows = (this.textWindows = new NativeTextWindows(p, { ...text, kernel: this.kernel })),
+      [initialize, , defaultsGlobal, defaultsOffset, ownerBytes] = image.ownerBootstrap;
+    for (const [dll, name] of [
+      ['USER32.dll', 'GetDC'],
+      ['USER32.dll', 'ReleaseDC'],
+      ['GDI32.dll', 'EnumFontFamiliesA'],
+      ['GDI32.dll', 'EnumFontFamiliesW'],
+    ])
+      this.registerWindows(dll, name, windows.definitions.get(name));
+    // WinMain passes the default startup/setup filenames and normal run mode.
+    // The original constructor reads startup.xml and owns both Settings blocks.
+    await p.callAsync(initialize, [0, 0, 1]);
+    const owner = p.load(image.ownerGlobal),
+      settings = p.load(image.settingsGlobal),
+      defaultSettings = p.load(defaultsGlobal);
+    if (
+      p.allocations.get(owner) !== ownerBytes ||
+      settings !== owner + image.settingsOffset ||
+      defaultSettings !== owner + defaultsOffset ||
+      windows.objects.size
+    )
+      throw new Error('Original engine startup did not establish its owner and Settings blocks');
+    Object.assign(this.refs, { owner, settings, defaultSettings, nativeOwner: true });
+  }
+  async releaseOwner() {
+    if (!this.refs.nativeOwner) return;
+    const image = NATIVE_ENGINE_IMAGES[this.profile],
+      [, destroy, defaultsGlobal] = image.ownerBootstrap,
+      p = this.process;
+    await p.callAsync(destroy);
+    if (
+      p.load(image.ownerGlobal) ||
+      p.load(image.settingsGlobal) ||
+      p.load(defaultsGlobal) ||
+      p.allocations.has(this.refs.owner)
+    )
+      throw new Error('Original engine owner did not release its Settings and allocation');
+    this.refs.nativeOwner = false;
   }
   constructor(unicorn, options = {}) {
     this.options = options;
@@ -983,6 +1032,11 @@ export class NativeEngineProcess {
         } catch (error) {
           errors.push(error);
         }
+      try {
+        await this.releaseOwner();
+      } catch (error) {
+        errors.push(error);
+      }
     } finally {
       this.kernel.events.closeAll();
       try {

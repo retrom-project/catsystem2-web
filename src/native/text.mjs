@@ -144,7 +144,9 @@ export class NativeTextRuntime {
       throw new Error('Native text requires a recovered engine image');
     Object.assign(this, { engine, process: engine.process });
     this.buffers = engine.features.get('data-buffers') || new NativeDataBuffers(engine);
-    this.windows = new NativeTextWindows(engine.process, { ...options, kernel: engine.kernel });
+    this.windows =
+      engine.textWindows ??
+      new NativeTextWindows(engine.process, { ...options, kernel: engine.kernel });
     for (const [name, definition] of this.windows.definitions)
       engine.registerWindows(
         user32.has(name) ? 'USER32.dll' : kernel32.has(name) ? 'KERNEL32.dll' : 'GDI32.dll',

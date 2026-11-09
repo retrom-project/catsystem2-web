@@ -1,9 +1,68 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineProcess, NativeEngineWindows } from '../src/native/engine-process.mjs';
+import {
+  NativeEngineProcess,
+  NativeEngineWindows,
+  NATIVE_ENGINE_IMAGES,
+} from '../src/native/engine-process.mjs';
+import { NativeConfiguration } from '../src/native/config.mjs';
+
+for (const [profile, variable, encoding] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'Shift_JIS'],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 'UTF-8'],
+])
+  test(
+    `${profile} original Engine construction parses startup and retains its distinct default Settings`,
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        source = new TextEncoder().encode(
+          `<?xml version="1.0" encoding="${encoding}"?><document><SCREEN><v_width>913</v_width><v_height>617</v_height></SCREEN></document>`,
+        ),
+        requests = [],
+        make = async () => {
+          const configuration = new NativeConfiguration({ profile, uiLanguage: 0x411 });
+          Object.assign(configuration.screen, { virtualWidth: 1237, virtualHeight: 719 });
+          return NativeEngineProcess.open({
+            profile,
+            bytes,
+            configuration,
+            bootstrapOwner: {},
+            readFile: async (name) => {
+              requests.push(name);
+              return name === 'config/startup.xml' ? source : null;
+            },
+          });
+        },
+        engine = await make(),
+        image = NATIVE_ENGINE_IMAGES[profile],
+        offset = engine.configurationMemory.layout.virtualSize - image.settingsOffset,
+        values = ({ refs, process }) => [
+          process.load(refs.defaultSettings + offset),
+          process.load(refs.settings + offset),
+        ];
+      let restored;
+      try {
+        assert.deepEqual(values(engine), [(617 << 16) | 913, (719 << 16) | 1237]);
+        assert.ok(requests.includes('config/startup.xml'));
+        assert.equal(engine.textWindows.objects.size, 0);
+        restored = await make();
+        restored.restore(engine.snapshot());
+        assert.deepEqual(values(restored), values(engine));
+        await restored.releaseOwner();
+        assert.equal(restored.process.load(image.ownerGlobal), 0);
+        assert.equal(engine.process.load(image.ownerGlobal), engine.refs.owner);
+        assert.deepEqual(values(engine), [(617 << 16) | 913, (719 << 16) | 1237]);
+      } finally {
+        await restored?.close();
+        await engine.close();
+      }
+    },
+  );
 
 test('queued native messages keep separate contexts and nested calls restore their parent context', async () => {
   const engine = new NativeEngineProcess(await loadUnicorn(), { profile: 'authored' }),

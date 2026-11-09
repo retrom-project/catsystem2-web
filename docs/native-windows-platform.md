@@ -121,3 +121,14 @@ The pinned Wine probe verifies the last callback result, early stop, an
 empty match, and invalid DC for both APIs. Both original constructors and
 destructors run in tests, including release of the restored name array.
 [EnumFontFamilies contract](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-enumfontfamiliesw)
+
+## Engine owner construction
+
+The original owner factory at Game `7148F0` and SDK `5C5790` runs in normal
+startup mode. It reads `config/startup.xml` through the mounted drive and
+creates separate active and default Settings inside the same Engine
+allocation. The browser projects the active preference fields into the
+first block, leaving the original startup defaults in the second.
+The owner destructor releases the original allocation after its dependent
+services are closed. Both profiles test distinct values in the two blocks
+and their lifetime across a fresh process.
