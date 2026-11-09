@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    604 |             82 |                     19 |                     304 |
-| Game / 2.6.1.76 | 1,055 |                    871 |             58 |                     17 |                     109 |
+| SDK / 2.6.1.74  | 1,009 |                    606 |             82 |                     19 |                     302 |
+| Game / 2.6.1.76 | 1,055 |                    873 |             58 |                     17 |                     107 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -39,6 +39,11 @@ the full native parser and composition helpers. Its returned wrapper is
 explicitly owned and is not inserted into the Script's automatic bitmap list.
 The two profiles have 28,004 comparisons, with separate shared-alias, explicit
 release, fresh-World and actual GPU pixel checks.
+
+The [render-source array](native-render-sources.md) pair `2BF/2C0` executes
+both original wrappers on live VM storage. The two record layouts keep
+original bitmap and retained-data pointers, including Draw's independent
+reference and the last release after restoration.
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file

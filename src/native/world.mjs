@@ -73,6 +73,7 @@ import { installNativeRegistry } from './registry.mjs';
 import { installNativeRectangles } from './rectangles.mjs';
 import { installNativeImageFiles } from './image-file.mjs';
 import { installNativeImageComposites } from './image-composite.mjs';
+import { installNativeRenderSources } from './render-sources.mjs';
 import { NativeSaveSlots } from './save-slots.mjs';
 import { installNativeUnicodeOutput } from './unicode-output.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -377,6 +378,7 @@ export class NativeWorld {
     installNativeRectangles(this);
     installNativeImageFiles(this);
     installNativeImageComposites(this);
+    installNativeRenderSources(this);
     installNativeUnicodeOutput(this);
     installNativeFormattedFileOutput(this);
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76')

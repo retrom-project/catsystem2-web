@@ -1655,6 +1655,13 @@ const extendedDescriptions = [
   ],
   [0x1cc, 'bitmap.composeFile', ['format* filename'], 'handle'],
   [0x2c1, 'bitmap.resize', ['handle bitmap', 'u32 width', 'u32 height'], 'void'],
+  [
+    0x2bf,
+    'draw.loadRenderSources',
+    ['format* manifest', 'VMptr destination', 'i32 initializationCount'],
+    'word',
+  ],
+  [0x2c0, 'draw.releaseRenderSources', ['VMptr sources', 'u32 count'], 'void'],
   [0x402, 'bitmap.pixelAt', ['handle nullableBitmap', 'i32 canvasX', 'i32 canvasY'], 'word'],
   [0x15f, 'matrix.copy', ['VMptr destinationMatrix4', 'VMptr sourceMatrix4'], 'void'],
   [0x160, 'vector4.normalize', ['VMptr inOut'], 'void'],
@@ -3177,7 +3184,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [
       0x24d, 0x25d, 0x25e, 0x25f, 0x2a2, 0x34c, 0x73, 0x74, 0x78, 0x1be, 0x218, 0x219, 0x21a,
     ].includes(id) ||
-    [0x188, 0x3ea, 0x1ae, 0x1bc, 0x1cc, 0x237].includes(id) ||
+    [0x188, 0x3ea, 0x1ae, 0x1bc, 0x1cc, 0x237, 0x2bf, 0x2c0].includes(id) ||
     [0x11d, 0x11e, 0x183, 0x184].includes(id) ||
     [0x18b, 0x18c, 0xed, 0x187, 0x1c8, 0x1d0].includes(id) ||
     [0x8c, 0x8e, 0x225].includes(id) ||
