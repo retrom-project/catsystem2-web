@@ -5,6 +5,18 @@ The authoritative public catalog is [src/native/catalog.mjs](../src/native/catal
 constant-zero handlers and unresolved contracts. Descriptive names are project
 names; the main compiler's original symbol table has not been recovered.
 
+Per-version declarations now live in `src/native/abi/2.6.1.74.mjs` and
+`2.6.1.76.mjs`. The ABI loader validates complete main, generic and particle
+tables and freezes all data. These documents include signatures, observed
+argument counts, controls, encodings and sound-bank differences. Canonical ABI
+IDs use the engine version. Existing profile keys identify the remaining
+transition layouts. EXE table locations remain in the catalog's transition
+metadata while the owning domains migrate.
+
+The 277 unresolved semantic names, including 160 slots with an implementation
+route, retain their explicit review state. The data extraction preserves every
+existing declaration and does not infer a contract from another ABI's slot.
+
 ## B migration inventory
 
 [b-migration.json](b-migration.json) records every slot in both engine ABIs,

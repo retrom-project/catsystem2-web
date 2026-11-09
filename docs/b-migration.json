@@ -39,8 +39,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 617,
-    "runtimeFiles": 321,
-    "fileDomains": { "3": 27, "4": 34, "5": 31, "6": 39, "7": 23, "8": 138, "9": 29 },
+    "runtimeFiles": 324,
+    "fileDomains": { "3": 27, "4": 34, "5": 31, "6": 39, "7": 23, "8": 141, "9": 29 },
     "fileNeedsReview": 144,
     "exeDependencyFiles": 131,
     "exeDependencies": { "addresses": 2132, "calls": 193, "references": 10 },
@@ -44629,6 +44629,45 @@
       "review": "counted"
     },
     {
+      "file": "src/native/abi/2.6.1.74.mjs",
+      "sourceSha256": "ad1b0c160ac47e9a48299eac514b47130a92b300ce77565508c808199c5d96d3",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/abi/2.6.1.76.mjs",
+      "sourceSha256": "a29a11593766a31d3ad32d57217733c62704f9edaf4a6d8ad39afa3829840a04",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/abi/index.mjs",
+      "sourceSha256": "30bf2220e9c6fe183c5b944ce86319878b2d2e290febcff56634743c6aba7ab2",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/area-effect-commands.mjs",
       "sourceSha256": "bbec8805f68624ccbd6aef9a66b367c955ee2a6abcbd2de67bcc281122f71a4c",
       "domain": 6,
@@ -45102,7 +45141,7 @@
     },
     {
       "file": "src/native/catalog.mjs",
-      "sourceSha256": "825482167b41e15b7e5593a9f1d0c6277cc27e4edd72815b07c79f43cf5c69af",
+      "sourceSha256": "e6f99ef0b9880085d2a3a4906faa2e846d400f04d3f3e8a7e378be86f08f32e5",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 8, "calls": 0, "references": 0 },
