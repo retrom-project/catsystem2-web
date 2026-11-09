@@ -11,6 +11,7 @@ to the native view's bitmap upload path.
 | `C5`      | Task ID                    | 2       | `6419A0`   | `529B10`  | 257 / 252                             |
 | `C6`      | Task ID                    | 2       | `6419D0`   | `529B40`  | 258 / 253                             |
 | `C8`      | Task ID                    | 1       | `641840`   | `5299B0`  | 259 / 254                             |
+| `C9`      | Task ID, selector, VM data | 2       | `641910`   | `529A80`  | 13, then 264 / 259 or 273 / 268       |
 | `CA`      | Task ID, VM source pair    | 2       | `641A00`   | `529B70`  | 13, then 260 / 255 for Wipe1 and Fade |
 | `CB`      | Task ID                    | 2       | `6415D0`   | `529740`  | 261 / 256                             |
 
@@ -42,24 +43,31 @@ The main `CA` wrapper only sends that message to kind 26 (Wipe1) and kind 27
 4 and 16. The original receiver keeps the active clock and work bitmap, and
 Fade still checks the pair's dimensions and pixel format.
 
+With selector zero, `C9` queries the target kind and sends its mapped packet
+to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
+`C4`, updates its parameters through `C9`, and draws through the original
+GraphManager callback. Stop or destruction removes that callback. Hydro's
+receiver leaves this message unhandled; the wrapper still completes.
+
 ## Verification
 
 `scripts/verify-native-area-effect-commands.mjs` executes both complete frozen
 wrappers and the adapter with an independent observing transport. Each profile
-runs 2,928 wrapper cases with 22,108 comparisons over initializer and replacement
-kind branches, data, shared and extended VM regions, missing addresses, receiver
-writes, output canaries and unwritten replies. Its 96 receiver checks per profile
-execute the original Wipe2 lifecycle and Wipe1/Fade source changes, including the
-uploaded bytes and Fade diagnostics.
+runs 7,128 wrapper cases with 55,748 comparisons over initializer, replacement
+and live-update branches, data, shared and extended VM regions, missing addresses,
+receiver writes, output canaries and unwritten replies. Its 216 receiver checks
+per profile execute the original Wipe2, Wipe1/Fade, Raster and Hydro paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
 pixels. It restores a fresh World mid-effect, verifies the next frame, then
 exercises both finish commands and destruction. A separate test replaces Wipe1
 and Fade sources during playback and verifies the next pixels before and after
-fresh restore. The source ownership stays with the KCS resource list or bitmap
-owner. Frozen executables and raw reports stay outside version control.
+fresh restore. Another test exercises the original Raster callback, reads
+its rendered pixels after fresh restore and verifies callback removal on
+stop and active destruction. Source ownership stays with the KCS resource
+list or bitmap owner. Frozen executables and raw reports stay outside version control.
 
 The wrapper checks cover the routing envelope for every `C4` kind. The original
-initializer receiver and browser pixel checks here cover kind 29. The remaining
-effect work includes other `C4` receiver types and the `C7` and `C9` wrappers.
+initializer and browser pixel checks here cover kinds 18 and 29. The remaining
+effect work includes other `C4` receiver types and the `C7` wrapper.

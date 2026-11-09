@@ -1990,6 +1990,7 @@ const extendedDescriptions = [
   [0xc5, 'areaEffect.start', ['word task'], 'void'],
   [0xc6, 'areaEffect.finish', ['word task'], 'void'],
   [0xc8, 'areaEffect.active', ['word task'], 'word'],
+  [0xc9, 'areaEffect.updateRaster', ['word task', 'word selector', 'VMptr parameters'], 'void'],
   [0xca, 'areaEffect.replaceSources', ['word task', 'VMptr sourcePair'], 'void'],
   [0xcb, 'areaEffect.finishActive', ['word task'], 'void'],
   [0x341, 'hostMemory.allocate', ['u32 bytes'], 'PEptr'],
@@ -3312,7 +3313,7 @@ for (const id of [0x2bd, 0x2be, 0x3dc, 0x3dd]) {
   recovered76.set(id, fact);
   recovered74.set(id, fact);
 }
-for (const id of [0xc4, 0xc5, 0xc6, 0xc8, 0xca, 0xcb]) {
+for (const id of [0xc4, 0xc5, 0xc6, 0xc8, 0xc9, 0xca, 0xcb]) {
   const fact = {
     ...recovered76.get(id),
     evidence: 'both-pinned-area-effect-wrappers-and-native-receiver-browser-tests',
