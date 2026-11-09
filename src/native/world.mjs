@@ -99,6 +99,7 @@ export class NativeWorld {
     sceneLanguages = [],
     steam = null,
     factories = {},
+    bootstrapOwner = null,
   }) {
     Object.assign(this, {
       game,
@@ -110,6 +111,7 @@ export class NativeWorld {
       audio,
       random,
       motionLibrary,
+      bootstrapOwner,
     });
     this.clock = new NativeSystemClock({
       now: host.nativeTimeGetTime ? () => host.nativeTimeGetTime() : null,
@@ -482,6 +484,7 @@ export class NativeWorld {
         game: this.game,
         profile: this.profile,
         configuration: this.configuration,
+        bootstrapOwner: this.bootstrapOwner,
         readFile: (name) => this.storage.read(name),
         writeFile: (name, bytes) => this.storage.write(name, bytes),
         statFile: (name) => this.storage.stat?.(name) ?? null,

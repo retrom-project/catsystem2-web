@@ -132,3 +132,10 @@ first block, leaving the original startup defaults in the second.
 The owner destructor releases the original allocation after its dependent
 services are closed. Both profiles test distinct values in the two blocks
 and their lifetime across a fresh process.
+
+The standalone browser starts this original owner for mounted games.
+GDI enumerates the loaded OpenType faces, using their names, pitch and
+code-page metadata. Text measurement uses the same loaded faces through
+Canvas. The browser does not require access to the host's installed font
+inventory.
+[OpenType Windows metrics](https://learn.microsoft.com/en-us/typography/opentype/spec/os2)

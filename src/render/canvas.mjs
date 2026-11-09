@@ -9,6 +9,7 @@ export class CanvasRenderer {
     this.fonts = new Map();
     this.loadedFaces = new Set();
     this.fontFaces = new Set();
+    this.fontMetadata = [];
     this.base = new OffscreenCanvas(canvas.width, canvas.height);
     this.baseContext = this.base.getContext('2d');
     this.buffer = new OffscreenCanvas(canvas.width, canvas.height);
@@ -214,6 +215,7 @@ export class CanvasRenderer {
       await font.load();
       document.fonts.add(font);
       this.fontFaces.add(font);
+      this.fontMetadata.push(metadata);
       this.fonts.set(name.toLowerCase(), family);
       for (const face of metadata.names) {
         this.fonts.set(face.toLowerCase(), family);
@@ -225,9 +227,34 @@ export class CanvasRenderer {
   fontAvailable(name) {
     return this.loadedFaces.has(name.toLowerCase());
   }
+  nativeFontFamilies(language) {
+    return this.fontMetadata.flatMap((font) => {
+      const name = (id) => {
+        const records = font.records.filter((row) => row.id === id);
+        return (
+          records.find((row) => row.platform === 3 && row.language === language)?.text ??
+          records.find((row) => row.platform === 3 && row.language === 0x409)?.text ??
+          records[0]?.text
+        );
+      };
+      const face = name(1) ?? name(16);
+      return face
+        ? [
+            {
+              ...font.windows,
+              face,
+              fullName: name(4) ?? face,
+              style: name(2) ?? name(17),
+              weight: font.weight,
+            },
+          ]
+        : [];
+    });
+  }
   async dispose() {
     for (const face of this.fontFaces) document.fonts.delete(face);
     this.fontFaces.clear();
+    this.fontMetadata.length = 0;
     this.fonts.clear();
     this.loadedFaces.clear();
     this.frames = new WeakMap();

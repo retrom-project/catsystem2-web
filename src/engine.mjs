@@ -7,6 +7,7 @@ import { EmoteProfiles } from './emote/profiles.mjs';
 import { EmoteRuntime } from './emote/runtime.mjs';
 import { EmoteGL } from './render/emote-gl.mjs';
 import { CanvasRenderer } from './render/canvas.mjs';
+import { CanvasTextGlyphs } from './render/native-text.mjs';
 import { StageRenderer } from './render/stage.mjs';
 import { AudioMixer } from './audio.mjs';
 import { SaveStore } from './saves.mjs';
@@ -175,6 +176,7 @@ export class CatSystem2 {
   createNativeWorld({ audio = this.audio } = {}) {
     const { startup, gamedef, sound } = this.nativeDocuments,
       game = Object.create(this.game),
+      uiLanguage = this.requestedUILanguage ?? browserWindowsLanguageID(),
       random = new ParticleRandom(this.randomSeed);
     if (this.game.nativeResources) game.nativeResources = Object.create(this.game.nativeResources);
     audio.game = game;
@@ -183,12 +185,18 @@ export class CatSystem2 {
       images: this.images,
       host: this.host,
       profile: this.nativeProfile,
+      bootstrapOwner: {
+        glyphs: new CanvasTextGlyphs({
+          family: (name) => this.renderer.fonts.get(name.toLowerCase()) ?? name,
+        }),
+        fontFamilies: () => this.renderer.nativeFontFamilies(uiLanguage),
+      },
       configuration: new NativeConfiguration({
         profile: this.nativeProfile,
         startup,
         gamedef,
         fontAvailability: (name) => this.renderer.fontAvailable(name),
-        uiLanguage: this.requestedUILanguage ?? browserWindowsLanguageID(),
+        uiLanguage,
       }),
       soundConfiguration: new NativeSoundConfiguration({
         profile: this.nativeProfile,
