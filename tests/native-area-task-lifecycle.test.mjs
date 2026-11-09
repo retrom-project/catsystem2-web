@@ -44,6 +44,7 @@ const profiles = [
 for (const [kind, name, size, tables] of [
   [17, 'UnderWater', 0x84, [0x8cdc8c, 0x992f6c]],
   [22, 'Weather', 0xd4, [0x8cddb4, 0x993094]],
+  [23, 'WipeCircle', 0xb8, [0x8cddd8, 0x9930b8]],
 ]) {
   for (const [index, [profile, variable]] of profiles.entries()) {
     test(

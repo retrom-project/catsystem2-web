@@ -83,11 +83,12 @@ inherited draw updates its frame word and returns before walking children.
 The original destructor releases any owned buffer at offset 196. The shared
 view and manager retain their ownership.
 
-Weather (kind 22) uses its own constructor and destructor with the same
-handled, unwritten receiver as UnderWater. The `C4` kind query leaves its
-output unchanged, so the wrapper never sends the initializer. The task
-creates no graphics resources. Its original draw advances the clock, and
-the task is released by owner teardown or explicit host removal.
+Weather (kind 22) and WipeCircle (kind 23) each use their original
+constructor and destructor with the same handled, unwritten receiver as
+UnderWater. The `C4` kind query leaves its output unchanged, so the wrapper
+never sends the initializer. These tasks create no graphics resources. Their
+original draw advances the clock, and owner teardown or explicit host
+removal releases the task.
 
 `C7` translates the VM address, copies exactly 64 bytes to the original stack,
 and sends that copy with zero `w` and flags. The original wrappers fault on a
@@ -101,9 +102,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 768 receiver checks
+receiver writes, output canaries and unwritten replies. Its 830 receiver checks
 per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
-WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe and Weather paths.
+WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe, Weather and WipeCircle paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA

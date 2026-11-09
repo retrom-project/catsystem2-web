@@ -17,6 +17,7 @@ const ABI = {
       baseLogic: false,
     },
     22: { construct: 0x5efad0, size: 0xd4, vtable: 0x8cddb4, baseLogic: false },
+    23: { construct: 0x5efb20, size: 0xb8, vtable: 0x8cddd8, baseLogic: false },
     25: { construct: 0x5efbd0, size: 0xb4, vtable: 0x8cde20 },
     26: { construct: 0x5efc30, size: 0xc8, vtable: 0x8cde44 },
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
@@ -38,6 +39,7 @@ const ABI = {
       baseLogic: false,
     },
     22: { construct: 0x4ca400, size: 0xd4, vtable: 0x993094, baseLogic: false },
+    23: { construct: 0x4ca450, size: 0xb8, vtable: 0x9930b8, baseLogic: false },
     25: { construct: 0x4ca500, size: 0xb4, vtable: 0x993100 },
     26: { construct: 0x4ca560, size: 0xc8, vtable: 0x993124 },
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
@@ -129,7 +131,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [17, 18, 19, 20, 21, 22, 25, 26, 27, 28, 29, 30, 31])
+  for (const kind of [17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );
