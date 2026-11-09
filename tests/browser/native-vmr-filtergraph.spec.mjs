@@ -330,6 +330,9 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
                 format: words.slice(11, 15),
                 length,
                 identifier: format ? [...p.read(format, Math.min(length, 7))] : [],
+                ...(format && words[11] === 0x05589f80 && length >= 36
+                  ? { bitrate: p.load(format + 32) }
+                  : {}),
                 exhausted:
                   (await direct.call(enumeration, 3, 1, scratch, scratch + 4)) === 1 &&
                   p.load(scratch + 4) === 0 &&
@@ -724,7 +727,10 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         };
       };
       expect(result.windowsMediaTypes[0]).toEqual([
-        type(0x73646976, 0x32564d57, 0x05589f80, 92, [0, 0, 0, 0, 0, 0, 0]),
+        {
+          ...type(0x73646976, 0x32564d57, 0x05589f80, 92, [0, 0, 0, 0, 0, 0, 0]),
+          bitrate: 386155,
+        },
         type(0x73647561, 0x161, 0x05589f81, 28, [0x61, 1, 1, 0, 0x80, 0xbb, 0]),
       ]);
       expect(result.windowsMediaTypes[1]).toEqual(result.windowsMediaTypes[0]);

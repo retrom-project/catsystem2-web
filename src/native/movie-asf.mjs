@@ -100,13 +100,47 @@ function readStream(bytes) {
   };
 }
 
+// WMASF derives the compressed video rate from the packet budget before
+// applying any Extended Stream Properties.
+function videoBitrates(file, streams, declared) {
+  const videoPayloadBits = 17 * 8,
+    audioPayloadBits = 29 * 8,
+    maximumRate = file.bitrate || 1000,
+    packetTime = ((file.maxPacket || 1000) * 8) / maximumRate,
+    payload = videoPayloadBits / packetTime,
+    payloadOverhead = Math.trunc(payload) >>> 0;
+  const audio = streams.findLast((stream) => stream.type === AUDIO && stream.format.length >= 16),
+    audioBudget = audio
+      ? (asfView(audio.format).getUint32(8, true) * 8 +
+          Math.trunc(audioPayloadBits / packetTime)) >>>
+        0
+      : 0;
+  let remaining = maximumRate < audioBudget ? maximumRate >>> 1 : maximumRate - audioBudget;
+  const rates = new Map();
+  for (const { number, type } of streams) {
+    if (type !== VIDEO) continue;
+    const available = declared
+        ? Math.max((declared.get(number) ?? 0) - payloadOverhead, 0)
+        : remaining,
+      fps = available > 150000 ? 30 : 15,
+      frameOverhead = Math.trunc(fps * videoPayloadBits + payload) >>> 0;
+    if (declared) {
+      rates.set(number, Math.max(available - frameOverhead, 0));
+    } else {
+      const overhead = (frameOverhead + payloadOverhead) >>> 0;
+      remaining = available <= overhead ? available >>> 1 : available - overhead;
+      rates.set(number, remaining);
+    }
+  }
+  return rates;
+}
+
 export function nativeASFProfile(header, dataPrefix, fileSize) {
   const size = asfHeaderSize(header, fileSize),
     view = asfView(header),
     data = asfView(dataPrefix),
     streamProperties = new Map(),
-    extended = new Map(),
-    bitrates = new Map();
+    extended = new Map();
   check(size === header.length, 'Truncated ASF header');
   check(data.byteLength >= 50 && guid(data, 0) === DATA, 'Missing ASF data object');
   const dataSize = data.getBigUint64(16, true);
@@ -114,7 +148,7 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
     dataSize >= 50n && dataSize <= BigInt(fileSize) - BigInt(size),
     'Invalid ASF data object size',
   );
-  let file;
+  let file, bitrates;
   function add(type, bytes) {
     const object = asfView(bytes);
     if (type === FILE_PROPERTIES) {
@@ -125,6 +159,7 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
       file = {
         duration: playTime > preroll ? playTime - preroll : 0n,
         bitrate: object.getUint32(76, true),
+        maxPacket: object.getUint32(72, true),
       };
     } else if (type === STREAM_PROPERTIES) {
       const stream = readStream(bytes);
@@ -148,6 +183,7 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
       check(bytes.length >= 2, 'Truncated ASF stream bitrates');
       const count = object.getUint16(0, true);
       check(2 + 6 * count <= bytes.length, 'Invalid ASF stream bitrate count');
+      bitrates ??= new Map();
       for (let i = 0; i < count; i++) {
         const offset = 2 + 6 * i;
         bitrates.set(object.getUint16(offset, true) & 127, object.getUint32(offset + 2, true));
@@ -161,24 +197,13 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
   }
   check(count === view.getUint32(24, true), 'Invalid ASF header object count');
   check(file && streamProperties.size, 'Missing ASF file or stream properties');
-  const streams = [...streamProperties.values()].sort((a, b) => a.number - b.number);
-  const audioRate = streams.reduce(
-    (sum, stream) =>
-      sum +
-      (stream.type === AUDIO && stream.format.length >= 16
-        ? asfView(stream.format).getUint32(8, true) * 8
-        : 0),
-    0,
-  );
-  const videoCount = streams.filter((stream) => stream.type === VIDEO).length;
+  const streams = [...streamProperties.values()],
+    rates = videoBitrates(file, streams, bitrates);
   return {
     duration: file.duration,
     streams: streams.map((stream) => {
       const detail = extended.get(stream.number),
-        bitrate =
-          detail?.bitrate ??
-          bitrates.get(stream.number) ??
-          (stream.type === VIDEO && videoCount === 1 ? Math.max(file.bitrate - audioRate, 0) : 0);
+        bitrate = detail?.bitrate ?? rates.get(stream.number) ?? 0;
       return compressedStream(stream, detail, bitrate);
     }),
   };

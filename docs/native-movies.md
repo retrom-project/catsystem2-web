@@ -383,11 +383,14 @@ partially initialized movie and returns zero for `.wmv`.
 The browser replaces sample delivery and decoding downstream of those pins.
 It uses the provenance-matched H.264/AAC conversion from
 `prepare:media` for decoded pixels and PCM. The ASF header supplies stream
-identities, compressed media types and play duration after subtracting
-preroll. For files with a single video stream and only an aggregate rate,
-the video media type estimates that stream's rate by subtracting the
-declared audio rate. The authored sample gives 400,000 bit/s by this rule
-and 386,155 bit/s in the Windows Media reader. The Plane clock uses sample
+identities in header order, compressed media types and play duration
+after subtracting preroll. For audio and video profiles, the compressed
+video rate follows the packet and frame budgets in `wmasf.dll` at
+`0x11C7F29E`. It accounts for the final audio track and each video
+track in stream order. A stream bitrate table supplies separate budgets
+and the extended stream properties can override the computed rate.
+The original reader and both browser Plane output pins report
+386,155 bit/s for the authored sample. The Plane clock uses sample
 positions and duration. The original loader dispatches by `.wmv`, and
 the mounted files carry ASF data.
 [ASF header fields](https://learn.microsoft.com/en-us/windows/win32/medfound/media-foundation-attributes-for-asf-header-objects)
