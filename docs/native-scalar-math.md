@@ -53,3 +53,17 @@ its VM translator. It checks every byte of data, stack, shared memory and two
 extended blocks, including unaligned and overlapping outputs, adjacent argument
 reads, FP context and temporary bridge ownership. The SDK World test exercises
 the live native backing and an independent restored World.
+
+The initial independent differential cases run through authored GCALL scripts in
+`tests/differential/native-math.test.mjs`. Each ABI executes 27 cases covering
+generic sin/cos, matrix copy, vector4 normalization, and the existing main
+linear-interpolation and integer-rounding implementations. Cases include signed
+zero, matrix self-aliasing and shared/heap writes. Scalar main `0x32` remains on
+the transition path and is rejected by this initial independent-entry guard.
+
+Run `npm run test:differential` with `CATSYSTEM2_SDK_EXE` and
+`CATSYSTEM2_ENGINE_EXE` set to the reviewed inputs. Each missing ABI reports a
+skip reason. `npm run test:js` runs both authored JS lanes and the comparator's
+negative checks without private EXEs. The runnable example selects inputs by
+ABI semantic name, observes each lane with `observeNativeCase`, and compares
+them using `compareNativeObservations` and the case's explicit float policy.

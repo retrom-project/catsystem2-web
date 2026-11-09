@@ -62,7 +62,8 @@ node scripts/test-native.mjs --list
 ```
 
 JS/golden 组清除私有 fixture 环境变量，平台服务使用自制 PE32 内存与调用宿主。
-oracle 组保留原 EXE 及私有插件回归。差分组接入独立 JS/oracle 用例前会明确报空组错误。
+oracle 组保留原 EXE 及私有插件回归。差分组比较两份 ABI 的独立 JS 计算路径与原 wrapper，
+首批为每份 ABI 27 例。缺少对应 EXE 时逐 ABI 明确跳过，提供两份 EXE 后运行全部 54 例。
 默认模式明确报告缺少私有资源的跳过原因。完整私有验收使用以下变量，并要求通过指纹校验。
 两份 EXE 的相邻目录都需有 `config/startup.xml`。
 

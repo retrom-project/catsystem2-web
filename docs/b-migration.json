@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 101, "oracle": 135, "differential": 0 },
+    "counts": { "js": 102, "oracle": 135, "differential": 1 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -50,6 +50,7 @@
         "tests/native-cpu-budget.test.mjs",
         "tests/native-cursor.test.mjs",
         "tests/native-d3d9-adapter.test.mjs",
+        "tests/native-differential.test.mjs",
         "tests/native-divided-model.test.mjs",
         "tests/native-draw.test.mjs",
         "tests/native-engine-message.test.mjs",
@@ -260,7 +261,7 @@
         "tests/ppi-particle-order.test.mjs",
         "tests/transitional-template.test.mjs"
       ],
-      "differential": []
+      "differential": ["tests/differential/native-math.test.mjs"]
     },
     "original": [
       {

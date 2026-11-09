@@ -66,6 +66,23 @@ E-mote/PPI DLL。提供路径但文件缺失或指纹错误时直接失败。默
 在执行测试前失败。完整模式仍保留明确标出的 GPU 专用 Node 跳过项，其浏览器
 用例需单独按对应配置运行。
 
+首批差分入口位于 `tests/differential/native-math.test.mjs`，自制输入由
+`tests/fixtures/differential-cases.mjs` 提供。每例经真实 GCALL、`MotionInstance`
+或 `NativeWorld`／`NativeRuntime` 分派执行。JS 侧的 EXE 装载入口设置为抛错，
+oracle 侧通过原表取得处理器，初始计算类用例要求执行期间没有宿主 trap。
+
+`tests/fixtures/native-differential.mjs` 记录返回值、控制码、实际结果写入、canary、
+全部 VM 数据与栈、共享区和扩展块，以及完整 VM 寄存器、分配计数和调试元数据。
+宿主 `memoryID` 单独排除。oracle 还检查 PE 可写节的净写入及临时分配回收。
+比较器核对逻辑句柄、任务状态、分派轨迹和有序事件。当前示例覆盖同步计算，要求
+无 PE 额外写入与资源分配，后续资源及异步领域接入时补充对应的观测适配。
+
+浮点策略读取 ABI 的正常脚本环境，FPCW `0x007f`、MXCSR `0x1f80`。
+当前 sin/cos、插值和向量归一化的有限 f32 输出逐字段使用 1 ULP，复制和整数逐位比较。
+正负零及无穷符号精确，NaN 默认逐位精确。显式 classification 策略仍校验
+quiet/signaling 分类。浮点写回范围以外的字节精确比较，重叠或越界的容差范围会失败。
+插件修改 FPCW 后的跨调用影响继续保留在原有 oracle 证据中。
+
 [native 契约](native-compatibility.md)、[FES/CST](fes-cst-compatibility.md)、
 [PPI/PTCL](ppi-compatibility.md) 和 [完成标准](completion.md) 分别记录各层验收边界。
 标题、主线、资源遍历、声明覆盖率和一次截图均不能代替通用模拟器验收。
