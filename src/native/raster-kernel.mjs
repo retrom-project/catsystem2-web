@@ -398,7 +398,14 @@ export class NativeRasterKernels {
       owner = this.reg('EBX'),
       width = this.reg('EDX'),
       height = this.reg('EBP');
-    if (this.reg('EDI') !== 0 || !width || !height || !this.range(owner, 48)) return false;
+    if (
+      this.reg('EDI') !== 0 ||
+      !width ||
+      !height ||
+      this.reg('EFLAGS') & 0x10100 ||
+      !this.range(owner, 48)
+    )
+      return false;
     const data = p.load(owner + 12),
       stride = p.load(owner + 20),
       size = stride * height;
@@ -407,19 +414,42 @@ export class NativeRasterKernels {
       p.load(owner + 4) !== width ||
       p.load(owner + 8) !== height ||
       this.reg('ESI') !== data + 3 ||
-      stride < width * 4 ||
+      stride < width * 4
+    )
+      return false;
+    const { active, limit, counter } = p.instructionBudget(),
+      rowSetup = 4,
+      pixelInstructions = 6,
+      rowInstructions = rowSetup + width * pixelInstructions + 5;
+    // The hook's XOR has already been counted. Reserve the target CMP so
+    // its original flags are visible before any later budget stop.
+    let remaining = limit === 0n ? Infinity : Number(limit - counter) + 1;
+    if (
+      !active ||
+      remaining <= rowSetup ||
+      !p.regions.some(
+        (region) => data >= region.address && data + size <= region.address + region.size,
+      ) ||
       !this.range(data, size)
     )
       return false;
     const bytes = p.view(data, size);
     let y = 0,
       x = 0;
-    outer: for (; y < height; y++)
-      for (x = 0; x < width; x++) if (bytes[y * stride + x * 4 + 3] !== 255) break outer;
+    outer: for (; y < height; y++, remaining -= rowInstructions) {
+      const pixels = Math.min(
+        width,
+        1 + Math.floor((remaining - rowSetup - 1) / pixelInstructions),
+      );
+      for (x = 0; x < pixels; x++) if (bytes[y * stride + x * 4 + 3] !== 255) break outer;
+      if (pixels < width) return false;
+    }
     if (y === height) {
       y = height - 1;
       x = width - 1;
     }
+    const additional = y * rowInstructions + rowSetup + x * pixelInstructions - 1;
+    if (!p.consumeInstructions(additional)) return false;
     this.reg('EDI', y);
     this.reg('ESI', data + y * stride + 3);
     this.reg('EAX', x);

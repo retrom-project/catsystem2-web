@@ -298,6 +298,7 @@ for (const [profile, variable, normal, mask, copy, btype] of [
               registers: p.registers(),
               image: p.read(arena, 65536),
               stack: p.read(stack, 2048),
+              budget: p.instructionBudget(),
             };
           };
           assert.deepEqual(await runAlpha(true), await runAlpha(false), `alpha scan ${n}`);
