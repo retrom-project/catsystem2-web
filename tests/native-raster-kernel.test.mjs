@@ -109,7 +109,9 @@ for (const [profile, variable, normal, mask, copy, btype] of [
           };
           const address = [normal, mask, copy, btype][n % 4],
             original = await run(false, address, bytes, stackBytes, setup),
+            maskBudget = address === mask && p.instructionBudget(),
             accelerated = await run(true, address, bytes, stackBytes, setup);
+          if (maskBudget) assert.deepEqual(p.instructionBudget(), maskBudget, `MASK ${n} budget`);
           for (const key of ['image', 'stack']) {
             const index = original[key].findIndex((value, i) => value !== accelerated[key][i]);
             assert.equal(

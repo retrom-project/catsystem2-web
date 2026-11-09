@@ -134,11 +134,10 @@ export class NativeRasterKernels {
     }
     return false;
   }
-  raster(pointer, frame, source, destination) {
+  raster(pointer, frame, source, destination, descriptor) {
     const p = this.process;
     if (!this.range(pointer, 128) || !this.range(frame - 0x140, 0x150, true)) return null;
-    const descriptor = new Int32Array(p.read(pointer, 128).buffer),
-      d = descriptor;
+    const d = descriptor ?? new Int32Array(p.read(pointer, 128).buffer);
     if (
       d[0] !== 4 ||
       d[10] !== 4 ||
@@ -180,7 +179,7 @@ export class NativeRasterKernels {
     p.view(sourceBase, sourceSize);
     p.view(destinationBase, destinationSize);
     return {
-      descriptor,
+      descriptor: d,
       input: p.view(sourceBase, sourceSize),
       output: p.view(destinationBase, destinationSize),
       source: source - sourceBase,
@@ -269,16 +268,59 @@ export class NativeRasterKernels {
     const p = this.process,
       frame = this.reg('EBP'),
       pointer = this.reg('ESI'),
-      channel = p.load(pointer + 92) - 1;
-    if (p.load(frame - 4) !== 0 || channel < 0 || channel > 3) return false;
-    const raster = this.raster(pointer, frame, this.reg('EDX') - channel, this.reg('EAX') - 3);
-    if (!raster) return false;
-    const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
-      rows = d[17] - 1;
+      regions = this.repeatRegions();
+    if (!this.range(frame - 16, 28, false, regions)) return false;
+    const locals = new DataView(p.read(frame - 16, 28).buffer),
+      local = (offset) => locals.getUint32(offset + 16, true);
+    if (
+      local(-4) !== 0 ||
+      this.reg('EFLAGS') & 0x10100 ||
+      !this.range(pointer, 128, false, regions) ||
+      overlaps(pointer, 128, frame - 16, 28)
+    )
+      return false;
+    const d = new Int32Array(p.read(pointer, 128).buffer),
+      count = d[16],
+      rows = d[17] - 1,
+      channel = d[23] - 1,
+      sourceRow = this.reg('EDX'),
+      destinationRow = this.reg('EAX');
+    if (
+      count < 1 ||
+      rows < 1 ||
+      channel < 0 ||
+      channel > 3 ||
+      this.reg('ECX') !== count ||
+      local(-16) !== d[8] ||
+      local(-12) !== sourceRow ||
+      local(-8) !== (d[20] ? -d[18] : d[18]) >>> 0 ||
+      local(8) !== destinationRow
+    )
+      return false;
+    // Six setup instructions, thirteen per pixel and eleven to advance a
+    // row. The XOR counted at this hook still executes for the final row,
+    // restoring its original EDI and flags before the next budget stop.
+    const additional = rows * (17 + 13 * count),
+      { active, counter, limit } = p.instructionBudget();
+    if (
+      !active ||
+      !Number.isSafeInteger(additional) ||
+      (limit !== 0n && limit - counter < BigInt(additional))
+    )
+      return false;
+    const contiguous = (address, size) =>
+      p.regions.some(
+        (region) => address >= region.address && address + size <= region.address + region.size,
+      );
+    if (!contiguous(d[1] >>> 0, d[8] * d[3]) || !contiguous(d[11] >>> 0, d[18] * d[13]))
+      return false;
+    const raster = this.raster(pointer, frame, sourceRow - channel, destinationRow - 3, d);
+    if (!raster || !p.consumeInstructions(additional)) return false;
+    const { input, output, sourceStep, destinationStep } = raster;
     let s = raster.source,
       t = raster.destination;
     for (let y = 0; y < rows; y++, s += sourceStep, t += destinationStep)
-      for (let x = 0, a = s + channel, b = t + 3; x < d[16]; x++, a += 4, b += 4)
+      for (let x = 0, a = s + channel, b = t + 3; x < count; x++, a += 4, b += 4)
         output[b] = (((output[b] + 1) * (input[a] + 1) - 1) & 65535) >>> 8;
     const source = (d[11] >>> 0) + s + channel,
       destination = (d[1] >>> 0) + t + 3;
@@ -288,7 +330,7 @@ export class NativeRasterKernels {
     this.reg('EBX', rows);
     this.reg('EDX', source);
     this.reg('EAX', destination);
-    this.reg('ECX', d[16]);
+    this.reg('ECX', count);
     return true;
   }
   copy() {
