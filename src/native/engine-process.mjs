@@ -34,6 +34,7 @@ import { installNativeDesktopAPIs } from './engine-desktop.mjs';
 import { releaseNativeStartupInstance } from './engine-startup-instance.mjs';
 import { releaseNativeWindowClass } from './engine-window-class.mjs';
 import { releaseNativeStartupMenu } from './engine-startup-menu.mjs';
+import { releaseNativeWindowOwner } from './engine-startup-window.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -906,6 +907,7 @@ export class NativeEngineProcess {
   }
   async releaseOwner() {
     if (!this.refs.nativeOwner) return;
+    await releaseNativeWindowOwner(this);
     await releaseNativeStartupMenu(this);
     await releaseNativeWindowClass(this);
     await releaseNativeStartupInstance(this);

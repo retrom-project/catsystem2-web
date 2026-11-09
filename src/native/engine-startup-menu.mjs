@@ -4,8 +4,8 @@ import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 const layouts = {
-  'sdk-4.01-engine-2.6.1.74': [0x5bf330, 0x5bf3c0, 0xaff2c8, 0x47ee90],
-  'nekopara-vol3-engine-2.6.1.76': [0x70df70, 0x70e000, 0x9e3230, 0x5ac260],
+  'sdk-4.01-engine-2.6.1.74': [0x5bf330, 0x5bf3c0, 0xaff2c8, 0x47ee90, 0x5bf400],
+  'nekopara-vol3-engine-2.6.1.76': [0x70df70, 0x70e000, 0x9e3230, 0x5ac260, 0x70e050],
 };
 
 // WinMain consults the active Settings after translating the resource.
@@ -63,8 +63,9 @@ async function runGameLanguageMenu(engine, remove) {
 
 export async function initializeNativeStartupMenu(engine) {
   const p = engine.process,
-    slot = NATIVE_STARTUP_BLOCKS[engine.profile] + 36,
-    [construct, load, vtable, localize] = layouts[engine.profile],
+    block = NATIVE_STARTUP_BLOCKS[engine.profile],
+    slot = block + 36,
+    [construct, load, vtable, localize, bind] = layouts[engine.profile],
     { authorMode } = NATIVE_CONFIGURATION_MEMORY_LAYOUTS[engine.profile];
   if (p.load(slot)) throw new Error('Original startup menu already has an owner');
   const owner = p.allocate(16, true);
@@ -78,6 +79,8 @@ export async function initializeNativeStartupMenu(engine) {
     p.store(slot, owner);
     const handle = p.load(owner + 8);
     await engine.call(localize, [], handle);
+    if ((await engine.call(bind, [block], owner)) !== block)
+      throw new Error('Original menu did not retain its startup block');
     const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
     for (const [offset, id] of optionalCommands[engine.profile])
       if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);

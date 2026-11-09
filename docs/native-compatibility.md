@@ -94,7 +94,15 @@ The game also executes WinMain `52C72F..52CCFE` with its original
 language vector, using the original strings and USER32 item mutations.
 It fills the UI, primary and secondary language groups, with accelerators
 and checked selections, or removes the submenu for one language.
-Attaching the resulting menu to the browser window remains a separate step.
+The original menu object retains the address of the WinMain startup block.
+
+WinMain then allocates the original 116-byte `kcWindow` owner (SDK `5BF430`,
+game `70E080`). It initializes the callback list and critical section and
+retains an unnamed, automatic-reset event in both of the original fields.
+The fresh-process tests restore a signaled event and consume it independently.
+The original destructors release the event and the list before the menu and
+class owners close. Creating the Win32 window and attaching the resulting
+menu to the browser view remain separate steps.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
