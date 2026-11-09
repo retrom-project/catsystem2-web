@@ -197,6 +197,38 @@ test('seen writes preserve the original formatted bytes, suffix rules and unsign
   assert.equal(nativeSceneData(0xe3, [128], m, services).value, 7);
 });
 
+test('native path writes, copies and reads keep undecodable names distinct after import', () => {
+  const m = machine(),
+    handles = new NativeHandles(),
+    source = new NativeSceneData(),
+    target = new NativeSceneData(),
+    handle = handles.add('scene-data', source),
+    copied = handles.add('scene-data', target),
+    services = { handles, formatBytes: formatNativeAt },
+    raw = Uint8Array.of(0x81, 0x30, 0xff, 0x51),
+    other = Uint8Array.of(0x81, 0x30, 0xfe, 0x51);
+  m.writeStringBytes(Uint8Array.of(...raw, 46, 67, 83, 84), 128);
+  assert.equal(nativeSceneData(0x149, [handle, 128, 6], m, services).value, 0);
+  m.writeStringBytes(Uint8Array.of(0x81, 0x30, 0xff, 0x71), 128);
+  assert.equal(nativeSceneData(0x149, [handle, 128, 3], m, services).value, 0);
+  m.writeStringBytes(other, 128);
+  assert.equal(nativeSceneData(0x149, [handle, 128, 4], m, services).value, 1);
+  assert.equal(nativeSceneData(0x3e1, [copied, handle], m, services).control, 2);
+  target.history.decode('path', target.history.encode('path', true));
+  for (const [index, expectedIndex, expectedName, expectedValue] of [
+    [0, 0, raw, 6],
+    [-1, 1, other, 4],
+  ]) {
+    m.bytes(256, 8).fill(0xa5);
+    assert.equal(
+      nativeSceneData(0x14d, [copied, index, 256, 288], m, services).value,
+      expectedIndex,
+    );
+    assert.deepEqual(m.bytes(256, 8), Uint8Array.of(...expectedName, 0, 0xa5, 0xa5, 0xa5));
+    assert.equal(m.load(288), expectedValue);
+  }
+});
+
 test('formatted seen aliases preserve raw bytes and values across native history import', () => {
   const m = machine(),
     data = new NativeSceneData(),

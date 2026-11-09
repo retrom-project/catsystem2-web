@@ -15,7 +15,6 @@ const empty = () => new Uint8Array();
 const word = (value) => nativeReply(1, value >>> 0);
 const done = () => nativeReply(2);
 const stripExtension = (name) => String(name).replace(/\.[^\\/.]*$/, '');
-const lower = (name) => String(name).replace(/[A-Z]/g, (char) => char.toLowerCase());
 const seenKeys = new WeakMap();
 const nameBytes = (name) => {
   const bytes = name instanceof Uint8Array ? name : encodeCP932(String(name)),
@@ -286,7 +285,8 @@ export class NativeSceneHistory {
   appendPath(scene, value) {
     scene = resetName(scene);
     const last = this.path.at(-1);
-    if (last && lower(last.scene) === lower(scene)) last.value = Math.max(last.value, value >>> 0);
+    if (last && foldedName(last.nameBytes ?? last.scene) === foldedName(scene))
+      last.value = Math.max(last.value, value >>> 0);
     else this.path.push(record(scene, value));
     return this.path.length - 1;
   }
@@ -527,30 +527,24 @@ export function nativeSceneData(id, args, machine, services = {}) {
           : 0,
     );
   }
-  if (id === 0x3a6 || id === 0x14c || id === 0x148) {
+  if (id === 0x3a6) {
     if (!services.formatBytes && !services.format) return undefined;
-    if (id !== 0x3a6) {
-      const formatted = formatHistoryName(
-          args[1],
-          machine,
-          services,
-          id === 0x14c ? 'query' : 'mark',
-        ),
-        name = direct ? stripHistoryExtension(formatted) : formatted;
-      if (id === 0x14c) return word(history.seenValue(name));
-      if (name.length) history.markSeen(name, args[2]);
-      return word(1);
-    }
     const source = formatHistoryName(args[1], machine, services, 'alias'),
       destination = formatHistoryName(args[2], machine, services, 'alias');
     history.aliasSeen(source, destination);
     return done();
   }
-  if (id === 0x149) {
-    if (!services.format) return undefined;
-    let name = services.format(args[1], machine);
-    if (direct) name = stripExtension(name);
-    const index = name ? history.appendPath(name, args[2]) : -1;
+  if (id === 0x148 || id === 0x149 || id === 0x14c) {
+    if (!services.formatBytes && !services.format) return undefined;
+    const operation = id === 0x14c ? 'query' : id === 0x148 ? 'mark' : 'path append',
+      formatted = formatHistoryName(args[1], machine, services, operation),
+      name = direct ? stripHistoryExtension(formatted) : formatted;
+    if (id === 0x14c) return word(history.seenValue(name));
+    if (id === 0x148) {
+      if (name.length) history.markSeen(name, args[2]);
+      return word(1);
+    }
+    const index = name.length ? history.appendPath(name, args[2]) : -1;
     return word(direct ? index : 1);
   }
   if (id === 0x14a) {
@@ -564,7 +558,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (id === 0x14d) {
     const index = Math.min(args[1] >>> 0, history.path.length - 1),
       entry = history.pathAt(args[1]);
-    machine.writeString(entry?.scene ?? '', args[2]);
+    machine.writeStringBytes(nameBytes(entry?.nameBytes ?? entry?.scene ?? ''), args[2]);
     machine.store(args[3], entry?.value ?? -1);
     return word(index);
   }
@@ -616,7 +610,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
       // 72DF60 clears the destination before traversing its source list.
       // Passing the same scene therefore clears its path as well.
       history.path =
-        source === history ? [] : source.path.map(({ scene, value }) => record(scene, value));
+        source === history
+          ? []
+          : source.path.map(({ scene, value, nameBytes: bytes }) =>
+              record(bytes ? nameBytes(bytes) : scene, value),
+            );
     } else
       for (const side of ['seen', 'path']) {
         for (let i = 0; i < Math.min(history[side].length, source[side].length); i++)

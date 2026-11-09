@@ -34,4 +34,14 @@ bytes that equal a separator, formatter and owner boundaries, and the
 untouched path list. Undefined stack bytes after the name terminator
 are excluded from comparison of newly inserted records.
 
+Main `149` and task-local `E0` append path names with the same bytewise
+extension distinction. The original only coalesces a match with the
+last path record. Main `14D` and task-local `E4` copy the raw name and
+position into caller memory and clamp an oversized unsigned index to the
+last entry. `3E1` copies these names without decoding and re-encoding them.
+`scripts/verify-native-scene-path.mjs` compares 130 appends and 82 reads
+per engine, including both result conventions, overlapping output pointers,
+empty lists, and unchanged seen data. The branch and copy oracle also uses
+an undecodable CP932 name.
+
 Two public fixture tests dispatch through World, restore into a fresh World, continue storage, restoration and branching, and check independent ownership, raw UTF-8/invalid bytes, unaffected outside variables/strings, original branch quirks, self-copy and null-scene behavior. Full game history/replay UI acceptance remains a separate requirement.

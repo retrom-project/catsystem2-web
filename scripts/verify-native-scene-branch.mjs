@@ -43,7 +43,7 @@ try {
   for (const positions of [[], [0], [0, 10, 20, 40], [40, 10, 20, 0]]) {
     history.path = [];
     history.seen = [];
-    for (const name of ['first', 'second', 'third']) {
+    for (const name of [Uint8Array.of(0x81, 0x30, 0xff, 0x51), 'second', 'third']) {
       history.appendPath(name, 77);
       history.markSeen(name, 99);
       for (const position of positions)
