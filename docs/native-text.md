@@ -47,6 +47,11 @@ whole-group command executes the original handler once. Sources and object
 definitions remain attached to the FES interpreter. `SIZE2` uses the original
 frame's cropped size and position, including its selector. An absent authored
 image font leaves the native image-data field null.
+The [`userfontobj` command](https://cs2.suki.jp/manual/fes/reference/co/userfontobj.html)
+requires an IMAGE as its font source. The original setters retain that pointer
+and the next driver reads the IMAGE record's resource field. A declared
+non-IMAGE source is diagnosed at the source lookup before that driver can
+read beyond the smaller object.
 
 FES string-bank identity follows the original interpreter guard: game offset
 2064, SDK offset 1800. A native shell supplies that identity while the World's

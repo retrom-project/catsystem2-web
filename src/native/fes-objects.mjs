@@ -182,9 +182,17 @@ export class NativeFESObjectRuntime {
             (object.index ?? 0) === (index | 0) &&
             c.instance.byKey.get(object.key) === object,
         );
-      if (key === '_TOPOBJ_' && index === 0) return this.topObject(c.instance);
-      if (!object) return 0;
-      if (object.deleted) return 0;
+      const top = key === '_TOPOBJ_' && index === 0;
+      if (c.fontSource && (top || (object && !object.deleted && object.nativeType !== 2))) {
+        const stack = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+        // userfontobj retains the source for its next driver pass, which
+        // reads the IMAGE tail without checking the source object's type.
+        // Only this lookup is the source; the destination is a text object.
+        if (p.load(stack) === at(0x777408, 0x6114f8))
+          throw new Error(`FES userfontobj requires an IMAGE source: ${key}`);
+      }
+      if (top) return this.topObject(c.instance);
+      if (!object || object.deleted) return 0;
       if (c.resourceDrivers) {
         c.object = object;
         c.pointer = object.nativeObjectPointer;
@@ -826,8 +834,9 @@ export class NativeFESObjectRuntime {
     p.write(source, command);
     p.write(name, objectName);
     try {
-      return await this.withContext({ ...context, instance, object, pointer, tokens }, () =>
-        this.call(fn, [this.interpreter, source, name, index]),
+      return await this.withContext(
+        { ...context, instance, object, pointer, tokens, fontSource: verb === 'userfontobj' },
+        () => this.call(fn, [this.interpreter, source, name, index]),
       );
     } finally {
       p.free(name);
