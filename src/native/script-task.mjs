@@ -91,6 +91,9 @@ export function createNativeScriptTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       const m = this.machine,
+        // Browser I/O parks GCALL for a retry. The original synchronous
+        // native callback sees the advanced PC and the already popped args.
+        duringNative = m.waiting?.kind === 'io' && this.task?.io?.pc === m.pc,
         header = bytesAt(source, address, 88).slice(),
         view = new DataView(header.buffer);
       const type = encodeCP932((record.nativeTypeName ?? '') + '\0'),
@@ -104,10 +107,10 @@ export function createNativeScriptTask(world, record) {
         world.nativeTaskID(record.id),
         0,
         m.shared.length,
-        m.pc,
+        duringNative ? m.pc + m.instruction().size : m.pc,
         m.memory.length,
         data,
-        m.sp,
+        duringNative ? m.nativeArgumentBase : m.sp,
         m.floor,
         m.fp,
         m.switchValue,
@@ -134,7 +137,8 @@ export function createNativeScriptTask(world, record) {
         if (hadPayload) context.payload = oldPayload;
         else delete context.payload;
       }
-      source.store(address + 52, count);
+      view.setUint32(52, count, true);
+      putBytes(source, address + 52, header.subarray(52, 56));
       return size;
     },
     async parentAssigned(parentID) {

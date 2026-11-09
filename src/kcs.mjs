@@ -39,6 +39,7 @@ export async function readKCS(bytes) {
     strings.set(dest, body.str(at));
   }
   return {
+    header: b.range(0, 52).slice(),
     body,
     codeSize,
     data,

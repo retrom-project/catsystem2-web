@@ -28,6 +28,12 @@ export class NativeKCSMemory {
       return pointer;
     };
     this.pointer = allocate(1408);
+    const header = machine.script?.header;
+    if (header) {
+      const pointer = allocate(header.length);
+      process.write(pointer, header);
+      process.store(this.pointer + 8, pointer);
+    }
     const copy = (read, existing) => {
       if (existing?.external || existing?.live) return existing.pointer;
       const bytes = read().slice(),

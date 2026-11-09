@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/browser',
-  testMatch: 'public.spec.mjs',
+  testMatch: ['public.spec.mjs', 'native-task-dump.spec.mjs'],
   fullyParallel: false,
   workers: 1,
   outputDir: '.local/playwright',

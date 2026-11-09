@@ -57,6 +57,7 @@ import { installNativeDatabases } from './database.mjs';
 import { installNativeSceneCheckpoints } from './scene-checkpoint.mjs';
 import { installNativeContentDatabases } from './content-databases.mjs';
 import { installNativeTaskCommands } from './task-command.mjs';
+import { installNativeTaskDump } from './task-dump.mjs';
 import { installNativeSectionTables } from './section-table.mjs';
 import { installNativeImageOwners } from './image-owner.mjs';
 import { installNativeGeometry } from './geometry.mjs';
@@ -364,6 +365,7 @@ export class NativeWorld {
     installNativeSceneCheckpoints(this);
     installNativeContentDatabases(this);
     installNativeTaskCommands(this);
+    installNativeTaskDump(this);
     installNativeSectionTables(this);
     installNativeImageOwners(this);
     installNativeGeometry(this);

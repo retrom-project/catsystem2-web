@@ -450,8 +450,10 @@ export class NativeEngineMessages {
           else if (operation === 7)
             await protocol.send(root.sound, record.id, layout.soundReset, 0, 0, context);
           else if (operation === 8) root.field = l >>> 0;
-          else if (operation === 4 && !layout.captionWide)
-            await protocol.saveDump(record, sender, w, l, context);
+          else if (operation === 4 && !layout.captionWide) {
+            if (context.writeNativeTaskDump) await context.writeNativeTaskDump(record);
+            else await protocol.saveDump(record, sender, w, l, context);
+          }
           context.nativeUnhandled = false;
           return NATIVE_UNWRITTEN_WORD;
         },
@@ -498,7 +500,7 @@ export class NativeEngineMessages {
   }
   async dump(record, sender, address, context) {
     const memory = this.memory(sender, context),
-      header = record.nativeDumpHeader?.slice() ?? new Uint8Array(60);
+      header = record.nativeDumpHeader?.slice() ?? bytesAt(memory, address, 60).slice();
     if (header.length !== 60) throw new Error('Native task dump header must contain 60 bytes');
     const type = stringBytes(record.nativeTypeName ?? '', false),
       name = stringBytes(record.name, false);

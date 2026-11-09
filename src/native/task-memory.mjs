@@ -605,6 +605,7 @@ export class NativeTaskMemory {
     if (mapping.vm)
       for (const pointer of [
         mapping.vm.pointer,
+        mapping.vm.header,
         mapping.vm.container,
         mapping.vm.head,
         mapping.vm.scratch,
@@ -791,6 +792,12 @@ export class NativeTaskMemory {
         nodes: [],
         nodeIDs: [],
       };
+      const header = machine.script?.header;
+      if (header) {
+        mapping.vm.header = allocate(header.length);
+        this.process.write(mapping.vm.header, header);
+        this.process.store(mapping.vm.pointer + 8, mapping.vm.header);
+      }
       this.updateVM(id, machine, mapping);
     }
     return mapping.vm.pointer;
