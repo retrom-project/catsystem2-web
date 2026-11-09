@@ -33,6 +33,69 @@ export async function initializeNativeLanguage(engine) {
   engine.refs.startupLanguage = { head, loaded: Boolean(loaded) };
 }
 
+// The original line loader recomputes strlen of the remaining catalogue at
+// every line. Its input is one unchanged new[] buffer. Keep the original
+// splitting, allocation and parser, and reuse the already located terminator.
+function observeCatalogueTerminator(p) {
+  let start = 0,
+    end = 0;
+  return p.beforeInstruction(0x787840, 'original language catalogue length scan', () => {
+    const { cpu, uc } = p,
+      address = cpu.reg_read_i32(uc.X86_REG_ECX) >>> 0;
+    if (address < start || address > end || !end) {
+      const size = p.allocations.get(address);
+      if (!size) return;
+      for (let at = 0; at < size; at += 65536) {
+        const found = p.read(address + at, Math.min(size - at, 65536)).indexOf(0);
+        if (found < 0) continue;
+        start = address;
+        end = address + at + found;
+        break;
+      }
+      if (start !== address) return;
+    }
+    // At the next native instruction ECX points past the terminator and AL
+    // contains the terminating zero. The original SUB sets the final flags.
+    cpu.reg_write_i32(uc.X86_REG_ECX, end + 1);
+    cpu.reg_write_i32(uc.X86_REG_EAX, cpu.reg_read_i32(uc.X86_REG_EAX) & ~255);
+    cpu.reg_write_i32(uc.X86_REG_EIP, 0x787847);
+  });
+}
+
+export async function loadNativeGameStartupLanguage(engine) {
+  const layout = LANGUAGE[engine.profile],
+    p = engine.process,
+    state = engine.refs.startupLanguage;
+  if (
+    engine.profile !== 'nekopara-vol3-engine-2.6.1.76' ||
+    !state ||
+    p.load(layout.global) !== state.head ||
+    state.filename !== undefined
+  )
+    throw new Error('Original game startup language has no unloaded catalogue owner');
+  const buffers = p.allocate(3 * 520 + 2048, true),
+    filename = buffers + 3 * 520;
+  try {
+    // WinMain asks the Settings owner for the selected UI, main and sub
+    // language codes, then builds the UI catalogue path with wsprintfW.
+    await p.callAsync(0x7137d0, [buffers, buffers + 520, buffers + 1040], engine.refs.owner);
+    p.call(p.load(0x8c64dc), [filename, 0x9e3000, buffers]);
+    const name = p.string(filename, true),
+      detach = observeCatalogueTerminator(p);
+    try {
+      p.cpu.reg_write_i32(p.uc.X86_REG_EDX, filename);
+      const loaded = await p.callAsync(0x5ab510, [], 0);
+      if ((loaded !== 0 && loaded !== 1) || p.load(layout.global) !== state.head)
+        throw new Error('Original game language loader lost its table');
+      Object.assign(state, { filename: name, loaded: Boolean(loaded) });
+    } finally {
+      detach();
+    }
+  } finally {
+    p.free(buffers);
+  }
+}
+
 export function releaseNativeLanguage(engine) {
   const state = engine.refs.startupLanguage;
   if (!state) return;

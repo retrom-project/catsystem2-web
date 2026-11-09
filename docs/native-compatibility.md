@@ -16,8 +16,12 @@ the original function epilogue. The SDK runs the check before loading game
 defaults; the game runs it after reading setup preferences. The following
 desktop registration and device checks stay outside this block; the browser
 still mounts prepared archives.
-The Unicode startup error path resolves fallback text through the original
-game language tree.
+The Unicode startup error path uses the game's original language tree. The
+game selects its UI catalogue from the saved Settings and parses the mounted
+UTF-8 file in the original code. The browser caches the end of that immutable
+buffer so the line loader does not scan it again for each line. Against the
+unmodified x86 loader, the English fixture matched every lookup across 934
+unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |

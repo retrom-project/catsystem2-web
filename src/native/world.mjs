@@ -32,6 +32,7 @@ import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
 import { NativeEngineProcess } from './engine-process.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
+import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
 import { installNativeText } from './text-task.mjs';
 import { NativeGlobalStrings } from './global-strings.mjs';
@@ -798,8 +799,10 @@ export class NativeWorld {
       );
       // The game WinMain reads setup.xml before checking the EXE resources;
       // the SDK does its resource check before loading game defaults.
-      if (this.profile === 'nekopara-vol3-engine-2.6.1.76')
-        await engine.executableResources?.initialize();
+      if (this.profile === 'nekopara-vol3-engine-2.6.1.76' && engine.executableResources) {
+        await loadNativeGameStartupLanguage(engine);
+        await engine.executableResources.initialize();
+      }
     }
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     this.graphics.initializeTextures();
