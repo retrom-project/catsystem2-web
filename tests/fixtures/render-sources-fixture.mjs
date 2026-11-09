@@ -85,6 +85,19 @@ export async function renderSourceWorldFiles(profile, executable, driver) {
       [59],
     ]),
   );
+  files.set(
+    'bind.kcs',
+    kcsProgram([
+      [37, [0x14, 256]],
+      [37, 0],
+      [37, [0x14, 0x80000024]],
+      ...[0, 0x3f800000, 0, 0, 0, 0x3f800000, 0x3f800000, 255, 0, 0].map((word) => [37, word]),
+      [43, 0x2c4, 52],
+      [37, 1800],
+      [43, 0x47, 4],
+      [59],
+    ]),
+  );
   return { files, layout, rgba: frames[0].rgba };
 }
 

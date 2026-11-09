@@ -495,7 +495,7 @@ export class NativeDrawTask {
     this.graphics.fesSurfaces.delete(this.record.id);
   }
   async releaseRenderer() {
-    for (const item of [...this.state.renderer.items]) await this.remove(item.key);
+    for (const item of [...this.state.renderer.items]) await this.removeEntry(item.key);
     await this.world.nativeEngine?.features.get('retained-draw')?.removeSurface(this);
     await this.world.nativeEngine?.features
       .get('graphics-platform')

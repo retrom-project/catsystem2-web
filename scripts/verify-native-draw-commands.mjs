@@ -5,6 +5,8 @@ import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeDrawCommands, NATIVE_DRAW_COMMAND_CONTRACTS } from '../src/native/draw-commands.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeRenderSources } from '../src/native/render-sources.mjs';
 import { imageOwnerFixture } from '../tests/fixtures/image-owner-fixture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
@@ -18,6 +20,7 @@ if (!profile) throw new Error('Draw command oracle requires a frozen engine');
 const f = await imageOwnerFixture(bytes, profile),
   { engine, world, machine: m, process: p, platform } = f,
   commands = new NativeDrawCommands(engine, world),
+  renderSources = new NativeRenderSources(engine, world),
   buffers = engine.features.get('data-buffers'),
   data = buffers.allocateData(16),
   pointer = buffers.wrapPointer(data, 16),
@@ -65,6 +68,14 @@ world.sendNativeEngine = async (target, sender, message, w, l, context) => {
 };
 const readVM = () => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) => b.slice())];
 try {
+  m.writeString('@cat/image/anim.hg2', 768);
+  assert.deepEqual(await renderSources.apply(0x2bf, [768, 1024, 1], m, { id: 41 }), {
+    control: 1,
+    value: 1,
+  });
+  assert.equal(m.load(1024), 2);
+  const retainedPointer = m.load(1028),
+    table = NATIVE_PROFILES[profile].tables.main.va;
   p.store(host, vtable);
   p.store(host + 4, 17);
   p.store(host + 116, platform.refs.view);
@@ -91,7 +102,10 @@ try {
     '猫.anm',
   ];
   m.writeString('anim', 2048);
-  for (const spec of NATIVE_DRAW_COMMAND_CONTRACTS)
+  for (const spec of NATIVE_DRAW_COMMAND_CONTRACTS) {
+    const handler = p.load(table + spec.id * 4),
+      retained = spec.id === 0x2c3 || spec.id === 0x2c4;
+    compare(handler, spec.handlers[Number(profile.startsWith('sdk-'))], 'fixed native table entry');
     for (const target of [0, 1, 0xffffffff, 0x80000000, 19])
       for (const value of words)
         for (let sourceIndex = 0; sourceIndex < sources.length; sourceIndex++) {
@@ -106,14 +120,18 @@ try {
                   : [
                       target,
                       value,
-                      sourceIndex % 2 ? handle : 0,
+                      retained
+                        ? [0, retainedPointer, 0xffffffff, retainedPointer, 0x80000000][sourceIndex]
+                        : sourceIndex % 2
+                          ? handle
+                          : 0,
                       ...Array.from(
                         { length: 10 },
                         (_, i) => words[(i + sourceIndex) % words.length],
                       ),
                     ],
             nativeArgs = args.slice();
-          if (spec.words === 13 && nativeArgs[2]) nativeArgs[2] = pointer;
+          if (spec.words === 13 && !retained && nativeArgs[2]) nativeArgs[2] = pointer;
           nativeArgs.forEach((word, i) => p.store(argv + i * 4, word));
           p.write(out, new Uint8Array(12).fill(0xa5));
           const before = readVM(),
@@ -122,12 +140,9 @@ try {
           events = [];
           let control;
           try {
-            control = await engine.call(
-              spec.handlers[Number(profile.startsWith('sdk-'))],
-              [bridge.pointer, host, argv, out + 4],
-              undefined,
-              { task: 41 },
-            );
+            control = await engine.call(handler, [bridge.pointer, host, argv, out + 4], undefined, {
+              task: 41,
+            });
           } finally {
             bridge.close();
           }
@@ -141,7 +156,7 @@ try {
           compare(events, original, 'exact original task namespace, packet and filename bytes');
           if (spec.words === 13) {
             const payload = new Uint32Array(15);
-            payload[1] = nativeArgs[2];
+            payload[retained ? 2 : 1] = nativeArgs[2];
             payload.set(args.slice(3, 10), 4);
             payload[11] = Math.min(255, args[10] >>> 0);
             payload[12] = args[11];
@@ -154,6 +169,12 @@ try {
           }
           compare(readVM(), before, 'all four VM domains unchanged');
           compare(buffers.words(pointer), counts, 'packet transport does not retain a source');
+          if (retained)
+            compare(
+              p.load(retainedPointer + 188),
+              1,
+              'retained pointer is carried without a new reference',
+            );
           compare(
             Array.from(p.read(out, 12)),
             new Array(12).fill(0xa5),
@@ -161,6 +182,9 @@ try {
           );
           operations++;
         }
+  }
+  await renderSources.apply(0x2c0, [1024, 1], m, { id: 41 });
+  compare(p.allocations.has(retainedPointer), false, 'release of the transport oracle source');
   await writeFile(
     output,
     JSON.stringify(
@@ -170,7 +194,7 @@ try {
         operations,
         comparisons,
         scope:
-          'All four original main26E/26F/270/271 wrappers, canonical task namespace including zero/missing/extreme targets, actual kcBuffer handle translation, all 60 packet bytes and f32/raw DWORDs, clamp boundaries, real formatter and original ANM filename/existence search, data/shared/block strings, complete VM domains, descriptor counts and result canaries. Retained renderer lifecycle/pixels are checked through World separately.',
+          'Six original main2C3/2C4/26E/26F/270/271 wrappers, raw retained pointer transport and actual kcBuffer translation, canonical task namespace, all packet bytes, float/unsigned clamp boundaries, original ANM filename search, complete VM domains, original reference counts and result canaries. Draw receiver lifecycle and pixels are checked through World separately.',
       },
       null,
       2,

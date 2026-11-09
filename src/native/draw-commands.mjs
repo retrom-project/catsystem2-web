@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original retained-data draw packets and animation file/enable commands.
+// Original retained-source draw packets and animation file/enable commands.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_DRAW_COMMAND_CONTRACTS = Object.freeze(
   [
+    [0x2c3, 13, 0x644090, 0x51c740],
+    [0x2c4, 13, 0x644b60, 0x51d1a0],
     [0x26e, 13, 0x644160, 0x51c810],
     [0x26f, 13, 0x644c30, 0x51d270],
     [0x270, 3, 0x644710, 0x51cda0],

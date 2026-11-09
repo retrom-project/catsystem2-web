@@ -72,10 +72,6 @@ for (const [profile, variable] of [
               if (JSON.stringify(actual) !== JSON.stringify(expected))
                 throw new Error(label || 'Different native record or pixel bytes');
             },
-            ok(value) {
-              if (!value)
-                throw new Error('The two Draw sources must have independent native references');
-            },
           };
           let plane;
           const frame = async (world) => {

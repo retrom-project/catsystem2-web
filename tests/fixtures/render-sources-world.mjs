@@ -9,30 +9,84 @@ function sourceName(name, wide) {
   return bytes;
 }
 
-async function bindSources(world, records, nativeSurface) {
+function drawWords(pointer, x, alpha = 255, shown = 1) {
+  return [pointer, ...[x, 1, 0, 0, 0, 1, 1].map(floatBits), alpha, shown, 0];
+}
+
+async function bindBitmapSource(world, pointer, nativeSurface) {
   const p = world.nativeEngine.process,
     packet = p.allocate(60, true);
   try {
-    for (const [index, { tag, pointer }] of records.entries()) {
-      const fields = [
-        tag === 1 ? p.load(pointer) : 0,
-        0,
-        tag === 2 ? pointer : 0,
-        0,
-        ...[index * 4, 1, 0, 0, 0, 1, 1].map(floatBits),
-        255,
-        1,
-        0,
-      ];
-      fields.forEach((word, i) => p.store(packet + i * 4, word));
-      await world.sendNativeEngine(nativeSurface, world.main.id, 280, index, packet, {
-        nativePointer: true,
-        payload: { load: (address) => p.load(address) },
-      });
-    }
+    p.store(packet, p.load(pointer));
+    drawWords(pointer, 4)
+      .slice(1)
+      .forEach((word, i) => p.store(packet + 16 + i * 4, word));
+    await world.sendNativeEngine(nativeSurface, world.main.id, 280, 1, packet, {
+      nativePointer: true,
+      payload: { load: (address) => p.load(address) },
+    });
   } finally {
     p.free(packet);
   }
+}
+
+async function originalRetainedStates(world, layout, source, updates, assert, remove = false) {
+  const engine = world.nativeEngine,
+    p = engine.process,
+    [receiver, construct, destroy, firstMessage] = layout.wide
+      ? [0x5f3f50, 0x742a10, 0x742cf0, 280]
+      : [0x4ce6c0, 0x5e3720, 0x5e39e0, 275],
+    before = p.read(source, layout.retainedBytes),
+    live = p.allocations.size,
+    manager = p.allocate(60, true),
+    host = p.allocate(160, true),
+    packet = p.allocate(60, true),
+    output = p.allocate(12),
+    sender = world.nativeTaskID(world.main.id),
+    states = [];
+  let constructed = false;
+  try {
+    await engine.call(construct, [8, 6, 4, 0], manager);
+    constructed = true;
+    p.store(host + 108, manager);
+    for (const [id, words] of updates) {
+      p.store(packet + 8, words[0]);
+      words
+        .slice(1)
+        .forEach((word, i) =>
+          p.store(packet + 16 + i * 4, i === 7 ? Math.min(255, word >>> 0) : word),
+        );
+      p.write(output, new Uint8Array(12).fill(0xa5));
+      const message = firstMessage + (id === 0x2c4 ? 2 : 0);
+      assert.equal(
+        await engine.call(receiver, [sender, message, 0, packet, 0, output + 4], host),
+        0,
+      );
+      assert.deepEqual(p.read(output, 12), new Uint8Array(12).fill(0xa5));
+      states.push(p.read(source, layout.retainedBytes));
+    }
+    if (remove) {
+      assert.equal(p.load(source + 188), 2);
+      assert.equal(
+        await engine.call(receiver, [sender, firstMessage + 1, 0, 0, 0, output + 4], host),
+        0,
+      );
+      assert.equal(
+        p.allocations.has(source),
+        false,
+        'the original single-entry removal destroys it immediately',
+      );
+    }
+  } finally {
+    if (constructed) await engine.call(destroy, [], manager);
+    for (const address of [output, packet, host, manager]) p.free(address);
+  }
+  if (!remove) {
+    assert.equal(p.allocations.size, live, 'reference manager destroys all of its allocations');
+    assert.equal(p.load(source + 188), 1);
+    p.write(source, before);
+  }
+  return states;
 }
 
 export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, inspectFrame) {
@@ -107,7 +161,97 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
       rawBitmap = p.load(bitmap.pointer);
     await call(world, 0x100, [nativeSurface, 8, 6]);
     await call(world, 0x104, [nativeSurface, 0, 0]);
-    await bindSources(world, records, nativeSurface);
+    const updates = [
+      [0x2c3, drawWords(animated.pointer, 0)],
+      [0x2c4, drawWords(manifest.pointer, 1, 129, 0)],
+      [0x2c3, drawWords(0xffffffff, 0, 0xffffffff)],
+      [0x2c4, drawWords(0, 7)],
+    ];
+    const expectedStates = await originalRetainedStates(
+      world,
+      layout,
+      animated.pointer,
+      updates,
+      assert,
+    );
+    for (const [i, [id, words]] of updates.entries()) {
+      assert.deepEqual(await call(world, id, [nativeSurface, 0, ...words]), { control: 2 });
+      assert.deepEqual(
+        p.read(animated.pointer, layout.retainedBytes),
+        expectedStates[i],
+        'the entire retained record matches the original Draw receiver',
+      );
+      assert.equal(
+        p.load(animated.pointer + 188),
+        2,
+        'one reference for the array and one for Draw',
+      );
+      assert.equal(p.load(manifest.pointer + 188), 1, 'the supplied replacement was ignored');
+    }
+    assert.deepEqual(await call(world, 0x2c3, [0xffffffff, 0, ...drawWords(0xffffffff, 0)]), {
+      control: 2,
+    });
+    const spareRecord = shared + stride;
+    for (const original of [true, false]) {
+      assert.deepEqual(await call(world, 0x2bf, [source, spareRecord, 1]), {
+        control: 1,
+        value: 1,
+      });
+      const spare = recordAt(m, spareRecord);
+      assert.equal(spare.tag, 2);
+      const words = drawWords(spare.pointer, 0, 255, 0);
+      if (original)
+        await originalRetainedStates(world, layout, spare.pointer, [[0x2c4, words]], assert, true);
+      else {
+        await call(world, 0x2c4, [nativeSurface, 2, ...words]);
+        assert.equal(retained.record(draw, key | 0x20000).pointer, spare.pointer);
+        assert.equal(
+          p.load(spare.pointer + 188),
+          2,
+          'an update to an absent key creates one reference',
+        );
+        await call(world, 0x102, [nativeSurface, 2]);
+        assert.equal(
+          p.allocations.has(spare.pointer),
+          false,
+          'single removal matches the original destruction',
+        );
+      }
+      assert.deepEqual(
+        recordAt(m, spareRecord),
+        spare,
+        'the caller still holds the original raw words',
+      );
+      // The authored single-remove test deliberately consumes the pointer.
+      // Clear its stale caller record before reusing the storage.
+      m.store(spareRecord, 0);
+      m.store(spareRecord + 4, 0);
+    }
+    const temporarySurface = await world.objects.create({ kind: 15, parent: world.main.id }),
+      temporaryNativeID = world.nativeTaskID(temporarySurface);
+    await call(world, 0x100, [temporaryNativeID, 8, 6]);
+    const bindingScript = await world.spawnScript('bind.kcs');
+    assert.equal(bindingScript.machine.load(shared + 4), manifest.pointer);
+    bindingScript.machine.store(256, temporaryNativeID);
+    await world.runtime.scheduler.execute(bindingScript);
+    assert.equal(p.load(manifest.pointer + 188), 2);
+    await world.objects.release(temporarySurface);
+    assert.equal(p.allocations.get(manifest.pointer), layout.retainedBytes);
+    assert.equal(
+      p.load(manifest.pointer + 188),
+      1,
+      'the complete Draw destructor releases one reference',
+    );
+    await bindBitmapSource(world, bitmap.pointer, nativeSurface);
+    const bitmapEntry = retained.record(draw, key | 0x10000).pointer;
+    await call(world, 0x2c4, [nativeSurface, 1, ...drawWords(manifest.pointer, 4)]);
+    assert.equal(retained.record(draw, key | 0x10000).pointer, bitmapEntry);
+    assert.equal(
+      p.load(bitmapEntry + 188),
+      1,
+      'a deferred bitmap transfers its reference to the manager',
+    );
+    assert.equal(p.load(manifest.pointer + 188), 1);
     assert.equal(retained.record(draw, key).pointer, animated.pointer);
     assert.equal(retained.record(draw, key | 0x10000).source, rawBitmap);
     for (const entry of draw.state.renderer.items)
@@ -124,7 +268,8 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
       12,
       'two independently positioned source images reach the original draw surface',
     );
-    assert.ok(references > 1 && bitmapReferences > 1);
+    assert.equal(references, 2, 'rasterization does not retain the same object again');
+    assert.equal(bitmapReferences, 2, 'the wrapper and Draw each own one bitmap reference');
 
     const preview = inspectFrame ? await inspectFrame(world) : null;
     fresh = make();

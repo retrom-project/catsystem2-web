@@ -1,5 +1,32 @@
 # Retained drawing commands
 
+Main 2C3 and 2C4 pass an original retained-record pointer to Draw. The
+arguments are the target task, entry index, raw pointer, two position words,
+two base words, rotation, two scale words, alpha, visibility and transform
+mode. Position, base, rotation and scale retain their float bits. Alpha
+clamps as an unsigned word. The complete 60-byte packet uses source word 2
+and zeroes the other source words and the auxiliary word. Both wrappers
+return control 2.
+
+| Fixed profile           | 2C3 / message  | 2C4 / message  | Original Draw receiver |
+| ----------------------- | -------------- | -------------- | ---------------------- |
+| NEKOPARA Vol.3 2.6.1.76 | 0x644090 / 280 | 0x644B60 / 282 | 0x5F3F50               |
+| SDK 4.01 2.6.1.74       | 0x51C740 / 275 | 0x51D1A0 / 277 | 0x4CE6C0               |
+
+The wrappers carry the pointer unchanged. A tag 2 render-source record
+provides that pointer. The Draw manager retains it once on insertion. For
+an existing key, the original update helper changes the stored record's
+transform, alpha and visibility and ignores the supplied replacement
+pointer. A zero pointer leaves the entry alone. The manager and its pointer
+identities restore in the shared native process.
+
+Whole-manager destruction decrements each reference. The explicit
+single-entry removal command calls the record destructor and frees it
+immediately, including when its reference count exceeds one. It leaves the
+caller array's words as they were. A caller using both APIs releases its
+array reference before single-entry removal.
+[Native render-source arrays](native-render-sources.md).
+
 Main `26E` and `26F` bind an `image-data` resource to a drawing entry through
 messages 280 and 282. The original wrapper fills the complete 60-byte packet:
 the second source word contains the original `kcBuffer` pointer, transforms
@@ -9,7 +36,7 @@ all unused fields are initialized. These resources are separate from decoded
 
 Main `270` formats its filename through the caller VM, resolves the original
 ANM filename through the shared view and mounted file service, then sends
-message 293. Main `271` sends the raw enable word through message 295. All four
+message 293. Main `271` sends the raw enable word through message 295. All six
 wrappers route zero targets through the caller's Top namespace. Missing targets
 retain the original routing result and control code 2.
 
@@ -20,12 +47,17 @@ shared original retained-image decoder, animation and raster routines. A
 single-frame image decodes without retaining its raw buffer descriptor; the
 decoded retained object owns its resulting bitmap independently.
 
-`scripts/verify-native-draw-commands.mjs` passes 6,050 comparisons across 1,100
-complete calls per frozen PE. It checks all four wrappers, every initialized
-packet byte, opaque buffer translation, signed/unsigned limits, raw float bits,
-formatting and ANM resolution from data/shared/extended-block addresses, complete
-VM state, descriptor reference counts and output canaries. Device initialization
-is an explicit boundary in this transport probe.
+`scripts/verify-native-draw-commands.mjs` passes 9,907 comparisons across 1,650
+complete calls per frozen PE. It checks all six wrappers, every packet byte,
+raw retained pointers and opaque buffer translation, signed and unsigned limits,
+float bits, formatting and ANM resolution from data, shared and extended-block
+addresses, complete VM state, reference counts and output canaries. Device
+initialization is an explicit boundary in this transport probe.
+
+The render-source World tests also call both complete original Draw receivers
+and compare the retained record bytes after insertion and updates. They
+exercise both destruction paths and compare the actual Draw pixels and
+independent references after restoring into a fresh World.
 
 The public SDK World test uses complete native view/device initialization,
 decodes an authored HG2 resource, binds and updates its actual pixels, loads an

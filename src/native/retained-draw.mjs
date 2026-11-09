@@ -9,7 +9,6 @@ const ABI = {
   game: {
     construct: 0x745930,
     release: 0x745c60,
-    retain: 0x745c50,
     bytes: 0xd4,
     bitmap: 0x745cb0,
     imageOwner: 0x745e60,
@@ -27,6 +26,7 @@ const ABI = {
     rendererDestroy: 0x742cf0,
     rendererBitmap: 0x742e20,
     rendererRetained: 0x743270,
+    rendererFind: 0x744c90,
     rendererRemove: 0x743390,
     rendererDraw: 0x7439b0,
     rendererClip: 0x7441f0,
@@ -35,7 +35,6 @@ const ABI = {
   sdk: {
     construct: 0x5e68a0,
     release: 0x5e6b20,
-    retain: 0x5e6b10,
     bytes: 0xc4,
     bitmap: 0x5e6b70,
     imageOwner: 0x5e6cf0,
@@ -53,6 +52,7 @@ const ABI = {
     rendererDestroy: 0x5e39e0,
     rendererBitmap: 0x5e3b10,
     rendererRetained: 0x5e3ea0,
+    rendererFind: 0x5e5860,
     rendererRemove: 0x5e3fc0,
     rendererDraw: 0x5e45e0,
     rendererClip: 0x5e4e20,
@@ -137,23 +137,20 @@ export class NativeRetainedDraw {
       },
     });
   }
-  async create(draw, key, pointer = null) {
+  async create(draw, key) {
     const id = this.key(draw, key);
     if (this.items.has(id)) return this.items.get(id);
     const p = this.process,
-      borrowed = pointer !== null;
-    pointer ??= p.allocate(this.abi.bytes, true);
+      pointer = p.allocate(this.abi.bytes, true);
     try {
-      if (borrowed) await this.call(this.abi.retain, [], pointer, draw.record.id);
-      else
-        await this.call(
-          this.abi.construct,
-          [key >>> 0, draw.state.renderer.width, draw.state.renderer.height],
-          pointer,
-          draw.record.id,
-        );
+      await this.call(
+        this.abi.construct,
+        [key >>> 0, draw.state.renderer.width, draw.state.renderer.height],
+        pointer,
+        draw.record.id,
+      );
     } catch (error) {
-      if (!borrowed) p.free(pointer);
+      p.free(pointer);
       throw error;
     }
     const record = {
@@ -162,26 +159,59 @@ export class NativeRetainedDraw {
       pointer,
       source: null,
       kind: null,
-      borrowed,
     };
     this.items.set(id, record);
     return record;
   }
+  async bindRetained(draw, key, fields) {
+    const p = this.process,
+      surface = draw.record.id,
+      platform = await this.world.getNativeFeature('graphics-platform'),
+      renderer = await this.renderer(draw, platform),
+      call = (address, args) => this.call(address, args, renderer.pointer, surface),
+      existing = await call(this.abi.rendererFind, [key]),
+      previous = this.record(draw, key) ?? (existing ? null : await this.ensure(draw, key)),
+      temporary = previous && !previous.managerOwned ? previous.pointer : 0,
+      oldItem = draw.entry(key),
+      scratch = renderer.scratch;
+    // A deferred bitmap entry may already exist on the Draw task before its
+    // first render. Keep that source when the original command updates its key.
+    const source = !existing && previous ? previous.pointer : fields[2];
+    [4, 5, 6, 7, 9, 10].forEach((field, i) => p.store(scratch + i * 4, fields[field]));
+    await call(this.abi.rendererRetained, [
+      key,
+      source,
+      scratch,
+      scratch + 8,
+      fields[8],
+      scratch + 16,
+      fields[11],
+      fields[12],
+      fields[13],
+    ]);
+    const pointer = await call(this.abi.rendererFind, [key]);
+    if (!pointer) throw new Error('Original Draw manager did not register its retained source');
+    const record = previous ?? { surface, key: key >>> 0, kind: 2, source: pointer };
+    record.pointer = pointer;
+    record.managerOwned = true;
+    this.items.set(this.key(draw, key), record);
+    if (temporary) await this.call(this.abi.release, [], temporary, surface);
+    if (!existing && oldItem) {
+      oldItem.clip.forEach((word, i) => p.store(scratch + 24 + i * 4, word));
+      await call(this.abi.rendererClip, [key, scratch + 24]);
+      await call(this.abi.rendererLayer, [key, oldItem.layer]);
+    }
+    if (fields[14]) p.store(pointer + 192, fields[14]);
+    return this.pull(draw, record);
+  }
   async bind(draw, key, fields) {
     const kind = fields.slice(0, 4).findIndex(Boolean);
     if (kind < 0) return false;
-    let record = this.record(draw, key);
-    if (
-      record &&
-      (record.borrowed !== (kind === 2) || (kind === 2 && record.pointer !== fields[2]))
-    ) {
-      await this.remove(draw, key);
-      record = null;
-    }
-    record ??= await this.create(draw, key, kind === 2 ? fields[2] : null);
-    const p = this.process,
+    if (kind === 2) return this.bindRetained(draw, key, fields);
+    const record = this.record(draw, key) ?? (await this.create(draw, key)),
+      p = this.process,
       pointer = record.pointer;
-    if (kind !== 2 && (record.source !== fields[kind] || record.kind !== kind)) {
+    if (record.source !== fields[kind] || record.kind !== kind) {
       await this.call(
         kind === 0 ? this.abi.bitmap : kind === 1 ? this.abi.data : this.abi.imageOwner,
         [fields[kind]],
@@ -313,7 +343,8 @@ export class NativeRetainedDraw {
       ),
       alpha = await this.call(this.abi.alpha, [], pointer, draw.record.id),
       shown = await this.call(this.abi.shown, [], pointer, draw.record.id);
-    const oldImage = record.image;
+    const oldImage = record.image,
+      newEntry = !draw.entry(record.key);
     const item = await draw.upsert(record.key, {
       image,
       position: [108, 112].map((at) => readFloat(p, pointer + at)),
@@ -326,6 +357,7 @@ export class NativeRetainedDraw {
       aux: p.load(pointer + 192),
       nativeRetained: this.key(draw, record.key),
     });
+    if (record.managerOwned && newEntry) item.layer = p.load(pointer + 4) | 0;
     record.image = image;
     if (oldImage !== image) await this.releaseMirror(oldImage);
     return item;
@@ -397,7 +429,7 @@ export class NativeRetainedDraw {
     p.store(pointer + 40, renderer.clearColor);
     const present = new Set(renderer.items.map((item) => item.key));
     for (const key of sources.keys())
-      if (!present.has(key)) {
+      if (!present.has(key) && !this.record(draw, key)?.managerOwned) {
         await call(this.abi.rendererRemove, [key]);
         sources.delete(key);
       }
@@ -446,13 +478,10 @@ export class NativeRetainedDraw {
       // The original retained-source manager entry holds that same object,
       // rather than reconstructing a different source from its bitmap.
       if (nativeBitmap) {
-        const existing = await this.call(
-          this.sdk ? 0x5e5860 : 0x744c90,
-          [item.key],
-          pointer,
-          draw.record.id,
-        );
+        const existing = await call(this.abi.rendererFind, [item.key]);
         if (existing !== native.pointer) {
+          if (native.managerOwned)
+            throw new Error('Original Draw manager lost its retained source identity');
           if (existing) await call(this.abi.rendererRemove, [item.key]);
           await bind(native.pointer, true);
         }
@@ -463,16 +492,16 @@ export class NativeRetainedDraw {
       )
         await bind(previous.pointer);
       else await platform.withBitmap(source, bind, draw.record.id);
-      await call(this.abi.rendererClip, [item.key, scratch + 24]);
-      await call(this.abi.rendererLayer, [item.key, item.layer]);
+      if (
+        !native?.managerOwned ||
+        item.clip.some((word, i) => word !== (p.load(native.pointer + 40 + i * 4) | 0))
+      )
+        await call(this.abi.rendererClip, [item.key, scratch + 24]);
+      if (!native?.managerOwned || item.layer !== (p.load(native.pointer + 4) | 0))
+        await call(this.abi.rendererLayer, [item.key, item.layer]);
       // 744C90 retrieves the manager-owned retained entry. Its wrapper at
       // +8 owns a reference to the input bitmap after withBitmap returns.
-      const managerItem = await this.call(
-          this.sdk ? 0x5e5860 : 0x744c90,
-          [item.key],
-          pointer,
-          draw.record.id,
-        ),
+      const managerItem = await call(this.abi.rendererFind, [item.key]),
         sourcePointer = await this.call(this.abi.getBitmap, [], managerItem, draw.record.id);
       sources.set(item.key, {
         signature,
@@ -510,24 +539,35 @@ export class NativeRetainedDraw {
     this.process.free(record.pointer);
     this.process.free(record.scratch);
     this.renderers.delete(surface);
+    for (const [id, item] of this.items)
+      if (item.surface === surface && item.managerOwned) {
+        this.items.delete(id);
+        await this.releaseMirror(item.image);
+      }
   }
   async remove(draw, key) {
     const id = this.key(draw, key),
       record = this.items.get(id);
     const renderer = this.renderers.get(draw.record.id);
-    if (renderer?.sources.has(key)) {
+    if (renderer && (record?.managerOwned || renderer.sources.has(key))) {
       await this.call(this.abi.rendererRemove, [key], renderer.pointer, draw.record.id);
       renderer.sources.delete(key);
     }
     if (!record) return;
-    await this.call(this.abi.release, [], record.pointer, draw.record.id);
+    // A single-entry native removal destroys the object immediately. A
+    // deferred host entry still needs its own release if it never reached
+    // the manager or if the manager stored a different record.
+    if (!record.managerOwned && this.process.allocations.has(record.pointer))
+      await this.call(this.abi.release, [], record.pointer, draw.record.id);
     this.items.delete(id);
     await this.releaseMirror(record.image);
   }
   async removeSurface(draw) {
+    // The original manager destructor releases its references. Running the
+    // individual remove command for each key would destroy shared records.
+    await this.releaseRenderer(draw.record.id);
     for (const record of [...this.items.values()])
       if (record.surface === draw.record.id) await this.remove(draw, record.key);
-    await this.releaseRenderer(draw.record.id);
   }
   snapshot() {
     return structuredClone({
