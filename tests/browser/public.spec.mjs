@@ -1654,3 +1654,66 @@ test('native audio output preserves source-rate PCM, DirectSound pan attenuation
   expect(result.crossings).toBeGreaterThanOrEqual(99);
   expect(result.crossings).toBeLessThanOrEqual(101);
 });
+
+// This regression needs the real app's private event queue and DOM controls.
+// It substitutes only the engine boundary, so no private game or native startup
+// is needed to catch accidental routing into the obsolete player state.
+for (const native of [true, false])
+  test(`toolbar routes save, load and backlog through the ${native ? 'World' : 'scene'} owner`, async ({
+    page,
+  }) => {
+    await page.route('**/src/files.mjs', (route) =>
+      route.fulfill({
+        contentType: 'text/javascript',
+        body: `export class GameFiles { static async fromHTTP() { return {width:64,height:48,title:'Toolbar fixture'}; } }`,
+      }),
+    );
+    await page.route('**/web/transitional-entry.mjs', (route) =>
+      route.fulfill({
+        contentType: 'text/javascript',
+        body: `
+      export class CatSystem2 {
+        constructor(options) {
+          this.options=options;this.game=options.game;this.vmEvidence=[];
+          this.world=${native ? '{window:{}}' : 'null'};this.story=${native ? 'null' : '{}'};
+          window.toolbarCalls=[];const calls=window.toolbarCalls;
+          this.inputBindings={gamepad(){}};
+          this.host={systemAction:async code=>calls.push(['action',code])};
+          this.theme={value:()=> 'history-fixture'};
+          this.saves={newest:(from,count)=>{calls.push(['legacy-select',from,count]);return 7;},get:slot=>({data:{slot}})};
+          this.quickSaveStart=5000;
+        }
+        status(){return {mode:this.world?'running':'story',story:this.story,stack:[]};}
+        activeFES(){return {root:{}};}
+        async initialize(){this.options.onState(this.status());}
+        async render(){} async step(){} async dispose(){} hover(){}
+        async openModal(name){window.toolbarCalls.push(['legacy-modal',name]);}
+        async restore(data){window.toolbarCalls.push(['legacy-restore',data]);}
+      }`,
+      }),
+    );
+    await page.goto('/');
+    await page.click('#start');
+    await expect(page.locator('#quick-save')).toBeEnabled({ timeout: 1000 });
+    await expect(page.locator('#next')).toBeEnabled({ timeout: 1000 });
+    await page.click('#backlog');
+    await page.click('#quick-save');
+    await page.click('#quick-load');
+    await expect
+      .poll(() => page.evaluate(() => window.toolbarCalls))
+      .toEqual(
+        native
+          ? [
+              ['action', 15],
+              ['action', 21],
+              ['action', 22],
+            ]
+          : [
+              ['legacy-modal', 'history-fixture'],
+              ['action', 21],
+              ['legacy-select', 5000, 12],
+              ['legacy-restore', { slot: 7 }],
+            ],
+      );
+    await expect(page.locator('#error')).toBeHidden();
+  });

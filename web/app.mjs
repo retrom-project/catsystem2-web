@@ -39,7 +39,10 @@ const enqueue = (action) =>
     }),
   );
 function updateStatus(state) {
-  for (const id of ['next', 'quick-save']) $(id).disabled = !state.story;
+  const nativeReady = Boolean(
+    engine?.world && state.mode === 'running' && engine.activeFES()?.root,
+  );
+  for (const id of ['next', 'quick-save']) $(id).disabled = !state.story && !nativeReady;
   $('export').disabled = state.mode !== 'running';
   for (const id of ['quick-load', 'backlog', 'settings', 'import']) $(id).disabled = !engine;
   const now = performance.now();
@@ -121,10 +124,15 @@ $('settings').onclick = () =>
     engine.world ? engine.world.window.post(0x46c, 0, 20) : engine.openModal('config'),
   ).catch(() => {});
 $('backlog').onclick = () =>
-  enqueue(() => engine.openModal(engine.theme?.value('log', 'script') || 'hist_b')).catch(() => {});
+  enqueue(() =>
+    engine.world
+      ? engine.host.systemAction(15)
+      : engine.openModal(engine.theme?.value('log', 'script') || 'hist_b'),
+  ).catch(() => {});
 $('quick-save').onclick = () => enqueue(() => engine.host.systemAction(21)).catch(() => {});
 $('quick-load').onclick = () =>
   enqueue(async () => {
+    if (engine.world) return engine.host.systemAction(22);
     const slot = engine.saves.newest(engine.quickSaveStart, 12);
     if (slot < 0) throw new Error('No quick save yet');
     await engine.restore(engine.saves.get(slot).data);
