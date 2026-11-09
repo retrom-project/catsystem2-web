@@ -583,6 +583,10 @@ saved[0] getflag -1 12
           directory = p.string(saved.nativeObjectPointer + (sdk ? 1784 : 2296), !sdk),
           file = new NativeGlobalFile(),
           flags = new Uint32Array(1024);
+        // This Top uses an empty save directory. The original reader prepends
+        // a separator, which Win32 maps to the root of the virtual game drive.
+        assert.equal(directory, '');
+        const slot = 'save0007.dat';
         flags[5] = 617;
         file.write(0x400, new Uint8Array(flags.buffer));
         file.write(
@@ -596,10 +600,10 @@ saved[0] getflag -1 12
         file.write(0x200, Uint8Array.from([...encodeCP932('7'), 0]));
         const savedBytes = await file.file();
         assert.equal(new DataView(savedBytes.buffer).getUint32(0, true), 0x535343);
-        files.set(`${directory}/save0007.dat`, savedBytes);
+        files.set(slot, savedBytes);
         await task.player.root.notify('LOAD');
         await task.tick();
-        assert.ok(reads.includes(`${directory}/save0007.dat`));
+        assert.ok(reads.includes(slot));
         assert.equal(task.player.globals[10], 617);
         assert.equal(task.player.globals[11], 0);
         assert.equal(task.player.globals[12], 0);
