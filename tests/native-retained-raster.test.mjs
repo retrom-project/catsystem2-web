@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
@@ -14,9 +15,9 @@ import { retainedRasterCases, RETAINED_RASTER_SIZE } from './fixtures/retained-r
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-retained-raster-golden.json', import.meta.url)),
 );
-for (const [profile, variable] of [
-  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
-  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
+for (const [profile, variable, affineTable] of [
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0xb6f048],
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0xc73b68],
 ])
   test(
     `${profile} retained CPU MASK/BTYPE/affine and physical upload match original full-manager pixels`,
@@ -44,6 +45,13 @@ for (const [profile, variable] of [
       new NativeGraphicsPlatform(engine, world);
       new NativeRetainedDraw(engine, world);
       try {
+        assert.equal(
+          createHash('sha256')
+            .update(engine.process.read(affineTable, 32769 * 4))
+            .digest('hex'),
+          golden.affineTableSha256,
+          'Engine startup initializes the original affine table',
+        );
         for (const [index, probe] of retainedRasterCases().entries()) {
           const draw = new NativeDrawTask(world.graphics, { id: 2 }),
             bitmap = world.graphics.images.create(width, height, 2),

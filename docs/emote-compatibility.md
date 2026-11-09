@@ -13,6 +13,8 @@ The reviewed game driver is SHA256 `85eb459e94e74ab608f649eb7fb440f2526e90aaa1af
 
 `NativeWorld` owns a single `NativeEngineProcess`. The image hash and version are checked before region execution. Its executable entry, PE TLS callbacks and Steam initialization are not invoked. Required ordinary CRT helpers initialize the original C/C++ runtime data. M2 and text share the process, configuration owner, task prefixes, global strings, graph platform and GPU.
 
+Engine startup executes the original affine sine-table constructors `5C3310` and `49FA90` after the CRT helpers. The retained raster fixture checks the digest of all 32,769 table words against an independent x86 run. The original retained managers then supply the CPU bitmap and VRAM pixel references for the GPU tests.
+
 ## Engine and task boundaries
 
 `installNativeM2(world)` installs the reviewed profile's task 54 and FES type 33. The game additionally binds all 37 main native IDs: 906–933, 965–966, 1025, 1027–1030 and 1047–1048. These handlers execute their original instructions, including argument translation, string formatting, map iteration and return-control codes. The temporary dictionary view is read-only; it is not passed to C++ mutation or ownership operations.

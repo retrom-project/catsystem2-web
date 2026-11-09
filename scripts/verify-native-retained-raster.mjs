@@ -2,6 +2,7 @@
 // Run the mounted original renderer independently of NativeDrawTask. Only the
 // Windows rectangle API and final CPU-bitmap upload are host boundaries.
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
@@ -24,6 +25,7 @@ const profiles = [
         draw: 0x7439b0,
         clip: 0x7441f0,
         layer: 0x744340,
+        affineTable: 0xb6f048,
       },
     ],
     [
@@ -36,10 +38,16 @@ const profiles = [
         draw: 0x5e45e0,
         clip: 0x5e4e20,
         layer: 0x5e4f70,
+        affineTable: 0xc73b68,
       },
     ],
   ],
-  golden = { profiles: [], size: RETAINED_RASTER_SIZE, cases: [] };
+  golden = {
+    profiles: [],
+    size: RETAINED_RASTER_SIZE,
+    affineTableSha256: '021182038e39289b423f6cf925c953c5a63bfda97b4ca17d277835c72c2c92f8',
+    cases: [],
+  };
 for (const [flag, profile, abi] of profiles) {
   const index = process.argv.indexOf(flag);
   if (index < 0) continue;
@@ -60,6 +68,13 @@ for (const [flag, profile, abi] of profiles) {
   for (const [name, definition] of nativeRectangleDefinitions(p))
     engine.registerWindows('USER32.dll', name, definition);
   try {
+    assert.equal(
+      createHash('sha256')
+        .update(p.read(abi.affineTable, 32769 * 4))
+        .digest('hex'),
+      golden.affineTableSha256,
+      profile + ' original affine table',
+    );
     for (const [number, probe] of retainedRasterCases().entries()) {
       const manager = p.allocate(60, true),
         scratch = p.allocate(40, true),
@@ -139,10 +154,12 @@ for (const [flag, profile, abi] of profiles) {
   }
 }
 if (!golden.profiles.length) throw new Error('Supply --game EXE and/or --sdk EXE');
+const fixture = new URL('../tests/fixtures/native-retained-raster-golden.json', import.meta.url);
 if (process.argv.includes('--write-fixture')) {
   assert.equal(golden.profiles.length, 2, 'A public golden requires both original profiles');
-  await writeFile(
-    new URL('../tests/fixtures/native-retained-raster-golden.json', import.meta.url),
-    JSON.stringify(golden, null, 2) + '\n',
-  );
+  await writeFile(fixture, JSON.stringify(golden, null, 2) + '\n');
+} else {
+  const expected = JSON.parse(await readFile(fixture));
+  assert.equal(golden.affineTableSha256, expected.affineTableSha256);
+  assert.deepEqual(golden.cases, expected.cases);
 }

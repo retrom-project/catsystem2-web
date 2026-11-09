@@ -26,6 +26,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     zlib: 0x82c550,
     deflate: 0x82c3c0,
     d3dxBaseline: [0xb32f30, 0xb32e08],
+    affineTrig: 0x5c3310,
     allocations: [
       [0x79ea57, 1],
       [0x5cac7e, 1],
@@ -43,6 +44,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     zlib: 0x869e70,
     deflate: 0x869ce0,
     d3dxBaseline: [0xc3bcd0, 0xc3bba8],
+    affineTrig: 0x49fa90,
     allocations: [
       [0x636cc0, 1],
       [0x4a7bc0, 3],
@@ -738,6 +740,8 @@ export class NativeEngineProcess {
       // their private heap and the current thread's C locale state. They do
       // not enter WinMain, PE TLS callbacks, or the game's platform bootstrap.
       for (const helper of image.crtHelpers) engine.process.call(helper);
+      // The original startup fills the affine transform's fixed-point sine table.
+      engine.process.call(image.affineTrig);
       // The original static table supplies the scalar D3DX dispatch used by
       // reviewed MOT handlers. This is initialized once before any feature
       // runs, and retains all original function pointers.
