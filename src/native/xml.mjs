@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main ABI XML services: 0x24E..0x251, fixed native 0x64DB20/0x7232F0/0x723910.
+// Startup metadata and the standalone VM's XML model. NativeWorld runs
+// the original Script XML wrappers through script-xml.mjs.
 import { XMLNode } from '../xml.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { parseNativeInteger } from './standard.mjs';
@@ -97,11 +98,16 @@ export function nativeXML(id, args, machine, services) {
     return bytes && typeof bytes.then === 'function' ? bytes.then(finish) : finish(bytes);
   }
   if (id === 0x24f) {
-    handles.release(args[0], 'xml');
+    if (args[0]) handles.release(args[0], 'xml');
     return nativeReply(2);
   }
+  if (!args[0]) return id === 0x250 ? nativeReply(1, args[1]) : nativeReply(2);
   const node = findNativeXML(handles.get(args[0], 'xml'), services.format(args[2], machine));
   if (id === 0x250) return nativeReply(1, node ? (parseNativeInteger(node.text) ?? 0) : args[1]);
-  if (node) machine.writeString(node.text, args[1]);
+  if (node) {
+    if (services.xmlEncoding?.toLowerCase() === 'utf-8')
+      machine.writeStringBytes(new TextEncoder().encode(node.text), args[1]);
+    else machine.writeString(node.text, args[1]);
+  }
   return nativeReply(2);
 }

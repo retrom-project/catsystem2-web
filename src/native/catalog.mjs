@@ -3370,6 +3370,14 @@ for (const id of [...Array.from({ length: 14 }, (_, offset) => 0x0d + offset), 0
   recovered74.set(id, fact);
   recovered76.set(id, fact);
 }
+for (let id = 0x24e; id <= 0x251; id++) {
+  const fact = {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-original-xml-wrappers-and-fresh-world-ownership',
+  };
+  recovered74.set(id, fact);
+  recovered76.set(id, fact);
+}
 for (let id = 0x279; id <= 0x280; id++) {
   const fact = recovered76.get(id);
   recovered74.set(id, {

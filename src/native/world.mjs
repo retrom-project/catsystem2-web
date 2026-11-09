@@ -63,6 +63,7 @@ import { installNativeTileGame } from './tile-game.mjs';
 import { installNativeDatabases } from './database.mjs';
 import { installNativeSceneCheckpoints } from './scene-checkpoint.mjs';
 import { installNativeContentDatabases } from './content-databases.mjs';
+import { installNativeScriptXML } from './script-xml.mjs';
 import { installNativeTaskCommands } from './task-command.mjs';
 import { installNativeTaskDump } from './task-dump.mjs';
 import { installNativeSectionTables } from './section-table.mjs';
@@ -376,6 +377,7 @@ export class NativeWorld {
     installNativeDatabases(this);
     installNativeSceneCheckpoints(this);
     installNativeContentDatabases(this);
+    installNativeScriptXML(this);
     installNativeTaskCommands(this);
     installNativeTaskDump(this);
     installNativeSectionTables(this);

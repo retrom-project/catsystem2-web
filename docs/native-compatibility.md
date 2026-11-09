@@ -90,13 +90,23 @@ unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    681 |             82 |                     19 |                     227 |
+| SDK / 2.6.1.74  | 1,009 |                    685 |             82 |                     19 |                     223 |
 | Game / 2.6.1.76 | 1,055 |                    917 |             58 |                     17 |                      63 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
 come from the SDK particle headers and [PPI contracts](../src/ppi/contracts.mjs).
 See [particle compatibility](ppi-compatibility.md) for their implementation status.
+
+Main `24E..251` runs the original Script XML file open, parse, query and
+release wrappers on both engines. The original file reader resolves mounted
+resources and owns the temporary stream. The document and its node vector
+live in the same process as the VM; the browser handle retains their pointer
+across a fresh World without reading the file again. String queries write
+the original Shift_JIS or UTF-8 bytes and one NUL. Missing nodes leave the
+string destination intact and use the caller's integer default. Null handles
+skip formatting and preserve those same fallbacks. The authored World test
+covers both profiles, raw output bytes, invalid input and independent release.
 
 The paired `36B` integer-unpacking interface executes both original wrappers
 and VM translators. Signed halves, aliased/overlapping destinations, all VM
