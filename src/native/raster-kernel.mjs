@@ -8,6 +8,12 @@ const profiles = {
     normal: 0x689ab0,
     mask: 0x689280,
     copy: 0x687356,
+    copyWrapper: 0x6a7210,
+    copyGetCaps: 0x5c50b0,
+    copyCaps: 0xb8f04c,
+    copyMMX: 0x444,
+    copyCRTFlags: 0xb925e8,
+    copyCRTAlignedSIMD: 0xb2acf0,
     stosByte: 0x79fc44,
     stosWord: 0x79fc95,
     memcpy: 0x79f2a0,
@@ -21,6 +27,12 @@ const profiles = {
     normal: 0x55fb90,
     mask: 0x561bd0,
     copy: 0x55df66,
+    copyWrapper: 0x576df0,
+    copyGetCaps: 0x4a1cb0,
+    copyCaps: 0xc93b6c,
+    copyMMX: 0x244,
+    copyCRTFlags: 0xc96f78,
+    copyCRTAlignedSIMD: 0xc35df0,
     stosByte: 0x637ea4,
     stosWord: 0x637ef5,
     memcpy: 0x637500,
@@ -134,9 +146,13 @@ export class NativeRasterKernels {
     }
     return false;
   }
-  raster(pointer, frame, source, destination, descriptor) {
+  raster(pointer, frame, source, destination, descriptor, regions) {
     const p = this.process;
-    if (!this.range(pointer, 128) || !this.range(frame - 0x140, 0x150, true)) return null;
+    if (
+      !this.range(pointer, 128, false, regions) ||
+      !this.range(frame - 0x140, 0x150, true, regions)
+    )
+      return null;
     const d = descriptor ?? new Int32Array(p.read(pointer, 128).buffer);
     if (
       d[0] !== 4 ||
@@ -164,8 +180,8 @@ export class NativeRasterKernels {
       destinationSize = d[8] * d[3],
       sourceSize = d[18] * d[13];
     if (
-      !this.range(destinationBase, destinationSize, true) ||
-      !this.range(sourceBase, sourceSize) ||
+      !this.range(destinationBase, destinationSize, true, regions) ||
+      !this.range(sourceBase, sourceSize, false, regions) ||
       overlaps(destinationBase, destinationSize, sourceBase, sourceSize) ||
       overlaps(destinationBase, destinationSize, pointer, 128) ||
       overlaps(destinationBase, destinationSize, frame - 0x140, 0x150) ||
@@ -333,19 +349,130 @@ export class NativeRasterKernels {
     this.reg('ECX', count);
     return true;
   }
+  copyInstructions(d, frame, source, destination, regions) {
+    const p = this.process,
+      abi = this.abi,
+      width = d[16],
+      rows = d[17] - 1,
+      rowOverhead = 14,
+      executable = (address, size) =>
+        regions.some(
+          ({ begin, end, perms }) =>
+            (perms & 5) === 5 && address >= Number(begin) && address + size - 1 <= Number(end),
+        ),
+      control = (address) =>
+        this.range(address, 4, false, regions) &&
+        !overlaps(address, 4, frame - 76, 88) &&
+        !overlaps(address, 4, d[1] >>> 0, d[8] * d[3])
+          ? p.load(address)
+          : undefined;
+    // The original dispatcher uses its capability object when present.
+    // The same branch runs for every row because its control word is stable.
+    if (!executable(abi.copy, 0x24) || !executable(abi.copyWrapper, 0xbc)) return null;
+    const caps = control(abi.copyCaps);
+    if (caps === undefined) return null;
+    let rowCost;
+    if (caps) {
+      if (!executable(abi.copyGetCaps, 0x23)) return null;
+      const mmx = control(caps + abi.copyMMX);
+      if (mmx === undefined) return null;
+      if (mmx) {
+        if (this.reg('CR0') & 0xc || this.reg('FPSW') & 0x80) return null;
+        // MMX copies two pixels per iteration when the byte count is a
+        // multiple of eight. The one-pixel loop has two extra dispatch ops.
+        rowCost = rowOverhead + (width % 2 ? 43 + 5 * width : 41 + (5 * width) / 2);
+      } else rowCost = rowOverhead + 40 + 5 * width;
+      return { skipped: rows * rowCost, tail: rowCost };
+    }
+
+    if (!executable(abi.memcpy, 0x34f)) return null;
+    const flags = control(abi.copyCRTFlags);
+    if (flags === undefined) return null;
+    // The CRT call wrapper costs 27 instructions. Its overlap test adds
+    // two instructions when the destination follows the source.
+    const crtCall = rowOverhead + 27 + (destination > source ? 2 : 0);
+    if (flags & 2) {
+      // REP MOVSB includes one final visit with ECX=0.
+      rowCost = crtCall + 18 + 4 * width;
+      return { skipped: rows * rowCost, tail: rowCost };
+    }
+    // Only the aligned scalar CRT paths have a reviewed cost. Sub-word
+    // alignment and the CRT SIMD bodies remain in the original PE.
+    if ((destination | d[8]) & 3) return null;
+    rowCost = crtCall + (width < 8 ? 29 + 2 * width : 26 + width);
+    if (width < 32) return { skipped: rows * rowCost, tail: rowCost };
+    if (flags & 1) return null;
+    const difference = (destination - source) & 15,
+      step = (d[8] - (d[20] ? -d[18] : d[18])) & 15;
+    let matches = 0;
+    // Low-nibble alignment repeats after at most sixteen rows.
+    for (let y = 0; y < Math.min(16, rows); y++)
+      if (((difference + y * step) & 15) === 0) matches += 1 + Math.floor((rows - 1 - y) / 16);
+    const tailMatches = ((difference + rows * step) & 15) === 0;
+    if (matches || tailMatches) {
+      const simd = control(abi.copyCRTAlignedSIMD);
+      if (simd === undefined || simd & 2) return null;
+    }
+    rowCost += 6;
+    return { skipped: rows * rowCost + 2 * matches, tail: rowCost + 2 * Number(tailMatches) };
+  }
   copy() {
     const p = this.process,
       frame = this.reg('EBP'),
-      pointer = this.reg('ESI');
-    if (p.load(frame + 8) !== 0) return false;
-    const raster = this.raster(pointer, frame, this.reg('EDI'), this.reg('EBX'));
-    if (!raster) return false;
-    const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
+      regions = this.repeatRegions();
+    if (!this.range(frame + 8, 4, false, regions) || p.load(frame + 8) !== 0) return false;
+    const pointer = this.reg('ESI'),
+      source = this.reg('EDI'),
+      destination = this.reg('EBX');
+    if (
+      this.reg('ESP') !== frame - 20 ||
+      this.reg('EFLAGS') & 0x50500 ||
+      this.reg('DS') !== 0 ||
+      this.reg('ES') !== 0 ||
+      this.reg('SS') !== 0 ||
+      !this.range(frame - 8, 20, false, regions) ||
+      !this.range(pointer, 128, false, regions) ||
+      overlaps(pointer, 128, frame - 76, 88)
+    )
+      return false;
+    const locals = new DataView(p.read(frame - 8, 8).buffer),
+      d = new Int32Array(p.read(pointer, 128).buffer),
+      contiguous = (address, size) =>
+        p.regions.some(
+          (region) => address >= region.address && address + size <= region.address + region.size,
+        );
+    if (
+      d[0] !== 4 ||
+      d[10] !== 4 ||
+      d[16] < 1 ||
+      d[17] < 2 ||
+      !source ||
+      !destination ||
+      locals.getInt32(0, true) !== d[8] ||
+      locals.getInt32(4, true) !== (d[20] ? -d[18] : d[18]) ||
+      !contiguous(d[1] >>> 0, d[8] * d[3]) ||
+      !contiguous(d[11] >>> 0, d[18] * d[13])
+    )
+      return false;
+    const { active, counter, limit } = p.instructionBudget();
+    if (!active) return false;
+    const cost = this.copyInstructions(d, frame, source, destination, regions);
+    if (!cost) return false;
+    // The counted instruction at this hook becomes the first instruction
+    // of the final row. Leave its entire native body available so the CRT
+    // scratch stack and any MMX state are restored before another cutoff.
+    const required = cost.skipped + cost.tail - 1;
+    if (!Number.isSafeInteger(required) || (limit !== 0n && limit - counter < BigInt(required)))
+      return false;
+    const raster = this.raster(pointer, frame, source, destination, d, regions);
+    if (!raster || !p.consumeInstructions(cost.skipped)) return false;
+    const { input, output, sourceStep, destinationStep } = raster,
+      length = d[16] * 4,
       rows = d[17] - 1;
     let s = raster.source,
       t = raster.destination;
     for (let y = 0; y < rows; y++, s += sourceStep, t += destinationStep)
-      output.set(input.subarray(s, s + d[16] * 4), t);
+      output.set(input.subarray(s, s + length), t);
     p.store(frame + 8, rows);
     this.reg('EDI', (d[11] >>> 0) + s);
     this.reg('EBX', (d[1] >>> 0) + t);
