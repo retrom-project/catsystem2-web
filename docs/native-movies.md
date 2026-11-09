@@ -122,8 +122,7 @@ The two-profile tests execute each original `PresentImage` vtable entry
 using authored decoder surfaces and the shared D3D device. Chromium checks
 the resulting asymmetric pixels, alpha and a second frame after fresh
 restore. These tests supply surfaces at the presenter boundary. The
-DirectShow filter graph and decoder connection for the Plane message still
-need separate integration.
+filter graph connection is exercised separately below.
 
 ## VMR9 allocator negotiation
 
@@ -180,3 +179,36 @@ while its flush event is signaled, ends the flush and releases the
 source interfaces, events, locks and worker. The implemented wait domain
 is unnamed, default-security event objects with no APC delivery. An
 in-flight PE wait requires completion before checkpoint export.
+
+## Renderless Plane source connection
+
+SimplePlane runs the original movie load and destruction code on both
+frozen profiles. The loader creates its native MemStream and source
+filter, then obtains a FilterGraph and a renderless VMR9 filter from the
+DirectShow platform service. It requests one stream and passes the
+original allocator to the Notify interface. The graph joins and retains
+the actual source filter, and queries its output pin for
+`IAsyncReader` when connecting. The original reader's length and prefix
+read are checked against its mounted file object. The browser opens media
+using those source bytes or a sidecar matched to their size and SHA-256.
+An alias or override with the same name and different bytes cannot
+select a stale conversion.
+[DirectShow graph builder](https://learn.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-igraphbuilder)
+
+The platform's paused state decodes a preroll frame and copies it into
+the negotiated X8R8G8B8 surface through its shared D3D9 lock. The original
+`PresentImage` transfers it to the Plane texture. Portable checkpoints
+retain the original source and COM identities, decoder metadata,
+position and presented texture. The browser opens a fresh decoder on
+the first request for a frame after restore. When the movie closes, the
+filter also retires the Notify query the loader stores at record offset
+`0x144`, which the guest destructor leaves unreleased.
+[Wine VMR9 interface ownership](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/quartz/vmr9.c)
+
+Chromium tests run both original loaders with a generated AVI and its
+WebM sidecar. They check missing and disabled loads, qualified resource
+selection, dimensions, asymmetric pixels, power-of-two padding,
+portable fresh restore and resource release. This connection service
+covers the original renderless loader and paused frame. Continuous
+playback, the main KCS entry point and the separate Plane renderer
+movie message still require integration.

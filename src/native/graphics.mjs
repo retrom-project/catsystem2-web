@@ -44,6 +44,7 @@ import { NativeTexturePageView } from './texture-memory.mjs';
 import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
 import { installNativeEngineWorkers } from './engine-workers.mjs';
 import { NativeVMR9 } from './vmr9.mjs';
+import { NativeDirectShow } from './directshow.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
@@ -1050,6 +1051,10 @@ export function installNativeGraphics(world) {
   if (world.registerNativeFeature) {
     world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
     world.registerNativeFeature('vmr9', (engine) => new NativeVMR9(engine));
+    world.registerNativeFeature('directshow', async (engine) => {
+      await world.getNativeFeature('engine-workers');
+      return new NativeDirectShow(engine, world, await world.getNativeFeature('vmr9'));
+    });
     world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
     world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {

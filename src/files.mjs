@@ -320,14 +320,17 @@ export class GameFiles {
     if (bytes === null) throw new Error(`Missing ${category} resource: ${name}`);
     return bytes;
   }
-  async movieSource(name, canPlayType) {
-    const hit = this.lookup(name);
-    if (!hit) return null;
-    const converted = this.media?.[resourcePath(name)];
+  async movieSource(name, canPlayType, stream = null) {
+    const hit = stream ? null : this.lookup(name);
+    if (!stream && !hit) return null;
+    const named = this.media?.[resourcePath(name)],
+      matches = (record) =>
+        record?.sourceSize === stream.bytes.length && record.sourceSha256 === stream.sha256,
+      converted = stream && !matches(named) ? Object.values(this.media ?? {}).find(matches) : named;
     if (converted) {
       if (
         converted.sourceIdentity !== (await this.fingerprint()) ||
-        converted.sourceSize !== hit.size
+        converted.sourceSize !== (stream?.bytes.length ?? hit.size)
       )
         throw new Error('Movie sidecar source differs from the mounted resource');
       return canPlayType(converted.mime) ? { url: converted.url } : null;
@@ -344,10 +347,10 @@ export class GameFiles {
         mpeg: 'video/mpeg',
       }[extension];
     if (!mime || !canPlayType(mime)) return null;
-    if (hit.offset === 0 && hit.size === hit.file.size && hit.file.url)
+    if (hit && hit.offset === 0 && hit.size === hit.file.size && hit.file.url)
       return { url: hit.file.url };
     const url = URL.createObjectURL(
-      new Blob([await hit.file.read(hit.offset, hit.size)], { type: mime }),
+      new Blob([stream?.bytes ?? (await hit.file.read(hit.offset, hit.size))], { type: mime }),
     );
     return { url, release: () => URL.revokeObjectURL(url) };
   }

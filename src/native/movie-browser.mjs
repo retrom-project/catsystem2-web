@@ -22,9 +22,9 @@ export class BrowserNativeMovie {
       );
     });
   }
-  async open(name) {
+  async open(name, stream = null) {
     if (!this.game.movieSource) throw new Error('Native movie source service is unavailable');
-    this.source = await this.game.movieSource(name, (type) => this.video.canPlayType(type));
+    this.source = await this.game.movieSource(name, (type) => this.video.canPlayType(type), stream);
     if (!this.source) {
       this.diagnostic({ type: 'movie-codec-unavailable', filename: name });
       return false;
@@ -44,6 +44,39 @@ export class BrowserNativeMovie {
       this.video.src = this.source.url;
       this.video.load();
     });
+  }
+  metadata() {
+    const { videoWidth: width, videoHeight: height, duration } = this.video;
+    if (!width || !height || !Number.isFinite(duration))
+      throw new Error('Native movie decoder did not open a finite video stream');
+    return { width, height, duration: BigInt(Math.round(duration * 10000000)) };
+  }
+  async decodedFrame() {
+    if (this.video.readyState < 2)
+      await new Promise((resolve, reject) => {
+        const finish = (error) => {
+            clearTimeout(timer);
+            this.video.removeEventListener('loadeddata', ready);
+            this.video.removeEventListener('error', fail);
+            error ? reject(error) : resolve();
+          },
+          ready = () => finish(),
+          fail = () => finish(new Error('Native movie decoder could not supply a frame')),
+          timer = setTimeout(
+            () => finish(new Error('Native movie decoder frame timed out')),
+            this.timeout,
+          );
+        this.video.addEventListener('loadeddata', ready);
+        this.video.addEventListener('error', fail);
+      });
+    const { width, height } = this.metadata();
+    this.frameCanvas ??= new OffscreenCanvas(width, height);
+    const ctx = this.frameCanvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(this.video, 0, 0);
+    return { width, height, rgba: ctx.getImageData(0, 0, width, height).data };
+  }
+  volume(decibels) {
+    this.video.volume = Math.max(0, Math.min(1, 10 ** (decibels / 2000)));
   }
   async play() {
     try {
@@ -116,7 +149,7 @@ export class BrowserNativeMovie {
       width: `${(((right - left) | 0) * 100) / this.width}%`,
       height: `${(((bottom - top) | 0) * 100) / this.height}%`,
     });
-    this.video.volume = Math.max(0, Math.min(1, 10 ** (record.decibels / 2000)));
+    this.volume(record.decibels);
     this.video.hidden = !this.activated || !record.windowVisible;
     this.record = record;
   }
@@ -139,5 +172,6 @@ export class BrowserNativeMovie {
     this.video.remove();
     this.source?.release?.();
     this.source = null;
+    this.frameCanvas = null;
   }
 }
