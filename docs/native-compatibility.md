@@ -181,6 +181,18 @@ memory as direct guest access, including the static TLS vector used by PPI
 DLLs. The TEB persists in the native memory checkpoint.
 [Thread Environment Block](https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-teb).
 
+The Win32 scheduler runs `CreateThread` entries in the same PE32 address
+space on separate stacks with their own TEBs. The browser schedules workers
+after a native call or while the initial thread is waiting. A blocked worker
+keeps the instruction pointer and its original import frame. Event, semaphore,
+mutex and thread waits use the same handle namespace, and critical sections
+track the owning thread. `ExitThread` or a normal entry return releases the
+stack and TLS and signals the thread object until its last handle is closed.
+Tests exercise suspend-at-creation, wait-all, mutex abandonment, and a fresh
+restore of a worker blocked in its original x86 wait.
+[CreateThread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread),
+[WaitForMultipleObjects](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects).
+
 Window and thread timers use the same clock as the emulated engine.
 Retrieval generates a due `WM_TIMER` after checking for matching queued
 messages. A nonremoving peek leaves the generated message available even

@@ -107,9 +107,13 @@ class NativeEngineWorkers {
     }
     const kernel = engine.kernel,
       closeFile = kernel.overrides.get('kernel32.dll!CloseHandle'),
+      sleep = kernel.overrides.get('kernel32.dll!Sleep'),
+      exitCode = kernel.overrides.get('kernel32.dll!GetExitCodeThread'),
       register = (name, count, fn) => engine.registerWindows('KERNEL32.dll', name, { count, fn });
-    register('Sleep', 1, ([duration]) => this.sleep(duration));
-    register('GetExitCodeThread', 2, ([handle, out]) => this.exitCode(handle, out));
+    register('Sleep', 1, ([duration]) => this.sleep(duration, sleep.fn));
+    register('GetExitCodeThread', 2, ([handle, out]) =>
+      this.threads.has(handle) ? this.exitCode(handle, out) : exitCode.fn([handle, out]),
+    );
     register('CloseHandle', 1, ([handle]) => {
       const worker = this.threads.get(handle);
       if (!worker) return closeFile.fn([handle]);
@@ -159,7 +163,7 @@ class NativeEngineWorkers {
     const layout = this.abi.entries[worker.entry];
     return Boolean(this.process.load(worker.owner + layout.stop)) === Boolean(layout.stopped);
   }
-  sleep(duration) {
+  sleep(duration, fallback) {
     const p = this.process,
       sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
     if (p.load(sp) === this.abi.streamWait) {
@@ -169,8 +173,7 @@ class NativeEngineWorkers {
         handle = p.load(p.load(stream + 380));
       return this.step(handle);
     }
-    if (duration && this.running?.kind !== 'stream')
-      return new Promise((resolve) => setTimeout(resolve, duration));
+    if (this.running?.kind !== 'stream') return fallback([duration]);
   }
   async exitCode(handle, out) {
     const worker = this.threads.get(handle);

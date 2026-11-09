@@ -5,6 +5,7 @@ const END = 0x58000000;
 const INFINITE = 0xffffffff;
 const WAIT_FAILED = 0xffffffff;
 const WAIT_TIMEOUT = 0x102;
+const WAIT_ABANDONED = 0x80;
 const INVALID_HANDLE = 6;
 const INVALID_PARAMETER = 87;
 const TOO_MANY_POSTS = 298;
@@ -15,12 +16,18 @@ const MODIFY_STATE = 2;
 const SYNCHRONIZE = 0x100000;
 const FULL_EVENT_ACCESS = 0x1f0003;
 
-// The guest exposes one Win32 thread. Its own mutex can be acquired recursively.
-const available = (object) =>
-  'depth' in object || ('maximum' in object ? object.count > 0 : object.signaled);
-function consume(object) {
-  if ('depth' in object) object.depth++;
-  else if ('maximum' in object) object.count--;
+const available = (object, id) =>
+  'depth' in object
+    ? !object.depth || object.owner === id
+    : 'maximum' in object
+      ? object.count > 0
+      : object.signaled;
+function consume(object, id) {
+  if ('depth' in object) {
+    object.owner = id;
+    object.depth++;
+    object.abandoned = false;
+  } else if ('maximum' in object) object.count--;
   else if (!object.manual) object.signaled = false;
 }
 
@@ -31,6 +38,8 @@ export class NativeWindowsEvents {
     this.mutexes = new Map();
     this.namedEvents = new Map();
     this.waiters = new Set();
+    this.revision = 0;
+    this.cancelEpoch = 0;
     this.next = BASE;
     const register = (name, count, fn) => kernel.register('KERNEL32.dll', name, { count, fn });
     for (const suffix of ['A', 'W']) {
@@ -68,8 +77,12 @@ export class NativeWindowsEvents {
     register('ReleaseMutex', 1, ([handle]) => {
       const mutex = this.mutexes.get(this.events.get(handle)?.mutex);
       if (!mutex) return this.error(INVALID_HANDLE);
-      if (!mutex.depth) return this.error(NOT_OWNER);
+      if (!mutex.depth || mutex.owner !== kernel.currentThreadID()) return this.error(NOT_OWNER);
       mutex.depth--;
+      if (!mutex.depth) {
+        mutex.owner = 0;
+        this.wake();
+      }
       return 1;
     });
     register('WaitForSingleObject', 2, ([handle, timeout]) => this.wait([handle], false, timeout));
@@ -117,7 +130,13 @@ export class NativeWindowsEvents {
     const handle = this.allocate({ mutex: existing ? existing[0] : this.next });
     if (!handle) return 0;
     if (existing) this.kernel.lastError = ALREADY_EXISTS;
-    else this.mutexes.set(handle, { name, depth: Number(Boolean(owner)) });
+    else
+      this.mutexes.set(handle, {
+        name,
+        depth: Number(Boolean(owner)),
+        owner: owner ? this.kernel.currentThreadID() : 0,
+        abandoned: false,
+      });
     return handle;
   }
   allocate(record) {
@@ -147,34 +166,72 @@ export class NativeWindowsEvents {
     return 1;
   }
   poll(handles, all, consumeReady = true) {
-    const records = handles.map((handle) => this.events.get(handle));
-    if (records.some((record) => !record)) return this.failed(INVALID_HANDLE);
-    if (records.some((record) => record.event && !(record.access & SYNCHRONIZE)))
-      return this.failed(ACCESS_DENIED);
-    const events = records.map((record) =>
-      record.mutex
-        ? this.mutexes.get(record.mutex)
-        : record.event
-          ? this.namedEvents.get(record.event)
-          : record,
-    );
-    if (all) {
-      if (!events.every(available)) return null;
-      if (consumeReady) for (const event of events) consume(event);
-      return 0;
+    const id = this.kernel.currentThreadID(),
+      events = [];
+    for (const handle of handles) {
+      const record = this.events.get(handle) ?? this.kernel.threadHandles?.synchronization(handle);
+      if (!record) return this.failed(INVALID_HANDLE);
+      if ('access' in record && !(record.access & SYNCHRONIZE)) return this.failed(ACCESS_DENIED);
+      events.push(
+        record.mutex
+          ? this.mutexes.get(record.mutex)
+          : record.event
+            ? this.namedEvents.get(record.event)
+            : record,
+      );
     }
-    const index = events.findIndex(available);
+    if (all) {
+      if (!events.every((event) => available(event, id))) return null;
+      const abandoned = events.findIndex((event) => event.abandoned);
+      if (consumeReady) for (const event of events) consume(event, id);
+      return abandoned < 0 ? 0 : WAIT_ABANDONED + abandoned;
+    }
+    const index = events.findIndex((event) => available(event, id));
     if (index < 0) return null;
-    if (consumeReady) consume(events[index]);
-    return index;
+    const status = events[index].abandoned ? WAIT_ABANDONED + index : index;
+    if (consumeReady) consume(events[index], id);
+    return status;
   }
   wait(handles, all, timeout) {
+    const threads = this.kernel.threadHandles;
+    if (threads && threads.currentID() !== 1) {
+      const status = this.poll(handles, all);
+      if (status !== null || !timeout) return status ?? WAIT_TIMEOUT;
+      return threads.park({ kind: 'objects', handles, all }, timeout);
+    }
     return this.waitUntil(() => this.poll(handles, all), timeout);
   }
   waitUntil(poll, timeout) {
     const status = poll();
     if (status !== null) return status;
     if (!timeout) return WAIT_TIMEOUT;
+    const threads = this.kernel.threadHandles;
+    if (threads?.currentID() > 1)
+      throw new Error('This wait has no serializable native thread condition');
+    return threads?.hasWorkers ? this.waitWithThreads(poll, timeout) : this.park(poll, timeout);
+  }
+  async waitWithThreads(poll, timeout) {
+    const threads = this.kernel.threadHandles,
+      cancellation = this.cancelEpoch,
+      deadline = timeout === INFINITE ? Infinity : performance.now() + timeout;
+    for (;;) {
+      if (cancellation !== this.cancelEpoch) return WAIT_FAILED;
+      const status = poll();
+      if (status !== null) return status;
+      if (performance.now() >= deadline) return WAIT_TIMEOUT;
+      const revision = this.revision;
+      if (await threads.pump()) continue;
+      if (cancellation !== this.cancelEpoch) return WAIT_FAILED;
+      const next = Math.min(deadline, threads.nextTimeout()),
+        delay = next === Infinity ? INFINITE : Math.max(0, Math.ceil(next - performance.now()));
+      if (!delay) continue;
+      const result = await this.park(() => (revision === this.revision ? null : 0), delay);
+      if (result === WAIT_FAILED) return WAIT_FAILED;
+    }
+  }
+  park(poll, timeout) {
+    const ready = poll();
+    if (ready !== null) return ready;
     return new Promise((resolve) => {
       const waiter = {
         poll,
@@ -198,10 +255,22 @@ export class NativeWindowsEvents {
     });
   }
   wake() {
+    this.revision++;
     for (const waiter of this.waiters) {
       const result = waiter.poll();
       if (result !== null) waiter.finish(result);
     }
+  }
+  cancelWaits() {
+    this.cancelEpoch++;
+    for (const waiter of this.waiters) waiter.finish(WAIT_FAILED);
+  }
+  abandonThread(id) {
+    for (const mutex of this.mutexes.values())
+      if (mutex.owner === id) {
+        mutex.owner = mutex.depth = 0;
+        mutex.abandoned = true;
+      }
   }
   close(handle) {
     const record = this.events.get(handle);
@@ -274,6 +343,12 @@ export class NativeWindowsEvents {
         typeof record.name !== 'string' ||
         !Number.isSafeInteger(record.depth) ||
         record.depth < 0 ||
+        !Number.isInteger(record.owner) ||
+        record.owner < 0 ||
+        record.owner > 0xffffffff ||
+        Boolean(record.owner) !== Boolean(record.depth) ||
+        typeof record.abandoned !== 'boolean' ||
+        (record.abandoned && record.depth !== 0) ||
         (record.name && (names.has(record.name) || namedEvents.has(record.name)))
       )
         throw new Error('Invalid native mutex checkpoint record');
@@ -294,9 +369,9 @@ export class NativeWindowsEvents {
     this.namedEvents = namedEvents;
   }
   closeAll() {
+    this.cancelWaits();
     this.events.clear();
     this.mutexes.clear();
     this.namedEvents.clear();
-    this.wake();
   }
 }

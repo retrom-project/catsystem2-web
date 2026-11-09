@@ -14,11 +14,13 @@ const TLS_INLINE = 64,
 export class PPIWindowsServices {
   constructor(process, { clock, now = () => performance.now(), epoch } = {}) {
     this.process = process;
+    this.initialTEB = process.teb;
     this.clock = clock;
     this.now = clock ? () => clock.now() : now;
     this.epoch = epoch ?? clock?.epoch ?? Date.now() - this.now();
     this.tls = new Set();
     this.locks = new Map();
+    this.lockOwners = new Map();
     this.functions = new Map();
     this.calls = new Map();
     this.heaps = new Map([[1, { flags: 0, maximum: 0, blocks: new Set() }]]);
@@ -111,7 +113,8 @@ export class PPIWindowsServices {
         this.lastError = 8;
         return 0xffffffff;
       }
-      process.store(this.tlsSlot(index, true), 0);
+      this.tlsSlot(index, true);
+      this.clearTLSSlot(index);
       this.tls.add(index);
       return index;
     });
@@ -120,8 +123,7 @@ export class PPIWindowsServices {
         this.lastError = 87;
         return 0;
       }
-      const slot = this.tlsSlot(index, false);
-      if (slot) process.store(slot, 0);
+      this.clearTLSSlot(index);
       return 1;
     });
     def('TlsGetValue', 1, ([index]) => {
@@ -149,7 +151,7 @@ export class PPIWindowsServices {
     def('DecodePointer', 1, ([pointer]) => pointer ^ 0x7319c5e3);
     def('GetCurrentProcess', 0, () => 0xffffffff);
     def('GetCurrentProcessId', 0, () => 1);
-    def('GetCurrentThreadId', 0, () => 1);
+    def('GetCurrentThreadId', 0, () => this.currentThreadID());
     def('IsDebuggerPresent', 0, () => 0);
     def('IsProcessorFeaturePresent', 1, ([feature]) => Number([3, 6, 7, 8, 10].includes(feature)));
     def('InterlockedIncrement', 1, ([pointer]) => {
@@ -169,21 +171,30 @@ export class PPIWindowsServices {
     });
     def('InitializeCriticalSection', 1, ([pointer]) => {
       this.locks.set(pointer, 0);
+      this.lockOwners.delete(pointer);
       process.write(pointer, new Uint8Array(24));
     });
     def('InitializeCriticalSectionAndSpinCount', 2, ([pointer]) => {
       this.locks.set(pointer, 0);
+      this.lockOwners.delete(pointer);
       process.write(pointer, new Uint8Array(24));
       return 1;
     });
     def('EnterCriticalSection', 1, ([pointer]) => {
-      if (!this.locks.has(pointer)) throw new Error('PPI entered uninitialized critical section');
-      this.locks.set(pointer, this.locks.get(pointer) + 1);
+      if (this.acquireLock(pointer)) return;
+      if (!this.threadHandles) throw new Error('PPI critical section is owned by another thread');
+      return this.threadHandles.lock(pointer);
     });
+    def('TryEnterCriticalSection', 1, ([pointer]) => Number(this.acquireLock(pointer)));
     def('LeaveCriticalSection', 1, ([pointer]) => {
       const count = this.locks.get(pointer);
-      if (!count) throw new Error('PPI left unowned critical section');
+      if (!count || this.lockOwners.get(pointer) !== this.currentThreadID())
+        throw new Error('PPI left unowned critical section');
       this.locks.set(pointer, count - 1);
+      if (count === 1) {
+        this.lockOwners.delete(pointer);
+        this.events?.wake();
+      }
     });
     def('DeleteCriticalSection', 1, ([pointer]) => {
       if (this.locks.get(pointer)) throw new Error('PPI deleted owned critical section');
@@ -602,10 +613,37 @@ export class PPIWindowsServices {
     }
     return 1;
   }
-  tlsSlot(index, create) {
+  currentThreadID() {
+    return this.process.load(this.process.teb + 0x24);
+  }
+  acquireLock(pointer) {
+    const count = this.locks.get(pointer);
+    if (count === undefined) throw new Error('PPI entered uninitialized critical section');
+    const id = this.currentThreadID();
+    if (count && this.lockOwners.get(pointer) !== id) return false;
+    this.locks.set(pointer, count + 1);
+    this.lockOwners.set(pointer, id);
+    return true;
+  }
+  clearTLSSlot(index) {
+    const p = this.process,
+      clear = (teb) => {
+        const slot = this.tlsSlot(index, false, teb);
+        if (slot) p.store(slot, 0);
+      };
+    clear(this.initialTEB);
+    for (const thread of this.threadHandles?.threads.values() ?? [])
+      if (thread.context) clear(thread.context.teb);
+  }
+  releaseTLSEnvironment(teb) {
+    const p = this.process,
+      slots = p.load(teb + TEB_TLS_EXPANSION_SLOTS);
+    if (slots && !p.free(slots)) throw new Error('Invalid virtual thread TLS expansion allocation');
+  }
+  tlsSlot(index, create, teb = this.process.teb) {
     const p = this.process;
-    if (index < TLS_INLINE) return p.teb + TEB_TLS_SLOTS + index * 4;
-    const expansion = p.teb + TEB_TLS_EXPANSION_SLOTS;
+    if (index < TLS_INLINE) return teb + TEB_TLS_SLOTS + index * 4;
+    const expansion = teb + TEB_TLS_EXPANSION_SLOTS;
     let slots = p.load(expansion);
     if (!slots && create) {
       slots = p.allocate((TLS_COUNT - TLS_INLINE) * 4, true);
@@ -624,6 +662,7 @@ export class PPIWindowsServices {
       lastError: this.lastError,
       tls: [...this.tls],
       locks: [...this.locks],
+      lockOwners: [...this.lockOwners],
       exceptionFilter: this.exceptionFilter || 0,
       heaps: [...this.heaps].map(([handle, heap]) => [
         handle,
@@ -646,6 +685,7 @@ export class PPIWindowsServices {
     )
       throw new Error('Invalid native TLS allocation bitmap');
     this.locks = new Map(state.locks);
+    this.lockOwners = new Map(state.lockOwners);
     this.exceptionFilter = state.exceptionFilter;
     this.heaps = new Map(
       state.heaps.map(([handle, heap]) => [handle, { ...heap, blocks: new Set(heap.blocks) }]),

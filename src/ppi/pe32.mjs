@@ -101,6 +101,7 @@ export function parsePE32(bytes, { allowExecutable = false } = {}) {
     image,
     base: b.u32(optional + 28),
     entry: b.u32(optional + 16),
+    stackReserve: b.u32(optional + 72),
     sections,
     exports,
     names,

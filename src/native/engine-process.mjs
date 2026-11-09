@@ -1063,7 +1063,9 @@ export class NativeEngineProcess {
         for (const feature of this.features.values()) await feature.beforeCall?.();
         this.configurationMemory?.push();
         pushed = true;
-        return await this.process.callAsync(address, args, thisPointer, { rasterBudget });
+        const result = await this.process.callAsync(address, args, thisPointer, { rasterBudget });
+        if (this.kernel.threadHandles.hasWorkers) await this.kernel.threadHandles.pump();
+        return result;
       } finally {
         try {
           if (pushed) {
@@ -1160,7 +1162,9 @@ export class NativeEngineProcess {
   }
   async close() {
     if (this.closed) return;
-    if (this.kernel.messageQueue.cancelWaits()) await this.queue;
+    this.kernel.messageQueue.cancelWaits();
+    this.kernel.events.cancelWaits();
+    if (this.pendingCalls) await this.queue;
     const errors = [];
     try {
       for (const feature of [...this.features.values()].reverse())
@@ -1206,7 +1210,11 @@ export class NativeEngineProcess {
     } finally {
       this.kernel.messageQueue.cancelWaits();
       this.kernel.events.closeAll();
-      this.kernel.threadHandles.closeAll();
+      try {
+        this.kernel.threadHandles.closeAll();
+      } catch (error) {
+        errors.push(error);
+      }
       try {
         this.process.close();
       } catch (error) {
