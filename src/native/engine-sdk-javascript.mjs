@@ -2,6 +2,7 @@
 // The SDK embeds V8 3.26.16. Execute its original static initializers and the
 // JavaScript portion of WinMain's platform setup in the virtual x86 process.
 const SDK = 'sdk-4.01-engine-2.6.1.74',
+  MOTION_CACHE = 0xc967ec,
   DEFAULT_MUTEX = 0xc981e4,
   DEFAULT_ISOLATE = 0xc981cc,
   ALLOCATOR = 0xc73b60,
@@ -12,10 +13,24 @@ const SDK = 'sdk-4.01-engine-2.6.1.74',
 export async function initializeSDKJavaScript(engine) {
   const p = engine.process;
   if (engine.profile !== SDK) throw new Error('No original JavaScript platform for this profile');
-  if (engine.refs.sdkJavaScript || p.load(DEFAULT_ISOLATE) || p.load(ALLOCATOR))
+  if (
+    engine.refs.sdkJavaScript ||
+    p.load(MOTION_CACHE) ||
+    p.load(DEFAULT_ISOLATE) ||
+    p.load(ALLOCATOR)
+  )
     throw new Error('The original SDK JavaScript platform cannot be initialized twice');
-  // Run the constructor from the first static initializer and own its
-  // teardown explicitly, in place of registering the desktop CRT atexit.
+  // The original static cache also belongs to plain JavaScript objects, even
+  // when they never load a motion or create any FES object.
+  const motionCache = await p.callAsync(0x622ad0, [0, 0]);
+  if (
+    p.allocations.get(motionCache) !== 0x114 ||
+    p.load(motionCache) !== motionCache ||
+    p.load(motionCache + 4) !== motionCache
+  )
+    throw new Error('The original SDK motion cache did not construct an empty list');
+  p.store(MOTION_CACHE, motionCache);
+  // Own the original static destructors instead of registering desktop CRT atexit.
   await p.callAsync(0x743660, [], DEFAULT_MUTEX);
   await p.callAsync(0x433ac0);
   await p.callAsync(0x433ad0);
@@ -41,16 +56,18 @@ export async function initializeSDKJavaScript(engine) {
     p.load(0xc98210) !== allocator
   )
     throw new Error('The original SDK JavaScript platform lost its owners');
-  engine.refs.sdkJavaScript = { isolate, allocator };
+  engine.refs.sdkJavaScript = { isolate, allocator, motionCache };
 }
 
 export async function releaseSDKJavaScript(engine) {
   const state = engine.refs.sdkJavaScript;
   if (!state) return;
   const p = engine.process,
-    { isolate, allocator } = state;
+    { isolate, allocator, motionCache } = state;
   if (
     engine.profile !== SDK ||
+    p.load(MOTION_CACHE) !== motionCache ||
+    p.allocations.get(motionCache) !== 0x114 ||
     p.load(DEFAULT_ISOLATE) !== isolate ||
     p.load(ALLOCATOR) !== allocator ||
     p.load(allocator) !== ALLOCATOR_VTABLE
@@ -63,5 +80,9 @@ export async function releaseSDKJavaScript(engine) {
     throw new Error('The original SDK JavaScript platform did not dispose its allocator');
   p.store(ALLOCATOR, 0);
   await p.callAsync(0x98d270);
+  await p.callAsync(0x98d1a0);
+  if (p.allocations.has(motionCache))
+    throw new Error('The original SDK motion cache did not release its list');
+  p.store(MOTION_CACHE, 0);
   delete engine.refs.sdkJavaScript;
 }

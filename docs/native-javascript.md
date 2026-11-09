@@ -6,6 +6,11 @@ portion of WinMain's platform setup. The guest owns its isolate, executable
 pages and ArrayBuffer allocator. The browser runs the original disposal
 routine before closing the PE process.
 
+The SDK's shared MOT cache is created before the isolate using the original
+list constructor. Plain JavaScript objects traverse this cache during native
+destruction even if no FES or motion ran. The engine releases the cache with
+its original static destructor after the task graph and V8 have closed.
+
 The browser uses the original V8 options that disable concurrent
 recompilation and parallel or concurrent sweeping for its single virtual CPU.
 It also turns off idle notifications: the guest clock advances between game
