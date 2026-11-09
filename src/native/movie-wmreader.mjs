@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Windows Media reader boundary consumed by the original 2.6.1.76 ASF filter.
 import { InvalidASF, asfHeaderSize, nativeASFProfile } from './movie-asf.mjs';
+import { nativeASFSamples } from './movie-asf-samples.mjs';
 
 const E_POINTER = 0x80004003;
 const E_INVALIDARG = 0x80070057;
@@ -288,13 +289,30 @@ export class NativeWindowsMediaReader {
         (stream) => stream.selected && stream.kind === 'audio',
       );
       graph.wmDuration = reader.duration;
-      const result = await this.show.connectMedia(graph, graph.source + 248);
+      const result = await this.show.connectMedia(graph, graph.source + 248, (bytes) =>
+        this.hasVideoSample(reader, track.number, bytes, graph.filename),
+      );
       if (FAILED(result)) return result;
       if (graph.video.width !== track.width || graph.video.height !== track.height)
         return VFW_E_CANNOT_RENDER;
     }
     graph.wmRendered.add(pin);
     return 0;
+  }
+  hasVideoSample(reader, number, bytes, filename) {
+    try {
+      for (const sample of nativeASFSamples(bytes, reader))
+        if (sample.number === number) return true;
+      throw new InvalidASF('ASF video stream has no complete media object');
+    } catch (error) {
+      if (!(error instanceof InvalidASF)) throw error;
+      this.show.world.host.nativeDiagnostic?.({
+        type: 'movie-codec-unavailable',
+        filename,
+        message: error.message,
+      });
+      return false;
+    }
   }
   async changeState(graph, state) {
     if (!graph.wmFilter) return 0;

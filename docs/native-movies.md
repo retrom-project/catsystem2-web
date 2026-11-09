@@ -417,6 +417,18 @@ several canvas colors, a 440 Hz signal, completion, replay, an independent
 fresh World and release of the native filter and IStream. SDK tests
 verify the original rejection through both Plane commands.
 
+The ASF packet reader indexes compressed media objects with their
+presentation time, clean-point flag and byte ranges in the mounted
+file. It joins objects spanning several packets and expands packed
+sub-payloads. The test fixtures reproduce all 166 compressed samples
+from the original synchronous reader, including six fragmented objects.
+The original Plane connection checks the first complete video sample
+from its IAsyncReader before opening the browser decoder. Later sample
+delivery, seeking and decompression continue through the browser media
+adapter. The packet reader covers uncorrected finite ASF packets.
+[ASF specification](https://download.microsoft.com/download/7/9/0/790fecaa-f64a-4a5e-a430-0bccdab3f1b4/ASF_Specification.doc)
+[Windows Media synchronous reader](https://learn.microsoft.com/en-us/windows/win32/wmformat/to-retrieve-media-samples-with-the-synchronous-reader)
+
 ## Legacy Hap5 frame decoding
 
 The two original Hap constructors at `0x6FC750` and `0x5BAC80`

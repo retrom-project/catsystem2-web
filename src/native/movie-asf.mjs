@@ -158,7 +158,9 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
         playTime = object.getBigUint64(40, true);
       file = {
         duration: playTime > preroll ? playTime - preroll : 0n,
+        preroll,
         bitrate: object.getUint32(76, true),
+        minPacket: object.getUint32(68, true),
         maxPacket: object.getUint32(72, true),
       };
     } else if (type === STREAM_PROPERTIES) {
@@ -201,6 +203,14 @@ export function nativeASFProfile(header, dataPrefix, fileSize) {
     rates = videoBitrates(file, streams, bitrates);
   return {
     duration: file.duration,
+    data: {
+      start: size + 50,
+      end: size + Number(dataSize),
+      packetCount: data.getBigUint64(40, true),
+      minPacket: file.minPacket,
+      maxPacket: file.maxPacket,
+      preroll: file.preroll,
+    },
     streams: streams.map((stream) => {
       const detail = extended.get(stream.number),
         bitrate = detail?.bitrate ?? rates.get(stream.number) ?? 0;

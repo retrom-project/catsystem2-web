@@ -62,6 +62,13 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     files['main.kcs'] = [...kcsProgram([[37, 1024], [43, 0x47, 4], [59]])];
     files['movie/clip.' + extension] = [...source];
     if (split || wmv) files['movie/invalid.' + extension] = [0x1a, 0x45, 0xdf, 0xa3, 0x9f, 1];
+    if (wmv && gamePE) {
+      const badPacket = await readFile(
+        new URL('../fixtures/native-plane-movie-wmv-packed.wmv', import.meta.url),
+      );
+      badPacket[Number(badPacket.readBigUInt64LE(16)) + 50 + 13] = 0x80;
+      files['movie/invalid-packet.wmv'] = [...badPacket];
+    }
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, files, gamePE, movie, texture, extension, format }) => {
@@ -113,7 +120,8 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         await game.open();
         const sourceBytes = Uint8Array.from(files['movie/clip.' + extension]),
           sha256 = await nativeImageIdentity(sourceBytes),
-          decoders = [];
+          decoders = [],
+          diagnostics = [];
         let url;
         // A stale same-name sidecar cannot replace the bytes selected by the
         // original IFile. The valid converted copy has a qualified alias.
@@ -167,6 +175,9 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             host: {
               nativeGPU: () => gpu,
               nativeLog() {},
+              nativeDiagnostic(detail) {
+                diagnostics.push(detail);
+              },
               nativeMovie(_name, _owner, world) {
                 const decoder = new BrowserNativeMovie({ game: world.game, timeout: 10000 });
                 decoders.push(decoder);
@@ -254,6 +265,20 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               events: world.nativeEngine.kernel.events.events.size,
               taskMemory: world.nativeEngine.kernel.comMemory.snapshot(),
               moduleReferences: split ? moduleReferences(world) : null,
+            };
+          }
+          let rejectedPacket;
+          if (wmv) {
+            await load(first, plane, 'invalid-packet');
+            const invalid = (await command(first, lookup, world.nativeTaskID(plane))).value,
+              pointer = world.runtime.handles.get(invalid, 'plane-movie');
+            rejectedPacket = {
+              graph: p.load(pointer),
+              decoders: decoders.length,
+              message: diagnostics.find(
+                ({ type, filename }) =>
+                  type === 'movie-codec-unavailable' && filename?.endsWith('invalid-packet.wmv'),
+              )?.message,
             };
           }
           await load(first, plane, 'clip');
@@ -619,6 +644,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             windowsMedia: [wmTopology, freshWM],
             windowsMediaTypes: [firstWMTypes, freshWMTypes],
             rejectedCodec,
+            rejectedPacket,
             rejectedHandleReleased,
             decodedAudio,
             muted: decoders.slice(0, 2).map(({ video }) => video.muted),
@@ -745,6 +771,11 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         moduleReferences: null,
       });
       expect(result.rejectedHandleReleased).toBe(true);
+      expect(result.rejectedPacket).toEqual({
+        graph: 0,
+        decoders: 0,
+        message: 'Invalid ASF packet payload count',
+      });
       expect(result.decodedAudio.amplitude).toBeGreaterThan(0.025);
       expect(result.decodedAudio.hz).toBeGreaterThan(420);
       expect(result.decodedAudio.hz).toBeLessThan(460);

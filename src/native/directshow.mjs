@@ -476,14 +476,15 @@ export class NativeDirectShow {
   connectDirect(graph, source, input, mediaType) {
     return this.splitFilters.connectDirect(graph, source, input, mediaType);
   }
-  async connectMedia(graph, pin) {
+  async connectMedia(graph, pin, acceptSource) {
     if (graph.video) return VFW_E_WRONG_STATE;
     if (this.hapDriver.matches(graph.movie)) {
       if (!this.hapDriver.available()) return VFW_E_CANNOT_RENDER;
       graph.hap = true;
     }
-    const bytes = await this.stream(graph, pin),
-      decoder = await this.decoder(graph, bytes);
+    const bytes = await this.stream(graph, pin);
+    if (acceptSource && !acceptSource(bytes)) return VFW_E_CANNOT_RENDER;
+    const decoder = await this.decoder(graph, bytes);
     if (!decoder) return VFW_E_CANNOT_RENDER;
     const result = graph.textureFilter
       ? await this.engine.features
