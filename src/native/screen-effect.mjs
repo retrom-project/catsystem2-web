@@ -145,7 +145,7 @@ export class NativeScreenEffectTask {
     this.base = this.world.base(record);
     this.abi = owner.abi[record.kind];
     if (!this.abi) throw new Error(`Unrecovered screen-effect task kind ${record.kind}`);
-    record.flags = 0;
+    record.flags ??= 0;
   }
   async invoke(
     address,
@@ -179,7 +179,10 @@ export class NativeScreenEffectTask {
         this.record.frameRate,
         this.owner.platform.refs.view,
       ]);
-      this.record.flags = p.load(this.pointer + 64);
+      // The original task factory assigns the concrete kind after the
+      // derived constructor returns (5DDA90 / 4B9CC0).
+      this.record.flags = this.record.kind;
+      p.store(this.pointer + 64, this.record.flags);
       await this.owner.taskMemory.ready(this.record);
     } finally {
       p.free(source);

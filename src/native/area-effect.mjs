@@ -2,26 +2,29 @@
 // Original CPU-area effects. These borrow their source/destination bitmap
 // wrappers; the FES resource list owns the wrappers and task lifetime.
 import { NativeScreenEffectTask } from './screen-effect.mjs';
+import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
     26: { construct: 0x5efc30, size: 0xc8, vtable: 0x8cde44 },
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
     28: { construct: 0x5f10e0, size: 0xc4, vtable: 0x8ce004 },
+    29: { construct: 0x5f1aa0, size: 0xc8, vtable: 0x8ce0d4 },
   },
   'sdk-4.01-engine-2.6.1.74': {
     26: { construct: 0x4ca560, size: 0xc8, vtable: 0x993124 },
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
     28: { construct: 0x4cb950, size: 0xc4, vtable: 0x9932e4 },
+    29: { construct: 0x4cc2e0, size: 0xc8, vtable: 0x9933b4 },
   },
 };
 export function areaEffectRawMessage(profile, message) {
   if (!profile.startsWith('sdk-')) return message;
-  return message >= 257 && message <= 276 ? message - 5 : message >= 39 ? message - 2 : message;
+  return message >= 257 && message <= 278 ? message - 5 : message >= 39 ? message - 2 : message;
 }
-function canonicalMessage(profile, message) {
+function areaEffectCanonicalMessage(profile, message) {
   if (!profile.startsWith('sdk-')) return message;
-  return message >= 252 && message <= 271 ? message + 5 : message >= 37 ? message + 2 : message;
+  return message >= 252 && message <= 273 ? message + 5 : message >= 37 ? message + 2 : message;
 }
 export class NativeAreaEffects {
   static async open(engine, world) {
@@ -53,7 +56,7 @@ export class NativeAreaEffects {
     const value = await this.world.sendNativeEngine(
       target,
       senderID,
-      canonicalMessage(this.engine.profile, raw),
+      areaEffectCanonicalMessage(this.engine.profile, raw),
       w,
       l,
       {
@@ -82,8 +85,9 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [26, 27, 28])
+  for (const kind of [26, 27, 28, 29])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );
+  installNativeAreaEffectCommands(world);
 }
