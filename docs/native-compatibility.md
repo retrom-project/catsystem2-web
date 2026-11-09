@@ -9,6 +9,14 @@ The frozen inputs and hashes are recorded in [references.json](../references.jso
 SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 **2.6.1.76**. SDK package version and engine ABI version are separate identifiers.
 
+Cold startup executes each original executable resource block, including its
+identity comparison against startup settings and its copy into the live
+settings. The original resource objects are released before returning through
+the original function epilogue. The following desktop registration and device
+checks stay outside this block; the browser still mounts prepared archives.
+The Unicode startup error path resolves fallback text through the original
+game language tree.
+
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
 | SDK / 2.6.1.74  | 1,009 |                    639 |             82 |                     19 |                     269 |

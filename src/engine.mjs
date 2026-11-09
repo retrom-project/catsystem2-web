@@ -184,6 +184,7 @@ export class CatSystem2 {
       host: this.host,
       profile: this.nativeProfile,
       bootstrapOwner: {
+        executableResources: true,
         seedFromClock: this.randomSeed === undefined,
         glyphs: new CanvasTextGlyphs({
           family: (name) => this.renderer.fonts.get(name.toLowerCase()) ?? name,
