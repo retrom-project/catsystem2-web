@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    630 |             82 |                     19 |                     278 |
-| Game / 2.6.1.76 | 1,055 |                    892 |             58 |                     17 |                      88 |
+| SDK / 2.6.1.74  | 1,009 |                    631 |             82 |                     19 |                     277 |
+| Game / 2.6.1.76 | 1,055 |                    893 |             58 |                     17 |                      87 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -43,10 +43,11 @@ Each pair loads into the Plane and borrows its movie identity without
 transferring ownership. The two pinned engines render the decoded result and
 resume it in a fresh browser instance.
 
-Main `C4/C5/C6/C8/C9/CA/CB` execute the original
+Main `C4/C5/C6/C7/C8/C9/CA/CB` execute the original
 [area effect wrappers](native-area-effects.md). The original Wipe2 receiver
 and Wipe1/Fade source replacement render and continue after restore. Raster
-retains its original drawing callback; Hydro leaves the update unhandled. Other
+retains its original drawing callback; Hydro leaves the update unhandled. `C7`
+copies and sends the matrix packet, which Raster and SimplePlane ignore. Other
 `C4` receiver types still require implementation and verification.
 
 The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
