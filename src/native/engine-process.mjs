@@ -18,7 +18,7 @@ import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { installNativeVolumeInformation } from './windows-volume.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
-import { initializeSDKLanguage, releaseSDKLanguage } from './engine-language.mjs';
+import { initializeNativeLanguage, releaseNativeLanguage } from './engine-language.mjs';
 import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
@@ -795,7 +795,7 @@ export class NativeEngineProcess {
           throw new Error('Native application COM initialization did not open a new apartment');
         engine.refs.applicationCOM = true;
         await initializeNativeFileServer(engine);
-        await initializeSDKLanguage(engine);
+        await initializeNativeLanguage(engine);
         await engine.initializeOwner(image, options.bootstrapOwner);
         if (options.bootstrapOwner.mountFiles) {
           await options.bootstrapOwner.mountFiles(engine);
@@ -1087,7 +1087,7 @@ export class NativeEngineProcess {
         errors.push(error);
       }
       try {
-        releaseSDKLanguage(this);
+        releaseNativeLanguage(this);
       } catch (error) {
         errors.push(error);
       }

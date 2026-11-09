@@ -74,3 +74,49 @@ test(
     }
   },
 );
+
+test(
+  'game startup owns the original Unicode language fallback tree through restore',
+  { skip: !process.env.CATSYSTEM2_ENGINE_EXE },
+  async () => {
+    const profile = 'nekopara-vol3-engine-2.6.1.76',
+      bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_ENGINE_EXE)),
+      open = () =>
+        NativeEngineProcess.open({
+          profile,
+          bytes,
+          bootstrapOwner: {},
+          configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+          readFile: async () => null,
+        }),
+      lookup = (engine, value) => {
+        const p = engine.process,
+          input = p.allocate(128, true);
+        try {
+          engine.kernel.writeString(input, value, true);
+          return p.string(p.call(0x5abe00, [input]), true);
+        } finally {
+          p.free(input);
+        }
+      },
+      engine = await open(),
+      { head } = engine.refs.startupLanguage;
+    let fresh;
+    try {
+      assert.equal(engine.process.load(0xbc3880), head);
+      assert.equal(lookup(engine, '表示'), '表示');
+      assert.equal(lookup(engine, '$TITLE$日本語の既定値'), '日本語の既定値');
+      fresh = await open();
+      fresh.restore(engine.snapshot());
+      assert.equal(fresh.process.load(0xbc3880), head);
+      assert.equal(lookup(fresh, '$TITLE$恢复后的文本'), '恢复后的文本');
+    } finally {
+      await fresh?.close();
+      await engine.close();
+    }
+    for (const instance of [engine, fresh]) {
+      assert.equal(instance.process.allocations.has(head), false);
+      assert.equal(instance.refs.startupLanguage, undefined);
+    }
+  },
+);
