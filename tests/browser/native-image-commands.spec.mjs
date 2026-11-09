@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { kcsProgram } from '../helpers.mjs';
+import { hg3, kcsProgram } from '../helpers.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
-  test(`${profile} KCS image upload reaches the original tiled view and restores its GPU pixels`, async ({
+  test(`${profile} KCS image warm-up and upload use the original view and restore its GPU pixels`, async ({
     page,
   }) => {
     test.skip(
@@ -17,6 +17,7 @@ for (const [profile, variable] of [
     const files = new Map([
       ['engine.exe', await readFile(process.env[variable])],
       ['main.kcs', kcsProgram([[37, 1024], [43, 0xd1, 4], [59]])],
+      ['warm.hg3', hg3(8, 6, new Uint8Array(8 * 6 * 4).fill(255))],
     ]);
     if (!profile.startsWith('sdk-'))
       files.set('emotedriver.dll', await readFile(process.env.CATSYSTEM2_EMOTE_DLL));
@@ -83,8 +84,48 @@ for (const [profile, variable] of [
           const before = pixels(world),
             task = world.main,
             m = task.machine,
-            call = (id, args) => world.runtime.native('main', id, args, m, task),
-            image = (await call(0x70, [4, 3])).value;
+            call = (id, args) => world.runtime.native('main', id, args, m, task);
+          const reads = [],
+            read = world.resourceCache.sourceRead;
+          world.resourceCache.sourceRead = (name) => {
+            reads.push(name);
+            return read(name);
+          };
+          const handles = world.runtime.handles.records.size,
+            p = world.nativeEngine.process,
+            sdk = profile.startsWith('sdk-');
+          let decoded = 0,
+            released = 0;
+          const stops = [
+            p.beforeInstruction(sdk ? 0x572bf0 : 0x6a1800, 'observe warm-up HG3 decode', () => {
+              decoded++;
+            }),
+            p.beforeInstruction(sdk ? 0x565590 : 0x68ea30, 'observe warm-up image release', () => {
+              released++;
+            }),
+          ];
+          try {
+            m.writeString('warm', 64);
+            m.writeString('%s[G64].hg3', 128);
+            const warmed = await call(0x2a9, [128]);
+            if (warmed.control !== 2 || !reads.includes('warm.hg3') || !decoded || !released)
+              throw new Error(
+                `Original image warm-up did not decode and release its bitmap: ${reads}, ${decoded}, ${released}`,
+              );
+            const beforeMissing = decoded;
+            m.writeString('absent.hg3', 128);
+            const missing = await call(0x2a9, [128]);
+            if (missing.control !== 2 || decoded !== beforeMissing)
+              throw new Error('Missing image warm-up should return without decoding');
+          } finally {
+            for (const stop of stops) stop();
+            world.resourceCache.sourceRead = read;
+          }
+          if (world.runtime.handles.records.size !== handles)
+            throw new Error('Image warm-up exposed a script-owned bitmap');
+          await render(world);
+          equal(pixels(world), before, 'image warm-up leaves the visible plane unchanged');
+          const image = (await call(0x70, [4, 3])).value;
           await call(0x75, [image, 0, 0, 4, 3, 0xff123456]);
           await call(0x73, [0, 5, 7, 4, 3, image, 0, 0, 4, 3]);
           await render(world);

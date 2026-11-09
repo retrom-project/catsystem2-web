@@ -5,6 +5,12 @@ original wrappers with persistent bitmap identities. They cover blended
 transfer, clipped copy/resizing, composition lists, opaque-bound computation,
 rectangle attributes, attribute copying and the original blur filter.
 
+Main `2A9` formats an image name, resolves it through the original image
+category and runs the view's original image loader. The wrapper immediately
+releases a successful result and returns control 2 without exposing a handle.
+The large HG3 row path shares the bounded bulk decoder used by the other
+native image calls.
+
 Source and destination aliases retain one guest bitmap. `78` translates each
 opaque image handle in its VM list to a real native wrapper without writing a
 temporary guest pointer back to KCS. The rectangle is copied independently so
@@ -41,6 +47,8 @@ The view upload is an explicit transport boundary in that probe and checks the
 actual view receiver. Public World tests additionally cover fresh restoration,
 source mutation, final release and failed child Script reload.
 
-The two-profile Chromium test uses an authored allocated texture page and a
-visible native VRAM plane. It checks the changed pixels, replacement upload,
-fresh restored GPU output and independence of the original World.
+The two-profile Chromium test first confirms the warm-up opens and decodes a
+mounted HG3, destroys the temporary bitmap and leaves the visible plane intact.
+It then uploads to an authored texture page on a visible native VRAM plane and
+checks the changed pixels, replacement upload, fresh restored GPU output and
+independence of the original World.

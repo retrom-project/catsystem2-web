@@ -2,6 +2,7 @@
 // Original image transfers, attributes and filters share one bitmap backing.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
+import { nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_IMAGE_COMMAND_CONTRACTS = Object.freeze(
   [
@@ -12,6 +13,7 @@ export const NATIVE_IMAGE_COMMAND_CONTRACTS = Object.freeze(
     [0x218, 7, 1, 0x64b9f0, 0x5185b0],
     [0x219, 2, 1, 0x64a8c0, 0x517530],
     [0x21a, 3, 2, 0x64a910, 0x517580],
+    [0x2a9, 1, 2, 0x64a940, 0x5175b0],
   ].map(([id, words, control, game, sdk]) =>
     Object.freeze({ id, words, control, handlers: [game, sdk] }),
   ),
@@ -65,14 +67,19 @@ export class NativeImageCommands {
             ? Boolean(words[0] && words[1])
             : Boolean(words[0]);
     if (active) need(spec.words);
-    const bitmaps = await this.world.getNativeFeature('bitmap-memory');
-    if (active) {
+    const warmup = id === 0x2a9,
+      bitmaps = warmup ? null : await this.world.getNativeFeature('bitmap-memory');
+    if (active && !warmup) {
       if (words[0]) words[0] = await bitmaps.wrapper(words[0]);
       if (id === 0x73 || id === 0x74) words[5] = await bitmaps.wrapper(words[5]);
       if (id === 0x219) words[1] = await bitmaps.wrapper(words[1]);
     }
     let platform;
-    if (id === 0x73 && active && !words[0]) {
+    if (warmup) {
+      await this.world.getNativeFeature('data-buffers');
+      await this.world.getNativeFeature('engine-files');
+    }
+    if (warmup || (id === 0x73 && active && !words[0])) {
       platform = await this.world.getNativeFeature('graphics-platform');
       await platform.ensureRenderer();
     }
@@ -98,7 +105,7 @@ export class NativeImageCommands {
         p.store(host + 116, platform.refs.view);
       }
       const parameters = [bridge.pointer, host, argv, out],
-        options = { task: task.id },
+        options = { task: task.id, messageContext: warmup ? nativeHG3DecodeContext() : undefined },
         control = p.asyncEnabled
           ? await this.engine.callFromHost(
               spec.handlers[this.profileIndex],

@@ -198,7 +198,8 @@ try {
     [3, 2, 4, 3],
     [0, 0, 0, 1],
   ];
-  for (const spec of NATIVE_IMAGE_COMMAND_CONTRACTS) {
+  // Warm-up uses the real mounted file and view in native-image-commands.spec.mjs.
+  for (const spec of NATIVE_IMAGE_COMMAND_CONTRACTS.filter(({ id }) => id !== 0x2a9)) {
     await reset();
     await run(
       spec,
