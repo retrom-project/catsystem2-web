@@ -2716,6 +2716,8 @@ const hostDescriptions = [
     'void',
   ],
   [0x50, 'plane.releaseBitmap', ['handle task'], 'void'],
+  [0x51, 'plane.loadKX2', ['nativeID target', 'format* filename'], 'void'],
+  [0x15a, 'plane.sendKX3Path', ['nativeID target', 'format* filename', 'word wParam'], 'void'],
   [0x53, 'plane.resetBase', ['handle task'], 'void'],
   [
     0x54,
@@ -3274,7 +3276,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e, 0x3df, 0x3e0, 0x3e2].includes(id) ||
     (id >= 0x7b && id <= 0x8b) ||
     (id >= 0x90 && id <= 0x9a) ||
-    [0x191, 0x193, 0x194, 0x1d2].includes(id) ||
+    [0x51, 0x15a, 0x191, 0x193, 0x194, 0x1d2].includes(id) ||
     (id >= 0x1b2 && id <= 0x1b6) ||
     [0x185, 0x186].includes(id) ||
     [0xee, 0xf4, 0xf6, 0x1d4, 0x1d5, 0x281].includes(id) ||

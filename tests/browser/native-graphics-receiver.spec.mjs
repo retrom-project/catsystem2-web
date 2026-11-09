@@ -59,7 +59,7 @@ for (const [profile, variable] of [
     const result = await page.evaluate(
       async ({ profile, names }) => {
         const [
-            { exerciseGraphRendering },
+            { exerciseGraphRendering, exercisePlaneFileModel },
             { StageRenderer },
             { exercisePlaneFlow },
             { browserNativeWorld, browserAssert },
@@ -81,7 +81,7 @@ for (const [profile, variable] of [
               ]),
             ),
           );
-        const result = await exerciseGraphRendering(profile, files, () => {
+        const makeStage = () => {
           const canvas = new OffscreenCanvas(16, 16);
           return new StageRenderer({
             canvas,
@@ -90,7 +90,9 @@ for (const [profile, variable] of [
               this.ctx.reset();
             },
           });
-        });
+        };
+        const result = await exerciseGraphRendering(profile, files, makeStage);
+        result.fileModel = await exercisePlaneFileModel(profile, files, makeStage);
         await exercisePlaneFlow(() => {
           const world = browserNativeWorld({
             profile,
@@ -107,5 +109,16 @@ for (const [profile, variable] of [
       },
       { profile, names: [...files.keys()] },
     );
-    for (const [name, passed] of Object.entries(result)) expect(passed, name).toBe(true);
+    const { fileModel, ...checks } = result;
+    for (const [name, passed] of Object.entries(checks)) expect(passed, name).toBe(true);
+    expect(fileModel).toEqual({
+      kind: 6,
+      source: '@cat/kx2/mesh07.kx2',
+      descriptor: true,
+      loads: 2,
+      colored: 48,
+      unchanged: true,
+      restored: true,
+      control: 2,
+    });
   });

@@ -84,6 +84,22 @@ The movie graph variants of messages 43 and 44 reach the original DirectShow
 loading path. The [VMR9 and Texture Renderer](native-movies.md) both draw
 decoded frames through the shared device and preserve their playback state.
 
+## File-backed Plane models
+
+Main `51` invokes the SDK `5133C0` or game `640CE0` wrapper. It
+expands the VM filename, prefixes the KX2 resource category and sends the
+original guest filename buffer to the mounted Plane. The original loader opens
+the resource, parses its triangle records and installs a type 6 graph model.
+Main `15A` similarly forwards the formatted KX3 path and its raw word through
+SDK `513320` or game `640C40`. Both frozen BasePlane receivers leave the
+existing model unchanged for this message; this route establishes no KX3 file
+decoder.
+
+The Chromium receiver probe runs both wrappers with an authored two-triangle
+KX2 file and a formatted VM argument in each frozen build. It checks both
+file opens, 48 colored pixels from a live VRAM page, the unchanged model after
+`15A`, and matching pixels after restoring into a fresh World.
+
 ## VRAM pages
 
 Ordinary textured planes and explicit divided meshes use the same owned VRAM

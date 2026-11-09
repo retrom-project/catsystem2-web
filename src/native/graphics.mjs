@@ -46,6 +46,7 @@ import { installNativeEngineWorkers } from './engine-workers.mjs';
 import { NativeVMR9 } from './vmr9.mjs';
 import { NativeDirectShow } from './directshow.mjs';
 import { installNativePlaneMovieCommands } from './plane-movie-command.mjs';
+import { installNativePlaneModelCommands } from './plane-model-command.mjs';
 import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
@@ -1062,6 +1063,7 @@ export function installNativeGraphics(world) {
       return new NativeDirectShow(engine, world, await world.getNativeFeature('vmr9'));
     });
     installNativePlaneMovieCommands(world);
+    installNativePlaneModelCommands(world);
     world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
     world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {

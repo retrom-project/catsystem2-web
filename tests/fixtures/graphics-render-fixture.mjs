@@ -382,3 +382,107 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     await world.close({ flushFiles: false });
   }
 }
+
+export async function exercisePlaneFileModel(profile, assets, makeStage) {
+  // KX2 header: bounding corners followed by two 48-byte triangle records.
+  const mesh = packet([
+      0x0032584b,
+      0,
+      0,
+      floatBits(8),
+      floatBits(6),
+      2,
+      0,
+      0,
+      0,
+      0xffffffff,
+      floatBits(8),
+      0,
+      0,
+      0xffffffff,
+      0,
+      floatBits(6),
+      0,
+      0xffffffff,
+      floatBits(8),
+      0,
+      0,
+      0xffffffff,
+      floatBits(8),
+      floatBits(6),
+      0,
+      0xffffffff,
+      0,
+      floatBits(6),
+      0,
+      0xffffffff,
+    ]).bytes(0, 24 + 2 * 48),
+    files = new Map(assets),
+    name = '@cat/kx2/mesh07.kx2';
+  files.set(name, mesh);
+  const make = () => {
+      const world = createTextureMemoryWorld(profile, files, makeStage);
+      const texture = world.configuration.fields.texture;
+      texture.grid.set([1, 1]);
+      for (const area of texture.areas) area.fill(0xffffffff);
+      texture.areas[0].set([0, 0, 1, 1]);
+      return world;
+    },
+    world = make(),
+    invoke = (owner, cmd, args) =>
+      owner.runtime.native('main', cmd, args, owner.main.machine, owner.main),
+    send = (owner, id, message, w, l, payload) =>
+      owner.sendEngine(id, owner.main.id, message, w, l, { payload }),
+    render = async (owner) => {
+      await owner.stageRenderer.render(owner.graphics.stage, null, owner.particles.drawItems());
+      return owner.stageRenderer.renderer.ctx.getImageData(0, 0, 16, 16).data;
+    };
+  let fresh;
+  try {
+    const read = world.game.read,
+      requests = [];
+    world.game.read = (path) => {
+      if (path === name) requests.push(path);
+      return read.call(world.game, path);
+    };
+    await world.initialize('main.kcs');
+    const id = await world.objects.create({ kind: 2, parent: world.root }),
+      task = world.graphics.get(id),
+      target = world.nativeTaskID(id),
+      p = world.nativeEngine.process,
+      platform = await world.getNativeFeature('graphics-platform'),
+      vm = world.main.machine;
+    vm.store(512, 7);
+    vm.writeString('mesh%02d[G512].kx2', 128);
+    await world.graphics.fill(0, 0, 8, 6, 0xff295cb4);
+    const reply = await invoke(world, 0x51, [target, 128]),
+      descriptor = platform.descriptor(target),
+      model = p.load(task.pointer + 336),
+      source = p.string(task.pointer + 412);
+    await send(world, id, 49, 0, 0, packet([0, 0, 100].map(floatBits)));
+    await send(world, id, 51, 0, 0, packet([2, 3, 0].map(floatBits)));
+    await send(world, id, 48, 0, 1);
+    const before = await render(world);
+    await invoke(world, 0x51, [0]);
+    vm.writeString('untouched.kx3', 128);
+    await invoke(world, 0x15a, [target, 128, 0x80000000]);
+    const unchanged =
+      descriptor === platform.descriptor(target) && equal(await render(world), before);
+    fresh = make();
+    await fresh.restore(structuredClone(world.snapshot()));
+    const after = await render(fresh);
+    return {
+      kind: model,
+      source,
+      descriptor: Boolean(descriptor),
+      loads: requests.length,
+      colored: colors(before, [41, 92, 180]),
+      unchanged,
+      restored: equal(before, after),
+      control: reply.control,
+    };
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
+}
