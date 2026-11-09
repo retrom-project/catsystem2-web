@@ -1,17 +1,18 @@
-# Native Wipe2 area effect
+# Native area effect controls
 
 KCS can create the original `Task_Eff2D_Wipe2` task with kind 29. Both frozen
 profiles run the original constructor, packet receiver, frame update, masked
 bitmap drawing and destructor in the shared PE process. The area effect writes
 to the native view's bitmap upload path.
 
-| Main slot | Arguments                  | Control | Game entry | SDK entry | Game / SDK message           |
-| --------- | -------------------------- | ------- | ---------- | --------- | ---------------------------- |
-| `C4`      | Task ID, VM packet address | 2       | `641600`   | `529770`  | 13, then 274 / 269 for Wipe2 |
-| `C5`      | Task ID                    | 2       | `6419A0`   | `529B10`  | 257 / 252                    |
-| `C6`      | Task ID                    | 2       | `6419D0`   | `529B40`  | 258 / 253                    |
-| `C8`      | Task ID                    | 1       | `641840`   | `5299B0`  | 259 / 254                    |
-| `CB`      | Task ID                    | 2       | `6415D0`   | `529740`  | 261 / 256                    |
+| Main slot | Arguments                  | Control | Game entry | SDK entry | Game / SDK message                    |
+| --------- | -------------------------- | ------- | ---------- | --------- | ------------------------------------- |
+| `C4`      | Task ID, VM packet address | 2       | `641600`   | `529770`  | 13, then 274 / 269 for Wipe2          |
+| `C5`      | Task ID                    | 2       | `6419A0`   | `529B10`  | 257 / 252                             |
+| `C6`      | Task ID                    | 2       | `6419D0`   | `529B40`  | 258 / 253                             |
+| `C8`      | Task ID                    | 1       | `641840`   | `5299B0`  | 259 / 254                             |
+| `CA`      | Task ID, VM source pair    | 2       | `641A00`   | `529B70`  | 13, then 260 / 255 for Wipe1 and Fade |
+| `CB`      | Task ID                    | 2       | `6415D0`   | `529740`  | 261 / 256                             |
 
 `C4` queries the receiver's kind before reading the VM address. The original
 `GCALL` leaves the native table slot address in ECX, which `C4` initially saves
@@ -35,26 +36,30 @@ the active flag. `C6` uploads the destination for any initialized effect, while
 `CB` does so only for an active effect. During playback the original rasterizer
 compares the first byte of each 32-bit mask pixel with the threshold computed from
 elapsed frames and duration. At natural completion it uploads the destination
-and clears the active flag. The receiver also accepts original message 260 / 255
-to replace the borrowed source and destination wrappers.
+and clears the active flag. The Wipe2 receiver also accepts message 260 / 255.
+The main `CA` wrapper only sends that message to kind 26 (Wipe1) and kind 27
+(Fade). Its 20-byte packet borrows the new source and destination at offsets
+4 and 16. The original receiver keeps the active clock and work bitmap, and
+Fade still checks the pair's dimensions and pixel format.
 
 ## Verification
 
 `scripts/verify-native-area-effect-commands.mjs` executes both complete frozen
 wrappers and the adapter with an independent observing transport. Each profile
-runs 1,528 wrapper cases with 10,868 comparisons over all initializer kind branches,
-data, shared and extended VM regions, missing addresses, receiver writes, output
-canaries and unwritten replies. A second phase in the same script runs the original
-task factory, Wipe2 receiver, frame driver, draw and destruction. Its 52 checks per
-profile use authored bitmaps and record the uploaded bytes at the view boundary.
+runs 2,928 wrapper cases with 22,108 comparisons over initializer and replacement
+kind branches, data, shared and extended VM regions, missing addresses, receiver
+writes, output canaries and unwritten replies. Its 96 receiver checks per profile
+execute the original Wipe2 lifecycle and Wipe1/Fade source changes, including the
+uploaded bytes and Fade diagnostics.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
 pixels. It restores a fresh World mid-effect, verifies the next frame, then
-exercises both finish commands and destruction. It also checks that source
-ownership stays with the KCS resource list or bitmap owner. Frozen executables
-and raw reports stay outside version control.
+exercises both finish commands and destruction. A separate test replaces Wipe1
+and Fade sources during playback and verifies the next pixels before and after
+fresh restore. The source ownership stays with the KCS resource list or bitmap
+owner. Frozen executables and raw reports stay outside version control.
 
 The wrapper checks cover the routing envelope for every `C4` kind. The original
-receiver and browser pixel checks here cover kind 29. The remaining effect work includes other `C4` receiver types and the
-`C7`, `C9` and `CA` wrappers.
+initializer receiver and browser pixel checks here cover kind 29. The remaining
+effect work includes other `C4` receiver types and the `C7` and `C9` wrappers.

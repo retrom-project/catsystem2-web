@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    621 |             82 |                     19 |                     287 |
-| Game / 2.6.1.76 | 1,055 |                    883 |             58 |                     17 |                      97 |
+| SDK / 2.6.1.74  | 1,009 |                    629 |             82 |                     19 |                     279 |
+| Game / 2.6.1.76 | 1,055 |                    891 |             58 |                     17 |                      89 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -37,10 +37,16 @@ Main `D0` executes both original [task dump wrappers](native-task-dump.md).
 The SDK writes its CSS task tree through the original receiver. The game
 receiver completes its message without a file write.
 
-Main `2BD` and `2BE` execute the original [Plane movie wrappers](native-movies.md).
-The first loads into the Plane; the second borrows its movie identity without
+Main `2BD/2BE` and `3DC/3DD` execute the original
+[Plane movie wrappers](native-movies.md) for VMR9 and the Texture Renderer.
+Each pair loads into the Plane and borrows its movie identity without
 transferring ownership. The two pinned engines render the decoded result and
 resume it in a fresh browser instance.
+
+Main `C4/C5/C6/C8/CA/CB` execute the original
+[area effect wrappers](native-area-effects.md). The original Wipe2 receiver
+and Wipe1/Fade source replacement render and continue after restore. Other
+`C4` receiver types still require implementation and verification.
 
 The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
 wrappers and VM translators with 40,612 comparisons across both engines.

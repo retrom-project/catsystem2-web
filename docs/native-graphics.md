@@ -75,7 +75,8 @@ cleanup through the owning SimplePlane. These auxiliary IDs share the native
 view without requiring a World task of the same number.
 
 The movie graph variants of messages 43 and 44 reach the original DirectShow
-loading path. Its VMR9 and Texture Renderer services remain platform work.
+loading path. The [VMR9 and Texture Renderer](native-movies.md) both draw
+decoded frames through the shared device and preserve their playback state.
 
 ## VRAM pages
 

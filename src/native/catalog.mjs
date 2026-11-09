@@ -1979,11 +1979,19 @@ const extendedDescriptions = [
   [0x10e, 'movie.redraw', ['handle movie'], 'void'],
   [0x2bd, 'movie.planeLoad', ['word planeTask', 'format* filename'], 'void'],
   [0x2be, 'movie.planeBorrow', ['word planeTask'], 'borrowed handle'],
+  [0x3dc, 'movie.planeEffectLoad', ['word planeTask', 'format* filename'], 'void'],
+  [0x3dd, 'movie.planeEffectBorrow', ['word planeTask'], 'borrowed handle'],
   [0x1a1, 'movie.volume', ['handle movie', 'u32 volume'], 'void'],
   [0x314, 'movie.rectangle', ['handle movie', 'i32 x', 'i32 y', 'i32 width', 'i32 height'], 'void'],
   [0x3e4, 'movie.mode', ['handle movie', 'word mode'], 'void'],
   [0x3e5, 'movie.renderGate', ['handle movie', 'bool enabled'], 'void'],
   [0x3e6, 'movie.positionMilliseconds', ['handle movie'], 'u32'],
+  [0xc4, 'areaEffect.initialize', ['word task', 'VMptr kindSpecificPacket'], 'void'],
+  [0xc5, 'areaEffect.start', ['word task'], 'void'],
+  [0xc6, 'areaEffect.finish', ['word task'], 'void'],
+  [0xc8, 'areaEffect.active', ['word task'], 'word'],
+  [0xca, 'areaEffect.replaceSources', ['word task', 'VMptr sourcePair'], 'void'],
+  [0xcb, 'areaEffect.finishActive', ['word task'], 'void'],
   [0x341, 'hostMemory.allocate', ['u32 bytes'], 'PEptr'],
   [0x342, 'hostMemory.free', ['PEptr block'], 'void'],
   [
@@ -3296,10 +3304,18 @@ for (let id = 0x32; id <= 0x40; id++)
     ...recovered76.get(id),
     evidence: 'both-pinned-scalar-wrappers-and-28524-full-fpu-differential-comparisons',
   });
-for (const id of [0x2bd, 0x2be]) {
+for (const id of [0x2bd, 0x2be, 0x3dc, 0x3dd]) {
   const fact = {
     ...recovered76.get(id),
     evidence: 'both-pinned-plane-movie-wrappers-and-rendered-filtergraph-browser-tests',
+  };
+  recovered76.set(id, fact);
+  recovered74.set(id, fact);
+}
+for (const id of [0xc4, 0xc5, 0xc6, 0xc8, 0xca, 0xcb]) {
+  const fact = {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-area-effect-wrappers-and-native-receiver-browser-tests',
   };
   recovered76.set(id, fact);
   recovered74.set(id, fact);
