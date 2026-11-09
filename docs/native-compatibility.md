@@ -72,7 +72,17 @@ assigns a process-local atom and preserves the original window procedure,
 embedded icon, arrow cursor and stock brush. Duplicate registration follows
 the original Windows error contract. Both profiles restore the same class
 and release it independently. The browser still owns the display window;
-the external icon-file, native menu and CreateWindowEx paths remain separate.
+the external icon-file and CreateWindowEx paths remain separate.
+
+The SDK `5BF330/5BF3C0` and game `70DF70/70E000` menu owners run their
+original constructor and [LoadMenu](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadmenuw)
+wrapper after class registration. The static WinMain block retains the menu
+owner and selects resource 104 or 105 from the original author-mode word.
+The virtual USER32 reads each embedded standard RT_MENU tree, including
+submenus, command IDs, separators and UTF-16 labels. The original destructor
+frees the owner and recursively releases the handles. Both profiles check
+the normal and author resources, reload and fresh-process ownership.
+Menu localization and attachment to the browser window are separate steps.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
