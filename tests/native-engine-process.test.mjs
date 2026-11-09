@@ -34,6 +34,7 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
       const bytes = new Uint8Array(await readFile(fixture)),
         clock = new NativeSystemClock({ now: () => 1234.5 }),
         display = [1391, 703],
+        startupBlock = layout.wide ? 0xbafa80 : 0xcb2440,
         desktopFields = layout.wide ? 0x13d40 : 0x10788,
         open = () =>
           NativeEngineProcess.open({
@@ -109,11 +110,13 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         );
         assert.equal(first.kernel.comDepth, 1, 'DxDiag released its nested apartment');
         await checkNativeDirectXStartup(first);
-        first.process.store(first.refs.owner + 44, 1);
+        first.process.store(startupBlock + 44, 1);
+        const engineFlag = first.process.load(first.refs.owner + 44);
         const desktop = (engine) => {
           const { process: p, refs } = engine,
-            packed = p.load(refs.owner + desktopFields);
-          assert.equal(p.load(refs.owner + 44), 0);
+            packed = p.load(startupBlock + desktopFields);
+          assert.equal(p.load(startupBlock + 44), 0);
+          assert.equal(p.load(refs.owner + 44), engineFlag);
           assert.equal(engine.textWindows.objects.size, 0, 'the desktop DC was released');
           return [packed & 0xffff, packed >>> 16];
         };

@@ -3,6 +3,8 @@
 // KEY_CODE/V_CODE and copies V_CODE2 into the original Settings. Its next
 // block opens desktop registration and device services, which are outside
 // the browser's prepared-content mount.
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
+
 const LAYOUTS = {
   'sdk-4.01-engine-2.6.1.74': {
     entry: 0x4406d0,
@@ -53,7 +55,11 @@ export class NativeExecutableResources {
     );
     this.loading = loading;
     try {
-      const result = await p.callAsync(layout.entry, [engine.module.base], engine.refs.owner);
+      const result = await p.callAsync(
+        layout.entry,
+        [engine.module.base],
+        NATIVE_STARTUP_BLOCKS[engine.profile],
+      );
       if (result !== 1 || !loading.reached)
         throw new Error(
           'Original engine rejected its executable resources' +

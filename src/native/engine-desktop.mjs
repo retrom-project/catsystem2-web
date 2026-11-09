@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The original startup queries the virtual desktop through USER32/GDI32.
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
+
 const DESKTOP_WINDOW = 2;
 const DESKTOP_DEPTH = 32;
 const layouts = {
@@ -48,7 +50,7 @@ export function installNativeDesktopAPIs(engine, { displaySize, touchPoints }) {
 export async function initializeNativeDesktop(engine) {
   const [survey, fields] = layouts[engine.profile],
     p = engine.process,
-    owner = engine.refs.owner,
+    block = NATIVE_STARTUP_BLOCKS[engine.profile],
     buffer = p.allocate(12, true);
   try {
     if ((await engine.call(survey, [buffer])) !== 1)
@@ -59,9 +61,9 @@ export async function initializeNativeDesktop(engine) {
     if (!width || !height || ![16, 32].includes(depth))
       throw new Error('Original startup rejected the virtual display mode');
     // WinMain clears its change-display flag for this depth and retains the
-    // two low WORDs from the desktop survey in the Engine owner.
-    p.store(owner + 44, 0);
-    p.store(owner + fields, (width & 0xffff) | (height << 16));
+    // two low WORDs from the desktop survey in its static startup block.
+    p.store(block + 44, 0);
+    p.store(block + fields, (width & 0xffff) | (height << 16));
   } finally {
     p.free(buffer);
   }
