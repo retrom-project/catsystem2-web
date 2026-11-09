@@ -97,6 +97,11 @@ export class NativeInputDevice {
   installWindows() {
     const e = this.engine,
       p = this.process;
+    e.kernel.accelerators.readModifiers = () => {
+      const keys = this.bindings?.down.keyboard;
+      return (keys?.has(16) ? 4 : 0) | (keys?.has(17) ? 8 : 0) | (keys?.has(18) ? 16 : 0);
+    };
+    e.kernel.accelerators.readCapture = () => this.capture;
     const add = (dll, name, count, fn) => {
       if (!e.kernel.overrides.has(`${dll.toLowerCase()}!${name}`))
         e.registerWindows(dll, name, { count, fn });

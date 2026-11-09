@@ -5,6 +5,12 @@ import { Binary } from '../binary.mjs';
 const FIRST_HANDLE = 0x5c000000;
 const INVALID_ACCELERATOR = 1403;
 const INVALID_PARAMETER = 87;
+const INVALID_WINDOW = 1400;
+const VIRTUAL_KEY = 1;
+const ALT = 0x10;
+const MODIFIERS = 0x1c;
+const WS_DISABLED = 0x08000000;
+const WS_MINIMIZE = 0x20000000;
 
 export class NativeWindowsAccelerators {
   constructor(kernel) {
@@ -21,6 +27,9 @@ export class NativeWindowsAccelerators {
       );
       register('CreateAcceleratorTable' + suffix, 2, ([entries, count]) =>
         this.create(entries, count | 0),
+      );
+      register('TranslateAccelerator' + suffix, 3, ([window, table, message]) =>
+        this.translate(window, table, message),
       );
     }
     register('DestroyAcceleratorTable', 1, ([handle]) => this.destroy(handle));
@@ -86,6 +95,56 @@ export class NativeWindowsAccelerators {
     if (!table) return this.error(INVALID_ACCELERATOR);
     if (--table.references) return 0;
     this.tables.delete(handle);
+    return 1;
+  }
+  match(handle, message, key, data, modifiers = this.readModifiers?.() ?? 0) {
+    const rows = this.tables.get(handle)?.rows;
+    if (!rows) return null;
+    const character = message === 0x102 || message === 0x106;
+    if (!character && message !== 0x100 && message !== 0x104) return null;
+    for (const [flags, code, command] of rows) {
+      if (code !== key) continue;
+      if (flags & VIRTUAL_KEY) {
+        if (!character && (flags & MODIFIERS) === (modifiers & MODIFIERS)) return command;
+      } else if (
+        character
+          ? (flags & ALT) === (modifiers & ALT)
+          : flags & ALT && (data & 0x21000000) === 0x20000000
+      )
+        return command;
+    }
+    return null;
+  }
+  async translate(target, table, at) {
+    if (!target || !at || !this.tables.has(table)) return 0;
+    const p = this.kernel.process,
+      command = this.match(table, p.load(at + 4), p.load(at + 8), p.load(at + 12));
+    if (command === null) return 0;
+    await this.dispatch(target, command);
+    return 1;
+  }
+  async dispatch(target, command, notify) {
+    const { windowViews, windowMenus } = this.kernel,
+      window = windowViews.windows.get(target);
+    if (!window) return this.error(INVALID_WINDOW);
+    const send = notify ?? ((message, w, l) => windowViews.send(target, message, w, l)),
+      menu = window.menu,
+      match = windowMenus.commandLocation(menu, command);
+    if (match) {
+      this.kernel.lastError = 0;
+      if (window.style & WS_DISABLED) return 0;
+      await send(0x116, menu, 0);
+      if (match.popupPosition !== null) await send(0x117, match.handle, match.popupPosition);
+      const current = windowMenus.commandLocation(window.menu, command);
+      if (
+        !windowViews.windows.has(target) ||
+        window.style & (WS_DISABLED | WS_MINIMIZE) ||
+        this.readCapture?.() ||
+        current?.entry.state & 3
+      )
+        return 0;
+    }
+    await send(0x111, 0x10000 | command, 0);
     return 1;
   }
   snapshot() {

@@ -131,7 +131,12 @@ layouts distinct: eight bytes in the PE resource and six in x86
 [ACCEL](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-accel).
 Tests cover missing language keys, independent restore and release of the
 dynamic table. The pinned Wine probe also verifies the copy's untouched
-padding and capacity boundary. The native message loop's accelerator dispatch is separate.
+padding and capacity boundary. The ANSI and Unicode `TranslateAccelerator`
+imports now match virtual and character messages and synchronously send the
+original application menu notifications and command. The pinned Wine probe
+checks exact modifiers, nested or disabled items, capture and minimization.
+This covers the engine's application accelerator tables; system menu
+accelerators and wiring the browser keyboard into the loop are separate.
 
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The

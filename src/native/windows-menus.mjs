@@ -129,6 +129,16 @@ export class NativeWindowsMenus {
     }
     return null;
   }
+  commandLocation(handle, id, popupPosition = null) {
+    const menu = this.menus.get(handle);
+    if (!menu) return null;
+    for (const [index, entry] of menu.entries()) {
+      if (!entry.submenu && entry.id === id) return { handle, entry, popupPosition };
+      const match = this.commandLocation(entry.submenu, id, index);
+      if (match) return match;
+    }
+    return null;
+  }
   remove(handle, item, flags) {
     const menu = this.menus.get(handle);
     if (!menu) return this.error(MENU_MISSING);
