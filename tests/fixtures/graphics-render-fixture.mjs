@@ -255,7 +255,22 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     checks.inheritedPos = equal(await modelVector(child, 62), [7, 8, 0]);
     const inheritedPixels = await render(world);
     checks.inheritedPixels = colors(inheritedPixels, [255, 255, 0]) > 0;
+    const coordinateCaller = await world.spawnScript('main.kcs', { parent: tops[1] }),
+      coordinateDescriptor = platform.descriptor(child.record.nativeID),
+      originalMode = p.load(coordinateDescriptor + 32),
+      setCoordinateMode = (owner, caller, target, mode) =>
+        owner.runtime.native('main', 0x1d2, [target, mode], caller.machine, caller);
+    const reply = await setCoordinateMode(
+      world,
+      coordinateCaller,
+      child.record.nativeID,
+      0x80000000,
+    );
+    await setCoordinateMode(world, coordinateCaller, 0, 1);
+    await setCoordinateMode(world, coordinateCaller, 0xffffffff, 1);
+    checks.coordinateMode = reply.control === 2 && p.load(coordinateDescriptor + 32) === 0x80000000;
     const saved = structuredClone(world.snapshot());
+    await setCoordinateMode(world, coordinateCaller, child.record.nativeID, originalMode);
     fresh = make();
     await fresh.ensureNativeEngine();
     fresh.nativeEngine.process.trap('authored earlier transient render trap', 0, () => 0);
@@ -264,6 +279,15 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
       restoredChild = fresh.graphics.get(childID);
     checks.freshQuery = equal(await modelVector(restored[0], 61), [0, 0, 200]);
     const freshPlatform = await fresh.getNativeFeature('graphics-platform');
+    checks.freshCoordinateMode =
+      freshPlatform.descriptor(child.record.nativeID) === coordinateDescriptor &&
+      fresh.nativeEngine.process.load(coordinateDescriptor + 32) === 0x80000000;
+    const restoredCaller = fresh.runtime.scheduler.tasks.get(coordinateCaller.id);
+    await setCoordinateMode(fresh, restoredCaller, child.record.nativeID, 2);
+    checks.freshCoordinateWrite =
+      fresh.nativeEngine.process.load(coordinateDescriptor + 32) === 2 &&
+      p.load(coordinateDescriptor + 32) === originalMode;
+    await setCoordinateMode(fresh, restoredCaller, child.record.nativeID, originalMode);
     checks.freshDescriptor =
       (await fresh.nativeEngine.call(raw.descriptor, [nativeID], freshPlatform.refs.manager)) ===
       pointer;

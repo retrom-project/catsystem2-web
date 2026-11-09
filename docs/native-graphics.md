@@ -43,6 +43,12 @@ World owns common task routing, clocks and input delivery. The receiver owns
 the graph models and derived task fields. Its checkpoint records the guest
 task pointer and restores that binding to the native state.
 
+Main `1D2` sends a raw coordinate mode word to an existing plane. SDK wrapper
+`513AA0` sends message 80 and game wrapper `6413C0` sends 82. Both original
+receivers store the word at offset 32 in the live graph descriptor. The
+Chromium test reads the exact field in both profiles and repeats the operation
+after a fresh World restore.
+
 The original BasePlane clears its input response before processing children.
 Drag message 6 carries two POINT addresses. Host packets marshal both points
 into the shared process, and guest packets retain their original addresses.

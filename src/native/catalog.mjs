@@ -1414,6 +1414,7 @@ const extendedDescriptions = [
   [0x187, 'legacyText.query119', ['handle task'], 'word'],
   [0x1c8, 'legacyText.message120', ['handle task', 'word value'], 'void'],
   [0x1d0, 'draw.refreshEntry', ['handle task', 'word entry'], 'void'],
+  [0x1d2, 'plane.setCoordinateMode', ['nativeID target', 'word mode'], 'void'],
   [0x40f, 'clipboard.copyUTF8', ['format* UTF8Text'], 'void'],
   [0x410, 'log.writeUTF8', ['format* UTF8Text'], 'void'],
   [0x38a, 'emote.message524', ['task target', 'format* model', 'word flags'], 'void'],
@@ -3252,7 +3253,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e, 0x3df, 0x3e0, 0x3e2].includes(id) ||
     (id >= 0x7b && id <= 0x8b) ||
     (id >= 0x90 && id <= 0x9a) ||
-    [0x191, 0x193, 0x194].includes(id) ||
+    [0x191, 0x193, 0x194, 0x1d2].includes(id) ||
     (id >= 0x1b2 && id <= 0x1b6) ||
     [0x185, 0x186].includes(id) ||
     [0xee, 0xf4, 0xf6, 0x1d4, 0x1d5, 0x281].includes(id) ||
