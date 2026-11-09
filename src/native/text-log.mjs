@@ -3,11 +3,12 @@
 // history. Rebuilds import a temporary view of that history and discard it.
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeReply } from '../kcs.mjs';
+import { Binary } from '../binary.mjs';
 import { evaluateNativeExpression } from './expression.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_DISPLAY_LOG_IDS = Object.freeze([
-  0x2b8, 0x2b9, 0x2ba, 0x2bb, 0x2bc, 0x311, 0x36c, 0x3d1, 0x40a,
+  0x2b8, 0x2b9, 0x2ba, 0x2bb, 0x2bc, 0x311, 0x352, 0x353, 0x36c, 0x3d1, 0x40a,
 ]);
 export const NATIVE_DISPLAY_LOG_ABI = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': {
@@ -18,6 +19,8 @@ export const NATIVE_DISPLAY_LOG_ABI = Object.freeze({
     historyImport: 0x72d680,
     lineCount: 0x72ea70,
     line: 0x72ec40,
+    save: 0x72f3a0,
+    load: 0x72f6d0,
     filename: 0x5d39e0,
     read: 0x5d50f0,
   },
@@ -29,10 +32,35 @@ export const NATIVE_DISPLAY_LOG_ABI = Object.freeze({
     historyImport: 0x5dc610,
     lineCount: 0x5dd8f0,
     line: 0x5ddac0,
+    save: 0x5de1a0,
+    load: 0x5de4d0,
     filename: 0x4b0830,
     read: 0x4b1ca0,
   },
 });
+
+function validateDisplayLogPayload(bytes) {
+  const payload = new Binary(bytes, 'Native display log');
+  payload.range(0, 24);
+  // The original loader takes a length but never reads it. Bound each of
+  // its four walks before passing bytes from a save file into guest memory.
+  for (let i = 0; i < 4; i++) {
+    const offset = payload.u32(i * 4),
+      count = payload.u32(offset);
+    let at = offset + 4;
+    if (i === 1) payload.range(at, count * 28);
+    else
+      for (let n = 0; n < count; n++) {
+        if (i === 2) {
+          payload.range(at, 4);
+          at += 4;
+        }
+        const end = bytes.indexOf(0, at);
+        if (end < 0) throw new Error('Native display log contains an unterminated string');
+        at = end + 1;
+      }
+  }
+}
 
 export class NativeDisplayLogs {
   constructor(engine, world, fes) {
@@ -77,6 +105,7 @@ export class NativeDisplayLogs {
   }
   async apply(id, args, machine, task) {
     if (!NATIVE_DISPLAY_LOG_IDS.includes(id) || id >= this.abi.count) return undefined;
+    if (id === 0x352 || id === 0x353) return this.persistence(id, args, task.id);
     if ([0x2bb, 0x40a].includes(id) && args[1]) {
       const history = this.world.runtime.handles.get(args[1], 'scene-data').history;
       return this.withHistory(
@@ -86,6 +115,45 @@ export class NativeDisplayLogs {
       );
     }
     return this.applyGuest(id, args, machine, task);
+  }
+  async persistence(id, args, task) {
+    if (args.length !== 3)
+      throw new Error(`Display-log native 0x${id.toString(16)} requires 3 arguments`);
+    const [container, tag, handle] = args,
+      reply = (value) => nativeReply(1, value);
+    if (!container || !handle) return reply(0);
+    const file = this.world.runtime.handles.get(container, 'global-file'),
+      p = this.process,
+      log = this.pointer(handle),
+      call = (address, args) =>
+        p.asyncEnabled
+          ? this.engine.callFromHost(address, args, log, { task })
+          : this.engine.call(address, args, log, { task });
+    if (id === 0x352) {
+      const size = await call(this.abi.save, [0]);
+      if (!size) return reply(0);
+      if (size > 0x10000000) throw new RangeError('Native display log exceeds the save size limit');
+      const pointer = p.allocate(size, true);
+      try {
+        if ((await call(this.abi.save, [pointer])) !== size)
+          throw new Error('Native display log size changed during serialization');
+        file.write(tag, p.read(pointer, size));
+      } finally {
+        p.free(pointer);
+      }
+    } else {
+      const bytes = file.read(tag);
+      if (bytes === null) return reply(0);
+      validateDisplayLogPayload(bytes);
+      const pointer = p.allocate(bytes.length, true);
+      try {
+        p.write(pointer, bytes);
+        await call(this.abi.load, [pointer, bytes.length]);
+      } finally {
+        p.free(pointer);
+      }
+    }
+    return reply(1);
   }
   async applyGuest(id, args, machine, task) {
     let mapping;

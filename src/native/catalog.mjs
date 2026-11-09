@@ -2958,6 +2958,8 @@ const hostDescriptions = [
   ],
   [0x350, 'plane.setFilter', ['handle task', 'word filter'], 'void'],
   [0x351, 'plane.setReferenceCapture', ['handle task', 'word flags'], 'void'],
+  [0x352, 'displayLog.save', ['handle globalFile', 'word tag', 'handle log'], 'bool'],
+  [0x353, 'displayLog.load', ['handle globalFile', 'word tag', 'handle log'], 'bool'],
   [
     0x35e,
     'draw.setRectangle',
@@ -3345,7 +3347,9 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     ].includes(id) ||
     (id >= 0xcc && id <= 0xcf) ||
     (id >= 0x263 && id <= 0x26d) ||
-    [0x2b6, 0x2b7, 0x2b8, 0x2b9, 0x2ba, 0x2bb, 0x2bc, 0x311, 0x36c, 0x374, 0x3d1].includes(id) ||
+    [
+      0x2b6, 0x2b7, 0x2b8, 0x2b9, 0x2ba, 0x2bb, 0x2bc, 0x311, 0x352, 0x353, 0x36c, 0x374, 0x3d1,
+    ].includes(id) ||
     (id >= 0x126 && id <= 0x140) ||
     [
       0x1b8, 0x202, 0x217, 0x24a, 0x167, 0x168, 0x1d1, 0x274, 0x315, 0x316, 0x3e3, 0x3e7, 0x3e8,

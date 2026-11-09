@@ -92,6 +92,15 @@ Appending entries, line wrapping, block pruning, names, scene locations and
 path indices remain native records. `311` limits blocks rather than flat lines.
 `2BC` returns a speaker name; the source scene is a different field.
 
+When static display logs are enabled, the system script saves and reloads
+CSS entry `0x30` with `352` and `353`. They run the original log serializer and
+loader against the same live manager. The payload includes the scene names,
+28-byte blocks, tagged text rows and voice names. The browser verifies the
+section ranges and string terminators before passing an imported record to
+the original loader, which does not check its supplied length. The test
+compares the complete entry against both original wrappers, reopens a CSS
+file in a fresh World and checks the restored lines.
+
 History rebuild imports the existing `NativeSceneData.history` into a temporary
 original history descriptor, runs the original CST reader and parser, then
 releases the temporary descriptor. It does not copy a host message array into
