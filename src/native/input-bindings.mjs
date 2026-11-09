@@ -76,7 +76,9 @@ export class NativeInputBindings {
     this.injected = new Uint32Array(80);
     this.mouseState = new Uint32Array(8);
     this.pointerActivation = false;
-    this.joypadEnabled = configuration.keys.enableJoypad;
+    // The original window's script gate starts enabled. WinMain loads the
+    // separate user preference after these browser bindings already exist.
+    this.joypadEnabled = 1;
     this.touchHoldEnabled = 0;
     this.touchActive = false;
     this.inside = 0;

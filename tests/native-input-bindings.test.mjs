@@ -95,3 +95,31 @@ test('browser virtual keys retain native numeric keypad and modifier values', ()
   assert.equal(browserVirtualKey({ code: 'ControlRight' }), 17);
   assert.equal(browserVirtualKey({ code: 'KeyZ', keyCode: 229 }), 0);
 });
+
+test('startup preferences can enable a pad after bindings exist while the script gate stays independent', () => {
+  const { config, bindings } = fixture(),
+    pad = { connected: true, axes: [0, 0], buttons: [{ pressed: true }] };
+  assert.equal(config.keys.enableJoypad, 0);
+  bindings.gamepad([pad]);
+  bindings.sample();
+  assert.equal(bindings.query(0, 0), 0);
+  // WinMain reads setup.xml after the browser creates its bindings.
+  config.keys.enableJoypad = 1;
+  bindings.gamepad([pad]);
+  bindings.sample();
+  assert.equal(bindings.query(0, 0), 4);
+  bindings.setJoypad(0);
+  bindings.gamepad([pad]);
+  bindings.sample();
+  bindings.finishFrame();
+  assert.equal(bindings.query(0, 0), 0);
+  config.keys.enableJoypad = 0;
+  config.keys.enableJoypad = 1;
+  bindings.gamepad([pad]);
+  bindings.sample();
+  assert.equal(bindings.query(0, 0), 0);
+  bindings.setJoypad(1);
+  bindings.gamepad([pad]);
+  bindings.sample();
+  assert.equal(bindings.query(0, 0), 4);
+});

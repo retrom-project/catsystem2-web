@@ -41,6 +41,11 @@ until the next sample. The 32-byte physical bitmap covers 256 virtual keys and
 mouse codes; it is independent of the logical key masks. Author mode selects
 whether the physical callbacks scan 32 or 80 logical definitions.
 
+The script's joystick gate starts enabled, independently of the user's
+`KEY/enable_joypad` preference. WinMain loads that preference after browser
+bindings are constructed. Polling requires both gates; a later preference
+change does not override an explicit script disable. Both gates are saved.
+
 [NativeInputDevice](../src/native/input-device.mjs) constructs the original
 physical device and window objects. Main input-device pointer queries return
 that real object. Keyboard, mouse and wheel queues execute its original window
