@@ -55,7 +55,9 @@ for (const [profile, variable, resourceImport, copyLength] of [
           'FreeResource',
         ])
           assert.equal(kernel.calls.get('kernel32.dll!' + name), 3);
-        assert.equal(p.executionBoundaries.size, 0);
+        const boundaries = (process) =>
+          [...process.executionBoundaries].map(([address, { name }]) => [address, name]);
+        assert.deepEqual(boundaries(p), boundaries(baseline.process));
         restored = await NativeEngineProcess.open({
           profile,
           bytes,
