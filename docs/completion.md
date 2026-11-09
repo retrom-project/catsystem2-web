@@ -3,6 +3,23 @@
 本项目的目标是独立的通用 CatSystem2 浏览器模拟器。NEKOPARA Vol. 3 是回归样本；
 标题、主线或单个菜单通过，均不构成完成。retrom-runtime 接入在独立实现验收之后进行。
 
+目标是运行时仅用 JavaScript 实现引擎，不加载或执行原 EXE 代码。版本差异由 ABI
+数据表达；E-mote/PPI 的独立 DLL 仍可经导出表和宿主 API 使用 x86。原 EXE 执行只用于
+离线取证和测试差分 oracle。当前仍是依赖原 EXE 的混合实现，正在向目标迁移。
+地址与调用边界、禁止游戏特判、开发期契约和 x87 浮点差分要求见
+[架构约束](architecture.md#目标与迁移状态)，均为完成条件。
+
+`npm run check` 以两份固定 EXE 的 PE 映像范围统计 `src/` 中的地址字面量、
+引擎调用/patch 和 `NativeEngineProcess`/模块引用；每个文件的各项计数只能减少，
+新文件须为零。确认依赖减少后执行 `node scripts/check-no-exe-addresses.mjs --update`
+收紧已提交的基线。范围内无法直接区分的数值保守计数；确认是普通常量时，只能按检查脚本
+的格式为该字面量附上具体原因，不能借此豁免 EXE 地址。oracle、离线工具和测试放在
+`src/` 之外。
+
+本地轻量标签 `x86-hybrid-baseline` 指向 `03d6523`。该提交的本地记录中，`npm run check`
+和 `npm run build` 通过，`npm test` 为 1,070 通过、1 跳过；公共浏览器 22 项和 PPI 15 项
+通过。SDK 与游戏浏览器记录各为一条筛选用例通过，不代表完整套件在该次运行中全部执行。
+
 以 `references.json` 的固定输入为准：官方 SDK 4.01 中的引擎是 2.6.1.74，
 目标游戏的引擎是 2.6.1.76。两版主 native 表分别有 1,009 和 1,055 个非空槽位，
 不能用 SDK 发行版本代替某个作品的 ABI。MOT/generic、PTCL 1/2 与 PPI 2.0/2.1/2.2

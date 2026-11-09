@@ -19,9 +19,11 @@ npm run dev -- --game /path/to/prepared-game --port 4101
 打开 `http://localhost:4101`，点击 **Start game**。也可通过 **Open game folder** 选择本地目录。
 输入目录保持只读，原始 `.int` 归档按需读取，不会整体装进 JavaScript 内存。
 KIF 和 PSB 必须已经解密，目录还需包含与 profile 指纹匹配的引擎及其所需 DLL/PPI。
-浏览器通过固定的 x86/WASM 后端执行已恢复契约的原 EXE 区域、E-mote DLL 和 PPI，
-由浏览器服务承接文件、输入、GPU、音频及其他已实现的平台边界。启动时不进行脱壳或解密。
-目前固定两版引擎；它们的来源及 SHA-256 见 [references.json](references.json)。
+当前处于架构迁移期：浏览器仍通过固定的 x86/WASM 后端执行部分原 EXE 区域、
+E-mote DLL 和 PPI。目标是以 JavaScript 实现引擎运行时，将原 EXE 执行降为离线/测试
+差分 oracle；独立插件 DLL 仍可通过宿主 API 使用 x86。浏览器服务承接文件、输入、GPU、
+音频及其他已实现的平台边界。启动时不进行脱壳或解密。
+当前固定两版引擎；它们的来源及 SHA-256 见 [references.json](references.json)。
 
 WMV 影片需要单独安装 FFmpeg，然后执行以下命令，并重启开发服务器：
 
@@ -87,8 +89,9 @@ GPU 上耗时较长。
 
 正常入口运行 `NativeWorld`：KCS VM 持续执行游戏自己的 main、sscript 和辅助脚本，
 保留任务图、消息队列、变量域和原生控制返回。FES/CST 通过这些任务驱动。
-原 EXE 处理器、格式解析、字体/图像操作和插件共用一个可保存的 PE 进程；
-浏览器 GPU/音频/文件等服务有各自的明确契约和测试。
+当前原 EXE 处理器、格式解析、字体/图像操作和插件共用一个可保存的 PE 进程；
+迁移目标与边界见[架构与嵌入接口](docs/architecture.md)。浏览器 GPU/音频/文件等服务
+有各自的明确契约和测试。
 
 - [完整实现标准](docs/completion.md)：通用模拟器的完成条件及必要验收。
 - [native 契约目录](docs/native-compatibility.md)：两版独立 ABI、已恢复族及未知项。
@@ -102,7 +105,7 @@ GPU 上耗时较长。
 当前原生模型执行速度仍不足以据此宣称达到正常游玩性能。
 
 公共测试使用自制资源；私有 fixture 用于 SDK/游戏原生差分与真实流程验证。
-旧的脚本遍历或浏览器近似路径结果不能替代当前原生执行路径的验收。
+旧的脚本遍历或浏览器近似路径结果不能替代对当前混合路径和未来 JavaScript 路径的验收。
 
 ## 来源与许可
 

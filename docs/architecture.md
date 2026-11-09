@@ -1,5 +1,31 @@
 # 架构与嵌入接口
 
+## 目标与迁移状态
+
+目标架构由 `GameFiles`/VFS、JavaScript KCS VM、`NativeRuntime` 分派和各领域的
+JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频使用浏览器服务。
+运行时不加载或执行原 EXE 代码。原 EXE 的 x86 执行仅用于不进入 `dist/` 的离线取证
+和测试差分 oracle；运行时可读取 EXE 版本资源以选择 ABI。
+
+目标实现必须遵守以下边界：
+
+- 运行时代码不含原 EXE 内部地址，不调用 `engine.call`、`patch` 或执行 EXE 代码区间；
+  `callFromHost` 也不得用于执行 EXE 代码。地址和原执行能力只用于 oracle、离线工具与测试。
+- 版本差异是 ABI 数据，包括 native ID 到语义的映射、参数签名及声音 bank 数；
+  业务代码不按 profile 名分支。未登记版本必须报错，不猜用相近版本。
+- E-mote/PPI 可以用 x86 执行独立 DLL，但只通过 DLL 导出表和宿主 API 交互，
+  不依赖 EXE 内部地址。禁止游戏专用特判、白名单和专用全局变量。
+- checkpoint 和内部接口仍在开发中，直接修改现有契约，不增加 V2、兼容读取或迁移；
+  目标 checkpoint 不含 EXE 的 CPU、堆和 PE RAM 状态。
+- 原处理器使用 x87；每个数学 native 的差分测试必须记录容差，或在 JavaScript 中
+  复现所需精度，不能假定浮点结果逐位一致。
+
+当前仍处于迁移期，下面描述的是尚未替换完的混合实现，不代表目标架构已经完成。
+`npm run check` 按文件限制现有 EXE 地址、调用和引用的数量，防止依赖增加；
+规则和基线更新方式见 [完成标准](completion.md)。
+
+## 当前混合实现
+
 正常入口由 `NativeWorld` 驱动。`NativeRuntime` 选择固定引擎 ABI，KCS VM 持续执行
 main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列。FES、CST、运动、
 声音和插件属于这些任务的服务，界面入口和流程由原系统脚本决定。
