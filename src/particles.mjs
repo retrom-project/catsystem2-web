@@ -67,6 +67,16 @@ export class Particles {
     if (!found) throw new Error(`Missing ${category} resource: ${name}`);
     return found;
   }
+  get hasLooseLibraries() {
+    return Boolean(this.game.nativeResources && this.game.readLoose);
+  }
+  async readPlugin(name) {
+    if (!this.hasLooseLibraries) return this.game.require(name);
+    const path = name.replace(/^c:[\\/]catsystem2-web[\\/]/i, ''),
+      bytes = await this.game.readLoose(path);
+    if (bytes === null) throw new Error(`Missing loose particle library: ${name}`);
+    return bytes;
+  }
   async preloadData() {
     if (this.dataReady) return;
     const entry = this.game.nativeResources?.entries.find(
@@ -193,7 +203,11 @@ export class Particles {
       throw new RangeError('Invalid particle count');
     if (!Number.isFinite(bank.priority)) throw new Error('Invalid particle priority');
     const category = bank.family === 'plugin' ? 'ptclpi' : 'ptcl';
-    bank.program = this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs');
+    bank.program =
+      bank.family === 'plugin' && this.hasLooseLibraries
+        ? this.game.nativeResources.resolveLoose(bank.program, category)
+        : this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs');
+    if (bank.program === null) throw new Error(`Missing ${category} mount for ${spec.program}`);
     let texture;
     if (bank.texture) {
       try {
@@ -224,7 +238,9 @@ export class Particles {
       onDebug: this.onDebug,
       autoStart: false,
     };
-    const bytes = await this.game.require(bank.program);
+    const bytes = await (bank.family === 'plugin'
+      ? this.readPlugin(bank.program)
+      : this.game.require(bank.program));
     if (bank.family === 'plugin') {
       await this.preloadData();
       const runtime = await this.nativeRuntime();
@@ -535,7 +551,7 @@ export class Particles {
         clock: this.clock,
         epoch: this.clock?.epoch ?? this.epoch,
         nativeThread: this.nativeThread,
-        readPlugin: async ({ name }) => this.game.require(name),
+        readPlugin: ({ name }) => this.readPlugin(name),
         instanceOptions: (saved) => ({
           attachment: () =>
             [...this.banks.values()].find((bank) => bank.nativeID === saved.id)?.attachment,

@@ -30,4 +30,11 @@ export class NativeResources {
     if (!name.includes('.')) name = `${name}.${entry.extension}`;
     return entry.archive ? `${entry.archive}/${name}` : name;
   }
+  resolveLoose(name, category) {
+    if (Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\')) > 0) return name;
+    const entry = this.entries.find((entry) => lower(entry.name) === lower(category));
+    if (!entry) return null;
+    if (!name.includes('.')) name = `${name}.${entry.extension}`;
+    return entry.directory ? `${entry.directory}\\${name}` : name;
+  }
 }

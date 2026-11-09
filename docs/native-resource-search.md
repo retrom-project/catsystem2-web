@@ -37,6 +37,13 @@ The original high-level byte readers also execute unchanged. They clear flag
 as a size query. `0x10000` suppresses their missing-file diagnostic. Tests cover
 `0x13`, null filenames, output canaries and archive-only reads with `0x12`.
 
+PPI libraries use the physical directory and extension from the `ptclpi`
+entry before loading the DLL. Both original resolvers (Game `5D3810`, SDK
+`4B0710`) use this Windows path instead of the archive-qualified file opener.
+The browser reads the loose DLL directly, including when restoring an
+instance. A same-name update entry does not replace the DLL; the test
+mounts both sources and verifies the loaded image hash.
+
 `verify-native-resource-search.mjs` executes both complete search dispatchers
 with authored native slot/list records. Only physical/archive I/O and archive
 membership cross the test boundary; cache is disabled and the alias map empty.
