@@ -2,6 +2,9 @@
 import { Binary } from '../binary.mjs';
 import { FLOATING_POINT_REGISTERS } from './floating-point.mjs';
 
+const GDT_ADDRESS = 0x7ffd0000;
+const INITIAL_TEB = 0x7ffde000;
+
 export function parsePE32(bytes, { allowExecutable = false } = {}) {
   const b = new Binary(bytes, 'PPI PE32');
   if (b.u16(0) !== 0x5a4d) throw new Error('PPI is not an MZ executable');
@@ -159,13 +162,14 @@ export class PE32Process {
       'heap',
       executableHeap ? unicorn.PROT_ALL : unicorn.PROT_READ | unicorn.PROT_WRITE,
     );
-    this.map(0x7fe00000, 0x100000, 'stack', unicorn.PROT_READ | unicorn.PROT_WRITE);
-    this.zero(0x7fe00000, 0x100000);
-    this.stackTop = 0x7feff000;
+    const stackBytes = 0x100000;
     this.stackBottom = 0x7fe00000;
+    const stackBase = this.stackBottom + stackBytes;
+    this.map(this.stackBottom, stackBytes, 'stack', unicorn.PROT_READ | unicorn.PROT_WRITE);
+    this.zero(this.stackBottom, stackBytes);
+    this.stackTop = stackBase - 4096;
     this.sentinel = 0x1000;
-    this.store(0, 0xffffffff);
-    this.store(0x18, 0);
+    this.initializeThreadEnvironment(stackBase);
     this.cpu.reg_write_i32(unicorn.X86_REG_CR4, 0x600);
     this.cpu.reg_write_i32(unicorn.X86_REG_FPCW, 0x37f);
     this.cpu.reg_write_i32(unicorn.X86_REG_FPTAG, 0xffff);
@@ -186,6 +190,37 @@ export class PE32Process {
       this.nextTrap,
       this.nextTrap + 0xfffff,
     );
+  }
+  initializeThreadEnvironment(stackBase) {
+    const cpu = this.cpu,
+      uc = this.uc,
+      flags = uc.PROT_READ | uc.PROT_WRITE;
+    this.teb = INITIAL_TEB;
+    this.map(this.teb, 4096, 'teb', flags);
+    this.store(this.teb, 0xffffffff);
+    this.store(this.teb + 4, stackBase);
+    this.store(this.teb + 8, this.stackBottom);
+    this.store(this.teb + 0x18, this.teb);
+    this.store(this.teb + 0x20, 1); // Process ID
+    this.store(this.teb + 0x24, 1); // Initial thread ID
+
+    this.map(GDT_ADDRESS, 4096, 'gdt', flags);
+    const code = 8,
+      data = 16,
+      thread = 24,
+      gdtr = new Uint8Array(24),
+      layout = new DataView(gdtr.buffer);
+    this.write(GDT_ADDRESS + code, segmentDescriptor(0, 0xfffff, 0x9b, 0xc0));
+    this.write(GDT_ADDRESS + data, segmentDescriptor(0, 0xfffff, 0x93, 0xc0));
+    this.write(GDT_ADDRESS + thread, segmentDescriptor(this.teb, 0xfff, 0x93, 0x40));
+    // Unicorn's uc_x86_mmr uses an aligned 64-bit base, even in 32-bit mode.
+    layout.setBigUint64(8, BigInt(GDT_ADDRESS), true);
+    layout.setUint32(16, thread + 7, true);
+    cpu.reg_write(uc.X86_REG_GDTR, gdtr);
+    cpu.reg_write_i32(uc.X86_REG_CS, code);
+    for (const segment of ['DS', 'ES', 'SS', 'GS'])
+      cpu.reg_write_i32(uc['X86_REG_' + segment], data);
+    cpu.reg_write_i32(uc.X86_REG_FS, thread);
   }
   map(address, size, kind = 'mapped', permissions = this.uc.PROT_ALL) {
     if (
@@ -985,6 +1020,18 @@ export class PE32Process {
       this.freeObservers?.clear();
     }
   }
+}
+
+function segmentDescriptor(base, limit, access, flags) {
+  const bytes = new Uint8Array(8),
+    descriptor = new DataView(bytes.buffer);
+  descriptor.setUint16(0, limit, true);
+  descriptor.setUint16(2, base, true);
+  descriptor.setUint8(4, base >>> 16);
+  descriptor.setUint8(5, access);
+  descriptor.setUint8(6, flags | (limit >>> 16));
+  descriptor.setUint8(7, base >>> 24);
+  return bytes;
 }
 
 function word(value) {

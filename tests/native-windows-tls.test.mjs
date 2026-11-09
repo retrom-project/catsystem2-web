@@ -7,6 +7,46 @@ import { loadUnicorn } from '../src/ppi/backend.mjs';
 const api = (engine, name, ...args) =>
   engine.process.call(engine.resolve({ dll: 'kernel32.dll', name }), args);
 
+test('x86 FS exposes a guest TEB with the stack, client IDs and Win32 last error', async () => {
+  const unicorn = await loadUnicorn(),
+    engine = new NativeEngineProcess(unicorn),
+    p = engine.process,
+    read = p.allocate(8),
+    setLastError = p.allocate(16),
+    field = (process, offset) => {
+      process.write(read, [0x64, 0xa1, offset, 0, 0, 0, 0xc3]);
+      return process.call(read);
+    };
+  p.write(setLastError, [0x8b, 0x44, 0x24, 4, 0x64, 0xa3, 0x34, 0, 0, 0, 0xc3]);
+  let fresh;
+  try {
+    const teb = field(p, 0x18),
+      stack = p.regions.find(({ kind }) => kind === 'stack');
+    assert.ok(teb);
+    assert.equal(p.load(teb + 0x18), teb);
+    assert.equal(field(p, 0), 0xffffffff);
+    assert.equal(field(p, 4), stack.address + stack.size);
+    assert.equal(field(p, 8), stack.address);
+    assert.equal(field(p, 0x20), api(engine, 'GetCurrentProcessId'));
+    assert.equal(field(p, 0x24), api(engine, 'GetCurrentThreadId'));
+    api(engine, 'SetLastError', 0x55aa1234);
+    assert.equal(field(p, 0x34), 0x55aa1234);
+    p.call(setLastError, [0x12345678]);
+    assert.equal(api(engine, 'GetLastError'), 0x12345678);
+
+    fresh = new NativeEngineProcess(unicorn);
+    fresh.restore(engine.snapshot());
+    assert.equal(field(fresh.process, 0x18), teb);
+    assert.equal(api(fresh, 'GetLastError'), 0x12345678);
+    api(fresh, 'SetLastError', 5);
+    assert.equal(field(fresh.process, 0x34), 5);
+    assert.equal(field(p, 0x34), 0x12345678);
+  } finally {
+    await fresh?.close();
+    await engine.close();
+  }
+});
+
 test('Win32 dynamic TLS and direct x86 TEB access share the same restored storage', async () => {
   const unicorn = await loadUnicorn(),
     engine = new NativeEngineProcess(unicorn),

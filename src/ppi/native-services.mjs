@@ -7,6 +7,7 @@ const PAGE_SIZE = 4096,
   ALLOCATION_GRANULARITY = 65536;
 const TLS_INLINE = 64,
   TLS_COUNT = 1088,
+  TEB_LAST_ERROR = 0x34,
   TEB_TLS_SLOTS = 0xe10,
   TEB_TLS_EXPANSION_SLOTS = 0xf94;
 
@@ -16,7 +17,6 @@ export class PPIWindowsServices {
     this.clock = clock;
     this.now = clock ? () => clock.now() : now;
     this.epoch = epoch ?? clock?.epoch ?? Date.now() - this.now();
-    this.lastError = 0;
     this.tls = new Set();
     this.locks = new Map();
     this.functions = new Map();
@@ -603,14 +603,21 @@ export class PPIWindowsServices {
     return 1;
   }
   tlsSlot(index, create) {
-    if (index < TLS_INLINE) return TEB_TLS_SLOTS + index * 4;
     const p = this.process;
-    let slots = p.load(TEB_TLS_EXPANSION_SLOTS);
+    if (index < TLS_INLINE) return p.teb + TEB_TLS_SLOTS + index * 4;
+    const expansion = p.teb + TEB_TLS_EXPANSION_SLOTS;
+    let slots = p.load(expansion);
     if (!slots && create) {
       slots = p.allocate((TLS_COUNT - TLS_INLINE) * 4, true);
-      p.store(TEB_TLS_EXPANSION_SLOTS, slots);
+      p.store(expansion, slots);
     }
     return slots ? slots + (index - TLS_INLINE) * 4 : 0;
+  }
+  get lastError() {
+    return this.process.load(this.process.teb + TEB_LAST_ERROR);
+  }
+  set lastError(value) {
+    this.process.store(this.process.teb + TEB_LAST_ERROR, value);
   }
   snapshot() {
     return {

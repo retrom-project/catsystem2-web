@@ -9,6 +9,7 @@ import { withFloatingPointThread } from './floating-point.mjs';
 
 const realSlots = new Set([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 27, 29, 30]);
 const contextSlots = new Set([0, 1, 31, 33, 34]);
+const TEB_STATIC_TLS_VECTOR = 0x2c;
 async function identity(bytes) {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (n) =>
     n.toString(16).padStart(2, '0'),
@@ -130,9 +131,10 @@ export class NativePPIRuntime {
       data = p.allocate(end - start + zeroFill, true);
     if (end > start) p.write(data, p.read(start, end - start));
     p.store(indexAddress, index);
-    if (!p.load(0x2c)) p.store(0x2c, p.allocate(4096, true));
+    const slot = p.teb + TEB_STATIC_TLS_VECTOR;
+    if (!p.load(slot)) p.store(slot, p.allocate(4096, true));
     if (index >= 1024) throw new Error('PPI static TLS vector exhausted');
-    p.store(p.load(0x2c) + index * 4, data);
+    p.store(p.load(slot) + index * 4, data);
     module.tlsIndex = index;
     module.tlsData = data;
     if (callbacks)
@@ -174,7 +176,7 @@ export class NativePPIRuntime {
     for (const callback of module.tlsCallbacks) p.call(callback, [module.base, 0, 0]);
     if (module.tlsIndex !== undefined) {
       p.free(module.tlsData);
-      p.store(p.load(0x2c) + module.tlsIndex * 4, 0);
+      p.store(p.load(p.teb + TEB_STATIC_TLS_VECTOR) + module.tlsIndex * 4, 0);
     }
     this.modules.delete(module.key);
     p.modules = p.modules.filter((candidate) => candidate !== module);
