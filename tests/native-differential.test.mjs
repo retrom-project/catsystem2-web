@@ -18,7 +18,7 @@ for (const abi of Object.values(NATIVE_ABIS))
       assert.deepEqual(observation.peWrites, []);
     }
     await assert.rejects(
-      observeNativeCase({ profile: abi.profile, table: 'main', id: 0x32, args: [0] }),
+      observeNativeCase({ profile: abi.profile, table: 'main', id: 0xffff, args: [0] }),
       /No independent JS differential entry/,
     );
   });

@@ -63,7 +63,7 @@ node scripts/test-native.mjs --list
 
 JS/golden 组清除私有 fixture 环境变量，平台服务使用自制 PE32 内存与调用宿主。
 oracle 组保留原 EXE 及私有插件回归。差分组比较两份 ABI 的独立 JS 计算路径与原 wrapper，
-首批为每份 ABI 27 例。缺少对应 EXE 时逐 ABI 明确跳过，提供两份 EXE 后运行全部 54 例。
+每份 ABI 含 27 例既有 generic/main 数学和 230 例 main 标量用例。缺少对应 EXE 时逐 ABI 明确跳过。
 默认模式明确报告缺少私有资源的跳过原因。完整私有验收使用以下变量，并要求通过指纹校验。
 两份 EXE 的相邻目录都需有 `config/startup.xml`。
 
@@ -96,8 +96,9 @@ NEKOPARA Vol. 3 输入，从浏览器启动原生 World，验证语言选择、�
 另一条用例通过真实点击推进到原场景第一个 PPI，比较粒子对画面的像素贡献，
 检查新 World 恢复后整帧一致且粒子继续运行。可用 `-- --grep 'original scene particle'`
 单独运行；在软件 GPU 上执行完整路径耗时较长。
-`test:game` 和 `test:route` 是旧播放器的
-交互及完整路线用例，依赖旧播放器的场景状态，不能作为原生 World 的验收证据。
+`test:game` 使用 NativeWorld 的 FES、CST 字符串银行、配置和原生存档观察交互及恢复；
+`test:route` 通过实际 Ctrl/Escape 输入和只读 CST reader 观察验证 14 章、5,000 条以上
+对白、两部影片实际解码及返回标题。它们不再读取旧 ScenePlayer 的 story/settings/modal。
 
 官方 SDK 4.01 有独立的冷启动与教程回归。将固定 SDK 的 `system` 目录挂载到另一端口：
 
@@ -106,6 +107,8 @@ npm run dev -- --port 4111 --game /path/to/sdk/system
 CAT2_SDK_URL=http://localhost:4111 npm run test:native-sdk
 ```
 
+SDK 和 native-game 使用 fullyParallel 与两个 worker。各用例的浏览器 context、IndexedDB、
+World 和 checkpoint 独立，静态资源服务器只读共享。四个慢套件按阶段在不同端口并行验收。
 这些用例通过实际鼠标进入教程，验证原生标题和选项画面在新 World 中逐像素恢复，
 并确认恢复后的选择可以继续。鉴赏用例从教程完成注册，再打开 CG、播放和停止音乐、
 进入并退出回想；可用 `-- --grep 'registers and opens'` 单独运行。完整教程路径在软件

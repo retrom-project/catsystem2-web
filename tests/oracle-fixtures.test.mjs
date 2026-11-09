@@ -65,7 +65,7 @@ test('all original 107 migration targets retain ownership and current executable
   const files = Object.values(inventory.groups).flat();
   assert.equal(files.length, new Set(files).size);
   assert.ok(inventory.groups.js.includes('tests/native-abi.test.mjs'));
-  assert.ok(inventory.groups.oracle.includes('tests/native-scalar-math.test.mjs'));
+  assert.ok(inventory.groups.oracle.includes('tests/oracle/native-scalar-math.test.mjs'));
   assert.ok(inventory.groups.oracle.includes('tests/ppi-native.test.mjs'));
   assert.equal(
     inventory.original.find((item) => item.file === 'tests/native-engine-process.test.mjs')?.state,

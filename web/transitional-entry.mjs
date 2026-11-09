@@ -7,7 +7,7 @@ import {
   NATIVE_ENGINE_IMAGES,
   nativeImageIdentity,
 } from '../src/native/engine-process.mjs';
-import { invokeNative, invokeRegion } from '../oracle/transitional-exe.mjs';
+import { invokeRegion } from '../oracle/transitional-exe.mjs';
 import { parsePE32 } from '../src/ppi/pe32.mjs';
 
 export const transitionalExe = Object.freeze({
@@ -16,7 +16,6 @@ export const transitionalExe = Object.freeze({
     engine.transitionalExe = transitionalExe;
     return engine;
   },
-  invokeNative,
   invokeRegion,
   async inspectBootstrap(game, profile) {
     const image = NATIVE_ENGINE_IMAGES[profile];

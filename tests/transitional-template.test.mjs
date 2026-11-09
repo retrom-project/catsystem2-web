@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../src/native/scalar-math.mjs';
+import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../oracle/scalar-math.mjs';
 import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
-import { invokeNative, invokeRegion } from '../oracle/transitional-exe.mjs';
+import { invokeNative } from '../oracle/scalar-invoke.mjs';
+import { invokeRegion } from '../oracle/transitional-exe.mjs';
 
 test('scalar template dispatches semantic operations through the explicitly injected capability', async () => {
   for (const abi of Object.values(NATIVE_ABIS)) {

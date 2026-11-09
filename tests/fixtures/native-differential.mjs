@@ -5,7 +5,7 @@ import { NativeConfiguration } from '../../src/native/config.mjs';
 import { MotionLibrary } from '../../src/motion/library.mjs';
 import { MotionInstance } from '../../src/motion/instance.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
-import { nativeABI } from '../../src/native/abi/index.mjs';
+import { nativeABI, NATIVE_ABIS } from '../../src/native/abi/index.mjs';
 import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { readKCS, nativeReply } from '../../src/kcs.mjs';
 import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
@@ -13,7 +13,13 @@ import { memoryGame, kcsProgram } from '../helpers.mjs';
 
 const independent = {
   generic: new Set(['math.sin', 'math.cos', 'matrix.copy', 'vector4.normalize']),
-  main: new Set(['math.linearInterpolate', 'math.roundInteger']),
+  main: new Set([
+    'math.linearInterpolate',
+    'math.roundInteger',
+    ...Object.values(NATIVE_ABIS)[0]
+      .tables.main.entries.filter((e) => e.family === 'math')
+      .map((e) => e.name),
+  ]),
 };
 
 function vmMemory(machine) {
@@ -61,12 +67,22 @@ function imageWrites(engine, before) {
   return result;
 }
 
-function originalReply(engine, table, id, args, machine, evidence) {
+function originalReply(engine, table, id, args, machine, evidence, allowedBoundaries = []) {
   const p = engine.process,
     abi = nativeABI(engine.profile),
     allocations = new Map(p.allocations);
   const bridge = new NativeKCSMemory(p, machine);
   let argv, out, watch;
+  const boundaries = [],
+    callbacks = [];
+  for (const trap of p.traps.values()) {
+    const callback = trap.callback;
+    callbacks.push([trap, callback]);
+    trap.callback = (...parameters) => {
+      boundaries.push(trap.name);
+      return callback(...parameters);
+    };
+  }
   try {
     argv = p.allocate(Math.max(4, args.length * 4));
     out = p.allocate(12);
@@ -79,7 +95,12 @@ function originalReply(engine, table, id, args, machine, evidence) {
     p.cpu.reg_write_i32(p.uc.X86_REG_MXCSR, abi.floatingPoint.mxcsr);
     p.lastTrap = null;
     const control = p.call(address, [bridge.pointer, 0, argv, out + 4]);
-    assert.equal(p.lastTrap, null, 'independent arithmetic oracle must execute without host traps');
+    for (const boundary of boundaries)
+      assert.ok(
+        allowedBoundaries.includes(boundary),
+        `unreviewed oracle host boundary ${boundary}`,
+      );
+    evidence.hostBoundaries.push(boundaries);
     assert.equal(p.load(out), 0xcccccccc, 'original leading output canary');
     assert.equal(p.load(out + 8), 0xcccccccc, 'original trailing output canary');
     const written = control === 1 || control === 3;
@@ -100,9 +121,11 @@ function originalReply(engine, table, id, args, machine, evidence) {
     evidence.floatingPoint.push({
       controlWord: p.cpu.reg_read_i32(p.uc.X86_REG_FPCW),
       mxcsr: p.cpu.reg_read_i32(p.uc.X86_REG_MXCSR),
+      boundaries,
     });
     return nativeReply(control, written ? p.load(out + 4) : undefined);
   } finally {
+    for (const [trap, callback] of callbacks) trap.callback = callback;
     watch?.close();
     try {
       bridge.close();
@@ -133,7 +156,7 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
   const instructions = [...args.map((word) => [37, word]), [43, id, args.length * 4], [59]];
   const bytes = kcsProgram(instructions),
     trace = [],
-    evidence = { peWrites: [], floatingPoint: [], outputWrites: [] };
+    evidence = { peWrites: [], floatingPoint: [], outputWrites: [], hostBoundaries: [] };
   let lastReply;
   const observeReply = (reply) => {
     assert.ok(
@@ -153,7 +176,17 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
       assert.deepEqual(words, args);
       if (oracleEngine) {
         motion.calls.set(nativeID, (motion.calls.get(nativeID) ?? 0) + 1);
-        return observeReply(originalReply(oracleEngine, table, nativeID, words, machine, evidence));
+        return observeReply(
+          originalReply(
+            oracleEngine,
+            table,
+            nativeID,
+            words,
+            machine,
+            evidence,
+            fixture.oracle?.boundaries,
+          ),
+        );
       }
       return observeReply(js(nativeID, words, machine));
     };
@@ -202,7 +235,17 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
       if (oracleEngine) {
         const key = `${table}:${id}`;
         world.runtime.calls.set(key, (world.runtime.calls.get(key) ?? 0) + 1);
-        return observeReply(originalReply(oracleEngine, table, nativeID, words, machine, evidence));
+        return observeReply(
+          originalReply(
+            oracleEngine,
+            table,
+            nativeID,
+            words,
+            machine,
+            evidence,
+            fixture.oracle?.boundaries,
+          ),
+        );
       }
       return observeReply(dispatch(nativeTable, nativeID, words, machine, task, scheduler));
     };
@@ -245,6 +288,10 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
       nativeCalls: trace,
       oracleEvidence: evidence.floatingPoint,
     };
+  } catch (error) {
+    const task = world.main ?? [...world.runtime.scheduler.tasks.values()].at(-1);
+    if (task?.machine) error.nativeMemory = vmMemory(task.machine);
+    throw error;
   } finally {
     await world.close({ flushFiles: false });
   }

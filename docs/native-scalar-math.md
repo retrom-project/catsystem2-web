@@ -1,69 +1,60 @@
 # Native scalar math
 
-`NativeScalarMath` resolves the current ABI slot to a semantic operation and calls
-the explicitly injected `invokeNative` capability. `oracle/scalar-handlers.mjs`
-holds the forty reviewed handler addresses. `oracle/transitional-exe.mjs` owns
-argument padding, VM memory bridging, task context, output canaries and cleanup.
-These modules are explicit transitional product includes and remain counted by
-the EXE dependency gate. The verifier also checks each semantic address against
-the corresponding original main-table pointer.
+All twenty main scalar operations in [scalar-math.mjs](../src/native/scalar-math.mjs)
+execute JavaScript, selected by the current
+ABI's semantic name. No EXE host is created for a scalar GCALL. Inputs and results
+are raw 32-bit words, with adjacent arguments read from the VM frame when the
+wrapper signature requires them. Each operation returns its declared control.
 
-The nineteen main scalar-result interfaces `32..40`, `141`, `18D`, `1CD` and `36A` execute
-their complete original wrappers in the mounted engine. This includes the
-trigonometric functions, rounding, remainder, square root, power, angle-unit
-conversion, integer absolute value, `atan2`, decimal logarithm and low/high-word
-packing. `18D` takes y followed by x, as confirmed by literal reference calls.
-`141` is the original periodic triangle wave: it uses the absolute phase and
-period, reaches 1 and -1 at successive odd quarter periods and returns to zero
-at half periods. Its zero-period and NaN behavior remains original CPU behavior.
-The raw half-period result retains negative zero where the original wrapper
-negates zero; it is not normalized to positive zero.
+`32..40`, `141`, `18D`, `1CD`, `36A` and `36B` cover trigonometry, rounding,
+absolute value, remainder, square root, power, angle conversion, triangle wave
+and signed word packing/unpacking. `atan2` takes y then x. Degree conversions
+round each multiply/divide to f32, using the f32 pi constant. Triangle wave uses
+absolute phase/period, quarters and ordered f32 operations; the half-period
+retains negative zero. Unpacking sign-extends low then high halves and writes
+in that order, including identical, unaligned and overlapping VM destinations.
+Zero is a valid VM address. An invalid destination raises a VM memory error;
+a valid first destination remains written if the second write fails. Four
+explicit invalid-address cases retain a separate oracle limitation: its VM
+translator returns NULL, and the sandbox null page is writable, so it can
+return control 2 after corrupting that page. JS deliberately rejects these
+invalid VM writes. This is outside the 460 valid-input comparisons and is
+asserted as an explicit boundary difference, not a passing equivalence case.
 
-Math shares the engine's actual x87/SIMD thread with native plugins. The host
-does not convert a returned NaN, signed zero or denormal through a JavaScript
-number. Original precision, rounding and exception status changes are retained.
-Adjacent native argument words are read from the caller's mapped frame.
+The contract is the normal script context, FPCW `0x007f`, MXCSR `0x1f80`.
+Plugin changes to FPCW across calls are not reproduced by JS. The original
+oracle regressions retain all eight masked precision/rounding configurations
+and full x87/SIMD state, including a fresh World checkpoint with modified FPCW.
+They live in `tests/oracle/native-scalar-math.test.mjs`, using the oracle-only
+scalar facade, handler map and wrapper adapter. These files are absent from
+the transitional product include list; only the bounded startup adapter remains.
 
-The JavaScript migration targets the normal script floating-point context,
-FPCW `0x007f` and MXCSR `0x1f80`. Plugin changes to FPCW across calls remain
-oracle evidence pending a demonstrated script-visible difference.
+`tests/fixtures/scalar-cases.mjs` supplies 230 authored cases per ABI. They run
+normal GCALL scripts in two independent Worlds. JS refuses to load an EXE; the
+oracle calls the unmodified original table handler. The tests compare controls,
+actual result writes/canaries, all VM regions, writable PE deltas, handles, task
+metadata and events. CRT domain/NaN paths may call only the named TLS and
+last-error OS services recorded in each fixture. These services do not replace
+the arithmetic implementation. Every host trap is traced and validated.
 
-`scripts/verify-native-scalar-math.mjs` executes 3,667 complete calls and 15,033
-comparisons per frozen engine. It compares original output canaries and the
-entire x87/SIMD context under eight masked precision/rounding configurations.
-Inputs include domain errors, signed zero, denormals, infinities, quiet and
-signaling NaN payloads, integer limits and adjacent argument reads. Literal
-integer packing and signed absolute results are checked separately.
+Finite transcendental results have a fixed budget of one f32 ULP. Ceil, floor,
+abs, integer operations, sqrt, angle conversion, remainder and triangle wave are
+bit exact in this corpus. Signed zero, infinity, NaN sign/payload/quieting and
+unrelated bytes are exact for every operation. No tolerance was widened.
+Public tests use the checked-in oracle golden words and exact hashes of VM
+bytes outside the declared floating result slot. Missing private EXEs produce
+an explicit per-ABI skip in differential mode; strict full mode requires them.
 
-The public SDK World test changes the actual native rounding context. Its
-upward-rounded square root of two is one ULP above the ordinary host result.
-The same context and result survive a fresh World; changing the restored
-context leaves the original World independent.
+Large-angle and remainder results also expose a limitation of the pinned
+Unicorn oracle, not hardware x87 accuracy. Its FPREM/FPREM1 helpers perform
+partial reductions with double arithmetic. CRT trigonometry at magnitude
+2^63 and above first reduces by its extended 2*pi*2^61 constant, then evaluates
+the reduced argument. Cancellation can differ greatly from direct `Math.sin`.
+`nativeRemainder` reproduces this currently script-visible path, including the
+partial-reduction steps, rather than widening the ULP limit. For example,
+sin(f32(1e30)) writes `0xbf6919a5` on both pinned oracles. Hardware equivalence
+for these extreme arguments is not established by this backend. The evidence
+and instruction trace are retained in ignored `.local/phase3/` storage.
 
-The paired `36B` unpacking wrapper also runs its complete original code. It
-sign-extends each 16-bit half to a DWORD and writes low followed by high through
-the original VM translator, returning control 2 without writing a result. Zero
-is a valid VM address; identical and overlapping destinations retain that write
-order. Live World memory, shared memory and extended blocks use the existing
-task-memory binding, including after fresh restore.
-
-`scripts/verify-native-word-unpack.mjs` compares 1,105 complete calls and 7,732
-checks per engine. The reference executes the full wrapper without replacing
-its VM translator. It checks every byte of data, stack, shared memory and two
-extended blocks, including unaligned and overlapping outputs, adjacent argument
-reads, FP context and temporary bridge ownership. The SDK World test exercises
-the live native backing and an independent restored World.
-
-The initial independent differential cases run through authored GCALL scripts in
-`tests/differential/native-math.test.mjs`. Each ABI executes 27 cases covering
-generic sin/cos, matrix copy, vector4 normalization, and the existing main
-linear-interpolation and integer-rounding implementations. Cases include signed
-zero, matrix self-aliasing and shared/heap writes. Scalar main `0x32` remains on
-the transition path and is rejected by this initial independent-entry guard.
-
-Run `npm run test:differential` with `CATSYSTEM2_SDK_EXE` and
-`CATSYSTEM2_ENGINE_EXE` set to the reviewed inputs. Each missing ABI reports a
-skip reason. `npm run test:js` runs both authored JS lanes and the comparator's
-negative checks without private EXEs. The runnable example selects inputs by
-ABI semantic name, observes each lane with `observeNativeCase`, and compares
-them using `compareNativeObservations` and the case's explicit float policy.
+Run `npm run test:differential` with both reviewed EXEs, or `npm run test:js`
+without private resources. Existing generic math cases remain independent too.

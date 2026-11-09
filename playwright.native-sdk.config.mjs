@@ -3,6 +3,8 @@ import config from './playwright.game.config.mjs';
 
 export default defineConfig({
   ...config,
+  fullyParallel: true,
+  workers: 2,
   testMatch: 'native-sdk.spec.mjs',
   outputDir: '.local/playwright-native-sdk',
   timeout: 30 * 60_000,

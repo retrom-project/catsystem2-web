@@ -1,35 +1,20 @@
 // SPDX-License-Identifier: MPL-2.0
-// Private compatibility test. Supply the prepared game through the local development server.
+// Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from '@playwright/test';
-import { clickGame, button, noError, launch, pad } from './game-helpers.mjs';
+import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
+import { step, until } from './native-game-input.mjs';
+
 test.afterEach(async ({ page }, info) => {
-  if (info.status !== info.expectedStatus && !page.isClosed()) {
-    console.log(
-      'failure state',
-      await page.evaluate(() => {
-        const e = globalThis.catSystem2,
-          p = e?.activeFES();
-        return {
-          error: document.getElementById('error').textContent,
-          state: e?.status(),
-          settings: e?.settings,
-          stack: p?.stack,
-          locals: p?.root?.locals,
-          candidates: p?.candidates().map(({ o, rect }) => ({ name: o.key, rect })),
-          unsupported: p ? [...p.unsupportedCommands] : [],
-        };
-      }),
-    );
-    await page.screenshot({
-      path: '.local/evidence/failed-game-case.jpg',
-      type: 'jpeg',
-      quality: 95,
-    });
-  }
+  if (info.status !== info.expectedStatus && !page.isClosed())
+    console.log('failure state', await gameplay(page));
 });
 test('native title, gamepad, story, touch, save, settings, backlog and new-instance recovery', async ({
   page,
 }) => {
+  // This exercises the original World, including software-GPU E-mote and CSS
+  // saves. Frame bounds below remain functional limits; the old three-minute
+  // wall budget belonged to the retired ScenePlayer implementation.
+  test.setTimeout(60 * 60_000);
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.addInitScript(() => {
@@ -44,207 +29,132 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
   await launch(page);
   await pad(page, 13);
   await pad(page, 0);
-  await page.waitForFunction(() => window.catSystem2?.story?.currentMessage);
-  expect(await page.evaluate(() => globalThis.catSystem2.vmEvidence.length)).toBe(2);
-  expect(await page.evaluate(() => globalThis.catSystem2.audio.context.state)).toBe('running');
-  await noError(page);
+  await until(page, 'meswnd#WAIT', 900);
+  await nativeWait(page, () => {
+    const e = window.catSystem2,
+      task = [...e.world.runtime.scheduler.tasks.values()].find((t) => t.name === 'sscript');
+    return task && e.world.runtime.stringBank(task, false)?.get(1000);
+  });
+  expect((await gameplay(page)).text.length).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.catSystem2.audio.context.state)).toBe('running');
   for (let i = 0; i < 240; i++) {
-    const ready = await page.evaluate(
-      () =>
-        globalThis.catSystem2.story?.waiting?.kind === 'input' &&
-        Object.values(globalThis.catSystem2.story.stage.actors).some((c) => c.model && c.touch),
+    const ready = await page.evaluate(() =>
+      [...window.catSystem2.nativeFES.values()].some((player) => {
+        const object = player.root?.byKey.get('btn');
+        return (
+          player.stack.some((label) => label.startsWith('touch#')) &&
+          object?.enable &&
+          player.root.placement(object).shown
+        );
+      }),
     );
     if (ready) break;
     await page.click('#next');
-    await page.waitForTimeout(65);
+    await step(page, 6);
   }
-  await page.waitForFunction(
-    () =>
-      globalThis.catSystem2.story?.waiting?.kind === 'input' &&
-      Object.values(globalThis.catSystem2.story.stage.actors).some((c) => c.model && c.touch),
-  );
-  await noError(page);
-  expect(await page.evaluate(() => globalThis.catSystem2.emote.gpu.models.size)).toBeGreaterThan(0);
+  expect((await gameplay(page)).models).toBeGreaterThan(0);
   await button(page, 'btn', true);
-  await page.waitForFunction(() => globalThis.catSystem2.touchEnabled);
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.extraFES.stack.includes('touch#WAIT_TOUCH'),
-  );
+  await until(page, 'touch#WAIT_TOUCH', 240);
   await clickGame(page, 640, 240);
-  await page.waitForFunction(() =>
-    /touch/i.test(globalThis.catSystem2.audio.voiceInfo().file || ''),
-  );
+  await nativeWait(page, () => /touch/i.test(window.catSystem2.audio.voiceInfo().file || ''));
   await page.keyboard.press('Escape');
-  await page.waitForFunction(() => !globalThis.catSystem2.touchEnabled);
+  await until(page, 'meswnd#WAIT', 240);
+
   await page.click('#settings');
-  await page.waitForFunction(() => globalThis.catSystem2.modal?.name === 'config');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.includes('config#WAIT'),
-  );
+  await until(page, 'config#WAIT', 240);
   await button(page, 'tab[0]');
   await button(page, 'system_langage[1]');
-  console.log('main language chooser opened');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal.player.stack.includes('config#SYSTEM_LANG_WAIT'),
-  );
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
   await button(page, 'system_main[2]');
-  console.log('main language selected');
-  await page.waitForFunction(
-    () =>
-      globalThis.catSystem2.settings.lang_text_main === 2 &&
-      globalThis.catSystem2.modal.player.stack.includes('config#WAIT'),
-  );
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language.main).toBe(2);
   await button(page, 'system_langage[1]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
   await button(page, 'system_main[0]');
-  await page.waitForFunction(() => globalThis.catSystem2.story.language === 'jp');
-  expect(
-    await page.evaluate(async () => {
-      const { cleanText } = await import('/src/scene.mjs');
-      const message = globalThis.catSystem2.story.currentMessage;
-      return (
-        message.text === cleanText(message.original) && message.speaker === message.originalSpeaker
-      );
-    }),
-  ).toBe(true);
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language.main).toBe(0);
   await button(page, 'system_langage[1]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
   await button(page, 'system_main[2]');
-  await page.waitForFunction(() => globalThis.catSystem2.story.language === 'cn');
+  await until(page, 'config#WAIT', 240);
   await button(page, 'system_langage[0]');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal.player.stack.includes('config#SYSTEM_LANG_WAIT'),
-  );
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
   await button(page, 'system_ui[2]');
-  console.log('UI language selected');
-  await page.waitForFunction(
-    () =>
-      globalThis.catSystem2.settings.lang_ui === 2 &&
-      globalThis.catSystem2.modal.player.stack.includes('config#WAIT'),
-  );
-  await noError(page);
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language).toMatchObject({ main: 2, ui: 2 });
   await page.keyboard.press('Escape');
-  await page.waitForFunction(() => !globalThis.catSystem2.modal);
-  await page.click('#quick-save');
-  await page.waitForFunction(() => globalThis.catSystem2.saves.records.size > 0);
-  const saved = await page.evaluate(() => {
-    const e = globalThis.catSystem2,
-      slot = e.saves.newest(e.quickSaveStart, 12),
-      data = e.saves.get(slot).data;
-    return { slot, message: data.scene.currentMessage, identity: data.sourceIdentity };
-  });
-  await page.click('#backlog');
-  await page.waitForFunction(() => globalThis.catSystem2.modal?.name === 'hist_b');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.includes('hist_b#WAIT'),
-  );
+  await until(page, 'meswnd#WAIT', 240);
   await noError(page);
-  const rollbackTarget = await page.evaluate(() => {
-    const e = globalThis.catSystem2;
-    return e.story.log[e.modal.player.root.byKey.get('log').top];
-  });
-  await page.screenshot({
-    path: '.local/evidence/accepted-backlog.jpg',
-    type: 'jpeg',
-    quality: 95,
-  });
+
+  const before = (await gameplay(page)).saves;
+  await page.click('#quick-save');
+  await nativeWait(
+    page,
+    (before) =>
+      [...window.catSystem2.nativeStorage.store.records.keys()].some(
+        (name) => /save\d+\.dat$/i.test(name) && !before.includes(name),
+      ),
+    before,
+  );
+  const saved = await gameplay(page);
+  expect(saved.saves.length).toBeGreaterThan(before.length);
+  await page.click('#backlog');
+  await until(page, 'hist_b#WAIT', 240);
   await button(page, 'ret[0]');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.includes('confirm#WAIT'),
-  );
+  await until(page, 'confirm#WAIT', 240);
   await button(page, 'btn[0]');
-  await page.waitForFunction(() => !globalThis.catSystem2.modal);
-  await page.waitForFunction(
-    (message) =>
-      globalThis.catSystem2.story?.currentMessage?.scene === message.scene &&
-      globalThis.catSystem2.story.currentMessage.index === message.index &&
-      !!globalThis.catSystem2.windowFES?.root,
-    rollbackTarget,
-  );
+  await until(page, 'meswnd#WAIT', 900);
+  await noError(page);
+
   await page.reload();
   await page.click('#start');
-  await page.waitForFunction(() => window.catSystem2?.mode === 'title');
-  await page.click('#quick-load');
   await page.waitForFunction(
-    (message) =>
-      globalThis.catSystem2.story?.currentMessage?.scene === message.scene &&
-      globalThis.catSystem2.story.currentMessage.index === message.index,
-    saved.message,
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { timeout: 180_000, polling: 100 },
   );
-  expect(await page.evaluate(() => globalThis.catSystem2.identity)).toBe(saved.identity);
-  await noError(page);
-  for (let i = 0; i < 16; i++) {
-    if (
-      await page.evaluate(
-        (index) => globalThis.catSystem2.story.currentMessage.index !== index,
-        saved.message.index,
-      )
-    )
-      break;
+  await until(page, 'title#WAIT', 900);
+  expect((await gameplay(page)).source).toBe(saved.source);
+  expect((await gameplay(page)).saves).toEqual(saved.saves);
+  await page.click('#quick-load');
+  await until(page, 'meswnd#WAIT', 900);
+  expect((await gameplay(page)).text).toBe(saved.text);
+  expect((await gameplay(page)).language).toMatchObject({ main: 2, ui: 2 });
+  const restored = await gameplay(page);
+  for (let i = 0; i < 20; i++) {
+    if ((await gameplay(page)).text !== restored.text) break;
     await page.click('#next');
-    await page.waitForTimeout(100);
+    await step(page, 6);
   }
-  expect(await page.evaluate(() => globalThis.catSystem2.story.currentMessage.index)).not.toBe(
-    saved.message.index,
-  );
+  expect((await gameplay(page)).text).not.toBe(restored.text);
+
   await button(page, 'btn[4]');
-  console.log('save panel opened');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.includes('saveload#WAIT'),
-  );
+  await until(page, 'saveload#WAIT', 240);
   await button(page, 'btdata[0]');
-  await page.waitForFunction(() => globalThis.catSystem2.saves.records.has(0));
-  const nativeSaved = await page.evaluate(
-    () => globalThis.catSystem2.saves.get(0).data.scene.currentMessage,
+  await nativeWait(page, () =>
+    [...window.catSystem2.nativeStorage.store.records.keys()].some((name) =>
+      /save0000\.dat$/i.test(name),
+    ),
   );
+  const ordinary = await gameplay(page);
   await page.keyboard.press('Escape');
-  await page.waitForFunction(() => !globalThis.catSystem2.modal);
+  await until(page, 'meswnd#WAIT', 240);
   for (let i = 0; i < 8; i++) {
     await page.click('#next');
-    await page.waitForTimeout(80);
+    await step(page, 6);
   }
   await button(page, 'btn[5]');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.includes('saveload#WAIT'),
-  );
+  await until(page, 'saveload#WAIT', 240);
   await button(page, 'btdata[0]');
-  await page.waitForFunction(() =>
-    globalThis.catSystem2.modal?.player.stack.some((label) => /^confirm2?#WAIT$/.test(label)),
+  await nativeWait(page, () =>
+    window.catSystem2.status().stack.some((label) => /^confirm2?#WAIT$/.test(label)),
   );
   await button(page, 'btn[0]');
-  await page.waitForFunction(
-    (message) =>
-      !globalThis.catSystem2.modal &&
-      globalThis.catSystem2.story?.currentMessage?.index === message.index &&
-      globalThis.catSystem2.story.currentMessage.scene === message.scene &&
-      !!globalThis.catSystem2.windowFES?.root,
-    nativeSaved,
-  );
-  expect(await page.evaluate(() => globalThis.catSystem2.story.language)).toBe('cn');
-  const restoredFrame = await page.evaluate(() => globalThis.catSystem2.frame);
-  await page.waitForFunction(
-    (frame) =>
-      globalThis.catSystem2.frame > frame + 3 &&
-      globalThis.catSystem2.status().stack.includes('meswnd#WAIT'),
-    restoredFrame,
-  );
-  for (let i = 0; i < 20; i++) {
-    if (
-      await page.evaluate(
-        (index) => globalThis.catSystem2.story.currentMessage.index !== index,
-        nativeSaved.index,
-      )
-    )
-      break;
-    await page.click('#next');
-    await page.waitForTimeout(100);
-  }
-  expect(await page.evaluate(() => globalThis.catSystem2.story.currentMessage.index)).not.toBe(
-    nativeSaved.index,
-  );
+  await until(page, 'meswnd#WAIT', 900);
+  expect((await gameplay(page)).text).toBe(ordinary.text);
+  const frame = (await gameplay(page)).frame;
+  await step(page, 6);
+  expect((await gameplay(page)).frame).toBeGreaterThan(frame + 3);
   await noError(page);
   expect(errors).toEqual([]);
-  await page.screenshot({
-    path: '.local/evidence/accepted-new-instance.jpg',
-    type: 'jpeg',
-    quality: 95,
-  });
 });

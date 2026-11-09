@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 102, "oracle": 135, "differential": 1 },
+    "counts": { "js": 103, "oracle": 135, "differential": 2 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -91,6 +91,7 @@
         "tests/native-resource-contracts.test.mjs",
         "tests/native-resource-search.test.mjs",
         "tests/native-runtime.test.mjs",
+        "tests/native-scalar-math.test.mjs",
         "tests/native-scene-data.test.mjs",
         "tests/native-scene-history.test.mjs",
         "tests/native-script-replacement.test.mjs",
@@ -205,7 +206,6 @@
         "tests/native-retained-owner.test.mjs",
         "tests/native-retained-raster.test.mjs",
         "tests/native-save-slots.test.mjs",
-        "tests/native-scalar-math.test.mjs",
         "tests/native-scene-checkpoint.test.mjs",
         "tests/native-scene-memory.test.mjs",
         "tests/native-screen-effect.test.mjs",
@@ -256,12 +256,16 @@
         "tests/native-windows-tls.test.mjs",
         "tests/native-windows-volume.test.mjs",
         "tests/native-world.test.mjs",
+        "tests/oracle/native-scalar-math.test.mjs",
         "tests/ppi-floating-point.test.mjs",
         "tests/ppi-native.test.mjs",
         "tests/ppi-particle-order.test.mjs",
         "tests/transitional-template.test.mjs"
       ],
-      "differential": ["tests/differential/native-math.test.mjs"]
+      "differential": [
+        "tests/differential/native-math.test.mjs",
+        "tests/differential/native-scalar.test.mjs"
+      ]
     },
     "original": [
       {
@@ -1345,7 +1349,7 @@
       {
         "kind": "guard",
         "file": "oracle/transitional-exe.mjs",
-        "line": 69,
+        "line": 4,
         "expression": "engine.profile !== 'nekopara-vol3-engine-2.6.1.76'",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -3696,7 +3700,7 @@
       {
         "kind": "exe-layout",
         "file": "web/transitional-entry.mjs",
-        "line": 22,
+        "line": 21,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -3783,8 +3787,8 @@
     "remainingExeVASelectionSites": 254,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 844,
-      "original-handler": 819,
+      "pure-js": 884,
+      "original-handler": 779,
       "exe-region": 31,
       "patch": 0,
       "reserved": 140,
@@ -3802,14 +3806,14 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 657,
-    "runtimeFiles": 331,
-    "fileDomains": { "3": 28, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
-    "fileNeedsReview": 145,
-    "exeDependencyFiles": 129,
-    "exeDependencies": { "addresses": 2132, "calls": 193, "references": 6 },
+    "nativeNeedsReview": 617,
+    "runtimeFiles": 330,
+    "fileDomains": { "3": 27, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
+    "fileNeedsReview": 143,
+    "exeDependencyFiles": 128,
+    "exeDependencies": { "addresses": 2092, "calls": 191, "references": 6 },
     "nonNativeGroups": 11,
-    "executionSites": 568
+    "executionSites": 565
   },
   "profiles": [
     {
@@ -4678,23 +4682,16 @@
           "hexID": "0x32",
           "semanticName": "math.sin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.sin",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4702,23 +4699,16 @@
           "hexID": "0x33",
           "semanticName": "math.cos",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.cos",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4726,23 +4716,16 @@
           "hexID": "0x34",
           "semanticName": "math.tan",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.tan",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4750,23 +4733,16 @@
           "hexID": "0x35",
           "semanticName": "math.asin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.asin",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4774,23 +4750,16 @@
           "hexID": "0x36",
           "semanticName": "math.acos",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.acos",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4798,23 +4767,16 @@
           "hexID": "0x37",
           "semanticName": "math.atan",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.atan",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4822,23 +4784,16 @@
           "hexID": "0x38",
           "semanticName": "math.ceil",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.ceil",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4846,23 +4801,16 @@
           "hexID": "0x39",
           "semanticName": "math.abs",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.abs",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4870,23 +4818,16 @@
           "hexID": "0x3a",
           "semanticName": "math.floor",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.floor",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4894,23 +4835,16 @@
           "hexID": "0x3b",
           "semanticName": "math.fmod",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.fmod",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4918,23 +4852,16 @@
           "hexID": "0x3c",
           "semanticName": "math.sqrt",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.sqrt",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4942,23 +4869,16 @@
           "hexID": "0x3d",
           "semanticName": "math.pow",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.pow",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4966,23 +4886,16 @@
           "hexID": "0x3e",
           "semanticName": "math.degreeToRadian",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.degreeToRadian",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4990,23 +4903,16 @@
           "hexID": "0x3f",
           "semanticName": "math.radianToDegree",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.radianToDegree",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -5014,23 +4920,16 @@
           "hexID": "0x40",
           "semanticName": "math.integerAbs",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.integerAbs",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -9720,23 +9619,16 @@
           "hexID": "0x141",
           "semanticName": "math.triangleWave",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.triangleWave",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -11060,23 +10952,16 @@
           "hexID": "0x18d",
           "semanticName": "math.atan2",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.atan2",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -12295,23 +12180,16 @@
           "hexID": "0x1cd",
           "semanticName": "math.log10",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.log10",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -20244,23 +20122,16 @@
           "hexID": "0x36a",
           "semanticName": "math.packWords",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.packWords",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -20268,23 +20139,16 @@
           "hexID": "0x36b",
           "semanticName": "math.unpackWords",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.unpackWords",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -25360,12 +25224,6 @@
           "dependencies": []
         },
         {
-          "name": "scalar-math",
-          "registration": "src/native/scalar-math.mjs:58",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "input-commands",
           "registration": "src/native/input-commands.mjs:113",
           "modules": [],
@@ -26357,23 +26215,16 @@
           "hexID": "0x32",
           "semanticName": "math.sin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.sin",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26381,23 +26232,16 @@
           "hexID": "0x33",
           "semanticName": "math.cos",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.cos",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26405,23 +26249,16 @@
           "hexID": "0x34",
           "semanticName": "math.tan",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.tan",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26429,23 +26266,16 @@
           "hexID": "0x35",
           "semanticName": "math.asin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.asin",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26453,23 +26283,16 @@
           "hexID": "0x36",
           "semanticName": "math.acos",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.acos",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26477,23 +26300,16 @@
           "hexID": "0x37",
           "semanticName": "math.atan",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.atan",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26501,23 +26317,16 @@
           "hexID": "0x38",
           "semanticName": "math.ceil",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.ceil",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26525,23 +26334,16 @@
           "hexID": "0x39",
           "semanticName": "math.abs",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.abs",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26549,23 +26351,16 @@
           "hexID": "0x3a",
           "semanticName": "math.floor",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.floor",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26573,23 +26368,16 @@
           "hexID": "0x3b",
           "semanticName": "math.fmod",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.fmod",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26597,23 +26385,16 @@
           "hexID": "0x3c",
           "semanticName": "math.sqrt",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.sqrt",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26621,23 +26402,16 @@
           "hexID": "0x3d",
           "semanticName": "math.pow",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.pow",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26645,23 +26419,16 @@
           "hexID": "0x3e",
           "semanticName": "math.degreeToRadian",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.degreeToRadian",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26669,23 +26436,16 @@
           "hexID": "0x3f",
           "semanticName": "math.radianToDegree",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.radianToDegree",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -26693,23 +26453,16 @@
           "hexID": "0x40",
           "semanticName": "math.integerAbs",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.integerAbs",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -31340,23 +31093,16 @@
           "hexID": "0x141",
           "semanticName": "math.triangleWave",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.triangleWave",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -32676,23 +32422,16 @@
           "hexID": "0x18d",
           "semanticName": "math.atan2",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.atan2",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -33902,23 +33641,16 @@
           "hexID": "0x1cd",
           "semanticName": "math.log10",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.log10",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -41882,23 +41614,16 @@
           "hexID": "0x36a",
           "semanticName": "math.packWords",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.packWords",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -41906,23 +41631,16 @@
           "hexID": "0x36b",
           "semanticName": "math.unpackWords",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/scalar-math.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scalar-math.mjs:60",
-          "features": ["scalar-math"],
-          "transitionalOperation": "math.unpackWords",
-          "dependencies": [
-            "oracle/scalar-handlers.mjs",
-            "oracle/transitional-exe.mjs",
-            "src/native/scalar-math.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。"
-          ]
+          "registration": "src/native/scalar-math.mjs:116",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-scalar-math.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -47781,12 +47499,6 @@
         {
           "name": "configuration-queries",
           "registration": "src/native/configuration-query.mjs:227",
-          "modules": [],
-          "dependencies": []
-        },
-        {
-          "name": "scalar-math",
-          "registration": "src/native/scalar-math.mjs:58",
           "modules": [],
           "dependencies": []
         },
@@ -55421,32 +55133,16 @@
     },
     {
       "file": "src/native/scalar-math.mjs",
-      "sourceSha256": "ce9afc80f84777bd073f71b2f306b09ffe256ee1a92cead6d1481dde77488c5d",
+      "sourceSha256": "a364d6d059bffd3d3e108e492854800012798ac53ed4cbed94753adddf78fb4d",
       "domain": 3,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature", "invokeNative"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 44,
-          "method": "invokeNative",
-          "target": "operation",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "invokeNative": 1 },
-      "indirectSites": [
-        {
-          "line": 61,
-          "method": "getNativeFeature",
-          "feature": "scalar-math",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "dependencyTypes": [],
+      "docs": ["docs/native-scalar-math.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/scene-checkpoint.mjs",
@@ -59045,7 +58741,7 @@
     },
     {
       "file": "web/transitional-entry.mjs",
-      "sourceSha256": "910b3a656a66b62abe152adf8d7bb71860da175871495dddbb9a7c58cdcfc150",
+      "sourceSha256": "a216ada782f87dc5e1e30e3e4e9866c794cc6e01e3284668c8ea564a288ffd37",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 4 },
@@ -59057,53 +58753,17 @@
       "review": "counted"
     },
     {
-      "file": "oracle/scalar-handlers.mjs",
-      "sourceSha256": "79e7d17329eb217a59c299c6059f9bf3474e12b412ac262bb9d78d49ae65afa9",
-      "domain": 3,
+      "file": "oracle/transitional-exe.mjs",
+      "sourceSha256": "7b781264e138d4442e6245afa97947edf5d7c1c6902274f6b641e14415892501",
+      "domain": 8,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 40, "calls": 0, "references": 0 },
+      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
       "dependencyTypes": ["in-image-literals"],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
       "review": "counted"
-    },
-    {
-      "file": "oracle/transitional-exe.mjs",
-      "sourceSha256": "eed71275cd46932afb905ddc756494cd14413da50a7ec60c79f53775488b9ef7",
-      "domain": 8,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "callFromHost", "getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 39,
-          "method": "callFromHost",
-          "target": "scalarHandler(engine.profile, operation)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 45,
-          "method": "call",
-          "target": "scalarHandler(engine.profile, operation)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
-      "indirectSites": [
-        {
-          "line": 25,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
     }
   ],
   "nonNativeEntries": [
@@ -59717,22 +59377,6 @@
           "line": 50,
           "method": "call",
           "target": "unregister",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/transitional-exe.mjs",
-          "line": 39,
-          "method": "callFromHost",
-          "target": "scalarHandler(engine.profile, operation)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/transitional-exe.mjs",
-          "line": 45,
-          "method": "call",
-          "target": "scalarHandler(engine.profile, operation)",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -63954,14 +63598,6 @@
           "line": 109,
           "method": "call",
           "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/scalar-math.mjs",
-          "line": 44,
-          "method": "invokeNative",
-          "target": "operation",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

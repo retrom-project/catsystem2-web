@@ -129,7 +129,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'scalar-math geometry rectangles view-geometry database content-databases section-table nametable bitmap-factory ' +
+    'geometry rectangles view-geometry database content-databases section-table nametable bitmap-factory ' +
     'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'configuration-query input-commands registry image-file image-composite render-sources ' +
     'unicode-output utf8 record-queue tile-game script-xml task-dump tile-plane-command ' +
@@ -533,16 +533,6 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           }
         }
       }
-      if (implementationFile === 'src/native/scalar-math.mjs') {
-        dependencies = unique([
-          ...dependencies,
-          'oracle/transitional-exe.mjs',
-          'oracle/scalar-handlers.mjs',
-        ]);
-        reasons.push(
-          '按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。',
-        );
-      }
       if (!entry.name) reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
       if (
         (table === 'generic' && [39, 40].includes(entry.id)) ||
@@ -575,9 +565,6 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         route,
         registration: location ? `${location.file}:${location.line}` : null,
         features: names,
-        ...(implementationFile === 'src/native/scalar-math.mjs'
-          ? { transitionalOperation: entry.name }
-          : {}),
         dependencies,
         docs: documentation(unique([implementationFile, ...dependencies]), docs),
         review: reasons.length ? 'needs-review' : 'traced',

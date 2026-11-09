@@ -236,6 +236,11 @@ async function openingPixels(page) {
 test('cold native language, title and opening dialogue continue through the original HG3 load', async ({
   page,
 }) => {
+  // The unchanged frame bounds passed in 18.5 minutes alone but crossed the
+  // old 20-minute wall limit with concurrent SDK work (phase 2.3). Two workers
+  // and the stage matrix need scheduling headroom, without changing frames or
+  // any pixel, input, load or checkpoint assertion.
+  test.setTimeout(40 * 60_000);
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await startGame(page);

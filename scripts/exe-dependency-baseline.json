@@ -1,14 +1,9 @@
 {
   "version": 1,
   "files": {
-    "oracle/scalar-handlers.mjs": {
-      "addresses": 40,
-      "calls": 0,
-      "references": 0
-    },
     "oracle/transitional-exe.mjs": {
       "addresses": 2,
-      "calls": 2,
+      "calls": 0,
       "references": 0
     },
     "src/native/area-effect-commands.mjs": {

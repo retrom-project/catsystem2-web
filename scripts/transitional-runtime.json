@@ -1,8 +1,3 @@
 {
-  "files": [
-    "web/app.mjs",
-    "web/transitional-entry.mjs",
-    "oracle/scalar-handlers.mjs",
-    "oracle/transitional-exe.mjs"
-  ]
+  "files": ["web/app.mjs", "web/transitional-entry.mjs", "oracle/transitional-exe.mjs"]
 }

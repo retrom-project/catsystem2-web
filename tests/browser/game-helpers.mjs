@@ -1,11 +1,32 @@
 // SPDX-License-Identifier: MPL-2.0
 import { expect } from '@playwright/test';
+import { frameClock, until, clickNativeButton, step } from './native-game-input.mjs';
 export async function clickGame(page, x, y) {
   await page.locator('#screen').scrollIntoViewIfNeeded();
   const rect = await page.locator('#screen').boundingBox();
-  await page.mouse.click(rect.x + (x * rect.width) / 1280, rect.y + (y * rect.height) / 720);
+  await page.mouse.move(rect.x + (x * rect.width) / 1280, rect.y + (y * rect.height) / 720);
+  await step(page, 2);
+  await page.mouse.down();
+  await step(page, 2);
+  await page.mouse.up();
+  await step(page, 2);
 }
 export async function button(page, name, extra = false) {
+  if (await page.evaluate(() => Boolean(window.catSystem2?.world))) {
+    if (!extra) return clickNativeButton(page, name);
+    const point = await page.evaluate((key) => {
+      const e = window.catSystem2,
+        player = [...e.nativeFES.values()].find((p) =>
+          p.stack.some((label) => label.startsWith('touch#')),
+        ),
+        object = player?.root.byKey.get(key),
+        region = object && e.world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+      if (!region) throw new Error('Missing native touch input ' + key);
+      const [l, t, r, b] = region.bounds;
+      return [(l + r) / 2, (t + b) / 2];
+    }, name);
+    return clickGame(page, ...point);
+  }
   await page.waitForFunction(
     ({ name, extra }) => {
       const e = window.catSystem2,
@@ -32,20 +53,64 @@ export async function noError(page) {
   await expect(page.locator('#error')).toBeHidden();
 }
 export async function launch(page) {
+  await frameClock(page);
   await page.goto('/');
   await page.click('#start');
-  await page.waitForFunction(() => window.catSystem2?.status().stack.includes('langselect#WAIT'));
+  await page.waitForFunction(
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { polling: 100, timeout: 180_000 },
+  );
+  await noError(page);
+  await until(page, 'langselect#WAIT', 900);
   await noError(page);
   await button(page, 'decide');
-  await page.waitForFunction(() => window.catSystem2?.status().stack.includes('title#WAIT'));
+  await until(page, 'title#WAIT', 240);
 }
 export async function pad(page, index) {
   await page.evaluate((i) => {
     window.testPad.buttons[i] = { pressed: true, value: 1 };
   }, index);
-  await page.waitForTimeout(120);
+  await step(page, 6);
   await page.evaluate((i) => {
     window.testPad.buttons[i] = { pressed: false, value: 0 };
   }, index);
-  await page.waitForTimeout(80);
+  await step(page, 4);
 }
+
+export async function nativeWait(page, predicate, argument, maxFrames = 240) {
+  const start = await page.evaluate(() => window.catSystem2.world.frame);
+  let frame = start;
+  while (frame - start < maxFrames) {
+    if (await page.evaluate(predicate, argument)) return;
+    frame = (await step(page, 6)).frame;
+  }
+  expect(
+    await page.evaluate(predicate, argument),
+    JSON.stringify(await page.evaluate(() => window.catSystem2.status())),
+  ).toBeTruthy();
+}
+export const gameplay = (page) =>
+  page.evaluate(() => {
+    const e = window.catSystem2,
+      { world } = e,
+      runtime = world.runtime,
+      script = [...runtime.scheduler.tasks.values()].find((task) => task.name === 'sscript'),
+      data = script && runtime.sceneData(script),
+      bank = script && runtime.stringBank(script, false);
+    return {
+      frame: world.frame,
+      source: e.identity,
+      text: bank?.get(1000) ?? '',
+      scene: data?.reader.filename,
+      block: data?.reader.block,
+      line: data?.reader.line,
+      stack: e.status().stack,
+      language: { ...world.configuration.language },
+      touch: e.status().stack.includes('touch#WAIT_TOUCH'),
+      models: e.emote.gpu.models.size,
+      saves: [...e.nativeStorage.store.records.keys()]
+        .filter((name) => /save\d+\.dat$/i.test(name))
+        .sort(),
+    };
+  });

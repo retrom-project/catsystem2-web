@@ -34,11 +34,7 @@ test('the normal development server serves the explicit transitional modules', a
     child.once('error', reject);
     child.once('exit', (code) => reject(new Error(`Development server exited ${code}\n${output}`)));
   });
-  for (const file of [
-    'web/transitional-entry.mjs',
-    'oracle/transitional-exe.mjs',
-    'oracle/scalar-handlers.mjs',
-  ]) {
+  for (const file of ['web/transitional-entry.mjs', 'oracle/transitional-exe.mjs']) {
     const response = await fetch(`http://127.0.0.1:${port}/${file}`);
     assert.equal(response.status, 200, file);
     assert.match(response.headers.get('content-type'), /javascript/);
@@ -47,6 +43,11 @@ test('the normal development server serves the explicit transitional modules', a
       await readFile(new URL(`../${file}`, import.meta.url), 'utf8'),
     );
   }
-  for (const file of ['oracle/scalar-handlers.mjs/extra', 'scripts/check-no-exe-addresses.mjs'])
+  for (const file of [
+    'oracle/scalar-handlers.mjs',
+    'oracle/scalar-invoke.mjs',
+    'oracle/scalar-handlers.mjs/extra',
+    'scripts/check-no-exe-addresses.mjs',
+  ])
     assert.equal((await fetch(`http://127.0.0.1:${port}/${file}`)).status, 404, file);
 });
