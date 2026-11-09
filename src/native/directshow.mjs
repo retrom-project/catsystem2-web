@@ -8,6 +8,12 @@ import {
   MOVIE_FILTER_GUIDS,
   NativeMovieFilters,
 } from './movie-split-filters.mjs';
+import {
+  NativeWindowsMediaReader,
+  WM_READER_CONTRACTS,
+  WM_READER_GUIDS,
+  WM_READER_PROFILE,
+} from './movie-wmreader.mjs';
 
 const E_NOINTERFACE = 0x80004002;
 const E_POINTER = 0x80004003;
@@ -26,6 +32,7 @@ const directShow = (word) => [word, 0x11ce0ad4, 0x20003ab0, 0x70a70baf];
 const ASYNC_READER = directShow(0x56a868aa);
 const GUIDS = {
   ...MOVIE_FILTER_GUIDS,
+  ...WM_READER_GUIDS,
   graph: [directShow(0x56a8689f), directShow(0x56a868a9)],
   control: [directShow(0x56a868b1)],
   seeking: [[0x36b73880, 0x11cfc2c8, 0x8000468b, 0x60ef6c5f]],
@@ -38,6 +45,7 @@ const GUIDS = {
 };
 const CONTRACTS = {
   ...MOVIE_FILTER_CONTRACTS,
+  ...WM_READER_CONTRACTS,
   graph: [
     18,
     { 3: ['addFilter', 2], 4: ['removeFilter', 1], 7: ['connectDirect', 3], 12: ['renderPin', 1] },
@@ -98,6 +106,7 @@ export class NativeDirectShow {
       fn: (args) => this.createInstance(...args),
     });
     this.splitFilters = new NativeMovieFilters(this, UNKNOWN);
+    if (engine.profile === WM_READER_PROFILE) this.wmReader = new NativeWindowsMediaReader(this);
     engine.registerFeature('directshow', this);
   }
   guid(address, value) {
@@ -105,7 +114,14 @@ export class NativeDirectShow {
   }
   definition(kind, slot) {
     const [name, count] = IUNKNOWN[slot] ?? CONTRACTS[kind][1][slot] ?? [null, 0],
-      service = slot >= 3 && MOVIE_FILTER_CONTRACTS[kind] ? this.splitFilters : this;
+      service =
+        slot < 3
+          ? this
+          : WM_READER_CONTRACTS[kind]
+            ? this.wmReader
+            : MOVIE_FILTER_CONTRACTS[kind]
+              ? this.splitFilters
+              : this;
     return {
       name: `DirectShow ${kind} slot ${slot}`,
       args: count + 1,
@@ -248,10 +264,12 @@ export class NativeDirectShow {
       }
       if (record.filter) await this.removeFilter(record, record.filter);
       if (record.textureFilter) await this.removeFilter(record, record.textureFilter);
+      if (record.wmFilter) await this.removeFilter(record, record.wmFilter);
       if (record.source) await this.removeFilter(record, record.source);
       for (const pointer of Object.values(record.splitFilters ?? {}))
         await this.removeFilter(record, pointer);
-    } else await this.splitFilters.destroy(record);
+    } else if (!record.windowsMediaReader && !record.windowsMediaStream)
+      await this.splitFilters.destroy(record);
     this.freeInterfaces(record);
   }
   freeInterfaces(record) {
@@ -288,14 +306,16 @@ export class NativeDirectShow {
       return 0;
     }
     const source = !graph.source && pointer === this.process.load(graph.movie + 384) + 12,
-      texture = this.engine.features.get('texture-movie-renderer')?.matches(pointer);
-    if (!source && !texture) return E_NOTIMPL;
+      texture = this.engine.features.get('texture-movie-renderer')?.matches(pointer),
+      reader = this.wmReader?.filter(pointer);
+    if (!source && !texture && !reader) return E_NOTIMPL;
     if (texture && (graph.filter || graph.textureFilter)) return VFW_E_WRONG_STATE;
     await this.call(pointer, 1);
     const result = await this.call(pointer, 13, graph.primary, name);
     if (FAILED(result)) await this.call(pointer, 2);
     else if (source) graph.source = pointer;
-    else graph.textureFilter = pointer;
+    else if (texture) graph.textureFilter = pointer;
+    else await this.wmReader.attach(graph, reader);
     return result;
   }
   async removeFilter(graph, pointer) {
@@ -309,11 +329,13 @@ export class NativeDirectShow {
       await this.release(filter);
       return 0;
     }
-    if (graph.source !== pointer && graph.textureFilter !== pointer) return E_INVALIDARG;
+    if (graph.source !== pointer && graph.textureFilter !== pointer && graph.wmFilter !== pointer)
+      return E_INVALIDARG;
     if (graph.source === pointer) await this.splitFilters.disconnectSource(graph);
     const result = await this.call(pointer, 13, 0, 0);
     if (!FAILED(result)) {
       if (graph.source === pointer) graph.source = 0;
+      else if (graph.wmFilter === pointer) await this.wmReader.detach(graph);
       else graph.textureFilter = 0;
       await this.call(pointer, 2);
     }
@@ -436,6 +458,7 @@ export class NativeDirectShow {
       return VFW_E_CANNOT_RENDER;
     const output = this.objects.get(pin);
     if (output?.parentFilter) return this.splitFilters.renderPin(graph, output);
+    if (graph.wmFilter) return this.wmReader.renderPin(graph, pin);
     if (pin !== graph.source + 248) return VFW_E_CANNOT_RENDER;
     return this.connectMedia(graph, pin);
   }
@@ -533,6 +556,10 @@ export class NativeDirectShow {
     if (!decoder) return VFW_E_CANNOT_RENDER;
     const result = await this.startPresentation(graph);
     if (FAILED(result)) return result;
+    if (graph.wmFilter) {
+      const state = await this.wmReader.changeState(graph, 2);
+      if (FAILED(state)) return state;
+    }
     if (!graph.exhausted && !(await decoder.play())) return E_FAIL;
     graph.state = 2;
     return 0;
@@ -544,6 +571,10 @@ export class NativeDirectShow {
     if (!(await decoder.stop())) return VFW_E_WRONG_STATE;
     const started = await this.startPresentation(graph);
     if (FAILED(started)) return started;
+    if (graph.wmFilter) {
+      const state = await this.wmReader.changeState(graph, 1);
+      if (FAILED(state)) return state;
+    }
     const result = await this.presentFrame(graph, true);
     if (!FAILED(result)) graph.state = 1;
     return result;
@@ -551,6 +582,10 @@ export class NativeDirectShow {
   async stop(graph) {
     const decoder = this.decoders.get(graph.primary);
     if (decoder && !(await decoder.stop())) return VFW_E_WRONG_STATE;
+    if (graph.wmFilter) {
+      const state = await this.wmReader.changeState(graph, 0);
+      if (FAILED(state)) return state;
+    }
     if (graph.filter) {
       const { notify } = this.objects.get(graph.filter);
       if (this.vmr.record(notify).presenting) {
@@ -575,7 +610,7 @@ export class NativeDirectShow {
   getDuration(graph, output) {
     if (!output) return E_POINTER;
     if (!graph.video) return VFW_E_WRONG_STATE;
-    this.engine.kernel.write64(output, graph.video.duration);
+    this.engine.kernel.write64(output, graph.wmDuration ?? graph.video.duration);
     return 0;
   }
   getPosition(graph, output) {
@@ -592,12 +627,13 @@ export class NativeDirectShow {
     if (!graph.video) return VFW_E_WRONG_STATE;
     const p = this.process,
       position = BigInt.asIntN(64, (BigInt(p.load(current + 4)) << 32n) | BigInt(p.load(current)));
-    if (position < 0n || position > graph.video.duration) return E_INVALIDARG;
+    const duration = graph.wmDuration ?? graph.video.duration;
+    if (position < 0n || position > duration) return E_INVALIDARG;
     const decoder = await this.resumeDecoder(graph);
     if (!decoder) return VFW_E_CANNOT_RENDER;
     await decoder.seek(position);
     graph.position = position;
-    graph.exhausted = position === graph.video.duration;
+    graph.exhausted = position === duration;
     graph.events.length = 0;
     this.samples.delete(graph.primary);
     return 0;
@@ -662,6 +698,8 @@ export class NativeDirectShow {
           if (FAILED(result))
             throw new Error(`Restored Plane movie could not resume: ${graph.filename}`);
         }
+        if (graph.wmFilter)
+          await this.wmReader.advance(graph, this.decoders.get(graph.primary).position());
         if (this.decoders.get(graph.primary).frameStamp() !== this.samples.get(graph.primary)) {
           const result = await this.presentFrame(graph);
           if (FAILED(result)) throw new Error(`Plane movie presentation failed: ${graph.filename}`);

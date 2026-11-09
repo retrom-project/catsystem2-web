@@ -7,7 +7,7 @@ import { kcsProgram } from '../helpers.mjs';
 
 for (const [profile, variable, texture, format] of profiles.flatMap(([profile, variable]) =>
   [false, true].flatMap((texture) =>
-    (texture ? ['avi', 'vp8', 'ogv'] : ['avi', 'vp8', 'vp9', 'ogv']).map((format) => [
+    (texture ? ['avi', 'vp8', 'ogv', 'wmv'] : ['avi', 'vp8', 'vp9', 'ogv', 'wmv']).map((format) => [
       profile,
       variable,
       texture,
@@ -15,7 +15,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     ]),
   ),
 ))
-  test(`${profile} original Plane ${texture ? 'Texture Renderer' : 'VMR9'} plays and restores its mounted ${['avi', 'ogv'].includes(format) ? format.toUpperCase() : 'WebM ' + format.toUpperCase()}`, async ({
+  test(`${profile} original Plane ${texture ? 'Texture Renderer' : 'VMR9'} ${format === 'wmv' ? 'handles mounted' : 'plays and restores its mounted'} ${['avi', 'ogv', 'wmv'].includes(format) ? format.toUpperCase() : 'WebM ' + format.toUpperCase()}`, async ({
     page,
   }) => {
     const gamePE = profile.startsWith('nekopara-');
@@ -24,7 +24,8 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       'Requires the frozen engine and its imported driver',
     );
     test.setTimeout(90000);
-    const split = format !== 'avi',
+    const wmv = format === 'wmv',
+      split = !wmv && format !== 'avi',
       ogg = format === 'ogv',
       extension = split && !ogg ? 'webm' : format;
     const [exe, source, converted] = await Promise.all([
@@ -36,13 +37,16 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             vp8: '../fixtures/native-plane-movie-vp8.webm',
             vp9: '../fixtures/native-plane-movie.webm',
             ogv: '../fixtures/native-plane-movie.ogv',
+            wmv: '../fixtures/native-plane-movie.wmv',
           }[format],
           import.meta.url,
         ),
       ),
       readFile(
         new URL(
-          ogg ? '../fixtures/native-plane-movie-ogv.mp4' : '../fixtures/native-plane-movie.webm',
+          ogg || wmv
+            ? `../fixtures/native-plane-movie-${format}.mp4`
+            : '../fixtures/native-plane-movie.webm',
           import.meta.url,
         ),
       ),
@@ -57,12 +61,13 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     );
     files['main.kcs'] = [...kcsProgram([[37, 1024], [43, 0x47, 4], [59]])];
     files['movie/clip.' + extension] = [...source];
-    if (split) files['movie/invalid.' + extension] = [0x1a, 0x45, 0xdf, 0xa3, 0x9f, 1];
+    if (split || wmv) files['movie/invalid.' + extension] = [0x1a, 0x45, 0xdf, 0xa3, 0x9f, 1];
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, files, gamePE, movie, texture, extension, format }) => {
         const directWebM = extension === 'webm',
           ogg = format === 'ogv',
+          wmv = format === 'wmv',
           split = directWebM || ogg;
         const [
           { NativeWorld },
@@ -114,7 +119,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         // original IFile. The valid converted copy has a qualified alias.
         if (!directWebM) {
           const movieBytes = Uint8Array.from(movie),
-            mime = ogg ? 'video/mp4' : 'video/webm';
+            mime = ogg || wmv ? 'video/mp4' : 'video/webm';
           url = URL.createObjectURL(new Blob([movieBytes], { type: mime }));
           const sidecar = {
             sourceIdentity: await game.fingerprint(),
@@ -220,8 +225,20 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             disabled = direct.objects.size === 0 && decoders.length === 0;
             world.configuration.setField('general.disableMovie', 0);
           }
+          if (wmv && !gamePE) {
+            await load(first, plane, 'clip');
+            const handle = (await command(first, lookup, world.nativeTaskID(plane))).value,
+              movie = handle && world.runtime.handles.get(handle, 'plane-movie');
+            await world.objects.release(plane);
+            return {
+              unsupported: !movie || !p.load(movie),
+              decoders: decoders.length,
+              remaining: direct.objects.size,
+              mediaModule: world.nativeEngine.kernel.hostModules.handle('wmvcore.dll'),
+            };
+          }
           let rejectedCodec, rejectedHandle, rejectedHandleReleased;
-          if (split) {
+          if (split || wmv) {
             await load(first, plane, 'invalid');
             rejectedHandle = (await command(first, lookup, world.nativeTaskID(plane))).value;
             const rejectedMovie = world.runtime.handles.get(rejectedHandle, 'plane-movie');
@@ -236,11 +253,12 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               decoders: decoders.length,
               events: world.nativeEngine.kernel.events.events.size,
               taskMemory: world.nativeEngine.kernel.comMemory.snapshot(),
-              moduleReferences: moduleReferences(world),
+              moduleReferences: split ? moduleReferences(world) : null,
             };
           }
           await load(first, plane, 'clip');
-          if (split) rejectedHandleReleased = !world.runtime.handles.records.has(rejectedHandle);
+          if (split || wmv)
+            rejectedHandleReleased = !world.runtime.handles.records.has(rejectedHandle);
           await world.sendEngine(plane, world.main.id, 48, 0, 1);
           const graph = [...direct.objects.values()].find((record) => record.movie);
           if (!graph?.video)
@@ -259,7 +277,34 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
                 }),
             );
           const graphID = graph.primary;
-          const oggMediaType = async (context, pin) => {
+          const windowsMedia = ({ direct, p }) => {
+            const graph = direct.objects.get(graphID);
+            if (!wmv) return null;
+            const reader = direct.wmReader.filter(graph.wmFilter),
+              loader = p.load(graph.movie + 424);
+            return {
+              filter: p.load(loader + 8) === graph.wmFilter && p.load(graph.wmFilter) === 0x8f0548,
+              source: p.load(loader + 12) === reader.input && p.load(reader.input) === 0x8f03b4,
+              pins: [...graph.wmPins.values()],
+              rendered: graph.wmRendered.size,
+              clock: reader.userClock,
+              duration: Number(reader.duration),
+              streams: reader.streams.map(
+                ({ number, kind, words, maxSample, compressed, allocate }) => [
+                  number,
+                  kind,
+                  words[4],
+                  maxSample,
+                  compressed,
+                  allocate,
+                ],
+              ),
+            };
+          };
+          const wmTopology = windowsMedia(first),
+            wmFilter = graph.wmFilter,
+            wmStream = wmv && direct.wmReader.filter(wmFilter).input;
+          const pinMediaType = async (context, pin) => {
             const { direct, p } = context,
               engine = context.world.nativeEngine,
               scratch = p.allocate(8, true),
@@ -267,14 +312,14 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
                 engine.call(engine.resolve({ dll: 'OLE32.dll', name: 'CoTaskMemFree' }), [pointer]);
             let enumeration, type, format;
             try {
-              if (await direct.call(pin.primary, 12, scratch))
-                throw new Error('Ogg pin did not enumerate its media type');
+              if (await direct.call(pin, 12, scratch))
+                throw new Error('Movie pin did not enumerate its media type');
               enumeration = p.load(scratch);
               if (
                 (await direct.call(enumeration, 3, 1, scratch, scratch + 4)) ||
                 p.load(scratch + 4) !== 1
               )
-                throw new Error('Ogg media type enumeration did not return one descriptor');
+                throw new Error('Movie media type enumeration did not return one descriptor');
               type = p.load(scratch);
               format = p.load(type + 68);
               const words = Array.from({ length: 17 }, (_, i) => p.load(type + 4 * i)),
@@ -315,7 +360,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               p.free(scratch);
             }
             const types = [];
-            if (ogg) for (const pin of pins) types.push(await oggMediaType(context, pin));
+            if (ogg) for (const pin of pins) types.push(await pinMediaType(context, pin.primary));
             return {
               names: filters.map(({ name }) => name),
               tracks: pins
@@ -333,7 +378,14 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               ...(ogg ? { types } : {}),
             };
           };
-          const connectedFilters = await splitFilters(first);
+          const nativeWMTypes = async (context) => {
+            const types = [];
+            for (const pin of context.direct.objects.get(graphID).wmPins.keys())
+              types.push(await pinMediaType(context, pin));
+            return types;
+          };
+          const connectedFilters = await splitFilters(first),
+            firstWMTypes = wmv && (await nativeWMTypes(first));
           const handle = (await command(first, lookup, world.nativeTaskID(plane))).value,
             stableHandle = (await command(first, lookup, world.nativeTaskID(plane))).value,
             otherHandle = (await command(first, texture ? 0x2be : 0x3dd, world.nativeTaskID(plane)))
@@ -361,9 +413,10 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               size: [record.video.width, record.video.height],
               textureFormat: d.textureData(target).format,
               decoderSurfaceFormat: vmr ? d.surfaceData(vmr.surfaces[0]).format : null,
-              duration: Number(record.video.duration),
+              duration: Number(record.wmDuration ?? record.video.duration),
               digest: record.sha256,
               state: record.state,
+              ...(wmv ? { filterState: p.load(record.wmFilter + 8) } : {}),
               pin: record.source,
               notifyOwnedByMovie: Boolean(filter?.movieNotify),
               color: [pixel(4, 4), pixel(4, 18), pixel(4, 30)],
@@ -391,7 +444,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             }
           };
           let analyser;
-          if (format === 'vp8' || ogg) {
+          if (format === 'vp8' || ogg || wmv) {
             audio = new AudioContext({ sampleRate: 48000 });
             const source = audio.createMediaElementSource(decoders[0].video);
             analyser = audio.createAnalyser();
@@ -406,14 +459,14 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             await world.movies.settle();
             return direct.decoders.get(graphID).position() >= 2400000n;
           });
-          let vorbis;
+          let decodedAudio;
           if (analyser) {
             const wave = new Float32Array(analyser.fftSize),
               spectrum = new Float32Array(analyser.frequencyBinCount);
             analyser.getFloatTimeDomainData(wave);
             analyser.getFloatFrequencyData(spectrum);
             const peak = spectrum.reduce((best, db, i) => (db > spectrum[best] ? i : best), 0);
-            vorbis = {
+            decodedAudio = {
               amplitude: Math.max(...wave.map(Math.abs)),
               hz: (peak * audio.sampleRate) / analyser.fftSize,
             };
@@ -439,7 +492,8 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
           fresh.world.movies.activate();
           await wait(async () => {
             await fresh.world.movies.settle();
-            return inspect(second).color[0][1] > 230;
+            const frame = inspect(second);
+            return frame.color[0][1] > 230 && frame.presentCalls > 1;
           });
           const later = inspect(second),
             playingAtGreen = (await command(second, 0x10d, handle)).value;
@@ -464,6 +518,8 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             return (await command(second, 0x10d, handle)).value === 0;
           });
           const freshFilters = await splitFilters(second),
+            freshWM = windowsMedia(second),
+            freshWMTypes = wmv && (await nativeWMTypes(second)),
             finishedRepeat = second.p.load(graph.movie + 392),
             stoppedAfterCompletion = (await command(second, 0x10b, handle)).value,
             boundMedia = [firstBoundMedia, await decoderUsesSource(decoders[1])];
@@ -479,6 +535,13 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               borrowed: context.world.runtime.handles.records.has(handle),
               modulesReleased:
                 !split || moduleReferences(context.world).every((references) => references === 1),
+              ...(wmv
+                ? {
+                    nativeASFReleased:
+                      !context.p.allocations.has(wmFilter - 12) &&
+                      !context.p.allocations.has(wmStream - 12),
+                  }
+                : {}),
             });
           }
           const loopPlane = await second.world.objects.create({
@@ -550,9 +613,11 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             reopenedBeforeActivation,
             digest: sha256,
             splitFilters: [connectedFilters, freshFilters],
+            windowsMedia: [wmTopology, freshWM],
+            windowsMediaTypes: [firstWMTypes, freshWMTypes],
             rejectedCodec,
             rejectedHandleReleased,
-            vorbis,
+            decodedAudio,
             muted: decoders.slice(0, 2).map(({ video }) => video.muted),
             size: [videoSize, width, height],
             released,
@@ -588,6 +653,10 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       },
       { profile, files, gamePE, movie: [...converted], texture, extension, format },
     );
+    if (wmv && !gamePE) {
+      expect(result).toEqual({ unsupported: true, decoders: 0, remaining: 0, mediaModule: 0 });
+      return;
+    }
     expect(result.rejected).toBe(true);
     expect(result.replaced).toBe(true);
     if (!texture) expect(result.disabled).toBe(true);
@@ -629,6 +698,51 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
     ]);
     expect(result.size).toEqual([0, 32, 24]);
     expect(result.boundMedia).toEqual([true, true]);
+    if (wmv) {
+      const topology = {
+        filter: true,
+        source: true,
+        pins: [1, 2],
+        rendered: 2,
+        clock: true,
+        duration: 28930000,
+        streams: [
+          [1, 'video', 0x32564d57, 2304, true, true],
+          [2, 'audio', 0x161, 512, true, true],
+        ],
+      };
+      expect(result.windowsMedia).toEqual([topology, topology]);
+      const type = (major, subtype, format, length, identifier) => {
+        const tail = [0x00100000, 0xaa000080, 0x719b3800];
+        return {
+          major: [major, ...tail],
+          subtype: [subtype, ...tail],
+          format: [format, 0x11cec356, 0xaa0001bf, 0x5a595500],
+          length,
+          identifier,
+          exhausted: true,
+        };
+      };
+      expect(result.windowsMediaTypes[0]).toEqual([
+        type(0x73646976, 0x32564d57, 0x05589f80, 92, [0, 0, 0, 0, 0, 0, 0]),
+        type(0x73647561, 0x161, 0x05589f81, 28, [0x61, 1, 1, 0, 0x80, 0xbb, 0]),
+      ]);
+      expect(result.windowsMediaTypes[1]).toEqual(result.windowsMediaTypes[0]);
+      expect([result.frame.filterState, result.duringPlayback.filterState]).toEqual([1, 2]);
+      expect(result.rejectedCodec).toEqual({
+        filters: texture ? [] : [['filter', 1, 0]],
+        graph: 0,
+        running: 0,
+        decoders: 0,
+        events: result.eventBaseline,
+        taskMemory: [],
+        moduleReferences: null,
+      });
+      expect(result.rejectedHandleReleased).toBe(true);
+      expect(result.decodedAudio.amplitude).toBeGreaterThan(0.025);
+      expect(result.decodedAudio.hz).toBeGreaterThan(420);
+      expect(result.decodedAudio.hz).toBeLessThan(460);
+    }
     if (split) {
       expect(result.rejectedCodec).toEqual({
         filters: texture ? [] : [['filter', 1, 0]],
@@ -642,9 +756,9 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       expect(result.rejectedHandleReleased).toBe(true);
       expect(result.muted).toEqual([format === 'vp9', format === 'vp9']);
       if (format === 'vp8' || ogg) {
-        expect(result.vorbis.amplitude).toBeGreaterThan(0.025);
-        expect(result.vorbis.hz).toBeGreaterThan(420);
-        expect(result.vorbis.hz).toBeLessThan(460);
+        expect(result.decodedAudio.amplitude).toBeGreaterThan(0.025);
+        expect(result.decodedAudio.hz).toBeGreaterThan(420);
+        expect(result.decodedAudio.hz).toBeLessThan(460);
       }
       expect(result.splitFilters[0]).toMatchObject({
         names: ogg
@@ -696,6 +810,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         deviceObjects: result.baseline,
         borrowed: false,
         modulesReleased: true,
+        ...(wmv ? { nativeASFReleased: true } : {}),
       }),
     );
     expect(result.closed).toBe(true);

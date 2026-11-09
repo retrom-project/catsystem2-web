@@ -365,3 +365,51 @@ Theora and Vorbis fixture with the original VMR9 and Texture Renderer
 on both profiles. It checks defined media type words, sample pixels
 and a 440 Hz signal, fresh decoder and COM identity restoration,
 the original stop and repeat worker, and resource release.
+
+## WMV files in the Plane loader
+
+The 2.6.1.76 loader creates its embedded WMV filter at `0x709B80`
+and its IStream adapter at `0x7094D0`. The adapter reads the same mounted
+file as the original CAsyncReader. The filter opens that stream through
+`WMCreateReader` and `IWMReaderAdvanced2::OpenStream` at `0x70B3C0`,
+requests compressed streams, creates the original video and audio pins,
+and adds the filter to DirectShow under its original name. The application
+keeps the original Pause, Run, Stop, user-clock, and EOF callbacks.
+SDK 4.01 takes the unknown-format branch at `0x5BB7A3`, closes its
+partially initialized movie and returns zero for `.wmv`.
+[Windows Media reader](https://learn.microsoft.com/en-us/windows/win32/wmformat/reader-object)
+[Compressed stream callbacks](https://learn.microsoft.com/en-us/windows/win32/wmformat/copying-streams-without-decompressing-the-data)
+
+The browser replaces sample delivery and decoding downstream of those pins.
+It uses the provenance-matched H.264/AAC conversion from
+`prepare:media` for decoded pixels and PCM. The ASF header supplies stream
+identities, compressed media types and play duration after subtracting
+preroll. For files with a single video stream and only an aggregate rate,
+the video media type estimates that stream's rate by subtracting the
+declared audio rate. The authored sample gives 400,000 bit/s by this rule
+and 386,155 bit/s in the Windows Media reader. The Plane clock uses sample
+positions and duration. The original loader dispatches by `.wmv`, and
+the mounted files carry ASF data.
+[ASF header fields](https://learn.microsoft.com/en-us/windows/win32/medfound/media-foundation-attributes-for-asf-header-objects)
+
+The pinned Wine comparison opens the authored WMV2/WMA2 file through the
+actual Microsoft x86 reader, enumerates both compressed media types,
+observes the open and close callbacks, and obtains RGB and PCM from the
+actual Windows Media decoders. The DLLs are version `11.0.5721.5262`
+from `wmfdist11.exe` in the Windows Media Player 11 package. The outer
+package SHA-256 is
+`ffd321a441a67001a893f3bde4bb1afba07d4d2c9659bfdb0fbb057e7945d970`.
+[Microsoft redistributable archive](https://web.archive.org/web/20170628063001id_/http://download.microsoft.com/download/0/9/5/0953e553-3bb6-44b1-8973-106f1b7e5049/wmp11-windowsxp-x86-enu.exe)
+
+| Module         | SHA-256                                                            |
+| -------------- | ------------------------------------------------------------------ |
+| `wmvcore.dll`  | `3254ec601f394d9a4b03eeb0da7e99df662647c33f81ce7e60ed2b57945bdc59` |
+| `wmasf.dll`    | `120b73327071a0d713c561759caa126a0fbc1a6f75ccdacfad73fd0da25d3066` |
+| `wmvdecod.dll` | `b873931c37019fd6cc93cf5655a4ea6a7d82ac62a9a567cbbe112f9c3162d5b5` |
+| `wmadmod.dll`  | `eddf74030dba828a3a5e96cfe282dc11f04fd84e26420ffa6c68041d199fc66b` |
+
+Chromium tests exercise both original renderers with the WMV fixture,
+including malformed input, the original output pins and media types,
+several canvas colors, a 440 Hz signal, completion, replay, an independent
+fresh World and release of the native filter and IStream. SDK tests
+verify the original rejection through both Plane commands.
