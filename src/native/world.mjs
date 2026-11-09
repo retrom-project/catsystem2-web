@@ -786,12 +786,17 @@ export class NativeWorld {
   }
 
   async initialize(name) {
-    if (this.bootstrapOwner)
+    if (this.bootstrapOwner) {
+      const engine = await this.ensureNativeEngine();
+      engine.features
+        .get('random-memory')
+        .initialize({ fromClock: this.bootstrapOwner.seedFromClock });
       await readNativeStartupPreferences(
-        await this.ensureNativeEngine(),
+        engine,
         (name) => this.storage.readSaved?.(name),
         (detail) => this.host.nativeDiagnostic?.(detail),
       );
+    }
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

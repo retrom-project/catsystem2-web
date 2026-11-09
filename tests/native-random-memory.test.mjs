@@ -39,6 +39,48 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
 ]) {
   test(
+    profile + ' cold start seeds both native streams from local time and restores their owner',
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        make = (wallNow) =>
+          NativeEngineProcess.open({
+            bytes,
+            profile,
+            wallNow: () => wallNow,
+            localOffsetMinutes: () => 330,
+          }),
+        random = new ParticleRandom(17),
+        other = new ParticleRandom(31, 43),
+        engine = await make(Date.UTC(2030, 11, 31, 21, 56, 57, 789)),
+        fresh = await make(Date.UTC(2040, 6, 8, 9, 10, 11, 12)),
+        first = new NativeRandomMemory(engine, random),
+        second = new NativeRandomMemory(fresh, other);
+      try {
+        first.initialize();
+        // The local time is 2031-01-01 03:26:57.789. Weekday is not part of the sum.
+        assert.deepEqual(random.snapshot(), new ParticleRandom(2908).snapshot());
+        const owner = engine.refs.randomOwner;
+        assert.equal(engine.process.load(first.layout.startup.global), owner);
+        random.rand();
+        random.frand();
+        second.initialize({ fromClock: false });
+        assert.deepEqual(other.snapshot(), new ParticleRandom(31, 43).snapshot());
+        fresh.restore(engine.snapshot());
+        assert.equal(fresh.refs.randomOwner, owner);
+        assert.equal(other.rand(), random.rand());
+        assert.equal(other.frand(), random.frand());
+        second.close();
+        assert.equal(fresh.process.load(second.layout.startup.global), 0);
+        assert.equal(fresh.process.allocations.has(owner), false);
+      } finally {
+        await fresh.close();
+        await engine.close();
+      }
+    },
+  );
+
+  test(
     profile +
       ' original and JS random callers share both streams, seed transitions and a fresh process',
     { skip: !process.env[variable] },

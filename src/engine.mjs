@@ -42,7 +42,7 @@ export class CatSystem2 {
     nativeProfile,
     uiLanguage,
     steam = null,
-    randomSeed = 4357,
+    randomSeed,
     onState = () => {},
     onClosed = () => {},
   }) {
@@ -184,6 +184,7 @@ export class CatSystem2 {
       host: this.host,
       profile: this.nativeProfile,
       bootstrapOwner: {
+        seedFromClock: this.randomSeed === undefined,
         glyphs: new CanvasTextGlyphs({
           family: (name) => this.renderer.fonts.get(name.toLowerCase()) ?? name,
         }),

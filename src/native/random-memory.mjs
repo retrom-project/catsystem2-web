@@ -2,10 +2,12 @@
 // One MT state per original integer/real stream, shared by JS and PE callers.
 export const NATIVE_RANDOM_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
+    startup: { global: 0xb93150, construct: 0x7c45a0, destroy: 0x7c45c0 },
     integer: { seed: 0x5c2180, draw: 0x5c21d0, words: 0xbc9020, index: 0xb64358 },
     real: { seed: 0x5c1ff0, draw: 0x5c2040, words: 0xbc8660, index: 0xb64354 },
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
+    startup: { global: 0xc97a24, construct: 0x656dd0, destroy: 0x656df0 },
     integer: { seed: 0x49e7c0, draw: 0x49e810, words: 0xcc8390, index: 0xc68d28 },
     real: { seed: 0x49e630, draw: 0x49e680, words: 0xcc79d0, index: 0xc68c24 },
   }),
@@ -54,6 +56,18 @@ export class NativeRandomMemory {
     }
     engine.registerFeature('random-memory', this);
   }
+  initialize({ fromClock = true } = {}) {
+    const { process: p, refs } = this.engine,
+      { global, construct } = this.layout.startup;
+    if (refs.randomOwner || p.load(global))
+      throw new Error('Original random startup already has an owner');
+    const override = fromClock ? null : this.random.snapshot(),
+      pointer = p.allocate(1, true);
+    refs.randomOwner = pointer;
+    if (p.call(construct, [], pointer) !== pointer || p.load(global) !== pointer)
+      throw new Error('Original random startup did not establish its owner');
+    if (override) this.random.restore(override);
+  }
   snapshot() {
     return {};
   }
@@ -70,5 +84,16 @@ export class NativeRandomMemory {
     this.closed = true;
     for (const [name, binding] of this.bindings) this.random[name].unbindState(binding);
     this.bindings.clear();
+    const { process: p, refs } = this.engine,
+      pointer = refs.randomOwner;
+    if (pointer) {
+      const { global, destroy } = this.layout.startup;
+      if (p.load(global) !== pointer)
+        throw new Error('Original random startup has inconsistent ownership');
+      p.call(destroy, [], pointer);
+      if (p.load(global) || !p.free(pointer))
+        throw new Error('Original random startup did not release its owner');
+      delete refs.randomOwner;
+    }
   }
 }

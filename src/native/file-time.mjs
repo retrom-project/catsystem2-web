@@ -47,7 +47,10 @@ function fromSystemTime(words) {
 }
 export function installNativeFileTimes(
   kernel,
-  { wallNow = Date.now, localOffsetMinutes = () => -new Date(wallNow()).getTimezoneOffset() } = {},
+  {
+    wallNow = Date.now,
+    localOffsetMinutes = (now = wallNow()) => -new Date(now).getTimezoneOffset(),
+  } = {},
 ) {
   const p = kernel.process,
     read = (at) => BigInt(p.load(at)) + BigInt(p.load(at + 4)) * 0x100000000n,
@@ -56,7 +59,26 @@ export function installNativeFileTimes(
     fail = (error) => {
       kernel.lastError = error;
       return 0;
+    },
+    offsetAt = (now) => {
+      const offset = localOffsetMinutes(now);
+      if (!Number.isInteger(offset) || Math.abs(offset) > 24 * 60)
+        throw new Error('Native timezone provider must return current offset minutes east of UTC');
+      return offset;
+    },
+    writeSystemTime = (out, words) => {
+      const bytes = new Uint8Array(16),
+        view = new DataView(bytes.buffer);
+      words.forEach((word, i) => view.setUint16(i * 2, word, true));
+      p.write(out, bytes);
     };
+  def('GetLocalTime', 1, ([out]) => {
+    const now = Math.trunc(wallNow()),
+      local = nativeFileTime(now + offsetAt(now) * 60000),
+      words = nativeSystemTime(local);
+    if (!out || !words) throw new Error('Native local time requires a valid SYSTEMTIME output');
+    writeSystemTime(out, words);
+  });
   def('CompareFileTime', 2, ([a, b]) => {
     const first = read(a),
       second = read(b);
@@ -106,10 +128,7 @@ export function installNativeFileTimes(
     if (!input || !out) return fail(87);
     const words = nativeSystemTime(read(input));
     if (!words) return fail(87);
-    const bytes = new Uint8Array(16),
-      view = new DataView(bytes.buffer);
-    words.forEach((word, i) => view.setUint16(i * 2, word, true));
-    p.write(out, bytes);
+    writeSystemTime(out, words);
     return 1;
   });
   def('SystemTimeToFileTime', 2, ([input, out]) => {
@@ -128,9 +147,7 @@ export function installNativeFileTimes(
     def(name, 2, ([input, out]) => {
       if (!input || !out || input === out) return fail(87);
       const time = read(input),
-        offset = localOffsetMinutes();
-      if (!Number.isInteger(offset) || Math.abs(offset) > 24 * 60)
-        throw new Error('Native timezone provider must return current offset minutes east of UTC');
+        offset = offsetAt();
       if (time >= MAX) return fail(87);
       const result = time + BigInt(direction * offset) * 600000000n;
       if (result < 0n || result >= MAX) return fail(87);

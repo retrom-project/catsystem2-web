@@ -8,6 +8,14 @@ of 1,000,000 counts per second. `GetSystemTimeAsFileTime` and the KCS current-da
 service use its UTC origin and elapsed time. Neither native task frame counters
 nor PPF `Frame`/`Before` derive from these timer values.
 
+The original random startup constructors (Game `7C45A0`, SDK `656DD0`)
+initialize both shared MT streams. Their `GetLocalTime` import derives a
+local SYSTEMTIME from the World clock and browser timezone. The original
+constructors sum the year, month, day, hour, minute, second and milliseconds.
+An explicitly supplied seed overrides the resulting stream state for
+reproduction. Fresh restore uses the saved streams and owner, without
+sampling local time again. [Microsoft GetLocalTime](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime)
+
 The default clock starts at elapsed zero and anchors UTC to the host's current
 date when the World is constructed. Each `World.tick` adds exactly `1000/fps`
 milliseconds using a reduced BigInt fraction. Changing FPS changes the next
