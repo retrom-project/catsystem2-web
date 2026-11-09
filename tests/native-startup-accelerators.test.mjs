@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { transitionalExe } from '../web/transitional-entry.mjs';
 import { initializeNativeAccelerators } from '../src/native/engine-startup-accelerators.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import {
@@ -27,7 +27,7 @@ for (const [profile, variable, suffix] of [
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable])),
         open = () =>
-          NativeEngineProcess.open({
+          transitionalExe.open({
             profile,
             bytes,
             bootstrapOwner: {},

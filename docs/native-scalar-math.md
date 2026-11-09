@@ -1,5 +1,13 @@
 # Native scalar math
 
+`NativeScalarMath` resolves the current ABI slot to a semantic operation and calls
+the explicitly injected `invokeNative` capability. `oracle/scalar-handlers.mjs`
+holds the forty reviewed handler addresses. `oracle/transitional-exe.mjs` owns
+argument padding, VM memory bridging, task context, output canaries and cleanup.
+These modules are explicit transitional product includes and remain counted by
+the EXE dependency gate. The verifier also checks each semantic address against
+the corresponding original main-table pointer.
+
 The nineteen main scalar-result interfaces `32..40`, `141`, `18D`, `1CD` and `36A` execute
 their complete original wrappers in the mounted engine. This includes the
 trigonometric functions, rounding, remainder, square root, power, angle-unit
@@ -15,6 +23,10 @@ Math shares the engine's actual x87/SIMD thread with native plugins. The host
 does not convert a returned NaN, signed zero or denormal through a JavaScript
 number. Original precision, rounding and exception status changes are retained.
 Adjacent native argument words are read from the caller's mapped frame.
+
+The JavaScript migration targets the normal script floating-point context,
+FPCW `0x007f` and MXCSR `0x1f80`. Plugin changes to FPCW across calls remain
+oracle evidence pending a demonstrated script-visible difference.
 
 `scripts/verify-native-scalar-math.mjs` executes 3,667 complete calls and 15,033
 comparisons per frozen engine. It compares original output canaries and the

@@ -6,6 +6,8 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Binary } from '../src/binary.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
+import { transitionalExe } from '../web/transitional-entry.mjs';
+import { scalarHandler } from '../oracle/scalar-handlers.mjs';
 import { captureFloatingPoint } from '../src/ppi/floating-point.mjs';
 import {
   NativeEngineProcess,
@@ -19,9 +21,9 @@ import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../src/native/sc
 export async function verifyWordUnpacking(bytes, profile) {
   const original = await NativeEngineProcess.open({ bytes, profile }),
     engine = await NativeEngineProcess.open({ bytes, profile }),
-    scalar = new NativeScalarMath(engine),
+    scalar = new NativeScalarMath(engine, undefined, transitionalExe),
     spec = NATIVE_SCALAR_MATH_CONTRACTS.find((item) => item.id === 0x36b),
-    handler = spec.handlers[Number(profile.startsWith('sdk-'))],
+    handler = scalarHandler(profile, spec.id),
     create = () => {
       const machine = new KCSMachine(
         {

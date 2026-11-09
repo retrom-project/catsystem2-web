@@ -2,16 +2,25 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
+import { checkNativeEntry } from './check-native-entry.mjs';
 import { walk } from './node-files.mjs';
 import { PPI_BACKEND_FILES, PPI_BACKEND_SHA256 } from '../src/ppi/backend-artifact.mjs';
 import { NATIVE_ZLIB_FILES, NATIVE_ZLIB_SHA256 } from '../src/native/zlib-artifact.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url)),
   output = join(root, 'dist');
+await checkNativeEntry(root);
 await rm(output, { recursive: true, force: true });
 await mkdir(output);
 for (const path of ['src', 'web', 'index.html', 'LICENSE', 'NOTICE.md', 'references.json'])
   await cp(join(root, path), join(output, path), { recursive: true });
+for (const file of (await transitionalRuntimeFiles(root)).filter((file) =>
+  file.startsWith('oracle/'),
+)) {
+  await mkdir(dirname(join(output, file)), { recursive: true });
+  await cp(join(root, file), join(output, file));
+}
 const backendRoot = join(root, '.local/vendor/ppi');
 const backendManifest = JSON.parse(await readFile(join(backendRoot, 'manifest.json'), 'utf8'));
 if (backendManifest.artifacts['unicorn_x86.js'].sha256 !== PPI_BACKEND_SHA256)

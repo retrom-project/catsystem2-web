@@ -20,7 +20,8 @@ existing declaration and does not infer a contract from another ABI's slot.
 ## B migration inventory
 
 [b-migration.json](b-migration.json) records every slot in both engine ABIs,
-including main, generic/MOT and both particle tables, and every file under `src/`.
+including main, generic/MOT and both particle tables, every file under `src/`,
+and the explicit shipped modules in `scripts/transitional-runtime.json`.
 Run `node scripts/b-migration.mjs` to regenerate it and
 `node scripts/b-migration.mjs --check` to verify the committed result. No private
 EXE is required. Update the reviewed route/ownership rules in the script when
@@ -38,7 +39,9 @@ native wrapper, while `exe-region` invokes EXE helpers or bounded regions.
 Patch/hook sites are recorded separately, including those installed indirectly
 by a feature. Zero native entries classified primarily as `patch` does not mean
 there are no patches. File counts reuse the phase 0 checker's exact AST scanner,
-whose syntactic counts also include independent DLL-host execution.
+whose syntactic counts also include independent DLL-host execution. Scalar
+entries retain their original-handler classification and list the semantic
+transition operation and both oracle dependencies after the 2.3 relocation.
 
 All 135 files in the local planning attachment are included. Nine have zero
 dependencies under the phase 0 scanner, and five other files have nonzero counts,

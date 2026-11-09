@@ -8,8 +8,10 @@ export const NATIVE_EMOTE_CREATE = '?EmoteCreate@@YAPAVIEmoteDevice@@ABUInitPara
 export async function inspectNativeM2Bootstrap(game, profile, transitionalExe) {
   nativeABI(profile);
   if (!game.names?.('exe').length) return null;
-  return requireTransitionalHost(transitionalExe, profile, 'plugin.bootstrap').inspectBootstrap(
-    game,
+  return requireTransitionalHost(
+    transitionalExe,
     profile,
-  );
+    'plugin.bootstrap',
+    'inspectBootstrap',
+  ).inspectBootstrap(game, profile);
 }

@@ -25,6 +25,10 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
 当前页面使用 `web/transitional-entry.mjs` 注入原 EXE 后端；纯入口的静态依赖图
 由 `scripts/check-native-entry.mjs` 检查。领域模块中的剩余地址随第 3–9 阶段迁移。
 共享 Windows 服务位于 `src/native/windows-services.mjs`，独立 DLL 宿主可直接使用。
+scalar-math 通过语义名调用 `oracle/transitional-exe.mjs`，该层也接管游戏启动中
+accelerator 的有界 WinMain 区间。`scripts/transitional-runtime.json` 明确列出
+产品使用的过渡模块，开发服务器按此清单提供文件，构建按此复制 oracle 模块。
+静态入口门禁同时核对页面依赖闭包，缺少清单项时失败。
 `npm run check` 按文件限制现有 EXE 地址、调用和引用的数量，防止依赖增加；
 规则和基线更新方式见 [完成标准](completion.md)。
 

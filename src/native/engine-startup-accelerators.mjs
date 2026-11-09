@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NATIVE_STARTUP_BLOCKS, runNativeGameWinMainSpan } from './engine-startup-block.mjs';
+import { requireTransitionalHost } from './transitional-exe.mjs';
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 export async function initializeNativeAccelerators(engine) {
   const p = engine.process,
@@ -11,11 +12,12 @@ export async function initializeNativeAccelerators(engine) {
       handle = await engine.call(load, [engine.module.base, 101]);
     if (handle) await engine.call(0x5bfc50, [handle], owner);
   } else {
-    await runNativeGameWinMainSpan(engine, 0x52cdcb, 0x52cfed, (stack, cpu, uc) => {
-      p.store(stack + 0x14, engine.module.base); // WinMain's local hInstance.
-      cpu.reg_write_i32(uc.X86_REG_EAX, engine.refs.settings);
-      cpu.reg_write_i32(uc.X86_REG_EBX, 0);
-    });
+    await requireTransitionalHost(
+      engine.transitionalExe,
+      engine.profile,
+      'startup.accelerators',
+      'invokeRegion',
+    ).invokeRegion('startup.accelerators', { engine });
   }
   if (!engine.kernel.accelerators.tables.has(p.load(owner + 12)))
     throw new Error('Original startup did not install its accelerator table');

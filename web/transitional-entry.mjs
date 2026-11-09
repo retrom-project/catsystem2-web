@@ -7,10 +7,17 @@ import {
   NATIVE_ENGINE_IMAGES,
   nativeImageIdentity,
 } from '../src/native/engine-process.mjs';
+import { invokeNative, invokeRegion } from '../oracle/transitional-exe.mjs';
 import { parsePE32 } from '../src/ppi/pe32.mjs';
 
 export const transitionalExe = Object.freeze({
-  open: (options) => NativeEngineProcess.open(options),
+  async open(options) {
+    const engine = await NativeEngineProcess.open(options);
+    engine.transitionalExe = transitionalExe;
+    return engine;
+  },
+  invokeNative,
+  invokeRegion,
   async inspectBootstrap(game, profile) {
     const image = NATIVE_ENGINE_IMAGES[profile];
     if (!image) throw new Error(`No reviewed native engine region profile ${profile}`);

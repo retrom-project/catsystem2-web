@@ -1,6 +1,16 @@
 {
   "version": 1,
   "files": {
+    "oracle/scalar-handlers.mjs": {
+      "addresses": 40,
+      "calls": 0,
+      "references": 0
+    },
+    "oracle/transitional-exe.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
     "src/native/area-effect-commands.mjs": {
       "addresses": 16,
       "calls": 2,
@@ -147,7 +157,7 @@
       "references": 0
     },
     "src/native/engine-startup-accelerators.mjs": {
-      "addresses": 3,
+      "addresses": 1,
       "calls": 3,
       "references": 0
     },
@@ -449,11 +459,6 @@
     "src/native/save-slots.mjs": {
       "addresses": 22,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/scalar-math.mjs": {
-      "addresses": 40,
-      "calls": 2,
       "references": 0
     },
     "src/native/scene-checkpoint.mjs": {

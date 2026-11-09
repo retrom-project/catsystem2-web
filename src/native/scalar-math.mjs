@@ -1,93 +1,53 @@
 // SPDX-License-Identifier: MPL-2.0
-// Scalar math executes in the same original CPU/FPU thread as native plugins.
-import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-
+// Transitional scalar wrappers. Arithmetic remains original until phase 3.
+import { nativeABI } from './abi/index.mjs';
+import { requireTransitionalHost } from './transitional-exe.mjs';
 export const NATIVE_SCALAR_MATH_CONTRACTS = Object.freeze(
   [
-    [0x32, 'sin', 1, 0x659a30, 0x526b20],
-    [0x33, 'cos', 1, 0x65b5f0, 0x526a80],
-    [0x34, 'tan', 1, 0x65b8e0, 0x527170],
-    [0x35, 'asin', 1, 0x65b580, 0x52b4f0],
-    [0x36, 'acos', 1, 0x65b550, 0x52b4c0],
-    [0x37, 'atan', 1, 0x659890, 0x526a10],
-    [0x38, 'ceil', 1, 0x6598c0, 0x526a40],
-    [0x39, 'abs', 1, 0x65b640, 0x52b540],
-    [0x3a, 'floor', 1, 0x659900, 0x526ab0],
-    [0x3b, 'fmod', 2, 0x659940, 0x52b570],
-    [0x3c, 'sqrt', 1, 0x65a050, 0x527140],
-    [0x3d, 'pow', 2, 0x6599b0, 0x52b5b0],
-    [0x3e, 'degreeToRadian', 1, 0x659720, 0x52ad90],
-    [0x3f, 'radianToDegree', 1, 0x659800, 0x52b280],
-    [0x40, 'integerAbs', 1, 0x659870, 0x5269b0],
-    [0x141, 'triangleWave', 2, 0x65b9a0, 0x52b910],
-    [0x18d, 'atan2', 2, 0x65b5b0, 0x5269d0],
-    [0x1cd, 'log10', 1, 0x659980, 0x526af0],
-    [0x36a, 'packWords', 2, 0x6597e0, 0x526950],
-    [0x36b, 'unpackWords', 3, 0x659830, 0x526970, 2, true],
-  ].map(([id, name, words, game, sdk, control = 1, memory = false]) =>
-    Object.freeze({ id, name, words, control, memory, handlers: [game, sdk] }),
-  ),
+    { id: 50, name: 'sin', words: 1, control: 1, memory: false },
+    { id: 51, name: 'cos', words: 1, control: 1, memory: false },
+    { id: 52, name: 'tan', words: 1, control: 1, memory: false },
+    { id: 53, name: 'asin', words: 1, control: 1, memory: false },
+    { id: 54, name: 'acos', words: 1, control: 1, memory: false },
+    { id: 55, name: 'atan', words: 1, control: 1, memory: false },
+    { id: 56, name: 'ceil', words: 1, control: 1, memory: false },
+    { id: 57, name: 'abs', words: 1, control: 1, memory: false },
+    { id: 58, name: 'floor', words: 1, control: 1, memory: false },
+    { id: 59, name: 'fmod', words: 2, control: 1, memory: false },
+    { id: 60, name: 'sqrt', words: 1, control: 1, memory: false },
+    { id: 61, name: 'pow', words: 2, control: 1, memory: false },
+    { id: 62, name: 'degreeToRadian', words: 1, control: 1, memory: false },
+    { id: 63, name: 'radianToDegree', words: 1, control: 1, memory: false },
+    { id: 64, name: 'integerAbs', words: 1, control: 1, memory: false },
+    { id: 321, name: 'triangleWave', words: 2, control: 1, memory: false },
+    { id: 397, name: 'atan2', words: 2, control: 1, memory: false },
+    { id: 461, name: 'log10', words: 1, control: 1, memory: false },
+    { id: 874, name: 'packWords', words: 2, control: 1, memory: false },
+    { id: 875, name: 'unpackWords', words: 3, control: 2, memory: true },
+  ].map((spec) => Object.freeze(spec)),
 );
 const byID = new Map(NATIVE_SCALAR_MATH_CONTRACTS.map((spec) => [spec.id, spec]));
-
 export class NativeScalarMath {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.profileIndex = Number(engine.profile.startsWith('sdk-'));
+  constructor(engine, world, transitionalExe = world?.transitionalExe ?? engine.transitionalExe) {
+    Object.assign(this, { engine, world });
+    this.host = requireTransitionalHost(
+      transitionalExe,
+      engine.profile,
+      'scalar-math',
+      'invokeNative',
+    );
     engine.registerFeature('scalar-math', this);
   }
   async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    let bridge;
-    if (spec.memory) {
-      const memory =
-        this.world?.objects.machine(task.id) === machine
-          ? await this.world.getNativeFeature('task-memory')
-          : null;
-      if (memory) memory.vmPointer(task.id);
-      bridge = new NativeKCSMemory(this.process, machine, memory?.mapMachine(task.id, machine));
-    }
-    const p = this.process,
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(12);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.write(out, new Uint8Array(12).fill(0xcc));
-      const parameters = [bridge?.pointer ?? 0, 0, argv, out + 4],
-        options = { task: task.id },
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(
-              spec.handlers[this.profileIndex],
-              parameters,
-              undefined,
-              options,
-            )
-          : await this.engine.call(
-              spec.handlers[this.profileIndex],
-              parameters,
-              undefined,
-              options,
-            );
-      if (
-        control !== spec.control ||
-        p.load(out) !== 0xcccccccc ||
-        p.load(out + 8) !== 0xcccccccc ||
-        (control === 2 && p.load(out + 4) !== 0xcccccccc)
-      )
-        throw new Error('Native scalar math changed its reviewed output contract');
-      return nativeReply(control, control === 1 ? p.load(out + 4) : undefined);
-    } finally {
-      try {
-        bridge?.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-      }
-    }
+    if (!byID.has(id)) return undefined;
+    const operation = nativeABI(this.engine.profile).tables.main.entries[id].name;
+    return this.host.invokeNative(operation, {
+      engine: this.engine,
+      world: this.world,
+      args,
+      machine,
+      task,
+    });
   }
   snapshot() {
     return {};

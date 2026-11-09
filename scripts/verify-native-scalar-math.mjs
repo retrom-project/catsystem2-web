@@ -5,15 +5,17 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../src/native/scalar-math.mjs';
+import { transitionalExe } from '../web/transitional-entry.mjs';
+import { scalarHandler } from '../oracle/scalar-handlers.mjs';
 import { captureFloatingPoint } from '../src/ppi/floating-point.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 export async function verifyScalarMath(bytes, profile) {
   const original = await NativeEngineProcess.open({ bytes, profile }),
     engine = await NativeEngineProcess.open({ bytes, profile }),
-    math = new NativeScalarMath(engine),
-    index = Number(profile.startsWith('sdk-')),
+    math = new NativeScalarMath(engine, undefined, transitionalExe),
     inputs = [
       0,
       0x80000000,
@@ -41,6 +43,12 @@ export async function verifyScalarMath(bytes, profile) {
       0x87654321,
     ],
     cases = new Map();
+  for (const spec of NATIVE_SCALAR_MATH_CONTRACTS)
+    assert.equal(
+      scalarHandler(profile, spec.id),
+      original.process.load(NATIVE_PROFILES[profile].tables.main.va + spec.id * 4),
+      `semantic handler ${profile}/${spec.name}`,
+    );
   let calls = 0,
     comparisons = 0;
   const check = (a, b, label) => {
@@ -60,7 +68,7 @@ export async function verifyScalarMath(bytes, profile) {
     try {
       args.forEach((v, i) => p.store(argv + i * 4, v));
       p.write(out, new Uint8Array(12).fill(0xcc));
-      const control = await original.call(spec.handlers[index], [0, 0, argv, out + 4]);
+      const control = await original.call(scalarHandler(profile, spec.id), [0, 0, argv, out + 4]);
       check([p.load(out), p.load(out + 8)], [0xcccccccc, 0xcccccccc], 'original output canaries');
       return { control, value: p.load(out + 4) };
     } finally {

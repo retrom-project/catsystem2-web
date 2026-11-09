@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
+import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 
 export async function nativeEntryGraph(root, entry = 'src/engine.mjs') {
   const visited = new Set();
@@ -55,6 +56,11 @@ export async function checkNativeEntry(root) {
   );
   if (forbidden.length)
     throw new Error(`Pure entry reaches the EXE backend\n${forbidden.join('\n')}`);
+  const includes = new Set(await transitionalRuntimeFiles(root));
+  const mixed = await nativeEntryGraph(root, 'web/app.mjs');
+  const unlisted = mixed.filter((file) => !file.startsWith('src/') && !includes.has(file));
+  if (unlisted.length)
+    throw new Error(`Uncounted shipped transitional dependency\n${unlisted.join('\n')}`);
   return graph;
 }
 

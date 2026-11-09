@@ -97,6 +97,7 @@ const ownedModules = {
 };
 function domain(file) {
   const name = basename(file);
+  if (file === 'oracle/scalar-handlers.mjs') return 3;
   if (
     file.startsWith('src/emote/') ||
     name.startsWith('emote') ||
@@ -211,6 +212,8 @@ function moduleFacts(file, source) {
         'beforeInstruction',
         'emu_start',
         'runThread',
+        'invokeNative',
+        'invokeRegion',
       ].includes(name) &&
       !(computed && /['"]call(?:FromHost)?['"]/.test(source.slice(...node.callee.range))) &&
       !directCodeWrite
@@ -279,7 +282,7 @@ function calledModules(location, modules) {
     let callee = node.callee;
     while (callee?.type === 'MemberExpression') callee = callee.object;
     const target = callee?.type === 'Identifier' ? facts.imports.get(callee.name) : null;
-    if (target?.startsWith('src/native/')) result.push(target);
+    if (target?.startsWith('src/native/') || target?.startsWith('oracle/')) result.push(target);
   });
   return unique(result);
 }
@@ -529,6 +532,16 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           }
         }
       }
+      if (implementationFile === 'src/native/scalar-math.mjs') {
+        dependencies = unique([
+          ...dependencies,
+          'oracle/transitional-exe.mjs',
+          'oracle/scalar-handlers.mjs',
+        ]);
+        reasons.push(
+          '按当前 ABI 的语义名调用显式过渡 host，原算术/VM 写回继续由 oracle 层的原处理器完成。',
+        );
+      }
       if (!entry.name) reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
       if (
         (table === 'generic' && [39, 40].includes(entry.id)) ||
@@ -561,6 +574,9 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         route,
         registration: location ? `${location.file}:${location.line}` : null,
         features: names,
+        ...(implementationFile === 'src/native/scalar-math.mjs'
+          ? { transitionalOperation: entry.name }
+          : {}),
         dependencies,
         docs: documentation(unique([implementationFile, ...dependencies]), docs),
         review: reasons.length ? 'needs-review' : 'traced',
@@ -607,6 +623,7 @@ const nonNativeGroups = [
       'engine-startup-window',
       'engine-startup-menu',
       'engine-startup-accelerators',
+      'transitional-exe',
       'engine-startup-instance',
       'engine-startup-sound',
       'engine-window-class',

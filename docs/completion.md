@@ -9,12 +9,21 @@
 地址与调用边界、禁止游戏特判、开发期契约和 x87 浮点差分要求见
 [架构约束](architecture.md#目标与迁移状态)，均为完成条件。
 
-`npm run check` 以两份固定 EXE 的 PE 映像范围统计 `src/` 中的地址字面量、
+`npm run check` 以两份固定 EXE 的 PE 映像范围统计 `src/` 及
+`scripts/transitional-runtime.json` 显式产品清单中的地址字面量、
 引擎调用/patch 和 `NativeEngineProcess`/模块引用；每个文件的各项计数只能减少，
 新文件须为零。确认依赖减少后执行 `node scripts/check-no-exe-addresses.mjs --update`
 收紧已提交的基线。范围内无法直接区分的数值保守计数；确认是普通常量时，只能按检查脚本
-的格式为该字面量附上具体原因，不能借此豁免 EXE 地址。oracle、离线工具和测试放在
-`src/` 之外。
+的格式为该字面量附上具体原因，不能借此豁免 EXE 地址。产品打包的 oracle 过渡模块
+继续计数，离线专用工具和测试在运行时清单之外。
+
+迁移到过渡层时使用 `node scripts/check-no-exe-addresses.mjs --relocate plan.json`。
+本地计划含 `version: 1`、完整当前 `base` commit、`sources` 的 src 模块和
+`targets` 的 oracle 模块。目标必须在产品清单内。门禁核对已提交基线、源文件和
+地址字面量多重集合，要求调用种类及各项总数不增加，清单外文件也只能减少。
+校验全部通过后原子写入基线。2.3 的 scalar 与启动区间模板重定位前后均为
+43 个地址、5 个调用，全局仍为 2,132 个地址、193 个调用、6 个引用。
+其余领域依赖在第 3–9 阶段迁移时处理。
 
 本地轻量标签 `x86-hybrid-baseline` 指向 `03d6523`。该提交的本地记录中，`npm run check`
 和 `npm run build` 通过，`npm test` 为 1,070 通过、1 跳过；公共浏览器 22 项和 PPI 15 项
