@@ -7,7 +7,7 @@ import { frameClock, state, step, until, clickNativeButton, pixels } from './nat
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 
-async function waitForLine(page, line, { drawn = true } = {}) {
+async function waitForLine(page, line, { drawn = true, advance = false } = {}) {
   for (let i = 0; i < 100; i++) {
     const ready = await page.evaluate(
       ({ line, drawn }) => {
@@ -22,7 +22,12 @@ async function waitForLine(page, line, { drawn = true } = {}) {
       { line, drawn },
     );
     if (ready) return;
-    await step(page, 6);
+    if (advance) {
+      await page.mouse.down();
+      await step(page, 2);
+      await page.mouse.up();
+      await step(page, 4);
+    } else await step(page, 6);
   }
   throw new Error(`Native writer did not reach the expected dialogue: ${line}`);
 }
@@ -68,7 +73,7 @@ async function openingPixels(page) {
   });
 }
 
-test('cold native language, title and opening dialogue continue in a fresh World', async ({
+test('cold native language, title and opening dialogue continue through the original HG3 load', async ({
   page,
 }) => {
   const errors = [];
@@ -144,6 +149,9 @@ test('cold native language, title and opening dialogue continue in a fresh World
   );
   expect(await openingPixels(page)).toEqual(opening);
 
+  const imageLoads = () =>
+      page.evaluate(() => window.catSystem2.world.runtime.calls.get('main:710') ?? 0),
+    beforeLoads = await imageLoads();
   const canvas = await page.locator('#screen').boundingBox();
   await page.mouse.move(canvas.x + canvas.width * 0.6, canvas.y + canvas.height * 0.65);
   await step(page, 2);
@@ -152,6 +160,8 @@ test('cold native language, title and opening dialogue continue in a fresh World
   await page.mouse.up();
   await step(page, 2);
   await waitForLine(page, 'Will you be dining in today?', { drawn: false });
+  await waitForLine(page, 'If you like first flush', { drawn: false, advance: true });
+  expect(await imageLoads()).toBeGreaterThan(beforeLoads);
   expect((await state(page)).unsupported).toEqual([]);
   expect(errors).toEqual([]);
 });
