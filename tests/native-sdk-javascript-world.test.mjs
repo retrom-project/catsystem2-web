@@ -9,7 +9,7 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 test(
-  'SDK KCS links, loads and calls original JavaScript with a shared string bank across restore',
+  'SDK KCS links, loads and calls original JavaScript with shared banks across restore',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const profile = 'sdk-4.01-engine-2.6.1.74',
@@ -20,14 +20,19 @@ test(
           'function Enable(args) {\n' +
           '  var s = args[0], missing = args[1];\n' +
           '  var words = cfGetStrVar(100, 2);\n' +
-          '  if (s === "\\u65e5\\u672c" && missing === "" && words[0] === s && words[1] === missing) {\n' +
+          '  var values = cfGetVar(3, 2);\n' +
+          '  if (s === "\\u65e5\\u672c" && missing === "" && words[0] === s && words[1] === missing\n' +
+          '      && values[0] === -11 && values[1] === 17 && cfGetVar(-1) === 0) {\n' +
           '    cfSetStrVar(102, "\\u78ba\\u8a8d");\n' +
           '    cfSetStrVar(103, "");\n' +
+          '    cfSetVar(4, 23);\n' +
           '    ready = true;\n' +
           '  }\n' +
           '}\n' +
           'function GameLoop(frame) {\n' +
-          '  if (ready && next() === 2 && cfGetStrVar(100) === "updated") {\n' +
+          '  if (ready && next() === 2 && cfGetStrVar(100) === "updated"\n' +
+          '      && cfCalc("$4 += 7") === 30 && cfCalc("$5 = $$8 + bonus") === 24\n' +
+          '      && cfCalc("$$8 += 2") === 22 && cfGetVar(5) === 24) {\n' +
           '    cfSetStrVar(104, "complete"); cfExit(42);\n' +
           '  }\n' +
           '}',
@@ -35,6 +40,14 @@ test(
       own = [37, [0x14, 64]],
       target = [37, [0x14, 68]],
       start = [
+        [37, 16],
+        [43, 0xd1, 4],
+        [37, 3],
+        [37, -11],
+        [43, 0xd3, 8],
+        [37, 4],
+        [37, 17],
+        [43, 0xd3, 8],
         [37, 100],
         [37, 320],
         [43, 0x114, 8],
@@ -62,6 +75,9 @@ test(
         [37, 102],
         [37, 96],
         [43, 0x115, 8],
+        [37, 4],
+        [43, 0xd2, 4],
+        [38, 108],
       ],
       idle = start.reduce((pc, op) => pc + 1 + (op.length - 1) * 5, 0),
       program = kcsProgram(
@@ -110,7 +126,9 @@ test(
       assert.equal(p.load(pointer + 608), 7);
       assert.equal(p.load(pointer + 140), 1, 'the original V8 load succeeded');
       assert.equal(world.main.machine.string(96), '確認');
-      const bank = world.runtime.stringBank(world.main, false);
+      assert.equal(world.main.machine.load(108), 23);
+      const bank = world.runtime.stringBank(world.main, false),
+        variables = world.runtime.variableBank(world.main, false);
       assert.equal(bank.get(103), '');
       const input = world.resolveTaskID(p.load(pointer + 192), id);
       assert.equal(world.objects.objects.get(input).parent, id);
@@ -118,16 +136,24 @@ test(
       await world.tick();
       assert.equal(record.exitCode, -1);
       bank.set(100, 'updated');
+      variables.registerContext(world.main.id);
+      variables.setPrivate(8, 20);
+      variables.setName('bonus', 0, 4);
       fresh = make();
       await fresh.restore(structuredClone(world.snapshot()));
       await fresh.tick();
       assert.equal(fresh.objects.objects.get(id).exitCode, 42);
       assert.equal(fresh.runtime.stringBank(fresh.main, false).get(104), 'complete');
+      const restoredVariables = fresh.runtime.variableBank(fresh.main, false);
+      assert.equal(restoredVariables.get(4), 30);
+      assert.equal(restoredVariables.get(5), 24);
+      assert.equal(restoredVariables.getPrivate(8), 22);
       assert.equal(fresh.nativeEngine.process.load(pointer + 144), 0);
       assert.equal(record.exitCode, -1);
       await world.tick();
       assert.equal(record.exitCode, 42);
       assert.equal(bank.get(104), 'complete');
+      assert.deepEqual(variables.snapshot(), restoredVariables.snapshot());
     } finally {
       await fresh?.close();
       await world.close();

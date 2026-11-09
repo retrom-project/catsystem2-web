@@ -6,7 +6,7 @@ import { NATIVE_PROFILES } from './catalog.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NativeSDKJavaScriptStrings } from './sdk-javascript-strings.mjs';
+import { NativeSDKJavaScriptBanks } from './sdk-javascript-banks.mjs';
 
 const SDK = 'sdk-4.01-engine-2.6.1.74',
   VTABLE = 0x9984c0,
@@ -29,7 +29,7 @@ class NativeSDKJavaScriptTasks {
     p.store(VTABLE + 16, this.routeTrap);
     this.commandVtable = p.allocate(20, true);
     p.store(this.commandVtable + 16, this.routeTrap);
-    this.strings = new NativeSDKJavaScriptStrings(engine, world);
+    this.banks = new NativeSDKJavaScriptBanks(engine, world);
     engine.registerWindows('USER32.dll', 'SetRectEmpty', {
       count: 1,
       fn: ([at]) => {
@@ -98,8 +98,9 @@ class NativeSDKJavaScriptTasks {
           ? this.world.objects.objects.get(this.world.resolveTaskID(p.load(words), task.id))
           : null;
       if (link?.kind === 55 || id === 0x3d0) {
-        bank = this.strings.create(task);
+        bank = this.banks.create(task);
         p.store(caller + 180, bank);
+        if (link) p.store(caller + 104, this.banks.interpreter(bank));
       }
       p.store(result, NATIVE_RESULT_SENTINEL);
       const slot = NATIVE_PROFILES[SDK].tables.main.va + 4 * id,
@@ -109,13 +110,13 @@ class NativeSDKJavaScriptTasks {
       if (control !== 2 || p.load(result) !== NATIVE_RESULT_SENTINEL)
         throw new Error('Original SDK JavaScript command changed its return contract');
       if (link?.kind === 55 && p.load(link.implementation.pointer + 172) === bank) {
-        this.strings.attach(link.id, bank);
+        this.banks.attach(link.id, bank);
         bank = 0;
       }
       return nativeReply(control);
     } finally {
       try {
-        this.strings.release(bank);
+        this.banks.release(bank);
         bridge.close();
       } finally {
         p.free(words);
@@ -126,16 +127,16 @@ class NativeSDKJavaScriptTasks {
   recoverTrap(trap) {
     return trap.name === ROUTER
       ? { args: 7, real: false, handler: (args) => this.route(args) }
-      : this.strings.recoverTrap(trap);
+      : this.banks.recoverTrap(trap);
   }
   snapshot() {
     return {
       routeTrap: this.routeTrap,
       commandVtable: this.commandVtable,
-      strings: this.strings.snapshot(),
+      banks: this.banks.snapshot(),
     };
   }
-  restore({ routeTrap, commandVtable, strings }) {
+  restore({ routeTrap, commandVtable, banks }) {
     const p = this.process;
     if (
       p.traps.get(routeTrap)?.name !== ROUTER ||
@@ -145,10 +146,10 @@ class NativeSDKJavaScriptTasks {
     )
       throw new Error('Invalid original JavaScript task transport checkpoint');
     Object.assign(this, { routeTrap, commandVtable });
-    this.strings.restore(strings);
+    this.banks.restore(banks);
   }
   close() {
-    this.strings.close();
+    this.banks.close();
     this.process.free(this.commandVtable);
   }
 }
@@ -251,7 +252,7 @@ class NativeSDKJavaScriptTask {
   async close() {
     if (!this.pointer) return;
     await this.invoke(0, [1]);
-    this.owner.strings.detach(this.record.id);
+    this.owner.banks.detach(this.record.id);
     this.owner.taskMemory.unbind(this.record.id);
     this.pointer = 0;
   }

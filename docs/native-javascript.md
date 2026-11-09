@@ -26,5 +26,10 @@ read and write the calling Script's live string bank. The test calls from KCS
 with Japanese text, reads back a JavaScript write in KCS, and verifies later
 reads and writes after restoring into a fresh World.
 
-The linked integer bank and the tutorial's drawing and sound need their own
-integration coverage.
+`cfGetVar` and `cfSetVar` share the Script's DWORD bank, including signed
+JavaScript results, unsigned index bounds and native write dirtiness.
+`cfCalc` runs the original SDK interpreter with the live global words, selected
+private words, named values and context word. Only its temporary interpreter
+owns the guest allocations; its changed words return to the shared KCS bank.
+The KCS test reads a JavaScript write immediately and compares the result of
+global, private and named expressions after fresh restore.
