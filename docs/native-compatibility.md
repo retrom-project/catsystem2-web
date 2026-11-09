@@ -193,6 +193,12 @@ restore of a worker blocked in its original x86 wait.
 [CreateThread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread),
 [WaitForMultipleObjects](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects).
 
+COM initialization depth and apartment mode belong to the calling thread.
+`CoInitialize` selects STA. `CoInitializeEx` also supports MTA, and a later
+incompatible call returns `RPC_E_CHANGED_MODE`. The apartment records survive
+a fresh restore with their live thread environments.
+[CoInitializeEx](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex).
+
 Window and thread timers use the same clock as the emulated engine.
 Retrieval generates a due `WM_TIMER` after checking for matching queued
 messages. A nonremoving peek leaves the generated message available even

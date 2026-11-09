@@ -13,8 +13,11 @@ function program(engine) {
   const word = (value) => [value & 255, (value >>> 8) & 255, (value >>> 16) & 255, value >>> 24];
   return {
     call(name, ...args) {
+      this.callImport('KERNEL32.dll', name, ...args);
+    },
+    callImport(dll, name, ...args) {
       for (const value of args.reverse()) bytes.push(0x68, ...word(value));
-      bytes.push(0xb8, ...word(engine.resolve({ dll: 'KERNEL32.dll', name })), 0xff, 0xd0);
+      bytes.push(0xb8, ...word(engine.resolve({ dll, name })), 0xff, 0xd0);
     },
     store(pointer) {
       bytes.push(0xa3, ...word(pointer));
@@ -27,6 +30,66 @@ function program(engine) {
     },
   };
 }
+
+test('an x86 worker owns its COM apartment and keeps its mode on restore', async () => {
+  const unicorn = await loadUnicorn(),
+    engine = new NativeEngineProcess(unicorn),
+    p = engine.process,
+    com = (target, name, ...args) => target.call(target.resolve({ dll: 'OLE32.dll', name }), args),
+    results = p.allocate(24, true),
+    guid = p.allocate(16, true),
+    object = p.allocate(4, true);
+  let fresh;
+  try {
+    const event = await api(engine, 'CreateEventW', 0, 1, 0, 0),
+      code = program(engine),
+      co = (name, ...args) => code.callImport('OLE32.dll', name, ...args),
+      activate = () => co('CoCreateInstance', guid, 0, 1, guid, object);
+    assert.equal(await com(engine, 'CoInitialize', 0), 0);
+    activate();
+    code.store(results);
+    co('CoInitializeEx', 0, 0);
+    code.store(results + 4);
+    co('CoInitialize', 0);
+    code.store(results + 8);
+    code.call('WaitForSingleObject', event, 0xffffffff);
+    co('CoInitializeEx', 0, 4);
+    code.store(results + 12);
+    co('CoUninitialize');
+    activate();
+    code.store(results + 16);
+    co('CoUninitialize');
+    activate();
+    code.store(results + 20);
+    code.call('ExitThread', 0);
+    const handle = await api(engine, 'CreateThread', 0, 0, code.finish(true), 0, 0, 0);
+    assert.ok(handle);
+    assert.deepEqual(
+      [0, 4, 8].map((at) => p.load(results + at)),
+      [0x800401f0, 0, 0x80010106],
+    );
+    assert.equal(engine.kernel.comDepth, 1);
+    assert.equal(engine.kernel.comApartments.size, 2);
+
+    fresh = new NativeEngineProcess(unicorn);
+    fresh.restore(engine.snapshot());
+    assert.equal(await com(fresh, 'CoInitializeEx', 0, 0), 0x80010106);
+    assert.equal(await api(fresh, 'SetEvent', event), 1);
+    assert.equal(await api(fresh, 'WaitForSingleObject', handle, 0), 0);
+    assert.deepEqual(
+      [12, 16, 20].map((at) => fresh.process.load(results + at)),
+      [1, 0x80040154, 0x800401f0],
+    );
+    assert.equal(fresh.kernel.comApartments.size, 1);
+    assert.equal(fresh.kernel.comDepth, 1);
+    await com(fresh, 'CoUninitialize');
+    assert.equal(fresh.kernel.comDepth, 0);
+    assert.equal(engine.kernel.comApartments.size, 2);
+  } finally {
+    await fresh?.close();
+    await engine.close();
+  }
+});
 
 test(
   'Win32 thread handles wait on a parked x86 thread across a fresh process',

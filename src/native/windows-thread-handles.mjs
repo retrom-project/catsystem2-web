@@ -202,6 +202,7 @@ export class NativeWindowsThreadHandles {
     }
   }
   releaseContext({ teb }) {
+    this.kernel.comApartments.delete(teb);
     this.kernel.releaseTLSEnvironment(teb);
     if (!this.kernel.virtualFree(teb, 0, 0x8000))
       throw new Error('Virtual thread could not release its stack and TEB');

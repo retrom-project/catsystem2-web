@@ -175,7 +175,7 @@ test('official SDK starts with saved setup and restores the title and tutorial c
     distinctSettings: true,
     nativeFontEnumeration: 2,
     executableResources: 3,
-    com: 1,
+    com: 2, // WinMain and the original CsSound owner both initialize the application apartment.
     nativeRandom: true,
     nativeLocalTime: 2,
     logLimit: 647,

@@ -126,19 +126,21 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.accelerators = new NativeWindowsAccelerators(this);
     this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
-    this.comDepth = 0;
+    this.comApartments = new Map();
     this.comClasses = new Map();
     this.register('OLE32.dll', 'CoInitialize', {
       count: 1,
-      fn: ([reserved]) => {
-        if (reserved) return 0x80070057;
-        return this.comDepth++ ? 1 : 0;
-      },
+      fn: ([reserved]) => this.initializeCOM(reserved, 2),
+    });
+    this.register('OLE32.dll', 'CoInitializeEx', {
+      count: 2,
+      fn: ([reserved, flags]) => this.initializeCOM(reserved, flags),
     });
     this.register('OLE32.dll', 'CoUninitialize', {
       count: 0,
       fn: () => {
-        if (this.comDepth) this.comDepth--;
+        const apartment = this.comApartments.get(process.teb);
+        if (apartment && --apartment.depth === 0) this.comApartments.delete(process.teb);
       },
     });
     this.register('OLE32.dll', 'CoCreateInstance', {
@@ -672,6 +674,22 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.hostModules ??= new NativeWindowsModules(this);
     return this.hostModules.register(name, exports);
   }
+  get comDepth() {
+    return this.comApartments.get(this.process.teb)?.depth ?? 0;
+  }
+  initializeCOM(reserved, flags) {
+    if (reserved || flags & ~14) return 0x80070057; // E_INVALIDARG
+    const teb = this.process.teb,
+      mode = flags & 2,
+      apartment = this.comApartments.get(teb);
+    if (apartment) {
+      if (apartment.mode !== mode) return 0x80010106; // RPC_E_CHANGED_MODE
+      apartment.depth++;
+      return 1; // S_FALSE
+    }
+    this.comApartments.set(teb, { mode, depth: 1 });
+    return 0;
+  }
   registerCOMClass(guid, factory) {
     const key = guid.join(',');
     if (this.comClasses.has(key)) throw new Error('Duplicate native COM class');
@@ -755,7 +773,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       accelerators: this.accelerators.snapshot(),
       threadHandles: this.threadHandles.snapshot(),
       comMemory: this.comMemory.snapshot(),
-      comDepth: this.comDepth,
+      comApartments: structuredClone([...this.comApartments]),
       ...(this.hostModules ? { hostModules: this.hostModules.snapshot() } : {}),
       nextFile: this.nextFile,
       files: [...this.files].map(([handle, file]) => [handle, { ...file, bytes: [...file.bytes] }]),
@@ -779,9 +797,22 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.accelerators.restore(state.accelerators);
     this.threadHandles.restore(state.threadHandles);
     this.comMemory.restore(state.comMemory);
-    if (!Number.isSafeInteger(state.comDepth) || state.comDepth < 0)
-      throw new Error('Invalid native COM initialization depth');
-    this.comDepth = state.comDepth;
+    const apartments = new Map(structuredClone(state.comApartments)),
+      owners = new Set([this.process.teb]);
+    for (const thread of this.threadHandles.threads.values())
+      if (thread.context) owners.add(thread.context.teb);
+    if (
+      apartments.size !== state.comApartments.length ||
+      [...apartments].some(
+        ([teb, apartment]) =>
+          !owners.has(teb) ||
+          ![0, 2].includes(apartment?.mode) ||
+          !Number.isSafeInteger(apartment.depth) ||
+          apartment.depth < 1,
+      )
+    )
+      throw new Error('Invalid native COM apartment checkpoint');
+    this.comApartments = apartments;
     if (state.hostModules) {
       if (!this.hostModules)
         throw new Error('Native checkpoint Windows module providers are absent');
@@ -1215,6 +1246,7 @@ export class NativeEngineProcess {
       } catch (error) {
         errors.push(error);
       }
+      this.kernel.comApartments.clear();
       try {
         this.process.close();
       } catch (error) {
