@@ -18,6 +18,7 @@ import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
+import { NativeSystemClock } from '../src/native/clock.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -30,6 +31,7 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
     { skip: !fixture },
     async () => {
       const bytes = new Uint8Array(await readFile(fixture)),
+        clock = new NativeSystemClock({ now: () => 1234.5 }),
         open = () =>
           NativeEngineProcess.open({
             profile,
@@ -38,6 +40,7 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
             configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
             readFile: async () => null,
             heapSize: 128 * 1024 * 1024,
+            clock,
           }),
         first = await open(),
         pointer = first.refs.systemInformation,
@@ -54,6 +57,13 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
             directXName: p.string(pointer + layout.directX + 4, layout.wide),
             manufacturer: p.string(pointer + layout.manufacturer, layout.wide),
             model: p.string(pointer + layout.model, layout.wide),
+            cpu: Array.from({ length: 4 }, (_, i) => p.load(pointer + layout.cpu.fields + 4 * i)),
+            cpuVendor: p.string(pointer + layout.cpu.fields + 16),
+            cpuMHz: p.load(pointer + layout.cpu.fields + 32),
+            cpuFlags: Array.from({ length: 5 }, (_, i) =>
+              p.load(pointer + layout.cpu.fields + 36 + 4 * i),
+            ),
+            processors: p.load(pointer + layout.cpu.fields + 56),
             memory: Array.from({ length: 4 }, (_, i) => p.load(pointer + layout.memory + 4 * i)),
           };
         };
@@ -68,6 +78,11 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           directXName: '9.0c',
           manufacturer: '',
           model: '',
+          cpu: [0, 6, 12, 4],
+          cpuVendor: 'GenuineIntel',
+          cpuMHz: 2000,
+          cpuFlags: [1, 1, 1, 1, 0],
+          processors: 1,
           memory: [127, 128, 127, 128],
         });
         for (const name of [
@@ -76,12 +91,19 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           'kernel32.dll!IsWow64Process',
           'kernel32.dll!GetProductInfo',
           'kernel32.dll!GlobalMemoryStatusEx',
+          'kernel32.dll!GetSystemInfo',
+          'kernel32.dll!QueryPerformanceFrequency',
+          `advapi32.dll!RegOpenKeyEx${layout.wide ? 'W' : 'A'}`,
           'ole32.dll!CoCreateInstance',
           'oleaut32.dll!#8', // VariantInit
           'oleaut32.dll!#7', // SysStringLen
         ])
           assert.equal(first.kernel.calls.get(name), 1, name);
         assert.equal(first.kernel.calls.get('oleaut32.dll!#9'), 3); // VariantClear
+        assert.equal(first.kernel.calls.get('kernel32.dll!QueryPerformanceCounter'), 5);
+        assert.ok(
+          layout.cpu.afterTSC.every((address) => !first.process.executionBoundaries.has(address)),
+        );
         assert.equal(first.kernel.comDepth, 1, 'DxDiag released its nested apartment');
         await checkNativeDirectXStartup(first);
         fresh = await open();
@@ -112,6 +134,12 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         );
         assert.equal(fresh.kernel.comDepth, 1);
         await checkNativeDirectXStartup(fresh);
+        const counter = fresh.kernel.resolve({
+          dll: 'KERNEL32.dll',
+          name: 'QueryPerformanceCounter',
+        });
+        assert.equal(p.call(counter, [probe]), 1);
+        assert.equal(new DataView(p.read(probe, 8).buffer).getBigUint64(0, true), 1234500n);
         p.free(probe);
       } finally {
         await fresh?.close();

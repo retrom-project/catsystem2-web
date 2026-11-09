@@ -18,11 +18,11 @@ desktop registration and device checks stay outside this block; the browser
 still mounts prepared archives.
 The original platform prelude also constructs the system information record
 (SDK `49FBE0`, game `5C3460`) before file-server and Settings startup. The
-version, DirectX, memory and OEM branches run in the original code. Their
+version, DirectX, CPU, memory and OEM branches run in the original code. Their
 Windows imports describe the virtual 32-bit Windows 7 SP1 environment, the
 Direct3D 9 adapter and its guest memory budget. The record and its DLL export
 bindings survive a fresh process. The original destructor clears the singleton
-on close. CPU discovery in the same constructor remains separate.
+on close. Both frozen WinMain functions supply the `0x7F` survey mask.
 The Windows boundaries follow the
 [version structure](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw)
 and [memory status structure](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex).
@@ -47,6 +47,13 @@ Tests give both engines a manufacturer in the second directory and a model
 in the third; the SDK reads CP932 and the game reads UTF-16. The mounted
 [profile-string API](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprivateprofilestringw)
 also preserves case-insensitive section/key lookup and quoted values.
+
+The CPU survey (SDK `4A1AE0`, game `5C4EE0`) runs the original `CPUID`
+checks, reads the original system information structure and performs its
+quarter-second calibration. The browser advances a virtual 2 GHz TSC and
+the performance counter together during calibration, then uses the normal
+frame clock. Tests check the recorded vendor, family, feature words and
+calculated speed, and confirm normal counter behavior after fresh restore.
 
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted

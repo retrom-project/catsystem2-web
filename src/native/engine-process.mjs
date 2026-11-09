@@ -155,13 +155,18 @@ export class NativeEngineWindows extends PPIWindowsServices {
     // The mounted browser environment starts with an empty, read-only Windows
     // registry. D3DX's optional HKLM tuning lookup follows its native fallback.
     for (const suffix of ['A', 'W'])
-      this.overrides.set(`advapi32.dll!RegOpenKey${suffix}`, {
-        count: 3,
-        fn: ([, , output]) => {
-          if (output) process.store(output, 0);
-          return 2;
-        },
-      });
+      for (const [name, count] of [
+        ['RegOpenKey', 3],
+        ['RegOpenKeyEx', 5],
+      ])
+        this.overrides.set(`advapi32.dll!${name}${suffix}`, {
+          count,
+          fn: (args) => {
+            const output = args[count - 1];
+            if (output) process.store(output, 0);
+            return 2;
+          },
+        });
     def('GetCommandLineW', 0, () => this.wideCommand);
     def('GetLogicalDrives', 0, () => 4);
     def('SetErrorMode', 1, ([mode]) => {
