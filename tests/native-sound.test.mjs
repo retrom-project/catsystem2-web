@@ -8,6 +8,7 @@ import {
   nativeSound,
 } from '../src/native/sound.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { canonicalMessage } from '../src/native/control-task.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
@@ -163,6 +164,25 @@ test('both sound profiles preload without playing and keep their original bank l
     await send(181);
     assert.equal(sound.device[0].loaded, false);
   }
+});
+
+test('SDK allocated sound loads read the original 280-byte packet and play the returned bank', async () => {
+  const { task, audio } = fixture(sdkProfile),
+    group = new NativeSoundPacket([], 16),
+    packet = new NativeSoundPacket([], 280),
+    sendRaw = (id, w = 0, l = 0, payload) =>
+      task.message([100, canonicalMessage(sdkProfile, 13, id), w, l], { payload });
+  group.writeString('voice', 0);
+  assert.equal(await sendRaw(207, 0, 0, group), 2);
+  packet.store(4, 5);
+  packet.writeString('authored.wav', 12);
+  assert.equal(await sendRaw(203, 0, 0, packet), 1);
+  assert.equal(packet.load(0), 1);
+  assert.equal(task.controls[1].word(C.crossfadeMilliseconds), 0);
+  await sendRaw(184, 1, 73);
+  await sendRaw(180, 1, 2);
+  assert.equal(audio.channels.get('native:1').volume, 73);
+  assert.equal(audio.channels.get('native:1').loopCount, 2);
 });
 
 test('native sound fades preserve reciprocal remaining-frame interpolation and deferred cleanup', async () => {

@@ -22,8 +22,8 @@ const ABI = Object.freeze({
 });
 export function canonicalMessage(profile, kind, message) {
   if (!profile.startsWith('sdk-')) return message;
-  // NativeEngineMessages owns the Top's profile-specific rootStart layout.
-  if (kind === 1) return message;
+  // The Top and Sound receivers translate their own profile-specific packets.
+  if (kind === 1 || kind === 13) return message;
   const start = { 15: 267, 34: 326, 40: 348, 41: 363, 42: 354, 48: 444 }[kind];
   if (start !== undefined && message >= start) return message + 5;
   if (kind === 49 && message >= 463) return message + 26;

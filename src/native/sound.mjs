@@ -521,7 +521,7 @@ export class NativeSoundTask {
     for (const at of [C.releasePending, C.stopPending, C.pausePending, C.endAfterPlayback])
       control.word(at, 0);
     control.word(C.crossfade, crossfade);
-    control.word(C.crossfadeMilliseconds, packet.load(284));
+    control.word(C.crossfadeMilliseconds, this.sound.legacy ? 0 : packet.load(284));
     control.word(C.linkedBank, allocated && crossfade ? target : -1);
     if (crossfade && (!allocated || type !== 1)) this.controls[bank].word(C.linkedBank, target);
     control.loopStart = 0n;
@@ -718,7 +718,7 @@ export class NativeSoundTask {
       const allocated = this.allocate(group.min, group.max);
       packet.store(0, allocated);
       return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true))
-        ? allocated + (packet.load(280) ? 32 : 0)
+        ? allocated + (!this.sound.legacy && packet.load(280) ? 32 : 0)
         : 0xffffffff;
     }
     if (id === 194) {

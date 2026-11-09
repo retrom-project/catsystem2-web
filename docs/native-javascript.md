@@ -33,3 +33,9 @@ private words, named values and context word. Only its temporary interpreter
 owns the guest allocations; its changed words return to the shared KCS bank.
 The KCS test reads a JavaScript write immediately and compares the result of
 global, private and named expressions after fresh restore.
+
+The SDK's original `CsSound` sends profile-specific packets directly to the
+sound task. Its allocated load is 280 bytes, with no crossfade fields. The
+receiver returns the allocated SDK bank without a crossfade offset, and the
+original object sends volume and play to that bank. In Chromium the official
+sample decodes and plays `bgm.int/bgm01.ogg` on its allocated channel.
