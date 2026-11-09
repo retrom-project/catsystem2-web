@@ -196,6 +196,11 @@ test('formatted seen aliases preserve raw bytes and values across native history
   assert.equal(restored.seenValue(alias), 0xffffffff);
   assert.equal(restored.seenValue(Uint8Array.of(0x81, 0x30, 0xff, 0x71)), 0xffffffff);
   assert.equal(restored.seenValue(Uint8Array.of(0x81, 0x30, 0xfe, 0x51)), 0);
+  data.history = restored;
+  m.writeStringBytes(Uint8Array.from([...alias, ...encodeCP932('.CST')]), 384);
+  assert.equal(nativeSceneData(0x14c, [handle, 384], m, services).value, 0xffffffff);
+  assert.equal(nativeSceneData(0xe3, [384], m, { ...services, sceneData: data }).value, 0);
+  assert.equal(nativeSceneData(0xe3, [768], m, { ...services, sceneData: data }).value, 0xffffffff);
   assert.throws(
     () => nativeSceneData(0x3a6, [handle, 128, 0x7fffffff], m, services),
     /unmapped format string/,

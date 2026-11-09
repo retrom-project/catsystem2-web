@@ -21,4 +21,11 @@ and game `642780` wrappers pass 144 comparisons across 48 calls each in
 `scripts/verify-native-seen-alias.mjs`, covering all four VM domains and
 untouched path records.
 
+Main `14C` and task-local `E3` also query the original byte sequence.
+`14C` removes the final extension unless it first encounters a slash byte;
+`E3` leaves the name intact. Both return zero for the empty-name record
+that ends a native lookup. `scripts/verify-native-seen-lookup.mjs` executes
+98 calls per frozen engine, including invalid CP932 sequences, Shift_JIS
+trail bytes that equal a separator, and formatter and owner boundaries.
+
 Two public fixture tests dispatch through World, restore into a fresh World, continue storage, restoration and branching, and check independent ownership, raw UTF-8/invalid bytes, unaffected outside variables/strings, original branch quirks, self-copy and null-scene behavior. Full game history/replay UI acceptance remains a separate requirement.

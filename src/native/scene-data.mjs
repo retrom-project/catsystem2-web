@@ -45,6 +45,26 @@ const mapped = (machine, address) => {
   }
 };
 
+function formatHistoryName(at, machine, services, operation) {
+  if (!mapped(machine, at))
+    throw new Error(`Native scene ${operation} dereferences an unmapped format string`);
+  const bytes = nameBytes(
+    services.formatBytes
+      ? services.formatBytes(at, machine)
+      : encodeCP932(services.format(at, machine)),
+  );
+  if (bytes.length >= 128) throw new Error(`Native scene ${operation} exceeds its format buffer`);
+  return bytes;
+}
+
+function stripHistoryExtension(bytes) {
+  for (let i = bytes.length - 1; i >= 0; i--) {
+    if (bytes[i] === 47 || bytes[i] === 92) break;
+    if (bytes[i] === 46) return bytes.subarray(0, i);
+  }
+  return bytes;
+}
+
 function nativeUTF8(bytes) {
   if (bytes.length > 4000) return empty();
   const text = decoder.decode(bytes);
@@ -263,7 +283,8 @@ export class NativeSceneHistory {
     return this.path.length - 1;
   }
   seenValue(scene) {
-    return this.findSeen(scene)?.value ?? 0;
+    const entry = this.findSeen(scene);
+    return (entry?.nameBytes ? entry.nameBytes[0] : entry?.scene.length) ? entry.value : 0;
   }
   pathAt(index) {
     return this.path[Math.min(index >>> 0, this.path.length - 1)] ?? null;
@@ -503,26 +524,21 @@ export function nativeSceneData(id, args, machine, services = {}) {
           : 0,
     );
   }
-  if (id === 0x3a6) {
+  if (id === 0x3a6 || id === 0x14c) {
     if (!services.formatBytes && !services.format) return undefined;
-    if (!mapped(machine, args[1]) || !mapped(machine, args[2]))
-      throw new Error('Native scene alias dereferences an unmapped format string');
-    const formatted = (at) =>
-        services.formatBytes
-          ? services.formatBytes(at, machine)
-          : encodeCP932(services.format(at, machine)),
-      source = formatted(args[1]),
-      destination = formatted(args[2]);
-    if (source.length >= 128 || destination.length >= 128)
-      throw new Error('Native scene alias exceeds its 128-byte format buffer');
+    if (id === 0x14c) {
+      const name = formatHistoryName(args[1], machine, services, 'query');
+      return word(history.seenValue(direct ? stripHistoryExtension(name) : name));
+    }
+    const source = formatHistoryName(args[1], machine, services, 'alias'),
+      destination = formatHistoryName(args[2], machine, services, 'alias');
     history.aliasSeen(source, destination);
     return done();
   }
-  if ([0x148, 0x149, 0x14c].includes(id)) {
+  if ([0x148, 0x149].includes(id)) {
     if (!services.format) return undefined;
     let name = services.format(args[1], machine);
     if (direct) name = stripExtension(name);
-    if (id === 0x14c) return word(history.seenValue(name));
     let index = -1;
     if (name) {
       if (id === 0x148) history.markSeen(name, args[2]);
