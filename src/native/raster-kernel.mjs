@@ -255,8 +255,7 @@ export class NativeRasterKernels {
     if (
       this.reg('ESP') !== frame - 0x140 ||
       this.reg('EFLAGS') & 0x50100 ||
-      this.reg('DS') !== 0 ||
-      this.reg('SS') !== 0 ||
+      !p.hasFlatDataSegments('DS', 'SS') ||
       !this.range(frame - 0x12c, 0x128, false, regions) ||
       !this.range(pointer, 128, false, regions) ||
       overlaps(pointer, 128, frame - 0x134, 0x134)
@@ -511,9 +510,7 @@ export class NativeRasterKernels {
     if (
       this.reg('ESP') !== frame - 20 ||
       this.reg('EFLAGS') & 0x50500 ||
-      this.reg('DS') !== 0 ||
-      this.reg('ES') !== 0 ||
-      this.reg('SS') !== 0 ||
+      !p.hasFlatDataSegments('DS', 'ES', 'SS') ||
       !this.range(frame - 8, 20, false, regions) ||
       !this.range(pointer, 128, false, regions) ||
       overlaps(pointer, 128, frame - 76, 88)
@@ -593,7 +590,7 @@ export class NativeRasterKernels {
     // and protected/executable destinations retain original CPU execution.
     if (
       !this.repeatFits(count, flags) ||
-      this.reg('ES') !== 0 ||
+      !p.hasFlatDataSegments('ES') ||
       !this.range(start, size, true, this.repeatRegions())
     )
       return false;
@@ -613,7 +610,8 @@ export class NativeRasterKernels {
     return true;
   }
   movs(address, width) {
-    const count = this.reg('ECX'),
+    const p = this.process,
+      count = this.reg('ECX'),
       flags = this.reg('EFLAGS'),
       source = this.reg('ESI'),
       destination = this.reg('EDI'),
@@ -623,13 +621,11 @@ export class NativeRasterKernels {
       size = count * width;
     if (
       !this.repeatFits(count, flags) ||
-      this.reg('ES') !== 0 ||
-      this.reg('DS') !== 0 ||
+      !p.hasFlatDataSegments('ES', 'DS') ||
       (source !== destination && overlaps(firstSource, size, firstDestination, size))
     )
       return false;
-    const p = this.process,
-      regions = this.repeatRegions();
+    const regions = this.repeatRegions();
     if (
       !this.range(firstSource, size, false, regions) ||
       !this.range(firstDestination, size, true, regions)
@@ -760,8 +756,7 @@ export class NativeRasterKernels {
     if (
       this.reg('ESP') !== frame - 0x14c ||
       this.reg('EFLAGS') & 0x50100 ||
-      this.reg('DS') !== 0 ||
-      this.reg('SS') !== 0 ||
+      !p.hasFlatDataSegments('DS', 'SS') ||
       !this.range(frame - 0x13c, 0x138, false, regions) ||
       !this.range(pointer, 128, false, regions) ||
       overlaps(pointer, 128, frame - 0x140, 0x140)
@@ -1160,8 +1155,7 @@ export class NativeRasterKernels {
       this.reg('EDI') !== right ||
       this.reg('EDX') !== (top << 15) >>> 0 ||
       this.reg('EFLAGS') & 0x50100 ||
-      this.reg('DS') !== 0 ||
-      this.reg('SS') !== 0 ||
+      !p.hasFlatDataSegments('DS', 'SS') ||
       (this.reg('MXCSR') & 0x1f80) !== 0x1f80 ||
       overlaps(pointer, 200, frame - 0x1c0, 0x1c0) ||
       !destination ||

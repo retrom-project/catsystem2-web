@@ -4,6 +4,7 @@ import { FLOATING_POINT_REGISTERS } from './floating-point.mjs';
 
 const GDT_ADDRESS = 0x7ffd0000;
 const INITIAL_TEB = 0x7ffde000;
+const FLAT_DATA_SELECTOR = 16;
 
 export function parsePE32(bytes, { allowExecutable = false } = {}) {
   const b = new Binary(bytes, 'PPI PE32');
@@ -204,14 +205,13 @@ export class PE32Process {
     this.store(this.teb + 0x20, 1); // Process ID
     this.store(this.teb + 0x24, 1); // Initial thread ID
 
-    this.map(GDT_ADDRESS, 4096, 'gdt', flags);
+    this.map(GDT_ADDRESS, 4096, 'gdt', uc.PROT_READ);
     const code = 8,
-      data = 16,
       thread = 24,
       gdtr = new Uint8Array(24),
       layout = new DataView(gdtr.buffer);
     this.write(GDT_ADDRESS + code, segmentDescriptor(0, 0xfffff, 0x9b, 0xc0));
-    this.write(GDT_ADDRESS + data, segmentDescriptor(0, 0xfffff, 0x93, 0xc0));
+    this.write(GDT_ADDRESS + FLAT_DATA_SELECTOR, segmentDescriptor(0, 0xfffff, 0x93, 0xc0));
     this.write(GDT_ADDRESS + thread, segmentDescriptor(this.teb, 0xfff, 0x93, 0x40));
     // Unicorn's uc_x86_mmr uses an aligned 64-bit base, even in 32-bit mode.
     layout.setBigUint64(8, BigInt(GDT_ADDRESS), true);
@@ -219,8 +219,13 @@ export class PE32Process {
     cpu.reg_write(uc.X86_REG_GDTR, gdtr);
     cpu.reg_write_i32(uc.X86_REG_CS, code);
     for (const segment of ['DS', 'ES', 'SS', 'GS'])
-      cpu.reg_write_i32(uc['X86_REG_' + segment], data);
+      cpu.reg_write_i32(uc['X86_REG_' + segment], FLAT_DATA_SELECTOR);
     cpu.reg_write_i32(uc.X86_REG_FS, thread);
+  }
+  hasFlatDataSegments(...segments) {
+    return segments.every(
+      (segment) => this.cpu.reg_read_i32(this.uc['X86_REG_' + segment]) === FLAT_DATA_SELECTOR,
+    );
   }
   map(address, size, kind = 'mapped', permissions = this.uc.PROT_ALL) {
     if (
