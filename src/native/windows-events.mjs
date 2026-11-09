@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Process-local Win32 events used by the original DirectShow reader.
+// Process-local Win32 events and semaphores share the same wait operations.
 const BASE = 0x57000000;
 const END = 0x58000000;
 const INFINITE = 0xffffffff;
@@ -7,6 +7,13 @@ const WAIT_FAILED = 0xffffffff;
 const WAIT_TIMEOUT = 0x102;
 const INVALID_HANDLE = 6;
 const INVALID_PARAMETER = 87;
+const TOO_MANY_POSTS = 298;
+
+const available = (object) => ('maximum' in object ? object.count > 0 : object.signaled);
+function consume(object) {
+  if ('maximum' in object) object.count--;
+  else if (!object.manual) object.signaled = false;
+}
 
 export class NativeWindowsEvents {
   constructor(kernel) {
@@ -15,14 +22,26 @@ export class NativeWindowsEvents {
     this.waiters = new Set();
     this.next = BASE;
     const register = (name, count, fn) => kernel.register('KERNEL32.dll', name, { count, fn });
-    for (const suffix of ['A', 'W'])
+    for (const suffix of ['A', 'W']) {
       register(`CreateEvent${suffix}`, 4, ([attributes, manual, signaled, name]) => {
         if (attributes || name)
           throw new Error('Native event requires an unnamed default-security object');
         return this.create(manual, signaled);
       });
+      register(`CreateSemaphore${suffix}`, 4, ([attributes, count, maximum, name]) => {
+        if (attributes || name)
+          throw new Error('Native semaphore requires an unnamed default-security object');
+        count |= 0;
+        maximum |= 0;
+        if (maximum <= 0 || count < 0 || count > maximum) return this.error(INVALID_PARAMETER);
+        return this.allocate({ count, maximum });
+      });
+    }
     register('SetEvent', 1, ([handle]) => this.signal(handle, true));
     register('ResetEvent', 1, ([handle]) => this.signal(handle, false));
+    register('ReleaseSemaphore', 3, ([handle, count, previous]) =>
+      this.release(handle, count | 0, previous),
+    );
     register('WaitForSingleObject', 2, ([handle, timeout]) => this.wait([handle], false, timeout));
     register('WaitForSingleObjectEx', 3, ([handle, timeout, alertable]) => {
       if (alertable) throw new Error('Native event waits do not have an APC provider');
@@ -39,37 +58,48 @@ export class NativeWindowsEvents {
     this.kernel.lastError = error;
     return WAIT_FAILED;
   }
+  error(error) {
+    this.kernel.lastError = error;
+    return 0;
+  }
   create(manual, signaled) {
-    if (this.next >= END) {
-      this.kernel.lastError = 8;
-      return 0;
-    }
+    return this.allocate({ manual: Boolean(manual), signaled: Boolean(signaled) });
+  }
+  allocate(record) {
+    if (this.next >= END) return this.error(8);
     const handle = this.next++;
-    this.events.set(handle, { manual: Boolean(manual), signaled: Boolean(signaled) });
+    this.events.set(handle, record);
     this.kernel.lastError = 0;
     return handle;
   }
   signal(handle, signaled) {
     const event = this.events.get(handle);
-    if (!event) {
-      this.kernel.lastError = INVALID_HANDLE;
-      return 0;
-    }
+    if (!event || 'maximum' in event) return this.error(INVALID_HANDLE);
     event.signaled = signaled;
     if (signaled) this.wake();
+    return 1;
+  }
+  release(handle, count, previous) {
+    const semaphore = this.events.get(handle);
+    if (!semaphore || !('maximum' in semaphore)) return this.error(INVALID_HANDLE);
+    if (count <= 0) return this.error(INVALID_PARAMETER);
+    if (semaphore.count + count > semaphore.maximum) return this.error(TOO_MANY_POSTS);
+    if (previous) this.kernel.process.store(previous, semaphore.count);
+    semaphore.count += count;
+    this.wake();
     return 1;
   }
   poll(handles, all) {
     const events = handles.map((handle) => this.events.get(handle));
     if (events.some((event) => !event)) return this.failed(INVALID_HANDLE);
     if (all) {
-      if (!events.every((event) => event.signaled)) return null;
-      for (const event of events) if (!event.manual) event.signaled = false;
+      if (!events.every(available)) return null;
+      for (const event of events) consume(event);
       return 0;
     }
-    const index = events.findIndex((event) => event.signaled);
+    const index = events.findIndex(available);
     if (index < 0) return null;
-    if (!events[index].manual) events[index].signaled = false;
+    consume(events[index]);
     return index;
   }
   wait(handles, all, timeout) {
@@ -124,15 +154,21 @@ export class NativeWindowsEvents {
       events.size !== state.events.length
     )
       throw new Error('Invalid native event checkpoint');
-    for (const [handle, event] of events)
-      if (
-        !Number.isInteger(handle) ||
-        handle < BASE ||
-        handle >= state.next ||
-        typeof event.manual !== 'boolean' ||
-        typeof event.signaled !== 'boolean'
-      )
+    for (const [handle, object] of events) {
+      const valid =
+        object &&
+        typeof object === 'object' &&
+        ('maximum' in object
+          ? Number.isInteger(object.count) &&
+            Number.isInteger(object.maximum) &&
+            object.count >= 0 &&
+            object.maximum > 0 &&
+            object.maximum <= 0x7fffffff &&
+            object.count <= object.maximum
+          : typeof object.manual === 'boolean' && typeof object.signaled === 'boolean');
+      if (!Number.isInteger(handle) || handle < BASE || handle >= state.next || !valid)
         throw new Error('Invalid native event checkpoint record');
+    }
     this.next = state.next;
     this.events = events;
   }

@@ -65,3 +65,68 @@ test('native unnamed Win32 event waits preserve auto-reset, manual-reset and han
     await engine.close();
   }
 });
+
+test('unnamed semaphores count successful waits and restore independently of events', async () => {
+  const unicorn = await loadUnicorn(),
+    engine = new NativeEngineProcess(unicorn),
+    { process: p, kernel } = engine,
+    call = api(engine),
+    previous = p.allocate(4),
+    handles = p.allocate(8);
+  let fresh;
+  try {
+    for (const name of ['CreateSemaphoreA', 'CreateSemaphoreW']) {
+      for (const [initial, max] of [
+        [0, 0],
+        [0xffffffff, 1],
+        [2, 1],
+      ]) {
+        assert.equal(await call(name, 0, initial, max, 0), 0);
+        assert.equal(await call('GetLastError'), 87);
+      }
+    }
+    const semaphore = await call('CreateSemaphoreA', 0, 1, 3, 0),
+      event = await call('CreateEventW', 0, 0, 0, 0);
+    p.store(handles, semaphore);
+    p.store(handles + 4, event);
+    assert.equal(await call('WaitForMultipleObjects', 2, handles, 1, 0), waitTimeout);
+    assert.equal(await call('SetEvent', event), 1);
+    assert.equal(await call('WaitForMultipleObjects', 2, handles, 1, 0), 0);
+    assert.equal(await call('WaitForSingleObject', event, 0), waitTimeout);
+    assert.equal(await call('WaitForSingleObject', semaphore, 0), waitTimeout);
+    const pending = call('WaitForSingleObject', semaphore, 0xffffffff);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(kernel.events.waiters.size, 1);
+    assert.equal(kernel.events.release(semaphore, 2, previous), 1);
+    assert.equal(await pending, 0);
+    assert.equal(p.load(previous), 0);
+    assert.equal(await call('ReleaseSemaphore', semaphore, 1, previous), 1);
+    assert.equal(p.load(previous), 1);
+    p.store(previous, 0xaaaaaaaa);
+    for (const [handle, count, error] of [
+      [semaphore, 2, 298],
+      [semaphore, 0, 87],
+      [event, 1, 6],
+    ]) {
+      assert.equal(await call('ReleaseSemaphore', handle, count, previous), 0);
+      assert.equal(await call('GetLastError'), error);
+      assert.equal(p.load(previous), 0xaaaaaaaa);
+    }
+    assert.equal(await call('SetEvent', semaphore), 0);
+    assert.equal(await call('GetLastError'), 6);
+    fresh = new NativeEngineProcess(unicorn);
+    fresh.restore(engine.snapshot());
+    const replay = api(fresh);
+    assert.equal(await replay('WaitForMultipleObjects', 2, handles, 0, 0), 0);
+    assert.equal(await replay('WaitForSingleObjectEx', semaphore, 0, 0), 0);
+    assert.equal(await replay('WaitForSingleObject', semaphore, 0), waitTimeout);
+    assert.equal(await replay('CloseHandle', semaphore), 1);
+    assert.equal(await replay('ReleaseSemaphore', semaphore, 1, previous), 0);
+    assert.equal(await replay('GetLastError'), 6);
+    assert.equal(await call('ReleaseSemaphore', semaphore, 1, previous), 1);
+    assert.equal(p.load(previous), 2);
+  } finally {
+    await fresh?.close();
+    await engine.close();
+  }
+});
