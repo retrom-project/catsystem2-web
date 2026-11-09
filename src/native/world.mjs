@@ -35,6 +35,7 @@ import { NativeEngineProcess } from './engine-process.mjs';
 import { checkNativeDirectXStartup } from './engine-system-information.mjs';
 import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
+import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
@@ -822,6 +823,7 @@ export class NativeWorld {
       await (await this.getNativeFeature('renderer')).initializeCapabilities();
       await initializeNativeStartupInstance(this.nativeEngine);
       await initializeNativeDesktop(this.nativeEngine);
+      await initializeNativeWindowClass(this.nativeEngine);
     }
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

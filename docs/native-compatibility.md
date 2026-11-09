@@ -64,6 +64,16 @@ reads its 32-bit color depth and releases it. The static WinMain block
 device and startup use the same metrics. Tests verify the original calls and
 packed dimensions after a fresh restore.
 
+WinMain next constructs its `CoreSystem2` window class. SDK `5C0040` and
+game `70ED40` write the original 48-byte
+[WNDCLASSEX record](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassexw)
+and call the corresponding ANSI or Unicode registration. The virtual desktop
+assigns a process-local atom and preserves the original window procedure,
+embedded icon, arrow cursor and stock brush. Duplicate registration follows
+the original Windows error contract. Both profiles restore the same class
+and release it independently. The browser still owns the display window;
+the external icon-file, native menu and CreateWindowEx paths remain separate.
+
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
 destructors close it. The virtual Windows instance uses the

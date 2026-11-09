@@ -21,6 +21,10 @@ import { NativeWorld } from '../src/native/world.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
 import {
+  initializeNativeWindowClass,
+  releaseNativeWindowClass,
+} from '../src/native/engine-window-class.mjs';
+import {
   initializeNativeStartupInstance,
   releaseNativeStartupInstance,
 } from '../src/native/engine-startup-instance.mjs';
@@ -141,10 +145,55 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           ['gdi32.dll!GetDeviceCaps', 1],
         ])
           assert.equal(first.kernel.calls.get(name), count, name);
+        await initializeNativeWindowClass(first);
+        const classPointer = first.refs.windowClass,
+          atom = first.process.load(classPointer) & 0xffff,
+          classOwner = (engine) => engine.kernel.windowClasses.classes.get(atom),
+          registered = classOwner(first),
+          assets = first.kernel.windowClasses.assets,
+          suffix = layout.wide ? 'W' : 'A',
+          duplicate = first.kernel.resolve({ dll: 'USER32.dll', name: 'RegisterClassEx' + suffix });
+        assert.equal(first.process.load(classPointer + 4), 48);
+        assert.ok(atom >= 0xc000);
+        assert.deepEqual(
+          [
+            registered.name,
+            registered.procedure,
+            registered.wide,
+            registered.style,
+            registered.menu,
+          ],
+          ['CoreSystem2', layout.wide ? 0x70eb60 : 0x5bfe20, layout.wide, 3, 0],
+        );
+        assert.deepEqual(assets.get(registered.cursor), {
+          kind: 'Cursor',
+          instance: 0,
+          resource: 0x7f00,
+        });
+        assert.deepEqual(assets.get(registered.brush), {
+          kind: 'Brush',
+          instance: 0,
+          resource: 4,
+          color: 0,
+        });
+        assert.equal(registered.icon, registered.smallIcon);
+        const icon = assets.get(registered.icon);
+        assert.equal(icon.instance, first.module.base);
+        assert.equal(first.process.load(icon.resource + 2) & 0xffff, 1, 'PE group icon resource');
+        assert.equal(first.kernel.calls.get('user32.dll!RegisterClassEx' + suffix), 1);
+        assert.equal(first.process.call(duplicate, [classPointer + 4]), 0);
+        assert.equal(first.kernel.lastError, 1410);
         fresh = await open();
         fresh.restore(first.snapshot());
         assert.deepEqual(read(fresh), info);
         assert.deepEqual(desktop(fresh), [1391, 703]);
+        assert.equal(fresh.refs.windowClass, classPointer);
+        assert.deepEqual(classOwner(fresh), registered);
+        assert.deepEqual(fresh.kernel.windowClasses.assets, assets);
+        await releaseNativeWindowClass(fresh);
+        assert.equal(classOwner(fresh), undefined);
+        assert.equal(fresh.process.allocations.has(classPointer), false);
+        assert.equal(classOwner(first), registered);
         assert.equal(fresh.process.load(startupBlock + 28), instance);
         assert.equal(fresh.process.load(instance), mutex);
         assert.ok(fresh.kernel.events.mutexes.has(mutex));

@@ -14,6 +14,7 @@ import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeResourceAPIs } from './windows-resources.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
+import { NativeWindowsClasses } from './windows-class.mjs';
 import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
@@ -30,6 +31,7 @@ import { NativeExecutableResources } from './engine-executable-resources.mjs';
 import { initializeSDKJavaScript, releaseSDKJavaScript } from './engine-sdk-javascript.mjs';
 import { installNativeDesktopAPIs } from './engine-desktop.mjs';
 import { releaseNativeStartupInstance } from './engine-startup-instance.mjs';
+import { releaseNativeWindowClass } from './engine-window-class.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -104,6 +106,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.errorMode = 0;
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);
+    this.windowClasses = new NativeWindowsClasses(this);
     this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
     this.comDepth = 0;
@@ -727,6 +730,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       nextFind: this.nextFind,
       errorMode: this.errorMode,
       events: this.events.snapshot(),
+      windowClasses: this.windowClasses.snapshot(),
       threadHandles: this.threadHandles.snapshot(),
       comMemory: this.comMemory.snapshot(),
       comDepth: this.comDepth,
@@ -745,6 +749,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.nextFind = state.nextFind;
     this.errorMode = state.errorMode;
     this.events.restore(state.events);
+    this.windowClasses.restore(state.windowClasses);
     this.threadHandles.restore(state.threadHandles);
     this.comMemory.restore(state.comMemory);
     if (!Number.isSafeInteger(state.comDepth) || state.comDepth < 0)
@@ -896,6 +901,7 @@ export class NativeEngineProcess {
   }
   async releaseOwner() {
     if (!this.refs.nativeOwner) return;
+    await releaseNativeWindowClass(this);
     await releaseNativeStartupInstance(this);
     const image = NATIVE_ENGINE_IMAGES[this.profile],
       [, destroy, defaultsGlobal] = image.ownerBootstrap,
