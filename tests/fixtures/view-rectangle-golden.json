@@ -1,0 +1,1309 @@
+{
+  "scope": "Authored main rectangle/view GCALL inputs; original table handlers, USER32 rectangle service as independently Wine-tested boundary; full VM and semantic view state exact.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "cases": {
+        "clear 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "72efda3507f8576e0c8c053e36174a2967516d57dcf0460facd58e1238d7997a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ef0545f077f38c6e5059e91f8a97333733d8765ecdd2914580fc6f780cf0ccb4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "07e13b4975b3c2993a854a46aebf3a384143ebd688ce5596ca3759546cc90f98",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9ae316b0eeb6932b5034d1a269c83142e0cc2310f5d41ca1198375c9b6cbfdda",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8c6f7393ecd131277a6a6603deafb3642045253dc11293ff89997150ae58886b",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8f424b0647f831b083a4360176bbbe8cda52bd044a9b4921c553f3d450449575",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 2": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "172dfce6f3b47e43256f26f8dd73ec1ffe1e2391ef2fe6f4e4a576e17f35c544",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ef0545f077f38c6e5059e91f8a97333733d8765ecdd2914580fc6f780cf0ccb4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "07e13b4975b3c2993a854a46aebf3a384143ebd688ce5596ca3759546cc90f98",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e977194305d0cdcadb742306857f9847626970bf3e18188cd2c4a6db08038e16",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "88c40dc013d6f559bade27220f878b7ddbdd44f083e7abed0beb2c4e460edbee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e57daef6b4f9553b76017e749ee8ab7973cb78a15eb92b13990de88bacc450ea",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ab734e02ede0770ac50c0b431ad50d42b01b89bf92b4de95844bcc1a8a8b242d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e207357af5bfc98b5c3c8d798b6ce7c0176f2f52b1445e4702316c57eb95ab02",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 4": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d516676d0eed4ec6aab745e6c6c88c1339ed60d92b8c53608142817d32b0aa1a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 12": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "5743bcabcc26c87754dcb17745c85c4895814f95817bf29c8a53c36be47f7023",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap undefined/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "54b73248350494b4ae9dfe7bc6b605046db9d0c25016ce226d11f6970738cf81",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap undefined/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7ee8f0c54e6dd78de029fc6868bff37bf2260fe07b3e5ad13b63e65c0a04e713",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 7/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7a4c322e70b1999c08dce24332cead2ffc6b6bafd319ee9d4e9b5ce939707ee6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 7/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1db4404f288598d855467cfcaa7ad91355344bf3db37fa69839ffa1567c7b030",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 0/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1245bb46186ffd271e68f56e153326ea5645674d99fc4e00130df7f0d594ac33",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 0/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1db4404f288598d855467cfcaa7ad91355344bf3db37fa69839ffa1567c7b030",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "dimensions 64,68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cdaddc9cccb01f5fce28e82019620a4900998510cf8e24d4f4ec744c7c04fc25",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8d2c1090d1ff39734f68439ff006971737c7a760f6bcd43abcd6a124a26dbe73",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "f5edf9042e3142b8466737e7b7757c4db6efb9d92f46e7f92125083baf217bb8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0191ab6ce81503270238c19575cc1b0a9f5b09f3cf3fa790a6c2be255c091a80",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "40a6a18da22db282baac7384600c5798ea322a8fc703b8147d902e4701591b80",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0904fefd9cf39a2ac35017001bf940ad16bb6bed3c5aee6476c88661c7fb2245",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 2147483680,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "37371e2343311e0f829a2fb6eb09b5a77b1dc4d39337ea1d4b6f51fefd235370",
+            "shared": "57ff358c4cb7f502cd3f17ecd9a218ff7d8a485ac789be549c1e030d3f2b0004",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 2147483680,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "6790d9765beacac00af8f54009ca635c666047a50b03185dc97b31b40941e84b",
+            "shared": "9c5f72927b9ef907227a5ae34b9b9fb7efee01b2604ce206b0a1d2c12f26a74b",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 64,68,72,76": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2b003b34d090ca433acbb2ba52a1f9f8e81b32fbf275091675ae6716ffcc7cf0",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 64,64,64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1464815c8c3f1c68d292fe7589151d6fdc697ea4afe684f77414bf222307d2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 0,2147483680,64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1e3c178f70a8cce094ca3839de3395c6938f8cb47aaaf34d7a38f3964fb22e7e",
+            "shared": "ccc010f6b11998a91425f8be51c14260b356105b66ce015e7a7ed582883b1ddd",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "43e6d44fa6c4e0b1eff53870d2cf81f06e687505aefed2477dc2259bcbc4cb3d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4277b5c9902d659155da864347a48f2e487ab1046603e7ac379fcc607c68d0d8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9dab542e674c11d1c979fbfb259460893c14feb186b8c747667db9735bb0413f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/4294967295": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position false/0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "42b22ad4afcd556be17b0adb049837c174a0fc7f1f4ed1807a307457fbb5031a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4277b5c9902d659155da864347a48f2e487ab1046603e7ac379fcc607c68d0d8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9dab542e674c11d1c979fbfb259460893c14feb186b8c747667db9735bb0413f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/4294967295": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "distinct position 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3359efc3990d883d021fcad0c29dcae4f22450a9b55ba8efabfea12afa76bd26",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "distinct position 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "262cee9c65ab841808ff6dbb80fd7b7869a202884887533a26d475bda7a4395a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "distinct position 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ad20775b4e004f64cfc74b4995506787a066ee553cc895c24b034ae0d6d781fe",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "camera 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "a619226a0284a755e8bed29aafe133e908ef71a6f2afed4bc03eb4b7b285a899"
+          }
+        },
+        "camera 80000000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8f3afcd38f735745426025419ca5ce8ad446b9d0a6d9f50a583b9c56c737d9ed",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "064d6f52ac5e5d45e6c8c5768f9b48d00b367aee47a62c6dfe3ddd7908db23a8"
+          }
+        },
+        "camera 3f800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "19dc092147f9edfe7ec03d350a8bda637680f30d16c4b7dcfa9ca9b4ff4e4db0"
+          }
+        },
+        "camera 443b8000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "a4ae4c2b96ebf859bab731a95fe61caa8aec65f40c4775c3a1d5d8fa70e08e22",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "e334a74fd1cd32b67c21cc6b609b9e341bf2ffe9c8465d76a666f5c820f122dd"
+          }
+        },
+        "camera 7f800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cebcd0065d3a3cfe6844ca9d9696f370bde36a4c664674a04ab55d77501465f4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "8a5b954d690a27cbafc18fb2bcf2e115e22fa0c098aa8fe6fecad4d08d7fa37f"
+          }
+        },
+        "camera ff800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "796b58d81813a304ad4dcfda4a642e63547ba72e657170b1661263da03bf80f9",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "16f092ea7de194c26a24a6c4fc02bfaa346236b75d010336912ea12759a071e9"
+          }
+        },
+        "camera 7fa01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0e993c431c99a685619f356176bcb7f2cf384a1dc069dd61c99d376d363b39a6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "68eb358704698350b44c116e8a0b2a2e0cb9b08c0442e6b57d544e859f8e0597"
+          }
+        },
+        "camera 7fc01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "eebc68f1b6524ab08a79fed74ebbd08e7b25865a7a869db74fde3af200f92fb6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "b666794a1523f3054de3e2b54d1659f1311f6060545702c7390d01c7795dca4c"
+          }
+        },
+        "camera ffc01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "58814465977f584e6d01420b89257ce028a4483126c6b13fe0c7974d24556a7e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "8d456654aa39c01735cb22c3f1b075af9ff4add63d9ca4e03ca9330fc9049a92"
+          }
+        },
+        "border disabled": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "bd63571127356dd092613e829fe255a998455ab292a5b522f4b92db9190b77af",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "rectangle disabled": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "b7feca9f4380672922bc328f4f7a493adc4f64fec1afbd9fb0a95b2630c42086",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "boundary scale 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d10a2a65b8ef797a5cb3e3ef0b8aecc82ad500f6f30863cc6b32ab7c2ab7eb42",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "f8aa729c04cf5c45656a101a03ed5754fdb68ef0748944aad040cf2adc372735"
+          }
+        },
+        "boundary scale -2.75": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "431869b266014cb688d786bb07e9ceaac1b4b44631b8b600097d5c8e5c010fa5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "850aebaa6ddf645552f798e3159d9cb7f7c4fca9809794545d79c3b8ad29f660"
+          }
+        },
+        "partial position 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "c0ee348e392de65bcaefa381feb76d6dd3b8d77e574a65d4dbfa99b83fe4ff48",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "partial position 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "138cb239e97c411be74f96a6b0ffa404d33f6f6f17cc12f6c454c0990f62a7ed",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "shared rectangle": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "12fa8b3ae4cee3f4e12d2666c1d1cf06651e4dd7e52a84d824484224f4704488",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "heap rectangle": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cf31963ec5b2d1197d9e6cfaca781185c1a7c993136c61a02be67acce0a59c2f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "block:1": "673813dfc9e6ef8f2285f9ce08977623bb5c38835842d5d9874914abb572b19d"
+          }
+        }
+      }
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "cases": {
+        "clear 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "72efda3507f8576e0c8c053e36174a2967516d57dcf0460facd58e1238d7997a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ef0545f077f38c6e5059e91f8a97333733d8765ecdd2914580fc6f780cf0ccb4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "07e13b4975b3c2993a854a46aebf3a384143ebd688ce5596ca3759546cc90f98",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9ae316b0eeb6932b5034d1a269c83142e0cc2310f5d41ca1198375c9b6cbfdda",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8c6f7393ecd131277a6a6603deafb3642045253dc11293ff89997150ae58886b",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8f424b0647f831b083a4360176bbbe8cda52bd044a9b4921c553f3d450449575",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 2": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "172dfce6f3b47e43256f26f8dd73ec1ffe1e2391ef2fe6f4e4a576e17f35c544",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ef0545f077f38c6e5059e91f8a97333733d8765ecdd2914580fc6f780cf0ccb4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "07e13b4975b3c2993a854a46aebf3a384143ebd688ce5596ca3759546cc90f98",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "clear 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty 3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e977194305d0cdcadb742306857f9847626970bf3e18188cd2c4a6db08038e16",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "union 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "88c40dc013d6f559bade27220f878b7ddbdd44f083e7abed0beb2c4e460edbee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "intersect 3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e57daef6b4f9553b76017e749ee8ab7973cb78a15eb92b13990de88bacc450ea",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ab734e02ede0770ac50c0b431ad50d42b01b89bf92b4de95844bcc1a8a8b242d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e207357af5bfc98b5c3c8d798b6ce7c0176f2f52b1445e4702316c57eb95ab02",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 4": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d516676d0eed4ec6aab745e6c6c88c1339ed60d92b8c53608142817d32b0aa1a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlap 12": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "5743bcabcc26c87754dcb17745c85c4895814f95817bf29c8a53c36be47f7023",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap undefined/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "54b73248350494b4ae9dfe7bc6b605046db9d0c25016ce226d11f6970738cf81",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap undefined/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7ee8f0c54e6dd78de029fc6868bff37bf2260fe07b3e5ad13b63e65c0a04e713",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 7/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7a4c322e70b1999c08dce24332cead2ffc6b6bafd319ee9d4e9b5ce939707ee6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 7/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1db4404f288598d855467cfcaa7ad91355344bf3db37fa69839ffa1567c7b030",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 0/-11": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1245bb46186ffd271e68f56e153326ea5645674d99fc4e00130df7f0d594ac33",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "bitmap 0/2147483646": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1db4404f288598d855467cfcaa7ad91355344bf3db37fa69839ffa1567c7b030",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "dimensions 64,68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cdaddc9cccb01f5fce28e82019620a4900998510cf8e24d4f4ec744c7c04fc25",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8d2c1090d1ff39734f68439ff006971737c7a760f6bcd43abcd6a124a26dbe73",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "f5edf9042e3142b8466737e7b7757c4db6efb9d92f46e7f92125083baf217bb8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0191ab6ce81503270238c19575cc1b0a9f5b09f3cf3fa790a6c2be255c091a80",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "40a6a18da22db282baac7384600c5798ea322a8fc703b8147d902e4701591b80",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0904fefd9cf39a2ac35017001bf940ad16bb6bed3c5aee6476c88661c7fb2245",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "dimensions 2147483680,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "37371e2343311e0f829a2fb6eb09b5a77b1dc4d39337ea1d4b6f51fefd235370",
+            "shared": "57ff358c4cb7f502cd3f17ecd9a218ff7d8a485ac789be549c1e030d3f2b0004",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "border 2147483680,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "6790d9765beacac00af8f54009ca635c666047a50b03185dc97b31b40941e84b",
+            "shared": "9c5f72927b9ef907227a5ae34b9b9fb7efee01b2604ce206b0a1d2c12f26a74b",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 64,68,72,76": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2b003b34d090ca433acbb2ba52a1f9f8e81b32fbf275091675ae6716ffcc7cf0",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 64,64,64,64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1464815c8c3f1c68d292fe7589151d6fdc697ea4afe684f77414bf222307d2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "rectangle 0,2147483680,64,66": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1e3c178f70a8cce094ca3839de3395c6938f8cb47aaaf34d7a38f3964fb22e7e",
+            "shared": "ccc010f6b11998a91425f8be51c14260b356105b66ce015e7a7ed582883b1ddd",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "43e6d44fa6c4e0b1eff53870d2cf81f06e687505aefed2477dc2259bcbc4cb3d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4277b5c9902d659155da864347a48f2e487ab1046603e7ac379fcc607c68d0d8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9dab542e674c11d1c979fbfb259460893c14feb186b8c747667db9735bb0413f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position true/4294967295": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "position false/0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "42b22ad4afcd556be17b0adb049837c174a0fc7f1f4ed1807a307457fbb5031a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4277b5c9902d659155da864347a48f2e487ab1046603e7ac379fcc607c68d0d8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9dab542e674c11d1c979fbfb259460893c14feb186b8c747667db9735bb0413f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/3": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "position false/4294967295": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2d97aadf957308af6c8c634628b3046dbf6a17a546a4566613651d540c898deb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "distinct position 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3359efc3990d883d021fcad0c29dcae4f22450a9b55ba8efabfea12afa76bd26",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "distinct position 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "262cee9c65ab841808ff6dbb80fd7b7869a202884887533a26d475bda7a4395a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "distinct position 2": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ad20775b4e004f64cfc74b4995506787a066ee553cc895c24b034ae0d6d781fe",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "camera 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "a619226a0284a755e8bed29aafe133e908ef71a6f2afed4bc03eb4b7b285a899"
+          }
+        },
+        "camera 80000000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8f3afcd38f735745426025419ca5ce8ad446b9d0a6d9f50a583b9c56c737d9ed",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "064d6f52ac5e5d45e6c8c5768f9b48d00b367aee47a62c6dfe3ddd7908db23a8"
+          }
+        },
+        "camera 3f800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "19dc092147f9edfe7ec03d350a8bda637680f30d16c4b7dcfa9ca9b4ff4e4db0"
+          }
+        },
+        "camera 443b8000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "a4ae4c2b96ebf859bab731a95fe61caa8aec65f40c4775c3a1d5d8fa70e08e22",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "e334a74fd1cd32b67c21cc6b609b9e341bf2ffe9c8465d76a666f5c820f122dd"
+          }
+        },
+        "camera 7f800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cebcd0065d3a3cfe6844ca9d9696f370bde36a4c664674a04ab55d77501465f4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "8a5b954d690a27cbafc18fb2bcf2e115e22fa0c098aa8fe6fecad4d08d7fa37f"
+          }
+        },
+        "camera ff800000": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "796b58d81813a304ad4dcfda4a642e63547ba72e657170b1661263da03bf80f9",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "16f092ea7de194c26a24a6c4fc02bfaa346236b75d010336912ea12759a071e9"
+          }
+        },
+        "camera 7fa01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0e993c431c99a685619f356176bcb7f2cf384a1dc069dd61c99d376d363b39a6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "68eb358704698350b44c116e8a0b2a2e0cb9b08c0442e6b57d544e859f8e0597"
+          }
+        },
+        "camera 7fc01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "eebc68f1b6524ab08a79fed74ebbd08e7b25865a7a869db74fde3af200f92fb6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "b666794a1523f3054de3e2b54d1659f1311f6060545702c7390d01c7795dca4c"
+          }
+        },
+        "camera ffc01234": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "58814465977f584e6d01420b89257ce028a4483126c6b13fe0c7974d24556a7e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "8d456654aa39c01735cb22c3f1b075af9ff4add63d9ca4e03ca9330fc9049a92"
+          }
+        },
+        "border disabled": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "bd63571127356dd092613e829fe255a998455ab292a5b522f4b92db9190b77af",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "rectangle disabled": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "b7feca9f4380672922bc328f4f7a493adc4f64fec1afbd9fb0a95b2630c42086",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "5b7e7b67789ea9f9c0cd9ef25599e3ec80e4b507ba879606f1eb433654e76b88"
+          }
+        },
+        "boundary scale 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d10a2a65b8ef797a5cb3e3ef0b8aecc82ad500f6f30863cc6b32ab7c2ab7eb42",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "f8aa729c04cf5c45656a101a03ed5754fdb68ef0748944aad040cf2adc372735"
+          }
+        },
+        "boundary scale -2.75": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "431869b266014cb688d786bb07e9ceaac1b4b44631b8b600097d5c8e5c010fa5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "850aebaa6ddf645552f798e3159d9cb7f7c4fca9809794545d79c3b8ad29f660"
+          }
+        },
+        "partial position 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "c0ee348e392de65bcaefa381feb76d6dd3b8d77e574a65d4dbfa99b83fe4ff48",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "partial position 1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "138cb239e97c411be74f96a6b0ffa404d33f6f6f17cc12f6c454c0990f62a7ed",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:view": "637873c44e47fee0055f19a9b46abde7b33b10032afbf74187e31cf1df1a106a"
+          }
+        },
+        "shared rectangle": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "12fa8b3ae4cee3f4e12d2666c1d1cf06651e4dd7e52a84d824484224f4704488",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "heap rectangle": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cf31963ec5b2d1197d9e6cfaca781185c1a7c993136c61a02be67acce0a59c2f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "block:1": "673813dfc9e6ef8f2285f9ce08977623bb5c38835842d5d9874914abb572b19d"
+          }
+        }
+      }
+    }
+  }
+}

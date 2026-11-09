@@ -63,6 +63,14 @@ test(
       await call(12, [floatBits(750)]);
       assert.equal(p.load(platform.refs.manager + 224), floatBits(750));
       assert.equal(world.graphics.projection().cameraNear, 750);
+      p.store(platform.refs.manager + 224, floatBits(123));
+      p.store(platform.refs.view + 24, 7);
+      assert.equal(world.graphics.cameraNear, 750, 'PE is a projection, never camera authority');
+      await call(8, [256, 260]);
+      assert.equal(m.load(256), 640, 'dimensions read the JS owner');
+      world.graphics.synchronizeView();
+      assert.equal(p.load(platform.refs.manager + 224), floatBits(750));
+      assert.equal(p.load(platform.refs.view + 24), 640);
       const vertices = [
           { x: 10, y: 20, z: 500, color: 0xffffffff, u: 0, v: 0 },
           { x: 12, y: 20, z: 500, color: 0xffffffff, u: 1, v: 0 },

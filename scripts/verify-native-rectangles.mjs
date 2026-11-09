@@ -6,7 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
-import { NATIVE_RECTANGLE_CONTRACTS } from '../src/native/rectangles.mjs';
+import { NATIVE_RECTANGLE_CONTRACTS } from '../oracle/rectangles.mjs';
 import { rectangleFixture, RECTANGLE_INPUTS } from '../tests/fixtures/rectangle-fixture.mjs';
 
 const [filename, output] = process.argv.slice(2);

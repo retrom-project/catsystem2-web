@@ -1,71 +1,80 @@
 // SPDX-License-Identifier: MPL-2.0
-// Dimensions, perspective distance, drawing rectangle and view positions.
-import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-
-export const NATIVE_VIEW_GEOMETRY_CONTRACTS = Object.freeze([
-  Object.freeze({ id: 8, words: 2, handlers: [0x650260, 0x51b8b0] }),
-  Object.freeze({ id: 12, words: 1, handlers: [0x650860, 0x51be80] }),
-  Object.freeze({ id: 0x2e3, words: 2, handlers: [0x650200, 0x51b850] }),
-  Object.freeze({ id: 0x2e4, words: 2, handlers: [0x650070, 0x51b6c0] }),
-  Object.freeze({ id: 0x313, words: 4, handlers: [0x64ff60, 0x51b5d0] }),
+import { nativeABI } from './abi/index.mjs';
+import { nativeReply } from '../kcs/vm.mjs';
+export const NATIVE_VIEW_GEOMETRY_OPERATIONS = Object.freeze([
+  'view.dimensions',
+  'view.setCameraNear',
+  'view.borderOffset',
+  'view.fullPositionCoordinates',
+  'view.drawingRectangle',
 ]);
-const byID = new Map(NATIVE_VIEW_GEOMETRY_CONTRACTS.map((spec) => [spec.id, spec]));
-export class NativeViewGeometry {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.sdk = engine.profile.startsWith('sdk-');
-    engine.registerFeature('view-geometry', this);
+const f = Math.fround;
+const cvtt = (value) =>
+  Number.isFinite(value) && value >= -2147483648 && value < 2147483648
+    ? Math.trunc(value) | 0
+    : -2147483648;
+function convert(machine, addresses, view) {
+  // Read each output only immediately before its conversion: aliases see X's write.
+  for (const [axis, address] of addresses.entries()) {
+    const shifted = f(f(machine.load(address) | 0) - view.deviceOffset[axis]);
+    const device = cvtt(f(shifted * f(1 / view.deviceScale)));
+    const ratio =
+      view.ratios?.[axis] ??
+      f(
+        [view.virtualWidth, view.virtualHeight][axis] / [view.clientWidth, view.clientHeight][axis],
+      );
+    machine.store(address, cvtt(f(f((device - view.windowShift[axis]) | 0) * ratio)));
   }
-  async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      host = p.allocate(120, true),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.store(host + 116, platform.refs.view);
-      p.store(out, NATIVE_RESULT_SENTINEL);
-      const address = spec.handlers[Number(this.sdk)],
-        parameters = [bridge.pointer, host, argv, out],
-        options = { task: task.id },
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(address, parameters, undefined, options)
-          : await this.engine.call(address, parameters, undefined, options);
-      if (control !== 2 || p.load(out) !== NATIVE_RESULT_SENTINEL)
-        throw new Error('Unexpected result from native view geometry wrapper');
-      return nativeReply(control);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-        p.free(host);
-      }
+}
+export function nativeViewGeometry(operation, args, machine, argumentWords, graphics, screen) {
+  const words = Array.from(args);
+  while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
+  const [x, y] = words,
+    view = graphics.view,
+    rect = view.active ? view.drawingRectangle : [0, 0, screen.currentWidth, screen.currentHeight];
+  if (operation === 'view.setCameraNear') graphics.setCameraNearWord(x);
+  else if (operation === 'view.dimensions') {
+    machine.store(x, view.virtualWidth);
+    machine.store(y, view.virtualHeight);
+  } else if (operation === 'view.drawingRectangle') {
+    [rect[0], rect[1], (rect[2] - rect[0]) | 0, (rect[3] - rect[1]) | 0].forEach((word, i) =>
+      machine.store(words[i], word),
+    );
+  } else if (operation === 'view.borderOffset') {
+    machine.store(y, 0);
+    machine.store(x, 0);
+    if (view.active) {
+      machine.store(x, cvtt(view.deviceOffset[0]));
+      machine.store(y, cvtt(view.deviceOffset[1]));
     }
+    machine.store(x, machine.load(x) * 2);
+    machine.store(y, machine.load(y) * 2);
+    convert(machine, [x, y], view);
+  } else {
+    machine.store(x, 0);
+    const mode = screen.fullPosition >>> 0;
+    if (mode === 0)
+      machine.store(
+        y,
+        view.active ? (rect[3] + cvtt(view.deviceOffset[1])) | 0 : screen.currentHeight,
+      );
+    else if (mode === 1) machine.store(y, screen.fullHeight);
+    else if (mode === 2) machine.store(y, screen.virtualHeight);
+    if (mode < 2) convert(machine, [x, y], view);
   }
-  snapshot() {
-    return {};
-  }
-  restore() {}
+  return nativeReply(2);
 }
 export function installNativeViewGeometry(world) {
-  world.registerNativeFeature('view-geometry', (engine) => new NativeViewGeometry(engine, world));
-  for (const { id } of NATIVE_VIEW_GEOMETRY_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('view-geometry')).apply(id, args, machine, task),
-    );
+  for (const entry of nativeABI(world.profile).tables.main.entries)
+    if (NATIVE_VIEW_GEOMETRY_OPERATIONS.includes(entry.name))
+      world.runtime.register('main', entry.id, (args, machine) =>
+        nativeViewGeometry(
+          entry.name,
+          args,
+          machine,
+          entry.signature.argumentWords,
+          world.graphics,
+          world.configuration.screen,
+        ),
+      );
 }

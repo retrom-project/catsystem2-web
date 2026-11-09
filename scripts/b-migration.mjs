@@ -129,7 +129,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'rectangles view-geometry database content-databases section-table nametable bitmap-factory ' +
+    'database content-databases section-table nametable bitmap-factory ' +
     'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'configuration-query input-commands registry image-file image-composite render-sources ' +
     'unicode-output utf8 record-queue tile-game script-xml task-dump tile-plane-command ' +
@@ -711,6 +711,14 @@ const nonNativeGroups = [
     ],
   },
   {
+    name: 'js-view-to-exe-renderer-projection',
+    domain: 6,
+    entry:
+      'JS NativeGraphics/NativeView → injected syncViewGeometry → original renderer RAM; one-way only; remove in phase 6',
+    modules: ['graphics', 'graphics-process'],
+    files: ['oracle/transitional-exe.mjs'],
+  },
+  {
     name: 'ppi-and-dll-host',
     domain: 9,
     entry:
@@ -988,6 +996,7 @@ async function build() {
     const selected = files.filter(
       ({ file }) =>
         group.modules.includes(basename(file)) ||
+        group.files?.includes(file) ||
         group.directories?.some((directory) => file.startsWith(directory)),
     );
     for (const { file } of selected) assigned.add(file);

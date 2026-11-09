@@ -588,6 +588,7 @@ export class NativeGraphicsPlatform {
     return result;
   }
   sync() {
+    this.world.graphics.synchronizeView();
     const p = this.process,
       graphics = this.world.graphics,
       projection = graphics.projection();

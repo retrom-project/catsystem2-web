@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// kcView3D coordinates: 673BB0, 676770, 6767C0, 676F90.
+// JS-owned view geometry; the renderer receives a one-way projection.
 const f = Math.fround;
 const integer = (value) =>
   Number.isFinite(value) && value >= -2147483648 && value < 2147483648
@@ -15,6 +15,9 @@ export class NativeView {
     deviceOffset = [0, 0],
     deviceScale = 1,
     windowShift = [0, 0],
+    active = true,
+    drawingRectangle = [0, 0, clientWidth ?? virtualWidth, clientHeight ?? virtualHeight],
+    ratios = null,
   } = {}) {
     this.configure({
       virtualWidth,
@@ -24,9 +27,19 @@ export class NativeView {
       deviceOffset,
       deviceScale,
       windowShift,
+      active,
+      drawingRectangle,
+      ratios,
     });
   }
   configure(values) {
+    if (values.active !== undefined) this.active = Boolean(values.active);
+    if (values.drawingRectangle !== undefined) {
+      if (!Array.isArray(values.drawingRectangle) || values.drawingRectangle.length !== 4)
+        throw new TypeError('Invalid native drawing rectangle');
+      this.drawingRectangle = values.drawingRectangle.map((n) => n | 0);
+    }
+    if (values.ratios !== undefined) this.ratios = values.ratios?.map(f) ?? null;
     for (const field of ['virtualWidth', 'virtualHeight', 'clientWidth', 'clientHeight'])
       if (values[field] !== undefined) {
         if (!Number.isInteger(values[field]) || values[field] < 0 || values[field] > 65535)
@@ -48,6 +61,7 @@ export class NativeView {
         throw new TypeError('Invalid native view deviceScale');
       this.deviceScale = f(values.deviceScale);
     }
+    this.changed?.();
   }
   virtualSize() {
     return [this.virtualWidth, this.virtualHeight];
@@ -85,6 +99,9 @@ export class NativeView {
           'deviceOffset',
           'deviceScale',
           'windowShift',
+          'active',
+          'drawingRectangle',
+          'ratios',
         ].map((key) => [key, this[key]]),
       ),
     );

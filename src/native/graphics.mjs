@@ -65,21 +65,20 @@ const GRAPHIC_TASK_LAYOUTS = {
 };
 
 export class NativeGraphics {
-  nativeCameraMemory() {
-    const engine = this.world.nativeEngine,
-      platform = engine?.features.get('graphics-platform');
-    return engine?.features.get('renderer')?.initialized && platform?.refs.manager
-      ? { process: engine.process, address: platform.refs.manager + 224 }
-      : null;
+  synchronizeView() {
+    const engine = this.world.nativeEngine;
+    if (engine?.features.get('renderer')?.initialized)
+      this.world.transitionalExe.syncViewGeometry({ engine, graphics: this });
   }
   get cameraNear() {
-    const memory = this.nativeCameraMemory();
-    return memory ? bitsFloat(memory.process.load(memory.address)) : this.cameraNearValue;
+    return bitsFloat(this.cameraNearWord);
   }
   set cameraNear(value) {
-    this.cameraNearValue = Math.fround(value);
-    const memory = this.nativeCameraMemory();
-    if (memory) memory.process.store(memory.address, floatBits(value));
+    this.setCameraNearWord(floatBits(value));
+  }
+  setCameraNearWord(word) {
+    this.cameraNearWord = word >>> 0;
+    this.synchronizeView();
   }
   constructor(world) {
     this.world = world;
@@ -105,16 +104,14 @@ export class NativeGraphics {
       clientWidth: screen?.currentWidth ?? world.game.width,
       clientHeight: screen?.currentHeight ?? world.game.height,
     });
+    this.view.changed = () => this.synchronizeView();
     Object.defineProperty(this.stage, 'nativeGraphics', { value: this });
   }
   get(id) {
     return this.tasks.get(id >>> 0) || null;
   }
   virtualSize() {
-    const engine = this.world.nativeEngine;
-    if (!engine?.features.get('renderer')?.initialized) return this.view.virtualSize();
-    const view = engine.features.get('graphics-platform').refs.view;
-    return [engine.process.load(view + 24), engine.process.load(view + 28)];
+    return this.view.virtualSize();
   }
   get cursorAllowed() {
     return this.cursor.state.allowed;
@@ -363,7 +360,7 @@ export class NativeGraphics {
       view: this.view.snapshot(),
       screenMatrix: this.screenMatrix,
       screenShift: this.screenShift,
-      cameraNear: this.cameraNear,
+      cameraNearWord: this.cameraNearWord,
       texturePages: this.texturePages?.snapshot() ?? null,
       cursor: this.cursor.snapshot(),
       renderSequence: this.renderSequence,

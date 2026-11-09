@@ -3,10 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import {
-  NativeViewGeometry,
-  NATIVE_VIEW_GEOMETRY_CONTRACTS,
-} from '../src/native/view-geometry.mjs';
+import { NativeViewGeometry, NATIVE_VIEW_GEOMETRY_CONTRACTS } from '../oracle/view-geometry.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';

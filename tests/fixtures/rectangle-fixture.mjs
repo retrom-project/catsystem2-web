@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeRectangles } from '../../src/native/rectangles.mjs';
+import { NativeRectangles } from '../../oracle/rectangles.mjs';
 import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { configurationQueryMachine } from './configuration-query-fixture.mjs';
 

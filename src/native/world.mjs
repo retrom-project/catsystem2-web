@@ -1072,6 +1072,7 @@ export class NativeWorld {
     this.menu = new Map(state.menu);
     this.windowMessages = structuredClone(state.windowMessages);
     this.configurationDirty = state.configurationDirty;
+    this.graphics.synchronizeView();
     for (const [handle, key] of bankSelections)
       this.runtime.handles.get(handle, 'variable-bank').selectedContext = key;
   }

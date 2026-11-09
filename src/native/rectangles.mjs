@@ -1,82 +1,64 @@
 // SPDX-License-Identifier: MPL-2.0
-// Execute the original RECT wrappers and VM translator. USER32 rectangle
-// semantics and persistent image wrappers are shared with the other tasks.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
-
-export const NATIVE_RECTANGLE_CONTRACTS = Object.freeze(
-  [
-    [0xd6, 1, 2, 0x644e60, 0x52aa50],
-    [0xd7, 2, 2, 0x644d00, 0x52a8f0],
-    [0xd8, 4, 2, 0x644da0, 0x52a990],
-    [0xd9, 1, 1, 0x644f40, 0x52ab30],
-    [0xda, 5, 2, 0x644eb0, 0x52aaa0],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
-);
-const byID = new Map(NATIVE_RECTANGLE_CONTRACTS.map((spec) => [spec.id, spec]));
-
-export class NativeRectangles {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    for (const [name, definition] of nativeRectangleDefinitions(this.process))
-      engine.registerWindows('USER32.dll', name, definition);
-    engine.registerFeature('rectangles', this);
-  }
-  async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    if (id === 0xd8 && words[1])
-      words[1] = await (await this.world.getNativeFeature('bitmap-memory')).wrapper(words[1]);
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(12);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.write(out, new Uint8Array(12).fill(0xcc));
-      const params = [bridge.pointer, 0, argv, out + 4],
-        options = { task: task.id },
-        handler = spec.handlers[Number(this.engine.profile.startsWith('sdk-'))],
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(handler, params, undefined, options)
-          : await this.engine.call(handler, params, undefined, options);
-      if (
-        control !== spec.control ||
-        p.load(out) !== 0xcccccccc ||
-        p.load(out + 8) !== 0xcccccccc ||
-        (control === 2 && p.load(out + 4) !== 0xcccccccc)
-      )
-        throw new Error('Original rectangle wrapper changed its output contract');
-      return nativeReply(control, control === 1 ? p.load(out + 4) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-      }
+export const NATIVE_RECTANGLE_OPERATIONS = Object.freeze([
+  'rectangle.clear',
+  'rectangle.union',
+  'rectangle.unionBitmap',
+  'rectangle.isEmpty',
+  'rectangle.intersect',
+]);
+const empty = (r) => r[0] >= r[2] || r[1] >= r[3];
+const read = (m, a) => Array.from({ length: 4 }, (_, i) => m.load((a + i * 4) >>> 0) | 0);
+const union = (a, b) =>
+  empty(a)
+    ? empty(b)
+      ? [0, 0, 0, 0]
+      : b
+    : empty(b)
+      ? a
+      : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
+export function nativeRectangle(operation, args, machine, argumentWords, images) {
+  const words = Array.from(args);
+  while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
+  const [address, b, x, y, z] = words;
+  if (operation === 'rectangle.isEmpty')
+    return nativeReply(1, Number(empty(read(machine, address))));
+  let result = [0, 0, 0, 0];
+  if (operation !== 'rectangle.clear') {
+    const a = read(machine, address);
+    if (operation === 'rectangle.union') result = union(a, read(machine, b));
+    else if (operation === 'rectangle.unionBitmap') {
+      const bitmap = b ? images.get(b) : null;
+      result = union(a, [
+        x | 0,
+        y | 0,
+        (x + (bitmap?.width ?? 0)) | 0,
+        (y + (bitmap?.height ?? 0)) | 0,
+      ]);
+    } else {
+      result = [
+        Math.max(a[0], b | 0),
+        Math.max(a[1], x | 0),
+        Math.min(a[2], y | 0),
+        Math.min(a[3], z | 0),
+      ];
+      if (empty(result)) result = [0, 0, 0, 0];
     }
   }
-  snapshot() {
-    return {};
-  }
-  restore() {}
+  result.forEach((word, i) => machine.store((address + i * 4) >>> 0, word));
+  return nativeReply(2);
 }
-
 export function installNativeRectangles(world) {
-  world.registerNativeFeature('rectangles', (engine) => new NativeRectangles(engine, world));
-  for (const { id } of NATIVE_RECTANGLE_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('rectangles')).apply(id, args, machine, task),
-    );
+  for (const entry of nativeABI(world.profile).tables.main.entries)
+    if (NATIVE_RECTANGLE_OPERATIONS.includes(entry.name))
+      world.runtime.register('main', entry.id, (args, machine) =>
+        nativeRectangle(
+          entry.name,
+          args,
+          machine,
+          entry.signature.argumentWords,
+          world.graphics.images,
+        ),
+      );
 }

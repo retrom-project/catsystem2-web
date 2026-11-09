@@ -58,9 +58,23 @@ for (const [profile, record] of Object.entries(golden.profiles)) {
     try {
       assert.deepEqual([...original.calculations.matrix], new Array(64).fill(0));
       await original.initialize('main.kcs');
+      original.graphics.view.configure({
+        deviceOffset: [5.75, -3.25],
+        deviceScale: 2,
+        drawingRectangle: [-17, 9, 300, 480],
+      });
+      await original.runtime.native('main', 12, [0x7fa01234], original.main.machine, original.main);
       const saved = structuredClone(original.snapshot());
       assert.equal(saved.nativeEngine, null);
       await fresh.restore(saved);
+      assert.equal(
+        fresh.graphics.cameraNearWord,
+        0x7fa01234,
+        'checkpoint preserves raw signaling NaN',
+      );
+      assert.deepEqual(fresh.graphics.view.snapshot(), original.graphics.view.snapshot());
+      fresh.graphics.view.configure({ deviceOffset: [0, 0] });
+      assert.deepEqual(original.graphics.view.deviceOffset, [5.75, -3.25]);
       await fresh.runtime.native('main', 0x15e, [0xffffffff], fresh.main.machine, fresh.main);
       const read = (world) =>
         [12, 13, 14].map((i) =>

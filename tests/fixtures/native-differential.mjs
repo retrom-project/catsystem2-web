@@ -10,6 +10,9 @@ import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { readKCS, nativeReply } from '../../src/kcs.mjs';
 import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
 import { memoryGame, kcsProgram } from '../helpers.mjs';
+import { NATIVE_RECTANGLE_OPERATIONS } from '../../src/native/rectangles.mjs';
+import { NATIVE_VIEW_GEOMETRY_OPERATIONS } from '../../src/native/view-geometry.mjs';
+import { viewStateBytes } from './view-state.mjs';
 import { NATIVE_MATRIX_OPERATIONS } from '../../src/native/matrix.mjs';
 import { NATIVE_GEOMETRY_OPERATIONS } from '../../src/native/geometry.mjs';
 
@@ -19,6 +22,8 @@ const independent = {
     'math.linearInterpolate',
     'math.roundInteger',
     ...NATIVE_MATRIX_OPERATIONS,
+    ...NATIVE_RECTANGLE_OPERATIONS,
+    ...NATIVE_VIEW_GEOMETRY_OPERATIONS,
     ...NATIVE_GEOMETRY_OPERATIONS,
     ...Object.values(NATIVE_ABIS)[0]
       .tables.main.entries.filter((e) => e.family === 'math')
@@ -105,7 +110,7 @@ function originalReply(
   try {
     argv = p.allocate(Math.max(4, args.length * 4));
     out = p.allocate(12);
-    args.forEach((word, index) => p.store(argv + index * 4, word));
+    (adapter?.arguments?.(args) ?? args).forEach((word, index) => p.store(argv + index * 4, word));
     p.write(out, new Uint8Array(12).fill(0xcc));
     watch = p.watchWrites(out + 4, 4);
     const before = imageMemory(engine),
@@ -270,6 +275,14 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
   };
   if (initial?.matrixWords)
     new Uint32Array(world.calculations.matrix.buffer).set(initial.matrixWords);
+  if (initial?.view) world.graphics.view.configure(initial.view);
+  if (initial?.screen) Object.assign(world.configuration.screen, initial.screen);
+  if (initial?.cameraNearWord !== undefined)
+    world.graphics.setCameraNearWord(initial.cameraNearWord);
+  if (initial?.bitmap) {
+    const bitmap = world.graphics.images.create(initial.bitmap.width, initial.bitmap.height);
+    assert.equal(bitmap, initial.bitmap.handle);
+  }
   try {
     const dispatch = world.runtime.native.bind(world.runtime);
     world.runtime.native = (nativeTable, nativeID, words, machine, task, scheduler) => {
@@ -312,6 +325,13 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
       value: lastReply.value,
       memory: {
         ...vmMemory(task.machine),
+        ...(fixture.domain === 'view'
+          ? {
+              'state:view': oracleEngine
+                ? adapter.memory()['state:view']
+                : viewStateBytes(world.graphics),
+            }
+          : {}),
         ...(fixture.domain === 'matrix'
           ? {
               'state:current-matrix': oracleEngine
@@ -348,6 +368,7 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
     if (task?.machine) error.nativeMemory = vmMemory(task.machine);
     throw error;
   } finally {
+    adapter?.close?.();
     await world.close({ flushFiles: false });
   }
 }

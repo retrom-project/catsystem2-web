@@ -1,9 +1,9 @@
-# Original RECT interfaces
+# JavaScript RECT interfaces
 
-The five main-table RECT wrappers execute their original instructions and VM
-address translator. USER32 rectangle calls reuse the platform services already
-used by text, controls and retained graphics. Coordinates are signed 32-bit
-words; rectangles contain left, top, right and bottom edges.
+The five main-table RECT operations execute synchronously in JavaScript, using
+VM memory and JS-owned bitmap dimensions. Rectangles are half-open, signed 32-bit
+left/top/right/bottom bounds. Empty means left >= right or top >= bottom.
+No EXE, bitmap-memory wrapper or transitional call is required.
 
 | ID   | Arguments                                     | Control/result                                | Game handler | SDK handler |
 | ---- | --------------------------------------------- | --------------------------------------------- | ------------ | ----------- |
@@ -19,8 +19,7 @@ uses the original words. An empty intersection becomes four zero words. Union
 ignores an empty input and produces four zeros if both inputs are empty.
 The wrapper discards the platform union/intersection BOOL and returns void.
 
-`D8` uses the persistent bitmap-memory image wrapper. Its original size helper
-reads the bitmap's physical width and height, ignoring canvas size and offsets.
+`D8` reads the JS bitmap handle's physical width and height, ignoring canvas size and offsets.
 A NULL image wrapper or a wrapper without a bitmap contributes zero width and
 height. The original x+width and y+height additions wrap as DWORD arithmetic
 before USER32 interprets the resulting signed edges. No JavaScript bounds or
@@ -50,3 +49,9 @@ full SDK World with an actual persistent image wrapper. A fresh World retains
 VM rectangles and the original image pointer; changes to its VM and image
 metadata leave the source World independent. Raw engine output and reports
 remain in ignored local storage.
+
+Independent JS-versus-original GCALL and public golden cases are in
+`tests/fixtures/view-rectangle-cases.mjs`; every VM byte, return word, control,
+logical handle and task state compares exactly. Authored bitmap dimensions are
+projected into original read-only image records on the oracle side. The original
+facade and exhaustive original-only probes remain under `oracle/rectangles.mjs`.
