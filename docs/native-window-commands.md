@@ -102,3 +102,11 @@ mode guards, preparation order, close cancellation, accepted shutdown and
 disposal while a dialog is open. The public browser case changes native
 preferences, imports a real file, cancels and accepts exit, checks task-tree
 release and reopens the same game to verify persisted preferences and files.
+
+Main `1BD` shows a modal script message. SDK `51B460` and game `64FDB0`
+execute the original formatter and emit their original caption. Only their
+`MessageBoxA/W` call is supplied by the browser. Both pass `MB_OK`; the
+native Script waits until OK or Escape dismisses the message. The output
+word remains untouched and the wrapper returns control 2. Other USER32
+message boxes keep their separate platform boundaries.
+[Microsoft MessageBoxW reference](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw).

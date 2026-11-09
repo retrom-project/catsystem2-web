@@ -87,13 +87,13 @@ export class BrowserNativeWindow {
     this.engine = engine;
     this.dialog = null;
   }
-  async show(title, build, { confirm = false } = {}) {
+  async show(title, build, { confirm = false, closeLabel = confirm ? 'Cancel' : 'Close' } = {}) {
     if (this.dialog) throw new Error('A native window dialog is already open');
     const dialog = element('dialog'),
       heading = element('h2', title),
       body = element('div'),
       buttons = element('div'),
-      close = element('button', confirm ? 'Cancel' : 'Close');
+      close = element('button', closeLabel);
     dialog.className = 'native-window';
     body.className = 'native-window-body';
     buttons.className = 'native-window-buttons';
@@ -323,6 +323,17 @@ export class BrowserNativeWindow {
       case 'confirm-title':
       case 'confirm-close':
         return this.confirm(action);
+      case 'script-message-box':
+        await this.show(
+          action.caption,
+          (body) => {
+            const message = element('p', action.message);
+            message.style.whiteSpace = 'pre-wrap';
+            body.append(message);
+          },
+          { closeLabel: 'OK' },
+        );
+        return 1;
       case 'save-directory':
         return this.files(world);
       case 'game-configuration':

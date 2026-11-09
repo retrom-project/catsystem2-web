@@ -365,6 +365,33 @@ test('browser window services apply native preferences, manage real save files, 
   ).toEqual({ volume: 37, font: 'Arial', file: [4, 5, 6] });
 });
 
+test('script message boxes display literal text and acknowledge OK and Escape', async ({
+  page,
+}) => {
+  await page.goto('/');
+  for (const dismiss of ['OK', 'Escape']) {
+    const message = '確認 <img src=x>\r\n第二行',
+      result = page.evaluate(async (message) => {
+        const { BrowserNativeWindow } = await import('/src/native/window-browser.mjs');
+        return new BrowserNativeWindow({}).perform({
+          type: 'script-message-box',
+          caption: 'system error',
+          message,
+        });
+      }, message);
+    result.catch(() => {});
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading')).toHaveText('system error');
+    expect(await dialog.locator('p').textContent()).toBe(message);
+    await expect(dialog.locator('img')).toHaveCount(0);
+    if (dismiss === 'Escape') await page.keyboard.press('Escape');
+    else await dialog.getByRole('button', { name: 'OK' }).click();
+    expect(await result).toBe(1);
+    await expect(dialog).toHaveCount(0);
+  }
+});
+
 test('native movie decoding, audible PCM, loop completion and fresh decoder restoration use real browser media', async ({
   page,
 }) => {
