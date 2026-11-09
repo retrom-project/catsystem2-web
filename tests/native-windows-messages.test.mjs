@@ -229,6 +229,29 @@ test('TranslateMessage posts character messages after the already queued message
   }
 });
 
+test('queued browser key modifiers and characters survive a fresh process', async () => {
+  const source = await desktop(),
+    target = await desktop(),
+    data = 0x00310001,
+    keyboard = { modifiers: 4, character: 0x4e };
+  try {
+    source.queue.post(source.root, 0x100, 0x4e, data, keyboard);
+    target.kernel.accelerators.readModifiers = () => 0;
+    target.kernel.restore(source.kernel.snapshot());
+    assert.equal(await target.get(), 1);
+    assert.deepEqual(target.queue.keyboardFor(target.packet), keyboard);
+    assert.equal(target.call('TranslateMessage', target.packet), 1);
+    assert.equal(await target.get(), 1);
+    assert.deepEqual(target.words().slice(0, 4), [target.root, 0x102, 0x4e, data]);
+    assert.deepEqual(target.queue.keyboardFor(target.packet), keyboard);
+    target.p.store(target.packet + 8, 0x6e);
+    assert.equal(target.queue.keyboardFor(target.packet), undefined);
+  } finally {
+    source.p.close();
+    target.p.close();
+  }
+});
+
 test('message waits share event priority and preserve unread queue categories', async () => {
   const { p, kernel, queue, call, root, peek } = await desktop(),
     event = kernel.events.create(0, 0),

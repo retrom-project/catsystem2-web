@@ -123,11 +123,11 @@ menu before destroying the windows. The tests verify those handles after
 an independent process restore. SDK `5BFAB0` and game `70E740` attach
 the native input device to the same `kcWindow` object. Its callback list,
 input state and window handles belong to each restored process. The browser
-still presents the view and dispatches the application loop. The SDK
+presents the view. The SDK
 `5BFD80` and game `70EA60` caption setters send the original
 [WM_SETTEXT](https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-settext)
 through the WndProc. The game resolves its initial caption through its
-native language tree; the browser displays the resulting window title,
+native language tree, and the browser displays the resulting window title,
 including after a fresh restore.
 
 Startup loads accelerator resource 101 through the original SDK setter.
@@ -143,12 +143,11 @@ padding and capacity boundary. The ANSI and Unicode
 imports now match virtual and character messages and synchronously send the
 original application menu notifications and command. The pinned Wine probe
 checks exact modifiers, nested or disabled items, capture and minimization.
-The standalone browser checks the current window's original table before
-posting a key press to its input device. It queues the accelerator's menu
-notifications and command for the same application dispatcher as Script
-window requests. Character messages also resolve the game's Shift+N
-secondary-language OFF entry. System-menu accelerators and the remaining
-native message pump are separate.
+The standalone browser checks the current accelerator table to decide
+whether to cancel the browser's default action. It posts the original
+virtual key and captures the modifiers and character with the message.
+The original loop translates the queued key. Its `WM_CHAR` path resolves
+the game's Shift+N secondary-language OFF entry.
 
 The virtual USER32 thread now owns posted messages for windows and the
 thread itself. The pinned Wine probe checks nonremoving reads, child-window
@@ -156,17 +155,24 @@ and message-range filtering, removal when a window is destroyed, and
 quit-code delivery through the 28-byte x86 `MSG` record.
 [`PeekMessage`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-peekmessagew)
 and [`GetMessage`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)
-share that queue. `DispatchMessage` invokes the registered window procedure
-and returns its result. A settled checkpoint preserves pending posts and the
-last received message independently of the original process. The queue
-contracts cover explicit posts and dispatch, with timer callbacks and
-generated input handled separately.
+share that queue. `DispatchMessage` normally invokes the registered window
+procedure and returns its result. A settled checkpoint preserves pending
+posts, queued key data and the last received message. Timer callbacks,
+modeless dialogs and system-menu keyboard handling require further coverage.
 
 [`MsgWaitForMultipleObjects`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-msgwaitformultipleobjects)
 waits on the same synchronization handles as the kernel and on the queue's
 newly posted messages. Wine probes verify handle priority, automatic-reset
 consumption, and the separate changes observed by filtered and unfiltered
 peeks. The changed queue flags survive a settled checkpoint.
+
+Browser frames execute the original `kcWindow` message loops at SDK
+`5BFB00` and game `70E7E0`. Both run the original event callback when its
+handle is signaled and return the posted exit code on `WM_QUIT`. Browser
+services for the application window can issue their own engine calls. The
+loop yields at its original epilogue before invoking those services, then
+resumes at the next message check. Fixed-binary tests verify event priority,
+dispatch to a secondary window, already queued posts and the exit code.
 
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The

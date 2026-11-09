@@ -179,7 +179,7 @@ export class NativeWindowsViews {
       p.free(temporary);
     }
   }
-  defaultProcedure([handle, message, , lParam]) {
+  defaultProcedure([handle, message, wParam, lParam]) {
     const window = this.windows.get(handle);
     if (!window) return this.error(INVALID_WINDOW);
     if (message === 0x81) return 1; // WM_NCCREATE accepts the window.
@@ -191,6 +191,7 @@ export class NativeWindowsViews {
       this.writeRect(lParam, this.clientBounds({ ...window, bounds: this.readRect(lParam) }));
       return 0;
     }
+    if (message === 0x102 || (message === 0x100 && wParam !== 0x79)) return 0;
     // Application-defined messages have no system default action.
     if (message >= 0x400 || [1, 2, 3, 5, 0x24, 0x82, 0x111, 0x116, 0x117].includes(message))
       return 0;

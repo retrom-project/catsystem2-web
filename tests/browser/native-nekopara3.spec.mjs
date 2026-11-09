@@ -77,6 +77,9 @@ test('the original game accelerators select the main and secondary languages aft
   expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
   await page.keyboard.press('Shift+KeyN');
   await step(page, 2);
+  expect(
+    await page.evaluate(() => window.catSystem2.world.nativeEngine.kernel.messageQueue.last),
+  ).toMatchObject({ message: 0x102, wParam: 78, keyboard: { modifiers: 4 } });
   expect(await preferences()).toMatchObject({
     main: target,
     sub: 0xffffffff,

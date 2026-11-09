@@ -3,6 +3,7 @@
 import { nativeWindowLanguageCommand, nativeWindowMessageCommand } from './window-commands.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { browserVirtualKey } from './input-bindings.mjs';
+import { virtualKeyCharacter } from './windows-keyboard.mjs';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
     119, 40045, 40002, 40008, 40009, 40012, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
@@ -18,9 +19,17 @@ export class NativeWindow {
   get opened() {
     return this.world.nativeEngine?.kernel?.windowViews.windows.has(this.handle) ?? false;
   }
-  post(message, wParam = 0, lParam = 0) {
+  post(message, wParam = 0, lParam = 0, keyboard) {
     if (this.opened) {
-      if (!this.world.nativeEngine.kernel.messageQueue.post(this.handle, message, wParam, lParam))
+      if (
+        !this.world.nativeEngine.kernel.messageQueue.post(
+          this.handle,
+          message,
+          wParam,
+          lParam,
+          keyboard,
+        )
+      )
         throw new Error(`Could not post native window message ${message}`);
       return;
     }
@@ -47,7 +56,7 @@ export class NativeWindow {
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
   }
-  keyboardCommand(event) {
+  keyboardShortcut(event) {
     const engine = this.world.nativeEngine,
       owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
       key = browserVirtualKey(event);
@@ -59,25 +68,25 @@ export class NativeWindow {
         /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(
           event.code,
         ),
-      data = (event.altKey ? 1 << 29 : 0) | (extended ? 1 << 24 : 0),
-      keyCommand = accelerators.match(table, event.altKey ? 0x104 : 0x100, key, data, modifiers);
-    if (keyCommand !== null || event.key?.length !== 1) return keyCommand;
-    let character = event.key.charCodeAt(0);
-    if (event.ctrlKey && !event.getModifierState?.('AltGraph')) {
-      const upper = event.key.toUpperCase().charCodeAt(0);
-      if (upper < 64 || upper > 95) return null;
-      character = upper & 31;
-    }
-    // A missed virtual-key match can still generate WM_CHAR, notably the
-    // game's original ASCII Shift+N secondary-language OFF entry.
-    return accelerators.match(table, event.altKey ? 0x106 : 0x102, character, data, modifiers);
-  }
-  async postKeyboardCommand(command) {
-    const accelerators = this.world.nativeEngine?.kernel.accelerators;
-    if (!accelerators) return;
-    await accelerators.dispatch(this.handle, command, (message, wParam, lParam) =>
-      this.post(message, wParam, lParam),
-    );
+      data =
+        1 | (event.altKey ? 1 << 29 : 0) | (extended ? 1 << 24 : 0) | (event.repeat ? 1 << 30 : 0),
+      message = event.altKey ? 0x104 : 0x100,
+      character =
+        event.key?.length === 1 && (!event.ctrlKey || event.getModifierState?.('AltGraph'))
+          ? event.key.charCodeAt(0)
+          : virtualKeyCharacter(key, modifiers, {
+              capsLock: Boolean(event.getModifierState?.('CapsLock')),
+              numLock: Boolean(event.getModifierState?.('NumLock')),
+            });
+    // Predict browser default handling now. The original loop translates
+    // the queued key and, where applicable, its later character message.
+    if (
+      accelerators.match(table, message, key, data, modifiers) !== null ||
+      (character !== null &&
+        accelerators.match(table, message + 2, character, data, modifiers) !== null)
+    )
+      return [message, key, data, { modifiers, character }];
+    return null;
   }
   text(value) {
     return this.world.globalStrings.get(value);

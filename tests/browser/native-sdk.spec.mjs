@@ -99,6 +99,9 @@ test('the original SDK accelerator consumes Alt+Enter and leaves bare Enter with
   };
   await toggle();
   expect(await enter()).toEqual({ held: 0, fullscreen: true });
+  expect(
+    await page.evaluate(() => window.catSystem2.world.nativeEngine.kernel.messageQueue.last),
+  ).toMatchObject({ message: 0x104, wParam: 13, keyboard: { modifiers: 16 } });
   await toggle();
   expect(await enter()).toEqual({ held: 0, fullscreen: false });
   await restoreFresh(page);

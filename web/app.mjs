@@ -228,15 +228,14 @@ document.addEventListener('keydown', (event) => {
   )
     return;
   const current = engine,
-    nativeWindow = current.world?.window,
-    command = nativeWindow?.keyboardCommand(event) ?? null;
-  if (command === null && !current.inputBindings.acceptsKeyboard(event)) return;
+    shortcut = current.world?.window.keyboardShortcut(event);
+  if (!shortcut && !current.inputBindings.acceptsKeyboard(event)) return;
   event.preventDefault();
   enqueue(async () => {
     if (engine !== current || !running) return;
     await current.audio.unlock();
-    if (command === null) current.inputBindings.keyboard(event, true);
-    else await current.world?.window.postKeyboardCommand(command);
+    if (shortcut) current.world?.window.post(...shortcut);
+    else current.inputBindings.keyboard(event, true);
   }).catch(() => {});
 });
 document.addEventListener('keyup', (event) => {

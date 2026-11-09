@@ -118,18 +118,23 @@ export class NativeWindowsAccelerators {
   async translate(target, table, at) {
     if (!target || !at || !this.tables.has(table)) return 0;
     const p = this.kernel.process,
-      command = this.match(table, p.load(at + 4), p.load(at + 8), p.load(at + 12));
+      keyboard = this.kernel.messageQueue.keyboardFor(at),
+      command = this.match(
+        table,
+        p.load(at + 4),
+        p.load(at + 8),
+        p.load(at + 12),
+        keyboard?.modifiers,
+      );
     if (command === null) return 0;
     await this.dispatch(target, command);
     return 1;
   }
-  async dispatch(target, command, notify) {
-    const { windowViews, windowMenus } = this.kernel,
+  async dispatch(target, command) {
+    const { windowViews, windowMenus, messageQueue } = this.kernel,
       window = windowViews.windows.get(target);
     if (!window) return this.error(INVALID_WINDOW);
-    const send =
-        notify ??
-        ((message, w, l) => this.kernel.messageQueue.dispatchWindow(target, message, w, l)),
+    const send = (message, w, l) => messageQueue.dispatchWindow(target, message, w, l),
       menu = window.menu,
       match = windowMenus.commandLocation(menu, command);
     if (match) {

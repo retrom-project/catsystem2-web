@@ -17,9 +17,18 @@ const QS_POSTED = QS_POSTMESSAGE | QS_ALLPOSTMESSAGE;
 const WAIT_FAILED = 0xffffffff;
 const WAIT_TIMEOUT = 0x102;
 const isWord = (value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff;
+const validKeyboard = (keyboard) =>
+  keyboard === undefined ||
+  (keyboard &&
+    isWord(keyboard.modifiers) &&
+    !(keyboard.modifiers & ~0x1c) &&
+    (keyboard.character === null || (isWord(keyboard.character) && keyboard.character <= 0xffff)));
 const validMessage = (entry) =>
   entry &&
-  ['handle', 'message', 'wParam', 'lParam', 'time', 'x', 'y'].every((name) => isWord(entry[name]));
+  ['handle', 'message', 'wParam', 'lParam', 'time', 'x', 'y'].every((name) =>
+    isWord(entry[name]),
+  ) &&
+  validKeyboard(entry.keyboard);
 
 export class NativeWindowsMessages {
   constructor(kernel) {
@@ -68,7 +77,7 @@ export class NativeWindowsMessages {
       y: y >>> 0,
     };
   }
-  post(handle, message, w = 0, l = 0) {
+  post(handle, message, w = 0, l = 0, keyboard) {
     const views = this.kernel.windowViews;
     if (message === 0xc || message === 0x4a) return this.error(SYNC_ONLY);
     if (handle && handle !== BROADCAST && !views.windows.has(handle))
@@ -78,7 +87,11 @@ export class NativeWindowsMessages {
         ? [...views.windows].filter(([, window]) => !views.isChildWindow(window)).map(([id]) => id)
         : [handle];
     if (this.entries.length + targets.length > MAX_POSTED) return this.error(1816);
-    for (const target of targets) this.entries.push(this.make(target, message, w, l));
+    for (const target of targets) {
+      const entry = this.make(target, message, w, l);
+      if (keyboard) entry.keyboard = { ...keyboard };
+      this.entries.push(entry);
+    }
     if (targets.length) this.onPost();
     return 1;
   }
@@ -205,18 +218,29 @@ export class NativeWindowsMessages {
       }
     }
   }
+  keyboardFor(address) {
+    const { last, process: p } = this;
+    if (
+      last?.keyboard &&
+      last.handle === p.load(address) &&
+      last.message === p.load(address + 4) &&
+      last.wParam === p.load(address + 8) &&
+      last.lParam === p.load(address + 12)
+    )
+      return last.keyboard;
+  }
   translate(address) {
     if (!address) return this.error(INVALID_PARAMETER);
     const p = this.process,
       message = p.load(address + 4);
     if (message === 0x101 || message === 0x105) return 1;
     if (message !== 0x100 && message !== 0x104) return 0;
-    const character = virtualKeyCharacter(
-      p.load(address + 8),
-      this.kernel.accelerators.readModifiers?.() ?? 0,
-    );
+    const keyboard = this.keyboardFor(address),
+      character = keyboard
+        ? keyboard.character
+        : virtualKeyCharacter(p.load(address + 8), this.kernel.accelerators.readModifiers?.() ?? 0);
     if (character !== null)
-      this.post(p.load(address), message + 2, character, p.load(address + 12));
+      this.post(p.load(address), message + 2, character, p.load(address + 12), keyboard);
     return 1;
   }
   dispatch(address) {
