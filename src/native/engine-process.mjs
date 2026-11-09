@@ -16,6 +16,7 @@ import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
+import { installNativeVolumeInformation } from './windows-volume.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeSDKLanguage, releaseSDKLanguage } from './engine-language.mjs';
 import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
@@ -89,6 +90,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.listFiles = options.listFiles;
     this.directories = new Set(['']);
     installNativeKnownFolders(this);
+    installNativeVolumeInformation(this);
     this.errorMode = 0;
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);
