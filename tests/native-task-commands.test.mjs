@@ -63,6 +63,14 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       world.objects.objects.get(innerPlane).exitCode = 32;
       await call(inner, 0x28b, [nativePlane]);
       assert.equal(world.objects.objects.get(innerPlane).exitCode, -1);
+      await call(world.main, 0x2b6, [nativePlane, 0xffffffff]);
+      await call(inner, 0x2b6, [nativePlane, 0x80000000]);
+      assert.deepEqual(await call(inner, 0x2b6, [0, 47]), { control: 2 });
+      assert.deepEqual(zeroMessages.at(-1), [world.nativeTaskID(inner.id), 29, 0, 47]);
+      assert.equal(nested.userValue, 0);
+      assert.deepEqual(await call(inner, 0x2b6, [0xffffffff, 17]), { control: 2 });
+      assert.equal(world.objects.objects.get(outerPlane).userValue, 0xffffffff);
+      assert.equal(world.objects.objects.get(innerPlane).userValue, 0x80000000);
       const observed = [],
         implementation = world.objects.objects.get(innerPlane).implementation,
         original = implementation.message.bind(implementation),
@@ -133,6 +141,11 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.equal(fresh.graphics.get(innerPlane).state.vramType, 29);
       assert.equal(fresh.objects.objects.get(innerTop).exitCode, 73);
       assert.equal(fresh.objects.objects.get(innerPlane).exitCode, -1);
+      assert.equal(fresh.objects.objects.get(outerPlane).userValue, 0xffffffff);
+      assert.equal(fresh.objects.objects.get(innerPlane).userValue, 0x80000000);
+      await invoke(0x2b6, [nativePlane, 0]);
+      assert.equal(fresh.objects.objects.get(innerPlane).userValue, 0);
+      assert.equal(world.objects.objects.get(innerPlane).userValue, 0x80000000);
       assert.deepEqual(await invoke(0x291, [drawID, 7]), { control: 1, value: auxiliary });
       await invoke(0x28d, [nativePlane, 31]);
       assert.equal(fresh.graphics.get(innerPlane).state.vramType, 31);

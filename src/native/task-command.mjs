@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original main28B/28D/28E/28F task envelopes. These wrappers route even
-// target zero; resolution belongs to the caller's Top namespace.
+// Original task command envelopes route even target zero; resolution belongs
+// to the caller's Top namespace.
 import { nativeReply, formatNativeAt } from '../kcs.mjs';
 
-export const NATIVE_TASK_COMMAND_IDS = Object.freeze([0x28b, 0x28d, 0x28e, 0x28f]);
+export const NATIVE_TASK_COMMAND_IDS = Object.freeze([0x28b, 0x28d, 0x28e, 0x28f, 0x2b6]);
 
 class Packet {
   constructor(size) {
@@ -35,6 +35,7 @@ export async function nativeTaskCommand(id, args, machine, task, world) {
     });
   if (id === 0x28b) await send(24, 0, 0xffffffff);
   else if (id === 0x28d) await send(84, 0, args[1]);
+  else if (id === 0x2b6) await send(29, 0, args[1]);
   else {
     const packet = new Packet(id === 0x28e ? 512 : 256),
       format = world.runtime?.services.formatBytes ?? formatNativeAt;

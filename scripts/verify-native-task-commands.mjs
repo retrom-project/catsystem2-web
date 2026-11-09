@@ -53,6 +53,7 @@ const messages = new Map([
   [0x28e, [85, 83]],
   [0x28f, [86, 84]],
   [0x291, [307, 302]],
+  [0x2b6, [29, 29]],
 ]);
 const compare = (actual, expected, label) => {
   assert.deepEqual(actual, expected, label);
@@ -178,7 +179,7 @@ try {
         operations,
         passed,
         scope:
-          'Complete original main28B/28D/28E/28F/291, original VM translation and formatter. Exact routing words, target zero, all DWORD extremes, raw CP932/UTF-8/invalid-byte formatted strings from data/shared/blocks, 255-byte scratch, output initialization and optional query writes, full VM and result canaries. Receiver-specific graphics/retained state is checked separately.',
+          'Complete original main28B/28D/28E/28F/291/2B6, original VM translation and formatter. Exact routing words, target zero, all DWORD extremes, raw CP932/UTF-8/invalid-byte formatted strings from data/shared/blocks, 255-byte scratch, output initialization and optional query writes, full VM and result canaries. Receiver-specific graphics/retained state is checked separately.',
       },
       null,
       2,
