@@ -150,8 +150,21 @@ test('official SDK starts with saved setup and restores the title and tutorial c
         .map(({ o }) => o.key),
     ),
   ).toEqual(['fr1[0]', 'fr1[1]', 'fr1[2]', 'fr1[3]']);
-  await clickNativeButton(page, 'fr1[0]');
+  const exported = page.waitForEvent('download');
+  await page.click('#export');
+  await step(page, 0);
+  expect(await (await exported).failure()).toBeNull();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.locator('#export')).toBeFocused();
+  await clickNativeButton(page, 'fr1[1]');
   await until(page, 'select#EXIT', 36);
+  expect(
+    await page.evaluate(() => ({
+      scroll: window.scrollY,
+      pressed: window.catSystem2.activeFES().nativeInput.state.pressed,
+      selected: window.catSystem2.activeFES().root.local(30),
+    })),
+  ).toEqual({ scroll: 0, pressed: 'fr1[1]', selected: 1 });
   expect(errors).toEqual([]);
 });
 

@@ -77,7 +77,7 @@ async function launch(getGame) {
     running = true;
     lastTime = performance.now();
     accumulator = 0;
-    canvas.focus();
+    canvas.focus({ preventScroll: true });
     requestAnimationFrame(loop);
   } catch (e) {
     fail(e);
@@ -157,32 +157,38 @@ const point = (event) => {
 const nativeTouch = (event) =>
   event.pointerType === 'touch' && !!engine?.world.configuration.fields.application.touch;
 canvas.addEventListener('pointermove', (event) => {
-  if (engine && running)
-    enqueue(() =>
-      nativeTouch(event)
-        ? engine.touchContact(event.pointerId, ...point(event), 'move')
-        : engine.hover(...point(event)),
-    ).catch(() => {});
+  if (!engine || !running) return;
+  const position = point(event),
+    touch = nativeTouch(event);
+  enqueue(() =>
+    touch ? engine.touchContact(event.pointerId, ...position, 'move') : engine.hover(...position),
+  ).catch(() => {});
 });
 canvas.addEventListener('pointerleave', (event) => {
   if (event.pointerType !== 'mouse') return;
   if (engine && running) enqueue(() => engine.hover(null, null)).catch(() => {});
 });
 canvas.addEventListener('pointerdown', (event) => {
-  canvas.focus();
+  // The browser can scroll when focus moves from the toolbar to the canvas.
+  // Sample the event against its current geometry, before focus or the next RAF.
+  const position = point(event);
+  canvas.focus({ preventScroll: true });
   if (!engine || !running) return;
+  const touch = nativeTouch(event);
   canvas.setPointerCapture(event.pointerId);
   enqueue(() =>
-    nativeTouch(event)
-      ? engine.touchContact(event.pointerId, ...point(event), 'down')
-      : engine.pointerButton(...point(event), event.button, true),
+    touch
+      ? engine.touchContact(event.pointerId, ...position, 'down')
+      : engine.pointerButton(...position, event.button, true),
   ).catch(() => {});
 });
 canvas.addEventListener('pointerup', (event) => {
   if (!engine || !running) return;
+  const position = point(event),
+    touch = nativeTouch(event);
   enqueue(() => {
-    if (nativeTouch(event)) engine.touchContact(event.pointerId, ...point(event), 'up');
-    else engine.pointerButton(...point(event), event.button, false);
+    if (touch) engine.touchContact(event.pointerId, ...position, 'up');
+    else engine.pointerButton(...position, event.button, false);
   }).catch(() => {});
 });
 canvas.addEventListener('pointercancel', (event) => {
