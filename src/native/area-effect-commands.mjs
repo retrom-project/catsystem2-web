@@ -10,6 +10,7 @@ export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
     [0xc5, 1, 2, 0x6419a0, 0x529b10],
     [0xc6, 1, 2, 0x6419d0, 0x529b40],
     [0xc8, 1, 1, 0x641840, 0x5299b0],
+    [0xca, 2, 2, 0x641a00, 0x529b70],
     [0xcb, 1, 2, 0x6415d0, 0x529740],
   ].map(([id, words, control, game, sdk]) =>
     Object.freeze({ id, words, control, handlers: [game, sdk] }),
@@ -17,6 +18,7 @@ export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
 );
 const byID = new Map(NATIVE_AREA_EFFECT_COMMANDS.map((spec) => [spec.id, spec])),
   bitmapPackets = new Map([
+    [260, { size: 20, fields: [4, 16] }],
     [274, { size: 56, fields: [4, 16, 28] }],
     [275, { size: 44, fields: [4, 16] }],
     [276, { size: 48, fields: [4, 16] }],
@@ -33,7 +35,7 @@ export class NativeAreaEffectCommands {
     engine.registerFeature('area-effect-commands', this);
   }
   async bitmapPacket(address, schema) {
-    if (!address) throw new Error('Native area effect initializer has no mapped VM packet');
+    if (!address) throw new Error('Native area effect command has no mapped VM packet');
     const p = this.process,
       world = this.world,
       bytes = p.read(address, schema.size),
@@ -57,7 +59,7 @@ export class NativeAreaEffectCommands {
     for (const [at, value] of typed) packet.setUint32(at, await memory.wrapper(value), true);
     for (const [value, identity] of borrowed)
       if (sources.bitmapWrapperIdentity(value) !== identity)
-        throw new Error('Area-effect bitmap wrapper was released before initialization');
+        throw new Error('Area-effect bitmap wrapper was released before dispatch');
     const copy = p.allocate(bytes.length);
     p.write(copy, bytes);
     return copy;

@@ -41,12 +41,14 @@ const sdk = profile.startsWith('sdk-'),
     [0xc5, 257],
     [0xc6, 258],
     [0xc8, 259],
+    [0xca, 13],
     [0xcb, 261],
   ]);
 let events = [],
   replyWord,
   writeReply,
   statusInput,
+  commandID,
   activeEffect = 0,
   operations = 0,
   wrapperChecks = 0,
@@ -57,15 +59,20 @@ const equal = (actual, expected, label) => {
   else wrapperChecks++;
 };
 const observe = (from, target, message, w, l, flags, result) => {
-  if (message === 259) statusInput = p.load(result);
+  if (message === 259 || message === 13) statusInput = p.load(result);
   events.push({
     from,
     target,
     message,
     w,
     flags,
-    source: l ? Array.from(p.read(l, 56)) : null,
-    initial: message === 13 ? p.load(result) : message === 259 ? 'caller' : null,
+    source: l ? Array.from(p.read(l, message === 260 ? 20 : 56)) : null,
+    initial:
+      message === 13 && commandID !== 0xca
+        ? statusInput
+        : message === 13 || message === 259
+          ? 'caller'
+          : null,
   });
   return writeReply ? replyWord : undefined;
 };
@@ -131,13 +138,18 @@ try {
   for (const [i, address] of locations.slice(0, -1).entries())
     m.bytes(address, 56).set(Uint8Array.from({ length: 56 }, (_, j) => (i * 23 + j * 37) & 255));
   for (const [id, firstMessage] of commands) {
+    commandID = id;
     const isInit = id === 0xc4,
-      values = isInit ? [...Array.from({ length: 33 }, (_, i) => i), ...words.slice(2)] : words;
+      isReplacement = id === 0xca,
+      queriesKind = isInit || isReplacement,
+      values = queriesKind
+        ? [...Array.from({ length: 33 }, (_, i) => i), ...words.slice(2)]
+        : words;
     for (const target of words)
       for (replyWord of values)
-        for (const address of isInit ? locations : [0])
+        for (const address of queriesKind ? locations : [0])
           for (writeReply of [false, true]) {
-            const args = isInit ? [target, address] : [target],
+            const args = queriesKind ? [target, address] : [target],
               before = vmState(),
               memory = new NativeKCSMemory(p, m);
             events = [];
@@ -147,8 +159,14 @@ try {
             } finally {
               memory.close();
             }
-            const initMessage = writeReply && isInit ? secondMessage[replyWord - 17] : undefined,
-              expectedMessages = [firstMessage, ...(initMessage ? [initMessage] : [])],
+            const followUp = writeReply
+                ? isInit
+                  ? secondMessage[replyWord - 17]
+                  : isReplacement && (replyWord === 26 || replyWord === 27)
+                    ? 260
+                    : undefined
+                : undefined,
+              expectedMessages = [firstMessage, ...(followUp ? [followUp] : [])],
               expectedEvents = events;
             equal(
               events.map((event) => event.message),
@@ -156,10 +174,13 @@ try {
               'original message IDs',
             );
             if (isInit) equal(events[0].initial, mainTable + 4 * id, 'GCALL slot remains in ECX');
-            if (initMessage)
+            if (isReplacement) equal(statusInput, host, 'CA kind query starts with caller word');
+            if (followUp)
               equal(
                 events[1].source,
-                address === 0xffffffff ? null : Array.from(m.bytes(address, 56)),
+                address === 0xffffffff
+                  ? null
+                  : Array.from(m.bytes(address, isReplacement ? 20 : 56)),
                 'original VM address translation',
               );
             equal(
@@ -171,6 +192,8 @@ try {
               equal(p.load(out + 4), 0xa5a5a5a5, 'original void result is unwritten');
             events = [];
             const actual = await adapter.apply(id, args, m, { id: 41 });
+            if (isReplacement)
+              equal(p.allocations.has(statusInput), false, 'CA kind query used caller scratch');
             if (id === 0xc8 && !writeReply) {
               equal(native.value, host, 'unwritten original C8 copies the caller pointer');
               equal(actual.value, statusInput, 'adapter preserves the unwritten caller word');
@@ -202,20 +225,21 @@ try {
   p.store(parent + 104, view);
   p.store(parent + 100, 20);
   activeEffect = await engine.call(factory, [29, name, out + 4], parent);
-  const nativeID = p.load(out + 4),
-    callWipe = (id, ...args) => callOriginal(id, [nativeID, ...args], memory.pointer);
+  let nativeID = p.load(out + 4);
+  const callWipe = (id, ...args) => callOriginal(id, [nativeID, ...args], memory.pointer);
   equal(p.load(activeEffect), wipeVtable, 'original factory constructs the Wipe2 receiver');
   equal(p.load(activeEffect + 64), 29, 'original factory assigns kind');
   equal(p.load(activeEffect + 100), 20, 'original factory inherits current task clock');
-  const makeBitmap = async (pixel) => {
+  const makeBitmap = async (pixel, dimensions = [width, height, 4]) => {
     const bitmap = p.allocate(92, true),
       wrapper = p.allocate(4, true);
     await engine.call(bitmapCtor, [], bitmap);
-    assert.ok(await engine.call(bitmapSize, [width, height, 4], bitmap));
+    assert.ok(await engine.call(bitmapSize, dimensions, bitmap));
     const data = p.load(bitmap + 12),
       stride = p.load(bitmap + 20);
-    for (let y = 0; y < height; y++)
-      for (let x = 0; x < width; x++) p.store(data + y * stride + x * 4, pixel(x, y));
+    if (pixel)
+      for (let y = 0; y < dimensions[1]; y++)
+        for (let x = 0; x < dimensions[0]; x++) p.store(data + y * stride + x * 4, pixel(x, y));
     p.store(wrapper, bitmap);
     return { wrapper, bitmap };
   };
@@ -226,7 +250,7 @@ try {
   ]);
   engine.patch(
     upload,
-    'original Wipe2 bitmap upload boundary',
+    'original area effect bitmap upload boundary',
     7,
     ([bitmap, sx, sy, w, h, x, y]) => {
       assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0, view);
@@ -269,8 +293,9 @@ try {
   values.forEach((word, i) => m.store(112 + i * 4, word));
   const memory = new NativeKCSMemory(p, m),
     frame = async (at) => {
-      await engine.call(p.load(wipeVtable + 8), [at, out], activeEffect);
-      await engine.call(p.load(wipeVtable + 12), [at], activeEffect);
+      const table = p.load(activeEffect);
+      await engine.call(p.load(table + 8), [at, out], activeEffect);
+      await engine.call(p.load(table + 12), [at], activeEffect);
     },
     expectRaster = (redColumns) => {
       equal(raster.length, 1, 'exactly one original upload');
@@ -363,7 +388,98 @@ try {
     await engine.call(p.load(wipeVtable), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original destructor releases actor');
     equal(p.allocations.has(finalWork), false, 'original destructor releases work bitmap');
-    for (const { wrapper, bitmap } of sources) {
+    const wrongSize = await makeBitmap(null, [width + 1, height, 4]),
+      wrongBpp = await makeBitmap(null, [width, height, 3]),
+      diagnostics = [],
+      log = p.beforeInstruction(
+        sdk ? 0x4a82f0 : 0x5cac90,
+        'observe original Fade validation',
+        () => {
+          const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+          diagnostics.push(p.string(p.load(sp + 4)));
+        },
+      );
+    try {
+      for (const kind of [26, 27]) {
+        activeEffect = await engine.call(factory, [kind, name, out + 4], parent);
+        nativeID = p.load(out + 4);
+        const fade = kind === 27,
+          size = fade ? 176 : 200,
+          pair = (first, second) => {
+            p.write(replacement, new Uint8Array(24).fill(0xa5));
+            p.store(replacement + 4, first.wrapper);
+            p.store(replacement + 16, second.wrapper);
+          },
+          configure = (first, second) => {
+            const params = [
+              4,
+              first.wrapper,
+              0,
+              0,
+              second.wrapper,
+              0,
+              0,
+              ...(fade ? [4, 3, width, height] : [first.wrapper, 4, 3, 0, 0, 0, 0]),
+            ];
+            params.forEach((word, i) => p.store(source + 4 * i, word));
+            return callWipe(0xc4, 112);
+          },
+          expectColor = (color) => {
+            equal(raster.length, 1, 'one original replacement frame is uploaded');
+            equal(
+              raster.pop().pixels.flat(),
+              new Array(width * height).fill(color),
+              'all original replacement pixels',
+            );
+          };
+        await configure(sources[0], sources[1]);
+        await callWipe(0xc5);
+        await frame(21);
+        expectColor(fade ? 0xffbf003f : previous);
+        equal(await callWipe(0xc8), { control: 1, value: 1 }, 'replacement target is active');
+        pair(sources[1], sources[0]);
+        const before = p.read(activeEffect, size),
+          changed = new DataView(before.buffer),
+          beforeInput = p.read(replacement, 24);
+        changed.setUint32(112, sources[1].wrapper, true);
+        changed.setUint32(124, sources[0].wrapper, true);
+        equal(await callWipe(0xca, 176), { control: 2 }, 'original CA replacement result');
+        equal(p.read(activeEffect, size), before, 'only the two borrowed pointers change');
+        equal(p.read(replacement, 24), beforeInput, 'CA preserves all packet bytes and canary');
+        equal(diagnostics.length, 0, 'compatible source replacement has no diagnostic');
+        await frame(22);
+        expectColor(fade ? 0xff7f007f : next);
+        await frame(23);
+        expectColor(fade ? 0xffbf003f : 0xff7f007f);
+        await frame(24);
+        expectColor(previous);
+        equal(
+          await callWipe(0xc8),
+          { control: 1, value: 0 },
+          'original deadline remains unchanged',
+        );
+        for (const candidate of [wrongSize, wrongBpp]) {
+          pair(candidate, sources[0]);
+          const count = diagnostics.length;
+          await callWipe(0xca, 176);
+          equal(p.load(activeEffect + 112), candidate.wrapper, 'replacement pointer is retained');
+          equal(diagnostics.length - count, Number(fade), 'Fade validates source size and depth');
+          if (fade) assert.match(diagnostics.at(-1), /Task_Eff2D_Fade/);
+        }
+        diagnostics.length = 0;
+        const work = p.load(activeEffect + (fade ? 152 : 164));
+        await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
+        equal(
+          p.allocations.has(activeEffect),
+          false,
+          'original destructor releases replaced actor',
+        );
+        equal(p.allocations.has(work), false, 'original destructor releases the same work bitmap');
+      }
+    } finally {
+      log();
+    }
+    for (const { wrapper, bitmap } of [...sources, wrongSize, wrongBpp]) {
       equal(p.load(wrapper), bitmap, 'original receiver borrows caller wrappers');
       equal(p.allocations.has(bitmap), true, 'actor destruction preserves caller bitmap');
       await engine.call(bitmapRelease, [], bitmap);
@@ -384,9 +500,9 @@ try {
         wrapperChecks,
         receiverChecks,
         wrapperBoundary:
-          'Original five GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
+          'Original six GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factory, task receiver, per-frame wipe draw and destructors. Authored caller, bitmaps and view; upload captured before device.',
+          'Original factories, Wipe1/Fade/Wipe2 receivers, per-frame bitmap draws and destructors. Authored caller, bitmaps and view; upload captured before device.',
       },
       null,
       2,
