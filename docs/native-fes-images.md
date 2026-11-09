@@ -87,6 +87,11 @@ This keeps the FES registration source authoritative and lets the original
 handlers resolve the variant and load the image. Authored tests distinguish
 unfiltered and seen-only selection by exact colored pixels, check that a miss
 preserves the image, and restore the drawn surface in a fresh World.
+The same authored gallery opens an all-frame HG3 in its animation IMAGE,
+loads an ANM, and compares the composed pixels on successive frames after a
+fresh restore. Both original drivers choose an existing static bitmap before
+their all-frame source branch. The fixture gives the animated viewer its own
+IMAGE so the original all-frame path is the one under test.
 
 DIFIMAGE's original `refex` handler accepts the same real 64-byte image owner.
 Its original frame driver sends a retained kind-3 source to the drawing task,

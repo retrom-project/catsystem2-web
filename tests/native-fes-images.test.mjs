@@ -1423,13 +1423,15 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
   test(
-    `${profile} original gallery IMAGE selects a seen CG and restores its exact drawn pixels`,
+    `${profile} original gallery IMAGE restores its selected still and animated CG pixels`,
     { skip: !process.env[variable] },
     async () => {
       const source = `#DEFINE
 IMAGE picture
+IMAGE animated
 #OBJECT POS PRI DISP
 picture 8,6 20 1
+animated 8,6 30 0
 #START
 cgreg_init gallery.dat 0x50 authored.dat
 picture loadlist2 0 0 0 0
@@ -1439,8 +1441,16 @@ next WAIT
 picture loadlist 0 record 0 0
 next WAIT
 #MISSING
-picture loadlist2 0 0 1 0
+picture loadlist2 0 0 2 0
 next WAIT
+#ANIMATE
+picture disp 0
+animated loadlist2 0 0 1 -1
+animated setanm authored-animation
+animated anm on
+animated disp 1
+next PLAYING
+#PLAYING
 `,
         seen = new CGRegistry(),
         data = new NativeGlobalFile(),
@@ -1448,10 +1458,11 @@ next WAIT
         green = Uint8Array.of(6, 173, 19, 255),
         image = (rgba) => hg3(2, 2, Uint8Array.from([...rgba, ...rgba, ...rgba, ...rgba]));
       seen.registerReference('seen', true);
+      seen.registerReference('authored', true);
       data.write(0x50, seen.write());
       const saved = await data.file(),
         files = {
-          'authored.dat': cgList('record', ['unseen', 'seen']),
+          'authored.dat': cgList('record', ['unseen', 'seen', 'authored']),
           'unseen.hg3': image(red),
           'seen.hg3': image(green),
         },
@@ -1462,7 +1473,7 @@ next WAIT
         exe = new Uint8Array(await readFile(process.env[variable])),
         make = () => fixture(profile, exe, 'hg3', source, { files, storage }),
         first = await make();
-      let fresh;
+      let fresh, animated;
       try {
         const { id, surface, task } = await start(first);
         const render = async (world) => {
@@ -1492,7 +1503,22 @@ next WAIT
           unfiltered = await jump(fresh, restored, 'UNSEEN');
         assert.deepEqual(unfiltered, expectedFrame(red));
         assert.deepEqual(await render(first), expected);
+        await jump(fresh, restored, 'ANIMATE');
+        for (let frame = 1; frame <= 3; frame++) await fresh.objects.drawTick(frame);
+        assert.deepEqual(await pixel(fresh, surface, 30), [60, 0, 150, 255]);
+        assert.equal(entry(fresh, surface, 30).alpha, 128);
+        const animationStart = await render(fresh);
+        animated = await make();
+        await animated.restore(fresh.snapshot());
+        assert.deepEqual(await render(animated), animationStart);
+        for (let frame = 4; frame <= 7; frame++) {
+          for (const world of [fresh, animated]) await world.objects.drawTick(frame);
+          assert.deepEqual(await render(animated), await render(fresh));
+        }
+        assert.notDeepEqual(await render(animated), animationStart);
+        assert.equal(restored.unsupportedCommands.size, 0);
       } finally {
+        await animated?.close();
         await fresh?.close();
         await first.close();
       }
