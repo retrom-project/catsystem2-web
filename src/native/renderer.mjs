@@ -45,12 +45,14 @@ export class NativeRenderer {
     if (!this.layout) throw new Error('Native renderer requires a reviewed engine image');
     if (engine.refs.renderer) throw new Error('Native renderer already has an owner');
     engine.refs.renderer = { initialized: false, viewStarted: false, caps: 0 };
-    const view = world.graphics.view;
+    const view = world.graphics.view,
+      stage = world.stageRenderer;
     this.d3d = new EmoteD3D9(this.process, {
       width: view.clientWidth,
       height: view.clientHeight,
       context: world.graphics.d3dContext,
       recordCommands: false,
+      onPresent: stage && ((request) => stage.presentNative(request)),
     });
     const gpu = world.getNativeGPU?.();
     if (gpu) this.d3d.attachGPU(gpu);

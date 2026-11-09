@@ -222,6 +222,11 @@ checkpoint. The virtual millisecond clock supplies the reported resolution.
 The supported period range and invalid-argument results match the Wine 8
 reference. [Multimedia timers](https://learn.microsoft.com/en-us/windows/win32/api/timeapi/).
 
+The native Direct3D device presents its backbuffer through the shared
+browser stage. The original view can present directly, and the stage
+can observe the same call when it draws screen effects.
+[IDirect3DDevice9::Present](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-present).
+
 Window and thread timers use the same clock as the emulated engine.
 Retrieval generates a due `WM_TIMER` after checking for matching queued
 messages. A nonremoving peek leaves the generated message available even

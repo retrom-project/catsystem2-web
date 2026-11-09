@@ -69,7 +69,6 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     const platform = await world.getNativeFeature('graphics-platform'),
       engine = world.nativeEngine,
       p = engine.process,
-      renderer = await world.getNativeFeature('renderer'),
       nativeID = tasks[0].record.nativeID,
       descriptor = () => engine.call(raw.descriptor, [nativeID], platform.refs.manager);
     checks.scopedTasks =
@@ -80,16 +79,13 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     checks.queryBeforeCreate = equal(await modelVector(tasks[1], 61), [0, 0, 100]);
     // No host graph renderer has been attached yet. This is the full original
     // view -> GraphManager -> D3D -> Present chain, not a JS geometry oracle.
-    const gpu = world.getNativeGPU(),
-      previousPresent = renderer.d3d.onPresent;
+    const gpu = world.getNativeGPU();
     gpu.beginFrame(0xff000000, { preserve: true });
-    renderer.d3d.onPresent = (request) => world.stageRenderer.presentNative(request);
     try {
       platform.sync();
       await engine.call(raw.changed, [0], platform.refs.manager);
       await engine.call(raw.render, [], platform.refs.view);
     } finally {
-      renderer.d3d.onPresent = previousPresent;
       gpu.endNativeFrame();
     }
     const original = world.stageRenderer.renderer.ctx.getImageData(0, 0, 16, 16).data;
