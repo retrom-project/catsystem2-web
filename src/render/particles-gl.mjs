@@ -2,6 +2,7 @@
 import { PARTICLE_BLEND_FACTORS } from '../ppi/abi.mjs';
 import { bitsFloat } from '../kcs/vm.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
+import { appendNativeLinePixels } from './native-lines.mjs';
 const vertexSource = `#version 300 es
 precision highp float;
 layout(location=0) in vec4 position;
@@ -945,10 +946,13 @@ export class ParticlesGL {
       data[at + 1] = v.y;
       data[at + 2] = v.z;
       data[at + 3] = v.w;
-      data[at + 4] = ((v.color >>> 16) & 255) / 255;
-      data[at + 5] = ((v.color >>> 8) & 255) / 255;
-      data[at + 6] = (v.color & 255) / 255;
-      data[at + 7] = (v.color >>> 24) / 255;
+      if (v.diffuse) data.set(v.diffuse, at + 4);
+      else {
+        data[at + 4] = ((v.color >>> 16) & 255) / 255;
+        data[at + 5] = ((v.color >>> 8) & 255) / 255;
+        data[at + 6] = (v.color & 255) / 255;
+        data[at + 7] = (v.color >>> 24) / 255;
+      }
       data[at + 8] = v.u;
       data[at + 9] = v.v;
     }
@@ -1052,6 +1056,7 @@ export class ParticlesGL {
       force = false,
       scissor,
       opaqueTarget = this.frameOpaqueTarget ?? false,
+      lineViewport = null,
     } = {},
   ) {
     if (!this.drawing) throw new Error('beginFrame must precede particle drawGeometry');
@@ -1299,6 +1304,57 @@ export class ParticlesGL {
           Number.isFinite(v.w) &&
           v.w !== 0,
       );
+    const antialiasedLine = (a, b) => {
+      const length = Math.hypot(b.x - a.x, b.y - a.y);
+      if (!length) return;
+      const dx = (b.x - a.x) / length,
+        dy = (b.y - a.y) / length;
+      gl.uniform4f(this.uniform.lineSegment, a.x, a.y, b.x, b.y);
+      submit(gl.TRIANGLE_STRIP, [
+        { ...a, x: a.x - dx * 0.5 + dy, y: a.y - dy * 0.5 - dx },
+        { ...b, x: b.x + dx * 0.5 + dy, y: b.y + dy * 0.5 - dx },
+        { ...a, x: a.x - dx * 0.5 - dy, y: a.y - dy * 0.5 + dx },
+        { ...b, x: b.x + dx * 0.5 - dy, y: b.y + dy * 0.5 + dx },
+      ]);
+    };
+    if (lineViewport) {
+      gl.disable(gl.CULL_FACE);
+      gl.disable(gl.POLYGON_OFFSET_FILL);
+      const flat = s.get(9) === 1,
+        [x, y, width, height] = lineViewport,
+        bounds = [
+          Math.max(0, x, s.get(174) ? rectangle[0] : 0),
+          Math.max(0, y, s.get(174) ? rectangle[1] : 0),
+          Math.min(this.target.width, x + width, s.get(174) ? rectangle[2] : Infinity),
+          Math.min(this.target.height, y + height, s.get(174) ? rectangle[3] : Infinity),
+        ];
+      if (bounds[0] >= bounds[2] || bounds[1] >= bounds[3]) return;
+      if (s.get(176)) {
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(bounds[0], bounds[1], bounds[2] - bounds[0], bounds[3] - bounds[1]);
+        gl.uniform1i(this.uniform.lineAntialias, 1);
+        for (const { vertices } of geometry) {
+          if (!valid(vertices)) continue;
+          const [a, b] = vertices;
+          antialiasedLine(a, flat ? { ...b, color: a.color } : b);
+        }
+        gl.uniform1i(this.uniform.lineAntialias, 0);
+      } else {
+        const pixels = [],
+          separate = s.get(194);
+        for (const { vertices } of geometry) {
+          if (!valid(vertices)) continue;
+          const [a, b] = vertices;
+          appendNativeLinePixels(pixels, a, b, flat, bounds);
+          if (pixels.length && (separate || pixels.length >= 65536)) {
+            submit(gl.POINTS, pixels);
+            pixels.length = 0;
+          }
+        }
+        if (pixels.length) submit(gl.POINTS, pixels);
+      }
+      return;
+    }
     // Within one draw, solid Gouraud triangles share all device state. A
     // triangle list retains their primitive order, winding, blending and
     // depth/stencil effects while avoiding a separate upload per triangle.
@@ -1348,19 +1404,7 @@ export class ParticlesGL {
             [b, c],
             [c, a],
           ])) {
-            const a = particle.vertices[ia],
-              b = particle.vertices[ib],
-              length = Math.hypot(b.x - a.x, b.y - a.y);
-            if (!length) continue;
-            const dx = (b.x - a.x) / length,
-              dy = (b.y - a.y) / length;
-            gl.uniform4f(this.uniform.lineSegment, a.x, a.y, b.x, b.y);
-            submit(gl.TRIANGLE_STRIP, [
-              { ...a, x: a.x - dx * 0.5 + dy, y: a.y - dy * 0.5 - dx },
-              { ...b, x: b.x + dx * 0.5 + dy, y: b.y + dy * 0.5 - dx },
-              { ...a, x: a.x - dx * 0.5 - dy, y: a.y - dy * 0.5 + dx },
-              { ...b, x: b.x + dx * 0.5 - dy, y: b.y + dy * 0.5 + dx },
-            ]);
+            antialiasedLine(particle.vertices[ia], particle.vertices[ib]);
           }
           gl.uniform1i(this.uniform.lineAntialias, 0);
         } else

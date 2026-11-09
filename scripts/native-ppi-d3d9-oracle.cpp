@@ -38,6 +38,8 @@ void input(void* data, U length) {
 }
 U word() { U value; input(&value, 4); return value; }
 struct Vertex { float x, y, z, w; U color; float u, v; };
+struct LineVertex { float x, y, z, w; U color; };
+struct Viewport { U x, y, width, height; float minZ, maxZ; };
 struct Present {
   U width, height, format, count, mstype, msquality, swap;
   void* window;
@@ -61,13 +63,19 @@ extern "C" void start() {
   Present pp = {8, 8, 21, 1, 0, 0, 1, window, 1, 1, 75, 1, 0, 0x80000000};
   void* device = 0;
   check(invoke<U>(d3d, 16, (U)0, (U)1, window, (U)0x22, &pp, &device));
-  check(invoke<U>(device, 89, (U)324)); // XYZRHW | DIFFUSE | TEX1.
-  check(invoke<U>(device, 67, (U)0, (U)4, (U)4)); // texture alpha * diffuse alpha.
   U cases = word(), written;
+  bool lineCases = (cases >> 31) != 0;
+  cases &= 0x7fffffff;
+  check(invoke<U>(device, 89, lineCases ? (U)68 : (U)324)); // XYZRHW | DIFFUSE, optional TEX1.
+  check(invoke<U>(device, 67, (U)0, (U)4, (U)4)); // texture alpha * diffuse alpha.
   check(invoke<U>(device, 7, deviceCaps));
   WriteFile(GetStdHandle((U)-11), deviceCaps, sizeof(deviceCaps), &written, 0);
   for (U index = 0; index < cases; index++) {
     U clear = word(), draws = word();
+    if (lineCases) {
+      Viewport full = {0, 0, 8, 8, 0.f, 1.f};
+      check(invoke<U>(device, 47, &full));
+    }
     check(invoke<U>(device, 57, (U)194, (U)0));
     check(invoke<U>(device, 43, (U)0, (void*)0, (U)7, clear, 1.f, (U)0));
     check(invoke<U>(device, 41));
@@ -76,6 +84,28 @@ extern "C" void start() {
       for (U i = 0; i < states; i++) {
         U id = word(), value = word();
         check(invoke<U>(device, 57, id, value));
+      }
+      if (lineCases) {
+        Viewport view = {0, 0, 0, 0, 0.f, 1.f};
+        U scissor[4], primitive, count, length, format;
+        input(&view, 16);
+        input(scissor, sizeof(scissor));
+        check(invoke<U>(device, 47, &view));
+        check(invoke<U>(device, 75, scissor));
+        primitive = word(); count = word(); length = word(); format = word();
+        LineVertex vertices[16];
+        if (!length || length > 16) ExitProcess(13);
+        input(vertices, length * sizeof(LineVertex));
+        if (format) {
+          U minimum = word(), vertexCount = word(), indexCount = word(), indices[16];
+          if (indexCount > 16 || (format != 101 && format != 102)) ExitProcess(14);
+          input(indices, indexCount * (format == 101 ? 2 : 4));
+          check(invoke<U>(device, 84, primitive, minimum, vertexCount, count, indices,
+                          format, vertices, (U)sizeof(LineVertex)));
+        } else {
+          check(invoke<U>(device, 83, primitive, count, vertices, (U)sizeof(LineVertex)));
+        }
+        continue;
       }
       U samplers = word();
       for (U i = 0; i < samplers; i++) {

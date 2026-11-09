@@ -6,6 +6,7 @@ import base64
 import hashlib
 import json
 import os
+import random
 import struct
 from pathlib import Path
 import subprocess
@@ -142,6 +143,111 @@ def probe_bytes(cases):
     return output
 
 
+LINE_RENDER_STATES = {7: 0, 8: 3, 9: 2, 14: 1, 15: 0, 16: 0, 19: 2, 20: 1, 22: 1,
+                      23: 4, 24: 0, 25: 8, 26: 0, 27: 0, 28: 0, 52: 0, 137: 0, 140: 0,
+                      168: 15, 171: 1, 174: 0, 176: 0, 185: 0, 193: 0xffffffff, 194: 0,
+                      206: 0}
+
+
+def line_probes():
+    cases = []
+
+    def draw(coordinates, *, colors=None, rhw=None, depth=None, states=None, primitive=2,
+             viewport=None, scissor=None, index_format=0):
+        vertices = [
+            [x, y, depth[i] if depth else .5, rhw[i] if rhw else 1,
+             colors[i] if colors else 0xff4080c0]
+            for i, (x, y) in enumerate(coordinates)
+        ]
+        result = {'primitive': primitive, 'vertices': vertices,
+                  'count': len(vertices) // 2 if primitive == 2 else len(vertices) - 1}
+        if states:
+            result['states'] = list(states.items())
+        if viewport:
+            result['viewport'] = viewport
+        if scissor:
+            result['scissor'] = scissor
+        if index_format:
+            result.update({'count': 2, 'indices': [1, 3, 2, 1], 'indexFormat': index_format,
+                           'minimum': 1, 'vertexCount': len(vertices) - 1})
+        return result
+
+    def case(name, *draws, rounding=False):
+        cases.append({'name': name, 'clear': 0xff182c3e, 'draws': draws,
+                      **({'channelRounding': 1} if rounding else {})})
+
+    samples = [
+        ('horizontal', [(1, 2), (7, 2)]),
+        ('horizontal-reversed', [(7, 2), (1, 2)]),
+        ('vertical', [(2, 1), (2, 7)]),
+        ('vertical-reversed', [(2, 7), (2, 1)]),
+        ('diagonal', [(1, 1), (7, 7)]),
+        ('diagonal-reversed', [(7, 7), (1, 1)]),
+        ('opposite-diagonal', [(1, 7), (7, 1)]),
+        ('opposite-diagonal-reversed', [(7, 1), (1, 7)]),
+        ('x-major', [(1, 2), (7, 5)]),
+        ('y-major', [(2, 1), (5, 7)]),
+        ('half-row', [(1, 2.5), (7, 2.5)]),
+        ('half-column', [(2.5, 1), (2.5, 7)]),
+        ('quarter', [(1.125, 1.375), (6.625, 4.75)]),
+        ('vertical-quarter', [(2.375, -2.625), (2.375, 7.75)]),
+        ('partial', [(-4, 2), (10, 5)]),
+        ('degenerate', [(3, 3), (3, 3)]),
+        ('subpixel', [(2.1, 2.1), (2.2, 2.2)]),
+    ]
+    for name, coordinates in samples:
+        case(name, draw(coordinates))
+    blend = {19: 5, 20: 6, 27: 1}
+    case('overlap-blend', draw([(1, 3), (7, 3), (3, 1), (3, 7)],
+                              colors=[0x804080c0] * 4, states=blend), rounding=True)
+    colors = [0xffff0000, 0xff0000ff]
+    case('gouraud', draw([(1, 2), (7, 2)], colors=colors), rounding=True)
+    case('gouraud-rhw', draw([(1, 2), (7, 2)], colors=colors, rhw=[1, .25]), rounding=True)
+    case('gouraud-diagonal', draw([(1, 1), (7, 4)], colors=colors), rounding=True)
+    case('flat-shade', draw([(1, 1), (7, 4)], colors=colors, states={9: 1}))
+    case('gouraud-reversed', draw([(7, 4), (1, 1)], colors=colors), rounding=True)
+    case('depth', draw([(1, 3), (7, 3)], depth=[.2, .8], states={7: 1}),
+         draw([(1, 3), (7, 3)], colors=[0xff00ff00] * 2, depth=[.5, .5], states={7: 1}))
+    case('line-strip', draw([(1, 1), (6, 4), (1, 7), (1, 1)], primitive=3))
+    case('line-antialias', draw([(1, 1), (6, 4)], colors=[0x804080c0] * 2,
+                               states=blend | {176: 1}), rounding=True)
+    case('viewport', draw([(-1, 4), (9, 4)], viewport=[2, 1, 4, 5]))
+    case('scissor', draw([(-1, 4), (9, 4)], scissor=[2, 2, 6, 5], states={174: 1}))
+    for index_format in [101, 102]:
+        case(f'indexed-{index_format}',
+             draw([(0, 0), (1, 1), (1, 6), (6, 6)], index_format=index_format))
+    rng = random.Random(0x4c9220)
+    for index in range(96):
+        case(f'random-{index:03d}',
+             draw([(rng.randrange(-32, 161) / 16, rng.randrange(-32, 161) / 16)
+                   for _ in range(2)]))
+    return cases
+
+
+def line_probe_bytes(cases):
+    output = bytearray(struct.pack('<I', 0x80000000 | len(cases)))
+    for case in cases:
+        output += struct.pack('<II', case['clear'], len(case['draws']))
+        for draw in case['draws']:
+            states = LINE_RENDER_STATES | dict(draw.get('states', []))
+            output += struct.pack('<I', len(states))
+            for pair in states.items():
+                output += struct.pack('<II', *pair)
+            vertices = draw['vertices']
+            index_format = draw.get('indexFormat', 0)
+            output += struct.pack('<4I4i4I', *draw.get('viewport', [0, 0, 8, 8]),
+                                  *draw.get('scissor', [0, 0, 8, 8]), draw['primitive'],
+                                  draw['count'], len(vertices), index_format)
+            for vertex in vertices:
+                output += struct.pack('<ffffI', *vertex)
+            if index_format:
+                indices = draw['indices']
+                output += struct.pack('<III', draw['minimum'], draw['vertexCount'], len(indices))
+                output += struct.pack('<' + ('H' if index_format == 101 else 'I') * len(indices),
+                                      *indices)
+    return output
+
+
 def run(args, **kwargs):
     return subprocess.run([str(arg) for arg in args], check=True, capture_output=True, timeout=45, **kwargs)
 
@@ -150,12 +256,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--emsdk', type=Path, required=True)
     parser.add_argument('--image', default=DEFAULT_IMAGE, help='Explicit immutable diagnostic Docker image ID')
-    parser.add_argument('--output', type=Path, default=Path('.local/ppi-audit/d3d9'))
+    parser.add_argument('--output', type=Path)
+    parser.add_argument('--lines', action='store_true', help='Probe untextured XYZRHW line draws')
     args = parser.parse_args()
     image = run(['docker', 'image', 'inspect', args.image, '--format', '{{.Id}}']).stdout.decode().strip()
     if image != args.image:
         raise ValueError('Pass the immutable SHA-256 image ID, not a mutable tag')
-    output = args.output.resolve()
+    output = (args.output or Path('.local/ppi-audit/d3d9-lines' if args.lines else '.local/ppi-audit/d3d9')).resolve()
     output.mkdir(parents=True, exist_ok=True)
     compiler = args.emsdk.resolve() / 'upstream/bin'
     source = Path(__file__).with_suffix('.cpp')
@@ -164,8 +271,8 @@ def main():
     run([compiler / 'clang++', '--target=i686-pc-windows-msvc', '-O1', '-fno-stack-protector', '-fno-exceptions', '-fno-rtti', '-fno-builtin', '-c', source, '-o', output / 'oracle.obj'])
     run([compiler / 'lld', '-flavor', 'link', '/entry:start', '/subsystem:console', '/nodefaultlib', '/machine:x86', '/base:0x400000',
          '/dynamicbase:no', '/fixed', f'/out:{output / "oracle.exe"}', output / 'oracle.obj', output / 'kernel32.lib'])
-    cases = probes()
-    inputs = probe_bytes(cases)
+    cases = line_probes() if args.lines else probes()
+    inputs = line_probe_bytes(cases) if args.lines else probe_bytes(cases)
     (output / 'probe.bin').write_bytes(inputs)
     container = f'catsystem2-d3d9-oracle-{os.getpid()}'
     try:
@@ -175,7 +282,7 @@ def main():
     except subprocess.TimeoutExpired:
         subprocess.run(['docker', 'stop', '--timeout', '1', container], capture_output=True)
         raise
-    expected = len(CASES) * 256 + 512
+    expected = len(cases) * 256 + 512
     if len(result.stdout) != expected:
         raise ValueError(f'Expected {expected} BGRA bytes, received {len(result.stdout)}')
     caps, pixels = result.stdout[:512], result.stdout[512:]
@@ -185,12 +292,18 @@ def main():
               'harnessSHA256': hashlib.sha256(source.read_bytes()).hexdigest(),
               'deviceCaps': {'rasterCaps': struct.unpack_from('<I', caps, 36)[0], 'textureFilterCaps': struct.unpack_from('<I', caps, 64)[0],
                              'maxAnisotropy': struct.unpack_from('<I', caps, 108)[0]}, 'cases': []}
-    for index, name in enumerate(CASES):
+    if args.lines:
+        golden['kind'] = 'Authored D3D9 untextured XYZRHW lines'
+        golden['lineRenderStates'] = list(LINE_RENDER_STATES.items())
+    for index, case in enumerate(cases):
+        name = case['name']
         bgra = pixels[index * 256:(index + 1) * 256]
         rgba = bytearray(bgra)
         for at in range(0, 256, 4):
             rgba[at], rgba[at + 2] = bgra[at + 2], bgra[at]
-        row = {'name': name, 'probe': cases[index], 'rgbaBase64': base64.b64encode(rgba).decode(), 'rgbaSHA256': hashlib.sha256(rgba).hexdigest()}
+        row = {'name': name, 'probe': case, 'rgbaBase64': base64.b64encode(rgba).decode(), 'rgbaSHA256': hashlib.sha256(rgba).hexdigest()}
+        if case.get('channelRounding'):
+            row['channelRounding'] = case['channelRounding']
         if name == 'anisotropic-minify':
             row['hardwareDependent'] = 'Device-specific anisotropic kernel; compare footprint energy rather than bitwise driver pixels.'
         if name.startswith('wireframe'):
@@ -199,7 +312,7 @@ def main():
     (output / 'golden.json').write_text(json.dumps(golden, indent=2) + '\n')
     (output / 'source.json').write_text(json.dumps({'image': image, 'harnessSHA256': hashlib.sha256(source.read_bytes()).hexdigest(),
                                                  'emsdk': '3.1.74', 'source': source.name}, indent=2) + '\n')
-    print(json.dumps({'cases': len(CASES), 'output': str(output / 'golden.json')}))
+    print(json.dumps({'cases': len(cases), 'output': str(output / 'golden.json')}))
 
 
 if __name__ == '__main__':

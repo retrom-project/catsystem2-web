@@ -1059,3 +1059,171 @@ test('original LPB installation consumes actual PCM media and preserves its nati
 }) => {
   await verifyM2Wrapper(page, 'psb', true);
 });
+
+test('native D3D9 line lists and strips match pinned device coverage and restore the GPU', async ({
+  page,
+}) => {
+  const golden = JSON.parse(
+    await readFile(new URL('../fixtures/native-d3d9-lines-golden.json', import.meta.url)),
+  );
+  await page.goto('/');
+  const result = await page.evaluate(async (golden) => {
+    const [{ loadUnicorn }, { PE32Process }, { EmoteD3D9 }, { ParticlesGL }] = await Promise.all([
+        import('/src/ppi/backend.mjs'),
+        import('/src/ppi/pe32.mjs'),
+        import('/src/emote/native-d3d.mjs'),
+        import('/src/render/particles-gl.mjs'),
+      ]),
+      unicorn = await loadUnicorn(),
+      p = new PE32Process(unicorn),
+      second = new PE32Process(unicorn),
+      gpu = new ParticlesGL(8, 8),
+      freshGPU = new ParticlesGL(8, 8),
+      d = new EmoteD3D9(p, { width: 8, height: 8 }).attachGPU(gpu),
+      fresh = new EmoteD3D9(second, { width: 8, height: 8 }).attachGPU(freshGPU),
+      scratch = p.allocate(64, true),
+      vertices = p.allocate(16 * 20, true),
+      indices = p.allocate(16 * 4, true),
+      full = [0, 0, 8, 8],
+      same = (a, b) => a.length === b.length && a.every((n, i) => n === b[i]),
+      invoke = (p, object, slot, args = []) => {
+        const value = p.call(p.load(p.load(object) + slot * 4), [object, ...args]);
+        if (value) throw new Error('Native D3D9 slot ' + slot + ' returned ' + value.toString(16));
+      },
+      device = (slot, args) => invoke(p, d.device, slot, args),
+      words = (values) => values.forEach((value, i) => p.store(scratch + 4 * i, value)),
+      viewport = (rect) => {
+        words([...rect, 0, 0x3f800000]);
+        device(47, [scratch]);
+      };
+    try {
+      words([8, 8, 21, 1, 0, 0, 1, 1, 1, 1, 75, 1, 0, 0x80000000]);
+      invoke(p, d.d3d, 16, [0, 1, 1, 0x22, scratch, scratch + 56]);
+      device(89, [68]);
+      device(67, [0, 4, 4]);
+      const failures = [];
+      let comparisons = 0,
+        exact = 0,
+        rawMatches = 0,
+        replayMatches = 0;
+      for (const { name, probe, rgbaBase64, channelRounding = 0 } of golden.cases) {
+        d.commands.length = 0;
+        viewport(full);
+        device(57, [194, 0]);
+        device(43, [0, 0, 7, probe.clear, 0x3f800000, 0]);
+        device(41);
+        for (const draw of probe.draws) {
+          for (const [id, value] of [...golden.lineRenderStates, ...(draw.states ?? [])])
+            device(57, [id, value]);
+          viewport(draw.viewport ?? full);
+          words(draw.scissor ?? full);
+          device(75, [scratch]);
+          const bytes = new Uint8Array(draw.vertices.length * 20),
+            data = new DataView(bytes.buffer),
+            indexed = Boolean(draw.indexFormat),
+            slot = indexed ? 84 : 83;
+          draw.vertices.forEach(([x, y, z, w, color], i) => {
+            [x, y, z, w].forEach((n, j) => data.setFloat32(i * 20 + 4 * j, n, true));
+            data.setUint32(i * 20 + 16, color, true);
+          });
+          p.write(vertices, bytes);
+          const indexBytes = indexed
+            ? new Uint8Array(
+                (draw.indexFormat === 101
+                  ? Uint16Array.from(draw.indices)
+                  : Uint32Array.from(draw.indices)
+                ).buffer,
+              )
+            : null;
+          if (indexBytes) p.write(indices, indexBytes);
+          d.onDrawRaw = (raw) => {
+            if (
+              raw.slot !== slot ||
+              raw.type !== draw.primitive ||
+              raw.count !== draw.count ||
+              raw.fvf !== 68 ||
+              raw.stride !== 20 ||
+              !same(raw.bytes, bytes) ||
+              (indexed && !same(raw.indices, indexBytes))
+            )
+              throw new Error('The native line payload changed in ' + name);
+            rawMatches++;
+          };
+          device(
+            slot,
+            indexed
+              ? [
+                  draw.primitive,
+                  draw.minimum,
+                  draw.vertexCount,
+                  draw.count,
+                  indices,
+                  draw.indexFormat,
+                  vertices,
+                  20,
+                ]
+              : [draw.primitive, draw.count, vertices, 20],
+          );
+          if (!same(p.read(vertices, bytes.length), bytes))
+            throw new Error('The native line draw wrote its source vertices');
+        }
+        device(42);
+        const actual = gpu.pixels(d.gpuTarget(d.backbuffer)),
+          expected = Uint8Array.from(atob(rgbaBase64), (byte) => byte.charCodeAt(0)),
+          background = [probe.clear >>> 16, probe.clear >>> 8, probe.clear, probe.clear >>> 24].map(
+            (word) => word & 255,
+          );
+        let maximum = 0,
+          coverage = true;
+        for (let i = 0; i < actual.length; i += 4) {
+          const a = actual.subarray(i, i + 4),
+            b = expected.subarray(i, i + 4);
+          if (same(a, background) !== same(b, background)) coverage = false;
+          for (let j = 0; j < 4; j++) maximum = Math.max(maximum, Math.abs(a[j] - b[j]));
+        }
+        if (maximum > channelRounding || !coverage) failures.push({ name, maximum, coverage });
+        if (name === 'viewport' || name === 'line-strip') {
+          freshGPU.beginFrame();
+          d.replay(freshGPU);
+          if (same(freshGPU.pixels(), actual)) replayMatches++;
+          freshGPU.endNativeFrame();
+        }
+        comparisons += actual.length;
+        if (!maximum) exact++;
+      }
+      d.onDrawRaw = undefined;
+      const before = gpu.pixels(d.gpuTarget(d.backbuffer));
+      second.restore(p.snapshot());
+      fresh.restore(d.snapshot());
+      const restored = same(freshGPU.pixels(fresh.gpuTarget(fresh.backbuffer)), before);
+      invoke(second, fresh.device, 43, [0, 0, 1, 0xff000000, 0x3f800000, 0]);
+      return {
+        failures,
+        comparisons,
+        rawMatches,
+        replayMatches,
+        exact,
+        restored,
+        independent: same(gpu.pixels(d.gpuTarget(d.backbuffer)), before),
+        errors: [gpu.gl.getError(), freshGPU.gl.getError()],
+      };
+    } finally {
+      fresh.close();
+      d.close();
+      second.close();
+      p.close();
+      freshGPU.close();
+      gpu.close();
+    }
+  }, golden);
+  expect(result.failures).toEqual([]);
+  expect(result.comparisons).toBe(126 * 8 * 8 * 4);
+  expect(result.rawMatches).toBe(127);
+  expect(result.replayMatches).toBe(2);
+  expect(result.exact).toBeGreaterThanOrEqual(
+    golden.cases.filter((row) => !row.channelRounding).length,
+  );
+  expect(result.restored).toBe(true);
+  expect(result.independent).toBe(true);
+  expect(result.errors).toEqual([0, 0]);
+});

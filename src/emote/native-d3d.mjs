@@ -1399,9 +1399,10 @@ export class EmoteD3D9 {
             ? { width: source.width, height: source.height, nativeTarget: source }
             : this.frame(command.texture);
         gpu.drawGeometry(
-          command.triangles.map((vertices) => ({ vertices })),
+          (command.lines ?? command.triangles).map((vertices) => ({ vertices })),
           frame,
           {
+            lineViewport: command.type === 'lines' ? command.viewport : null,
             state: command.state,
             scissor: command.scissor,
             opaqueTarget: this.surfaceData(command.target).format === 22,
@@ -1422,9 +1423,14 @@ export class EmoteD3D9 {
   draw(type, count, address, stride, indices, indexed) {
     const p = this.process,
       n = this.vertexCount(type, count),
-      position = this.fvf & 14;
+      position = this.fvf & 14,
+      line = type === 2 || type === 3;
     if (![2, 4].includes(position) || this.fvf & ~0x146)
       throw new Error(`Unsupported E-mote fixed-function vertex format 0x${this.fvf.toString(16)}`);
+    if (line && (position !== 4 || this.fvf & 0xf00))
+      throw new Error(
+        'Native D3D lines require pretransformed vertices without texture coordinates',
+      );
     const rawVertices = p.read(
         address,
         (indexed ? indexed.minimum + indexed.vertices : n) * stride,
@@ -1470,8 +1476,11 @@ export class EmoteD3D9 {
         v = this.fvf & 0xf00 ? b.getFloat32(at + 4, true) : 0;
       return { x, y, z, w, color, u, v };
     });
-    const triangles = [];
-    if (type === 4) for (let i = 0; i < n; i += 3) triangles.push(vertices.slice(i, i + 3));
+    const lines = [],
+      triangles = [];
+    if (type === 2) for (let i = 0; i < n; i += 2) lines.push(vertices.slice(i, i + 2));
+    else if (type === 3) for (let i = 0; i < n - 1; i++) lines.push(vertices.slice(i, i + 2));
+    else if (type === 4) for (let i = 0; i < n; i += 3) triangles.push(vertices.slice(i, i + 3));
     else if (type === 5)
       for (let i = 0; i < n - 2; i++)
         triangles.push(
@@ -1479,10 +1488,9 @@ export class EmoteD3D9 {
         );
     else if (type === 6)
       for (let i = 1; i < n - 1; i++) triangles.push([vertices[0], vertices[i], vertices[i + 1]]);
-    else throw new Error(`E-mote raster primitive ${type} requires its line/point backend`);
+    else throw new Error(`E-mote raster primitive ${type} requires its point backend`);
     this.command({
-      type: 'triangles',
-      triangles,
+      ...(line ? { type: 'lines', lines } : { type: 'triangles', triangles }),
       texture: this.textures.get(0) ?? 0,
       state: {
         states:
@@ -1567,9 +1575,13 @@ export class EmoteD3D9 {
         continue;
       }
       gpu.drawGeometry(
-        command.triangles.map((vertices) => ({ vertices })),
+        (command.lines ?? command.triangles).map((vertices) => ({ vertices })),
         this.frame(command.texture),
-        { state: command.state, scissor: command.scissor },
+        {
+          lineViewport: command.type === 'lines' ? command.viewport : null,
+          state: command.state,
+          scissor: command.scissor,
+        },
       );
     }
   }
