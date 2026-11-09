@@ -23,12 +23,14 @@ for (const [profile, variable, suffix] of [
     `${profile} runs the original kcWindow event, message, and quit loop`,
     { skip: !process.env[variable] },
     async () => {
+      let clock = 0;
       const engine = await NativeEngineProcess.open({
           profile,
           bytes: new Uint8Array(await readFile(process.env[variable])),
           bootstrapOwner: {},
           configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
           readFile: async () => null,
+          now: () => clock,
         }),
         p = engine.process,
         { messageQueue, windowViews, events, calls } = engine.kernel,
@@ -143,10 +145,24 @@ for (const [profile, variable, suffix] of [
             unhookCallback();
           }
 
+          const timers = [],
+            tick = p.trap('authored original window timer', 4, (args) => timers.push(args)),
+            timer = await engine.call(user32('SetTimer'), [0, 0, 25, tick]);
+          assert(timer > 0);
+          const waitsBeforeTimer = count('MsgWaitForMultipleObjects');
+          clock = 24;
+          assert.equal(await pump(), null);
+          assert.equal(count('MsgWaitForMultipleObjects'), waitsBeforeTimer);
+          clock = 25;
+          assert.equal(await pump(), null);
+          assert.deepEqual(timers, [[0, 0x113, timer, 25]]);
+          assert.equal(count('MsgWaitForMultipleObjects'), waitsBeforeTimer + 1);
+          assert.equal(await engine.call(user32('KillTimer'), [0, timer]), 1);
+
           await engine.call(user32('PostQuitMessage'), [-29]);
           assert.equal(await pump(), -29);
-          assert.equal(count('GetMessage' + suffix), 10);
-          assert.equal(count('DispatchMessage' + suffix), 9);
+          assert.equal(count('GetMessage' + suffix), 11);
+          assert.equal(count('DispatchMessage' + suffix), 10);
           assert.equal(messageQueue.pending, false);
           assert.equal(messageQueue.dispatchToHost, undefined);
         } finally {

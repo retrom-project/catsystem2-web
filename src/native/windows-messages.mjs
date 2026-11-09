@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The application and its virtual windows share one Win32 thread queue.
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
+import { NativeWindowsTimers, QS_TIMER, WM_TIMER } from './windows-timers.mjs';
 
 const WM_QUIT = 0x12;
 const INVALID_WINDOW = 1400;
@@ -28,6 +29,7 @@ const validMessage = (entry) =>
   ['handle', 'message', 'wParam', 'lParam', 'time', 'x', 'y'].every((name) =>
     isWord(entry[name]),
   ) &&
+  (entry.timer === undefined || (entry.timer === true && entry.message === WM_TIMER)) &&
   validKeyboard(entry.keyboard);
 
 export class NativeWindowsMessages {
@@ -40,6 +42,9 @@ export class NativeWindowsMessages {
     this.changed = 0;
     this.inputWaits = 0;
     this.closing = false;
+    this.timers = new NativeWindowsTimers(this);
+    this.timerWake = null;
+    this.timerPackets = 0;
     const register = (name, count, fn) => kernel.register('USER32.dll', name, { count, fn });
     for (const suffix of ['A', 'W']) {
       register('PostMessage' + suffix, 4, (args) => this.post(...args));
@@ -103,18 +108,58 @@ export class NativeWindowsMessages {
     this.changed |= QS_POSTED;
     this.wake();
     this.kernel.events.wake();
+    this.scheduleTimerWake();
   }
   get pending() {
-    return this.entries.length > 0 || this.kernel.windowViews.quit !== null;
+    return this.current !== 0;
+  }
+  get current() {
+    const posted = this.entries.length > this.timerPackets || this.kernel.windowViews.quit !== null;
+    return (posted ? QS_POSTED : 0) | (this.timerPackets || this.timers.ready ? QS_TIMER : 0);
+  }
+  advanceTimers() {
+    if (this.timers.update()) this.changed |= QS_TIMER;
+  }
+  timersChanged() {
+    this.advanceTimers();
+    this.changed &= this.current;
+    this.scheduleTimerWake();
+  }
+  scheduleTimerWake() {
+    clearTimeout(this.timerWake);
+    this.timerWake = null;
+    if (
+      this.closing ||
+      (!this.waiters.size && !this.inputWaits) ||
+      (this.kernel.clock && !this.kernel.clock.external)
+    )
+      return;
+    const delay = this.timers.delay;
+    if (delay === Infinity) return;
+    this.timerWake = setTimeout(
+      () => {
+        this.advanceTimers();
+        this.wake();
+        this.kernel.events.wake();
+        this.scheduleTimerWake();
+      },
+      Math.max(1, delay),
+    );
   }
   dropWindow(handle) {
-    this.entries = this.entries.filter((entry) => entry.handle !== handle);
-    if (!this.pending) this.changed = 0;
+    this.entries = this.entries.filter((entry) => {
+      if (entry.handle !== handle) return true;
+      if (entry.timer) this.timerPackets--;
+      return false;
+    });
+    this.timers.dropWindow(handle);
     this.wake();
+    this.timersChanged();
   }
   status(mask) {
+    this.advanceTimers();
     const changed = this.changed & mask,
-      current = this.pending ? QS_POSTED & mask : 0;
+      current = this.current & mask;
     this.changed &= ~mask;
     return ((current << 16) | changed) >>> 0;
   }
@@ -125,14 +170,15 @@ export class NativeWindowsMessages {
     if (new Set(handles).size !== count) return this.error(INVALID_PARAMETER, WAIT_FAILED);
     const poll = () => {
       if (this.closing) return this.error(ABORTED, WAIT_FAILED);
-      const posted = Boolean(this.changed & mask);
+      this.advanceTimers();
+      const input = Boolean(this.changed & mask);
       if (all) {
-        const objects = events.poll(handles, true, posted);
+        const objects = events.poll(handles, true, input);
         if (objects === WAIT_FAILED) return objects;
-        return posted ? objects : null;
+        return input ? objects : null;
       }
       const object = events.poll(handles, false);
-      return object ?? (posted ? count : null);
+      return object ?? (input ? count : null);
     };
     const immediate = poll();
     if (immediate !== null) return immediate;
@@ -142,7 +188,11 @@ export class NativeWindowsMessages {
     const waiting = events.waitUntil(poll, timeout);
     if (typeof waiting === 'number') return waiting;
     this.inputWaits++;
-    return waiting.finally(() => this.inputWaits--);
+    this.scheduleTimerWake();
+    return waiting.finally(() => {
+      this.inputWaits--;
+      this.scheduleTimerWake();
+    });
   }
   validate(address, handle) {
     if (!address) return INVALID_PARAMETER;
@@ -154,13 +204,16 @@ export class NativeWindowsMessages {
     const views = this.kernel.windowViews,
       first = min & 0xffff,
       last = max & 0xffff,
-      index = this.entries.findIndex(
+      unfiltered = !first && !last,
+      matches = (target) =>
+        !handle ||
+        (handle === THREAD_ONLY ? !target : target === handle || views.isChild(handle, target)),
+      acceptTimer = unfiltered || (first <= WM_TIMER && WM_TIMER <= last);
+    this.advanceTimers();
+    let index = this.entries.findIndex(
         (entry) =>
-          (!handle ||
-            (handle === THREAD_ONLY
-              ? !entry.handle
-              : entry.handle === handle || views.isChild(handle, entry.handle))) &&
-          ((!first && !last) ||
+          matches(entry.handle) &&
+          (unfiltered ||
             entry.message === WM_QUIT ||
             (entry.message >= first && entry.message <= last)),
       ),
@@ -170,7 +223,15 @@ export class NativeWindowsMessages {
           : views.quit !== null
             ? this.make(0, WM_QUIT, views.quit, 0)
             : null;
-    this.changed &= ~(first || last ? QS_POSTMESSAGE : QS_POSTED);
+    if (!entry && acceptTimer && this.entries.length < MAX_POSTED) {
+      const timer = this.timers.take(matches);
+      if (timer) {
+        entry = { ...this.make(timer.handle, WM_TIMER, timer.id, timer.callback), timer: true };
+        index = this.entries.push(entry) - 1;
+        this.timerPackets++;
+      }
+    }
+    this.changed &= ~((unfiltered ? QS_POSTED : QS_POSTMESSAGE) | (acceptTimer ? QS_TIMER : 0));
     if (!entry) return null;
     const bytes = new Uint8Array(28),
       view = new DataView(bytes.buffer);
@@ -181,7 +242,8 @@ export class NativeWindowsMessages {
     if (remove) {
       if (index >= 0) this.entries.splice(index, 1);
       else views.quit = null;
-      if (!this.pending) this.changed = 0;
+      if (entry.timer) this.timerPackets--;
+      this.changed &= this.current;
     }
     this.last = entry;
     return entry;
@@ -199,9 +261,11 @@ export class NativeWindowsMessages {
     const entry = this.take(address, handle, min, max, true);
     if (entry) return Number(entry.message !== WM_QUIT);
     if (!this.process.asyncEnabled) throw new Error('A native GetMessage wait requires callAsync');
-    return new Promise((resolve, reject) =>
+    const waiting = new Promise((resolve, reject) =>
       this.waiters.add({ address, handle, min, max, resolve, reject }),
     );
+    this.scheduleTimerWake();
+    return waiting;
   }
   wake() {
     for (const waiter of this.waiters) {
@@ -250,10 +314,13 @@ export class NativeWindowsMessages {
       message = p.load(address + 4),
       w = p.load(address + 8),
       l = p.load(address + 12);
-    if (!handle) return 0;
     const views = this.kernel.windowViews;
-    if (!views.windows.has(handle)) return this.error(INVALID_WINDOW);
-    if (message === 0x113 && l) throw new Error('Native WM_TIMER callback needs its timer owner');
+    if (handle && !views.windows.has(handle)) return this.error(INVALID_WINDOW);
+    if (message === WM_TIMER && l)
+      return p
+        .callFromHost(l, [handle, message, w, this.kernel.timerDefinition.fn() >>> 0])
+        .then(() => 1);
+    if (!handle) return 0;
     return this.dispatchWindow(handle, message, w, l);
   }
   dispatchWindow(handle, message, w, l) {
@@ -263,6 +330,7 @@ export class NativeWindowsMessages {
   cancelWaits() {
     const waiting = this.waiters.size > 0 || this.inputWaits > 0;
     this.closing = true;
+    this.scheduleTimerWake();
     for (const { resolve } of this.waiters) resolve(this.error(ABORTED, 0xffffffff));
     this.waiters.clear();
     if (this.inputWaits) this.kernel.events.wake();
@@ -270,9 +338,14 @@ export class NativeWindowsMessages {
   }
   snapshot() {
     if (this.waiters.size) throw new Error('Cannot checkpoint a pending native GetMessage wait');
-    return structuredClone({ entries: this.entries, last: this.last, changed: this.changed });
+    return {
+      entries: structuredClone(this.entries),
+      last: structuredClone(this.last),
+      changed: this.changed,
+      timers: this.timers.snapshot(),
+    };
   }
-  restore({ entries, last, changed }) {
+  restore({ entries, last, changed, timers }) {
     if (
       this.waiters.size ||
       !Array.isArray(entries) ||
@@ -284,12 +357,14 @@ export class NativeWindowsMessages {
       ) ||
       (last !== null && !validMessage(last)) ||
       !isWord(changed) ||
-      changed & ~QS_POSTED ||
-      (changed && !entries.length && this.kernel.windowViews.quit === null)
+      changed & ~(QS_POSTED | QS_TIMER)
     )
       throw new Error('Invalid native window message queue checkpoint');
+    this.timers.restore(timers);
     this.entries = structuredClone(entries);
+    this.timerPackets = this.entries.filter((entry) => entry.timer).length;
     this.last = structuredClone(last);
+    if (changed & ~this.current) throw new Error('Invalid native window message status checkpoint');
     this.changed = changed;
   }
 }

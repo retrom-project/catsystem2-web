@@ -157,8 +157,8 @@ quit-code delivery through the 28-byte x86 `MSG` record.
 and [`GetMessage`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)
 share that queue. `DispatchMessage` normally invokes the registered window
 procedure and returns its result. A settled checkpoint preserves pending
-posts, queued key data and the last received message. Timer callbacks,
-modeless dialogs and system-menu keyboard handling require further coverage.
+posts, queued key data and the last received message. Modeless dialogs and
+system-menu keyboard handling require further coverage.
 
 [`MsgWaitForMultipleObjects`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-msgwaitformultipleobjects)
 waits on the same synchronization handles as the kernel and on the queue's
@@ -173,6 +173,14 @@ services for the application window can issue their own engine calls. The
 loop yields at its original epilogue before invoking those services, then
 resumes at the next message check. Fixed-binary tests verify event priority,
 dispatch to a secondary window, already queued posts and the exit code.
+
+Window and thread timers use the same clock as the emulated engine.
+Retrieval generates a due `WM_TIMER` after checking for matching queued
+messages. A nonremoving peek leaves the generated message available even
+after cancellation, while a timer cancelled before retrieval cannot
+generate a new message. Both fixed engines wake their original loops for
+timer input and dispatch the guest `TIMERPROC`. The active timers and any
+already generated messages survive a settled checkpoint. [SetTimer](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-settimer), [KillTimer and generated messages](https://devblogs.microsoft.com/oldnewthing/20141205-00/?p=43463).
 
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The

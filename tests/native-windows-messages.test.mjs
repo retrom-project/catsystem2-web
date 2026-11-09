@@ -252,6 +252,101 @@ test('queued browser key modifiers and characters survive a fresh process', asyn
   }
 });
 
+test('due window timers generate only on retrieval and survive cancellation once queued', async () => {
+  const source = await desktop(),
+    { p, kernel, call, root, child, words, peek, get, setTime } = source,
+    target = await desktop(),
+    timer = 0x113,
+    status = () => call('GetQueueStatus', 0x10);
+  try {
+    assert.equal(call('SetTimer', root, 0, 0, 0), 1);
+    setTime(58);
+    assert.equal(status(), 0);
+    assert.equal(peek(root), 0);
+    setTime(59);
+    assert.equal(status(), 0x100010);
+    assert.equal(call('PostMessageW', root, 0x4222, 7, 3), 1);
+    assert.equal(await get(), 1);
+    assert.deepEqual(words().slice(0, 4), [root, 0x4222, 7, 3]);
+    assert.equal(peek(root, timer, timer), 1);
+    assert.deepEqual(words().slice(0, 5), [root, timer, 0, 0, 59]);
+    assert.equal(call('KillTimer', root, 0), 1);
+    assert.equal(status(), 0x100000);
+    assert.equal(await get(), 1);
+    assert.deepEqual(words().slice(0, 5), [root, timer, 0, 0, 59]);
+    assert.equal(status(), 0);
+    assert.equal(call('KillTimer', root, 0), 0);
+    assert.equal(kernel.lastError, 87);
+
+    assert.equal(call('SetTimer', root, 33, 10, 0), 33);
+    assert.equal(call('SetTimer', child, 33, 20, 0), 33);
+    setTime(79);
+    assert.equal(call('KillTimer', root, 33), 1);
+    assert.equal(call('PostMessageW', child, 0x4223, 0, 0), 1);
+    assert.equal(peek(child, timer, timer), 1);
+    assert.deepEqual(words().slice(0, 5), [child, timer, 33, 0, 79]);
+    target.setTime(79);
+    target.kernel.restore(kernel.snapshot());
+    assert.equal(await target.get(), 1);
+    assert.deepEqual(target.words().slice(0, 4), [child, 0x4223, 0, 0]);
+    assert.equal(await target.get(), 1);
+    assert.deepEqual(target.words().slice(0, 5), [child, timer, 33, 0, 79]);
+    assert.equal(target.peek(), 0);
+    target.setTime(99);
+    assert.equal(target.peek(), 1);
+    assert.deepEqual(target.words().slice(0, 5), [child, timer, 33, 0, 99]);
+    assert.equal(
+      await p.callAsync(kernel.resolve({ dll: 'USER32.dll', name: 'DestroyWindow' }), [child]),
+      1,
+    );
+    assert.equal(peek(), 0);
+    assert.equal(status(), 0);
+    assert.equal(target.call('KillTimer', child, 33), 1);
+    assert.equal(target.peek(0, 0, 0, 1), 1);
+    assert.equal(target.peek(), 0);
+  } finally {
+    p.close();
+    target.p.close();
+  }
+});
+
+test(
+  'timer messages wake both waits and dispatch the original thread TIMERPROC arguments',
+  { timeout: 5000 },
+  async () => {
+    const { p, kernel, queue, call, words, peek, get, dispatch, setTime } = await desktop(),
+      seen = [],
+      callback = p.trap('authored TIMERPROC', 4, (args) => seen.push(args)),
+      timer = 0x113,
+      id = call('SetTimer', 0, 0, 10, callback);
+    try {
+      assert(id > 0);
+      assert.equal(call('SetTimer', 0, id, 20, callback), id);
+      assert.equal(peek(0xffffffff, timer, timer), 0);
+      const wait = p.callAsync(
+        kernel.resolve({ dll: 'USER32.dll', name: 'MsgWaitForMultipleObjects' }),
+        [0, 0, 0, 1000, 0x10],
+      );
+      setTime(69);
+      assert.equal(await wait, 0);
+      assert.equal(peek(0xffffffff, timer, timer, 1), 1);
+      assert.deepEqual(words().slice(0, 5), [0, timer, id, callback, 69]);
+      const next = get(0xffffffff, timer, timer);
+      setTime(89);
+      assert.equal(await next, 1);
+      assert.deepEqual(words().slice(0, 5), [0, timer, id, callback, 89]);
+      assert.equal(call('KillTimer', 0, id), 1);
+      setTime(104);
+      assert.equal(await dispatch(), 1);
+      assert.deepEqual(seen, [[0, timer, id, 104]]);
+      assert.equal(peek(), 0);
+    } finally {
+      queue.cancelWaits();
+      p.close();
+    }
+  },
+);
+
 test('message waits share event priority and preserve unread queue categories', async () => {
   const { p, kernel, queue, call, root, peek } = await desktop(),
     event = kernel.events.create(0, 0),

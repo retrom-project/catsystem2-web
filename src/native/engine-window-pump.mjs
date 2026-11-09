@@ -31,6 +31,7 @@ export async function runNativeWindowPump(engine, handle, host) {
   if (!owner || p.load(owner) !== handle || windowViews.windows.get(handle)?.userData !== owner)
     throw new Error('Original message loop requires the startup window');
   const ready = () => {
+    messageQueue.advanceTimers();
     const event = p.load(owner + 0x54);
     if (!event) return messageQueue.pending;
     return (

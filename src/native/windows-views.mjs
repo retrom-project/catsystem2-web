@@ -193,7 +193,7 @@ export class NativeWindowsViews {
     }
     if (message === 0x102 || (message === 0x100 && wParam !== 0x79)) return 0;
     // Application-defined messages have no system default action.
-    if (message >= 0x400 || [1, 2, 3, 5, 0x24, 0x82, 0x111, 0x116, 0x117].includes(message))
+    if (message >= 0x400 || [1, 2, 3, 5, 0x24, 0x82, 0x111, 0x113, 0x116, 0x117].includes(message))
       return 0;
     throw new Error(`Unreviewed native DefWindowProc message 0x${message.toString(16)}`);
   }
