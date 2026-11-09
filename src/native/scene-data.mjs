@@ -213,11 +213,19 @@ export class NativeSceneReader {
   }
 }
 
-const record = (scene, value) => ({ scene, value: value >>> 0, strings: null, extra: null });
+function record(name, value) {
+  const entry = { scene: name, value: value >>> 0, strings: null, extra: null };
+  if (name instanceof Uint8Array) {
+    entry.scene = decoder.decode(name);
+    entry.nameBytes = new Uint8Array(32);
+    entry.nameBytes.set(name);
+  }
+  return entry;
+}
 const resetName = (name) => {
-  if (encodeCP932(name).length > 31)
-    throw new Error('Native scene history name exceeds its 32-byte field');
-  return String(name);
+  const bytes = name instanceof Uint8Array ? nameBytes(name) : encodeCP932(String(name));
+  if (bytes.length > 31) throw new Error('Native scene history name exceeds its 32-byte field');
+  return name instanceof Uint8Array ? bytes : String(name);
 };
 const scanReferences = (source, callback) => {
   for (let at = 0; at < source.length; at++) {
@@ -314,13 +322,8 @@ export class NativeSceneHistory {
   }
   aliasSeen(source, destination) {
     const entry = this.findSeen(source);
-    if (entry && !this.findSeen(destination)) {
-      const name = nameBytes(destination);
-      if (name.length > 31) throw new Error('Native scene history name exceeds its 32-byte field');
-      const field = new Uint8Array(32);
-      field.set(name);
-      this.seen.push({ ...record(decoder.decode(name), entry.value), nameBytes: field });
-    }
+    if (entry && !this.findSeen(destination))
+      this.seen.push(record(resetName(nameBytes(destination)), entry.value));
   }
   encode(side, includeExtra = false) {
     if (!['seen', 'path'].includes(side)) throw new Error('Invalid native scene history list');
@@ -524,27 +527,31 @@ export function nativeSceneData(id, args, machine, services = {}) {
           : 0,
     );
   }
-  if (id === 0x3a6 || id === 0x14c) {
+  if (id === 0x3a6 || id === 0x14c || id === 0x148) {
     if (!services.formatBytes && !services.format) return undefined;
-    if (id === 0x14c) {
-      const name = formatHistoryName(args[1], machine, services, 'query');
-      return word(history.seenValue(direct ? stripHistoryExtension(name) : name));
+    if (id !== 0x3a6) {
+      const formatted = formatHistoryName(
+          args[1],
+          machine,
+          services,
+          id === 0x14c ? 'query' : 'mark',
+        ),
+        name = direct ? stripHistoryExtension(formatted) : formatted;
+      if (id === 0x14c) return word(history.seenValue(name));
+      if (name.length) history.markSeen(name, args[2]);
+      return word(1);
     }
     const source = formatHistoryName(args[1], machine, services, 'alias'),
       destination = formatHistoryName(args[2], machine, services, 'alias');
     history.aliasSeen(source, destination);
     return done();
   }
-  if ([0x148, 0x149].includes(id)) {
+  if (id === 0x149) {
     if (!services.format) return undefined;
     let name = services.format(args[1], machine);
     if (direct) name = stripExtension(name);
-    let index = -1;
-    if (name) {
-      if (id === 0x148) history.markSeen(name, args[2]);
-      else index = history.appendPath(name, args[2]);
-    }
-    return word(id === 0x149 && direct ? index : 1);
+    const index = name ? history.appendPath(name, args[2]) : -1;
+    return word(direct ? index : 1);
   }
   if (id === 0x14a) {
     history.seen = [];

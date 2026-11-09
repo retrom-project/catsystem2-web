@@ -3387,6 +3387,14 @@ for (const id of [0xe3, 0x14c]) {
   recovered74.set(id, fact);
   recovered76.set(id, fact);
 }
+for (const id of [0xdf, 0x148]) {
+  const fact = {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-original-seen-mark-wrappers-and-raw-history-differential',
+  };
+  recovered74.set(id, fact);
+  recovered76.set(id, fact);
+}
 for (let id = 0x24e; id <= 0x251; id++) {
   const fact = {
     ...recovered76.get(id),

@@ -173,6 +173,30 @@ test('history preserves unsigned maxima, consecutive path coalescing and clipped
   assert.deepEqual(new NativeSceneHistory().restore(h.snapshot()).snapshot(), h.snapshot());
 });
 
+test('seen writes preserve the original formatted bytes, suffix rules and unsigned values after import', () => {
+  const m = machine(),
+    data = new NativeSceneData(),
+    handles = new NativeHandles(),
+    handle = handles.add('scene-data', data),
+    services = { handles, sceneData: data, formatBytes: formatNativeAt },
+    raw = Uint8Array.of(0x81, 0x30, 0xff, 0x51),
+    filename = Uint8Array.of(...raw, 46, 67, 83, 84);
+  m.writeString('%s[G768]', 128);
+  m.writeStringBytes(filename, 768);
+  assert.equal(nativeSceneData(0x148, [handle, 128, -1], m, services).value, 1);
+  assert.equal(nativeSceneData(0x148, [handle, 128, 12], m, services).value, 1);
+  assert.equal(nativeSceneData(0xdf, [128, 7], m, services).value, 1);
+  const restored = new NativeSceneHistory();
+  restored.decode('seen', data.history.encode('seen', true));
+  data.history = restored;
+  assert.deepEqual(
+    restored.seen.map(({ nameBytes }) => nameBytes.slice(0, nameBytes.indexOf(0))),
+    [raw, filename],
+  );
+  assert.equal(nativeSceneData(0x14c, [handle, 128], m, services).value, 0xffffffff);
+  assert.equal(nativeSceneData(0xe3, [128], m, services).value, 7);
+});
+
 test('formatted seen aliases preserve raw bytes and values across native history import', () => {
   const m = machine(),
     data = new NativeSceneData(),

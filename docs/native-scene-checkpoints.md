@@ -24,8 +24,14 @@ untouched path records.
 Main `14C` and task-local `E3` also query the original byte sequence.
 `14C` removes the final extension unless it first encounters a slash byte;
 `E3` leaves the name intact. Both return zero for the empty-name record
-that ends a native lookup. `scripts/verify-native-seen-lookup.mjs` executes
-98 calls per frozen engine, including invalid CP932 sequences, Shift_JIS
-trail bytes that equal a separator, and formatter and owner boundaries.
+that ends a native lookup. Main `148` and task-local `DF` keep the same
+extension distinction when marking a scene. They retain the original
+name bytes and update existing values as unsigned maxima. An empty
+formatted name succeeds without adding a record.
+`scripts/verify-native-seen-lookup.mjs` executes 98 queries and 122 writes
+per frozen engine, including invalid CP932 sequences, Shift_JIS trail
+bytes that equal a separator, formatter and owner boundaries, and the
+untouched path list. Undefined stack bytes after the name terminator
+are excluded from comparison of newly inserted records.
 
 Two public fixture tests dispatch through World, restore into a fresh World, continue storage, restoration and branching, and check independent ownership, raw UTF-8/invalid bytes, unaffected outside variables/strings, original branch quirks, self-copy and null-scene behavior. Full game history/replay UI acceptance remains a separate requirement.
