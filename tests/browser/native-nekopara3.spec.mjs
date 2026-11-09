@@ -37,6 +37,8 @@ async function startGame(page) {
     acceleratorCount: 11,
     applicationHook: true,
     displayOwner: true,
+    soundBankCount: 64,
+    soundWorker: true,
   });
 }
 

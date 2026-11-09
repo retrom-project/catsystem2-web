@@ -61,6 +61,8 @@ async function startSDK(page) {
     acceleratorCount: 4,
     applicationHook: true,
     displayOwner: true,
+    soundBankCount: 32,
+    soundWorker: true,
   });
 }
 

@@ -213,9 +213,14 @@ Fixed-binary tests cover event, hook and IME ownership after a fresh restore.
 
 The WinMain prelude also posts `0x40B` through its original USER32 import.
 The registered application callback creates the native display-mode owner,
-selects the configured or desktop dimensions and posts `0x40C`. At `0x40C`,
-the World calls the original sound configuration reader before initializing
-the browser devices and entering the Script task.
+selects the configured or desktop dimensions and posts `0x40C`. The registered
+`0x40C` callback reads the original sound configuration and constructs
+`CsSound` with the live Settings flags. Its original CRT thread waits on the
+native device events. The SDK initializes 32 channel owners and the game
+initializes 64. The callback returns through its original epilogue after
+audio setup, and the World continues with browser graphics and the Script task.
+On close, the `CsSound` destructor signals and joins the worker, closes its
+handles and releases the channel owners.
 Tests restore the queued `0x40B` in a fresh process and compare both display
 dimension branches, message order and destructor ownership.
 
@@ -636,8 +641,8 @@ virtual playback device exposes the primary `IDirectSoundBuffer` used by the
 SDK `4AA3F0` and game `5CD370` initializers. Both routines set 44,100 Hz,
 16-bit stereo PCM after selecting priority mode. The cooperative level,
 format and COM references survive a fresh restore. This boundary covers
-primary PCM negotiation. Startup audio workers and secondary buffer
-playback have separate contracts. [DirectSoundCreate8](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416762(v=vs.85)>),
+primary PCM negotiation and the native startup worker. Gameplay audio
+continues through the browser sound task and Web Audio. [DirectSoundCreate8](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416762(v=vs.85)>),
 [SetFormat](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/mt708936(v=vs.85)>).
 
 DirectSound percent 50 maps to -1,000 hundredths of a decibel, not a linear gain

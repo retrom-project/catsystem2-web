@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The opening application callback reads the native SOUNDGROUP/MASTER/PART tree.
+import { initializeNativeApplicationAudio } from './engine-startup-application.mjs';
+
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': {
     load: 0x5c5ef0,
@@ -97,7 +99,13 @@ function readGroups(p, address, encoding) {
   return groups;
 }
 
-export async function readNativeStartupSoundConfiguration(engine, sound, readSaved, diagnostic) {
+export async function readNativeStartupSoundConfiguration(
+  engine,
+  sound,
+  readSaved,
+  diagnostic,
+  { startupWindow = false } = {},
+) {
   const { process: p, kernel, refs } = engine,
     layout = layouts[engine.profile],
     base = refs.owner + layout.base,
@@ -135,7 +143,9 @@ export async function readNativeStartupSoundConfiguration(engine, sound, readSav
     });
     // The mounted XML and the user's same-named preferences are different files.
     kernel.readFile = (name) => (game.readLoose ? game.readLoose(name) : game.read(name));
-    const loaded = await engine.call(layout.load, [], refs.owner);
+    const loaded = startupWindow
+      ? await initializeNativeApplicationAudio(engine)
+      : await engine.call(layout.load, [], refs.owner);
     Object.assign(sound, {
       filename: file,
       loaded: Boolean(loaded),

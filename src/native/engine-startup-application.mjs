@@ -15,6 +15,11 @@ const layouts = {
     unregister: 0x5c03b0,
     destroyIME: 0x4b7db0,
     destroyDisplay: 0x635ea0,
+    soundRead: 0x442e22,
+    soundReady: 0x442e77,
+    soundReturn: 0x44381b,
+    destroySound: 0x4a8f90,
+    soundGlobal: 0xc945cc,
   },
   'nekopara-vol3-engine-2.6.1.76': {
     begin: 0x52d031,
@@ -25,12 +30,19 @@ const layouts = {
     unregister: 0x70f0c0,
     destroyIME: 0x5db8a0,
     destroyDisplay: 0x79d380,
+    soundRead: 0x531b47,
+    soundReady: 0x531bab,
+    soundReturn: 0x5325b8,
+    destroySound: 0x5cbee0,
+    soundGlobal: 0xb8faa4,
   },
 };
 const IME_SLOT = 40;
 const IME_BYTES = 24;
 const DISPLAY_SLOT = 8;
 const DISPLAY_BYTES = 36;
+const SOUND_SLOT = 12;
+const SOUND_BYTES = 0x78;
 const DISPLAY_STARTUP_MESSAGE = 0x40b;
 export const NATIVE_APPLICATION_SERVICES_MESSAGE = 0x40c;
 
@@ -47,7 +59,11 @@ export function installNativeApplicationWindowBoundary(engine) {
       message = p.load(packet + 4);
     // The remaining application window services are dispatched by the World.
     // Continue the original hook walk so the other window callbacks still run.
-    if (message !== DISPLAY_STARTUP_MESSAGE && !isNativeWindowCommandMessage(message))
+    if (
+      message !== DISPLAY_STARTUP_MESSAGE &&
+      !(engine.startingApplicationAudio && message === NATIVE_APPLICATION_SERVICES_MESSAGE) &&
+      !isNativeWindowCommandMessage(message)
+    )
       cpu.reg_write_i32(uc.X86_REG_EIP, nextHook);
   });
 }
@@ -89,11 +105,69 @@ export async function initializeNativeApplicationWindow(engine) {
   }
 }
 
+export async function initializeNativeApplicationAudio(engine) {
+  const { process: p, profile, kernel, refs } = engine,
+    { cpu, uc } = p,
+    block = NATIVE_STARTUP_BLOCKS[profile],
+    handle = refs.applicationWindowHook,
+    window = kernel.windowViews.windows.get(handle),
+    { soundRead, soundReady, soundReturn, soundGlobal } = layouts[profile];
+  if (
+    !window ||
+    !p.load(block + DISPLAY_SLOT) ||
+    p.load(block + SOUND_SLOT) ||
+    p.load(soundGlobal) ||
+    engine.startingApplicationAudio
+  )
+    throw new Error('Original audio startup requires the initialized application window');
+  let loaded,
+    ready = false;
+  const detach = [];
+  engine.startingApplicationAudio = true;
+  try {
+    detach.push(
+      p.beforeInstruction(soundRead, 'original application sound configuration result', () => {
+        loaded = cpu.reg_read_i32(uc.X86_REG_EAX) >>> 0;
+      }),
+    );
+    detach.push(
+      p.beforeInstruction(soundReady, 'application boundary after original audio startup', () => {
+        ready = true;
+        cpu.reg_write_i32(uc.X86_REG_EIP, soundReturn);
+      }),
+    );
+    await engine.call(window.procedure, [handle, NATIVE_APPLICATION_SERVICES_MESSAGE, 0, 0]);
+    const owner = p.load(block + SOUND_SLOT);
+    if (
+      loaded === undefined ||
+      !ready ||
+      p.allocations.get(owner) !== SOUND_BYTES ||
+      p.load(soundGlobal) !== owner ||
+      p.load(owner) !== 1 ||
+      p.load(owner + 4) !== handle
+    )
+      throw new Error('Original application callback did not establish its sound owner');
+    return loaded;
+  } finally {
+    delete engine.startingApplicationAudio;
+    for (const unhook of detach.reverse()) unhook();
+  }
+}
+
 export async function releaseNativeApplicationWindow(engine) {
   const { process: p, profile } = engine,
     block = NATIVE_STARTUP_BLOCKS[profile],
     { applicationWindowHook: handle } = engine.refs,
-    { unregister, destroyIME, destroyDisplay } = layouts[profile];
+    { unregister, destroyIME, destroyDisplay, destroySound, soundGlobal } = layouts[profile];
+  const sound = p.load(block + SOUND_SLOT);
+  if (sound) {
+    if (p.allocations.get(sound) !== SOUND_BYTES || p.load(soundGlobal) !== sound)
+      throw new Error('Original startup sound owner is invalid');
+    await engine.call(destroySound, [], sound);
+    if (p.load(soundGlobal) || !p.free(sound))
+      throw new Error('Original startup sound owner could not be released');
+    p.store(block + SOUND_SLOT, 0);
+  }
   const display = p.load(block + DISPLAY_SLOT);
   if (display) {
     if (p.allocations.get(display) !== DISPLAY_BYTES)

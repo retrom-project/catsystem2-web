@@ -897,6 +897,7 @@ export class NativeWorld {
         this.soundConfiguration,
         (name) => this.storage.readSaved?.(name),
         (detail) => this.host.nativeDiagnostic?.(detail),
+        { startupWindow: true },
       );
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

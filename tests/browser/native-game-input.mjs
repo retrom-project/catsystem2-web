@@ -97,7 +97,12 @@ export function startupWindow(page) {
       view = kernel.windowViews.windows.get(handle),
       owner = view?.userData,
       input = refs.inputDevice,
-      startup = world.profile.startsWith('sdk-') ? 0xcb2440 : 0xbafa80;
+      sdk = world.profile.startsWith('sdk-'),
+      startup = sdk ? 0xcb2440 : 0xbafa80,
+      sound = p.load(startup + 12),
+      backend = sound && p.load(sound + 108),
+      workerID = backend && kernel.threadHandles.handles.get(p.load(backend + 12))?.id,
+      worker = kernel.threadHandles.threads.get(workerID);
     return {
       handle,
       client: view?.client.slice(2),
@@ -106,6 +111,12 @@ export function startupWindow(page) {
       acceleratorCount: owner && kernel.accelerators.tables.get(p.load(owner + 12))?.rows.length,
       applicationHook: refs.applicationWindowHook === handle,
       displayOwner: p.allocations.get(p.load(startup + 8)) === 36,
+      soundBankCount: backend
+        ? Array.from({ length: sdk ? 32 : 64 }, (_, index) =>
+            p.load(backend + 28 + index * 4),
+          ).filter((address) => p.allocations.has(address)).length
+        : 0,
+      soundWorker: worker?.wait?.kind === 'objects',
     };
   });
 }
