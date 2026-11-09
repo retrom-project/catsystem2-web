@@ -184,7 +184,10 @@ for (const [profile, variable, normal, mask, copy, btype] of [
             },
             address = kernels.abi[n & 1 ? 'affineBtype' : 'affine'] - 0x233,
             original = await run(false, address, bytes, stackBytes, setup),
+            affineBudget = !(n & 1) && p.instructionBudget(),
             accelerated = await run(true, address, bytes, stackBytes, setup);
+          if (affineBudget)
+            assert.deepEqual(p.instructionBudget(), affineBudget, `affine ${n} budget`);
           for (const key of ['image', 'stack']) {
             const index = original[key].findIndex((value, i) => value !== accelerated[key][i]);
             assert.equal(

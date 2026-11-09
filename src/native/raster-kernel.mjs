@@ -20,6 +20,8 @@ const profiles = {
     alpha: 0x68ce08,
     btype: 0x68a3a0,
     affine: 0x874e03,
+    affineSampler: 0x874120,
+    affineMultiply: 0x7a02e0,
     affineBtype: 0x875523,
   },
   'sdk-4.01-engine-2.6.1.74': {
@@ -39,10 +41,13 @@ const profiles = {
     alpha: 0x563978,
     btype: 0x560480,
     affine: 0x8a05d3,
+    affineSampler: 0x89f920,
+    affineMultiply: 0x638da0,
     affineBtype: 0x8a0cf3,
   },
 };
 const overlaps = (a, size, b, length) => a < b + length && b < a + size;
+const fixedMultiply = (a, b) => Math.floor((a * b) / 32768) | 0;
 
 export class NativeRasterKernels {
   constructor(engine) {
@@ -878,6 +883,75 @@ export class NativeRasterKernels {
     this.reg('EDI', destination);
     return true;
   }
+  affineInstructions({ d, table, input, output, px, py, baseX, baseY }, available) {
+    const left = d[32],
+      top = d[33],
+      right = d[34],
+      bottom = d[35],
+      sw = d[14],
+      sh = d[15],
+      ss = d[16],
+      nextSourceRow = ss & ~3,
+      ds = d[10];
+    let total = 0,
+      row;
+    for (let y = top; y < bottom; y++) {
+      row = 24;
+      const cy = ((y << 15) - py + d[46]) | 0,
+        rowU = (fixedMultiply(d[39], cy) + d[42]) | 0,
+        rowV = (fixedMultiply(d[40], cy) + d[43]) | 0,
+        // Four native allmul calls cost eight instructions each on their
+        // unsigned fast path. A negative operand costs eight extra.
+        rowTransform = 127 + 8 * (Number(cy < 0 || d[39] < 0) + Number(cy < 0 || d[40] < 0));
+      for (let x = left; x < right; x++) {
+        const cx = ((x << 15) - px + d[45]) | 0,
+          u = (fixedMultiply(d[36], cx) + rowU) | 0,
+          v = (fixedMultiply(d[37], cx) + rowV) | 0,
+          ix = ((u >> 15) + baseX) | 0,
+          iy = ((v >> 15) + baseY) | 0;
+        row += rowTransform + 8 * (Number(cx < 0 || d[36] < 0) + Number(cx < 0 || d[37] < 0));
+        if (ix >>> 0 >= sw) {
+          row += 14;
+          continue;
+        }
+        if (iy >>> 0 >= sh) {
+          row += 17;
+          continue;
+        }
+        const at = iy * ss + ix * 4 + 3,
+          hasRight = ix < sw - 1,
+          hasBottom = iy < sh - 1,
+          a0 = input[at],
+          a1 = input[hasRight ? at + 4 : at],
+          a2 = input[hasBottom ? at + nextSourceRow : at],
+          a3 = input[hasRight && hasBottom ? at + nextSourceRow + 4 : at];
+        // Both right-edge paths have the same cost. The lower-edge path
+        // costs one fewer instruction before the four-alpha test.
+        row += hasBottom ? 60 : 59;
+        if (!(a0 + a1 + a2 + a3)) {
+          row++;
+          continue;
+        }
+        const fx = u & 32767,
+          fy = v & 32767,
+          sampleAlpha =
+            (a0 * (((32768 - fx) * (32768 - fy)) >> 15) +
+              a1 * ((fx * (32768 - fy)) >> 15) +
+              a2 * (((32768 - fx) * fy) >> 15) +
+              a3 * ((fx * fy) >> 15)) >>>
+            15,
+          alpha = table[sampleAlpha & 255],
+          oldAlpha = output[y * ds + x * 4 + 3];
+        row += 89;
+        if (!alpha) row += oldAlpha ? 2 : 5;
+        else if (alpha === 255) row += 5;
+        else row += !oldAlpha ? 9 : oldAlpha === 255 ? 31 : 65;
+      }
+      total += row;
+      if (total > available) return null;
+    }
+    return total - row;
+  }
   affineBtype() {
     return this.affine(true);
   }
@@ -922,8 +996,13 @@ export class NativeRasterKernels {
         };
     const p = this.process,
       frame = this.reg('EBP'),
-      pointer = this.reg(layout.pointer);
-    if (!this.range(pointer, 200) || !this.range(frame - 0x1c0, 0x1d0, true)) return false;
+      pointer = this.reg(layout.pointer),
+      regions = blendType ? undefined : this.repeatRegions();
+    if (
+      !this.range(pointer, 200, false, regions) ||
+      !this.range(frame - 0x1c0, 0x1d0, true, regions)
+    )
+      return false;
     const d = new Int32Array(p.read(pointer, 200).buffer),
       table = p.read(frame - 0x104, 256),
       left = d[32],
@@ -954,8 +1033,8 @@ export class NativeRasterKernels {
       sh <= 0 ||
       ds < dw * 4 ||
       ss < sw * 4 ||
-      !this.range(destination, destinationSize, true) ||
-      !this.range(source, sourceSize) ||
+      !this.range(destination, destinationSize, true, regions) ||
+      !this.range(source, sourceSize, false, regions) ||
       overlaps(destination, destinationSize, source, sourceSize) ||
       overlaps(destination, destinationSize, pointer, 200) ||
       overlaps(destination, destinationSize, frame - 0x1c0, 0x1d0) ||
@@ -976,20 +1055,73 @@ export class NativeRasterKernels {
       return false;
     const px = p.load(frame - layout.position[0]) | 0,
       py = p.load(frame - layout.position[1]) | 0,
-      alphaSpill = blendType ? p.load(frame - 0x138) & 0xffffff : 0;
+      alphaSpill = blendType ? p.load(frame - 0x138) & 0xffffff : 0,
+      nextSourceRow = blendType ? ss : ss & ~3;
+    let available = Infinity;
+    if (!blendType) {
+      const code = (address, size) =>
+          regions.some(
+            ({ begin, end, perms }) =>
+              (perms & 5) === 5 && address >= Number(begin) && address + size - 1 <= Number(end),
+          ),
+        contiguous = (address, size) =>
+          p.regions.some(
+            (region) => address >= region.address && address + size <= region.address + region.size,
+          );
+      if (
+        this.reg('ESP') !== frame - 0x174 ||
+        this.reg('ESI') !== left ||
+        this.reg('EDI') !== right ||
+        this.reg('EDX') !== (top << 15) >>> 0 ||
+        this.reg('EFLAGS') & 0x50100 ||
+        this.reg('DS') !== 0 ||
+        this.reg('SS') !== 0 ||
+        (this.reg('MXCSR') & 0x1f80) !== 0x1f80 ||
+        overlaps(pointer, 200, frame - 0x1c0, 0x1c0) ||
+        !destination ||
+        !contiguous(source, sourceSize) ||
+        !contiguous(destination, destinationSize) ||
+        !code(this.abi.affine, 0x4d2) ||
+        !code(this.abi.affineSampler, 0xc2) ||
+        !code(this.abi.affineMultiply, 0x34)
+      )
+        return false;
+      const locals = new DataView(p.read(frame - 0x168, 0x48).buffer),
+        local = (offset) => locals.getUint32(0x168 - offset, true);
+      if (
+        local(0x124) !== pointer ||
+        local(0x130) !== top ||
+        local(0x138) !== (top << 15) >>> 0 ||
+        local(0x150) !== bottom ||
+        local(0x158) !== left ||
+        local(0x160) !== right ||
+        local(0x168) !== (left << 2) >>> 0
+      )
+        return false;
+      const { active, counter, limit } = p.instructionBudget();
+      available = limit === 0n ? Infinity : Number(limit - counter) + 1;
+      if (!active || available < (bottom - top) * (24 + 141 * (right - left))) return false;
+    }
     p.view(source, sourceSize);
     p.view(destination, destinationSize);
     const input = p.view(source, sourceSize),
       output = p.view(destination, destinationSize),
       words = new DataView(input.buffer, input.byteOffset, input.byteLength),
-      locals = new Map(),
-      multiply = (a, b) => Math.floor((a * b) / 32768) | 0;
+      locals = new Map();
+    if (!blendType) {
+      const skipped =
+        available === Infinity
+          ? 0
+          : this.affineInstructions({ d, table, input, output, px, py, baseX, baseY }, available);
+      // The final native row replays the sampler calls and all conversions.
+      if (skipped === null || !p.consumeInstructions(skipped)) return false;
+    }
     for (let y = top; y < bottom - 1; y++)
       for (let x = left; x < right; x++) {
         const cx = ((x << 15) - px + d[45]) | 0,
           cy = ((y << 15) - py + d[46]) | 0,
-          u = (multiply(d[36], cx) + multiply(d[39], cy) + d[42]) | 0,
-          v = (multiply(d[37], cx) + multiply(d[40], cy) + d[43]) | 0,
+          u = (fixedMultiply(d[36], cx) + fixedMultiply(d[39], cy) + d[42]) | 0,
+          v = (fixedMultiply(d[37], cx) + fixedMultiply(d[40], cy) + d[43]) | 0,
           ix = ((u >> 15) + baseX) | 0,
           iy = ((v >> 15) + baseY) | 0;
         locals.set(layout.temporary, blendType ? cx : cy);
@@ -1000,8 +1132,8 @@ export class NativeRasterKernels {
         locals.set(layout.spill, v);
         const a = iy * ss + ix * 4,
           b = ix < sw - 1 ? a + 4 : a,
-          c = iy < sh - 1 ? a + ss : a,
-          e = ix < sw - 1 && iy < sh - 1 ? a + ss + 4 : a,
+          c = iy < sh - 1 ? a + nextSourceRow : a,
+          e = ix < sw - 1 && iy < sh - 1 ? a + nextSourceRow + 4 : a,
           samples = [a, b, c, e],
           corners = samples.map((at) => words.getUint32(at, true)),
           alpha0 = input[a + 3],
