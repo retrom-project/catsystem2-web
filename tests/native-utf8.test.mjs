@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { nativeUTF8 } from '../src/native/utf8.mjs';
+import { nativeUTF8 } from '../oracle/utf8.mjs';
 import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 test(

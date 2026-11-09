@@ -551,16 +551,6 @@
       "calls": 2,
       "references": 0
     },
-    "src/native/unicode-output.mjs": {
-      "addresses": 21,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/utf8.mjs": {
-      "addresses": 0,
-      "calls": 1,
-      "references": 0
-    },
     "src/native/version-query.mjs": {
       "addresses": 2,
       "calls": 2,

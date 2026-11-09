@@ -10,6 +10,7 @@ import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { readKCS, nativeReply } from '../../src/kcs.mjs';
 import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
 import { memoryGame, kcsProgram } from '../helpers.mjs';
+import { NATIVE_UTF8_OPERATIONS } from '../../src/native/utf8.mjs';
 import { NATIVE_RECTANGLE_OPERATIONS } from '../../src/native/rectangles.mjs';
 import { NATIVE_VIEW_GEOMETRY_OPERATIONS } from '../../src/native/view-geometry.mjs';
 import { viewStateBytes } from './view-state.mjs';
@@ -23,6 +24,7 @@ const independent = {
     'math.roundInteger',
     ...NATIVE_MATRIX_OPERATIONS,
     ...NATIVE_RECTANGLE_OPERATIONS,
+    ...NATIVE_UTF8_OPERATIONS,
     ...NATIVE_VIEW_GEOMETRY_OPERATIONS,
     ...NATIVE_GEOMETRY_OPERATIONS,
     ...Object.values(NATIVE_ABIS)[0]
@@ -31,14 +33,14 @@ const independent = {
   ]),
 };
 
-function vmMemory(machine) {
+export function vmMemory(machine) {
   return Object.fromEntries([
     ['memory', machine.memory.slice()],
     ['shared', machine.shared.slice()],
     ...machine.blockIDs.map((id, index) => [`block:${id}`, machine.blockBytes(index).slice()]),
   ]);
 }
-function vmState(machine) {
+export function vmState(machine) {
   const state = machine.snapshot();
   // Byte regions are compared separately. memoryID identifies the host backing.
   delete state.memory;
@@ -51,7 +53,7 @@ function applyInitial(machine, initial = {}) {
   for (const [address, words] of initial.words ?? [])
     words.forEach((word, index) => machine.store(address + index * 4, word));
 }
-function imageMemory(engine) {
+export function imageMemory(engine) {
   return engine.module.pe.sections
     .filter((section) => section.flags & 0x80000000)
     .map((section) => ({
@@ -60,7 +62,7 @@ function imageMemory(engine) {
       bytes: engine.process.read(engine.module.base + section.address, section.size).slice(),
     }));
 }
-function imageWrites(engine, before, projectedRanges = []) {
+export function imageWrites(engine, before, projectedRanges = []) {
   const result = [];
   for (const section of before) {
     const after = engine.process.read(section.address, section.bytes.length);

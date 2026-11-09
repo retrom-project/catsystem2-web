@@ -1,0 +1,360 @@
+{
+  "scope": "Authored game UTF8 inputs and original handlers, permissive byte walker, fixed NLS boundary, all VM bytes exact.",
+  "profiles": {
+    "nekopara-vol3-engine-2.6.1.76": {
+      "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "cases": {
+        "empty/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1ee0f6be450044c191f771369105f6d6de01f03611fd2795f049696e67d11bd6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "822c94047876376715117fa1e27db5bc6b3afeef717766097048b53c89552e5f",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "empty/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d5c75828363d8e085c2a3c5528f3d34e03f984c9f6a41b4a27b0c81cae489235",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "ascii/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "049f9ff28a3db0c58b5d941a2bafdf0a15f921ae34bf097e035960926429df02",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "ascii/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ab5f61dec12ba14375fc105b02149dee884fb63bce7b9d5ccaa1908de9791b1b",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "ascii/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7528d9e1398f68baf1524f0ed5ae6d53a3e008c09a9b9c60ff19db89911c9b63",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "japanese/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "191f1d0aa2c5419054a8ad88e958e9d0356ae2f2126217ce96e7310e170505e9",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "japanese/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "a7273a16166b880048a8226e31f4765172207980d14572100f2009e5480c0356",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "japanese/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "319ac13fbccd92d58c0bbcc9d21d6a540bdf597415dab9f8a02173dee8bbc037",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "supplementary/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d9e535cde900c8c544486da9d026afaee4763169434b056c74b30e4629c3c2be",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "supplementary/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "77080d370c7e81c97bb6ca99bd49e1a9a10895f4aa7a05b92329f718f1aa9c36",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "supplementary/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "2583357dac2c0294f9ab69c7ec551012c32930452590e0b4b8fc6131f75028ef",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "unchecked tail/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "feb7c9e954e7f6e815b884fcb59ba0ac8216ea54ec53c4448795ca1b531b6dd0",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "unchecked tail/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9600e33603d546b731ef69fa06cfe9bd16963d06df576a44a6c779eed173d45c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "unchecked tail/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "68b1a5947a23dbc67621bbff5178bf1b588fe9946b8ad6019143e4bbfba71531",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlong/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1f530ec8fbdfac873c63b17456072f315e3bf77abf14a4d8d8a321e1fb5a9285",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlong/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0eeb548690508ad09e9d005178b40fa25ce803d78045a91b84704facd9c58ebe",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "overlong/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8958d3114e7d0c9caafe9fc68bdb0cad0118e51f4a8fa1e75c4cb1393f094979",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "six ones/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "f1d6d594d8ce0704de1d2f335ff5bb6b625b213f5e51fea16ea7008531f9a624",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "six ones/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0b1daae10af97c5550758780027a370dae2fb592dc7f1df80f1308984f5ed6e4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "six ones/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "69b436e884bf313a5b70ca6d96cca74b872e2efae7e89a0190959be69abde41c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "continuation/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "c7613014a1d16a22ff0f4aa18cf931616ad7c45dcbf2098b954aafae7f7629e9",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "continuation/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "18340caf4d4304fea563009a52f4bdd7160c6b63c9954ef66c2801de60543dba",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "continuation/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967294,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "d5e600078b4e3ee5f25ed8311b1d79443c2799a3218aa2d29ca20d33bdc4f75e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "invalid middle/utf8.truncateBytes/3": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "22d466e3ed783e10608b5a1259752c57d97c4ce753c896d09a27eb7dbf87250b",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "invalid middle/utf8.truncateBytes/4": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "335643d0d5e85b1b9d294e73f6e01927825c9a96d9fde13f876e57d6eb345e2e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "invalid middle/utf8.truncateCharacters/1": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967293,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cf05310706c935b2d230f3cd7ca4bb0693fe19ae4c97c44b4eda605979c13786",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search japanese": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "84c15e55a7e8043ea69728ca86df769526d6b18966c50cc1c8d0e45f7a5ce4c0",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search ascii": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 5,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "c224104a5d4483da27219d24e5e37201346b91d69d891a8e4b991b1de5a003b2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search absent": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 8,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3346e6fb1807aa72c4a7147d09e559eb4f12502843ff50c2938c72fa7fd1ca89",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search empty": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "7cf1d3eddfd30e38d1d78fc6d99426323a72110ecafa937ad81f810224c429e8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search halfwidth": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "bbe924379e56fdbf77010df953e1b9d25bbfcb64bd7105b6302a36542f7a4682",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search extension": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0d8c8a4a0337019fad41f5a1c825442e302c8d3b131184f5b01677f2a4937ba6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search invalid key": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "21001bdd7ccb3ded2c4fb25ca0331a9668459ee29af9e927647dd46e74b673d1",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "search long key": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "17217930d341b2c4366bd252de3794633e5bcbe5c9a2f57416aec38818afd349",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        }
+      }
+    }
+  }
+}

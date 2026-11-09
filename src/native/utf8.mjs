@@ -1,49 +1,49 @@
 // SPDX-License-Identifier: MPL-2.0
-// The game build's UTF-8 primitives retain its original permissive byte walker
-// and CP932-to-UTF8 search-key conversion, including CRT/Windows boundaries.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from './catalog.mjs';
+import { nativeUTF8Step, readNativeCString } from './utf8-codec.mjs';
+import { decodeNativeCP932 } from './cp932.mjs';
 export const NATIVE_UTF8_IDS = Object.freeze([0x415, 0x416, 0x41b]);
-export async function nativeUTF8(id, args, machine, task, world) {
-  if (!NATIVE_UTF8_IDS.includes(id) || !nativeABI(world.profile).capabilities.utf8Primitives)
-    return undefined;
-  if (args.length !== 2)
-    throw new Error(`Native UTF-8 primitive 0x${id.toString(16)} expects two arguments`);
-  const engine = await world.ensureNativeEngine(),
-    p = engine.process,
-    taskMemory =
-      world.objects.machine(task.id) === machine
-        ? await world.getNativeFeature('task-memory')
-        : null;
-  if (taskMemory) taskMemory.vmPointer(task.id);
-  const bridge = new NativeKCSMemory(p, machine, taskMemory?.mapMachine(task.id, machine)),
-    argv = p.allocate(8),
-    out = p.allocate(4);
-  try {
-    args.forEach((word, i) => p.store(argv + i * 4, word));
-    p.store(out, 0xcccccccc);
-    const control = await engine.call(
-      p.load(NATIVE_EXE_PROFILES[world.profile].tables.main.va + id * 4),
-      [bridge.pointer, 0, argv, out],
-      undefined,
-      { task: task.id },
-    );
-    return nativeReply(control, p.load(out));
-  } finally {
-    try {
-      bridge.close();
-    } finally {
-      p.free(out);
-      p.free(argv);
+export const NATIVE_UTF8_OPERATIONS = Object.freeze([
+  'utf8.truncateBytes',
+  'utf8.truncateCharacters',
+  'utf8.findCP932Key',
+]);
+const operations = new Set(NATIVE_UTF8_OPERATIONS);
+export function nativeUTF8(id, args, machine, task, world) {
+  const entry = nativeABI(world.profile).tables.main.entries[id];
+  if (!operations.has(entry?.name)) return undefined;
+  if (args.length !== 2) throw Error('Native UTF-8 primitive expects two arguments');
+  const [address, limit] = args,
+    read = (at) => machine.load((address + at) >>> 0, 1);
+  let at = 0;
+  if (entry.name === 'utf8.findCP932Key') {
+    const source = readNativeCString(machine, address),
+      raw = readNativeCString(machine, limit),
+      key = raw.length > 4000 ? new Uint8Array() : new TextEncoder().encode(decodeNativeCP932(raw));
+    while (read(at)) {
+      if (key.every((byte, i) => read(at + i) === byte)) return nativeReply(1, at);
+      const step = nativeUTF8Step(read, at);
+      if (step <= 0) break;
+      at += step;
     }
+    return nativeReply(1, source.length);
   }
+  let count = 0;
+  while (read(at)) {
+    if (entry.name === 'utf8.truncateCharacters' && count >= limit) break;
+    const next = (at + nativeUTF8Step(read, at)) | 0;
+    if (entry.name === 'utf8.truncateBytes' && next >>> 0 >= limit >>> 0) break;
+    at = next;
+    count++;
+  }
+  machine.store((address + at) >>> 0, 0, 2);
+  return nativeReply(1, at >>> 0);
 }
 export function installNativeUTF8(world) {
-  if (!nativeABI(world.profile).capabilities.utf8Primitives) return;
-  for (const id of NATIVE_UTF8_IDS)
-    world.runtime.register('main', id, (args, machine, task) =>
-      nativeUTF8(id, args, machine, task, world),
-    );
+  for (const entry of nativeABI(world.profile).tables.main.entries)
+    if (operations.has(entry.name))
+      world.runtime.register('main', entry.id, (args, machine, task) =>
+        nativeUTF8(entry.id, args, machine, task, world),
+      );
 }

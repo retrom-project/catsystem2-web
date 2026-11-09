@@ -1,0 +1,507 @@
+{
+  "scope": "Authored Unicode clipboard/log GCALL inputs. Original formatter, converter and wide CRT execute; only verified private OS transports supplied. Raw UTF-16 service input retained including lone surrogates; VM bytes exact.",
+  "profile": "nekopara-vol3-engine-2.6.1.76",
+  "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+  "cases": {
+    "40f/empty": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "b3a45aa24e88169feb9f40ccd8d142936cfd910e29c06760a4b88b6c49ab3358",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", ""], ["close"]],
+        "contents": "",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/empty": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "b3a45aa24e88169feb9f40ccd8d142936cfd910e29c06760a4b88b6c49ab3358",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[]]
+      }
+    },
+    "40f/ascii": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "634573397fed505ba8868ab08320e6b06f59b74c0a9b85a4ff52cf4ee01ff9aa",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "hello"], ["close"]],
+        "contents": "hello",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/ascii": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "634573397fed505ba8868ab08320e6b06f59b74c0a9b85a4ff52cf4ee01ff9aa",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[104, 101, 108, 108, 111]]
+      }
+    },
+    "40f/japanese newline": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "c7ac20e2046ec2cca4dce9517308ca3a76ab64389c272fa9bc44ec533ba09a84",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "日本語\r\nend"], ["close"]],
+        "contents": "日本語\r\nend",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/japanese newline": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "c7ac20e2046ec2cca4dce9517308ca3a76ab64389c272fa9bc44ec533ba09a84",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[147, 250, 150, 123, 140, 234, 92, 110, 101, 110, 100]]
+      }
+    },
+    "40f/supplementary BOM": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "cf4e604fc4643e585a1ba7933863b4989be9c3f8af85109f26e288ecc9b5edc6",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "﻿\ud83dtail"], ["close"]],
+        "contents": "﻿\ud83dtail",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/supplementary BOM": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "cf4e604fc4643e585a1ba7933863b4989be9c3f8af85109f26e288ecc9b5edc6",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[63, 63, 116, 97, 105, 108]]
+      }
+    },
+    "40f/percent": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "1dbff96fe732a628a1f5c930534c5c677dd74319a4f9450668ba53bf80b7bc5d",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "100% 日本語"], ["close"]],
+        "contents": "100% 日本語",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/percent": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "1dbff96fe732a628a1f5c930534c5c677dd74319a4f9450668ba53bf80b7bc5d",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[49, 48, 48, 37, 32, 147, 250, 150, 123, 140, 234]]
+      }
+    },
+    "40f/percent run": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "4315078eae9812c3a0382963659475fa17516e66b28f9ff408b469328f8eba56",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "%%"], ["close"]],
+        "contents": "%%",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/percent run": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "4315078eae9812c3a0382963659475fa17516e66b28f9ff408b469328f8eba56",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[37]]
+      }
+    },
+    "40f/percent run three": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "d8e4ab42e898891700b4b8c91710fe8e30fe573aa036b5e6dceba7b44438d730",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "%%%"], ["close"]],
+        "contents": "%%%",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/percent run three": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "d8e4ab42e898891700b4b8c91710fe8e30fe573aa036b5e6dceba7b44438d730",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[37, 37]]
+      }
+    },
+    "40f/sentinel": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "44b09b3f60a3af42ea7b1594c53863c103c086d714fa24341bca34d9b3b3ed26",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "A￿B"], ["close"]],
+        "contents": "A￿B",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/sentinel": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "44b09b3f60a3af42ea7b1594c53863c103c086d714fa24341bca34d9b3b3ed26",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[65, 63]]
+      }
+    },
+    "40f/invalid stop": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "f6057595f17909da3c1ce3e76db1bd0b8cb8ebac4c354b448ede890a14a5d2f1",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "A"], ["close"]],
+        "contents": "A",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/invalid stop": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "f6057595f17909da3c1ce3e76db1bd0b8cb8ebac4c354b448ede890a14a5d2f1",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[65]]
+      }
+    },
+    "40f/unchecked tail": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "2c95c9d7a551fca32a695380a1a09b178129bda75ff4f66a26c8f2c89a06669f",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "�B"], ["close"]],
+        "contents": "�B",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/unchecked tail": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "2c95c9d7a551fca32a695380a1a09b178129bda75ff4f66a26c8f2c89a06669f",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[63, 66]]
+      }
+    },
+    "40f/overlong": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "65309ae61bd821eef5a23ac27f00dbc6b87e12c9c7fb97c8b990230922803b4b",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "�A"], ["close"]],
+        "contents": "�A",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/overlong": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "65309ae61bd821eef5a23ac27f00dbc6b87e12c9c7fb97c8b990230922803b4b",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [[63, 65]]
+      }
+    },
+    "40f/long": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "f82a863ba85f4834d72f9975f4b146a9f51a0dc202c4f187ba423eecb7a0c54c",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [
+          ["open", 1],
+          ["empty"],
+          [
+            "write",
+            "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          ],
+          ["close"]
+        ],
+        "contents": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "410/long": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "f82a863ba85f4834d72f9975f4b146a9f51a0dc202c4f187ba423eecb7a0c54c",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [],
+        "contents": "previous",
+        "opened": false,
+        "logs": [
+          [
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+            120, 120, 120, 120, 120, 120
+          ]
+        ]
+      }
+    },
+    "clipboard available": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "2187a66a037e4585a03f772a71d52a5c98c09e5d20384331dae190ff54ec5ea4",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1]],
+        "contents": "previous",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "clipboard acceptEmpty": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "2187a66a037e4585a03f772a71d52a5c98c09e5d20384331dae190ff54ec5ea4",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "text"], ["close"]],
+        "contents": "text",
+        "opened": false,
+        "logs": []
+      }
+    },
+    "clipboard acceptWrite": {
+      "native": {
+        "control": 2,
+        "resultWritten": false,
+        "floatingMemory": [],
+        "memory": {
+          "memory": "2187a66a037e4585a03f772a71d52a5c98c09e5d20384331dae190ff54ec5ea4",
+          "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+        }
+      },
+      "effects": {
+        "clipboard": [["open", 1], ["empty"], ["write", "text"], ["close"]],
+        "contents": "",
+        "opened": false,
+        "logs": []
+      }
+    }
+  }
+}

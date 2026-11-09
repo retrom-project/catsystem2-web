@@ -107,12 +107,25 @@ and return their byte offset. Search converts the key to UTF-8, visits original
 character boundaries, and returns byte length when absent. Keys longer than
 4,000 bytes take the original empty-key conversion branch.
 
-These wrappers execute in the supplied engine through the shared KCS memory
-adapter. They retain its permissive legacy UTF-8 walker rather than silently
-substituting modern Unicode validation. `verify-native-utf8.mjs` compares
-**1,392 results and full-memory states** across data, shared and extension
-blocks. Public optional tests verify strict byte-limit behavior, CP932-key
-search and fresh-process restoration. The original conversion routine's
-undefined overflows and malformed-input underflows are not acceptance cases.
+These three handlers dispatch by the operations present in the ABI and execute
+synchronously in JavaScript, without an EXE or transitional capability. The byte
+walker counts lead bits, leaves the final continuation unchecked, and preserves
+its negative steps for malformed inputs when the resulting VM access is mapped.
+Search stops at nonpositive steps. No modern Unicode validity rule substitutes
+for these legacy byte operations. A two-byte NUL write and unsigned byte-limit
+comparison remain exact.
+
+CP932 conversion uses the fixed Microsoft table and existing measured Windows
+mapping exceptions in [`cp932.mjs`](../src/native/cp932.mjs); see
+[table provenance](../third_party/cp932/README.md). It does not depend on browser
+Shift_JIS decoding. Already migrated generic string APIs remain unchanged.
+
+`tests/fixtures/utf8-cases.mjs` has authored independent GCALL comparisons including
+malformed bytes, supplementary text, CP932 extensions, missing/empty keys and the
+4,000-byte branch. Every VM byte and result compares exactly. Original handlers
+and NLS boundaries run privately; public golden cases run without an EXE. Original
+facades and extensive CPU-only verifier evidence remain under `oracle/utf8.mjs`
+and `scripts/verify-native-utf8.mjs`. Out-of-mapping accesses and original undefined
+conversion-buffer overflows are not defined text acceptance cases.
 
 Private binaries, native memory and raw reports remain in ignored storage.

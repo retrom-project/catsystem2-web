@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 105, "oracle": 135, "differential": 4 },
+    "counts": { "js": 106, "oracle": 135, "differential": 6 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -105,6 +105,7 @@
         "tests/native-standard.test.mjs",
         "tests/native-string-bank.test.mjs",
         "tests/native-token.test.mjs",
+        "tests/native-unicode-calculations.test.mjs",
         "tests/native-view-rectangles.test.mjs",
         "tests/native-view.test.mjs",
         "tests/native-windows-accelerators.test.mjs",
@@ -268,6 +269,8 @@
         "tests/differential/native-geometry.test.mjs",
         "tests/differential/native-math.test.mjs",
         "tests/differential/native-scalar.test.mjs",
+        "tests/differential/native-unicode-output.test.mjs",
+        "tests/differential/native-utf8.test.mjs",
         "tests/differential/native-view-rectangles.test.mjs"
       ]
     },
@@ -3549,15 +3552,6 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "exe-layout",
-        "file": "src/native/utf8.mjs",
-        "line": 28,
-        "expression": "NATIVE_EXE_PROFILES[world.profile]",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "va-condition",
         "file": "src/native/window-events.mjs",
         "line": 9,
@@ -3684,16 +3678,16 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 21, "exeVASelectionSites": 247, "needsReview": 0 }
+    "totals": { "profileIndexSites": 21, "exeVASelectionSites": 246, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 21,
-    "remainingExeVASelectionSites": 247,
+    "remainingExeVASelectionSites": 246,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 930,
-      "original-handler": 741,
+      "pure-js": 935,
+      "original-handler": 736,
       "exe-region": 23,
       "patch": 0,
       "reserved": 140,
@@ -3712,13 +3706,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 619,
-    "runtimeFiles": 332,
-    "fileDomains": { "3": 29, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
-    "fileNeedsReview": 139,
-    "exeDependencyFiles": 124,
-    "exeDependencies": { "addresses": 2042, "calls": 183, "references": 6 },
+    "runtimeFiles": 335,
+    "fileDomains": { "3": 32, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
+    "fileNeedsReview": 137,
+    "exeDependencyFiles": 122,
+    "exeDependencies": { "addresses": 2021, "calls": 180, "references": 6 },
     "nonNativeGroups": 12,
-    "executionSites": 557
+    "executionSites": 554
   },
   "profiles": [
     {
@@ -44481,14 +44475,14 @@
           "hexID": "0x40f",
           "semanticName": "clipboard.copyUTF8",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/unicode-output.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/unicode-output.mjs:231",
-          "features": ["unicode-output"],
-          "dependencies": ["src/native/unicode-output.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/unicode-output.mjs:67",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-unicode-output.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -44498,14 +44492,14 @@
           "hexID": "0x410",
           "semanticName": "log.writeUTF8",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/unicode-output.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/unicode-output.mjs:231",
-          "features": ["unicode-output"],
-          "dependencies": ["src/native/unicode-output.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/unicode-output.mjs:67",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-unicode-output.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -44583,13 +44577,13 @@
           "hexID": "0x415",
           "semanticName": "utf8.truncateBytes",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/utf8.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
           "registration": "src/native/utf8.mjs:46",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -44600,13 +44594,13 @@
           "hexID": "0x416",
           "semanticName": "utf8.truncateCharacters",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/utf8.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
           "registration": "src/native/utf8.mjs:46",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -44691,13 +44685,13 @@
           "hexID": "0x41b",
           "semanticName": "utf8.findCP932Key",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/utf8.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
           "registration": "src/native/utf8.mjs:46",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -47406,12 +47400,6 @@
           "dependencies": ["data-buffers", "engine-files", "retained-draw"]
         },
         {
-          "name": "unicode-output",
-          "registration": "src/native/unicode-output.mjs:229",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "particle-projection",
           "registration": "src/native/particles.mjs:31",
           "modules": ["src/native/particle-projection.mjs"],
@@ -48828,7 +48816,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-unicode-output.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49070,6 +49058,32 @@
         }
       ],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/cp932-data.mjs",
+      "sourceSha256": "d29ee27cafa3986a3cf3d8038bd3605b782d3f0fb61de8aab3b9019001d04780",
+      "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/cp932.mjs",
+      "sourceSha256": "e1c0fd7dd3301331ddc646e0f60cf2a6f6e323043df65f0f176a3acd757c6de7",
+      "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-strings.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/cursor.mjs",
@@ -56987,82 +57001,42 @@
     },
     {
       "file": "src/native/unicode-output.mjs",
-      "sourceSha256": "72e84e1e9127c5a1897ef10b94a68e00be65e2b170ae05951347f023167b66a0",
+      "sourceSha256": "eecd3c184478e9249b7b3f583ab643f965868933de37c15502770f78ff8cb6db",
       "domain": 3,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 21, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "callFromHost", "getNativeFeature", "in-image-literals"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-unicode-output.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/utf8-codec.mjs",
+      "sourceSha256": "113bbad8f7ffe5b1c461aefab3cd6104f7fd91884d22a83d6bb06770ec36b54c",
+      "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 175,
-          "method": "callFromHost",
-          "target": "HANDLERS[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 185,
-          "method": "call",
-          "target": "HANDLERS[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
-      "indirectSites": [
-        {
-          "line": 153,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 232,
-          "method": "getNativeFeature",
-          "feature": "unicode-output",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/utf8.mjs",
-      "sourceSha256": "b0814d1c911a1c877b9d8ebe14108853cade021c36e10047fefc31ab16bbb4d6",
+      "sourceSha256": "ba7453a066c6fbfe8ae2de663c7e9036a2268284732c386ee03b27e55c94f61c",
       "domain": 3,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 1, "references": 0 },
-      "dependencyTypes": ["call", "ensureNativeEngine", "getNativeFeature", "native-table-lookup"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 27,
-          "method": "call",
-          "target": "p.load(NATIVE_EXE_PROFILES[world.profile].tables.main.va + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 1 },
-      "indirectSites": [
-        {
-          "line": 14,
-          "method": "ensureNativeEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 18,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/version-query.mjs",
@@ -63678,30 +63652,6 @@
           "line": 78,
           "method": "call",
           "target": "this.address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/unicode-output.mjs",
-          "line": 175,
-          "method": "callFromHost",
-          "target": "HANDLERS[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/unicode-output.mjs",
-          "line": 185,
-          "method": "call",
-          "target": "HANDLERS[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/utf8.mjs",
-          "line": 27,
-          "method": "call",
-          "target": "p.load(NATIVE_EXE_PROFILES[world.profile].tables.main.va + id * 4)",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
