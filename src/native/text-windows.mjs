@@ -4,10 +4,14 @@ import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
 import { installNativeDIBs } from './windows-dib.mjs';
 import { installNativeGDIBitmaps } from './windows-gdi.mjs';
+import { installNativeFontEnumeration } from './windows-fonts.mjs';
 
 export class NativeTextWindows {
-  constructor(process, { glyphs = new CanvasTextGlyphs(), now = () => 0, kernel } = {}) {
-    Object.assign(this, { process, glyphs });
+  constructor(
+    process,
+    { glyphs = new CanvasTextGlyphs(), fontFamilies = () => [], now = () => 0, kernel } = {},
+  ) {
+    Object.assign(this, { process, glyphs, fontFamilies });
     this.kernel = kernel || new PPIWindowsServices(process, { now, epoch: 0 });
     this.definitions = new Map();
     this.functions = new Map();
@@ -103,6 +107,7 @@ export class NativeTextWindows {
       });
     installNativeDIBs(this);
     installNativeGDIBitmaps(this);
+    installNativeFontEnumeration(this);
   }
   createObject(kind, values) {
     const handle = this.nextObject++;

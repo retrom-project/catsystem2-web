@@ -107,3 +107,17 @@ and AppData. Tests verify that the paths address the browser's directory and
 file services and resolve the same way after restoring a native process.
 File searches enumerate the user directories separately from mounted content.
 [SHGetFolderPath contract](https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetfolderpatha)
+
+## GDI font families
+
+The font directory constructors at Game `6A8760` and SDK `578C20`
+enumerate twice: the first callback counts eligible rows and the second
+copies names into their original allocation. The GDI adapter passes its
+font catalog through ANSI or wide records and calls the original callbacks.
+The callbacks still decide which charset, pitch, font type and vertical names
+to retain. The host supplies metrics through the same glyph provider as text.
+
+The pinned Wine probe verifies the last callback result, early stop, an
+empty match, and invalid DC for both APIs. Both original constructors and
+destructors run in tests, including release of the restored name array.
+[EnumFontFamilies contract](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-enumfontfamiliesw)
