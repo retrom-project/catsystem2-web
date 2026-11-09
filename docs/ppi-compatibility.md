@@ -503,10 +503,20 @@ records at restoration and during continuation.
 each original engine during changes to a native plane's KX2 transform and
 visibility, Stop, restart, unload, fresh restore, model recreation, and
 detach. The mounted `em_question.ppi` matches 11 independent Wine callback
-records. Nine 8×8 interior crops match Wine D3D9 exactly. A few X coordinates
-are within one float32 ULP of the original x87 projection with control word
-`007F`. The complete frame is identical immediately after restoring the
-checkpoint taken with the attached graph absent.
+records. Nine 8×8 interior crops match Wine D3D9 exactly. All projected
+XYZRHW, color and UV words match the original executables byte for byte.
+The browser also draws the same DLL frame with two alternate x87 and SSE
+control settings, matching the independent i386 captures in each case.
+The complete frame is identical immediately after restoring the checkpoint
+taken with the attached graph absent.
+
+Mounted particle geometry reads the calling thread's x87 control word and
+MXCSR. The scalar D3DX path preserves the component-specific dot product
+order, significand rounding and float32 stores. It batches the original
+`FSINCOS` and float stores in the same process. Other floating-point modes
+or dispatch tables execute the mounted projector at game `5F5280` or SDK
+`4CFB30` and capture its DrawUP vertices. The shared GraphManager keeps
+ordering and submitting those vertices with the other scene layers.
 
 The observed D3D9 device does not advertise `D3DPRASTERCAPS_WBUFFER`. It accepts
 `D3DZB_USEW` while retaining z-based XYZRHW depth; the browser matches this

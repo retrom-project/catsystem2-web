@@ -25,6 +25,7 @@ export class Particles {
       epoch = 0,
       onDebug = null,
       nativeThread,
+      projectGeometry = particleGeometry,
     } = {},
   ) {
     this.stage = stage;
@@ -36,6 +37,7 @@ export class Particles {
     this.attachment = attachment;
     this.onDebug = onDebug;
     this.nativeThread = nativeThread;
+    this.projectGeometry = projectGeometry;
     this.clock = clock;
     this.epoch = epoch;
     this.now = clock ? () => clock.now() : now || (() => (this.frame * 1000) / this.fps);
@@ -443,13 +445,13 @@ export class Particles {
       bank.retireAt = frame + 1;
     this.metadata(bank);
   }
-  drawBatch(bank) {
+  async drawBatch(bank) {
     const projection = this.stage.nativeGraphics?.projection();
     const particles =
         bank.family === 'plugin' ? ppiParticles(bank.instance) : scriptParticles(bank.instance),
       alpha = bank.alpha >= 255 ? 256 : bank.alpha;
     return {
-      geometry: particleGeometry(particles, {
+      geometry: await this.projectGeometry(particles, {
         width: projection?.width ?? this.stage.width,
         height: projection?.height ?? this.stage.height,
         priority: bank.priority,
@@ -468,10 +470,10 @@ export class Particles {
       },
     };
   }
-  drawBank(key, gpu) {
+  async drawBank(key, gpu) {
     const bank = this.require(key);
     if (!bank.started || !bank.instance.active) return;
-    const batch = this.drawBatch(bank);
+    const batch = await this.drawBatch(bank);
     gpu.drawGeometry(batch.geometry, batch.image, batch.options);
   }
   drawItems() {
@@ -487,7 +489,7 @@ export class Particles {
         drawGPU: async (gpu) => this.drawBank(bank.key, gpu),
         draw: async (context) => {
           this.gpu ||= new ParticlesGL(this.stage.width, this.stage.height);
-          const batch = this.drawBatch(bank),
+          const batch = await this.drawBatch(bank),
             canvas = this.gpu.render(batch.geometry, batch.image, context.canvas, batch.options);
           context.save();
           context.setTransform(1, 0, 0, 1, 0, 0);

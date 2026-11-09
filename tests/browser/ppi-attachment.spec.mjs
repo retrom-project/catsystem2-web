@@ -52,7 +52,7 @@ for (const [profile, variable, prepare] of [
       });
       await page.goto('/');
       const result = await page.evaluate(
-        async ({ profile, names, plugin, prepare, crops, cropSize }) => {
+        async ({ profile, names, plugin, prepare, crops, cropSize, projectionModes }) => {
           const [
               { browserNativeWorld, placeBrowserNativePlane },
               { NativeGraphicsPacket },
@@ -175,6 +175,36 @@ for (const [profile, variable, prepare] of [
                 p.free(shell);
               }
             };
+            const renderVertices = async (current) => {
+              let vertices;
+              const gpu = current.stageRenderer.gpu,
+                drawGeometry = gpu.drawGeometry;
+              gpu.drawGeometry = function (geometry, image, options) {
+                if (image === bank(current).image)
+                  vertices = geometry.flatMap(({ vertices }) =>
+                    vertices.flatMap((v) => [
+                      floatBits(v.x),
+                      floatBits(v.y),
+                      floatBits(v.z),
+                      floatBits(v.w),
+                      v.color,
+                      floatBits(v.u),
+                      floatBits(v.v),
+                    ]),
+                  );
+                return drawGeometry.call(this, geometry, image, options);
+              };
+              try {
+                await current.stageRenderer.render(
+                  current.graphics.stage,
+                  null,
+                  current.particles.drawItems(),
+                );
+              } finally {
+                gpu.drawGeometry = drawGeometry;
+              }
+              return vertices;
+            };
             const phase = async (current, name, action, { refresh = true, id = graph } = {}) => {
               if (refresh) await originalFields(current, id);
               await action();
@@ -190,32 +220,8 @@ for (const [profile, variable, prepare] of [
                   records: await digest(p.records()),
                 };
               if (crops[name]) {
-                const gpu = current.stageRenderer.gpu,
-                  drawGeometry = gpu.drawGeometry;
-                gpu.drawGeometry = function (geometry, image, options) {
-                  if (image === currentBank.image)
-                    row.vertices = geometry.flatMap(({ vertices }) =>
-                      vertices.flatMap((v) => [
-                        floatBits(v.x),
-                        floatBits(v.y),
-                        floatBits(v.z),
-                        floatBits(v.w),
-                        v.color,
-                        floatBits(v.u),
-                        floatBits(v.v),
-                      ]),
-                    );
-                  return drawGeometry.call(this, geometry, image, options);
-                };
-                try {
-                  await current.stageRenderer.render(
-                    current.graphics.stage,
-                    null,
-                    current.particles.drawItems(),
-                  );
-                } finally {
-                  gpu.drawGeometry = drawGeometry;
-                }
+                row.vertices = await renderVertices(current);
+                const gpu = current.stageRenderer.gpu;
                 const pixels = gpu.pixels(),
                   [x, y] = crops[name];
                 row.hash = await digest(pixels);
@@ -231,6 +237,18 @@ for (const [profile, variable, prepare] of [
             await phase(world, 'init', () => call(world, 0x110, [nativeID]));
             await phase(world, 'exec0', () => world.tick());
             await phase(world, 'exec1', () => world.tick());
+            const modes = [],
+              process = world.nativeEngine.process,
+              saved = process.registers();
+            try {
+              for (const { control, mxcsr } of projectionModes) {
+                process.cpu.reg_write_i32(process.uc.X86_REG_FPCW, control);
+                process.cpu.reg_write_i32(process.uc.X86_REG_MXCSR, mxcsr);
+                modes.push(await renderVertices(world));
+              }
+            } finally {
+              process.writeRegisters(saved);
+            }
             await apply(world, [13.5, 1.25, 1800], [211, 160, 5], false);
             await phase(world, 'hidden-move', () => world.tick());
             await apply(world, [4.25, 17, 1900], [81, 151, 7], true);
@@ -247,7 +265,7 @@ for (const [profile, variable, prepare] of [
             await phase(fresh, 'recreated', () => fresh.tick());
             await call(fresh, 0x1ab, [nativeID, 0]);
             await phase(fresh, 'detached', () => fresh.tick(), { id: -1 });
-            return { graph, loaded, phases };
+            return { graph, loaded, phases, modes };
           } finally {
             await fresh?.close();
             await world.close();
@@ -259,6 +277,7 @@ for (const [profile, variable, prepare] of [
           plugin: golden.plugin,
           prepare,
           cropSize: golden.cropSize,
+          projectionModes: golden.projectionModes.map(({ control, mxcsr }) => ({ control, mxcsr })),
           crops: Object.fromEntries(
             golden.phases.filter((p) => p.origin).map((p) => [p.name, p.origin]),
           ),
@@ -276,17 +295,19 @@ for (const [profile, variable, prepare] of [
         if (expected.origin) {
           const vertices = Buffer.from(expected.vertices, 'base64');
           expect(sample.vertices.length * 4).toBe(vertices.length);
-          for (const [word, value] of sample.vertices.entries()) {
-            // The scalar x87 projection rounds some X fields one ULP earlier.
-            const error = Math.abs((value >>> 0) - vertices.readUInt32LE(word * 4));
-            expect(error, expected.name + ' vertex word ' + word).toBeLessThanOrEqual(
-              word % 7 === 0 ? 1 : 0,
-            );
-          }
+          expect(sample.vertices, expected.name).toEqual(
+            sample.vertices.map((_, word) => vertices.readUInt32LE(word * 4)),
+          );
           expect(sample.crop, expected.name).toEqual(
             Array.from({ length: golden.cropSize ** 2 }, () => expected.rgba).flat(),
           );
         }
+      }
+      for (const [i, mode] of golden.projectionModes.entries()) {
+        const vertices = Buffer.from(mode.vertices, 'base64');
+        expect(result.modes[i]).toEqual(
+          Array.from({ length: vertices.length / 4 }, (_, word) => vertices.readUInt32LE(word * 4)),
+        );
       }
       const unloaded = result.phases.find((p) => p.name === 'unloaded');
       const restored = result.phases.find((p) => p.name === 'restore-absent');

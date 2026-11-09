@@ -132,13 +132,18 @@ function sortParticleDepths(order, left, right) {
   }
 }
 
-export function particleGeometry(particles, options) {
-  const shifts = options.zShifts || [];
+export function particleDepthOrder(particles, shifts) {
   const order = particles.map((p, index) => ({
     index,
     depth: f(f(f(p.pos[2] + p.base[2]) + p.vertices[0].z) - f((shifts[index] || 0) * 65000)),
   }));
   sortParticleDepths(order, 0, order.length - 1);
+  return order;
+}
+
+export function particleGeometry(particles, options) {
+  const shifts = options.zShifts || [],
+    order = particleDepthOrder(particles, shifts);
   // Native 5F5280 indexes the final shift by sorted rank, while sort depth uses
   // original particle index. Retain this observable asymmetry.
   return order.flatMap(({ index }, rank) =>

@@ -2,6 +2,8 @@
 // Factory 5DDCB0 case 0x10 -> 5F4B50; native wrappers 657380..657890.
 // PTCL and PPI share kcTaskParticle. MSG 13A's leading DWORD selects the family.
 import { Particles } from '../particles.mjs';
+import { particleGeometry } from '../ppi/geometry.mjs';
+import { NativeParticleProjection } from './particle-projection.mjs';
 import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleCommands } from './particle-commands.mjs';
@@ -19,6 +21,11 @@ export class NativeParticles {
   constructor(world, options = {}) {
     this.world = world;
     this.tasks = new Map();
+    if (world.game.names?.('exe').length)
+      world.registerNativeFeature(
+        'particle-projection',
+        (engine) => new NativeParticleProjection(engine),
+      );
     this.host = new Particles(world.graphics.stage, {
       game: world.game,
       images: world.images,
@@ -26,6 +33,10 @@ export class NativeParticles {
       clock: world.clock,
       onDebug: (message) => world.host.nativeLog?.(message),
       nativeThread: () => world.nativeEngine?.process,
+      projectGeometry: async (particles, geometry) =>
+        world.nativeEngine
+          ? (await world.getNativeFeature('particle-projection')).geometry(particles, geometry)
+          : particleGeometry(particles, geometry),
       attachment: (handle) => {
         const graph = world.graphics.attachment(handle);
         return graph && { id: handle, ...graph, disp: Number(graph.display) };
