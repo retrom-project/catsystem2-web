@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    617 |             82 |                     19 |                     291 |
-| Game / 2.6.1.76 | 1,055 |                    879 |             58 |                     17 |                     101 |
+| SDK / 2.6.1.74  | 1,009 |                    619 |             82 |                     19 |                     289 |
+| Game / 2.6.1.76 | 1,055 |                    880 |             58 |                     17 |                     100 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -63,6 +63,10 @@ the game's native prefetch readiness check and the same pointer after restore.
 Main `1B1` uses both original [tiled SimplePlane](native-tile-plane.md)
 wrappers and receivers. The browser tests compare the rendered child tiles,
 the native model identities and the lifecycle across restoration.
+
+Main `2E3/2E4` use both original [view geometry queries](native-view-geometry.md).
+The wrappers preserve writes to overlapping destinations and all configured
+position modes, with live KCS calls in Chromium before and after restoration.
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file

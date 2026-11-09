@@ -7,6 +7,7 @@ export default {
     'native-image-composite.spec.mjs',
     'native-render-sources.spec.mjs',
     'native-tile-plane.spec.mjs',
+    'native-view-geometry.spec.mjs',
   ],
   outputDir: '.local/playwright-image',
 };
