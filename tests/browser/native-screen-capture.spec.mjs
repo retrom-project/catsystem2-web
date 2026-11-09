@@ -156,6 +156,50 @@ for (const [profile, variable] of [
           );
           await world.graphics.images.release(gdiShot);
           p.store(platform.refs.view + displayGate, 0);
+          const { initializeNativeStartupMenu } = await import(
+            '/src/native/engine-startup-menu.mjs'
+          );
+          const { initializeNativeLanguage } = await import('/src/native/engine-language.mjs');
+          await initializeNativeLanguage(world.nativeEngine);
+          await initializeNativeStartupMenu(world.nativeEngine);
+          const saveBitmap = async () => {
+            world.window.post(0x111, 0x10000 | 40030);
+            try {
+              await world.processWindowMessages();
+            } catch (error) {
+              throw new Error(
+                'Native menu capture failed: ' +
+                  JSON.stringify({
+                    message: error.message,
+                    fault: error.nativeFault,
+                    trace: error.trace,
+                  }),
+                { cause: error },
+              );
+            }
+          };
+          world.configuration.authorMode = 0;
+          await saveBitmap();
+          if (saved.size) throw new Error('Disabled menu capture wrote a file');
+          const previous = Uint8Array.of(12, 45, 78);
+          saved.set('cap0000.bmp', previous);
+          world.configuration.authorMode = 1;
+          await saveBitmap();
+          world.configuration.authorMode = 0;
+          const numbered = saved.get('cap0001.bmp');
+          if (!numbered)
+            throw new Error('Original menu did not write its first free BMP: ' + [...saved.keys()]);
+          equal(saved.get('cap0000.bmp'), previous, 'existing menu capture');
+          const decodedMenu = await createImageBitmap(new Blob([numbered], { type: 'image/bmp' })),
+            menuCanvas = new OffscreenCanvas(64, 48),
+            menuContext = menuCanvas.getContext('2d');
+          menuContext.drawImage(decodedMenu, 0, 0);
+          decodedMenu.close();
+          equal(
+            new Uint8Array(menuContext.getImageData(0, 0, 64, 48).data),
+            displayed,
+            'menu BMP pixels',
+          );
           const before = original.slice();
           await bitmap.fill(0, 0, 1, 1, 0xff123456);
           equal(pixels(world), displayed, 'independent captured bitmap');
@@ -271,7 +315,7 @@ for (const [profile, variable] of [
             wrapped,
             gated,
             asymmetric: [...displayed.slice((5 * 64 + 4) * 4, (5 * 64 + 4) * 4 + 4)],
-            saved: entries.length,
+            saved: entries.filter(([name]) => name.startsWith('capture/')).length,
           };
         } catch (error) {
           failure = error;
@@ -282,6 +326,10 @@ for (const [profile, variable] of [
           } catch (error) {
             failure ??= error;
           }
+        if (failure?.nativeFault)
+          throw new Error(failure.message + ': ' + JSON.stringify(failure.nativeFault), {
+            cause: failure,
+          });
         if (failure) throw failure;
         return output;
       },

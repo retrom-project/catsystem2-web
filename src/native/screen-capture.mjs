@@ -3,6 +3,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { formatNativeAt } from '../kcs.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 export const NATIVE_SCREEN_CAPTURE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x71, words: 0, control: 1, handlers: [0x64b690, 0x518290] }),
@@ -16,12 +17,16 @@ export const NATIVE_SCREEN_CAPTURE_LAYOUTS = Object.freeze({
     recording: 164,
     counter: 168,
     prefix: 172,
+    menuHandler: 0x530200,
+    menuCapture: 0x5305ef,
   }),
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
     capture: 0x54ca70,
     recording: 132,
     counter: 136,
     prefix: 140,
+    menuHandler: 0x442080,
+    menuCapture: 0x44240a,
   }),
 });
 const byID = new Map(NATIVE_SCREEN_CAPTURE_CONTRACTS.map((spec) => [spec.id, spec]));
@@ -59,6 +64,29 @@ export class NativeScreenCapture {
       throw error;
     } finally {
       await buffers.releaseBitmapPointer(wrapper);
+    }
+  }
+  async menuBitmap() {
+    const { engine, world, process: p, layout } = this,
+      owner = p.load(NATIVE_STARTUP_BLOCKS[engine.profile] + 36),
+      view = engine.features.get('graphics-platform')?.refs.view;
+    if (!owner || !view || !world.configuration.authorMode) return;
+    const buffers = await world.getNativeFeature('data-buffers'),
+      bitmap = await this.call(layout.capture, [], view);
+    if (!bitmap) return;
+    let detach;
+    try {
+      // The desktop requests the same capture from its render worker. The
+      // browser already serializes frames, so return the worker result at
+      // that call site and leave the name search, row copy and encoder intact.
+      detach = p.beforeInstruction(layout.menuCapture, 'screen capture worker result', () => {
+        p.cpu.reg_write_i32(p.uc.X86_REG_EAX, bitmap);
+        p.cpu.reg_write_i32(p.uc.X86_REG_EIP, layout.menuCapture + 5);
+      });
+      await this.call(layout.menuHandler, [world.window.handle, 0x111, 40030, 0, 0], owner);
+    } finally {
+      detach?.();
+      await buffers.releaseBitmapPointer(bitmap);
     }
   }
   async apply(id, args, machine, task) {

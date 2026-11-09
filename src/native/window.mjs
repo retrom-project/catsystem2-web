@@ -59,6 +59,10 @@ export class NativeWindow {
       }
       return true;
     }
+    if (command === 40030) {
+      if (world.nativeEngine) await (await world.getNativeFeature('screen-capture')).menuBitmap();
+      return true;
+    }
     if (command === 40096 && world.profile === 'nekopara-vol3-engine-2.6.1.76') {
       const engine = await world.ensureNativeEngine(),
         old = await engine.call(0x713f70, [], engine.refs.owner),

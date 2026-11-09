@@ -26,6 +26,13 @@ decoded BMP matches the displayed picture. D3D readback orientation is independe
 checked by the authored Wine PPI and M2 pixel fixtures; it is not changed to hide
 this bitmap contract.
 
+Window command 40030 uses the same original capture routine that the desktop
+render worker calls. The browser supplies its result directly to the original
+menu handler, which retains the author-mode gate, finds the first available
+`cap%04d.bmp`, flips the rows and writes through the game's persistent virtual
+directory. A Chromium test checks the disabled case, existing files and the
+entire decoded BMP against an asymmetric displayed frame for both engines.
+
 `scripts/verify-native-screen-recording.mjs` executes the complete original
 recording setter and getters, comparing whole view buffers and unchanged VM
 regions. Game passes 7,942 comparisons across 2,646 calls; SDK passes 9,265 across
