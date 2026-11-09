@@ -21,11 +21,6 @@ import { ParticleRandom } from './ppi/random.mjs';
 import { checkpointBytes } from './checkpoint.mjs';
 import { NativeWorld } from './native/world.mjs';
 import { NativeConfiguration } from './native/config.mjs';
-import {
-  NativeSoundConfiguration,
-  nativeSoundConfigurationFilename,
-  applyNativeSoundPreferences,
-} from './native/sound-config.mjs';
 import { NativeFileStorage } from './native/storage.mjs';
 import { parseNativeXML } from './native/xml.mjs';
 import { NATIVE_PROFILES } from './native/catalog.mjs';
@@ -132,20 +127,7 @@ export class CatSystem2 {
       nativeXML('startup.xml'),
       nativeXML('config.int/gamedef.xml', true),
     ]);
-    const soundFilename = nativeSoundConfigurationFilename(startup);
-    let sound;
-    if (soundFilename) {
-      try {
-        sound = await nativeXML(soundFilename);
-      } catch (error) {
-        this.host.nativeDiagnostic?.({
-          type: 'sound-configuration-invalid',
-          file: soundFilename,
-          message: error.message,
-        });
-      }
-    }
-    this.nativeDocuments = { startup, gamedef, sound };
+    this.nativeDocuments = { startup, gamedef };
     this.nativeStorage = new NativeFileStorage(this.game, this.identity);
     await this.nativeStorage.open();
     this.nativeFES = new Map();
@@ -155,15 +137,6 @@ export class CatSystem2 {
       this.onState(this.status());
       return;
     }
-    const soundConfiguration = this.world.soundConfiguration;
-    if (soundConfiguration.loaded && soundConfiguration.filename) {
-      const soundPreferences = await this.nativeStorage.readSaved(soundConfiguration.filename);
-      if (soundPreferences && !applyNativeSoundPreferences(soundConfiguration, soundPreferences))
-        this.host.nativeDiagnostic?.({
-          type: 'preferences-invalid',
-          file: soundConfiguration.filename,
-        });
-    }
     this.bindNativeBanks();
     const main = this.startup.value('SCRIPT', 'start') || 'main.kcs';
     await this.world.initialize(main);
@@ -172,7 +145,7 @@ export class CatSystem2 {
     this.onState(this.status());
   }
   createNativeWorld({ audio = this.audio } = {}) {
-    const { startup, gamedef, sound } = this.nativeDocuments,
+    const { startup, gamedef } = this.nativeDocuments,
       game = Object.create(this.game),
       uiLanguage = this.requestedUILanguage ?? browserWindowsLanguageID(),
       random = new ParticleRandom(this.randomSeed);
@@ -198,14 +171,6 @@ export class CatSystem2 {
         gamedef,
         fontAvailability: (name) => this.renderer.fontAvailable(name),
         uiLanguage,
-      }),
-      soundConfiguration: new NativeSoundConfiguration({
-        profile: this.nativeProfile,
-        document: sound,
-        filename: nativeSoundConfigurationFilename(startup),
-        loaded:
-          !!nativeSoundConfigurationFilename(startup) &&
-          game.has(nativeSoundConfigurationFilename(startup)),
       }),
       storage: this.nativeStorage,
       audio,

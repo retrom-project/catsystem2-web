@@ -28,8 +28,9 @@ export function nativeEnvironment(id, args, machine, services = {}) {
     if (!services.systemMenu?.setEnabled) return undefined;
     services.systemMenu.setEnabled(0x77, args[0] !== 0);
   } else if (id === 0x3aa) {
-    if (services.soundConfigurationAvailable === undefined) return undefined;
-    return nativeReply(1, Number(services.soundConfigurationAvailable));
+    const loaded = services.soundConfiguration?.loaded ?? services.soundConfigurationAvailable;
+    if (loaded === undefined) return undefined;
+    return nativeReply(1, Number(loaded));
   } else {
     if (!services.read || !services.format || !services.sound?.primary) return undefined;
     const file = services.format(args[1], machine);

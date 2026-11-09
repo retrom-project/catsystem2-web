@@ -1138,7 +1138,7 @@ test('native engine checkpoints restore through a fresh world, reject a broken c
       xml =
         '<?xml version="1.0" encoding="UTF-8"?><document>' +
         fixture.app +
-        '<SCREEN><width>32</width><height>32</height><v_width>32</v_width><v_height>32</v_height></SCREEN><SOUNDCONFIG>sound-options.xml</SOUNDCONFIG><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
+        '<SCREEN><width>32</width><height>32</height><v_width>32</v_width><v_height>32</v_height></SCREEN><SOUNDCONFIG>sound-options.xml</SOUNDCONFIG><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><ext>xml</ext></int01></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
       soundXML =
         '<?xml version="1.0" encoding="UTF-8"?><document><MASTER><volume>80</volume><play>1</play><sysplay>1</sysplay><mute>0</mute></MASTER></document>',
       sampleRate = 8000,

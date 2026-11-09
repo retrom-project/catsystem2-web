@@ -4,6 +4,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
+import { syncNativeStartupSoundConfiguration } from './engine-startup-sound.mjs';
 
 export const NATIVE_CONFIGURATION_QUERY_CONTRACTS = Object.freeze(
   [
@@ -117,9 +118,9 @@ export class NativeConfigurationQueries {
     ])
       this.string(at + offset, node?.[field] ?? '', strings);
     p.store(at + 48, node?.id ?? -1);
-    p.store(at + 100, node?.sameid ?? 0);
+    p.store(at + 100, node?.group ?? -1);
     p.store(at + 128, node?.mastervol ?? -1);
-    p.store(at + 156, node?.group ?? -1);
+    p.store(at + 156, node?.sameid ?? 0);
     defaults.forEach((field, i) => p.store(at + 132 + i * 4, node?.defaults[field] ?? -1));
     current.forEach((field, i) => p.store(at + 160 + i * 4, node?.current[field] ?? -1));
     this.vector(at + 184, node?.children ?? [], vectors, strings);
@@ -146,8 +147,12 @@ export class NativeConfigurationQueries {
         p.write(at + offset + bytes.length, [0]);
       }
     }
-    const sound = this.world.soundConfiguration,
-      vectors = new Set(),
+    const sound = this.world.soundConfiguration;
+    if (this.engine.refs.startupSoundConfiguration) {
+      syncNativeStartupSoundConfiguration(this.engine, sound);
+      return;
+    }
+    const vectors = new Set(),
       strings = new Set();
     p.store(owner + l.soundLoaded, Number(sound.loaded));
     if (sound.master) this.record(owner + l.soundMaster, sound.master, vectors, strings);
@@ -212,6 +217,13 @@ export class NativeConfigurationQueries {
   close() {
     if (this.closed) return;
     this.closed = true;
+    if (this.engine.refs.nativeOwner) {
+      for (const address of this.refs.vectors.keys()) this.process.zero(address, 12);
+      for (const address of this.refs.strings.keys()) {
+        this.process.zero(address, 24);
+        this.process.store(address + 20, 15);
+      }
+    }
     for (const pointer of this.refs.allocations) this.free(pointer);
     this.refs.vectors.clear();
     this.refs.strings.clear();

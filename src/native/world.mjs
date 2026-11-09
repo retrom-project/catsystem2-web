@@ -49,6 +49,7 @@ import {
   setNativeWindowCaption,
 } from './engine-startup-window.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
+import { readNativeStartupSoundConfiguration } from './engine-startup-sound.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
 import { installNativeText } from './text-task.mjs';
@@ -287,7 +288,6 @@ export class NativeWorld {
             : game.resolveCategory
               ? game.resolveCategory(name, category)
               : name,
-        soundConfigurationAvailable: this.soundConfiguration.loaded,
         persistence: storage,
         objects: this.objects,
         audio,
@@ -891,6 +891,13 @@ export class NativeWorld {
     return this.main;
   }
   async initializeApplicationServices(name) {
+    if (this.bootstrapOwner)
+      await readNativeStartupSoundConfiguration(
+        this.nativeEngine,
+        this.soundConfiguration,
+        (name) => this.storage.readSaved?.(name),
+        (detail) => this.host.nativeDiagnostic?.(detail),
+      );
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();
     this.refreshTitle();

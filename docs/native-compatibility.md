@@ -194,8 +194,9 @@ Fixed-binary tests cover event, hook and IME ownership after a fresh restore.
 
 The WinMain prelude also posts `0x40B` through its original USER32 import.
 The registered application callback creates the native display-mode owner,
-selects the configured or desktop dimensions and posts `0x40C`. The World
-handles `0x40C` as the boundary for browser devices and the Script entry.
+selects the configured or desktop dimensions and posts `0x40C`. At `0x40C`,
+the World calls the original sound configuration reader before initializing
+the browser devices and entering the Script task.
 Tests restore the queued `0x40B` in a fresh process and compare both display
 dimension branches, message order and destructor ownership.
 
@@ -601,13 +602,15 @@ Destination/value expressions execute once, before field validation. The facade
 owns no copy of the configuration and continues to use its restored backing.
 
 The root startup `SOUNDCONFIG` leaf supplies the resource and user-preference
-filename; its default is empty. Saving settings writes `setup.xml` and, when
-sound configuration is loaded, that separate sound document. Only the six mutable
-fields volume/play/sysplay/voicevol/skipvol/mute are saved recursively. The writer
-preserves native insertion order, CRLF indentation and profile encoding. A missing
-mute preference uses the sysplay default, as in the original reader. A malformed
-resource still sets the original file-existence flag but leaves numeric record
-initialization undefined; it is not replaced by a fabricated valid tree.
+filename, which defaults to empty. The x86 readers at SDK `5C5EF0` and game
+`7150B0` load the mounted XML and then read the optional same-named preference
+file from the virtual user directory. Configuration queries keep the original
+map and recursive record allocations and synchronize the six mutable values.
+Saving settings writes `setup.xml` and recursively saves
+volume/play/sysplay/voicevol/skipvol/mute to the separate sound document. The
+writer preserves native insertion order, CRLF indentation and profile encoding.
+A missing mute preference uses the sysplay default. A malformed resource sets
+the native file-existence flag and leaves numeric record initialization undefined.
 
 DirectSound percent 50 maps to -1,000 hundredths of a decibel, not a linear gain
 of 0.5. Loop positions are passed as signed 64-bit sample-frame positions; native
