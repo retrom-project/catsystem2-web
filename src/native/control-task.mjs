@@ -20,7 +20,7 @@ const ABI = Object.freeze({
     42: { construct: 0x5099c0, vtable: 0x997df4, size: 0x258 },
   },
 });
-function canonicalMessage(profile, kind, message) {
+export function canonicalMessage(profile, kind, message) {
   if (!profile.startsWith('sdk-')) return message;
   // NativeEngineMessages owns the Top's profile-specific rootStart layout.
   if (kind === 1) return message;

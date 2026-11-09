@@ -15,6 +15,9 @@ use the embedded engine. See [V8 3.26.16 flags](https://github.com/v8/v8/blob/3.
 The native tests construct the original JavaScript task, load an authored
 program and advance its closure through the original GameLoop callback.
 Restoring after the first frame reproduces the exit on the second frame in a
-fresh PE process. The tests also verify the allocator and task teardown. The
-KCS message route and the tutorial's drawing, input and sound need their own
-integration coverage.
+fresh PE process. The tests also verify the allocator and task teardown.
+KCS creates the original kind 55 task; its `3CE` link message creates a real
+input child, `3CF` runs the mounted script through the original filename
+formatter and loader, and `3EE` updates the original task option word.
+The linked KCS variable and string banks and the tutorial's drawing and sound
+need their own integration coverage.

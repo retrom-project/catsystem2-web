@@ -15,6 +15,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_FES_IDS, nativeFES } from './fes.mjs';
 import { createNativeFESTask } from './fes-task.mjs';
 import { createNativeScriptTask, installNativeScripts } from './script-task.mjs';
+import { installNativeSDKJavaScriptTasks } from './sdk-javascript-task.mjs';
 import { installNativeGraphics } from './graphics.mjs';
 import { NativeInput, nativeInput, NATIVE_INPUT_IDS } from './input.mjs';
 import { NativeInputBindings } from './input-bindings.mjs';
@@ -330,6 +331,7 @@ export class NativeWorld {
         nativeInputControl(id, args, machine, task, this),
       );
     installNativeScripts(this);
+    installNativeSDKJavaScriptTasks(this);
     installNativeVersionQuery(this);
     installNativeScriptMessageBox(this);
     this.runtime.services.objects.machine = (id) =>
