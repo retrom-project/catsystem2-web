@@ -6,6 +6,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
 import {
   installNativeWindowCommands,
+  NATIVE_WINDOW_COMMAND_CALLBACKS,
   nativeWindowMessageCommand,
 } from '../src/native/window-commands.mjs';
 const [filename, profile, output] = process.argv.slice(2);
@@ -20,7 +21,7 @@ const engine = await NativeEngineProcess.open({
   sdk = profile.startsWith('sdk-'),
   p = engine.process,
   table = NATIVE_PROFILES[profile].tables.main.va,
-  wndProc = sdk ? 0x442a30 : 0x531670,
+  wndProc = NATIVE_WINDOW_COMMAND_CALLBACKS[profile],
   context = p.allocate(124, true),
   out = p.allocate(4, true),
   hwnd = 0x1234,

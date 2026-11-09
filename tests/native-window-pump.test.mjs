@@ -12,6 +12,8 @@ import {
 } from '../src/native/engine-startup-window.mjs';
 import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
 import { runNativeWindowPump } from '../src/native/engine-window-pump.mjs';
+import { NativeWindow } from '../src/native/window.mjs';
+import { NATIVE_WINDOW_COMMAND_CALLBACKS } from '../src/native/window-commands.mjs';
 
 for (const [profile, variable, suffix] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'A'],
@@ -90,10 +92,61 @@ for (const [profile, variable, suffix] of [
           assert.equal(messageQueue.pending, false);
           assert.equal(await pump(), null);
           assert.equal(count('MsgWaitForMultipleObjects'), 2);
+
+          const actions = [],
+            packets = [],
+            callbackArgs = [],
+            app = new NativeWindow({
+              profile,
+              nativeEngine: engine,
+              configuration: engine.options.configuration,
+              host: {
+                nativeWindowAction: ({ type }) => actions.push(type),
+              },
+            }),
+            unhookCallback = p.beforeInstruction(
+              NATIVE_WINDOW_COMMAND_CALLBACKS[profile],
+              'observe original Script menu callback',
+              () => {
+                const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+                callbackArgs.push(
+                  Array.from({ length: 6 }, (_, index) => p.load(sp + 4 + index * 4)),
+                );
+              },
+            );
+          try {
+            app.post(0x46c, 23, 0xffffffff);
+            app.post(0x46c, 42, 12);
+            assert.equal(
+              await runNativeWindowPump(engine, handle, {
+                handles: (message, wParam) => app.handlesBrowserMessage(message, wParam),
+                async deliver(packet) {
+                  packets.push(packet);
+                  await app.message(packet);
+                },
+                stopping: () => false,
+              }),
+              null,
+            );
+            const context = NATIVE_STARTUP_BLOCKS[profile];
+            assert.deepEqual(callbackArgs, [
+              [context, handle, 0x46c, 23, 0xffffffff, 0],
+              [context, handle, 0x46c, 42, 12, 0],
+            ]);
+            assert.deepEqual(packets.slice(2), [
+              { message: 0x111, wParam: 40021, lParam: 0 },
+              { message: 0x112, wParam: 0xf020, lParam: 0 },
+            ]);
+            assert.deepEqual(actions, ['minimize']);
+            assert.equal(count('PostMessage' + suffix), 1);
+          } finally {
+            unhookCallback();
+          }
+
           await engine.call(user32('PostQuitMessage'), [-29]);
           assert.equal(await pump(), -29);
-          assert.equal(count('GetMessage' + suffix), 6);
-          assert.equal(count('DispatchMessage' + suffix), 5);
+          assert.equal(count('GetMessage' + suffix), 10);
+          assert.equal(count('DispatchMessage' + suffix), 9);
           assert.equal(messageQueue.pending, false);
           assert.equal(messageQueue.dispatchToHost, undefined);
         } finally {

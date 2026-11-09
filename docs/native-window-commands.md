@@ -81,8 +81,10 @@ the browser. Raw traces and original executable bytes remain ignored.
 
 ## Browser execution
 
-The World drains posted messages in order, including a `0x46C` callback's
-posted `WM_COMMAND`. Title and close confirmations use the native translated
+The World runs the original `kcWindow` loop. Its application window calls
+SDK `442A30` or game `531670` for messages `0x469..0x46C`. The callback
+posts its resulting `WM_COMMAND` to the same queue as other window
+messages. Title and close confirmations use the native translated
 captions/body. `WM_CLOSE` cancellation keeps the World alive. Acceptance hides
 the view and posts `0x410`, which sends the original filtered Script-disable
 event before requesting teardown. The Engine waits for its active frame,

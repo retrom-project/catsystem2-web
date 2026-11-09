@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
-import { nativeWindowLanguageCommand, nativeWindowMessageCommand } from './window-commands.mjs';
+import {
+  NATIVE_WINDOW_COMMAND_CALLBACKS,
+  nativeWindowLanguageCommand,
+  nativeWindowMessageCommand,
+} from './window-commands.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { browserVirtualKey } from './input-bindings.mjs';
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
@@ -215,6 +219,20 @@ export class NativeWindow {
       return true;
     }
     if (message.message >= 0x469 && message.message <= 0x46c) {
+      if (this.opened) {
+        const { nativeEngine, profile } = this.world;
+        // These four branches only post their command and never write the
+        // optional LRESULT. WinMain supplies its startup record as context.
+        await nativeEngine.call(NATIVE_WINDOW_COMMAND_CALLBACKS[profile], [
+          NATIVE_STARTUP_BLOCKS[profile],
+          this.handle,
+          message.message,
+          message.wParam,
+          message.lParam,
+          0,
+        ]);
+        return true;
+      }
       const command = nativeWindowMessageCommand(message.message, message.lParam);
       if (command !== null) this.post(0x111, command);
       return true;

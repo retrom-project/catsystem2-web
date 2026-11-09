@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
-// Game 531670 and SDK 442A30 translate private messages into WM_COMMAND.
 import { nativeReply } from '../kcs/vm.mjs';
+
+export const NATIVE_WINDOW_COMMAND_CALLBACKS = Object.freeze({
+  'sdk-4.01-engine-2.6.1.74': 0x442a30,
+  'nekopara-vol3-engine-2.6.1.76': 0x531670,
+});
 
 const scriptMessages = new Map([
     [0x34d, 0x469],
