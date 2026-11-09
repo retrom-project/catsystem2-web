@@ -7,9 +7,8 @@ import { CatSystem2 } from '../src/engine.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
-async function fixture() {
-  const profile = 'sdk-4.01-engine-2.6.1.74',
-    game = memoryGame({ 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) }),
+async function fixture(profile = 'sdk-4.01-engine-2.6.1.74') {
+  const game = memoryGame({ 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) }),
     random = new ParticleRandom(),
     configuration = new NativeConfiguration({ profile }),
     trace = [],
@@ -39,6 +38,32 @@ async function fixture() {
   };
   return { world, trace, host };
 }
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(`${profile} Script window requests post before toggling display, minimizing or asking to close`, async () => {
+    const { world, trace } = await fixture(profile);
+    try {
+      const [task] = world.runtime.scheduler.tasks.values(),
+        request = (id) =>
+          world.runtime.native('main', id, [], task.machine, task, world.runtime.scheduler);
+      for (const [id, message, expected] of [
+        [0x34d, 0x469, [['mode', 1]]],
+        [0x34d, 0x469, [['mode', 0]]],
+        [0x34e, 0x46a, ['minimize']],
+        [0x34f, 0x46b, [['event', 158, 0, 1], 'confirm-close']],
+      ]) {
+        trace.length = 0;
+        assert.deepEqual(request(id), { control: 2 });
+        assert.deepEqual(world.windowMessages, [{ message, wParam: 0, lParam: 0 }]);
+        assert.deepEqual(trace, []);
+        await world.processWindowMessages();
+        assert.deepEqual(trace, expected);
+        assert.deepEqual(world.windowMessages, []);
+      }
+      assert.equal(world.quitRequested, undefined);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
 test('window messages drain posted menu commands and preserve native preparation/action order', async () => {
   const { world, trace } = await fixture();
   try {

@@ -259,6 +259,20 @@ try {
       assert.equal(result, [2, 22, 30, 31].includes(selector) ? 1 : 0);
       results.push({ selector, variant, result, trace: trace.slice() });
     }
+  for (const locked of [0, 1])
+    for (const fullscreen of [0, 1]) {
+      trace.length = 0;
+      p.store(app + 44, locked);
+      p.store(engine.refs.settings + f.fullscreen, fullscreen);
+      const command = 40012,
+        result = await engine.call(f.menu, [0x1234, 0x111, command, 0, 0], menu);
+      assert.equal(result, 0);
+      assert.deepEqual(
+        trace,
+        locked ? [] : [['pause'], [fullscreen ? 'window' : 'full'], ['update'], ['resume']],
+      );
+      results.push({ command, locked, fullscreen, result, trace: trace.slice() });
+    }
   await writeFile(
     output,
     JSON.stringify(

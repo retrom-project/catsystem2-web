@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
-// Runs the original application callback only for its 0x46C dispatch branch.
+// Runs original Script wrappers and the application's private-message dispatch.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { nativeWindowMenuCommand } from '../src/native/window-commands.mjs';
+import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
+import {
+  installNativeWindowCommands,
+  nativeWindowMessageCommand,
+} from '../src/native/window-commands.mjs';
 const [filename, profile, output] = process.argv.slice(2);
 if (!output)
   throw new Error(
@@ -14,28 +18,57 @@ const engine = await NativeEngineProcess.open({
     profile,
   }),
   sdk = profile.startsWith('sdk-'),
+  p = engine.process,
+  table = NATIVE_PROFILES[profile].tables.main.va,
+  wndProc = sdk ? 0x442a30 : 0x531670,
+  context = p.allocate(124, true),
+  out = p.allocate(4, true),
+  hwnd = 0x1234,
+  handlers = new Map(),
   posts = [];
+p.store(context + 120, hwnd);
+let postResult = 1;
 engine.registerWindows('USER32.dll', sdk ? 'PostMessageA' : 'PostMessageW', {
   count: 4,
   fn: (args) => {
     posts.push(args);
-    return 1;
+    return postResult;
   },
 });
+installNativeWindowCommands({
+  runtime: {
+    register: (table, id, handler) => {
+      assert.equal(table, 'main');
+      handlers.set(id, handler);
+    },
+  },
+  window: { post: (message) => posts.push([hwnd, message, 0, 0]) },
+});
 let passed = 0;
+async function compareDispatch(message, wParam, lParam) {
+  posts.length = 0;
+  await engine.call(wndProc, [0, hwnd, message, wParam, lParam, 0]);
+  const command = nativeWindowMessageCommand(message, lParam);
+  assert.deepEqual(posts, command === null ? [] : [[hwnd, 0x111, command, 0]]);
+  passed++;
+}
 try {
-  for (const selector of [
-    -2147483648,
-    -1,
-    ...Array.from({ length: 45 }, (_, i) => i),
-    0x7fffffff,
-  ]) {
-    posts.length = 0;
-    await engine.call(sdk ? 0x442a30 : 0x531670, [0, 0x1234, 0x46c, 0, selector >>> 0, 0]);
-    const command = nativeWindowMenuCommand(selector);
-    assert.deepEqual(posts, command === null ? [] : [[0x1234, 0x111, command, 0]]);
-    passed++;
-  }
+  for (const selector of [-2147483648, -1, ...Array.from({ length: 45 }, (_, i) => i), 0x7fffffff])
+    await compareDispatch(0x46c, 0, selector >>> 0);
+  for (const id of [0x34d, 0x34e, 0x34f])
+    for (postResult of [0, 1]) {
+      posts.length = 0;
+      p.store(out, 0xcccccccc);
+      const control = await engine.call(p.load(table + id * 4), [0, context, 0xffffffff, out]),
+        originalPosts = posts.splice(0),
+        reply = handlers.get(id)([]);
+      assert.deepEqual(reply, { control });
+      assert.equal(p.load(out), 0xcccccccc);
+      assert.deepEqual(posts, originalPosts);
+      passed += 3;
+      const [, message] = originalPosts[0];
+      await compareDispatch(message, 0x12345678, 0xabcdef01);
+    }
   await writeFile(output, JSON.stringify({ profile, comparisons: passed }, null, 2) + '\n');
   console.log(`${profile}: ${passed} original window command dispatches passed`);
 } finally {

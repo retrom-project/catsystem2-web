@@ -1,10 +1,18 @@
-# FES window menu commands
+# Native window commands
 
 `wndmenu` evaluates its first argument and posts window message `0x46C` with
 `wParam=0` and that unsigned word in `lParam`. A missing argument emits no
 event. The original application callback maps thirteen selectors to
 `WM_COMMAND`. Unknown selectors do nothing. The FES event number differs by
 profile: game 27 and SDK 30 both lead to the same window message.
+
+The KCS natives `34D..34F` post `0x469..0x46B` with both parameters zero
+and return control 2, regardless of the Windows post result. The window
+procedure then posts `WM_COMMAND` 40012 (toggle fullscreen), 40021 (minimize)
+or 40002 (request exit). The toggle does nothing when the original startup
+record forces fullscreen because of the desktop color depth. The browser
+desktop normally supplies 32 bits per pixel. Minimization uses the browser
+pause view, and the exit command shares the regular confirmation path.
 
 The command handler's common preparation sends event `(158,0,1)` in the game
 and `(156,0,1)` in the SDK, when the application's script core and its root
@@ -59,11 +67,13 @@ and the independently recovered SDK handlers `619350`, `501350`, `442A30`,
 helpers `530A20`/`530B00` correspond to SDK `442780`/`442860`.
 
 `scripts/verify-native-window-commands.mjs` executes the original application
-callback for 48 selector values in each frozen profile. The action probe
+callback for 48 selector values, then checks the three KCS wrappers and their
+posted messages with both Windows post results, in each frozen profile. The action probe
 `scripts/verify-native-window-actions.mjs` executes each original menu handler
-and event helper for 208 cases per profile: all thirteen commands, both
+and event helper for 212 cases per profile: all thirteen FES commands, both
 fullscreen states, present/missing script core and root, both confirmation
-answers, and nonzero high bits in the command word. Its 832 comparisons check
+answers, nonzero high bits in the command word, and the Script toggle with or
+without the startup lock. Its 848 comparisons check
 call order, packet words and handler return values. Dialogs, shell execution,
 display changes, translation and configuration UI remain declared host
 boundaries in that probe; it does not claim to execute the Windows UI inside

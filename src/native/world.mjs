@@ -55,6 +55,7 @@ import { installNativePlainText } from './text-plain.mjs';
 import { installNativeUTF8 } from './utf8.mjs';
 import { installNativeWindowEvents } from './window-events.mjs';
 import { NativeWindow } from './window.mjs';
+import { installNativeWindowCommands } from './window-commands.mjs';
 import { inspectNativeM2Bootstrap } from './emote-bootstrap.mjs';
 import { installNativeSteam } from './steam.mjs';
 import { installNativeRecordQueues } from './record-queue.mjs';
@@ -368,6 +369,7 @@ export class NativeWorld {
     installNativePlainText(this);
     installNativeUTF8(this);
     installNativeWindowEvents(this);
+    installNativeWindowCommands(this);
     installNativeSteam(this, steam);
     installNativeRecordQueues(this);
     installNativeTileGame(this);

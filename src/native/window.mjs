@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
-import { nativeWindowMenuCommand } from './window-commands.mjs';
+import { nativeWindowMessageCommand } from './window-commands.mjs';
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
-    119, 40045, 40002, 40008, 40009, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
+    119, 40045, 40002, 40008, 40009, 40012, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
   ]);
 export class NativeWindow {
   constructor(world) {
@@ -73,9 +74,16 @@ export class NativeWindow {
         this.post(0x10);
         break;
       case 40008:
-      case 40009: {
-        const fullscreen = command === 40008,
-          screen = world.configuration.screen;
+      case 40009:
+      case 40012: {
+        // The native desktop survey can force fullscreen on unsupported color depths.
+        if (
+          command === 40012 &&
+          world.nativeEngine?.process.load(NATIVE_STARTUP_BLOCKS[world.profile] + 44)
+        )
+          break;
+        const screen = world.configuration.screen,
+          fullscreen = command === 40012 ? !screen.fullscreen : command === 40008;
         if (Boolean(screen.fullscreen) === fullscreen) break;
         if (fullscreen && screen.noFullResolution) {
           screen.fullWidth = world.graphics.view.clientWidth;
@@ -123,8 +131,8 @@ export class NativeWindow {
       await this.sendEvent(21);
       return true;
     }
-    if (message.message === 0x46c) {
-      const command = nativeWindowMenuCommand(message.lParam);
+    if (message.message >= 0x469 && message.message <= 0x46c) {
+      const command = nativeWindowMessageCommand(message.message, message.lParam);
       if (command !== null) this.post(0x111, command);
       return true;
     }
