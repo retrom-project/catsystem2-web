@@ -3,6 +3,7 @@ import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
 import { NativeFileAccess, installNativeFormattedFileOutput } from './storage.mjs';
+import { installNativeVersionQuery } from './version-query.mjs';
 import { NativeMotionRegistry } from './motion.mjs';
 import {
   NativeSoundConfiguration,
@@ -320,6 +321,7 @@ export class NativeWorld {
         nativeInputControl(id, args, machine, task, this),
       );
     installNativeScripts(this);
+    installNativeVersionQuery(this);
     this.runtime.services.objects.machine = (id) =>
       this.runtime.scheduler.tasks.get(id)?.machine ?? null;
     for (const id of NATIVE_FES_IDS)

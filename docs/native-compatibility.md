@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    603 |             82 |                     19 |                     305 |
-| Game / 2.6.1.76 | 1,055 |                    870 |             58 |                     17 |                     110 |
+| SDK / 2.6.1.74  | 1,009 |                    604 |             82 |                     19 |                     304 |
+| Game / 2.6.1.76 | 1,055 |                    871 |             58 |                     17 |                     109 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -56,6 +56,14 @@ the VM formatter; the filename is literal. The original file helper seeks to
 the last existing byte, then writes the formatted CP932 bytes and CRLF. A
 two-profile KCS test covers creation, this overwrite on a second write after
 restoration, read-only failure, and handle closure.
+
+Module version query `1BC` executes the SDK `51B8F0` and game `6502A0`
+wrappers and their complete version-string parsers. Both read the actual main
+image name and localized `FileVersion` resource through
+[Win32 version imports](native-windows-platform.md). Four original DWORD
+writes preserve their order even when the VM destinations alias. A KCS
+program covers the actual wrappers, live VM addresses and aliased output in a
+fresh World on both fixed executables.
 
 The [matrix/vector family](native-vector-matrix.md) executes all nine original
 0x15E..166 wrappers and arithmetic helpers. Two-profile evidence includes
