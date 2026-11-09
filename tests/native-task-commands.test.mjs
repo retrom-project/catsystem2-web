@@ -71,6 +71,16 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.deepEqual(await call(inner, 0x2b6, [0xffffffff, 17]), { control: 2 });
       assert.equal(world.objects.objects.get(outerPlane).userValue, 0xffffffff);
       assert.equal(world.objects.objects.get(innerPlane).userValue, 0x80000000);
+      assert.deepEqual(await call(inner, 0x241, [0xff123456]), { control: 2 });
+      assert.deepEqual(zeroMessages.at(-1), [
+        world.nativeTaskID(inner.id),
+        world.engineMessages.layout.rootStart + 8,
+        0,
+        0xff123456,
+      ]);
+      await call(world.main, 0x241, [0x80000000]);
+      assert.equal(outer.implementation.field, 0x80000000);
+      assert.equal(nested.implementation.field, 0xff123456);
       const observed = [],
         implementation = world.objects.objects.get(innerPlane).implementation,
         original = implementation.message.bind(implementation),
@@ -143,6 +153,11 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.equal(fresh.objects.objects.get(innerPlane).exitCode, -1);
       assert.equal(fresh.objects.objects.get(outerPlane).userValue, 0xffffffff);
       assert.equal(fresh.objects.objects.get(innerPlane).userValue, 0x80000000);
+      assert.equal(fresh.objects.objects.get(innerTop).implementation.field, 0xff123456);
+      assert.equal(fresh.objects.objects.get(fresh.root).implementation.field, 0x80000000);
+      await invoke(0x241, [0]);
+      assert.equal(fresh.objects.objects.get(innerTop).implementation.field, 0);
+      assert.equal(nested.implementation.field, 0xff123456);
       await invoke(0x2b6, [nativePlane, 0]);
       assert.equal(fresh.objects.objects.get(innerPlane).userValue, 0);
       assert.equal(world.objects.objects.get(innerPlane).userValue, 0x80000000);

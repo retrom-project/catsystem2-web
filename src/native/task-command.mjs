@@ -3,7 +3,7 @@
 // to the caller's Top namespace.
 import { nativeReply, formatNativeAt } from '../kcs.mjs';
 
-export const NATIVE_TASK_COMMAND_IDS = Object.freeze([0x28b, 0x28d, 0x28e, 0x28f, 0x2b6]);
+export const NATIVE_TASK_COMMAND_IDS = Object.freeze([0x241, 0x28b, 0x28d, 0x28e, 0x28f, 0x2b6]);
 
 class Packet {
   constructor(size) {
@@ -25,9 +25,22 @@ class Packet {
 
 export async function nativeTaskCommand(id, args, machine, task, world) {
   if (!NATIVE_TASK_COMMAND_IDS.includes(id)) return undefined;
-  const count = id === 0x28b ? 1 : id === 0x28e ? 3 : 2;
+  const count = id === 0x241 || id === 0x28b ? 1 : id === 0x28e ? 3 : 2;
   if (args.length !== count)
     throw new Error(`Native task command 0x${id.toString(16)} expects ${count} arguments`);
+  if (id === 0x241) {
+    await world.sendNativeEngine(
+      0,
+      task.id,
+      world.engineMessages.layout.rootStart + 8,
+      0,
+      args[0],
+      {
+        flags: 0,
+      },
+    );
+    return nativeReply(2);
+  }
   const send = (message, w = 0, l = 0, payload = undefined) =>
     world.sendNativeEngine(args[0], task.id, message, w, l, {
       ...(payload ? { payload } : {}),

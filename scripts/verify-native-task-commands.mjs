@@ -47,7 +47,9 @@ let id,
   writeQuery = false,
   passed = 0,
   operations = 0;
+const sdk = profile.startsWith('sdk-');
 const messages = new Map([
+  [0x241, [sdk ? 38 : 40, 38]],
   [0x28b, [24, 24]],
   [0x28d, [84, 82]],
   [0x28e, [85, 83]],
@@ -94,7 +96,7 @@ try {
     vft + 16,
     p.trap('task command oracle transport', 7, ([sender, target, message, w, l, flags, out]) => {
       const [canonical, sdkMessage] = messages.get(id);
-      assert.equal(message, profile.startsWith('sdk-') ? sdkMessage : canonical);
+      assert.equal(message, sdk ? sdkMessage : canonical);
       p.store(out, 0x75231468);
       return receive(sender, target, canonical, w, l, flags, {
         load: (a) => p.load(a),
@@ -122,13 +124,15 @@ try {
           machine.store(2048, word);
           machine.fp = 4096;
           const args =
-              id === 0x28b
-                ? [target]
-                : id === 0x28e
-                  ? [target, address, 0x80000800]
-                  : id === 0x28f
-                    ? [target, address]
-                    : [target, word],
+              id === 0x241
+                ? [word]
+                : id === 0x28b
+                  ? [target]
+                  : id === 0x28e
+                    ? [target, address, 0x80000800]
+                    : id === 0x28f
+                      ? [target, address]
+                      : [target, word],
             before = vm(),
             bridge = new NativeKCSMemory(p, machine);
           writeQuery = sourceIndex % 2 === 0;
@@ -156,6 +160,7 @@ try {
             machine,
             { id: 37 },
             {
+              engineMessages: { layout: { rootStart: sdk ? 30 : 32 } },
               sendNativeEngine: async (target, sender, message, w, l, context) =>
                 receive(sender, target, message, w, l, context.flags ?? 0, context.payload),
             },
@@ -179,7 +184,7 @@ try {
         operations,
         passed,
         scope:
-          'Complete original main28B/28D/28E/28F/291/2B6, original VM translation and formatter. Exact routing words, target zero, all DWORD extremes, raw CP932/UTF-8/invalid-byte formatted strings from data/shared/blocks, 255-byte scratch, output initialization and optional query writes, full VM and result canaries. Receiver-specific graphics/retained state is checked separately.',
+          'Complete original main241/28B/28D/28E/28F/291/2B6, original VM translation and formatter. Exact routing words, target zero, all DWORD extremes, raw CP932/UTF-8/invalid-byte formatted strings from data/shared/blocks, 255-byte scratch, output initialization and optional query writes, full VM and result canaries. Receiver-specific graphics/retained state is checked separately.',
       },
       null,
       2,

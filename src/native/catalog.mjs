@@ -1814,6 +1814,7 @@ const extendedDescriptions = [
   [0x219, 'bitmap.copyAttributes', ['handle destination', 'handle source'], 'bool'],
   [0x21a, 'bitmap.filter', ['handle bitmap', 'word first', 'word second'], 'void'],
   [0x28b, 'task.resetExitCode', ['nativeID target'], 'void'],
+  [0x241, 'task.setTopValue', ['word value'], 'void'],
   [0x2b6, 'task.setUserValue', ['nativeID target', 'word value'], 'void'],
   [0x28d, 'task.message84', ['nativeID target', 'word value'], 'void'],
   [0x28e, 'task.message85', ['nativeID target', 'format* first', 'format* second'], 'void'],
@@ -3266,8 +3267,8 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
       0x3e4, 0x3e5, 0x3e6,
     ].includes(id) ||
     [
-      0x292, 0x293, 0x21b, 0x21c, 0x256, 0x388, 0x312, 0x2ab, 0x2ac, 0x2ad, 0x28b, 0x28d, 0x28e,
-      0x28f,
+      0x241, 0x292, 0x293, 0x21b, 0x21c, 0x256, 0x388, 0x312, 0x2ab, 0x2ac, 0x2ad, 0x28b, 0x28d,
+      0x28e, 0x28f,
     ].includes(id) ||
     (id >= 0x35f && id <= 0x364) ||
     [0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e, 0x3df, 0x3e0, 0x3e2].includes(id) ||
