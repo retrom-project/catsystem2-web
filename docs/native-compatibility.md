@@ -612,6 +612,15 @@ writer preserves native insertion order, CRLF indentation and profile encoding.
 A missing mute preference uses the sysplay default. A malformed resource sets
 the native file-existence flag and leaves numeric record initialization undefined.
 
+Both original engines resolve `DirectSoundCreate8` through ordinal 11. The
+virtual playback device exposes the primary `IDirectSoundBuffer` used by the
+SDK `4AA3F0` and game `5CD370` initializers. Both routines set 44,100 Hz,
+16-bit stereo PCM after selecting priority mode. The cooperative level,
+format and COM references survive a fresh restore. This boundary covers
+primary PCM negotiation. Startup audio workers and secondary buffer
+playback have separate contracts. [DirectSoundCreate8](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416762(v=vs.85)>),
+[SetFormat](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/mt708936(v=vs.85)>).
+
 DirectSound percent 50 maps to -1,000 hundredths of a decibel, not a linear gain
 of 0.5. Loop positions are passed as signed 64-bit sample-frame positions; native
 playback halves start and nonnegative end at 22,050 Hz and leaves other rates

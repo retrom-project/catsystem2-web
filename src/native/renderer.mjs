@@ -3,7 +3,7 @@
 // The browser owns one COM device and the Windows services those objects use.
 import { EmoteD3D9 } from '../emote/native-d3d.mjs';
 import { NativeGraphicsPlatform } from './graphics-process.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { installNativeDirectSound } from './windows-directsound.mjs';
 
 export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -102,36 +102,7 @@ export class NativeRenderer {
     kernel.registerHostModule('d3d9.dll', {
       Direct3DCreate9: kernel.resolve({ dll: 'D3D9.dll', name: 'Direct3DCreate9' }),
     });
-    const exports = new Map();
-    for (const suffix of ['A', 'W']) {
-      const name = `DirectSoundEnumerate${suffix}`,
-        wide = suffix === 'W';
-      register('DSOUND.dll', name, 2, async ([callback, context]) => {
-        if (!callback) return 0x80070057;
-        // A live browser audio sink exposes one primary output. Headless
-        // component clients without an audio sink expose no sound endpoint.
-        if (!world.audio) return 0;
-        const text = wide
-            ? new Uint8Array(
-                Uint16Array.from([...'Browser audio output\0'], (c) => c.charCodeAt(0)).buffer,
-              )
-            : encodeCP932('Browser audio output\0'),
-          description = p.allocate(text.length, true),
-          driver = p.allocate(wide ? 2 : 1, true);
-        try {
-          p.write(description, text);
-          await this.call(callback, [0, description, driver, context]);
-        } finally {
-          p.free(description);
-          p.free(driver);
-        }
-        return 0;
-      });
-      const address = kernel.resolve({ dll: 'DSOUND.dll', name });
-      exports.set(name, address);
-      exports.set(wide ? 3 : 2, address);
-    }
-    kernel.registerHostModule('dsound.dll', exports);
+    installNativeDirectSound(this.engine, () => Boolean(world.audio));
     register('USER32.dll', 'IsWindow', 1, ([handle]) => Number(handle === hwnd));
     register('USER32.dll', 'IsIconic', 1, ([handle]) =>
       Number(handle === hwnd && Boolean(world.host.nativeWindowMinimized?.())),
