@@ -2,6 +2,7 @@
 // Win32 directory searches over mounted loose files and persistent native data.
 import { nativeFileTime } from './file-time.mjs';
 import { nativeFilePattern } from './file-pattern.mjs';
+import { isNativeUserPath } from './windows-folders.mjs';
 export function installNativeFileSearch(kernel) {
   const p = kernel.process;
   kernel.finds = new Map();
@@ -58,12 +59,14 @@ export function installNativeFileSearch(kernel) {
       }
       const slash = path.lastIndexOf('/'),
         directory = slash < 0 ? '' : path.slice(0, slash).toLowerCase(),
+        user = isNativeUserPath(directory),
         mask = path.slice(slash + 1),
         entries = new Map(),
         all = await kernel.list();
       for (const value of all) {
-        const name = kernel.path(value.name),
-          parts = name.split('/');
+        const name = kernel.path(value.name);
+        if (isNativeUserPath(name) !== user) continue;
+        const parts = name.split('/');
         for (let i = 1; i < parts.length; i++) {
           const folder = parts.slice(0, i).join('/');
           if (!entries.has(folder.toLowerCase()))
@@ -72,7 +75,8 @@ export function installNativeFileSearch(kernel) {
         if (!entries.has(name.toLowerCase())) entries.set(name.toLowerCase(), { ...value, name });
       }
       for (const name of kernel.directories)
-        if (name && !entries.has(name)) entries.set(name, { name, attributes: 0x10, size: 0 });
+        if (name && isNativeUserPath(name) === user && !entries.has(name))
+          entries.set(name, { name, attributes: 0x10, size: 0 });
       return [...entries.values()]
         .filter((e) => {
           const slash = e.name.lastIndexOf('/'),

@@ -13,6 +13,7 @@ import { installNativeFileSearch } from './file-search.mjs';
 import { NativeWindowsModules } from './windows-modules.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
+import { installNativeKnownFolders } from './windows-folders.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -76,6 +77,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.diskSpace = options.diskSpace;
     this.listFiles = options.listFiles;
     this.directories = new Set(['']);
+    installNativeKnownFolders(this);
     this.errorMode = 0;
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);

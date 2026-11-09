@@ -91,3 +91,19 @@ load 16-bit NE resources.
 [Microsoft version buffer reference](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfow),
 [version queries](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew),
 [Wine 8.0 version API](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/kernelbase/version.c).
+
+## Shell folders for the native engine
+
+The folder helper at Game `6A80C0` and SDK `5784F0` calls the original
+Shell32 imports. The browser gives its Windows user fixed folders under
+`C:\catsystem2-web\@cat\user`, on the same per-game drive as the mounted
+program. Documents, Pictures, AppData and the desktop, Start Menu, program
+and shared data folders queried by the two executables are present at
+startup. ANSI and wide APIs return the same logical locations without a
+trailing separator. User tokens other than the current user are unavailable.
+
+Both frozen images execute their original helper for Documents, Pictures
+and AppData. Tests verify that the paths address the browser's directory and
+file services and resolve the same way after restoring a native process.
+File searches enumerate the user directories separately from mounted content.
+[SHGetFolderPath contract](https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetfolderpatha)
