@@ -422,8 +422,11 @@ X/Y/Z, and translates. It then converts depth with `65000-(z+priority)`,
 projects relative to screen center with a 1000-unit focal distance, applies
 the engine's final screen transform, and submits a triangle strip. PPI 2.1
 z-shift participates in both sort depth and final depth. Per-particle sorting
-uses position.z + base.z + firstVertex.z, adjusted by zShift\*65000; native
-comparison is ascending. Do not substitute arbitrary iteration order.
+uses position.z + base.z + firstVertex.z, adjusted by zShift\*65000. The
+game's `7C80F0` and SDK's `868AD0` sorters take the middle entry as pivot
+and move strictly lower depths to its left. Equal-depth entries therefore
+follow the original pivot swaps. Hidden entries participate in sorting, and
+the renderer reads the final z-shift by sorted rank.
 
 Blend factors were recovered from `sub_671df0` setting D3D source/destination
 render states19/20. `PARTICLE_BLEND_FACTORS` publishes the same table:
@@ -475,6 +478,18 @@ antialias joins and anisotropic footprints have measured device-dependent
 coverage. Browser tests constrain exceptions to analytic tie/endpoint positions
 and compare anisotropic footprint energy. They do not claim identical filter
 kernels across two GPU drivers.
+
+`ppi-world.spec.mjs` mounts the frozen game's `filmnoise.ppi` as a
+kind-16 task between two planes rendered by the original GraphManager.
+The fixture uses an authored red and blue atlas. The Wine DLL oracle
+supplies the Init and six Exec records. An independent i386 run of the
+original record copy, sort and projection captures the submitted vertices.
+Wine D3D9 renders those vertices between the original plane submissions
+into 36 selected 8×8 crops. The browser matches the particle records and
+vertices byte for byte. The crop containing the equal-depth overlap
+matches exactly, with a one-level tolerance in the other crops. A new
+World restored after frame 2 produces identical whole frames and particle
+records at restoration and during continuation.
 
 The observed D3D9 device does not advertise `D3DPRASTERCAPS_WBUFFER`. It accepts
 `D3DZB_USEW` while retaining z-based XYZRHW depth; the browser matches this

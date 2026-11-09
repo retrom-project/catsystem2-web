@@ -83,14 +83,62 @@ export function ppiParticles(instance) {
   const bytes = instance.records();
   return Array.from({ length: instance.count }, (_, i) => readPPIRecord(bytes, i * 148));
 }
+
+// The original sort takes the middle entry as pivot and moves only strictly
+// lower depths to its left. Pivot swaps also determine equal-depth draw order.
+function sortParticleDepths(order, left, right) {
+  while (left < right) {
+    const middle = (left + right) >>> 1,
+      pivot = order[middle];
+    order[middle] = order[left];
+    let lower = left,
+      equal = true;
+    for (let i = left + 1; i <= right; i++) {
+      const entry = order[i];
+      if (entry.depth < pivot.depth) {
+        lower++;
+        order[i] = order[lower];
+        order[lower] = entry;
+      }
+      if (
+        equal &&
+        entry.depth !== pivot.depth &&
+        !(Number.isNaN(entry.depth) && Number.isNaN(pivot.depth))
+      )
+        equal = false;
+    }
+    order[left] = order[lower];
+    order[lower] = pivot;
+    if (equal) {
+      // Equal depths always place the pivot at the left boundary. Replay
+      // those swaps without scanning the remaining suffix for every pivot.
+      for (let i = left + 1; i < right; i++) {
+        const next = (i + right) >>> 1,
+          entry = order[next];
+        order[next] = order[i];
+        order[i] = entry;
+      }
+      return;
+    }
+    // The two partitions are independent. Recurse on the smaller one to
+    // bound stack use even when a depth sequence repeatedly splits unevenly.
+    if (lower - left < right - lower) {
+      sortParticleDepths(order, left, lower - 1);
+      left = lower + 1;
+    } else {
+      sortParticleDepths(order, lower + 1, right);
+      right = lower - 1;
+    }
+  }
+}
+
 export function particleGeometry(particles, options) {
   const shifts = options.zShifts || [];
-  const order = particles
-    .map((p, index) => ({
-      index,
-      depth: f(f(f(p.pos[2] + p.base[2]) + p.vertices[0].z) - f((shifts[index] || 0) * 65000)),
-    }))
-    .sort((a, b) => a.depth - b.depth || a.index - b.index);
+  const order = particles.map((p, index) => ({
+    index,
+    depth: f(f(f(p.pos[2] + p.base[2]) + p.vertices[0].z) - f((shifts[index] || 0) * 65000)),
+  }));
+  sortParticleDepths(order, 0, order.length - 1);
   // Native 5F5280 indexes the final shift by sorted rank, while sort depth uses
   // original particle index. Retain this observable asymmetry.
   return order.flatMap(({ index }, rank) =>
