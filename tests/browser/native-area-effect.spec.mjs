@@ -1400,4 +1400,138 @@ for (const [profile, variable] of [
       );
     },
   );
+
+  test(
+    profile + ' original Wipe keeps its Base lifecycle and leaves the rendered plane unchanged',
+    async ({ page }) => {
+      const sdk = profile.startsWith('sdk-');
+      test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
+      test.setTimeout(180000);
+      const files = new Map([
+          ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
+          [
+            'wipe.kcs',
+            kcsProgram(
+              [[37, 21], ...start.slice(1), ...wait, [39, waitingPC], [41, waitingPC]],
+              [[64, 'Authored original Wipe']],
+            ),
+          ],
+        ]),
+        names = await openAreaFixture(page, profile, variable, files);
+      await page.evaluate(
+        async ({ profile, names, sdk }) => {
+          const {
+              browserNativeWorld,
+              browserAssert: assert,
+              placeBrowserNativePlane,
+            } = await import('/tests/fixtures/browser-native-world.mjs'),
+            files = new Map(
+              await Promise.all(
+                names.map(async (name) => {
+                  const response = await fetch('/area-effect-fixture/' + name);
+                  if (!response.ok) throw new Error('Missing Wipe fixture ' + name);
+                  return [name, new Uint8Array(await response.arrayBuffer())];
+                }),
+              ),
+            ),
+            make = () =>
+              browserNativeWorld({
+                profile,
+                files,
+                storage: { read: async () => null, write: async () => true },
+              }),
+            world = make(),
+            call = (owner, id, ...args) =>
+              owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+            render = async (owner) => {
+              const stage = owner.stageRenderer;
+              await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
+              return stage.renderer.ctx.getImageData(0, 0, 64, 48).data;
+            };
+          let fresh, detach;
+          try {
+            await world.initialize('main.kcs');
+            const plane = await world.objects.create({ kind: 2, parent: world.root }),
+              platform = await world.getNativeFeature('graphics-platform'),
+              p = world.nativeEngine.process;
+            await placeBrowserNativePlane(world, plane, {
+              width: 16,
+              height: 12,
+              position: [4, 3, 0],
+              priority: 300,
+              color: 0xff385982,
+            });
+            const baseline = await render(world),
+              pixel = (64 * 6 + 8) * 4;
+            assert.deepEqual([...baseline.slice(pixel, pixel + 4)], [0x38, 0x59, 0x82, 255]);
+            const script = await world.spawnScript('wipe.kcs', { parent: world.main.id }),
+              vm = script.machine;
+            vm.store(96, world.nativeTaskID(world.main.id));
+            vm.store(100, 0xffffffff);
+            await world.runtime.scheduler.execute(script);
+            const nativeID = vm.load(128),
+              id = world.resolveTaskID(nativeID, script.id),
+              record = world.objects.objects.get(id),
+              pointer = record.implementation.pointer,
+              table = sdk ? 0x993044 : 0x8cdd64,
+              taskMemory = await world.getNativeFeature('task-memory');
+            assert.equal(p.load(pointer), table);
+            assert.equal(p.allocations.get(pointer), 0xd8);
+            assert.equal(p.load(pointer + 104), platform.refs.view);
+            assert.equal(p.load(pointer + 108), platform.refs.manager);
+            assert.equal(vm.load(132), await taskMemory.pointer(script.id));
+            assert.equal(platform.descriptor(nativeID), 0);
+            assert.deepEqual(await call(world, 0x4a, nativeID), { control: 1, value: 21 });
+            await world.tick();
+            assert.equal(record.lastFrame, 0);
+            assert.equal(p.load(pointer + 100), world.frame);
+            assert.deepEqual(await render(world), baseline);
+
+            const buffers = await world.getNativeFeature('data-buffers'),
+              storage = buffers.allocateData(40),
+              content = Uint8Array.from({ length: 40 }, (_, i) => i * 23 + 3);
+            p.write(storage, content);
+            p.store(pointer + 196, storage);
+            assert.deepEqual(await call(world, 0x43, nativeID), { control: 2 });
+            assert.equal(record.destroyRequested, true);
+            assert.equal(p.load(pointer + 84), 1);
+            const state = p.read(pointer, 0xd8);
+
+            fresh = make();
+            await fresh.restore(structuredClone(world.snapshot()));
+            const rp = fresh.nativeEngine.process,
+              restored = fresh.objects.objects.get(id),
+              reg = rp.uc.X86_REG_ECX;
+            assert.equal(restored.implementation.pointer, pointer);
+            assert.deepEqual(rp.read(pointer, 0xd8), state);
+            assert.deepEqual(rp.read(storage, 40), content);
+            let visits = 0;
+            detach = rp.beforeInstruction(rp.load(table + 12), 'observe pending Wipe draw', () => {
+              if (rp.cpu.reg_read_i32(reg) >>> 0 === pointer) visits++;
+            });
+            await fresh.tick();
+            detach();
+            detach = undefined;
+            assert.equal(visits, 1);
+            assert.equal(restored.lastFrame, 0);
+            assert.equal(rp.load(pointer + 100), fresh.frame);
+            assert.equal(rp.load(pointer + 84), 1);
+            assert.equal(fresh.resolveTaskID(nativeID, fresh.main.id), id);
+            assert.deepEqual(await render(fresh), baseline);
+
+            await fresh.objects.release(id);
+            assert.equal(rp.allocations.has(pointer), false);
+            assert.equal(rp.allocations.has(storage - 4), false);
+            assert.equal(p.allocations.has(storage - 4), true);
+            assert.deepEqual(await render(fresh), baseline);
+          } finally {
+            detach?.();
+            await fresh?.close({ flushFiles: false });
+            await world.close({ flushFiles: false });
+          }
+        },
+        { profile, names, sdk },
+      );
+    },
+  );
 }

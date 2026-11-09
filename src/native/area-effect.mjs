@@ -9,6 +9,13 @@ const ABI = {
     18: { construct: 0x5ee060, size: 0x94, vtable: 0x8cdcb0, requiresRenderer: true },
     19: { construct: 0x5ee790, size: 0xd0, vtable: 0x8cdd0c, requiresRenderer: true },
     20: { construct: 0x5ef0d0, size: 0x9c, vtable: 0x8cdd34, requiresRenderer: true },
+    21: {
+      construct: 0x5ef9e0,
+      size: 0xd8,
+      vtable: 0x8cdd64,
+      requiresRenderer: true,
+      baseLogic: false,
+    },
     25: { construct: 0x5efbd0, size: 0xb4, vtable: 0x8cde20 },
     26: { construct: 0x5efc30, size: 0xc8, vtable: 0x8cde44 },
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
@@ -22,6 +29,13 @@ const ABI = {
     18: { construct: 0x4c8990, size: 0x94, vtable: 0x992f90, requiresRenderer: true },
     19: { construct: 0x4c90c0, size: 0xd0, vtable: 0x992fec, requiresRenderer: true },
     20: { construct: 0x4c9a00, size: 0x9c, vtable: 0x993014, requiresRenderer: true },
+    21: {
+      construct: 0x4ca310,
+      size: 0xd8,
+      vtable: 0x993044,
+      requiresRenderer: true,
+      baseLogic: false,
+    },
     25: { construct: 0x4ca500, size: 0xb4, vtable: 0x993100 },
     26: { construct: 0x4ca560, size: 0xc8, vtable: 0x993124 },
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
@@ -113,7 +127,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [17, 18, 19, 20, 25, 26, 27, 28, 29, 30, 31])
+  for (const kind of [17, 18, 19, 20, 21, 25, 26, 27, 28, 29, 30, 31])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );

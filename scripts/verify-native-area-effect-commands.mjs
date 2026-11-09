@@ -975,7 +975,6 @@ try {
       }
     }
     p.free(vertices);
-    p.free(manager);
     activeEffect = await engine.call(factory, [25, name, out + 4], parent);
     nativeID = p.load(out + 4);
     equal(p.load(activeEffect), sdk ? 0x993100 : 0x8cde20, 'original Hydro vtable');
@@ -1055,6 +1054,98 @@ try {
     }
     await engine.call(p.load(underwater), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original UnderWater destructor frees task');
+
+    // Wipe delegates packets to Base, but its logic slot remains a stub.
+    for (const mounted of [false, true]) {
+      p.store(view + 4, Number(mounted));
+      p.store(view + 8, manager);
+      activeEffect = await engine.call(factory, [21, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      const table = p.load(activeEffect),
+        before = p.read(activeEffect, 0xd8),
+        seen = [],
+        allocations = [...p.allocations],
+        expected = before.slice(),
+        fields = new DataView(expected.buffer),
+        stop = p.beforeInstruction(p.load(table + 28), 'observe original Wipe receiver', () => {
+          const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+          seen.push([p.load(sp + 8), p.load(sp + 16)]);
+        });
+      equal(table, sdk ? 0x993044 : 0x8cdd64, 'original Wipe factory');
+      equal(p.allocations.get(activeEffect), 0xd8);
+      equal(p.load(activeEffect + 104), view, 'original Wipe borrows the shared view');
+      equal(p.load(activeEffect + 108), mounted ? manager : 0, 'original manager capability');
+      equal([p.load(activeEffect + 140), p.load(activeEffect + 196)], [0, 0]);
+      try {
+        p.cpu.mem_protect(0, 4096, 0);
+        try {
+          equal(await callWipe(0xc4, 0xffffffff), { control: 2 });
+        } finally {
+          p.cpu.mem_protect(0, 4096, p.uc.PROT_ALL);
+        }
+        equal(
+          seen.splice(0),
+          [
+            [13, 0],
+            [sdk ? 263 : 268, 0],
+          ],
+          'C4 sends the ignored NULL packet',
+        );
+        equal(await callWipe(0x4a), { control: 1, value: 21 }, 'Base writes the Wipe kind');
+        equal(seen.splice(0), [[13, 0]]);
+        for (const [id, args, message, control] of [
+          [0xc5, [], 257, 2],
+          [0xc6, [], 258, 2],
+          [0xc7, [240], 262, 2],
+          [0xc8, [], 259, 1],
+          [0xc9, [0, 0xffffffff], 13, 2],
+          [0xca, [0xffffffff], 13, 2],
+          [0xcb, [], 261, 2],
+        ]) {
+          equal(
+            await callWipe(id, ...args),
+            control === 1 ? { control, value: host } : { control },
+          );
+          equal(
+            seen.splice(0).map(([raw]) => raw),
+            [sdk && message >= 257 ? message - 5 : message],
+          );
+        }
+        equal(p.read(activeEffect, 0xd8), before, 'area controls preserve the original task bytes');
+        equal([...p.allocations], allocations, 'area controls allocate no additional graphics');
+        p.write(out, scratchFill);
+        equal(await engine.call(p.load(table + 8), [202, out + 4], activeEffect), 1);
+        equal(p.read(out, 12), scratchFill, 'the logic stub leaves its result unwritten');
+        equal(p.read(activeEffect, 0xd8), before);
+        fields.setUint32(100, 202, true);
+        equal(await engine.call(p.load(table + 12), [202], activeEffect), 1);
+        equal(p.read(activeEffect, 0xd8), expected, 'only the draw clock advances');
+        equal(await callWipe(0x43), { control: 2 });
+        equal(seen.splice(0), [[3, 0]]);
+        fields.setUint32(84, 1, true);
+        equal(p.read(activeEffect, 0xd8), expected, 'Base marks the Wipe for destruction');
+        p.write(out, scratchFill);
+        equal(await engine.call(p.load(table + 8), [203, out + 4], activeEffect), 1);
+        equal(p.read(out, 12), scratchFill);
+        equal(p.read(activeEffect, 0xd8), expected, 'the logic stub keeps the task alive');
+        fields.setUint32(100, 203, true);
+        equal(await engine.call(p.load(table + 12), [203], activeEffect), 0);
+        equal(p.read(activeEffect, 0xd8), expected, 'pending Base draw still writes the clock');
+      } finally {
+        stop();
+      }
+      const storage = mounted ? await engine.call(sdk ? 0x575ce0 : 0x6a49d0, [0, 40]) : 0;
+      if (storage) {
+        equal(p.allocations.get(storage - 4), 44);
+        p.store(activeEffect + 196, storage);
+      }
+      await engine.call(p.load(table), [1], activeEffect);
+      equal(p.allocations.has(activeEffect), false, 'original Wipe destructor frees the task');
+      if (storage)
+        equal(p.allocations.has(storage - 4), false, 'original Wipe frees owned storage');
+      equal(p.allocations.has(manager), true, 'the borrowed manager survives');
+    }
+    p.free(manager);
 
     // Both extended wipes use a 256-entry table followed by a separate
     // blend interval. The 32-bit reference assets also exercise transparent RGB.
@@ -1267,7 +1358,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, UnderWater/Raster/Hydro/RainDrop/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater executes original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,

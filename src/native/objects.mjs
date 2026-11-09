@@ -279,7 +279,13 @@ export class NativeObjects {
     const visit = async (record, clock) => {
       if (record.state !== 'active') return;
       record.effectiveFrame = clock >>> 0;
-      if (record.destroyRequested) return;
+      if (record.destroyRequested) {
+        // An original logic stub can leave the task alive after Base marks
+        // it. Its inherited draw still runs and updates the native clock.
+        if (record.implementation.runsBaseLogic === false)
+          await record.implementation.drawTick?.(record.effectiveFrame);
+        return;
+      }
       await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
       if (this.objects.has(record.id))
         await record.implementation.drawTick?.(record.effectiveFrame);

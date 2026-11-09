@@ -59,9 +59,9 @@ receiver leaves this message unhandled; the wrapper still completes.
 
 UnderWater (kind 17) is an original task without a rendered surface. Its
 receiver leaves query outputs unwritten and ignores the KCS delete message.
-The original draw bookkeeping still advances its draw clock. The tested
-lifecycle covers UnderWater as a child; registering children under it needs
-separate task namespace handling.
+The original draw bookkeeping still advances its draw clock. Rejected child
+registration retains the original route aliases and is covered by the
+[task protocol audit](native-engine-messages.md).
 
 RainDrop (kind 19) takes the original 40-byte `C4` packet and updates its
 separate source and projected arrays using the native clock and shared random
@@ -72,6 +72,16 @@ GlassBreak (kind 20) initializes from a 12-byte `C4` packet (graph ID,
 float speed and duration). The original start reads the live graph geometry,
 creates shard records, and installs its vertex callback. Completion, `C6`
 and destruction detach that callback. `CB` does not address this kind.
+
+Wipe (kind 21) obtains the shared view and graph manager in its original
+constructor. The `C4` query reaches Base and reports kind 21, so the wrapper
+sends message 268 (263 in the SDK). The Wipe receiver leaves that message and
+the area controls unhandled. No graph or image is created, and `C8` retains
+the caller's native pointer. Base accepts message 3 and sets the pending
+destruction word. The original logic stub leaves the object alive, while the
+inherited draw updates its frame word and returns before walking children.
+The original destructor releases any owned buffer at offset 196. The shared
+view and manager retain their ownership.
 
 `C7` translates the VM address, copies exactly 64 bytes to the original stack,
 and sends that copy with zero `w` and flags. The original wrappers fault on a
@@ -85,9 +95,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 620 receiver checks
+receiver writes, output canaries and unwritten replies. Its 702 receiver checks
 per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
-WipeAlpha3, UnderWater, RainDrop and GlassBreak paths.
+WipeAlpha3, UnderWater, RainDrop, GlassBreak and Wipe paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
@@ -103,3 +113,8 @@ list or bitmap owner. Frozen executables and raw reports stay outside version co
 The wrapper checks cover the routing envelope for every `C4` kind. Native
 initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak
 and Wipe2 through WipeAlpha3. Other `C4` receiver types still require verification.
+
+The Wipe browser cases run authored KCS against both mounted engines, verify
+unchanged nonempty GPU pixels and restore the pending task with its owned
+buffer. The resumed original draw writes its frame word, and the original
+destructor frees the buffer without changing the visible plane.
