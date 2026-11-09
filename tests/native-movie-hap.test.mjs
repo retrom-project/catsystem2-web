@@ -3,11 +3,32 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { NativeHapPlayback } from '../src/native/movie-hap-playback.mjs';
 import { decodeHap5, nativeHapMovie } from '../src/native/movie-hap.mjs';
 
 const fixture = (suffix = '') =>
   readFile(new URL(`./fixtures/native-plane-movie${suffix}.hap`, import.meta.url));
 const digest = (pixels) => createHash('sha256').update(pixels).digest('hex');
+
+test('Hap5 AVI reads the PCM format and samples returned by the x86 VfW stream', async () => {
+  const bytes = await fixture('-hap-pcm'),
+    { audio, duration } = nativeHapMovie(bytes),
+    pcm = Buffer.concat(audio.packets);
+  assert.deepEqual(
+    [audio.index, audio.scale, audio.rate, audio.startTime, duration],
+    [1, 1, 16000, 0n, 30000000n],
+  );
+  assert.equal(Buffer.from(audio.format).toString('hex'), '01000100803e0000007d000002001000');
+  assert.equal(pcm.length, 96000);
+  assert.equal(digest(pcm), '499956a57d4f9edf5848827824d052a68f99438574cd2e001ab0df472d7ec284');
+  const diagnostics = [],
+    player = new NativeHapPlayback({ diagnostic: (detail) => diagnostics.push(detail) });
+  assert.equal(player.open('audio.hap', { bytes }), false);
+  assert.match(diagnostics.pop().message, /requires the World audio device/);
+  audio.format[0] = 2;
+  assert.equal(player.open('audio.hap', { bytes }), false);
+  assert.match(diagnostics.pop().message, /Unsupported Hap AVI PCM format/);
+});
 
 test('legacy Hap5 AVI raw and Snappy packets reproduce the native RGB and alpha', async () => {
   const [raw, snappy] = await Promise.all([fixture('-hap-raw'), fixture()]);
@@ -16,7 +37,7 @@ test('legacy Hap5 AVI raw and Snappy packets reproduce the native RGB and alpha'
       nativeHapMovie(bytes);
     assert.deepEqual(
       [width, height, scale, rate, startTime, duration, audio, packets.length],
-      [32, 24, 1, 4, 0n, 30000000n, false, 12],
+      [32, 24, 1, 4, 0n, 30000000n, null, 12],
     );
     assert.equal(packets[0][3], codec ? 0xbe : 0xae);
     return packets.map((packet) => decodeHap5(packet, width, height).rgba);

@@ -445,17 +445,29 @@ The extracted x86 `HapCodec.dll` SHA-256 is
 
 The original SDK Plane loaders use the registered Hap5 driver to render
 the CAsyncReader output. The browser VfW provider keeps the driver's
-registration scoped to the World and supplies decoded video-only frames
-from the mounted AVI. The Texture Renderer negotiates ARGB32 and copies
+registration scoped to the World and decodes frames from the mounted AVI.
+The Texture Renderer negotiates ARGB32 and copies
 the decoder's alpha bytes into the original texture. The VMR9 path
 uses the opaque X8R8G8B8 decoder surface. The Game loaders take their
-failed graph path after registering the truncated driver name. An AVI
-with audio currently returns an explicit codec failure on this provider.
+failed graph path after registering the truncated driver name.
 
-The frame timeline uses the shared World clock and the AVI stream's
-rate and scale. Portable restore retains the decoder position, presented
-texture, original completion worker and driver registration. Chromium
-checks both SDK renderers through the original KCS load, query, play,
-stop and repeat calls. The same tests verify straight alpha on the
-Texture Renderer, compositing on the actual canvas, and the Game
-registration failure for both original Plane loaders.
+An AVI can carry one integer PCM track. The provider reads its original
+wave format and audio packets and schedules the sample buffer on the
+World's AudioContext. The VfW comparison reads 48,000 mono 16 kHz samples
+from the fixture using `AVIStreamRead`. All 96,000 PCM bytes match.
+The provider reports an unsupported format for compressed AVI audio.
+[AVIStreamRead](https://learn.microsoft.com/en-us/windows/win32/api/vfw/nf-vfw-avistreamread)
+[WAVEFORMATEX](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatex)
+
+Silent playback uses the shared World clock. With PCM, the AudioContext
+clock drives both streams and AVI rate and scale select the video frame.
+Portable restore retains the position, presented texture, completion
+worker, driver registration and volume. It recreates the audio source
+at the saved offset when playback activates. Chromium checks both SDK
+renderers through the original KCS load, query, play, stop and repeat
+calls. It measures the 440 Hz signal before and after restore and
+verifies that the timeline stays fixed when the audio device is
+suspended. The frame tests cover straight alpha on the Texture Renderer,
+compositing on the actual canvas and the Game registration failure for
+both loaders.
+[Web Audio API](https://www.w3.org/TR/2021/REC-webaudio-20210617/)

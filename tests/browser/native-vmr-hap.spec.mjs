@@ -6,8 +6,18 @@ import { profiles } from '../fixtures/native-vmr-surface.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
 for (const [profile, variable] of profiles)
-  for (const texture of [false, true])
-    test(`${profile} original Hap5 ${texture ? 'Texture Renderer' : 'VMR9'} ${profile.startsWith('sdk-') ? 'plays through its Plane' : 'retains the native registration failure'}`, async ({
+  for (const [texture, pcm] of profile.startsWith('sdk-')
+    ? [
+        [false, false],
+        [true, false],
+        [false, true],
+        [true, true],
+      ]
+    : [
+        [false, false],
+        [true, false],
+      ])
+    test(`${profile} original Hap5 ${texture ? 'Texture Renderer' : 'VMR9'} ${pcm ? 'plays AVI PCM on the shared audio device' : profile.startsWith('sdk-') ? 'plays through its Plane' : 'retains the native registration failure'}`, async ({
       page,
     }) => {
       const gamePE = profile.startsWith('nekopara-');
@@ -18,7 +28,9 @@ for (const [profile, variable] of profiles)
       test.setTimeout(90000);
       const [engine, clip] = await Promise.all([
         readFile(process.env[variable]),
-        readFile(new URL('../fixtures/native-plane-movie.hap', import.meta.url)),
+        readFile(
+          new URL(`../fixtures/native-plane-movie${pcm ? '-hap-pcm' : ''}.hap`, import.meta.url),
+        ),
       ]);
       await page.route('**/test/engine.exe', (route) => route.fulfill({ body: engine }));
       if (gamePE) {
@@ -32,7 +44,7 @@ for (const [profile, variable] of profiles)
       files['movie/clip.hap'] = [...clip];
       await page.goto('/');
       const result = await page.evaluate(
-        async ({ profile, gamePE, texture, files }) => {
+        async ({ profile, gamePE, texture, pcm, files }) => {
           const [
             { NativeWorld },
             { NativeConfiguration },
@@ -41,6 +53,7 @@ for (const [profile, variable] of profiles)
             { StageRenderer },
             { GameFiles, BlobFile },
             { serializeCheckpoint, deserializeCheckpoint },
+            { AudioMixer },
           ] = await Promise.all([
             import('/src/native/world.mjs'),
             import('/src/native/config.mjs'),
@@ -49,6 +62,7 @@ for (const [profile, variable] of profiles)
             import('/src/render/stage.mjs'),
             import('/src/files.mjs'),
             import('/src/checkpoint.mjs'),
+            import('/src/audio.mjs'),
           ]);
           const resources = new Map(
             Object.entries(files).map(([name, bytes]) => [
@@ -77,7 +91,8 @@ for (const [profile, variable] of profiles)
               stage = new StageRenderer({ canvas, ctx }),
               configuration = new NativeConfiguration({ profile, uiLanguage: 0x0411 }),
               random = new ParticleRandom(),
-              gpu = stage.gpu;
+              gpu = stage.gpu,
+              audio = pcm ? new AudioContext({ sampleRate: 16000 }) : null;
             for (const field of [
               'width',
               'height',
@@ -95,11 +110,19 @@ for (const [profile, variable] of profiles)
               images: {},
               host: { nativeGPU: () => gpu, nativeLog() {}, nativeTimeGetTime: () => tick },
               storage: { read: async () => null, write: async () => true },
+              audio: pcm ? new AudioMixer(game, audio) : undefined,
               random,
               motionLibrary: new MotionLibrary(game, { profile, random }),
             });
             world.stageRenderer = stage;
-            return { world, stage, ctx, gpu, advance: (milliseconds) => (tick += milliseconds) };
+            return {
+              world,
+              stage,
+              ctx,
+              gpu,
+              audio,
+              advance: (milliseconds) => (tick += milliseconds),
+            };
           };
           const first = create();
           let fresh;
@@ -174,13 +197,61 @@ for (const [profile, variable] of profiles)
             };
             const paused = await first.direct.call(graph.interfaces.control, 8),
               frame = await inspect(first);
+            const decoder = (context) => context.direct.decoders.get(graph.primary);
+            const wait = async (context, predicate) => {
+              const deadline = performance.now() + 8000;
+              for (;;) {
+                await context.world.movies.settle();
+                if (predicate()) return;
+                if (performance.now() >= deadline) throw new Error('Hap5 movie did not advance');
+                await new Promise((resolve) => setTimeout(resolve, 15));
+              }
+            };
+            const monitor = (context) => {
+              const audio = decoder(context).audio,
+                analyser = context.audio.createAnalyser(),
+                samples = [...audio.buffer.getChannelData(0).subarray(0, 8)].map((v) => v * 32768);
+              analyser.fftSize = 2048;
+              audio.gain.connect(analyser);
+              return () => {
+                const signal = new Float32Array(analyser.fftSize),
+                  spectrum = new Float32Array(analyser.frequencyBinCount);
+                analyser.getFloatTimeDomainData(signal);
+                analyser.getFloatFrequencyData(spectrum);
+                const bin = spectrum.reduce((best, db, i) => (db > spectrum[best] ? i : best), 0);
+                return {
+                  samples,
+                  shared: audio.context === context.world.audio.context,
+                  gain: audio.gain.gain.value,
+                  amplitude: Math.max(...signal.map(Math.abs)),
+                  hz: (bin * context.audio.sampleRate) / analyser.fftSize,
+                };
+              };
+            };
+            let firstPCM, freshPCM, devicePaused, stoppedPCM;
+            const firstMonitor = pcm && monitor(first);
+            if (pcm) {
+              await call(first, 0x1a1, handle, 80);
+              await first.audio.suspend();
+            }
             world.movies.activate();
             const started = (await call(first, 0x10a, handle, 2)).value;
-            first.advance(500);
+            first.advance(pcm ? 2000 : 500);
             await world.movies.settle();
-            const checkpoint = await serializeCheckpoint(world.snapshot()),
-              firstPosition = (await call(first, 0x3e6, handle)).value,
-              stopped = (await call(first, 0x10b, handle)).value;
+            if (pcm) {
+              devicePaused = (await call(first, 0x3e6, handle)).value;
+              await first.audio.resume();
+              await wait(first, () => decoder(first).position() >= 5000000n);
+              firstPCM = firstMonitor();
+            }
+            const state = world.snapshot(),
+              savedGraph = new Map(state.nativeEngine.features)
+                .get('directshow')
+                .objects.find(([id]) => id === graph.primary)[1],
+              firstPosition = Number(savedGraph.position / 10000n),
+              stopped = (await call(first, 0x10b, handle)).value,
+              checkpoint = await serializeCheckpoint(state);
+            if (pcm) stoppedPCM = decoder(first).audio.node === null;
             const released = async (context) => {
               await context.world.objects.release(plane);
               return [
@@ -200,20 +271,35 @@ for (const [profile, variable] of profiles)
               freshPosition = (await call(fresh, 0x3e6, handle)).value,
               deferred = fresh.direct.decoders.size === 0,
               restoredDriver = fresh.direct.hapDriver.path;
+            await fresh.audio?.resume();
             fresh.world.movies.activate();
             await fresh.world.movies.settle();
-            fresh.advance(1250);
-            await fresh.world.movies.settle();
+            if (pcm) {
+              const freshMonitor = monitor(fresh);
+              await wait(fresh, () => decoder(fresh).position() >= 17500000n);
+              freshPCM = freshMonitor();
+            } else {
+              fresh.advance(1250);
+              await fresh.world.movies.settle();
+            }
             const later = await inspect(fresh),
               resumedPosition = (await call(fresh, 0x3e6, handle)).value;
-            fresh.advance(1500);
-            await fresh.world.movies.settle();
+            if (pcm) {
+              await wait(fresh, () => fresh.p.load(graph.movie + 392) === 1);
+            } else {
+              fresh.advance(1500);
+              await fresh.world.movies.settle();
+            }
             await fresh.world.movies.settle();
             const afterRepeat = await inspect(fresh),
               repeatCount = fresh.p.load(graph.movie + 392),
               repeatPosition = (await call(fresh, 0x3e6, handle)).value;
-            fresh.advance(3000);
-            await fresh.world.movies.settle();
+            if (pcm) {
+              await wait(fresh, () => fresh.direct.objects.get(graph.primary).exhausted);
+            } else {
+              fresh.advance(3000);
+              await fresh.world.movies.settle();
+            }
             const completed = fresh.direct.objects.get(graph.primary).exhausted,
               finalStopped = (await call(fresh, 0x10b, handle)).value,
               freshReleased = await released(fresh);
@@ -233,6 +319,9 @@ for (const [profile, variable] of profiles)
               restoredDriver,
               repeatCount,
               completed,
+              devicePaused,
+              stoppedPCM,
+              pcm: [firstPCM, freshPCM],
               released: [firstReleased, freshReleased],
               baseline,
             };
@@ -241,10 +330,11 @@ for (const [profile, variable] of profiles)
               if (!context) continue;
               await context.world.close({ flushFiles: false });
               context.gpu.close();
+              await context.audio?.close();
             }
           }
         },
-        { profile, gamePE, texture, files },
+        { profile, gamePE, texture, pcm, files },
       );
       const [type, handler, path, flags, installed] = result.registration[0];
       expect([type, handler, flags, installed]).toEqual([0x63646976, 0x35706148, 2, 1]);
@@ -278,7 +368,25 @@ for (const [profile, variable] of profiles)
       ]);
       expect(result.duration).toBe(30000000);
       expect(result.handle[1]).toBe(result.handle[0]);
-      expect(result.positions).toEqual([500, 500, 1750, 0]);
+      if (pcm) {
+        const [saved, restored, resumed, repeated] = result.positions;
+        expect(saved).toBeGreaterThanOrEqual(500);
+        expect(restored).toBe(saved);
+        expect(resumed).toBeGreaterThanOrEqual(1750);
+        expect(repeated).toBeLessThan(500);
+        expect(result.devicePaused).toBe(0);
+        expect(result.stoppedPCM).toBe(true);
+        for (const track of result.pcm) {
+          expect(track.samples).toEqual([0, 704, 1387, 2029, 2610, 3114, 3525, 3830]);
+          expect(track.shared).toBe(true);
+          expect(track.gain).toBeCloseTo(0.691, 2);
+          expect(track.amplitude).toBeGreaterThan(0.08);
+          expect(track.amplitude).toBeLessThan(0.09);
+          expect(Math.abs(track.hz - 440)).toBeLessThan(8);
+        }
+      } else {
+        expect(result.positions).toEqual([500, 500, 1750, 0]);
+      }
       expect(result.deferred).toBe(true);
       expect([result.repeatCount, result.completed]).toEqual([1, true]);
       expect(result.released).toEqual(new Array(2).fill([null, 0, 0, result.baseline, 0, false]));

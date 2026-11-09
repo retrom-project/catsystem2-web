@@ -44,17 +44,34 @@ function dimensionCheck(width, height) {
   );
 }
 
-function videoStream(lists) {
-  let video,
-    audio = false;
+function aviStreams(lists) {
+  let video, audio;
   for (const [index, stream] of lists.entries()) {
     const fields = [...chunks(stream.bytes, 4)],
       header = fields.find((field) => field.tag === 'strh')?.bytes,
       format = fields.find((field) => field.tag === 'strf')?.bytes;
     check(header?.length >= 56, 'Missing Hap AVI stream header');
     const type = tagAt(header, 0);
-    if (type === 'auds') audio = true;
-    if (type !== 'vids') continue;
+    if (type !== 'vids' && type !== 'auds') continue;
+    const timing = viewOf(header),
+      scale = timing.getUint32(20, true),
+      rate = timing.getUint32(24, true),
+      start = timing.getUint32(28, true),
+      unit = BigInt(scale) * TIME_UNITS;
+    check(scale && rate && index < 100, 'Invalid Hap5 AVI stream timing');
+    const track = {
+      index,
+      scale,
+      rate,
+      start,
+      startTime: (BigInt(start) * unit) / BigInt(rate),
+      packets: [],
+    };
+    if (type === 'auds') {
+      check(!audio && format?.length >= 16, 'Invalid Hap AVI audio stream');
+      audio = { ...track, format };
+      continue;
+    }
     check(!video && format?.length >= 40, 'Invalid Hap AVI video stream');
     check(tagAt(format, 16) === 'Hap5', 'Hap AVI video is not Hap5');
     const bitmap = viewOf(format),
@@ -66,15 +83,10 @@ function videoStream(lists) {
       'Invalid Hap5 bitmap header',
     );
     dimensionCheck(width, height);
-    const timing = viewOf(header),
-      scale = timing.getUint32(20, true),
-      rate = timing.getUint32(24, true),
-      start = timing.getUint32(28, true);
-    check(scale && rate && index < 100, 'Invalid Hap5 AVI stream timing');
-    video = { width, height, scale, rate, start, index };
+    video = { ...track, width, height };
   }
   check(video, 'Missing Hap5 AVI video stream');
-  return { ...video, audio };
+  return { video, audio };
 }
 
 export function nativeHapMovie(bytes) {
@@ -84,14 +96,15 @@ export function nativeHapMovie(bytes) {
   const directory = [...chunks(primary, 4)].find((chunk) => listType(chunk, 'hdrl'));
   check(directory, 'Missing Hap AVI stream directory');
   const lists = [...chunks(directory.bytes, 4)].filter((chunk) => listType(chunk, 'strl')),
-    { index, ...stream } = videoStream(lists),
-    prefix = String(index).padStart(2, '0'),
-    packets = [];
+    { video, audio } = aviStreams(lists),
+    prefix = String(video.index).padStart(2, '0'),
+    wave = audio && String(audio.index).padStart(2, '0') + 'wb';
   function collect(list) {
     for (const chunk of chunks(list.bytes, 4)) {
       if (listType(chunk, 'rec ')) collect(chunk);
       else if (chunk.tag === prefix + 'dc' || chunk.tag === prefix + 'db')
-        packets.push(chunk.bytes);
+        video.packets.push(chunk.bytes);
+      else if (chunk.tag === wave) audio.packets.push(chunk.bytes);
     }
   }
   for (const [index, reel] of reels.entries()) {
@@ -99,17 +112,15 @@ export function nativeHapMovie(bytes) {
     for (const chunk of chunks(reel.bytes, 4)) if (listType(chunk, 'movi')) collect(chunk);
   }
   check(
-    packets.some((packet) => packet.length),
+    video.packets.some((packet) => packet.length),
     'Missing Hap AVI frames',
   );
-  const unit = BigInt(stream.scale) * TIME_UNITS,
-    divisor = BigInt(stream.rate),
-    startTime = (BigInt(stream.start) * unit) / divisor;
+  const unit = BigInt(video.scale) * TIME_UNITS,
+    divisor = BigInt(video.rate);
   return {
-    ...stream,
-    startTime,
-    duration: (BigInt(stream.start + packets.length) * unit) / divisor,
-    packets,
+    ...video,
+    duration: (BigInt(video.start + video.packets.length) * unit) / divisor,
+    audio: audio ?? null,
   };
 }
 

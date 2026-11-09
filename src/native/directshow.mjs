@@ -413,6 +413,7 @@ export class NativeDirectShow {
     const adapter = graph.hap
       ? new NativeHapPlayback({
           clock: () => this.world.clock.performanceCounter() * 10n,
+          audioContext: this.world.audio?.context,
           diagnostic: (detail) => this.world.host.nativeDiagnostic?.(detail),
         })
       : await this.world.host.nativeMovie(graph.filename, graph.owner, this.world);
