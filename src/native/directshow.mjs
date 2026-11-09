@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // DirectShow connection boundary for the original renderless SimplePlane movie.
 import { nativeImageIdentity } from './engine-process.mjs';
+import { NativeHapDriver, NativeHapPlayback } from './movie-hap-playback.mjs';
 import { writeMoviePixels } from './movie-texture-renderer.mjs';
 import { WEBM_CONVERTERS } from './movie-webm.mjs';
 import {
@@ -106,6 +107,7 @@ export class NativeDirectShow {
       fn: (args) => this.createInstance(...args),
     });
     this.splitFilters = new NativeMovieFilters(this, UNKNOWN);
+    this.hapDriver = new NativeHapDriver(engine);
     if (engine.profile === WM_READER_PROFILE) this.wmReader = new NativeWindowsMediaReader(this);
     engine.registerFeature('directshow', this);
   }
@@ -402,15 +404,22 @@ export class NativeDirectShow {
   }
   async decoder(graph, bytes) {
     if (this.decoders.has(graph.primary)) return this.decoders.get(graph.primary);
-    if (!this.world.host.nativeMovie) throw new Error('Native plane movie decoder is unavailable');
-    const sha256 = await nativeImageIdentity(bytes);
+    if (!graph.hap && !this.world.host.nativeMovie)
+      throw new Error('Native plane movie decoder is unavailable');
+    const source = graph.hap ? bytes.slice() : bytes,
+      sha256 = await nativeImageIdentity(source);
     if (graph.sha256 && sha256 !== graph.sha256)
       throw new Error('Restored DirectShow source differs from the original reader');
-    const adapter = await this.world.host.nativeMovie(graph.filename, graph.owner, this.world);
+    const adapter = graph.hap
+      ? new NativeHapPlayback({
+          clock: () => this.world.clock.performanceCounter() * 10n,
+          diagnostic: (detail) => this.world.host.nativeDiagnostic?.(detail),
+        })
+      : await this.world.host.nativeMovie(graph.filename, graph.owner, this.world);
     try {
       if (
         !(await adapter.open(graph.filename, {
-          bytes,
+          bytes: source,
           sha256,
           audioEnabled: graph.audioEnabled,
           mime: graph.mime,
@@ -424,7 +433,8 @@ export class NativeDirectShow {
         graph.video &&
         (video.width !== graph.video.width ||
           video.height !== graph.video.height ||
-          video.duration !== graph.video.duration)
+          video.duration !== graph.video.duration ||
+          video.alpha !== graph.video.alpha)
       )
         throw new Error('Restored DirectShow decoder metadata differs');
       if (graph.position) await adapter.seek(graph.position);
@@ -467,6 +477,10 @@ export class NativeDirectShow {
   }
   async connectMedia(graph, pin) {
     if (graph.video) return VFW_E_WRONG_STATE;
+    if (this.hapDriver.matches(graph.movie)) {
+      if (!this.hapDriver.available()) return VFW_E_CANNOT_RENDER;
+      graph.hap = true;
+    }
     const bytes = await this.stream(graph, pin),
       decoder = await this.decoder(graph, bytes);
     if (!decoder) return VFW_E_CANNOT_RENDER;
@@ -698,9 +712,10 @@ export class NativeDirectShow {
           if (FAILED(result))
             throw new Error(`Restored Plane movie could not resume: ${graph.filename}`);
         }
-        if (graph.wmFilter)
-          await this.wmReader.advance(graph, this.decoders.get(graph.primary).position());
-        if (this.decoders.get(graph.primary).frameStamp() !== this.samples.get(graph.primary)) {
+        const session = this.decoders.get(graph.primary);
+        session.advance?.();
+        if (graph.wmFilter) await this.wmReader.advance(graph, session.position());
+        if (session.frameStamp() !== this.samples.get(graph.primary)) {
           const result = await this.presentFrame(graph);
           if (FAILED(result)) throw new Error(`Plane movie presentation failed: ${graph.filename}`);
         }
@@ -715,6 +730,7 @@ export class NativeDirectShow {
   snapshot() {
     if (this.updating) throw new Error('Cannot checkpoint a running Plane movie update');
     return structuredClone({
+      hapDriver: this.hapDriver.path,
       tables: [...this.tables],
       objects: [...this.objects].map(([pointer, record]) => [
         pointer,
@@ -724,6 +740,9 @@ export class NativeDirectShow {
   }
   restore(state) {
     const p = this.process;
+    if (state.hapDriver !== null && typeof state.hapDriver !== 'string')
+      throw new Error('Invalid VfW driver registration checkpoint');
+    this.hapDriver.path = state.hapDriver;
     this.tables = new Map(state.tables);
     for (const [kind, table] of this.tables) {
       const contract = CONTRACTS[kind];

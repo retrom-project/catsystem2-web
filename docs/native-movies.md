@@ -442,3 +442,20 @@ The comparison uses RenderHeads Hap DirectShow v1.0.10, installer SHA-256
 The extracted x86 `HapCodec.dll` SHA-256 is
 `be668219992b7028dc3411af834b44af3439c82b2ec4a25c9616f64084bf9b18`.
 [Vidvox release](https://github.com/Vidvox/hap-directshow/releases/tag/v1.0.10)
+
+The original SDK Plane loaders use the registered Hap5 driver to render
+the CAsyncReader output. The browser VfW provider keeps the driver's
+registration scoped to the World and supplies decoded video-only frames
+from the mounted AVI. The Texture Renderer negotiates ARGB32 and copies
+the decoder's alpha bytes into the original texture. The VMR9 path
+uses the opaque X8R8G8B8 decoder surface. The Game loaders take their
+failed graph path after registering the truncated driver name. An AVI
+with audio currently returns an explicit codec failure on this provider.
+
+The frame timeline uses the shared World clock and the AVI stream's
+rate and scale. Portable restore retains the decoder position, presented
+texture, original completion worker and driver registration. Chromium
+checks both SDK renderers through the original KCS load, query, play,
+stop and repeat calls. The same tests verify straight alpha on the
+Texture Renderer, compositing on the actual canvas, and the Game
+registration failure for both original Plane loaders.

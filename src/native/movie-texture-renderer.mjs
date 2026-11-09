@@ -17,11 +17,12 @@ const LAYOUT = {
 };
 const VIDEO = [0x73646976, 0x00100000, 0xaa000080, 0x719b3800];
 const RGB32 = [0xe436eb7e, 0x11ce524f, 0x2000539f, 0x70a70baf];
+const ARGB32 = [0x773c9ac0, 0x11d03274, 0xaa0024b7, 0x011a6c00];
 const VIDEO_INFO = [0x05589f80, 0x11cec356, 0xaa0001bf, 0x5a595500];
 const E_FAIL = 0x80004005;
 const FAILED = (status) => (status | 0) < 0;
 
-export function writeMoviePixels(process, frame, address, pitch, bottomUp = false) {
+export function writeMoviePixels(process, frame, address, pitch, bottomUp = false, alpha = false) {
   const { width, height, rgba } = frame,
     row = new Uint8Array(width * 4);
   for (let y = 0; y < height; y++) {
@@ -30,7 +31,7 @@ export function writeMoviePixels(process, frame, address, pitch, bottomUp = fals
       row[x] = rgba[at + 2];
       row[x + 1] = rgba[at + 1];
       row[x + 2] = rgba[at];
-      row[x + 3] = 255;
+      row[x + 3] = alpha ? rgba[at + 3] : 255;
     }
     process.write(address + (bottomUp ? height - y - 1 : y) * pitch, row);
   }
@@ -66,14 +67,14 @@ export class NativeTextureMovieRenderer {
       ? this.engine.callFromHost(address, args, pointer)
       : this.engine.call(address, args, pointer);
   }
-  async configure(filter, { width, height }) {
+  async configure(filter, { width, height, alpha }) {
     const p = this.process,
       type = p.allocate(160, true),
       info = type + 72;
     try {
       for (const [at, guid] of [
         [type, VIDEO],
-        [type + 16, RGB32],
+        [type + 16, alpha ? ARGB32 : RGB32],
         [type + 44, VIDEO_INFO],
       ])
         guid.forEach((word, index) => p.store(at + index * 4, word));
@@ -108,7 +109,7 @@ export class NativeTextureMovieRenderer {
       data = sample + 12;
     try {
       [this.table, data, length].forEach((word, i) => p.store(sample + i * 4, word));
-      writeMoviePixels(p, frame, data, pitch, true);
+      writeMoviePixels(p, frame, data, pitch, true, frame.alpha);
       const result = await this.call(this.layout.sample, [sample], pointer);
       return result ? E_FAIL : 0;
     } finally {
