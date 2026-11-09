@@ -31,6 +31,77 @@ function program(engine) {
   };
 }
 
+test(
+  'a virtual worker reads a title through the initial window thread',
+  { timeout: 15000 },
+  async () => {
+    const engine = new NativeEngineProcess(await loadUnicorn()),
+      { process: p, kernel } = engine,
+      user = (name, ...args) => engine.call(engine.resolve({ dll: 'USER32.dll', name }), args),
+      className = p.allocate(32, true),
+      windowClass = p.allocate(48, true),
+      output = p.allocate(24, true),
+      result = p.allocate(12, true),
+      initial = p.teb,
+      messages = [],
+      procedure = p.trap('authored window title procedure', 4, (args) => {
+        const [, message, capacity, pointer] = args;
+        if (message !== 0x0d) return kernel.windowViews.defaultProcedure(args, true);
+        messages.push([kernel.currentThreadID(), p.teb, capacity]);
+        return kernel.windowViews.copyText('猫B', pointer, capacity, true);
+      });
+    try {
+      kernel.writeString(className, 'TitleProbe', true);
+      p.store(windowClass, 48);
+      p.store(windowClass + 8, procedure);
+      p.store(windowClass + 20, 0x400000);
+      p.store(windowClass + 40, className);
+      const atom = await user('RegisterClassExW', windowClass),
+        window = await user('CreateWindowExW', 0, atom, 0, 0, 0, 0, 40, 30, 0, 0, 0x400000, 0);
+      assert.ok(window);
+      p.write(output, new Uint8Array(24).fill(0xa5));
+      assert.equal(await user('GetWindowTextW', window, output, 0), 0);
+      assert.equal(p.load(output), 0xa5a5a5a5);
+      assert.equal(await user('GetWindowTextA', window, output, 2), 0);
+      assert.equal(p.load(output), 0xa5a5a500);
+      assert.equal(await user('GetWindowTextA', window, output, 4), 3);
+      assert.equal(p.string(output), '猫B');
+      assert.equal(await user('GetWindowTextW', window, output, 2), 1);
+      assert.equal(p.string(output, true), '猫');
+      assert.equal(await user('GetWindowTextW', 0x77777777, output, 4), 0);
+      assert.equal(p.string(output, true), '');
+      assert.equal(kernel.lastError, 1400);
+      assert.deepEqual(messages, [
+        [1, initial, 2],
+        [1, initial, 4],
+        [1, initial, 2],
+      ]);
+
+      const code = program(engine);
+      code.call('Sleep', 3);
+      code.call('SetLastError', 0x325);
+      code.callImport('USER32.dll', 'GetWindowTextW', window, output, 8);
+      code.store(result);
+      code.call('GetCurrentThreadId');
+      code.store(result + 4);
+      code.call('GetLastError');
+      code.store(result + 8);
+      code.call('ExitThread', 0);
+      const worker = await api(engine, 'CreateThread', 0, 0, code.finish(true), 0, 0, 0);
+      assert.equal(await api(engine, 'WaitForSingleObject', worker, 0xffffffff), 0);
+      assert.deepEqual(messages.at(-1), [1, initial, 8]);
+      assert.equal(p.string(output, true), '猫B');
+      assert.equal(p.load(result), 2);
+      assert.equal(p.load(result + 4), await api(engine, 'GetThreadId', worker));
+      assert.notEqual(p.load(result + 4), 1);
+      assert.equal(p.load(result + 8), 0x325);
+      assert.equal(p.teb, initial);
+    } finally {
+      await engine.close();
+    }
+  },
+);
+
 test('an x86 worker owns its COM apartment and keeps its mode on restore', async () => {
   const unicorn = await loadUnicorn(),
     engine = new NativeEngineProcess(unicorn),

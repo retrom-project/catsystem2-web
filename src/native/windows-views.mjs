@@ -10,6 +10,7 @@ const INVALID_WINDOW = 1400;
 const INVALID_MENU = 1401;
 const INVALID_INDEX = 1413;
 const CLASS_MISSING = 1407;
+const WM_GETTEXT = 0x0d;
 const LONG_FIELDS = new Map([
   [-21, 'userData'],
   [-20, 'extended'],
@@ -42,8 +43,11 @@ export class NativeWindowsViews {
     for (const suffix of ['A', 'W']) {
       const wide = suffix === 'W';
       register('CreateWindowEx' + suffix, 12, (args) => this.create(args, wide));
-      register('DefWindowProc' + suffix, 4, (args) => this.defaultProcedure(args));
+      register('DefWindowProc' + suffix, 4, (args) => this.defaultProcedure(args, wide));
       register('SetWindowText' + suffix, 2, ([handle, at]) => this.setText(handle, at, wide));
+      register('GetWindowText' + suffix, 3, ([handle, output, capacity]) =>
+        this.getText(handle, output, capacity | 0, wide),
+      );
       register('GetWindowLong' + suffix, 2, ([handle, index]) => this.long(handle, index | 0));
       register('SetWindowLong' + suffix, 3, ([handle, index, value]) =>
         this.long(handle, index | 0, value),
@@ -180,7 +184,47 @@ export class NativeWindowsViews {
       p.free(temporary);
     }
   }
-  defaultProcedure([handle, message, wParam, lParam]) {
+  async getText(handle, output, capacity, wide) {
+    if (capacity <= 0) return 0;
+    if (!output) return this.error(87);
+    const window = this.windows.get(handle);
+    if (!window) {
+      this.process.zero(output, wide ? 2 : 1);
+      return this.error(INVALID_WINDOW);
+    }
+    if (wide === window.wide) return this.send(handle, WM_GETTEXT, capacity, output);
+    const p = this.process,
+      count = wide ? 2 * capacity : capacity,
+      unit = window.wide ? 2 : 1,
+      temporary = p.allocate((count + 1) * unit, true);
+    try {
+      await this.send(handle, WM_GETTEXT, count, temporary);
+      return this.copyText(p.string(temporary, window.wide), output, capacity, wide);
+    } finally {
+      p.free(temporary);
+    }
+  }
+  copyText(text, output, capacity, wide) {
+    if (!output || capacity <= 0) return 0;
+    if (wide) {
+      const truncated = text.slice(0, capacity - 1);
+      this.kernel.writeString(output, truncated, true);
+      return truncated.length;
+    }
+    const bytes = encodeCP932(text);
+    let copied = 0;
+    while (copied < bytes.length) {
+      const lead = bytes[copied],
+        width = (lead >= 0x81 && lead <= 0x9f) || (lead >= 0xe0 && lead <= 0xfc) ? 2 : 1;
+      if (copied + width >= capacity) break;
+      copied += width;
+    }
+    const terminated = new Uint8Array(copied + 1);
+    terminated.set(bytes.subarray(0, copied));
+    this.process.write(output, terminated);
+    return copied;
+  }
+  defaultProcedure([handle, message, wParam, lParam], wide) {
     const window = this.windows.get(handle);
     if (!window) return this.error(INVALID_WINDOW);
     if (message === 0x81) return 1; // WM_NCCREATE accepts the window.
@@ -188,6 +232,7 @@ export class NativeWindowsViews {
       window.title = lParam ? this.process.string(lParam, window.wide) : '';
       return 1;
     }
+    if (message === WM_GETTEXT) return this.copyText(window.title, lParam, wParam | 0, wide);
     if (message === 0x83) {
       this.writeRect(lParam, this.clientBounds({ ...window, bounds: this.readRect(lParam) }));
       return 0;
@@ -203,7 +248,17 @@ export class NativeWindowsViews {
   send(handle, message, wParam = 0, lParam = 0) {
     const window = this.windows.get(handle);
     if (!window) throw new Error('Cannot send a native message to a released window');
-    return this.process.callFromHost(window.procedure, [handle, message, wParam, lParam]);
+    const crossing = window.threadID !== this.kernel.currentThreadID();
+    if (crossing && window.threadID !== 1)
+      throw new Error('Native synchronous delivery to another worker window is unavailable');
+    return this.process.callFromHost(
+      window.procedure,
+      [handle, message, wParam, lParam],
+      undefined,
+      {
+        onInitialThread: crossing,
+      },
+    );
   }
   async create(args, wide) {
     const [extended, className, title, style, x, y, width, height, parent, menu, instance, param] =
@@ -226,6 +281,7 @@ export class NativeWindowsViews {
         procedure: cls.procedure,
         instance,
         title: title ? p.string(title, wide) : '',
+        threadID: this.kernel.currentThreadID(),
         userData: 0,
         style,
         extended,

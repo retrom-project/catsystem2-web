@@ -199,6 +199,13 @@ incompatible call returns `RPC_E_CHANGED_MODE`. The apartment records survive
 a fresh restore with their live thread environments.
 [CoInitializeEx](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex).
 
+The ANSI and Unicode `GetWindowText` imports send `WM_GETTEXT` to the
+registered window procedure. Caption reads preserve the terminator, return
+the copied length in the caller's encoding and keep CP932 pairs together
+at the buffer boundary. A worker reading the startup window enters its
+procedure on the initial thread's stack and TEB, then resumes the worker.
+[GetWindowTextW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw).
+
 Window and thread timers use the same clock as the emulated engine.
 Retrieval generates a due `WM_TIMER` after checking for matching queued
 messages. A nonremoving peek leaves the generated message available even

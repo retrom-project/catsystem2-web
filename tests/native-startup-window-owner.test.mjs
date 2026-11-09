@@ -171,6 +171,16 @@ for (const [profile, variable, menuFlag, hook] of [
         const captionBytes = p.allocations.size;
         assert.equal(await setNativeWindowCaption(engine, '更新した窓'), '更新した窓');
         assert.equal(p.allocations.size, captionBytes);
+        const output = p.allocate(64, true);
+        for (const wide of [false, true]) {
+          const getText = engine.kernel.resolve({
+            dll: 'USER32.dll',
+            name: wide ? 'GetWindowTextW' : 'GetWindowTextA',
+          });
+          assert.equal(await engine.call(getText, [handle, output, 32]), wide ? 5 : 10);
+          assert.equal(p.string(output, wide), '更新した窓');
+        }
+        p.free(output);
         fresh = await open();
         const freshInput = device(fresh);
         fresh.restore(engine.snapshot());

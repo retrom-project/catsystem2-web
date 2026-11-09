@@ -858,12 +858,23 @@ export class PE32Process {
       this.awaitingHost = false;
     }
   }
-  callFromHost(address, args = [], thisPointer, options) {
+  callFromHost(address, args = [], thisPointer, { onInitialThread = false, ...options } = {}) {
     return this.withSavedExecution(() => {
-      const sp = this.cpu.reg_read_i32(this.uc.X86_REG_ESP) >>> 0;
-      if (sp - 0x100 < this.stackBottom)
-        throw new Error('Nested native call exhausted the guest stack');
-      this.stackTop = (sp - 0x100) & ~15;
+      const initial = onInitialThread && this.teb !== INITIAL_TEB ? this.initialThreadFrame : null;
+      if (onInitialThread && this.teb !== INITIAL_TEB && !initial)
+        throw new Error('Initial thread callback has no saved execution frame');
+      if (initial) {
+        this.selectTEB(initial.teb);
+        this.writeRegisters(initial.registers);
+        this.stackBottom = initial.stackBottom;
+        this.stackTop = initial.stackTop;
+      }
+      if (!initial || initial.asyncEnabled) {
+        const sp = this.cpu.reg_read_i32(this.uc.X86_REG_ESP) >>> 0;
+        if (sp - 0x100 < this.stackBottom)
+          throw new Error('Nested native call exhausted the guest stack');
+        this.stackTop = (sp - 0x100) & ~15;
+      }
       return this.callAsync(address, args, thisPointer, options);
     }, true);
   }
@@ -874,8 +885,9 @@ export class PE32Process {
   runThread(context, address, parameter, resumeImport) {
     if (this.teb !== INITIAL_TEB)
       throw new Error('PE32 threads must be scheduled from the initial thread');
-    return this.withSavedExecution(async () => {
+    return this.withSavedExecution(async (initial) => {
       const { teb, stackBottom, stackTop, registers } = context;
+      this.initialThreadFrame = initial;
       this.selectTEB(teb);
       this.stackBottom = stackBottom;
       this.stackTop = stackTop;
@@ -917,6 +929,7 @@ export class PE32Process {
       skippingHost: this.skippingHost,
       pendingError: this.pendingError,
       threadCanStop: this.threadCanStop,
+      initialThreadFrame: this.initialThreadFrame,
     };
     this.asyncEnabled = false;
     this.pendingHost = null;
@@ -924,7 +937,7 @@ export class PE32Process {
     this.awaitingHost = false;
     this.threadCanStop = false;
     try {
-      return await operation();
+      return await operation(saved);
     } finally {
       const { registers, teb, ...execution } = saved;
       if (this.teb !== teb) this.selectTEB(teb);
