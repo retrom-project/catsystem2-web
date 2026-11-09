@@ -191,7 +191,9 @@ export class NativeWindowsViews {
       this.writeRect(lParam, this.clientBounds({ ...window, bounds: this.readRect(lParam) }));
       return 0;
     }
-    if ([1, 2, 3, 5, 0x24, 0x82].includes(message)) return 0;
+    // Application-defined messages have no system default action.
+    if (message >= 0x400 || [1, 2, 3, 5, 0x24, 0x82, 0x111, 0x116, 0x117].includes(message))
+      return 0;
     throw new Error(`Unreviewed native DefWindowProc message 0x${message.toString(16)}`);
   }
   send(handle, message, wParam = 0, lParam = 0) {

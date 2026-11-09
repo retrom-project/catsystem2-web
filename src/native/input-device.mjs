@@ -262,12 +262,13 @@ export class NativeInputDevice {
     // Both original constructors resolve these through the shared DLL loader.
     e.kernel.registerHostModule('user32.dll', touchExports);
     e.kernel.messageQueue.readPosition = () => [this.input.x | 0, this.input.y | 0];
-    // The current browser dispatcher still receives the input device's main-window posts.
+    // Authored Worlds can create an input device without a startup HWND.
     for (const suffix of ['A', 'W'])
       e.registerWindows('USER32.dll', `PostMessage${suffix}`, {
         count: 4,
         fn: ([window, message, w, l]) => {
-          if (window !== 1) return e.kernel.messageQueue.post(window, message, w, l);
+          if (window !== 1 || e.kernel.windowViews.windows.has(window))
+            return e.kernel.messageQueue.post(window, message, w, l);
           if (!this.world.windowMessages)
             throw new Error(`Native input window message ${message} has no dispatcher`);
           this.world.windowMessages.push({ message, wParam: w, lParam: l });

@@ -15,12 +15,37 @@ export class NativeWindow {
     // One browser game view is the application's virtual Win32 window.
     return 1;
   }
+  get opened() {
+    return this.world.nativeEngine?.kernel?.windowViews.windows.has(this.handle) ?? false;
+  }
   post(message, wParam = 0, lParam = 0) {
+    if (this.opened) {
+      if (!this.world.nativeEngine.kernel.messageQueue.post(this.handle, message, wParam, lParam))
+        throw new Error(`Could not post native window message ${message}`);
+      return;
+    }
     this.world.windowMessages.push({
       message: message >>> 0,
       wParam: wParam >>> 0,
       lParam: lParam >>> 0,
     });
+  }
+  handlesBrowserMessage(message, wParam) {
+    if (message === 0x111) {
+      const command = wParam & 0xffff;
+      return (
+        commands.has(command) ||
+        command === 40030 ||
+        (command === 40096 && this.world.profile === 'nekopara-vol3-engine-2.6.1.76') ||
+        Boolean(this.world.configuration.language && nativeWindowLanguageCommand(command))
+      );
+    }
+    return (
+      message === 0x10 ||
+      message === 0x410 ||
+      (message >= 0x467 && message <= 0x470 && message !== 0x46d) ||
+      (message === 0x112 && (wParam & 0xfff0) === 0xf020)
+    );
   }
   keyboardCommand(event) {
     const engine = this.world.nativeEngine,

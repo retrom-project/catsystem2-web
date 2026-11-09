@@ -230,7 +230,11 @@ export class NativeWindowsMessages {
     const views = this.kernel.windowViews;
     if (!views.windows.has(handle)) return this.error(INVALID_WINDOW);
     if (message === 0x113 && l) throw new Error('Native WM_TIMER callback needs its timer owner');
-    return views.send(handle, message, w, l);
+    return this.dispatchWindow(handle, message, w, l);
+  }
+  dispatchWindow(handle, message, w, l) {
+    if (this.dispatchToHost?.(handle, message, w, l)) return 0;
+    return this.kernel.windowViews.send(handle, message, w, l);
   }
   cancelWaits() {
     const waiting = this.waiters.size > 0 || this.inputWaits > 0;

@@ -39,6 +39,7 @@ import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { initializeNativeStartupMenu, refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
 import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
 import { initializeNativeConfigurationEvent } from './engine-configuration-event.mjs';
+import { runNativeWindowPump } from './engine-window-pump.mjs';
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
@@ -209,7 +210,7 @@ export class NativeWorld {
         const message =
           type === screenEvent ? 0x467 : type === 0x2b ? 0x46e : type === 0x2c ? 0x46f : null;
         if (message === null) throw new Error(`Unimplemented FES configuration event ${type}`);
-        this.windowMessages.push({ message, wParam: 0, lParam: message === 0x467 ? value : 0 });
+        this.window.post(message, 0, message === 0x467 ? value : 0);
       },
       changed: (name) => {
         this.markConfigurationDirty();
@@ -662,18 +663,29 @@ export class NativeWorld {
     if (this.nativeEngine) await refreshNativeLanguageMenu(this.nativeEngine);
   }
   async processWindowMessages() {
+    if (this.window.opened) {
+      const exit = await runNativeWindowPump(this.nativeEngine, this.window.handle, {
+        handles: (message, wParam) => this.window.handlesBrowserMessage(message, wParam),
+        deliver: (message) => this.dispatchWindowMessage(message),
+        stopping: () => this.disposalRequested || this.quitRequested,
+      });
+      if (exit !== null) this.quitRequested = true;
+      return;
+    }
     let processed = 0;
     while (this.windowMessages.length && !this.disposalRequested) {
       if (++processed > 10000) throw new Error('Native window message queue did not settle');
-      const message = this.windowMessages.shift();
-      if (await this.window.message(message)) continue;
-      if ([0x46e, 0x46f, 0x470].includes(message.message)) {
-        const field = ['ui', 'main', 'sub'][message.message - 0x46e];
-        await this.applyNativeLanguage(field, { reloadMainFirst: field === 'main' });
-      } else if (message.message === 0x467 && !this.host.nativeWindowMessage)
-        throw new Error('Native fullscreen/window mode service is unavailable');
-      await this.host.nativeWindowMessage?.(message, this);
+      await this.dispatchWindowMessage(this.windowMessages.shift());
     }
+  }
+  async dispatchWindowMessage(message) {
+    if (await this.window.message(message)) return;
+    if ([0x46e, 0x46f, 0x470].includes(message.message)) {
+      const field = ['ui', 'main', 'sub'][message.message - 0x46e];
+      await this.applyNativeLanguage(field, { reloadMainFirst: field === 'main' });
+    } else if (message.message === 0x467 && !this.host.nativeWindowMessage)
+      throw new Error('Native fullscreen/window mode service is unavailable');
+    await this.host.nativeWindowMessage?.(message, this);
   }
   script(record) {
     return createNativeScriptTask(this, record);
@@ -718,11 +730,7 @@ export class NativeWorld {
         return world.window.action('fes-message-box', message);
       },
       postWindowMessage(message) {
-        world.windowMessages.push({
-          message: message.message >>> 0,
-          wParam: message.wParam >>> 0,
-          lParam: message.lParam >>> 0,
-        });
+        world.window.post(message.message, message.wParam, message.lParam);
       },
       soundConfigTokens(line) {
         return world.fesSoundConfiguration.tokens(line);
@@ -850,6 +858,8 @@ export class NativeWorld {
       await initializeNativeStartupMenu(this.nativeEngine);
       await initializeNativeWindowOwner(this.nativeEngine);
       await createNativeStartupWindow(this.nativeEngine);
+      for (const { message, wParam, lParam } of this.windowMessages.splice(0))
+        this.window.post(message, wParam, lParam);
       await initializeNativeAccelerators(this.nativeEngine);
       await (await this.getNativeFeature('input-device')).pointer();
       await setNativeWindowCaption(this.nativeEngine);

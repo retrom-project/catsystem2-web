@@ -399,7 +399,8 @@ export function nativeConfiguration(id, args, machine, services = {}) {
       mark = services.configurationChanged ?? (world && (() => world.markConfigurationDirty())),
       windowMessage =
         services.configurationWindowMessage ??
-        (world && ((message) => world.windowMessages.push(message)));
+        (world &&
+          ((message) => world.window.post(message.message, message.wParam, message.lParam)));
     if (!mark || !windowMessage) return undefined;
     config.language[field] = value;
     mark(`language.${field}`);

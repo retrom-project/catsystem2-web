@@ -127,7 +127,9 @@ export class NativeWindowsAccelerators {
     const { windowViews, windowMenus } = this.kernel,
       window = windowViews.windows.get(target);
     if (!window) return this.error(INVALID_WINDOW);
-    const send = notify ?? ((message, w, l) => windowViews.send(target, message, w, l)),
+    const send =
+        notify ??
+        ((message, w, l) => this.kernel.messageQueue.dispatchWindow(target, message, w, l)),
       menu = window.menu,
       match = windowMenus.commandLocation(menu, command);
     if (match) {

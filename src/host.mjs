@@ -28,11 +28,7 @@ export class EngineHost {
     this.steam = engine.steam;
   }
   postWindowMessage(message) {
-    this.engine.world.windowMessages.push({
-      message: message.message >>> 0,
-      wParam: message.wParam >>> 0,
-      lParam: message.lParam >>> 0,
-    });
+    this.engine.world.window.post(message.message, message.wParam, message.lParam);
   }
   nativeWindowAction(action, world) {
     this.windowService ??= new BrowserNativeWindow(this.engine);
