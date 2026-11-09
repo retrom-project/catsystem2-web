@@ -4,7 +4,7 @@ import { NativeWorld } from '../../src/native/world.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { MotionLibrary } from '../../src/motion/library.mjs';
 import { MotionInstance } from '../../src/motion/instance.mjs';
-import { ParticleRandom } from '../../src/ppi/random.mjs';
+import { fixtureRandom, randomStateBytes } from './random-state.mjs';
 import { nativeABI, NATIVE_ABIS } from '../../src/native/abi/index.mjs';
 import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { readKCS, nativeReply } from '../../src/kcs.mjs';
@@ -18,10 +18,35 @@ import { NATIVE_MATRIX_OPERATIONS } from '../../src/native/matrix.mjs';
 import { NATIVE_GEOMETRY_OPERATIONS } from '../../src/native/geometry.mjs';
 
 const independent = {
-  generic: new Set(['math.sin', 'math.cos', 'matrix.copy', 'vector4.normalize']),
+  generic: new Set([
+    'math.sin',
+    'math.cos',
+    'matrix.copy',
+    'vector4.normalize',
+    'random.integer',
+    'random.float',
+  ]),
   main: new Set([
     'math.linearInterpolate',
     'math.roundInteger',
+    'random.integer',
+    'random.float',
+    'word.identity',
+    'memory.copy',
+    'memory.fill',
+    'number.formatThousands',
+    'string.copyUntilSeparator',
+    'string.copyFormattedUntilSeparator',
+    'string.isDoubleByte',
+    'list.split',
+    'list.select',
+    'list.splitGroups',
+    'list.join',
+    'string.replace',
+    'string.characterLength',
+    'string.formattedCharacterLength',
+    'string.findAtCharacterBoundary',
+    'task.yield',
     ...NATIVE_MATRIX_OPERATIONS,
     ...NATIVE_RECTANGLE_OPERATIONS,
     ...NATIVE_UTF8_OPERATIONS,
@@ -121,6 +146,7 @@ function originalReply(
     p.cpu.reg_write_i32(p.uc.X86_REG_MXCSR, abi.floatingPoint.mxcsr);
     p.lastTrap = null;
     const control = p.call(address, [bridge.pointer, adapter?.caller ?? 0, argv, out + 4]);
+    adapter?.afterCall?.();
     for (const boundary of boundaries)
       assert.ok(
         allowedBoundaries.includes(boundary),
@@ -194,7 +220,13 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
   if (oracleAdapter)
     assert.ok(oracleEngine, 'only the independent oracle lane accepts a PE adapter');
   const adapter = oracleAdapter?.prepare(oracleEngine, fixture);
-  const instructions = [...args.map((word) => [37, word]), [43, id, args.length * 4], [59]];
+  const instructions = [
+    ...Array.from({ length: fixture.repeat ?? 1 }, () => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+    ]).flat(),
+    [59],
+  ];
   const bytes = kcsProgram(instructions),
     trace = [],
     evidence = {
@@ -215,7 +247,10 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
     return reply;
   };
   if (table === 'generic') {
-    const motion = new MotionInstance(await readKCS(bytes), { profile });
+    const motion = new MotionInstance(await readKCS(bytes), {
+      profile,
+      random: fixtureRandom(initial),
+    });
     applyInitial(motion.machine, initial);
     const js = motion.native.bind(motion);
     motion.native = (nativeID, words, machine) => {
@@ -245,7 +280,14 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
         ? evidence.outputWrites.at(-1)
         : Object.hasOwn(lastReply, 'value'),
       value: lastReply.value,
-      memory: vmMemory(motion.machine),
+      memory: {
+        ...vmMemory(motion.machine),
+        ...(fixture.domain === 'random'
+          ? oracleEngine
+            ? adapter.memory()
+            : randomStateBytes(motion.random)
+          : {}),
+      },
       peWrites: evidence.peWrites,
       handles: { next: 1, records: [] },
       tasks: {
@@ -261,7 +303,7 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
     };
   }
   const game = memoryGame({ 'case.kcs': bytes }),
-    random = new ParticleRandom();
+    random = fixtureRandom(initial);
   const world = new NativeWorld({
     profile,
     game,
@@ -327,6 +369,11 @@ export async function observeNativeCase(fixture, oracleEngine = null, oracleAdap
       value: lastReply.value,
       memory: {
         ...vmMemory(task.machine),
+        ...(fixture.domain === 'random'
+          ? oracleEngine
+            ? adapter.memory()
+            : randomStateBytes(world.random)
+          : {}),
         ...(fixture.domain === 'view'
           ? {
               'state:view': oracleEngine

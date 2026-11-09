@@ -532,6 +532,8 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           }
         }
       }
+      if (declaration.entries[entry.id].signature?.reviewReason)
+        reasons.push(declaration.entries[entry.id].signature.reviewReason);
       if (table === 'main' && entry.name === 'matrix.rotateXYZ')
         reasons.push(
           '正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。',

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 106, "oracle": 135, "differential": 6 },
+    "counts": { "js": 107, "oracle": 135, "differential": 8 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -87,6 +87,7 @@
         "tests/native-pixel-checkpoint.test.mjs",
         "tests/native-preferences.test.mjs",
         "tests/native-ram-view.test.mjs",
+        "tests/native-random-standard.test.mjs",
         "tests/native-record-stack.test.mjs",
         "tests/native-resource-cache.test.mjs",
         "tests/native-resource-contracts.test.mjs",
@@ -268,7 +269,9 @@
       "differential": [
         "tests/differential/native-geometry.test.mjs",
         "tests/differential/native-math.test.mjs",
+        "tests/differential/native-random.test.mjs",
         "tests/differential/native-scalar.test.mjs",
+        "tests/differential/native-sdk-standard.test.mjs",
         "tests/differential/native-unicode-output.test.mjs",
         "tests/differential/native-utf8.test.mjs",
         "tests/differential/native-view-rectangles.test.mjs"
@@ -3705,7 +3708,7 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 619,
+    "nativeNeedsReview": 603,
     "runtimeFiles": 335,
     "fileDomains": { "3": 32, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
     "fileNeedsReview": 137,
@@ -3740,8 +3743,8 @@
           "table": "main",
           "id": 1,
           "hexID": "0x1",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "debug.print",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -3751,7 +3754,9 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires debug-window transport and original formatter."
+          ]
         },
         {
           "table": "main",
@@ -3825,8 +3830,8 @@
           "table": "main",
           "id": 6,
           "hexID": "0x6",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "word.identity",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -3835,8 +3840,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -3876,8 +3881,8 @@
           "table": "main",
           "id": 9,
           "hexID": "0x9",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "application.exit",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -3887,14 +3892,16 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires window action transport."
+          ]
         },
         {
           "table": "main",
           "id": 10,
           "hexID": "0xa",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "clipboard.copy",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -3904,14 +3911,16 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires ANSI clipboard transport."
+          ]
         },
         {
           "table": "main",
           "id": 11,
           "hexID": "0xb",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "clock.localDate",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -3921,7 +3930,9 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires controlled local-time provider."
+          ]
         },
         {
           "table": "main",
@@ -4182,8 +4193,8 @@
           "table": "main",
           "id": 27,
           "hexID": "0x1b",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "memory.allocate",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4193,14 +4204,16 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires complete original VM allocation container."
+          ]
         },
         {
           "table": "main",
           "id": 28,
           "hexID": "0x1c",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "memory.free",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4210,7 +4223,9 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires complete original VM allocation container."
+          ]
         },
         {
           "table": "main",
@@ -4233,8 +4248,8 @@
           "table": "main",
           "id": 30,
           "hexID": "0x1e",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "file.read",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4244,14 +4259,16 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires live original file manager."
+          ]
         },
         {
           "table": "main",
           "id": 31,
           "hexID": "0x1f",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "file.write",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4261,7 +4278,9 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "SDK body confirms semantic, argument width and control; independent normal execution still requires live original file manager."
+          ]
         },
         {
           "table": "main",
@@ -4284,8 +4303,8 @@
           "table": "main",
           "id": 33,
           "hexID": "0x21",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "random.integer",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4296,16 +4315,15 @@
           "docs": ["docs/native-compatibility.md", "docs/native-content-databases.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "本体为 JS，随机流可能由 random-memory 绑定到 EXE 数据页，PE 状态依赖单列。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "本体为 JS，随机流可能由 random-memory 绑定到 EXE 数据页，PE 状态依赖单列。"
           ]
         },
         {
           "table": "main",
           "id": 34,
           "hexID": "0x22",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "random.float",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4316,16 +4334,15 @@
           "docs": ["docs/native-compatibility.md", "docs/native-content-databases.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "本体为 JS，随机流可能由 random-memory 绑定到 EXE 数据页，PE 状态依赖单列。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "本体为 JS，随机流可能由 random-memory 绑定到 EXE 数据页，PE 状态依赖单列。"
           ]
         },
         {
           "table": "main",
           "id": 35,
           "hexID": "0x23",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "memory.copy",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4334,15 +4351,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 36,
           "hexID": "0x24",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "memory.fill",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4351,15 +4368,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 37,
           "hexID": "0x25",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "number.formatThousands",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4368,15 +4385,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 38,
           "hexID": "0x26",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.copyUntilSeparator",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4385,15 +4402,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 39,
           "hexID": "0x27",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.copyFormattedUntilSeparator",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4402,15 +4419,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 40,
           "hexID": "0x28",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.isDoubleByte",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4419,15 +4436,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 41,
           "hexID": "0x29",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "list.split",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4436,15 +4453,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 42,
           "hexID": "0x2a",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "list.select",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4453,15 +4470,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 43,
           "hexID": "0x2b",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "list.splitGroups",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4470,15 +4487,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 44,
           "hexID": "0x2c",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "list.join",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4487,15 +4504,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 45,
           "hexID": "0x2d",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.replace",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4504,8 +4521,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4528,8 +4545,8 @@
           "table": "main",
           "id": 47,
           "hexID": "0x2f",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.characterLength",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4538,15 +4555,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 48,
           "hexID": "0x30",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.formattedCharacterLength",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4555,15 +4572,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 49,
           "hexID": "0x31",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "string.findAtCharacterBoundary",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4572,8 +4589,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4834,8 +4851,8 @@
           "table": "main",
           "id": 65,
           "hexID": "0x41",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "task.yield",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/standard.mjs",
           "domain": 3,
@@ -4844,8 +4861,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -48235,7 +48252,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "72d1b3cc67502b358762d5fc9f6dda92ef28cdcb9a8bdd05f97db39374b39e7a",
+      "sourceSha256": "d8b22169cffb57cb7ac19e3859f7250d0e695cefc15e05ea7e5c70a8cbdc6529",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58219,7 +58236,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-standard-review.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],

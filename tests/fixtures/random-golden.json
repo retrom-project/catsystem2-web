@@ -1,0 +1,687 @@
+{
+  "scope": "Independently seeded main/generic MT19937 GCALL sequences, full integer/real RAM state, exact output bits including float endpoints; JS does not bind oracle RAM.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "cases": {
+        "main/random.integer/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2807835183,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "94c222e7da2a2d481125a8f28377fff8b6697dada1c446b1f96fbfa0faafb4c7",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31",
+            "state:random.real": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029"
+          }
+        },
+        "main/random.integer/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2953900839,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e78b2cec4b32e3ecce8939ced68d615708c7a0550c361e3178205c1a055a7436",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "da0053978272114e8b6389db9fdd4d4d4643dfb74cb517d00bd98da2ec7b3487",
+            "state:random.real": "85281666ffcbc59566e6b652f91a0bfac5c812c0b8d3edcab1005a043765b1d5"
+          }
+        },
+        "main/random.integer/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2624248258,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "004ac14fad854aca1fa2d22cf4adb89798000c9a5a3d390a03edc1f12ffde04a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0",
+            "state:random.real": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab"
+          }
+        },
+        "main/random.integer/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2523486900,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ccf749b311f5824db78524cae121fa8d9be5ae8709cbca2de0f80f57b7ed99a4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "010f139a3ef5570ee158aef07f0a4b823bfd7e8094b11f6997786b9b3d3e5856",
+            "state:random.real": "9271347e75b4f036545f240aa3b089ed8146798404b9e9fcf4b46391ed20be3e"
+          }
+        },
+        "main/random.integer/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1585203162,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8a3ab41aa37308ec31ea3704f5e52f041c5bbadae0c1c380a668297100c7f660",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99",
+            "state:random.real": "cc8b823a044fa859c71e918dea86f15f9a860cc33349bf168d1ff2dd7c0b8366"
+          }
+        },
+        "main/random.integer/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "6a62bc58b037b102d017c840fac743d4b590329363555f9f050176ca6b5e2b17",
+            "state:random.real": "1e4890479e21781f01b2eb0c76206b8f47b147faa539d8f2209673257c148f6a"
+          }
+        },
+        "main/random.integer/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "f1088d26e23dbd019a2b0ec715802657c0213eb2d1d031c0922f382787f56644",
+            "state:random.real": "58ee571ff16c127391ed8b1ffb835ad0a41aa142da0dcf4a67b0e76e9065f9ad"
+          }
+        },
+        "main/random.float/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1059544106,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3e0a95a83ab35089a7a9142562c68d57ee49c2bf70d6ba59a9df882d376f0654",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029",
+            "state:random.real": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31"
+          }
+        },
+        "main/random.float/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1030184723,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "08a48f0edbee6800cc13e7c457b92a4e30d695b29529c11bff4c27666cb39379",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "7e8283512f66c18368dbcf63c7362c2d68edd1c8bc281487f771424c281fb7ff",
+            "state:random.real": "285205061ec6521e6b8ff3826273288091c94380f4497784ede1439326d5d7d5"
+          }
+        },
+        "main/random.float/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1058826970,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9b8a7096ce1d4f3a52d9270acbccdbad1c36da1fecf0423bef4cab28069d0646",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab",
+            "state:random.real": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0"
+          }
+        },
+        "main/random.float/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1050066781,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1bc981b6a4220fa2810611c3a404fd752d36f075647e80cdef968b81b6da507d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "f5e7bcb11ffee63af16704732d34521389f64d1ed3f3248f1b3186b8adeed180",
+            "state:random.real": "ced933582fdacb557202e00e6bb39dc655968f0e61f9c84022a8ce9a70b98985"
+          }
+        },
+        "main/random.float/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1052571792,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0790062275fe48209f115eadc1acb87cab29a5e3f3ee5b10b86e93a4cfe85bce",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "86d0f0e5bdc8f091be610083fcbcb945e5047fed8755b08fdfaa62f30bda768d",
+            "state:random.real": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99"
+          }
+        },
+        "main/random.float/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "26c682be80230c66817b7cc8f84bebb011456914a8296ac47149107cc9956008",
+            "state:random.real": "383d041794a3a14225e8615516e8a26da0e39a243f9e9952e3a536150a36b653"
+          }
+        },
+        "main/random.float/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "7d72478ea35f3c5e543551ffd8524a033a8b1a4ea288e3ba79e47cdc4f040771",
+            "state:random.real": "d5ba5c577d95f5df5bda9c92a81e88d6291288b91c548e76b5a0b7be90028376"
+          }
+        },
+        "generic/random.integer/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2807835183,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "94c222e7da2a2d481125a8f28377fff8b6697dada1c446b1f96fbfa0faafb4c7",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31",
+            "state:random.real": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029"
+          }
+        },
+        "generic/random.integer/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2953900839,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e78b2cec4b32e3ecce8939ced68d615708c7a0550c361e3178205c1a055a7436",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "da0053978272114e8b6389db9fdd4d4d4643dfb74cb517d00bd98da2ec7b3487",
+            "state:random.real": "85281666ffcbc59566e6b652f91a0bfac5c812c0b8d3edcab1005a043765b1d5"
+          }
+        },
+        "generic/random.integer/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2624248258,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "004ac14fad854aca1fa2d22cf4adb89798000c9a5a3d390a03edc1f12ffde04a",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0",
+            "state:random.real": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab"
+          }
+        },
+        "generic/random.integer/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2523486900,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ccf749b311f5824db78524cae121fa8d9be5ae8709cbca2de0f80f57b7ed99a4",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "010f139a3ef5570ee158aef07f0a4b823bfd7e8094b11f6997786b9b3d3e5856",
+            "state:random.real": "9271347e75b4f036545f240aa3b089ed8146798404b9e9fcf4b46391ed20be3e"
+          }
+        },
+        "generic/random.integer/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1585203162,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8a3ab41aa37308ec31ea3704f5e52f041c5bbadae0c1c380a668297100c7f660",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99",
+            "state:random.real": "cc8b823a044fa859c71e918dea86f15f9a860cc33349bf168d1ff2dd7c0b8366"
+          }
+        },
+        "generic/random.integer/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "6a62bc58b037b102d017c840fac743d4b590329363555f9f050176ca6b5e2b17",
+            "state:random.real": "1e4890479e21781f01b2eb0c76206b8f47b147faa539d8f2209673257c148f6a"
+          }
+        },
+        "generic/random.integer/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "f1088d26e23dbd019a2b0ec715802657c0213eb2d1d031c0922f382787f56644",
+            "state:random.real": "58ee571ff16c127391ed8b1ffb835ad0a41aa142da0dcf4a67b0e76e9065f9ad"
+          }
+        },
+        "generic/random.float/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1059544106,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3e0a95a83ab35089a7a9142562c68d57ee49c2bf70d6ba59a9df882d376f0654",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029",
+            "state:random.real": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31"
+          }
+        },
+        "generic/random.float/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1030184723,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "08a48f0edbee6800cc13e7c457b92a4e30d695b29529c11bff4c27666cb39379",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "7e8283512f66c18368dbcf63c7362c2d68edd1c8bc281487f771424c281fb7ff",
+            "state:random.real": "285205061ec6521e6b8ff3826273288091c94380f4497784ede1439326d5d7d5"
+          }
+        },
+        "generic/random.float/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1058826970,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9b8a7096ce1d4f3a52d9270acbccdbad1c36da1fecf0423bef4cab28069d0646",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab",
+            "state:random.real": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0"
+          }
+        },
+        "generic/random.float/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1050066781,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1bc981b6a4220fa2810611c3a404fd752d36f075647e80cdef968b81b6da507d",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "f5e7bcb11ffee63af16704732d34521389f64d1ed3f3248f1b3186b8adeed180",
+            "state:random.real": "ced933582fdacb557202e00e6bb39dc655968f0e61f9c84022a8ce9a70b98985"
+          }
+        },
+        "generic/random.float/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1052571792,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0790062275fe48209f115eadc1acb87cab29a5e3f3ee5b10b86e93a4cfe85bce",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "86d0f0e5bdc8f091be610083fcbcb945e5047fed8755b08fdfaa62f30bda768d",
+            "state:random.real": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99"
+          }
+        },
+        "generic/random.float/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "26c682be80230c66817b7cc8f84bebb011456914a8296ac47149107cc9956008",
+            "state:random.real": "383d041794a3a14225e8615516e8a26da0e39a243f9e9952e3a536150a36b653"
+          }
+        },
+        "generic/random.float/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "7d72478ea35f3c5e543551ffd8524a033a8b1a4ea288e3ba79e47cdc4f040771",
+            "state:random.real": "d5ba5c577d95f5df5bda9c92a81e88d6291288b91c548e76b5a0b7be90028376"
+          }
+        }
+      }
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "cases": {
+        "main/random.integer/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2807835183,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "94c222e7da2a2d481125a8f28377fff8b6697dada1c446b1f96fbfa0faafb4c7",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31",
+            "state:random.real": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029"
+          }
+        },
+        "main/random.integer/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2953900839,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e78b2cec4b32e3ecce8939ced68d615708c7a0550c361e3178205c1a055a7436",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "da0053978272114e8b6389db9fdd4d4d4643dfb74cb517d00bd98da2ec7b3487",
+            "state:random.real": "85281666ffcbc59566e6b652f91a0bfac5c812c0b8d3edcab1005a043765b1d5"
+          }
+        },
+        "main/random.integer/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2624248258,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "004ac14fad854aca1fa2d22cf4adb89798000c9a5a3d390a03edc1f12ffde04a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0",
+            "state:random.real": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab"
+          }
+        },
+        "main/random.integer/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2523486900,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ccf749b311f5824db78524cae121fa8d9be5ae8709cbca2de0f80f57b7ed99a4",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "010f139a3ef5570ee158aef07f0a4b823bfd7e8094b11f6997786b9b3d3e5856",
+            "state:random.real": "9271347e75b4f036545f240aa3b089ed8146798404b9e9fcf4b46391ed20be3e"
+          }
+        },
+        "main/random.integer/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1585203162,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8a3ab41aa37308ec31ea3704f5e52f041c5bbadae0c1c380a668297100c7f660",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99",
+            "state:random.real": "cc8b823a044fa859c71e918dea86f15f9a860cc33349bf168d1ff2dd7c0b8366"
+          }
+        },
+        "main/random.integer/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "6a62bc58b037b102d017c840fac743d4b590329363555f9f050176ca6b5e2b17",
+            "state:random.real": "1e4890479e21781f01b2eb0c76206b8f47b147faa539d8f2209673257c148f6a"
+          }
+        },
+        "main/random.integer/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "f1088d26e23dbd019a2b0ec715802657c0213eb2d1d031c0922f382787f56644",
+            "state:random.real": "58ee571ff16c127391ed8b1ffb835ad0a41aa142da0dcf4a67b0e76e9065f9ad"
+          }
+        },
+        "main/random.float/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1059544106,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3e0a95a83ab35089a7a9142562c68d57ee49c2bf70d6ba59a9df882d376f0654",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029",
+            "state:random.real": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31"
+          }
+        },
+        "main/random.float/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1030184723,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "08a48f0edbee6800cc13e7c457b92a4e30d695b29529c11bff4c27666cb39379",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "7e8283512f66c18368dbcf63c7362c2d68edd1c8bc281487f771424c281fb7ff",
+            "state:random.real": "285205061ec6521e6b8ff3826273288091c94380f4497784ede1439326d5d7d5"
+          }
+        },
+        "main/random.float/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1058826970,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9b8a7096ce1d4f3a52d9270acbccdbad1c36da1fecf0423bef4cab28069d0646",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab",
+            "state:random.real": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0"
+          }
+        },
+        "main/random.float/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1050066781,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1bc981b6a4220fa2810611c3a404fd752d36f075647e80cdef968b81b6da507d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "f5e7bcb11ffee63af16704732d34521389f64d1ed3f3248f1b3186b8adeed180",
+            "state:random.real": "ced933582fdacb557202e00e6bb39dc655968f0e61f9c84022a8ce9a70b98985"
+          }
+        },
+        "main/random.float/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1052571792,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0790062275fe48209f115eadc1acb87cab29a5e3f3ee5b10b86e93a4cfe85bce",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "86d0f0e5bdc8f091be610083fcbcb945e5047fed8755b08fdfaa62f30bda768d",
+            "state:random.real": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99"
+          }
+        },
+        "main/random.float/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "26c682be80230c66817b7cc8f84bebb011456914a8296ac47149107cc9956008",
+            "state:random.real": "383d041794a3a14225e8615516e8a26da0e39a243f9e9952e3a536150a36b653"
+          }
+        },
+        "main/random.float/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:random.integer": "7d72478ea35f3c5e543551ffd8524a033a8b1a4ea288e3ba79e47cdc4f040771",
+            "state:random.real": "d5ba5c577d95f5df5bda9c92a81e88d6291288b91c548e76b5a0b7be90028376"
+          }
+        },
+        "generic/random.integer/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2807835183,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "94c222e7da2a2d481125a8f28377fff8b6697dada1c446b1f96fbfa0faafb4c7",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31",
+            "state:random.real": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029"
+          }
+        },
+        "generic/random.integer/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2953900839,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e78b2cec4b32e3ecce8939ced68d615708c7a0550c361e3178205c1a055a7436",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "da0053978272114e8b6389db9fdd4d4d4643dfb74cb517d00bd98da2ec7b3487",
+            "state:random.real": "85281666ffcbc59566e6b652f91a0bfac5c812c0b8d3edcab1005a043765b1d5"
+          }
+        },
+        "generic/random.integer/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2624248258,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "004ac14fad854aca1fa2d22cf4adb89798000c9a5a3d390a03edc1f12ffde04a",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0",
+            "state:random.real": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab"
+          }
+        },
+        "generic/random.integer/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2523486900,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ccf749b311f5824db78524cae121fa8d9be5ae8709cbca2de0f80f57b7ed99a4",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "010f139a3ef5570ee158aef07f0a4b823bfd7e8094b11f6997786b9b3d3e5856",
+            "state:random.real": "9271347e75b4f036545f240aa3b089ed8146798404b9e9fcf4b46391ed20be3e"
+          }
+        },
+        "generic/random.integer/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1585203162,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8a3ab41aa37308ec31ea3704f5e52f041c5bbadae0c1c380a668297100c7f660",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99",
+            "state:random.real": "cc8b823a044fa859c71e918dea86f15f9a860cc33349bf168d1ff2dd7c0b8366"
+          }
+        },
+        "generic/random.integer/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "6a62bc58b037b102d017c840fac743d4b590329363555f9f050176ca6b5e2b17",
+            "state:random.real": "1e4890479e21781f01b2eb0c76206b8f47b147faa539d8f2209673257c148f6a"
+          }
+        },
+        "generic/random.integer/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "f1088d26e23dbd019a2b0ec715802657c0213eb2d1d031c0922f382787f56644",
+            "state:random.real": "58ee571ff16c127391ed8b1ffb835ad0a41aa142da0dcf4a67b0e76e9065f9ad"
+          }
+        },
+        "generic/random.float/seed zero": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1059544106,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3e0a95a83ab35089a7a9142562c68d57ee49c2bf70d6ba59a9df882d376f0654",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "dad6aa92acec0244a23b46c85e660c0d8e4f98bde6838d18e570783726aa7029",
+            "state:random.real": "a780be0bd3a91e8e87496cb7702f9bbe47f0dd7d7c93b6f575442632308bbe31"
+          }
+        },
+        "generic/random.float/seed normal": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1030184723,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "08a48f0edbee6800cc13e7c457b92a4e30d695b29529c11bff4c27666cb39379",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "7e8283512f66c18368dbcf63c7362c2d68edd1c8bc281487f771424c281fb7ff",
+            "state:random.real": "285205061ec6521e6b8ff3826273288091c94380f4497784ede1439326d5d7d5"
+          }
+        },
+        "generic/random.float/seed max": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1058826970,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9b8a7096ce1d4f3a52d9270acbccdbad1c36da1fecf0423bef4cab28069d0646",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "0d79544d0554411fc2de187eecdf9ee92a0a6670f61d7885e6f6e0d5b37e20ab",
+            "state:random.real": "c6ab32b9b31bd89ecfbfa05fe76cbbe642fafa15ee72dce724172c0bcd8b81a0"
+          }
+        },
+        "generic/random.float/checkpoint last word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1050066781,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "1bc981b6a4220fa2810611c3a404fd752d36f075647e80cdef968b81b6da507d",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "f5e7bcb11ffee63af16704732d34521389f64d1ed3f3248f1b3186b8adeed180",
+            "state:random.real": "ced933582fdacb557202e00e6bb39dc655968f0e61f9c84022a8ce9a70b98985"
+          }
+        },
+        "generic/random.float/unseeded sentinel": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1052571792,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "0790062275fe48209f115eadc1acb87cab29a5e3f3ee5b10b86e93a4cfe85bce",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "86d0f0e5bdc8f091be610083fcbcb945e5047fed8755b08fdfaa62f30bda768d",
+            "state:random.real": "92f70617334971f7a7faffccde2ba18c22533bad44aac9550816906880a78b99"
+          }
+        },
+        "generic/random.float/lower endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "26c682be80230c66817b7cc8f84bebb011456914a8296ac47149107cc9956008",
+            "state:random.real": "383d041794a3a14225e8615516e8a26da0e39a243f9e9952e3a536150a36b653"
+          }
+        },
+        "generic/random.float/upper endpoint": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "957bc53f67e1518ce289fd7cc2ecf3bc99c95c08d138d6e440e6d5d02b97c5eb",
+            "shared": "86d831db2dc9ed1bc73a66fc1e49eac177dcbc107785cb26e661860c6c79dc7a",
+            "state:random.integer": "7d72478ea35f3c5e543551ffd8524a033a8b1a4ea288e3ba79e47cdc4f040771",
+            "state:random.real": "d5ba5c577d95f5df5bda9c92a81e88d6291288b91c548e76b5a0b7be90028376"
+          }
+        }
+      }
+    }
+  }
+}

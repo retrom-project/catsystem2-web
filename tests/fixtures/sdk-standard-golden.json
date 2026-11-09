@@ -1,0 +1,182 @@
+{
+  "scope": "Authored SDK standard inputs, actual SDK table wrappers. Exact VM/return/control, only explicitly checked formatter result bytes treated as private scratch.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "cases": {
+        "identity word": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3735928559,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e9dc3a3014fb78181e22f741d6803ddc4c73eb87244d86d56e87f745781d5106",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "memory copy": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "e59b1abff9d2c5bc824af94c7efec4356c6fa1fb999941cc8f7a186088285882",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "memory low byte fill": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "89435a3a5da1ea2235ae67d9c78e4955a9f277c353f9cd35189adc14eb3d0a9e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "thousands signed": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "460705e7d78d7aa4a6d0e8d3d63ae821eb8c528d05405a1f0b62a9f1fd972a67",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "separator plain": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cb0a71b496bbda136c85331ea61431b95d4396ade908488a902ab3c83f16046d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "separator formatted": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "103684cb81586dbc2e360f0fa52cb43acf29b70164bae3e4c57cddb5a7a1da2c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "CP932 lead": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "cbf795380f81230cbc347cca1b1fc9ca3d55e0acd6e0622a8490760ee7919a08",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "ASCII byte": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ab40963bdcb1add96cc05ebd48a62cc0078135ad545623ed3ee2dc5a1faa406e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "split plain": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4e4548a52b337af8400b1ab1288b6930daa363e4d141c33640940db24312e6da",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "list select": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "be8a1df8a3287da3c621720dbd4a9a428d541288426fe2b5a3494d5c7d225b84",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "split groups": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "ca3e240aca8c3c64f6da61505ea775a9bff2d99740a6ed5bc0413bf17c99bb2e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "join list": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "978d4fff5bc344d6206d59d04f3def8e23b60f67f083fd5fa2e0b1d2d2391098",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "replace bytes": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "84a897aaea82b7958d3ae1c31f57f608330726ffb8cdf6d566fd35a3e2b87a07",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "character count": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "8ca8d4bdabe40a2039292a3863d301aa8a1b04f77d4005fd527b04cf9156a1bc",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "formatted character count": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 3,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "3e79ded7edddc7ea793334f3278d4b4b7ee689d44456d42a4ded1fd547024ecb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "find character boundary": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "aa10ae3e126d73bee3e02b8b348d501b10b698188a6a1a9586c8323d43c928ce",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "do not find a trail byte": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 4,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "4a2ba93f150a59dd3ed949c0d743f705d2f66cf364d0609520de5077c5bef580",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        },
+        "yield control": {
+          "control": 4,
+          "resultWritten": false,
+          "floatingMemory": [],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+          }
+        }
+      }
+    }
+  }
+}
