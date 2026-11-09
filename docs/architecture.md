@@ -28,12 +28,16 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
 运行时版本行为读取 `src/native/abi/` 的冻结数据。字符宽度、配置布局、声音协议、
 消息映射和 capability 都由当前 ABI 声明。剩余纯 EXE 地址选择继续随领域迁移，
 盘点的 `remainingProfileSelections` 单独列出它们及对应阶段。
-scalar-math 通过语义名调用 `oracle/transitional-exe.mjs`，该层也接管游戏启动中
-accelerator 的有界 WinMain 区间。`scripts/transitional-runtime.json` 明确列出
+第 3 阶段的标量、矩阵/向量、矩形/视图、UTF-8 和 Unicode 输出入口已改为 JS；
+计算状态由 World 拥有并进入其 checkpoint。标量原处理器和旧 facade 只供 oracle 测试，
+不再进入产品清单。`oracle/transitional-exe.mjs` 保留 accelerator 的有界 WinMain 区间，
+并将 JS 视图状态单向投影给尚未迁移的 EXE 渲染器；这项投影在第 6 阶段删除。
+随机数本体和独立差分已通过，原 EXE 消费者仍使用的随机状态绑定保留至第 10 阶段。`scripts/transitional-runtime.json` 明确列出
 产品使用的过渡模块，开发服务器按此清单提供文件，构建按此复制 oracle 模块。
 静态入口门禁同时核对页面依赖闭包，缺少清单项时失败。
 `npm run check` 按文件限制现有 EXE 地址、调用和引用的数量，防止依赖增加；
-规则和基线更新方式见 [完成标准](completion.md)。
+规则和基线更新方式见 [完成标准](completion.md)。计算边界另由
+`check-calculation-boundary.mjs` 保证不重新引入 EXE 执行能力。
 
 ## 当前混合实现
 

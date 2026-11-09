@@ -27,7 +27,8 @@ oracle regressions retain all eight masked precision/rounding configurations
 and full x87/SIMD state, including a fresh World checkpoint with modified FPCW.
 They live in `tests/oracle/native-scalar-math.test.mjs`, using the oracle-only
 scalar facade, handler map and wrapper adapter. These files are absent from
-the transitional product include list; only the bounded startup adapter remains.
+the transitional product include list; the product adapter now owns only bounded
+startup and the separately registered one-way view-state projection.
 
 `tests/fixtures/scalar-cases.mjs` supplies 230 authored cases per ABI. They run
 normal GCALL scripts in two independent Worlds. JS refuses to load an EXE; the
@@ -58,3 +59,6 @@ and instruction trace are retained in ignored `.local/phase3/` storage.
 
 Run `npm run test:differential` with both reviewed EXEs, or `npm run test:js`
 without private resources. Existing generic math cases remain independent too.
+Reproduce the checked-in scalar golden with
+`node scripts/capture-native-calculations.mjs --check scalar` (or `--write` after
+reviewing an intentional change). The same tool handles each migrated family.

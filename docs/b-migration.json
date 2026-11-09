@@ -18,12 +18,13 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 107, "oracle": 135, "differential": 8 },
+    "counts": { "js": 108, "oracle": 135, "differential": 8 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
         "tests/b-migration.test.mjs",
         "tests/bicubic-kernel.test.mjs",
+        "tests/calculation-boundary.test.mjs",
         "tests/check-no-exe-addresses.test.mjs",
         "tests/checkpoint-portable.test.mjs",
         "tests/emote.test.mjs",

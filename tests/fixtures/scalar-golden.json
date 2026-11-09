@@ -1,5 +1,5 @@
 {
-  "scope": "Authored inputs observed through unmodified native table handlers at FPCW 0x007f/MXCSR 0x1f80 on the pinned backend. Only declared floating result slots are masked in exact memory hashes. Raw result words remain checked at the per-operation ULP budget.",
+  "scope": "Authored scalar GCALLs through unmodified original handlers at FPCW 0x007f/MXCSR 0x1f80 on the pinned backend. Declared floating memory words are retained explicitly; all other bytes hash exactly. Results use the fixed per-operation budget.",
   "profiles": {
     "sdk-4.01-engine-2.6.1.74": {
       "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",

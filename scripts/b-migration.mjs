@@ -98,7 +98,6 @@ const ownedModules = {
 };
 function domain(file) {
   const name = basename(file);
-  if (file === 'oracle/scalar-handlers.mjs') return 3;
   if (
     file.startsWith('src/emote/') ||
     name.startsWith('emote') ||
@@ -757,7 +756,7 @@ function tally(items, key) {
 
 // Remaining selections are tracked until the owning phase removes its EXE path.
 const addressSelectorModules = new Set(
-  'area-effect-commands bitmap-factory bitmap-operations configuration-query content-databases draw-commands effect-commands engine-files fes-objects geometry image-commands image-composite image-file image-owner input-browser input-commands nametable particle-commands plane-model-command plane-movie-command rectangles registry render-sources retained-draw screen-capture script-replacements-bridge task-dump task-memory text tile-plane-command view-geometry window-events'.split(
+  'area-effect-commands bitmap-factory bitmap-operations configuration-query content-databases draw-commands effect-commands engine-files fes-objects image-commands image-composite image-file image-owner input-browser input-commands nametable particle-commands plane-model-command plane-movie-command registry render-sources retained-draw screen-capture script-replacements-bridge task-dump task-memory text tile-plane-command window-events'.split(
     ' ',
   ),
 );

@@ -53,9 +53,19 @@ native wrapper, while `exe-region` invokes EXE helpers or bounded regions.
 Patch/hook sites are recorded separately, including those installed indirectly
 by a feature. Zero native entries classified primarily as `patch` does not mean
 there are no patches. File counts reuse the phase 0 checker's exact AST scanner,
-whose syntactic counts also include independent DLL-host execution. Scalar
-entries retain their original-handler classification and list the semantic
-transition operation and both oracle dependencies after the 2.3 relocation.
+whose syntactic counts also include independent DLL-host execution. After phase 3,
+all 285 domain-3 slots are pure JS: original-handler and exe-region are zero.
+Scalar, matrix/vector, rectangle/view and game UTF-8/output paths do not execute
+original instructions. The only remaining domain-3 EXE state binding is
+`random-memory.mjs`, explicitly retained through phase 10. The temporary JS view
+projection is a separately registered domain-6 dependency, removed in phase 6.
+
+Eighteen domain-3 rows remain needs-review with explicit reasons: eight SDK
+host/allocator normal-execution fixtures, eight random-stream rows carrying the
+permitted PE binding, and two out-of-range FSINCOS rows whose original empty-stack
+pop can expose prior x87 register residue. Neither classification nor a canonical
+fresh-state comparison certifies that undefined historical residue. See
+[numeric semantics](native-vector-matrix.md) and [SDK review](native-standard-review.md).
 
 `remainingProfileSelections` lists the retained `profileIndex` sites, EXE version
 guards and VA selections with their owning migration phase. Counts use unique
@@ -70,9 +80,17 @@ executable groups. Pending domains retain their oracle regressions. Regenerate
 the inventory when adding a test or changing its import/fixture dependencies.
 The maintained source plan is `tests/native-test-plan.json`.
 
-All 135 files in the local planning attachment are included. Nine have zero
-dependencies under the phase 0 scanner, and five other files have nonzero counts,
-giving 131 dependency-bearing files. The inventory keeps the zero-count files.
+The initial planning attachment is retained in inventory history, including files
+with zero checker counts. The current generated file is authoritative for runtime
+file membership and dependency totals; those totals decrease with each migration.
+
+Phase 3 introduced a permanent `check-calculation-boundary.mjs` check alongside the
+address baseline. It rejects EXE capabilities in migrated calculation modules and
+EXE-backed calculation classifications. The random-memory exception remains named
+explicitly. Public calculation golden fixtures can be regenerated or checked with
+`scripts/capture-native-calculations.mjs --write|--check`, using the two reviewed
+private EXE environment variables. A capture mismatch requires inspecting the
+original evidence; it is not permission to widen a floating-point budget.
 
 The frozen inputs and hashes are recorded in [references.json](../references.json).
 SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is

@@ -119,6 +119,17 @@ GPU 上耗时较长。
 
 ## 实现与验收范围
 
+第 3 阶段的 285 个计算槽位均走 JS，包括标量、矩阵/向量、矩形/视图和 game 的
+UTF-8/Unicode 输出。视图状态由 JS 持有，仍需原渲染器读取的字段单向投影；随机状态
+保留已登记的 PE 绑定。[盘点与待审查原因](docs/native-compatibility.md#b-migration-inventory)
+区分实现方式和验证边界。矩阵/向量有每 ABI 92 个自制 GCALL 样本，所有计算族都有
+不含私有 EXE 的公共 golden 测试。
+
+```sh
+# 用已配置的两份私有 EXE 核对全部计算 golden；可在末尾指定 scalar、geometry 等族
+node scripts/capture-native-calculations.mjs --check
+```
+
 正常入口运行 `NativeWorld`：KCS VM 持续执行游戏自己的 main、sscript 和辅助脚本，
 保留任务图、消息队列、变量域和原生控制返回。FES/CST 通过这些任务驱动。
 当前原 EXE 处理器、格式解析、字体/图像操作和插件共用一个可保存的 PE 进程；
@@ -145,6 +156,3 @@ GPU 上耗时较长。
 来源、提交和 SDK 原生对照指纹见 [references.json](references.json)。
 MPL-2.0；GARbro 的 MIT 归属及其他说明见 [NOTICE.md](NOTICE.md)。
 本仓库不分发游戏素材或原生引擎二进制。
-
-Main matrix/vector migration has 92 authored GCALL cases per ABI, captured in
-`tests/fixtures/geometry-golden.json`; see [calculation semantics](docs/native-vector-matrix.md).
