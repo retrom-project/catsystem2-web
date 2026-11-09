@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // WinMain owns the original MainWndMenu at +36 in the startup block.
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
-import { NATIVE_STARTUP_BLOCKS, runNativeGameWinMainSpan } from './engine-startup-block.mjs';
+import {
+  NATIVE_STARTUP_BLOCKS,
+  runNativeGameWinMainSpan,
+  runNativeStackSpan,
+} from './engine-startup-block.mjs';
 
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': [0x5bf330, 0x5bf3c0, 0xaff2c8, 0x47ee90, 0x5bf400],
@@ -73,4 +77,15 @@ export async function releaseNativeStartupMenu(engine) {
   if (p.allocations.has(owner) || engine.kernel.windowMenus.menus.has(handle))
     throw new Error('Original startup menu did not release its allocation and handle');
   p.store(slot, 0);
+}
+
+export async function refreshNativeLanguageMenu(engine) {
+  if (engine.profile !== 'nekopara-vol3-engine-2.6.1.76') return;
+  const block = NATIVE_STARTUP_BLOCKS[engine.profile];
+  if (!engine.process.load(block + 36)) return;
+  // The original checkmark pass reads the live Settings and writes only the
+  // three language groups. The surrounding task locks and broadcast are separate.
+  await runNativeStackSpan(engine, 0x530ec0, 0x53100d, 0x44, (_stack, cpu, uc) => {
+    cpu.reg_write_i32(uc.X86_REG_EDI, block);
+  });
 }

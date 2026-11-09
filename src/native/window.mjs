@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
-import { nativeWindowMessageCommand } from './window-commands.mjs';
+import { nativeWindowLanguageCommand, nativeWindowMessageCommand } from './window-commands.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
@@ -47,6 +47,18 @@ export class NativeWindow {
   async command(word) {
     const command = word & 0xffff,
       world = this.world;
+    const language = world.configuration.language,
+      selection = language && nativeWindowLanguageCommand(command);
+    if (selection) {
+      const { field, index } = selection,
+        valid = index < language.entries.length,
+        next = valid ? index : 0xffffffff;
+      if ((valid || field === 'sub') && language[field] !== next) {
+        language[field] = next;
+        await world.applyNativeLanguage(field);
+      }
+      return true;
+    }
     if (command === 40096 && world.profile === 'nekopara-vol3-engine-2.6.1.76') {
       const engine = await world.ensureNativeEngine(),
         old = await engine.call(0x713f70, [], engine.refs.owner),

@@ -11,8 +11,10 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import {
   initializeNativeStartupMenu,
+  refreshNativeLanguageMenu,
   releaseNativeStartupMenu,
 } from '../src/native/engine-startup-menu.mjs';
+import { nativeWindowLanguageCommand } from '../src/native/window-commands.mjs';
 
 for (const [profile, variable, normalCount, load, suffix] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 4, 0x5bf3c0, 'A'],
@@ -247,6 +249,39 @@ test(
           [40087, 'Sub : 繁体中文\tC', 0, 0],
           [40088, 'Sub : OFF\tShift + N', 0, 8],
         ],
+      );
+      const block = NATIVE_STARTUP_BLOCKS[profile],
+        owner = p.load(block + 36),
+        observed = [];
+      for (const [address, field] of [
+        [0x530be0, 'ui'],
+        [0x530d50, 'main'],
+        [0x530e30, 'sub'],
+      ])
+        engine.patch(address, 'observe original menu language selection', 1, ([forced]) => {
+          assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0, block);
+          assert.equal(forced, 0);
+          observed.push({ field, index: p.cpu.reg_read_i32(p.uc.X86_REG_EDX) >>> 0 });
+          return 0;
+        });
+      for (let command = 40064; command <= 40095; command++) {
+        observed.length = 0;
+        await engine.call(0x530200, [1, 0x111, 0x10000 | command, 0, 0], owner);
+        const selection = nativeWindowLanguageCommand(command);
+        assert.deepEqual(observed, selection ? [selection] : [], `command ${command}`);
+      }
+
+      Object.assign(configuration.language, { ui: 0, main: 2, sub: 1 });
+      await refreshNativeLanguageMenu(engine);
+      assert.deepEqual(
+        choices.filter(({ state }) => state === 8).map(({ id }) => id),
+        [40065, 40077, 40086],
+      );
+      configuration.language.sub = 0xffffffff;
+      await refreshNativeLanguageMenu(engine);
+      assert.deepEqual(
+        choices.filter(({ state }) => state === 8).map(({ id }) => id),
+        [40065, 40077, 40088],
       );
       await releaseNativeStartupMenu(engine);
       configuration.language.entries = configuration.language.entries.slice(0, 1);

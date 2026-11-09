@@ -36,7 +36,7 @@ import { checkNativeDirectXStartup } from './engine-system-information.mjs';
 import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { initializeNativeWindowClass } from './engine-window-class.mjs';
-import { initializeNativeStartupMenu } from './engine-startup-menu.mjs';
+import { initializeNativeStartupMenu, refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
 import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
 import { initializeNativeConfigurationEvent } from './engine-configuration-event.mjs';
 import {
@@ -627,6 +627,40 @@ export class NativeWorld {
       });
     await this.configurationFlush;
   }
+  async applyNativeLanguage(field, { reloadMainFirst = false } = {}) {
+    const language = this.configuration.language,
+      index = language[field] >>> 0,
+      valid = index < language.entries.length,
+      bridge = this.nativeEngine?.features.get('global-strings');
+    if (reloadMainFirst) {
+      // Private message 46F reloads the option table before calling the
+      // range-checked main-language handler, unlike the menu command.
+      bridge?.invalidate([1]);
+      await this.globalStrings.reload(1, this.globalStrings.optionFilename());
+    }
+    if (field === 'sub') language.sub = valid ? index : 0xffffffff;
+    else {
+      if (!valid) return;
+      bridge?.invalidate(field === 'ui' ? [0, 1] : [1]);
+      await this.globalStrings.languageChanged(field);
+      if (field === 'ui') {
+        if (this.nativeEngine?.kernel.windowViews.windows.has(this.window.handle))
+          await setNativeWindowCaption(
+            this.nativeEngine,
+            this.globalStrings.get(this.configuration.getField('application.title')),
+          );
+        this.refreshTitle();
+      }
+      for (const record of this.objects.objects.values()) {
+        const player = record.kind === 34 && record.implementation.player;
+        if (!player) continue;
+        this.applyFESLanguage(player);
+        await player.refreshImages();
+      }
+    }
+    this.markConfigurationDirty();
+    if (this.nativeEngine) await refreshNativeLanguageMenu(this.nativeEngine);
+  }
   async processWindowMessages() {
     let processed = 0;
     while (this.windowMessages.length && !this.disposalRequested) {
@@ -634,39 +668,8 @@ export class NativeWorld {
       const message = this.windowMessages.shift();
       if (await this.window.message(message)) continue;
       if ([0x46e, 0x46f, 0x470].includes(message.message)) {
-        const language = this.configuration.language,
-          field = message.message === 0x46e ? 'ui' : message.message === 0x46f ? 'main' : 'sub',
-          index = language[field] >>> 0,
-          valid = index < language.entries.length,
-          bridge = this.nativeEngine?.features.get('global-strings');
-        if (message.message === 0x46f) {
-          // WndProc 531670 reloads the option table before its range-checked
-          // main-language handler. A valid index therefore reloads it twice.
-          bridge?.invalidate([1]);
-          await this.globalStrings.reload(1, this.globalStrings.optionFilename());
-        }
-        if (field === 'sub') {
-          language.sub = valid ? index : 0xffffffff;
-          this.markConfigurationDirty();
-        } else if (valid) {
-          bridge?.invalidate(field === 'ui' ? [0, 1] : [1]);
-          await this.globalStrings.languageChanged(field);
-          this.markConfigurationDirty();
-          if (field === 'ui') {
-            if (this.nativeEngine?.kernel.windowViews.windows.has(this.window.handle))
-              await setNativeWindowCaption(
-                this.nativeEngine,
-                this.globalStrings.get(this.configuration.getField('application.title')),
-              );
-            this.refreshTitle();
-          }
-          for (const record of this.objects.objects.values()) {
-            const player = record.kind === 34 && record.implementation.player;
-            if (!player) continue;
-            this.applyFESLanguage(player);
-            await player.refreshImages();
-          }
-        }
+        const field = ['ui', 'main', 'sub'][message.message - 0x46e];
+        await this.applyNativeLanguage(field, { reloadMainFirst: field === 'main' });
       } else if (message.message === 0x467 && !this.host.nativeWindowMessage)
         throw new Error('Native fullscreen/window mode service is unavailable');
       await this.host.nativeWindowMessage?.(message, this);

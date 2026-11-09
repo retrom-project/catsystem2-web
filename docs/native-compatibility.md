@@ -95,6 +95,13 @@ language vector, using the original strings and USER32 item mutations.
 It fills the UI, primary and secondary language groups, with accelerators
 and checked selections, or removes the submenu for one language.
 The original menu object retains the address of the WinMain startup block.
+The game menu command receiver maps the three ten-ID ranges to language
+indexes, including an out-of-range secondary selection for OFF. Menu
+commands and private Script messages share the browser language tables,
+with the original extra option reload only on private message 46F. Changes
+run the original checkmark pass `530EC0..53100D` against the live native
+menu. Rebuilding the localized menu labels on a UI language change is a
+separate operation.
 
 WinMain then allocates the original 116-byte `kcWindow` owner (SDK `5BF430`,
 game `70E080`). It initializes the callback list and critical section and

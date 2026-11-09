@@ -34,6 +34,11 @@ export function nativeWindowMessageCommand(message, selector) {
   if (message === 0x46c) return nativeWindowMenuCommand(selector);
   return postedCommands.get(message) ?? null;
 }
+export function nativeWindowLanguageCommand(command) {
+  if (command < 40065 || command > 40094) return null;
+  const index = command - 40065;
+  return { field: ['ui', 'main', 'sub'][Math.floor(index / 10)], index: index % 10 };
+}
 export function installNativeWindowCommands(world) {
   for (const [id, message] of scriptMessages)
     world.runtime.register('main', id, () => {

@@ -105,6 +105,45 @@ test('window messages drain posted menu commands and preserve native preparation
     await world.close({ flushFiles: false });
   }
 });
+test('language menu commands select native indexes, and only private main-language messages preload the option table', async () => {
+  const { world } = await fixture('nekopara-vol3-engine-2.6.1.76');
+  const { language } = world.configuration,
+    calls = [],
+    send = async (id, word) => {
+      world.window.post(id, word);
+      await world.processWindowMessages();
+    };
+  try {
+    language.entries = [{ prefix: 'en' }, { prefix: 'jp' }];
+    language.optionTable = 'options_%LANG%_%LANG_M%.txt';
+    world.globalStrings.reload = async (...args) => calls.push(args);
+    await send(0x111, 0x10000 | 40076);
+    assert.equal(language.main, 1);
+    assert.deepEqual(calls.splice(0), [[1, 'options_en_jp.txt']]);
+    await send(0x111, 40076);
+    await send(0x111, 40078);
+    assert.equal(language.main, 1);
+    assert.deepEqual(calls.splice(0), []);
+    await send(0x111, 40086);
+    assert.equal(language.sub, 1);
+    await send(0x111, 40087);
+    assert.equal(language.sub, 0xffffffff);
+    assert.deepEqual(calls.splice(0), []);
+    await send(0x111, 40066);
+    assert.equal(language.ui, 1);
+    assert.deepEqual(calls.splice(0), [
+      [0, 'language_jp.txt'],
+      [1, 'options_jp_jp.txt'],
+    ]);
+    await send(0x46f, 0);
+    assert.deepEqual(calls, [
+      [1, 'options_jp_jp.txt'],
+      [1, 'options_jp_jp.txt'],
+    ]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
 test('close confirmation cancellation retains the World; acceptance disables Scripts before the settled teardown request', async () => {
   const { world, trace, host } = await fixture();
   try {
