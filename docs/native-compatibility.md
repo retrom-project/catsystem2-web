@@ -25,8 +25,8 @@ unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    639 |             82 |                     19 |                     269 |
-| Game / 2.6.1.76 | 1,055 |                    893 |             58 |                     17 |                      87 |
+| SDK / 2.6.1.74  | 1,009 |                    640 |             82 |                     19 |                     268 |
+| Game / 2.6.1.76 | 1,055 |                    894 |             58 |                     17 |                      86 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -93,6 +93,11 @@ the full native parser and composition helpers. Its returned wrapper is
 explicitly owned and is not inserted into the Script's automatic bitmap list.
 The two profiles have 28,004 comparisons, with separate shared-alias, explicit
 release, fresh-World and actual GPU pixel checks.
+
+Main `281` runs each original [bitmap alpha operation](native-bitmap-memory.md)
+on both owned bitmaps and live borrowed render sources. The original helper
+uses unsigned percentage arithmetic and only writes the alpha bytes of a
+32-bit source.
 
 The [render-source array](native-render-sources.md) pair `2BF/2C0` executes
 both original wrappers on live VM storage. The two record layouts keep
