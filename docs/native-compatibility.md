@@ -25,7 +25,7 @@ unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    640 |             82 |                     19 |                     268 |
+| SDK / 2.6.1.74  | 1,009 |                    644 |             82 |                     19 |                     264 |
 | Game / 2.6.1.76 | 1,055 |                    894 |             58 |                     17 |                      86 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
@@ -50,6 +50,10 @@ unchecked indices inside the expression. See
 Main `D0` executes both original [task dump wrappers](native-task-dump.md).
 The SDK writes its CSS task tree through the original receiver. The game
 receiver completes its message without a file write.
+
+The SDK's [original JavaScript task](native-javascript.md) receives `3CE`,
+`3CF`, `3D0` and `3EE` through their original wrappers. The corresponding
+slots in the fixed game executable are original no-ops.
 
 Main `2BD/2BE` and `3DC/3DD` execute the original
 [Plane movie wrappers](native-movies.md) for VMR9 and the Texture Renderer.

@@ -3331,6 +3331,23 @@ for (const id of [0x10f, 0x110, 0x111, 0x112, 0x113, 0x1aa, 0x1ab, 0x2b5]) {
   recovered76.set(id, fact);
   recovered74.set(id, fact);
 }
+for (const [id, name, parameters] of [
+  [0x3ce, 'javascript.linkScript', ['nativeID target', 'nativeID script']],
+  [0x3cf, 'javascript.load', ['nativeID target', 'format* filename']],
+  [
+    0x3d0,
+    'javascript.call',
+    ['nativeID targetOrParent', 'format* functionName', 'u32 firstString', 'i32 count'],
+  ],
+  [0x3ee, 'javascript.setOption', ['nativeID target', 'word option']],
+])
+  recovered74.set(id, {
+    name,
+    parameters,
+    result: 'void',
+    family: 'javascript',
+    evidence: 'pinned-sdk-javascript-wrappers-and-original-kcs-v8-world-test',
+  });
 const genericNames = [
   'debug.print',
   'math.sin',
