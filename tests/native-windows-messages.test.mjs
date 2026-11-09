@@ -188,6 +188,47 @@ test('GetMessage waits for its matching post and can be cancelled at process exi
   }
 });
 
+test('TranslateMessage posts character messages after the already queued messages', async () => {
+  const { p, kernel, queue, call, root, packet, words, peek, get } = await desktop();
+  let modifiers = 4;
+  kernel.accelerators.readModifiers = () => modifiers;
+  try {
+    queue.post(root, 0x100, 0x4e, 0x00310002);
+    queue.post(root, 0x4220, 17, 4);
+    assert.equal(await get(), 1);
+    const original = words();
+    assert.equal(call('TranslateMessage', packet), 1);
+    assert.deepEqual(words(), original);
+    assert.equal(await get(), 1);
+    assert.deepEqual(words().slice(0, 4), [root, 0x4220, 17, 4]);
+    assert.equal(call('TranslateMessage', packet), 0);
+    assert.equal(await get(), 1);
+    assert.deepEqual(words().slice(0, 4), [root, 0x102, 0x4e, 0x00310002]);
+
+    for (const [message, key, data, flags, character] of [
+      [0x101, 0x4e, 0xc0310001, 4, null],
+      [0x105, 0x41, 0xe01e0001, 16, null],
+      [0x100, 0x70, 0x003b0001, 0, null],
+      [0x100, 0x41, 0x001e0001, 0, 0x61],
+      [0x104, 0x41, 0x201e0001, 16, 0x61],
+      [0x100, 0x41, 0x001e0001, 8, 1],
+      [0x100, 0x32, 0x00030001, 12, 0],
+      [0x100, 0xbd, 0x000c0001, 4, 0x5f],
+    ]) {
+      modifiers = flags;
+      queue.post(root, message, key, data);
+      assert.equal(await get(), 1);
+      assert.equal(call('TranslateMessage', packet), 1);
+      assert.equal(peek(0, 0, 0, 1), Number(character !== null));
+      if (character !== null)
+        assert.deepEqual(words().slice(0, 4), [root, message + 2, character, data]);
+    }
+  } finally {
+    queue.cancelWaits();
+    p.close();
+  }
+});
+
 test('message waits share event priority and preserve unread queue categories', async () => {
   const { p, kernel, queue, call, root, peek } = await desktop(),
     event = kernel.events.create(0, 0),

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // The application and its virtual windows share one Win32 thread queue.
+import { virtualKeyCharacter } from './windows-keyboard.mjs';
+
 const WM_QUIT = 0x12;
 const INVALID_WINDOW = 1400;
 const INVALID_THREAD = 1444;
@@ -48,6 +50,7 @@ export class NativeWindowsMessages {
     );
     register('GetQueueStatus', 1, ([mask]) => this.status(mask));
     register('MsgWaitForMultipleObjects', 5, (args) => this.waitForInput(...args));
+    register('TranslateMessage', 1, ([address]) => this.translate(address));
   }
   error(code, result = 0) {
     this.kernel.lastError = code;
@@ -201,6 +204,20 @@ export class NativeWindowsMessages {
         reject(error);
       }
     }
+  }
+  translate(address) {
+    if (!address) return this.error(INVALID_PARAMETER);
+    const p = this.process,
+      message = p.load(address + 4);
+    if (message === 0x101 || message === 0x105) return 1;
+    if (message !== 0x100 && message !== 0x104) return 0;
+    const character = virtualKeyCharacter(
+      p.load(address + 8),
+      this.kernel.accelerators.readModifiers?.() ?? 0,
+    );
+    if (character !== null)
+      this.post(p.load(address), message + 2, character, p.load(address + 12));
+    return 1;
   }
   dispatch(address) {
     if (!address) return this.error(INVALID_PARAMETER);
