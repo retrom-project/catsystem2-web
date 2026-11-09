@@ -27,7 +27,7 @@ export class KCSScheduler {
     native,
     diagnostic,
     shared = new Uint8Array(1024 * 1024),
-    budget = 5000000,
+    budget = 5000000 /* exe-address-check: non-address - instruction budget */,
   }) {
     this.load = load;
     this.dispatch = native;

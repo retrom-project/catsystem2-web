@@ -62,7 +62,14 @@ export async function createNativeStartupWindow(engine) {
     p.store(rect + 12, dimensions >>> 16);
     const handle = await engine.call(
       open,
-      [classRecord, rect, 0xca0000, 0x800a0000, menuOwner, 0],
+      [
+        classRecord,
+        rect,
+        0xca0000 /* exe-address-check: non-address - Win32 window style flags */,
+        0x800a0000,
+        menuOwner,
+        0,
+      ],
       owner,
     );
     if (

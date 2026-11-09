@@ -115,7 +115,7 @@ export class PE32Process {
   constructor(
     unicorn,
     {
-      budget = 10000000,
+      budget = 10000000 /* exe-address-check: non-address - instruction budget */,
       singleStep = false,
       trace = false,
       heapSize = 0x4000000,

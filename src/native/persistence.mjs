@@ -120,7 +120,7 @@ export class NativeGlobalFile {
       throw new Error('Native CSS compression failed');
     const compressed = encoded.bytes.subarray(0, encoded.result);
     const out = new Uint8Array(compressed.length + 16);
-    word(out, 0, 0x00535343);
+    word(out, 0, 0x00535343 /* exe-address-check: non-address - CSS file signature */);
     word(out, 4, compressed.length);
     word(out, 8, payload.length);
     word(out, 12, this.tag);
@@ -129,7 +129,8 @@ export class NativeGlobalFile {
   }
   static async fromFile(bytes) {
     const b = new Binary(bytes, 'CSS saved file');
-    if (b.u32(0) !== 0x00535343) throw new Error('Invalid CSS saved-file signature');
+    if (b.u32(0) !== 0x00535343 /* exe-address-check: non-address - CSS file signature */)
+      throw new Error('Invalid CSS saved-file signature');
     const compressed = b.range(16, b.u32(4));
     if (!b.u32(8)) return NativeGlobalFile.fromPayload(new Uint8Array(), b.u32(12));
     const payload = await inflate(compressed, b.u32(8));
@@ -271,7 +272,12 @@ export function nativePersistence(id, args, machine, services = {}) {
     return Promise.resolve(storage.read(name)).then(async (bytes) => {
       if (bytes === null) return result(0);
       if (id === 0xff) {
-        if (bytes.length < 16 || new Binary(bytes).u32(0) !== 0x00535343) return result(0);
+        if (
+          bytes.length < 16 ||
+          new Binary(bytes).u32(0) !==
+            0x00535343 /* exe-address-check: non-address - CSS file signature */
+        )
+          return result(0);
         const info = await storage.stat(name);
         if (!info) return result(0);
         const value = nativeFileTime(info.modifiedMs),

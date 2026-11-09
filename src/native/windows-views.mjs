@@ -23,11 +23,22 @@ const LONG_FIELDS = new Map([
 
 function margins(style, menu, extended) {
   const base = (style & ~WS_VISIBLE) >>> 0;
-  if (extended || ![0, 0xca0000, WS_CHILD, WS_POPUP, 0x800a0000, 0xc0000000].includes(base))
+  if (
+    extended ||
+    ![
+      0,
+      0xca0000 /* exe-address-check: non-address - Win32 window style flags */,
+      WS_CHILD,
+      WS_POPUP,
+      0x800a0000,
+      0xc0000000,
+    ].includes(base)
+  )
     throw new Error(
       `Unreviewed native window frame 0x${base.toString(16)}/0x${extended.toString(16)}`,
     );
-  const border = base === 0xca0000 ? 3 : 0,
+  const border =
+      base === 0xca0000 /* exe-address-check: non-address - Win32 window style flags */ ? 3 : 0,
     caption = border ? 19 : 0;
   return [border, border + caption + (menu ? 19 : 0), border, border];
 }

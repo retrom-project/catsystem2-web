@@ -15,8 +15,8 @@ const nan = (value) => (value & 0x7fffffff) > 0x7f800000;
 function binary(a, b, operation) {
   const x = word(a),
     y = word(b);
-  if (nan(x)) return real(x | 0x400000);
-  if (nan(y)) return real(y | 0x400000);
+  if (nan(x)) return real(x | 0x400000 /* exe-address-check: non-address - IEEE quiet NaN bit */);
+  if (nan(y)) return real(y | 0x400000 /* exe-address-check: non-address - IEEE quiet NaN bit */);
   const result = Math.fround(operation(a, b));
   return Number.isNaN(result) ? real(0xffc00000) : result;
 }

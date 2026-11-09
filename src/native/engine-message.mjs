@@ -556,7 +556,7 @@ export class NativeEngineMessages {
       bytes = new Uint8Array(size + 20),
       view = new DataView(bytes.buffer),
       memory = { bytes: (at, count) => bytes.subarray(at, at + count) };
-    view.setUint32(0, 0x00535343, true);
+    view.setUint32(0, 0x00535343 /* exe-address-check: non-address - CSS file signature */, true);
     view.setUint32(4, size, true);
     view.setUint32(8, tag >>> 0, true);
     const hadPayload = Object.hasOwn(context, 'payload'),

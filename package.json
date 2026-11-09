@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "eslint . && prettier --check .",
+    "check": "node scripts/check-no-exe-addresses.mjs && eslint . && prettier --check .",
     "format": "prettier --write .",
     "test:browser": "playwright test",
     "test:game": "playwright test --config playwright.game.config.mjs",

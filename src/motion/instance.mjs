@@ -53,7 +53,7 @@ export class MotionInstance {
       flags = 0,
       random = new ParticleRandom(),
       onDebug = null,
-      budget = 5000000,
+      budget = 5000000 /* exe-address-check: non-address - instruction budget */,
     } = {},
   ) {
     this.script = script;

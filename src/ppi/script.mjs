@@ -47,7 +47,7 @@ export class ParticleScriptInstance {
       random = new ParticleRandom(),
       shared = new Uint8Array(0),
       onDebug = null,
-      budget = 5000000,
+      budget = 5000000 /* exe-address-check: non-address - instruction budget */,
       screenBounds = projectionBounds,
     } = options;
     if (!Number.isSafeInteger(count) || count < 0 || count > 1000000)

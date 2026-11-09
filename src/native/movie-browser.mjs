@@ -50,7 +50,15 @@ export class BrowserNativeMovie {
     const { videoWidth: width, videoHeight: height, duration } = this.video;
     if (!width || !height || !Number.isFinite(duration))
       throw new Error('Native movie decoder did not open a finite video stream');
-    return { width, height, duration: BigInt(Math.round(duration * 10000000)) };
+    return {
+      width,
+      height,
+      duration: BigInt(
+        Math.round(
+          duration * 10000000 /* exe-address-check: non-address - media time units per second */,
+        ),
+      ),
+    };
   }
   async decodedFrame() {
     if (this.video.readyState < 2)
@@ -97,10 +105,17 @@ export class BrowserNativeMovie {
     return true;
   }
   position() {
-    return BigInt(Math.trunc(this.video.currentTime * 10000000));
+    return BigInt(
+      Math.trunc(
+        this.video.currentTime *
+          10000000 /* exe-address-check: non-address - media time units per second */,
+      ),
+    );
   }
   async seek(position) {
-    const seconds = Number(position) / 10000000;
+    const seconds =
+      Number(position) /
+      10000000; /* exe-address-check: non-address - media time units per second */
     if (Math.abs(this.video.currentTime - seconds) < 0.0000001) return;
     if (seconds > 0)
       await new Promise((resolve, reject) => {

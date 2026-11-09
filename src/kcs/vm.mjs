@@ -37,8 +37,10 @@ function arithmetic(op, a, b, left, right) {
   const x = floating ? bitsFloat(a) : signed ? a | 0 : a >>> 0;
   const y = floating ? bitsFloat(b) : signed ? b | 0 : b >>> 0;
   if (floating && op <= 4) {
-    if (Number.isNaN(x)) return (a | 0x00400000) >>> 0;
-    if (Number.isNaN(y)) return (b | 0x00400000) >>> 0;
+    if (Number.isNaN(x))
+      return (a | 0x00400000) /* exe-address-check: non-address - IEEE quiet NaN bit */ >>> 0;
+    if (Number.isNaN(y))
+      return (b | 0x00400000) /* exe-address-check: non-address - IEEE quiet NaN bit */ >>> 0;
   }
   let value;
   switch (op) {
@@ -605,9 +607,14 @@ export class KCSMachine {
   debugValue(descriptor) {
     return nativeDebugValue(this, descriptor, { relative: true });
   }
-  run(options = 5000000, stop = () => false) {
-    const { budget = 5000000, yieldOnBudget = false } =
-      typeof options === 'number' ? { budget: options } : options;
+  run(
+    options = 5000000 /* exe-address-check: non-address - instruction budget */,
+    stop = () => false,
+  ) {
+    const {
+      budget = 5000000 /* exe-address-check: non-address - instruction budget */,
+      yieldOnBudget = false,
+    } = typeof options === 'number' ? { budget: options } : options;
     if (!Number.isSafeInteger(budget) || budget < 1)
       throw new Error('KCS invalid instruction budget');
     this.suspended = false;

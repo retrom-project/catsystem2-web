@@ -1,0 +1,660 @@
+{
+  "version": 1,
+  "files": {
+    "src/emote/native-device.mjs": {
+      "addresses": 0,
+      "calls": 0,
+      "references": 1
+    },
+    "src/native/area-effect-commands.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/area-effect.mjs": {
+      "addresses": 60,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/bitmap-factory.mjs": {
+      "addresses": 18,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/bitmap-memory.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/bitmap-operations.mjs": {
+      "addresses": 37,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/catalog.mjs": {
+      "addresses": 8,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/configuration-query.mjs": {
+      "addresses": 12,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/content-databases.mjs": {
+      "addresses": 178,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/control-task.mjs": {
+      "addresses": 12,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/data-buffer.mjs": {
+      "addresses": 21,
+      "calls": 2,
+      "references": 1
+    },
+    "src/native/database.mjs": {
+      "addresses": 18,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/directshow.mjs": {
+      "addresses": 0,
+      "calls": 0,
+      "references": 1
+    },
+    "src/native/draw-commands.mjs": {
+      "addresses": 18,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/effect-commands.mjs": {
+      "addresses": 60,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/emote-blocks.mjs": {
+      "addresses": 15,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/emote-bootstrap.mjs": {
+      "addresses": 0,
+      "calls": 0,
+      "references": 1
+    },
+    "src/native/emote-configuration.mjs": {
+      "addresses": 22,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/emote-fes.mjs": {
+      "addresses": 8,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/emote-graphics.mjs": {
+      "addresses": 6,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/emote-sdk-task.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/emote.mjs": {
+      "addresses": 46,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/engine-configuration-event.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-desktop.mjs": {
+      "addresses": 2,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-executable-resources.mjs": {
+      "addresses": 6,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-file-server.mjs": {
+      "addresses": 6,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-files.mjs": {
+      "addresses": 12,
+      "calls": 8,
+      "references": 0
+    },
+    "src/native/engine-language.mjs": {
+      "addresses": 13,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-message.mjs": {
+      "addresses": 18,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-preferences.mjs": {
+      "addresses": 4,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-process.mjs": {
+      "addresses": 46,
+      "calls": 8,
+      "references": 2
+    },
+    "src/native/engine-sdk-javascript.mjs": {
+      "addresses": 15,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/engine-startup-accelerators.mjs": {
+      "addresses": 3,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/engine-startup-application.mjs": {
+      "addresses": 32,
+      "calls": 7,
+      "references": 0
+    },
+    "src/native/engine-startup-block.mjs": {
+      "addresses": 2,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-startup-instance.mjs": {
+      "addresses": 4,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-startup-menu.mjs": {
+      "addresses": 15,
+      "calls": 6,
+      "references": 0
+    },
+    "src/native/engine-startup-sound.mjs": {
+      "addresses": 6,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-startup-window.mjs": {
+      "addresses": 13,
+      "calls": 6,
+      "references": 0
+    },
+    "src/native/engine-system-information.mjs": {
+      "addresses": 20,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-window-class.mjs": {
+      "addresses": 6,
+      "calls": 4,
+      "references": 0
+    },
+    "src/native/engine-window-pump.mjs": {
+      "addresses": 12,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/engine-workers.mjs": {
+      "addresses": 27,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-area.mjs": {
+      "addresses": 10,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-controls.mjs": {
+      "addresses": 42,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-data.mjs": {
+      "addresses": 8,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-effects.mjs": {
+      "addresses": 24,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-gallery.mjs": {
+      "addresses": 8,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-images.mjs": {
+      "addresses": 90,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/fes-log.mjs": {
+      "addresses": 33,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-objects.mjs": {
+      "addresses": 60,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/fes-particles.mjs": {
+      "addresses": 4,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-planes.mjs": {
+      "addresses": 14,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/fes-text.mjs": {
+      "addresses": 25,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/gallery-tables.mjs": {
+      "addresses": 38,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/geometry.mjs": {
+      "addresses": 18,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/global-strings-bridge.mjs": {
+      "addresses": 2,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/graphics-process.mjs": {
+      "addresses": 24,
+      "calls": 7,
+      "references": 0
+    },
+    "src/native/graphics-render.mjs": {
+      "addresses": 18,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/graphics-task.mjs": {
+      "addresses": 0,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/graphics.mjs": {
+      "addresses": 4,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/hg3-delta.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/history-cursor.mjs": {
+      "addresses": 12,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/image-commands.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/image-composite.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/image-file.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/image-owner.mjs": {
+      "addresses": 62,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/input-browser.mjs": {
+      "addresses": 4,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/input-commands.mjs": {
+      "addresses": 8,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/input-device.mjs": {
+      "addresses": 32,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/matrix.mjs": {
+      "addresses": 12,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/movie-hap-audio.mjs": {
+      "addresses": 1,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/movie-hap-playback.mjs": {
+      "addresses": 3,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/movie-hap.mjs": {
+      "addresses": 1,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/movie-texture-renderer.mjs": {
+      "addresses": 8,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/movie-wmreader.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/nametable.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/particle-bounds.mjs": {
+      "addresses": 10,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/particle-commands.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/particle-projection.mjs": {
+      "addresses": 30,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/particle-textures.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/plane-model-command.mjs": {
+      "addresses": 8,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/plane-movie-command.mjs": {
+      "addresses": 26,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/random-memory.mjs": {
+      "addresses": 22,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/raster-kernel.mjs": {
+      "addresses": 34,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/record-queue.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/record-stack.mjs": {
+      "addresses": 12,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/rectangles.mjs": {
+      "addresses": 10,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/registry.mjs": {
+      "addresses": 8,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/render-sources.mjs": {
+      "addresses": 12,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/renderer.mjs": {
+      "addresses": 12,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/retained-draw.mjs": {
+      "addresses": 48,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/save-slots.mjs": {
+      "addresses": 22,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/scalar-math.mjs": {
+      "addresses": 40,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/scene-checkpoint.mjs": {
+      "addresses": 8,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/scene-memory.mjs": {
+      "addresses": 15,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/screen-capture.mjs": {
+      "addresses": 14,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/screen-effect-render.mjs": {
+      "addresses": 4,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/screen-effect.mjs": {
+      "addresses": 80,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/script-message-box.mjs": {
+      "addresses": 6,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/script-replacements-bridge.mjs": {
+      "addresses": 2,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/script-xml.mjs": {
+      "addresses": 0,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/sdk-javascript-banks.mjs": {
+      "addresses": 9,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/sdk-javascript-task.mjs": {
+      "addresses": 6,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/section-table.mjs": {
+      "addresses": 10,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/sound.mjs": {
+      "addresses": 1,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/storage.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/task-dump.mjs": {
+      "addresses": 4,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/task-memory.mjs": {
+      "addresses": 6,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/text-legacy.mjs": {
+      "addresses": 8,
+      "calls": 3,
+      "references": 0
+    },
+    "src/native/text-log.mjs": {
+      "addresses": 20,
+      "calls": 9,
+      "references": 0
+    },
+    "src/native/text-plain.mjs": {
+      "addresses": 15,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/text.mjs": {
+      "addresses": 94,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/texture-memory.mjs": {
+      "addresses": 4,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/tile-game.mjs": {
+      "addresses": 6,
+      "calls": 4,
+      "references": 0
+    },
+    "src/native/tile-plane-command.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/unicode-output.mjs": {
+      "addresses": 21,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/utf8.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/version-query.mjs": {
+      "addresses": 2,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/view-geometry.mjs": {
+      "addresses": 10,
+      "calls": 2,
+      "references": 0
+    },
+    "src/native/window-commands.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/window-events.mjs": {
+      "addresses": 6,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/window.mjs": {
+      "addresses": 3,
+      "calls": 4,
+      "references": 0
+    },
+    "src/native/windows-class.mjs": {
+      "addresses": 3,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/windows-directsound.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/windows-fonts.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/windows-messages.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/windows-resources.mjs": {
+      "addresses": 1,
+      "calls": 0,
+      "references": 0
+    },
+    "src/native/windows-views.mjs": {
+      "addresses": 0,
+      "calls": 1,
+      "references": 0
+    },
+    "src/native/world.mjs": {
+      "addresses": 0,
+      "calls": 0,
+      "references": 4
+    },
+    "src/ppi/native-services.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    }
+  }
+}

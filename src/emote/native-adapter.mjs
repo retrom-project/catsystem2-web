@@ -22,7 +22,7 @@ export function writeD3D9Caps(owner, adapter, type, output) {
         0x10000 |
         0x100000 |
         0x200000 |
-        0x400000 |
+        0x400000 /* exe-address-check: non-address - D3D capability flag */ |
         0x1000000 |
         0x2000000 |
         0x4000000,
