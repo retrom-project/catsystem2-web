@@ -29,6 +29,11 @@ input. It preserves each image's script-owned display word and pending count
 delta. Both profiles check sleep/wake immediately before a cross-image wipe,
 so a temporary UI mask cannot turn that wipe into an incoming-image transition.
 
+The original frame dispatcher traverses the resource list in allocation order.
+PLANE and retained image drivers preserve their declaration order so an image
+reads the authored `SIZE2` rectangle of an earlier plane on its first frame.
+Both profiles check the resulting Draw clip with a nonzero plane origin.
+
 DRAW (type 7) and WIPE (type 8) execute their original constructors and resource
 list lifecycle. Their children are actual area-effect tasks: cross-wipe 26,
 alpha fade 27, and masked incoming/outgoing wipe 28. The original CPU kernels

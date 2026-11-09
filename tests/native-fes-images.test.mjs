@@ -228,6 +228,43 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
   test(
+    `${profile} resolves a declared plane's SIZE2 before clipping its first retained image`,
+    { skip: !process.env[variable] },
+    async () => {
+      const script = `#DEFINE
+PLANE backing
+IMAGE panel
+#OBJECT SIZE2 VRAM DISP
+backing geometry:0 3,5 1
+#OBJECT FILE PL PRI DISP
+panel authored backing 17 1
+#START
+next WAIT
+#WAIT
+`,
+        world = await fixture(
+          profile,
+          new Uint8Array(await readFile(process.env[variable])),
+          'hg3',
+          script,
+          { files: { 'geometry.hg3': hg3(6, 4, new Uint8Array(6 * 4 * 4).fill(255)) } },
+        );
+      try {
+        const { task, surface } = await start(world, { frames: 1 }),
+          backing = task.player.root.byKey.get('backing');
+        assert.deepEqual([backing.width, backing.height], [6, 4]);
+        assert.deepEqual(entry(world, surface, 17).clip, [3, 5, 9, 9]);
+      } finally {
+        await world.close();
+      }
+    },
+  );
+
+for (const [profile, variable] of [
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
+])
+  test(
     `${profile} FES loading allocates native children without decoding images or creating plane/model graphs`,
     { skip: !process.env[variable] },
     async () => {

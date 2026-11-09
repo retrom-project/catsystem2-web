@@ -190,7 +190,7 @@ export class NativeFESObjectRuntime {
         c.pointer = object.nativeObjectPointer;
       }
       if (object === c.object) return c.pointer;
-      if (object.nativeType === 2) return this.image(c.instance, object);
+      if (object.nativeType === 2 && !c.planeAssociation) return this.image(c.instance, object);
       if (this.types.has(object.nativeType)) {
         const pointer = await this.create(c.instance, object);
         if (object.nativeType === 4) await this.syncObject(c.instance, object, pointer);
@@ -543,7 +543,10 @@ export class NativeFESObjectRuntime {
         p.write(node + 8, name);
         p.store(node + 40, object.index ?? 0);
       }
-      await this.withContext({ instance }, async () => {
+      // These two passes query object identity and display counts. Running
+      // an image driver during lookup consumes its dirty flag before the
+      // frame's declared resource order has established the plane geometry.
+      await this.withContext({ instance, planeAssociation: true }, async () => {
         p.store(this.driver + 384, list);
         await this.call(
           this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0,

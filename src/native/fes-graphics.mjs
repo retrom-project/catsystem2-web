@@ -119,12 +119,19 @@ export async function syncFESGraphics(graphics, record, player, { restoring = fa
     await (
       await graphics.world.getNativeFeature('fes-objects')
     ).planeAssociationPhase(instance, false);
-  if (player.nativeImages) {
-    for (const object of instance.objects)
-      if (player.nativeImages.supports(object))
-        await player.nativeImages.update(instance, object, {
-          configurationDirty: graphics.world.configurationDirty,
-        });
+  // 62DA50 / 504E50 walk the FIFO resource list. An IMAGE's original
+  // frame driver reads its PLANE's current rectangle, so keep these
+  // drivers in declaration order rather than running every image first.
+  for (const object of instance.objects) {
+    const adapter = player.nativeImages?.supports(object)
+      ? player.nativeImages
+      : !restoring && player.nativePlanes?.supports(object)
+        ? player.nativePlanes
+        : null;
+    if (adapter)
+      await adapter.update(instance, object, {
+        configurationDirty: graphics.world.configurationDirty,
+      });
   }
   if (player.nativeControls) {
     for (const object of instance.objects)
@@ -167,12 +174,6 @@ export async function syncFESGraphics(graphics, record, player, { restoring = fa
     await player.nativeEffects.update(instance);
   else if (!restoring && instance.objects.some((object) => player.nativeArea?.supports(object)))
     await (await graphics.world.getNativeFeature('fes-objects')).runResourceDrivers(instance);
-  if (!restoring && player.nativePlanes)
-    for (const object of instance.objects)
-      if (player.nativePlanes.supports(object))
-        await player.nativePlanes.update(instance, object, {
-          configurationDirty: graphics.world.configurationDirty,
-        });
   for (const object of instance.objects.filter(
     (o) => o.isPlane && !player.nativeM2?.supports(o) && !player.nativePlanes?.supports(o),
   )) {
