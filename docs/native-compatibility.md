@@ -11,8 +11,8 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    616 |             82 |                     19 |                     292 |
-| Game / 2.6.1.76 | 1,055 |                    878 |             58 |                     17 |                     102 |
+| SDK / 2.6.1.74  | 1,009 |                    617 |             82 |                     19 |                     291 |
+| Game / 2.6.1.76 | 1,055 |                    879 |             58 |                     17 |                     101 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
 tables contain 44 slots for version 1 and 51 for version 2; their declarations
@@ -57,6 +57,8 @@ reference and the last release after restoration. The [retained Draw bindings](n
 the manager's reference on insertion, in-place update, and both destruction paths.
 The original `2C2` wrapper writes the retained source's nine geometry words
 through the live VM translator, with the same null and empty cases after restore.
+The original `2C5` wrapper returns a borrowed raw frame pointer, including
+the game's native prefetch readiness check and the same pointer after restore.
 
 Main `1B1` uses both original [tiled SimplePlane](native-tile-plane.md)
 wrappers and receivers. The browser tests compare the rendered child tiles,

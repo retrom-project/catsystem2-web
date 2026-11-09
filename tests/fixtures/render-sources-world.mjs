@@ -13,7 +13,7 @@ function drawWords(pointer, x, alpha = 255, shown = 1) {
   return [pointer, ...[x, 1, 0, 0, 0, 1, 1].map(floatBits), alpha, shown, 0];
 }
 
-async function bindBitmapSource(world, pointer, nativeSurface) {
+async function bindBitmapSource(world, pointer, nativeSurface, index = 1) {
   const p = world.nativeEngine.process,
     packet = p.allocate(60, true);
   try {
@@ -21,7 +21,7 @@ async function bindBitmapSource(world, pointer, nativeSurface) {
     drawWords(pointer, 4)
       .slice(1)
       .forEach((word, i) => p.store(packet + 16 + i * 4, word));
-    await world.sendNativeEngine(nativeSurface, world.main.id, 280, 1, packet, {
+    await world.sendNativeEngine(nativeSurface, world.main.id, 280, index, packet, {
       nativePointer: true,
       payload: { load: (address) => p.load(address) },
     });
@@ -101,6 +101,26 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
       tag: machine.load(address),
       pointer: machine.load(address + 4),
     });
+  async function drawBorrowedFrame(owner, draw, nativeSurface, wrapper) {
+    const process = owner.nativeEngine.process,
+      bitmap = process.load(wrapper),
+      references = process.load(bitmap + 80),
+      wrapperReferences = process.load(wrapper + layout.wrapperBytes - 4),
+      index = 3,
+      key = owner.nativeTaskID(owner.main.id) | (index << 16),
+      retained = await owner.getNativeFeature('retained-draw');
+    await bindBitmapSource(owner, wrapper, nativeSurface, index);
+    assert.equal(retained.record(draw, key).source, bitmap);
+    assert.equal(process.load(bitmap + 80), references + 1);
+    assert.deepEqual(
+      await owner.graphics.images.get(draw.entry(key).image).pixels(),
+      new Uint8ClampedArray(rgba),
+      'the original Draw binder reads the borrowed frame pixels',
+    );
+    await call(owner, 0x102, [nativeSurface, index]);
+    assert.equal(process.load(bitmap + 80), references);
+    assert.equal(process.load(wrapper + layout.wrapperBytes - 4), wrapperReferences);
+  }
   let fresh;
   try {
     await world.initialize('main.kcs');
@@ -217,6 +237,15 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     assert.deepEqual(metadataAt(qm, aliasCount), metadataWords);
     assert.equal(qm.load(aliasCount + 36), 0xa5a5a5a5);
     assert.equal(p.load(animated.pointer + 188), 2, 'metadata does not acquire a reference');
+    const frameTask = await world.spawnScript('frame.kcs');
+    frameTask.machine.store(256, animated.pointer);
+    await world.runtime.scheduler.execute(frameTask);
+    const borrowed = frameTask.machine.load(252),
+      firstFrame = p.load(p.load(p.load(animated.pointer + 60)));
+    assert.equal(borrowed, p.load(firstFrame + 20), 'GCALL returns the original frame wrapper');
+    assert.equal(p.allocations.get(borrowed), layout.wrapperBytes);
+    assert.equal(world.runtime.handles.records.has(borrowed), false);
+    await drawBorrowedFrame(world, draw, nativeSurface, borrowed);
     const spareRecord = shared + stride;
     for (const original of [true, false]) {
       assert.deepEqual(await call(world, 0x2bf, [source, spareRecord, 1]), {
@@ -325,6 +354,12 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     assert.deepEqual(metadataAt(fm, queryDestination), metadataWords);
     assert.equal(fm.load(queryDestination + 36), 0xa5a5a5a5);
     assert.equal(fp.load(animated.pointer + 188), references - 1);
+    assert.equal(fresh.runtime.scheduler.tasks.get(frameTask.id).machine.load(252), borrowed);
+    assert.deepEqual(await call(fresh, 0x2c5, [animated.pointer, 0]), {
+      control: 1,
+      value: borrowed,
+    });
+    await drawBorrowedFrame(fresh, restored, nativeSurface, borrowed);
     const released = sourceBytes.slice();
     released.fill(0, 0, 8);
     released.fill(0, stride, stride + 8);
@@ -338,6 +373,8 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     await call(fresh, 0x102, [nativeSurface, 0]);
     await call(fresh, 0x102, [nativeSurface, 1]);
     assert.equal(fp.allocations.has(animated.pointer), false);
+    assert.equal(fp.allocations.has(borrowed), false);
+    assert.equal(p.allocations.get(borrowed), layout.wrapperBytes);
     assert.equal(fp.allocations.has(rawBitmap), false);
     assert.equal(restored.state.renderer.items.length, 0);
     assert.deepEqual(

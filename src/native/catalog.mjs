@@ -1670,6 +1670,7 @@ const extendedDescriptions = [
   ],
   [0x2c0, 'draw.releaseRenderSources', ['VMptr sources', 'u32 count'], 'void'],
   [0x2c2, 'draw.retainedGeometry', ['nativePtr retainedSource', 'VMptr metadata36'], 'bool'],
+  [0x2c5, 'draw.borrowRetainedFrame', ['nativePtr retainedSource', 'i32 ordinal'], 'nativePtr'],
   ...[
     [0x2c3, 'draw.retainedSource'],
     [0x2c4, 'draw.updateRetainedSource'],
@@ -3217,6 +3218,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     ].includes(id) ||
     [
       0x188, 0x3ea, 0x1ae, 0x1b1, 0x1bc, 0x1bd, 0x1cc, 0x237, 0x2bf, 0x2c0, 0x2c2, 0x2c3, 0x2c4,
+      0x2c5,
     ].includes(id) ||
     [0x11d, 0x11e, 0x183, 0x184].includes(id) ||
     [0x18b, 0x18c, 0xed, 0x187, 0x1c8, 0x1d0].includes(id) ||

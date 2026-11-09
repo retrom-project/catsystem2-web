@@ -45,7 +45,7 @@ export async function renderSourceFiles() {
   files.set('sequence.anm', animation);
   files.set(
     'sequence.hg3',
-    authoredHG3(Array.from({ length: 8 }, (_, id) => ({ ...frames[0], id }))),
+    authoredHG3([0, 7, 2, 21, 4, 15, 9, 11].map((id, i) => ({ ...frames[i % 3], id }))),
   );
   return { files, frames };
 }
@@ -104,6 +104,18 @@ export async function renderSourceWorldFiles(profile, executable, driver) {
       [37, [0x14, 256]],
       [37, 4100],
       [43, 0x2c2, 8],
+      [38, [4, 252]],
+      [37, 1800],
+      [43, 0x47, 4],
+      [59],
+    ]),
+  );
+  files.set(
+    'frame.kcs',
+    kcsProgram([
+      [37, [0x14, 256]],
+      [37, -1],
+      [43, 0x2c5, 8],
       [38, [4, 252]],
       [37, 1800],
       [43, 0x47, 4],

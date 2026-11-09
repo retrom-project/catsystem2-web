@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Independently invoke the original 2BF/2C0/2C2 wrappers on authored RAM.
+// Independently invoke the original 2BF/2C0/2C2/2C5 wrappers on authored RAM.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -35,6 +35,7 @@ const raw = await renderSourceFixture(bytes, profile),
   load = p.load(table + 0x2bf * 4),
   release = p.load(table + 0x2c0 * 4),
   geometry = p.load(table + 0x2c2 * 4),
+  frame = p.load(table + 0x2c5 * 4),
   cases = [
     '',
     'probe.hg2',
@@ -64,7 +65,8 @@ const raw = await renderSourceFixture(bytes, profile),
     Uint8Array.of(0x82, 0xff, 0x41),
     new TextEncoder().encode('日本語.hg3'),
   ];
-const calls = { load: 0, release: 0, geometry: 0 },
+const callName = { 0x2bf: 'load', 0x2c0: 'release', 0x2c2: 'geometry', 0x2c5: 'frame' },
+  calls = { load: 0, release: 0, geometry: 0, frame: 0 },
   produced = { bitmap: 0, retained: 0, empty: 0, multiple: 0 };
 let comparisons = 0;
 const check = (actual, expected, label) => {
@@ -90,7 +92,7 @@ async function compare(id, args) {
       i < args.length ? args[i] : a.nativeArgument(i),
     ),
     host = loading ? p.allocate(120, true) : 0,
-    bridge = new NativeKCSMemory(p, a),
+    bridge = id === 0x2c5 ? null : new NativeKCSMemory(p, a),
     argv = p.allocate(count * 4),
     out = p.allocate(12);
   let control, result;
@@ -104,13 +106,13 @@ async function compare(id, args) {
     p.write(out, new Uint8Array(12).fill(0xcc));
     control = await raw.engine.call(
       p.load(table + id * 4),
-      [bridge.pointer, host, argv, out + 4],
+      [bridge?.pointer ?? 0, host, argv, out + 4],
       undefined,
       { task: 1 },
     );
     result = p.read(out, 12);
   } finally {
-    bridge.close();
+    bridge?.close();
     p.free(out);
     p.free(argv);
     if (host) p.free(host);
@@ -134,8 +136,8 @@ async function compare(id, args) {
     'original prefetch boundary state',
   );
   check(q.read(adapted.view, 0x118), p.read(raw.view, 0x118), 'whole original view');
-  calls[loading ? 'load' : returnsWord ? 'geometry' : 'release']++;
-  return returnsWord ? value : undefined;
+  calls[callName[id]]++;
+  return reply.value;
 }
 
 async function run(source, destination, initialized) {
@@ -261,11 +263,134 @@ async function checkGeometry(animated) {
   await compare(0x2c0, [source, 1]);
 }
 
+async function consumeFrame(fixture, wrapper) {
+  const { process, engine } = fixture,
+    bitmap = process.load(wrapper),
+    fields = [4, 8, 28, 32],
+    doubled = fields.map((offset) => 2 * process.load(bitmap + offset)),
+    argv = process.allocate(12),
+    out = process.allocate(12),
+    canaries = new Uint8Array(12).fill(0xa5),
+    address = process.load(table + 0x2c1 * 4);
+  try {
+    check(address, sdk ? 0x519270 : 0x64c8b0, 'independent original resize slot');
+    [wrapper, ...doubled.slice(2)].forEach((word, i) => process.store(argv + 4 * i, word));
+    process.write(out, canaries);
+    check(await engine.call(address, [0, 0, argv, out + 4]), 2, 'original bitmap resize control');
+    check(process.read(out, 12), canaries, 'original bitmap resize preserves the result');
+    check(process.load(wrapper), bitmap, 'the original consumer keeps the same bitmap object');
+    check(
+      fields.map((offset) => process.load(bitmap + offset)),
+      doubled,
+      'original resize uses the borrowed frame bitmap',
+    );
+    return {
+      bitmap: process.read(bitmap, 92),
+      pixels: process.read(process.load(bitmap + 12), doubled[1] * process.load(bitmap + 20)),
+    };
+  } finally {
+    process.free(out);
+    process.free(argv);
+  }
+}
+
+async function checkFrames(animated) {
+  const map = p.load(animated + 60),
+    head = p.load(map),
+    nodes = [],
+    argumentsAt = 4800,
+    visit = (node) => {
+      if (node === head) return;
+      visit(p.load(node));
+      nodes.push({ node, key: p.load(node + 16), wrapper: p.load(node + 20) });
+      visit(p.load(node + 8));
+    };
+  visit(p.load(head + 4));
+  check(
+    nodes.map(({ key }) => key),
+    [0, 2, 4, 7, 9, 11, 15, 21],
+    'ordered sparse HG3 frame IDs',
+  );
+  const wrappers = nodes.map(({ wrapper }) => wrapper),
+    references = (process) => [
+      process.load(animated + 188),
+      ...wrappers.map((ptr) => process.load(ptr + wrapperBytes - 4)),
+    ],
+    before = references(p),
+    lookup = async (ordinal, count = 2) => {
+      const words = [animated, ordinal >>> 0];
+      for (const m of [a, b]) {
+        m.nativeArgumentBase = argumentsAt;
+        words.forEach((word, i) => m.store(argumentsAt + 4 * i, word));
+      }
+      return compare(0x2c5, words.slice(0, count));
+    };
+  for (const ordinal of [-0x80000000, -7, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 21, 0x7fffffff])
+    for (const count of [0, 1, 2])
+      check(
+        await lookup(ordinal, count),
+        wrappers[Math.max(0, ordinal)] ?? 0,
+        'signed ordinal selects the native wrapper identity',
+      );
+  const { node, wrapper } = nodes[1];
+  for (const process of [p, q]) process.store(node + 20, 0);
+  try {
+    check(await lookup(1), 0, 'a frame with no decoded wrapper returns zero');
+  } finally {
+    for (const process of [p, q]) process.store(node + 20, wrapper);
+  }
+  const saved = [0, 4, 8].map((offset) => p.load(head + offset)),
+    size = p.load(map + 4);
+  for (const process of [p, q]) {
+    [0, 4, 8].forEach((offset) => process.store(head + offset, head));
+    process.store(map + 4, 0);
+  }
+  try {
+    for (const index of [-1, 0, 1])
+      check(await lookup(index), 0, 'an empty frame map returns zero');
+  } finally {
+    for (const process of [p, q]) {
+      saved.forEach((ptr, i) => process.store(head + 4 * i, ptr));
+      process.store(map + 4, size);
+    }
+  }
+  if (!sdk) {
+    const waits = [0, 0],
+      workers = adapted.engine.features.get('engine-workers');
+    check(workers.threads.size, 1, 'the Game source owns its original prefetch worker');
+    const detach = [p, q].map((process, i) => {
+      check(process.load(node + 24), 0, 'the original image worker cleared the pending word');
+      process.store(node + 24, 1);
+      return process.beforeInstruction(0x747f0c, 'authored frame ready after Sleep(0)', () => {
+        waits[i]++;
+        process.store(node + 24, 0);
+      });
+    });
+    try {
+      check(await lookup(1), wrapper, 'the original wait rechecks a pending image');
+      check(waits, [1, 1], 'each PE runs the original Sleep(0) wait once');
+      check(workers.threads.size, 1, 'query keeps the existing worker identity');
+    } finally {
+      for (const stop of detach) stop();
+    }
+  }
+  check(references(p), before, 'original wrapper lookup acquires no references');
+  check(references(q), before, 'mounted wrapper lookup acquires no references');
+  const selected = await lookup(2);
+  check(
+    await consumeFrame(adapted, selected),
+    await consumeFrame(raw, wrappers[2]),
+    'complete original 2C1 consumes the returned pointer and writes identical pixels',
+  );
+  return wrappers;
+}
+
 try {
   check(blockB, block, 'same extended VM block');
   check(load, sdk ? 0x519040 : 0x64c520, 'independent frozen load slot');
   check(release, sdk ? 0x518420 : 0x64b860, 'independent frozen release slot');
   check(geometry, sdk ? 0x518830 : 0x64bc70, 'independent frozen geometry slot');
+  check(frame, sdk ? 0x51cb30 : 0x644480, 'independent frozen frame slot');
   const regions = [
     [2080, 0],
     [2080, 512],
@@ -377,6 +502,7 @@ try {
   const pointer = a.load(4);
   check(b.load(4), pointer, 'same raw retained pointer');
   await checkGeometry(pointer);
+  const borrowed = await checkFrames(pointer);
   await raw.engine.call(retainedRetain, [], pointer);
   await adapted.engine.call(retainedRetain, [], pointer);
   for (const m of [a, b]) {
@@ -385,8 +511,20 @@ try {
   }
   await compare(0x2c0, [0, 1]);
   check(q.load(pointer + 188), 1, 'an independently retained source remains live');
+  for (const wrapper of borrowed)
+    check(
+      q.allocations.get(wrapper),
+      wrapperBytes,
+      'borrowed frame lives with the retained source',
+    );
   await compare(0x2c0, [stride, 1]);
   check(q.allocations.has(pointer), false, 'last retained source runs its destructor');
+  for (const wrapper of borrowed)
+    check(
+      q.allocations.has(wrapper),
+      false,
+      'the last retained release destroys each frame wrapper',
+    );
   check(
     adapted.engine.features.get('engine-workers')?.threads.size ?? 0,
     0,
@@ -408,7 +546,7 @@ try {
   };
   await writeFile(output, JSON.stringify(report, null, 2) + '\n');
   console.log(
-    `Render sources passed ${calls.load + calls.release} load/release calls, ${calls.geometry} geometry calls and ${comparisons} comparisons`,
+    `Render sources passed ${calls.load + calls.release} load/release calls, ${calls.geometry} geometry calls, ${calls.frame} frame calls and ${comparisons} comparisons`,
   );
 } finally {
   await adapted.close();

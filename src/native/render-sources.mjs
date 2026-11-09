@@ -8,6 +8,7 @@ export const NATIVE_RENDER_SOURCE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x2bf, words: 3, control: 1, handlers: [0x64c520, 0x519040] }),
   Object.freeze({ id: 0x2c0, words: 2, control: 2, handlers: [0x64b860, 0x518420] }),
   Object.freeze({ id: 0x2c2, words: 2, control: 1, handlers: [0x64bc70, 0x518830] }),
+  Object.freeze({ id: 0x2c5, words: 2, control: 1, handlers: [0x644480, 0x51cb30] }),
 ]);
 
 export class NativeRenderSources {
@@ -48,7 +49,7 @@ export class NativeRenderSources {
           throw new Error("Native render-source factory requires its caller's initialized kcView");
       }
       const mapping = taskMemory?.mapMachine(task.id, machine);
-      bridge = new NativeKCSMemory(p, machine, mapping);
+      if (id !== 0x2c5) bridge = new NativeKCSMemory(p, machine, mapping);
       let argv;
       if (mapping && task.io?.native === id && task.io.pc === machine.pc) {
         // GCALL passes the actual argument span. 2C0 reloads the count word
@@ -61,7 +62,7 @@ export class NativeRenderSources {
       }
       out = p.allocate(4);
       p.store(out, NATIVE_RESULT_SENTINEL);
-      const params = [bridge.pointer, host, argv, out],
+      const params = [bridge?.pointer ?? 0, host, argv, out],
         address = spec.handlers[Number(this.sdk)],
         options = { task: task.id },
         control = p.asyncEnabled

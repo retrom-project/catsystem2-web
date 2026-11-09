@@ -57,20 +57,50 @@ zero and a destination that overlaps the GCALL arguments. The caller
 supplies a live retained-record pointer and writable storage for all
 36 bytes. The query leaves source reference counts intact.
 
+## Borrowed animation frames
+
+Main 2C5 takes a live retained-record pointer with an initialized animation
+frame map and a signed ordinal. It returns control 1 with the original
+image-wrapper pointer. Zero and negative ordinals select the first entry.
+Positive ordinals advance in frame-key order, regardless of gaps in the
+keys. An ordinal past the map or an entry without a wrapper returns zero.
+
+| Fixed profile           | Main 2C5 | Frame lookup |
+| ----------------------- | -------- | ------------ |
+| NEKOPARA Vol.3 2.6.1.76 | 0x644480 | 0x746460     |
+| SDK 4.01 2.6.1.74       | 0x51CB30 | 0x5E7100     |
+
+The game lookup runs the original readiness check for the chosen frame.
+The retained source keeps ownership of its wrapper and worker. The query
+adds no reference, so the wrapper's lifetime follows the retained source.
+Its original address persists in both the VM and the restored PE heap.
+
+The original 2C1 wrapper can resize the bitmap through that borrowed
+pointer. The Draw receiver can use the unwrapped bitmap and hold its own
+bitmap reference. The browser's KCS 2C1 dispatcher currently requires a
+logical bitmap handle. Passing the borrowed pointer through that dispatcher
+remains open.
+
 The direct wrapper comparison in `scripts/verify-native-render-sources.mjs`
 checks 1,116 load and release calls and 131 geometry calls per fixed
-executable, with 12,949 comparisons. It compares control and output bytes,
-all VM regions, live native allocations, prefetch state, file candidates and
-the original view. Geometry cases cover a static source, a multi-frame
-source, empty and null sources, an unavailable frame, zero canvas
-dimensions, all VM memory domains and result canaries. The reference mounts
-authored HG2, HG3, ANM and manifest bytes through the shared IFile, raster,
+executable. It adds 48 frame calls on the game and 47 on the SDK, with
+13,464 and 13,449 comparisons in total. It compares control and output
+bytes, all VM regions, live native allocations, prefetch state, file
+candidates and the original view. The frame cases include signed limits,
+adjacent stack arguments, sparse IDs, an empty map and a missing wrapper.
+On the game, the verifier completes an authored pending frame at the return
+from the original `Sleep(0)` call and checks the existing worker's lifetime.
+The returned pointer is also passed to the complete original 2C1 wrapper
+to compare the resized metadata and pixels. The reference mounts authored
+HG2, HG3, ANM and manifest bytes through the shared IFile, raster,
 compression and image-prefetch platform boundaries.
 
 The SDK World and both Chromium profiles use an authored KCS caller,
 exercise live argument aliasing, and send both source tags through the Draw
 receiver. The geometry caller writes over its own second argument. In the
 fresh World it queries the same native record after the array releases
-its reference. The tests verify independent fresh-process release and the
-last Draw reference's destruction. Chromium also compares the authored
-colors and the restored view pixels.
+its reference. The frame caller stores the borrowed wrapper in VM memory
+and sends its bitmap to Draw before and after restoring. The tests verify
+independent fresh-process release and the last Draw reference's
+destruction. Chromium also compares the authored colors and the restored
+view pixels.
