@@ -58,6 +58,28 @@ for (const [profile, variable, lookup, suffix] of [
         assert.equal(p.string(out, wide), '');
         assert.equal(await engine.call(folder, [0, 5, 123, 0, out]), 0x80070057);
         assert.equal(p.string(out, wide), '');
+        const windows = 'C:\\catsystem2-web\\@cat\\windows';
+        assert.equal(await engine.call(lookup, [7, out, 0]), 1);
+        assert.equal(p.string(out, wide), windows);
+        for (const [api, directory] of [
+          ['GetWindowsDirectory', windows],
+          ['GetSystemDirectory', windows + '\\System32'],
+        ]) {
+          const address = system('KERNEL32.dll', api),
+            canary = new Uint8Array(521).fill(0xa5),
+            written = (directory.length + 1) * (wide ? 2 : 1);
+          p.write(out, canary);
+          assert.equal(await engine.call(address, [0, 0]), directory.length + 1);
+          assert.equal(await engine.call(address, [out, directory.length]), directory.length + 1);
+          assert.deepEqual(p.read(out, canary.length), canary);
+          assert.equal(await engine.call(address, [out, directory.length + 1]), directory.length);
+          assert.equal(p.string(out, wide), directory);
+          assert.deepEqual(
+            p.read(out + written, canary.length - written),
+            canary.subarray(written),
+          );
+          assert.equal(await engine.call(attributes, [out]), 0x10);
+        }
 
         restored = await make();
         restored.restore(engine.snapshot());

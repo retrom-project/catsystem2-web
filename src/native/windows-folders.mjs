@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // CatSystem's folder selectors resolve inside the per-game virtual drive.
 const ROOT = '@cat/user';
+const WINDOWS = '@cat/windows';
 export function isNativeUserPath(path) {
   const key = path.toLowerCase();
   return key === ROOT || key.startsWith(ROOT + '/');
@@ -20,6 +21,8 @@ const FOLDERS = new Map([
 
 export function installNativeKnownFolders(kernel) {
   const process = kernel.process;
+  kernel.directories.add(WINDOWS);
+  kernel.directories.add(WINDOWS + '/system32');
   for (const folder of FOLDERS.values()) {
     let path = '';
     for (const part of `${ROOT}/${folder}`.toLowerCase().split('/')) {
@@ -43,6 +46,24 @@ export function installNativeKnownFolders(kernel) {
         );
         return 0;
       };
+    for (const [name, directory] of [
+      ['GetWindowsDirectory', WINDOWS],
+      ['GetSystemDirectory', WINDOWS + '/System32'],
+    ]) {
+      const path = `C:\\catsystem2-web\\${directory.replaceAll('/', '\\')}`;
+      kernel.register('KERNEL32.dll', name + suffix, {
+        count: 2,
+        fn: ([out, capacity]) => {
+          if (capacity <= path.length) return path.length + 1;
+          if (!out) {
+            kernel.lastError = 87;
+            return 0;
+          }
+          kernel.writeString(out, path, wide);
+          return path.length;
+        },
+      });
+    }
     kernel.register('SHELL32.dll', `SHGetFolderPath${suffix}`, {
       count: 5,
       fn: ([, id, token, type, out]) => write(id, token, type, out),

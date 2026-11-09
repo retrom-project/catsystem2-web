@@ -147,4 +147,6 @@ export function installNativeResourceAPIs(kernel, uiLanguage = () => 0x411) {
     );
     return module && index(module)?.payloads.has(address) ? address : 0;
   });
+  // Win32 maps the resource for the lifetime of its module.
+  register('FreeResource', 1, () => 0);
 }

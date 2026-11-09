@@ -104,13 +104,15 @@ is resources in the mapped PE; external Windows MUI files are not mounted.
 `SizeofResource`, `LoadResource` and `LockResource` address the original
 resource descriptor and payload in guest memory. Handles are scoped to
 their module and retain their addresses after a fresh restore without
-allocating a separate copy. Both original imports read their own version and
+allocating a separate copy. `FreeResource` leaves that Win32 mapping intact.
+Both original imports read their own version and
 named startup resources; the fixtures distribute none of those payloads.
 The same 18 lookups and 108 output fields were checked under pinned Wine 8.0
 using an authored PE and the two fixed executables loaded as data.
 [PE resource directories](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#the-rsrc-section),
 [FindResourceEx](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-findresourceexw),
-[LockResource](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-lockresource).
+[LockResource](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-lockresource),
+[FreeResource](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freeresource).
 
 ## Shell folders for the native engine
 
@@ -127,6 +129,14 @@ and AppData. Tests verify that the paths address the browser's directory and
 file services and resolve the same way after restoring a native process.
 File searches enumerate the user directories separately from mounted content.
 [SHGetFolderPath contract](https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetfolderpatha)
+
+The Windows and System32 directory APIs return paths in the same virtual
+drive under `@cat/windows`. Both original folder helpers reach this
+Windows-directory branch. ANSI and wide buffer probes match the pinned Wine
+returns and untouched output on short capacity, after accounting for the
+different mounted path lengths.
+[GetWindowsDirectory](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getwindowsdirectoryw),
+[GetSystemDirectory](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemdirectoryw).
 
 ## GDI font families
 

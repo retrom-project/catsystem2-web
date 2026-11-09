@@ -73,6 +73,8 @@ test('PE resources preserve lookup language, mapped pointers and module ownershi
     assert.equal(kernel.lastError, 1813);
 
     const address = call('LoadResource', base, japanese);
+    assert.equal(call('FreeResource', address), 0);
+    assert.equal(call('LockResource', address), address);
     fresh = make();
     fresh.p.restore(p.snapshot());
     fresh.kernel.restore(kernel.snapshot());
@@ -117,6 +119,7 @@ for (const [profile, variable, suffix] of [
           pointer = call('LoadResource', 0, version),
           size = call('SizeofResource', 0, version);
         assert.ok(version && pointer && size);
+        assert.equal(call('FreeResource', pointer), 0);
         assert.equal(call('LockResource', pointer), pointer);
         assert.deepEqual(p.read(pointer, size), readPEVersionResource(bytes));
         for (const [kind, entry, expectedBytes] of [
