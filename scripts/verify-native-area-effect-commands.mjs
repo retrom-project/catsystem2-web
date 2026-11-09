@@ -990,70 +990,75 @@ try {
     await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original Hydro destruction frees task');
 
-    activeEffect = await engine.call(factory, [17, name, out + 4], parent);
-    nativeID = p.load(out + 4);
-    const underwater = p.load(activeEffect),
-      underwaterBytes = p.read(activeEffect, 0x84),
-      messages = [];
-    equal(underwater, sdk ? 0x992f6c : 0x8cdc8c, 'original UnderWater factory');
-    equal(p.allocations.get(activeEffect), 0x84);
-    const stopObserving = p.beforeInstruction(
-      p.load(underwater + 28),
-      'observe original UnderWater receiver',
-      () => {
-        const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
-        messages.push(p.load(sp + 8));
-      },
-    );
-    try {
-      for (const [id, args, message, control] of [
-        [0xc4, [0xffffffff], 13, 2],
-        [0xc5, [], 257, 2],
-        [0xc6, [], 258, 2],
-        [0xc7, [240], 262, 2],
-        [0xc8, [], 259, 1],
-        [0xc9, [0, 0xffffffff], 13, 2],
-        [0xca, [0xffffffff], 13, 2],
-        [0xcb, [], 261, 2],
-        [0x43, [], 3, 2],
-        [0x4a, [], 13, 1],
-      ]) {
-        equal(
-          await callWipe(id, ...args),
-          control === 1 ? { control, value: host } : { control },
-          'UnderWater keeps the original wrapper result',
-        );
-        equal(
-          messages.splice(0),
-          [sdk && message >= 257 ? message - 5 : message],
-          'only the original routed message arrives',
-        );
-        equal(
-          p.read(activeEffect, 0x84),
-          underwaterBytes,
-          'the receiver preserves every task byte',
-        );
+    for (const [kind, label, size, tables, destructors] of [
+      [17, 'UnderWater', 0x84, [0x8cdc8c, 0x992f6c], [0x5ee030, 0x4c8960]],
+      [22, 'Weather', 0xd4, [0x8cddb4, 0x993094], [0x5efaf0, 0x4ca420]],
+    ]) {
+      activeEffect = await engine.call(factory, [kind, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      const table = p.load(activeEffect),
+        initial = p.read(activeEffect, size),
+        messages = [];
+      equal(table, tables[Number(sdk)], label + ' original factory');
+      equal(p.allocations.get(activeEffect), size);
+      equal(p.load(table), destructors[Number(sdk)], label + ' deleting destructor');
+      equal(p.load(table + 8), sdk ? 0x937bc0 : 0x5d8d50, 'original logic stub');
+      equal(p.load(table + 12), sdk ? 0x4b9340 : 0x626480, 'original Base draw');
+      equal(p.load(table + 28), sdk ? 0x4ca4a0 : 0x5efbc0, 'original no-write receiver');
+      const stopObserving = p.beforeInstruction(
+        p.load(table + 28),
+        'observe original ' + label + ' receiver',
+        () => {
+          const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+          messages.push(p.load(sp + 8));
+        },
+      );
+      try {
+        for (const [id, args, message, control] of [
+          [0xc4, [0xffffffff], 13, 2],
+          [0xc5, [], 257, 2],
+          [0xc6, [], 258, 2],
+          [0xc7, [240], 262, 2],
+          [0xc8, [], 259, 1],
+          [0xc9, [0, 0xffffffff], 13, 2],
+          [0xca, [0xffffffff], 13, 2],
+          [0xcb, [], 261, 2],
+          [0x43, [], 3, 2],
+          [0x4a, [], 13, 1],
+        ]) {
+          equal(
+            await callWipe(id, ...args),
+            control === 1 ? { control, value: host } : { control },
+            label + ' keeps the original wrapper result',
+          );
+          equal(
+            messages.splice(0),
+            [sdk && message >= 257 ? message - 5 : message],
+            'only the original routed message arrives',
+          );
+          equal(p.read(activeEffect, size), initial, 'the receiver preserves every task byte');
+        }
+        for (const message of [2, 3, 13, 23, 24, 29, initMessages[kind - 17] - (sdk ? 5 : 0)]) {
+          [nativeID, sender, message, 0xffffffff, 0, 0].forEach((word, i) =>
+            p.store(packet + 4 * i, word),
+          );
+          p.write(out, scratchFill);
+          equal(await engine.call(p.load(table + 24), [packet, out + 4], activeEffect), 0);
+          equal(p.read(out, 12), scratchFill, 'handled original packet leaves reply and canaries');
+          equal(p.read(activeEffect, size), initial);
+        }
+        equal(await engine.call(p.load(table + 8), [201, out], activeEffect), 1);
+        equal(p.read(activeEffect, size), initial, 'logic leaves Base state untouched');
+        const drawBytes = initial.slice();
+        new DataView(drawBytes.buffer).setUint32(100, 201, true);
+        equal(await engine.call(p.load(table + 12), [201], activeEffect), 1);
+        equal(p.read(activeEffect, size), drawBytes, 'only the original draw clock advances');
+      } finally {
+        stopObserving();
       }
-      for (const message of [2, 3, 13, 23, 24, 29, sdk ? 260 : 265]) {
-        [nativeID, sender, message, 0xffffffff, 0, 0].forEach((word, i) =>
-          p.store(packet + 4 * i, word),
-        );
-        p.write(out, scratchFill);
-        equal(await engine.call(p.load(underwater + 24), [packet, out + 4], activeEffect), 0);
-        equal(p.read(out, 12), scratchFill, 'handled original packet leaves reply and canaries');
-        equal(p.read(activeEffect, 0x84), underwaterBytes);
-      }
-      equal(await engine.call(p.load(underwater + 8), [201, out], activeEffect), 1);
-      equal(p.read(activeEffect, 0x84), underwaterBytes, 'logic leaves Base state untouched');
-      const drawBytes = underwaterBytes.slice();
-      new DataView(drawBytes.buffer).setUint32(100, 201, true);
-      equal(await engine.call(p.load(underwater + 12), [201], activeEffect), 1);
-      equal(p.read(activeEffect, 0x84), drawBytes, 'only the original draw clock advances');
-    } finally {
-      stopObserving();
+      await engine.call(p.load(table), [1], activeEffect);
+      equal(p.allocations.has(activeEffect), false, label + ' original destructor frees task');
     }
-    await engine.call(p.load(underwater), [1], activeEffect);
-    equal(p.allocations.has(activeEffect), false, 'original UnderWater destructor frees task');
 
     // Wipe delegates packets to Base, but its logic slot remains a stub.
     for (const mounted of [false, true]) {
@@ -1358,7 +1363,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, UnderWater/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Weather/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,
