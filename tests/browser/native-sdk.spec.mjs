@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
-import { frameClock, state, step, until, clickNativeButton, pixels } from './native-game-input.mjs';
+import {
+  frameClock,
+  state,
+  step,
+  until,
+  clickNativeButton,
+  pixels,
+  startupWindow,
+} from './native-game-input.mjs';
 
 const sourceIdentity = 'fe2025130e0f8f7e776eb96b3df004f3f46e65e7fefbe3b6a7cdd5e239a2f217';
 const profile = 'sdk-4.01-engine-2.6.1.74';
@@ -45,6 +53,13 @@ async function startSDK(page) {
     { polling: 100, timeout: 180_000 },
   );
   expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+  expect(await startupWindow(page)).toEqual({
+    handle: 1,
+    client: [800, 600],
+    nativeTitle: true,
+    inputOwner: true,
+    acceleratorCount: 4,
+  });
 }
 
 async function restoreFresh(page) {
@@ -61,11 +76,13 @@ async function restoreFresh(page) {
 
 async function freshAtSameFrame(page) {
   const before = await state(page),
-    image = await pixels(page);
+    image = await pixels(page),
+    nativeWindow = await startupWindow(page);
   expect(image.colors).toBeGreaterThan(32);
   await restoreFresh(page);
   expect(await state(page)).toEqual(before);
   expect(await pixels(page)).toEqual(image);
+  expect(await startupWindow(page)).toEqual(nativeWindow);
   return image;
 }
 

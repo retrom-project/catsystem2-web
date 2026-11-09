@@ -2,7 +2,15 @@
 // Uses the prepared, frozen game mounted on the private development server.
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { frameClock, state, step, until, clickNativeButton, pixels } from './native-game-input.mjs';
+import {
+  frameClock,
+  state,
+  step,
+  until,
+  clickNativeButton,
+  pixels,
+  startupWindow,
+} from './native-game-input.mjs';
 
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
 const profile = 'nekopara-vol3-engine-2.6.1.76';
@@ -21,6 +29,13 @@ async function startGame(page) {
     { polling: 100, timeout: 180_000 },
   );
   expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+  expect(await startupWindow(page)).toEqual({
+    handle: 1,
+    client: [1280, 720],
+    nativeTitle: true,
+    inputOwner: true,
+    acceleratorCount: 11,
+  });
 }
 
 async function sceneParticle(page, draw = false) {

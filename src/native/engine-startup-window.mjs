@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // The first word of WinMain's static startup block owns kcWindow.
+import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { releaseNativeAccelerators } from './engine-startup-accelerators.mjs';
@@ -10,6 +11,8 @@ const layouts = {
     destroy: 0x5bf510,
     open: 0x5bf870,
     menuFlag: 48804,
+    caption: 0x5bfd80,
+    titleOffset: 828,
     hook: 0xc9659c,
     releaseHook: 0x5c01c0,
   },
@@ -18,6 +21,9 @@ const layouts = {
     destroy: 0x70e160,
     open: 0x70e4c0,
     menuFlag: 51728,
+    caption: 0x70ea60,
+    titleOffset: 1088,
+    resolveCaption: 0x5abe00,
     hook: 0xb91bc4,
     releaseHook: 0x70eed0,
   },
@@ -67,6 +73,30 @@ export async function createNativeStartupWindow(engine) {
       throw new Error('Original startup could not create its main window');
   } finally {
     p.free(rect);
+  }
+}
+
+export async function setNativeWindowCaption(engine, text) {
+  const p = engine.process,
+    owner = p.load(NATIVE_STARTUP_BLOCKS[engine.profile]),
+    { caption, titleOffset, resolveCaption } = layouts[engine.profile],
+    source = engine.refs.settings + titleOffset;
+  if (!owner || !p.load(owner)) throw new Error('Original caption requires its startup window');
+  let temporary = 0;
+  try {
+    let title = source;
+    if (text !== undefined) {
+      const wide = Boolean(resolveCaption),
+        bytes = wide ? (text.length + 1) * 2 : encodeCP932(text).length + 1;
+      temporary = p.allocate(bytes);
+      engine.kernel.writeString(temporary, text, wide);
+      title = temporary;
+    } else if (resolveCaption) title = await engine.call(resolveCaption, [source]);
+    if (!(await engine.call(caption, [title], owner)))
+      throw new Error('Original window caption could not be set');
+    return engine.kernel.windowViews.windows.get(p.load(owner)).title;
+  } finally {
+    if (temporary) p.free(temporary);
   }
 }
 

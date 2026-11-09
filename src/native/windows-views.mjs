@@ -42,6 +42,7 @@ export class NativeWindowsViews {
       const wide = suffix === 'W';
       register('CreateWindowEx' + suffix, 12, (args) => this.create(args, wide));
       register('DefWindowProc' + suffix, 4, (args) => this.defaultProcedure(args));
+      register('SetWindowText' + suffix, 2, ([handle, at]) => this.setText(handle, at, wide));
       register('GetWindowLong' + suffix, 2, ([handle, index]) => this.long(handle, index | 0));
       register('SetWindowLong' + suffix, 3, ([handle, index, value]) =>
         this.long(handle, index | 0, value),
@@ -145,10 +146,29 @@ export class NativeWindowsViews {
     this.process.write(output, Uint8Array.from([...bytes, 0]));
     return bytes.length;
   }
+  async setText(handle, pointer, wide) {
+    const window = this.windows.get(handle);
+    if (!window) return this.error(INVALID_WINDOW);
+    if (!pointer || wide === window.wide) return this.send(handle, 0xc, 0, pointer);
+    const p = this.process,
+      text = p.string(pointer, wide),
+      size = window.wide ? (text.length + 1) * 2 : encodeCP932(text).length + 1,
+      temporary = p.allocate(size);
+    try {
+      this.kernel.writeString(temporary, text, window.wide);
+      return await this.send(handle, 0xc, 0, temporary);
+    } finally {
+      p.free(temporary);
+    }
+  }
   defaultProcedure([handle, message, , lParam]) {
     const window = this.windows.get(handle);
     if (!window) return this.error(INVALID_WINDOW);
     if (message === 0x81) return 1; // WM_NCCREATE accepts the window.
+    if (message === 0xc) {
+      window.title = lParam ? this.process.string(lParam, window.wide) : '';
+      return 1;
+    }
     if (message === 0x83) {
       this.writeRect(lParam, this.clientBounds({ ...window, bounds: this.readRect(lParam) }));
       return 0;
@@ -178,6 +198,7 @@ export class NativeWindowsViews {
       window = {
         atom: cls.atom,
         className: cls.name,
+        wide: cls.wide,
         procedure: cls.procedure,
         instance,
         title: title ? p.string(title, wide) : '',

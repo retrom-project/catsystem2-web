@@ -41,6 +41,7 @@ import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs'
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
+  setNativeWindowCaption,
 } from './engine-startup-window.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
@@ -593,7 +594,9 @@ export class NativeWorld {
     if (main) player.languageMain = main.prefix;
   }
   refreshTitle() {
-    const title = this.globalStrings.get(this.configuration.getField('application.title'));
+    const title =
+      this.nativeEngine?.kernel.windowViews.windows.get(this.window.handle)?.title ??
+      this.globalStrings.get(this.configuration.getField('application.title'));
     this.host.nativeTitleChanged?.(title, this);
     return title;
   }
@@ -648,7 +651,14 @@ export class NativeWorld {
           bridge?.invalidate(field === 'ui' ? [0, 1] : [1]);
           await this.globalStrings.languageChanged(field);
           this.markConfigurationDirty();
-          if (field === 'ui') this.refreshTitle();
+          if (field === 'ui') {
+            if (this.nativeEngine?.kernel.windowViews.windows.has(this.window.handle))
+              await setNativeWindowCaption(
+                this.nativeEngine,
+                this.globalStrings.get(this.configuration.getField('application.title')),
+              );
+            this.refreshTitle();
+          }
           for (const record of this.objects.objects.values()) {
             const player = record.kind === 34 && record.implementation.player;
             if (!player) continue;
@@ -835,6 +845,7 @@ export class NativeWorld {
       await createNativeStartupWindow(this.nativeEngine);
       await initializeNativeAccelerators(this.nativeEngine);
       await (await this.getNativeFeature('input-device')).pointer();
+      await setNativeWindowCaption(this.nativeEngine);
     }
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

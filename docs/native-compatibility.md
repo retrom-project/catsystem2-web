@@ -116,7 +116,12 @@ menu before destroying the windows. The tests verify those handles after
 an independent process restore. SDK `5BFAB0` and game `70E740` attach
 the native input device to the same `kcWindow` object. Its callback list,
 input state and window handles belong to each restored process. The browser
-still presents the view and dispatches the application loop.
+still presents the view and dispatches the application loop. The SDK
+`5BFD80` and game `70EA60` caption setters send the original
+[WM_SETTEXT](https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-settext)
+through the WndProc. The game resolves its initial caption through its
+native language tree; the browser displays the resulting window title,
+including after a fresh restore.
 
 Startup loads accelerator resource 101 through the original SDK setter.
 The game executes WinMain `52CDCB..52CFED`, copying the four embedded

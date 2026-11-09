@@ -88,3 +88,21 @@ export async function pixels(page) {
     return { colors: colors.size, sha256: hash.toHex() };
   });
 }
+
+export function startupWindow(page) {
+  return page.evaluate(() => {
+    const { world } = window.catSystem2,
+      { process: p, kernel, refs } = world.nativeEngine,
+      handle = world.window.handle,
+      view = kernel.windowViews.windows.get(handle),
+      owner = view?.userData,
+      input = refs.inputDevice;
+    return {
+      handle,
+      client: view?.client.slice(2),
+      nativeTitle: Boolean(view?.title && view.title === document.title),
+      inputOwner: Boolean(owner && input?.pointer && p.load(owner + 8) === input.pointer),
+      acceleratorCount: owner && kernel.accelerators.tables.get(p.load(owner + 12))?.rows.length,
+    };
+  });
+}

@@ -12,6 +12,7 @@ import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
   releaseNativeWindowOwner,
+  setNativeWindowCaption,
 } from '../src/native/engine-startup-window.mjs';
 
 for (const [profile, variable, suffix] of [
@@ -161,6 +162,15 @@ for (const [profile, variable, menuFlag, hook] of [
         assert.equal(input.refs.userData, owner);
         assert.equal(p.load(nativeInput), handle);
         assert.equal(p.allocations.get(hookOwner), 8);
+        engine.options.configuration.setField('application.title', '$WINDOW$猫の窓');
+        const caption = await setNativeWindowCaption(engine);
+        assert.equal(caption, suffix === 'A' ? '$WINDOW$猫の窓' : '猫の窓');
+        assert.equal(root.title, caption);
+        assert.equal(popup.title, 'kcMenuWindow');
+        assert.equal(engine.kernel.calls.get('user32.dll!SetWindowText' + suffix), 1);
+        const captionBytes = p.allocations.size;
+        assert.equal(await setNativeWindowCaption(engine, '更新した窓'), '更新した窓');
+        assert.equal(p.allocations.size, captionBytes);
         fresh = await open();
         const freshInput = device(fresh);
         fresh.restore(engine.snapshot());
