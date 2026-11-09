@@ -198,6 +198,11 @@ then copy it into their lock tree. The insertion boundary moves the lock
 registration to the original node for every CThread, including threads that
 run through the general Win32 scheduler. The original destructor deletes it.
 
+An original BaseTask uses its x86 packet receiver while it has no World
+binding. Once a task is bound, the same entry routes to the World task
+graph. Fresh restore preserves both paths even if the host trap was
+allocated at a different address.
+
 COM initialization depth and apartment mode belong to the calling thread.
 `CoInitialize` selects STA. `CoInitializeEx` also supports MTA, and a later
 incompatible call returns `RPC_E_CHANGED_MODE`. The apartment records survive

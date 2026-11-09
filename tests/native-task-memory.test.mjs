@@ -10,6 +10,62 @@ import { KCSScheduler } from '../src/kcs/scheduler.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { NativeEngineMessages } from '../src/native/engine-message.mjs';
 
+for (const [profile, variable, construct, receive, destroy] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4b8cd0, 0x4b9360, 0x4b9120],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0x5dcab0, 0x5dd130, 0x5dcf00],
+])
+  test(
+    `${profile} guest-only BaseTask runs its original receiver with the World bridge installed`,
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        world = () => ({
+          objects: { objects: new Map(), machine: () => null },
+          base: (record) => ({ message: () => record.flags }),
+        }),
+        first = await NativeEngineProcess.open({ profile, bytes }),
+        p = first.process,
+        task = p.allocate(0x400, true),
+        name = p.allocate(32, true),
+        packet = p.allocate(24, true),
+        out = p.allocate(4, true);
+      let restored;
+      try {
+        const memory = new NativeTaskMemory(first, world());
+        first.kernel.writeString(name, 'native startup task');
+        await first.call(construct, [0, name, 60], task);
+        p.store(task + 64, 0x1234);
+        p.store(packet + 8, 13);
+        assert.equal(await first.call(receive, [packet, out], task), 0);
+        assert.equal(p.load(out), 0x1234);
+
+        const state = first.snapshot();
+        restored = await NativeEngineProcess.open({ profile, bytes });
+        restored.process.trap('authored trap before BaseTask restore', 0, () => 0);
+        const freshWorld = world(),
+          freshMemory = new NativeTaskMemory(restored, freshWorld);
+        assert.notEqual(freshMemory.baseReceiver.trap, memory.baseReceiver.trap);
+        restored.restore(state);
+        assert.equal(freshMemory.baseReceiver.trap, memory.baseReceiver.trap);
+        restored.process.store(out, 0);
+        assert.equal(await restored.call(receive, [packet, out], task), 0);
+        assert.equal(restored.process.load(out), 0x1234);
+        const record = { id: 1, flags: 0x5678 };
+        freshWorld.objects.objects.set(record.id, record);
+        freshMemory.bind(record, task);
+        assert.equal(await restored.process.callAsync(receive, [packet, out], task), 0);
+        assert.equal(restored.process.load(out), 0x5678);
+        freshMemory.unbind(record.id);
+        freshWorld.objects.objects.delete(record.id);
+        await restored.call(destroy, [], task);
+        assert.ok(restored.process.free(task));
+      } finally {
+        await restored?.close();
+        await first.close();
+      }
+    },
+  );
+
 test('Root and Script prefixes acquire the same ready renderer view without creating a feature', async () => {
   const engine = new NativeEngineProcess(await loadUnicorn(), {
       profile: 'nekopara-vol3-engine-2.6.1.76',

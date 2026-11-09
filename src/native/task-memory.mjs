@@ -3,6 +3,9 @@
 // prefix never stands in for an implemented derived task factory.
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
+import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
+
+const BASE_RECEIVER = 'shared native BaseTask receiver';
 
 export class NativeTaskMemory {
   constructor(engine, world) {
@@ -41,15 +44,18 @@ export class NativeTaskMemory {
     engine.registerFeature('task-memory', this);
   }
   installBaseReceiver() {
-    if (this.baseReceiverInstalled) return;
-    this.engine.patch(
+    if (this.baseReceiver) return;
+    this.baseReceiver = conditionalNativeGraphicsBoundary(
+      this.engine,
       this.sdk ? 0x4b9360 : 0x5dd130,
-      'shared native BaseTask receiver',
+      BASE_RECEIVER,
       2,
+      () => {
+        const { cpu, uc } = this.process;
+        return this.worldID(cpu.reg_read_i32(uc.X86_REG_ECX) >>> 0) !== undefined;
+      },
       (args) => this.baseMessage(args),
-      { calleePops: true },
     );
-    this.baseReceiverInstalled = true;
   }
   async baseMessage([packet, out]) {
     const p = this.process,
@@ -895,9 +901,14 @@ export class NativeTaskMemory {
     this.pullHostBindings();
   }
   snapshot() {
-    return {};
+    return { baseReceiver: this.baseReceiver?.trap ?? 0 };
   }
-  restore() {
+  restore({ baseReceiver }) {
+    if (this.baseReceiver) {
+      if (this.process.traps.get(baseReceiver)?.name !== BASE_RECEIVER)
+        throw new Error('Native task checkpoint base receiver is unavailable');
+      this.baseReceiver.trap = baseReceiver;
+    } else if (baseReceiver) throw new Error('Native task checkpoint requires a base receiver');
     this.sharedBindings.clear();
     this.memoryBindings.clear();
     this.inlineSharedSources = new WeakMap();
@@ -960,6 +971,7 @@ export class NativeTaskMemory {
       this.sharedBindings.clear();
       this.memoryBindings.clear();
       this.inlineHostBindings.clear();
+      this.baseReceiver?.detach();
       this.detachDestruction();
       this.closed = true;
     }
