@@ -97,6 +97,7 @@ test('official SDK starts with saved setup and restores the title and tutorial c
         nativeOwner,
         distinctSettings: owner < settings && settings < defaultSettings,
         nativeFontEnumeration: engine.kernel.calls.get('gdi32.dll!EnumFontFamiliesA'),
+        executableResources: engine.kernel.calls.get('kernel32.dll!FreeResource'),
         com: engine.kernel.comDepth,
         nativeRandom: Boolean(engine.refs.randomOwner),
         nativeLocalTime: engine.kernel.calls.get('kernel32.dll!GetLocalTime'),
@@ -107,9 +108,10 @@ test('official SDK starts with saved setup and restores the title and tutorial c
     nativeOwner: true,
     distinctSettings: true,
     nativeFontEnumeration: 2,
+    executableResources: 3,
     com: 1,
     nativeRandom: true,
-    nativeLocalTime: 1,
+    nativeLocalTime: 2,
     logLimit: 647,
   });
   await until(page, 'title#WAIT', 360);
