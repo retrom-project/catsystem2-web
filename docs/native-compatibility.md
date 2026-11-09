@@ -118,6 +118,16 @@ the native input device to the same `kcWindow` object. Its callback list,
 input state and window handles belong to each restored process. The browser
 still presents the view and dispatches the application loop.
 
+Startup loads accelerator resource 101 through the original SDK setter.
+The game executes WinMain `52CDCB..52CFED`, copying the four embedded
+entries and appending the original language keys and secondary-language
+off command when applicable. The virtual USER32 keeps the two record
+layouts distinct: eight bytes in the PE resource and six in x86
+[ACCEL](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-accel).
+Tests cover missing language keys, independent restore and release of the
+dynamic table. The pinned Wine probe also verifies the copy's untouched
+padding and capacity boundary. The native message loop's accelerator dispatch is separate.
+
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
 destructors close it. The virtual Windows instance uses the

@@ -37,6 +37,7 @@ import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { initializeNativeStartupMenu } from './engine-startup-menu.mjs';
+import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
@@ -832,6 +833,7 @@ export class NativeWorld {
       await initializeNativeStartupMenu(this.nativeEngine);
       await initializeNativeWindowOwner(this.nativeEngine);
       await createNativeStartupWindow(this.nativeEngine);
+      await initializeNativeAccelerators(this.nativeEngine);
       await (await this.getNativeFeature('input-device')).pointer();
     }
     this.graphics.initializeTextures();

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // WinMain owns the original MainWndMenu at +36 in the startup block.
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
-import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
+import { NATIVE_STARTUP_BLOCKS, runNativeGameWinMainSpan } from './engine-startup-block.mjs';
 
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': [0x5bf330, 0x5bf3c0, 0xaff2c8, 0x47ee90, 0x5bf400],
@@ -21,44 +21,13 @@ const optionalCommands = {
   ],
 };
 
-// The game builds all three language groups inside WinMain. This exact span
-// reads its already initialized Settings and ends before allocating kcWindow.
-async function runGameLanguageMenu(engine, remove) {
-  const p = engine.process,
-    { cpu, uc } = p,
-    first = 0x52c72f,
-    after = 0x52ccfe,
-    frameSize = 0x6270,
-    registers = [uc.X86_REG_ESP, uc.X86_REG_EBX, uc.X86_REG_ESI, uc.X86_REG_EDI],
-    wsprintf = p.load(0x8c64dc);
-  let caller,
-    finished = false;
-  const enter = p.beforeInstruction(first, 'WinMain language menu entry', () => {
-    if (caller) throw new Error('Original language menu block entered twice');
-    caller = registers.map((id) => cpu.reg_read_i32(id));
-    const stack = ((caller[0] >>> 0) - frameSize) & ~7;
-    if (stack >>> 0 < p.stackBottom + 0x1000)
-      throw new Error('Original language menu exhausted its guest stack');
-    p.zero(stack >>> 0, frameSize);
-    cpu.reg_write_i32(uc.X86_REG_ESP, stack);
+// The game builds all three language groups from its original Settings.
+function runGameLanguageMenu(engine, remove) {
+  const wsprintf = engine.process.load(0x8c64dc);
+  return runNativeGameWinMainSpan(engine, 0x52c72f, 0x52ccfe, (_stack, cpu, uc) => {
     cpu.reg_write_i32(uc.X86_REG_ESI, remove);
     cpu.reg_write_i32(uc.X86_REG_EDI, wsprintf);
   });
-  try {
-    const leave = p.beforeInstruction(after, 'WinMain language menu exit', () => {
-      registers.forEach((id, i) => cpu.reg_write_i32(id, caller[i]));
-      finished = true;
-      cpu.reg_write_i32(uc.X86_REG_EIP, p.sentinel);
-    });
-    try {
-      await engine.call(first);
-      if (!finished) throw new Error('Original language menu did not reach the window boundary');
-    } finally {
-      leave();
-    }
-  } finally {
-    enter();
-  }
 }
 
 export async function initializeNativeStartupMenu(engine) {

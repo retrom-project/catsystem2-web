@@ -2,6 +2,7 @@
 // The first word of WinMain's static startup block owns kcWindow.
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
+import { releaseNativeAccelerators } from './engine-startup-accelerators.mjs';
 
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': {
@@ -76,10 +77,12 @@ export async function releaseNativeWindowOwner(engine) {
   if (!owner) return;
   if (p.allocations.get(owner) !== WINDOW_BYTES)
     throw new Error('Original startup window lost its C++ owner');
-  const { destroy, hook, releaseHook } = layouts[engine.profile];
+  const { destroy, hook, releaseHook } = layouts[engine.profile],
+    accelerators = p.load(owner + 12);
   await engine.call(destroy, [], owner);
   if (!p.free(owner)) throw new Error('Original startup window allocation could not be released');
   p.store(slot, 0);
+  await releaseNativeAccelerators(engine, accelerators);
   const callbackOwner = p.load(hook);
   if (callbackOwner) {
     await engine.call(releaseHook, [], callbackOwner);
