@@ -17,7 +17,7 @@ async function desktop() {
     packet = p.allocate(32),
     seen = [],
     proc = p.trap('authored message receiver', 4, ([handle, message, w, l]) => {
-      if (message >= 0x400) seen.push([handle, message, w, l]);
+      if (message >= 0x400 || message === 0x282) seen.push([handle, message, w, l]);
       if (message === 0x81) return 1;
       return (w ^ l) >>> 0;
     });
@@ -185,6 +185,61 @@ test('GetMessage waits for its matching post and can be cancelled at process exi
   } finally {
     queue.cancelWaits();
     p.close();
+  }
+});
+
+test('the default IMM context shares status across windows and notifies its owner synchronously', async () => {
+  const source = await desktop(),
+    { p, kernel, root, child, packet, seen } = source,
+    fresh = await desktop(),
+    api = (instance, dll, name) => instance.kernel.resolve({ dll, name }),
+    imm = (name, ...args) => p.call(api(source, 'IMM32.dll', name), args),
+    change = (name, ...args) => p.callAsync(api(source, 'IMM32.dll', name), args);
+  try {
+    const context = imm('ImmGetContext', root);
+    assert(context);
+    assert.equal(imm('ImmGetContext', root), context);
+    assert.equal(imm('ImmGetContext', child), context);
+    assert.equal(imm('ImmGetOpenStatus', context), 0);
+    p.store(packet, 123);
+    p.store(packet + 4, 456);
+    assert.equal(imm('ImmGetStatusWindowPos', context, packet), 1);
+    assert.deepEqual(source.words().slice(0, 2), [0, 0]);
+
+    p.store(packet, -123);
+    p.store(packet + 4, 456);
+    assert.equal(await change('ImmSetStatusWindowPos', context, packet), 1);
+    assert.equal(await change('ImmSetOpenStatus', context, 1), 1);
+    assert.equal(await change('ImmSetOpenStatus', context, 1), 1);
+    assert.deepEqual(seen, [
+      [child, 0x282, 12, 0],
+      [child, 0x282, 8, 0],
+    ]);
+    assert.equal(source.queue.pending, false);
+    assert.equal(imm('ImmReleaseContext', root, context), 1);
+    assert.equal(imm('ImmReleaseContext', root, 0), 0);
+    assert.equal(kernel.lastError, 6);
+    assert.equal(imm('ImmGetContext', 99), 0);
+    assert.equal(kernel.lastError, 1400);
+
+    fresh.kernel.restore(kernel.snapshot());
+    const restored = (name, ...args) => fresh.p.call(api(fresh, 'IMM32.dll', name), args);
+    assert.equal(restored('ImmGetOpenStatus', context), 1);
+    assert.equal(restored('ImmGetStatusWindowPos', context, fresh.packet), 1);
+    assert.deepEqual(fresh.words().slice(0, 2), [0xffffff85, 456]);
+    assert.equal(restored('ImmReleaseContext', root, context), 1);
+    assert.equal(restored('ImmReleaseContext', root, context), 0);
+    assert.equal(restored('ImmReleaseContext', child, context), 1);
+    assert.equal(imm('ImmReleaseContext', root, context), 1);
+    assert.equal(await p.callAsync(api(source, 'USER32.dll', 'DestroyWindow'), [child]), 1);
+    assert.equal(imm('ImmReleaseContext', child, context), 0);
+    assert.equal(imm('ImmGetOpenStatus', context), 1);
+    assert.equal(await change('ImmSetOpenStatus', context, 0), 1);
+    assert.equal(seen.length, 2);
+    assert.equal(restored('ImmGetOpenStatus', context), 1);
+  } finally {
+    p.close();
+    fresh.p.close();
   }
 });
 

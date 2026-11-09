@@ -108,6 +108,7 @@ export class NativeWindowsViews {
   }
   forget(handle) {
     this.windows.delete(handle);
+    this.kernel.ime.forgetWindow(handle);
     this.kernel.messageQueue.dropWindow(handle);
   }
   readRect(at) {
@@ -192,6 +193,8 @@ export class NativeWindowsViews {
       return 0;
     }
     if (message === 0x102 || (message === 0x100 && wParam !== 0x79)) return 0;
+    // The IMM provider owns these two default status-window updates.
+    if (message === 0x282 && (wParam === 8 || wParam === 12)) return 0;
     // Application-defined messages have no system default action.
     if (message >= 0x400 || [1, 2, 3, 5, 0x24, 0x82, 0x111, 0x113, 0x116, 0x117].includes(message))
       return 0;

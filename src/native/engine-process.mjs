@@ -18,6 +18,7 @@ import { NativeWindowsClasses } from './windows-class.mjs';
 import { NativeWindowsMenus } from './windows-menus.mjs';
 import { NativeWindowsViews } from './windows-views.mjs';
 import { NativeWindowsMessages } from './windows-messages.mjs';
+import { NativeWindowsIME } from './windows-ime.mjs';
 import { NativeWindowsAccelerators } from './windows-accelerators.mjs';
 import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
@@ -116,6 +117,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.windowClasses = new NativeWindowsClasses(this);
     this.windowMenus = new NativeWindowsMenus(this);
     this.windowViews = new NativeWindowsViews(this);
+    this.ime = new NativeWindowsIME(this);
     this.messageQueue = new NativeWindowsMessages(this);
     this.accelerators = new NativeWindowsAccelerators(this);
     this.threadHandles = new NativeWindowsThreadHandles(this);
@@ -744,6 +746,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       windowClasses: this.windowClasses.snapshot(),
       windowMenus: this.windowMenus.snapshot(),
       windowViews: this.windowViews.snapshot(),
+      ime: this.ime.snapshot(),
       messageQueue: this.messageQueue.snapshot(),
       accelerators: this.accelerators.snapshot(),
       threadHandles: this.threadHandles.snapshot(),
@@ -767,6 +770,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.windowClasses.restore(state.windowClasses);
     this.windowMenus.restore(state.windowMenus);
     this.windowViews.restore(state.windowViews);
+    this.ime.restore(state.ime);
     this.messageQueue.restore(state.messageQueue);
     this.accelerators.restore(state.accelerators);
     this.threadHandles.restore(state.threadHandles);
