@@ -44,6 +44,12 @@ for (const [profile, variable] of [
         'emotedriver.dll',
         new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL)),
       );
+    const planeFixture = await readFile(
+      new URL('../fixtures/browser-native-world.mjs', import.meta.url),
+    );
+    await page.route('**/tests/fixtures/browser-native-world.mjs', (route) =>
+      route.fulfill({ body: planeFixture, contentType: 'text/javascript' }),
+    );
     await page.route('**/screen-effect-fixture/**', async (route) => {
       const name = decodeURIComponent(
           new URL(route.request().url()).pathname.slice('/screen-effect-fixture/'.length),
@@ -61,7 +67,7 @@ for (const [profile, variable] of [
             { ParticleRandom },
             { StageRenderer },
             { NATIVE_SCREEN_EFFECT_LAYOUTS },
-            { MOTION_ABI, setMotionVector },
+            { placeBrowserNativePlane },
             { ImageStore },
           ] = await Promise.all([
             import('/src/native/world.mjs'),
@@ -70,7 +76,7 @@ for (const [profile, variable] of [
             import('/src/ppi/random.mjs'),
             import('/src/render/stage.mjs'),
             import('/src/native/screen-effect.mjs'),
-            import('/src/motion/abi.mjs'),
+            import('/tests/fixtures/browser-native-world.mjs'),
             import('/src/formats/hg3.mjs'),
           ]),
           files = new Map(
@@ -174,25 +180,33 @@ for (const [profile, variable] of [
           await world.initialize('main.kcs');
           await world.tick();
           const planeID = await world.objects.create({
-              kind: 2,
-              parent: world.root,
-              name: 'Authored background',
-            }),
-            plane = world.graphics.get(planeID);
-          plane.makeGraph({ type: 2, width: 64, height: 48, colors: [0xff406080] });
-          setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, 300]);
-          plane.state.shown = true;
-          plane.sync();
+            kind: 2,
+            parent: world.root,
+            name: 'Authored background',
+          });
+          let planeColor = 0xff406080;
+          const tint = async (color) => {
+            planeColor = color;
+            await world.sendEngine(planeID, world.main.id, 59, 1, color);
+          };
+          await placeBrowserNativePlane(world, planeID, {
+            width: 64,
+            height: 48,
+            color: planeColor,
+            priority: 300,
+          });
           const patchID = await world.objects.create({
-              kind: 2,
-              parent: world.root,
-              name: 'Authored foreground',
-            }),
-            patch = world.graphics.get(patchID);
-          patch.makeGraph({ type: 2, x: 4, y: 5, width: 12, height: 10, colors: [0xff20b040] });
-          setMotionVector(patch.graph.kx2, MOTION_ABI.base, [0, 0, 61000]);
-          patch.state.shown = true;
-          patch.sync();
+            kind: 2,
+            parent: world.root,
+            name: 'Authored foreground',
+          });
+          await placeBrowserNativePlane(world, patchID, {
+            width: 12,
+            height: 10,
+            color: 0xff20b040,
+            position: [4, 5, 0],
+            priority: 61000,
+          });
           await render(world);
           const baseline = sample(world),
             baselineHash = await hash(world),
@@ -207,8 +221,7 @@ for (const [profile, variable] of [
           // callback. A submitted graph change must not erase the retained
           // backbuffer or present a replacement frame while this gate is set.
           p.store(effects.platform.refs.view + 12, 1);
-          plane.graph.colors = [0xffa02040];
-          plane.sync();
+          await tint(0xffa02040);
           await render(world);
           const paused = {
             callback: p.load(effects.platform.refs.view3D + 192),
@@ -217,8 +230,7 @@ for (const [profile, variable] of [
             displayPreserved: canvasPixels().every((value, i) => value === displayed[i]),
           };
           p.store(effects.platform.refs.view + 12, 0);
-          plane.graph.colors = [0xff406080];
-          plane.sync();
+          await tint(0xff406080);
           await render(world);
           for (const [kindString, abi] of Object.entries(NATIVE_SCREEN_EFFECT_LAYOUTS[profile])) {
             await world.nativeEngine.call(
@@ -294,8 +306,7 @@ for (const [profile, variable] of [
           await fes.load('effects', world.main);
           fes.player.root.invoke('DRAW');
           await fes.player.flush();
-          plane.graph.colors = [0xffa02040];
-          plane.sync();
+          await tint(0xffa02040);
           for (let i = 0; i < 3; i++) {
             await world.tick();
             await render(world);
@@ -347,7 +358,7 @@ for (const [profile, variable] of [
             ['DRAW', 26],
           ]) {
             const from = sample(world),
-              next = plane.graph.colors[0] === 0xffa02040 ? 0xff406080 : 0xffa02040;
+              next = planeColor === 0xffa02040 ? 0xff406080 : 0xffa02040;
             fes.player.root.invoke(label);
             await fes.player.flush();
             const object = fes.player.root.objects.findLast(
@@ -363,8 +374,7 @@ for (const [profile, variable] of [
               object.nativeObjectPointer !== pointer
             )
               throw new Error('A live native global effect was replaced');
-            plane.graph.colors = [next];
-            plane.sync();
+            await tint(next);
             const colors = [];
             for (let i = 0; i < 24; i++) {
               await world.tick();

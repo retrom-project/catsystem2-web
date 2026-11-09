@@ -7,6 +7,7 @@ export default {
     'native-screen-effect.spec.mjs',
     'native-retained-owner.spec.mjs',
     'native-graphics-receiver.spec.mjs',
+    'native-controls.spec.mjs',
   ],
   outputDir: '.local/playwright-text',
   use: { ...base.use, baseURL: 'http://127.0.0.1:4115' },

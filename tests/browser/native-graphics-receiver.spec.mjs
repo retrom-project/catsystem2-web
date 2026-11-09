@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { kcsProgram } from '../helpers.mjs';
 import { nativeParticleFixture } from '../fixtures/ppi-native-fixture.mjs';
+import { planeFES } from '../fixtures/plane-fes-fixture.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -18,6 +19,17 @@ for (const [profile, variable] of [
     const files = new Map([
       ['engine.exe', new Uint8Array(await readFile(process.env[variable]))],
       ['main.kcs', kcsProgram([[37, 1024], [43, 0xd1, 4], [43, 0x41, 0], [59]])],
+      ['planes.fes', new TextEncoder().encode(planeFES)],
+      [
+        'authored-scale.kcs',
+        kcsProgram([
+          [21, [0x13, 0x80000064], [0x13, 0x8000009c]],
+          [21, [0x13, 0x80000068], [0x13, 0x800000a0]],
+          [21, [0x13, 0x8000006c], [0x13, 0x800000a4]],
+          [43, 0x26, 0],
+          [59],
+        ]),
+      ],
       ['@cat/ptclpi/tie.ppi', nativeParticleFixture({ color: 0xff0000ff })],
     ]);
     if (!profile.startsWith('sdk-'))
@@ -33,7 +45,7 @@ for (const [profile, variable] of [
       await route.fulfill(bytes ? { body: Buffer.from(bytes) } : { status: 404, body: '' });
     });
     await page.route(
-      /\/tests\/fixtures\/(graphics-render|texture-clear)-fixture\.mjs$/,
+      /\/tests\/fixtures\/(?:(graphics-render|texture-clear|plane-fes)-fixture|browser-native-world)\.mjs$/,
       async (route) => {
         const name = new URL(route.request().url()).pathname.split('/').pop();
         return route.fulfill({
@@ -45,9 +57,16 @@ for (const [profile, variable] of [
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, names }) => {
-        const [{ exerciseGraphRendering }, { StageRenderer }] = await Promise.all([
+        const [
+            { exerciseGraphRendering },
+            { StageRenderer },
+            { exercisePlaneFlow },
+            { browserNativeWorld, browserAssert },
+          ] = await Promise.all([
             import('/tests/fixtures/graphics-render-fixture.mjs'),
             import('/src/render/stage.mjs'),
+            import('/tests/fixtures/plane-fes-fixture.mjs'),
+            import('/tests/fixtures/browser-native-world.mjs'),
           ]),
           files = new Map(
             await Promise.all(
@@ -61,7 +80,7 @@ for (const [profile, variable] of [
               ]),
             ),
           );
-        return exerciseGraphRendering(profile, files, () => {
+        const result = await exerciseGraphRendering(profile, files, () => {
           const canvas = new OffscreenCanvas(16, 16);
           return new StageRenderer({
             canvas,
@@ -71,6 +90,19 @@ for (const [profile, variable] of [
             },
           });
         });
+        await exercisePlaneFlow(() => {
+          const world = browserNativeWorld({
+            profile,
+            files,
+            storage: { read: async () => null, write: async () => true, stat: async () => null },
+          });
+          const texture = world.configuration.fields.texture;
+          texture.grid.set([1, 1]);
+          texture.areas[0].set([0, 0, 1, 1]);
+          texture.bppY.set([1, 1]);
+          return world;
+        }, browserAssert);
+        return result;
       },
       { profile, names: [...files.keys()] },
     );

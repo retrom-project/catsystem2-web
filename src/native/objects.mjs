@@ -228,6 +228,7 @@ export class NativeObjects {
         record.pausedFrames = ((record.pausedFrames ?? 0) + clock - (record.lastFrame ?? 0)) >>> 0;
       else record.effectiveFrame = clock;
       record.lastFrame = clock;
+      record.implementation.beforeChildren?.();
       // The original walk resolves live signed native route keys.
       await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
       if (!this.objects.has(record.id)) return;

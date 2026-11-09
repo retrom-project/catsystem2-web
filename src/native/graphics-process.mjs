@@ -13,8 +13,10 @@ const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
     baseMessage: 0x5e0920,
     planeBroadcast: 0x5dfbd0,
+    taskSend: 0x5dd860,
     graphDestroy: 0x675ea0,
     graphShown: 0x676910,
+    graphTypes: 252,
     graphDisplay: 0x6776f0,
     bitmapCopy: 0x677690,
     bitmapClear: 0x6745b0,
@@ -27,8 +29,10 @@ const ABI = {
   'sdk-4.01-engine-2.6.1.74': {
     baseMessage: 0x4bcc70,
     planeBroadcast: 0x4bbf70,
+    taskSend: 0x4b9aa0,
     graphDestroy: 0x54cfb0,
     graphShown: 0x54da30,
+    graphTypes: 188,
     graphDisplay: 0x54e7f0,
     bitmapCopy: 0x54e790,
     bitmapClear: 0x54b6a0,
@@ -37,6 +41,18 @@ const ABI = {
     bitmapRelease: 0x563a90,
   },
 };
+
+function findUnsignedTreeWord(p, map, key) {
+  if (!map) return 0;
+  const end = p.load(map);
+  for (let node = p.load(end + 4); node !== end; ) {
+    const word = p.load(node + 16);
+    if (word === key) return p.load(node + 20);
+    node = p.load(node + (key < word ? 0 : 8));
+  }
+  return 0;
+}
+
 export class NativeGraphicsPlatform {
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
@@ -52,16 +68,15 @@ export class NativeGraphicsPlatform {
       view3D: 0,
     };
     this.owned = new Set([this.refs.view, this.refs.renderer, this.refs.manager]);
-    p.store(this.refs.view + 4, this.refs.renderer);
     p.store(this.refs.view + 8, this.refs.manager);
     p.store(this.refs.view + 20, 1);
+    const [width, height] = world.graphics.view.virtualSize();
+    p.store(this.refs.view + 24, width);
+    p.store(this.refs.view + 28, height);
     p.store(this.refs.renderer + 4, 1);
     if (this.abi.rendererGlobal) p.store(this.abi.rendererGlobal, this.refs.renderer);
     this.destroyListeners = new Set();
     this.originalTasks = new Set();
-    this.nativeRouteTrap = p.trap('native graph task message router', 7, (args) =>
-      this.routeTask(args),
-    );
     this.boundaryDetachers = [];
     this.nativeBoundaries = [];
     this.nativeUploadDepth = 0;
@@ -80,6 +95,7 @@ export class NativeGraphicsPlatform {
         [
           this.abi.baseMessage,
           this.abi.planeBroadcast,
+          this.abi.taskSend,
           this.abi.graphDestroy,
           this.abi.graphShown,
           this.abi.graphDisplay,
@@ -96,15 +112,22 @@ export class NativeGraphicsPlatform {
           (args) => {
             if (address === this.abi.bitmapCopy) return !this.nativeUploadDepth;
             if (address === this.abi.bitmapClear) return !this.nativeClearDepth;
-            if (address === this.abi.planeBroadcast) {
+            if (address === this.abi.planeBroadcast || address === this.abi.taskSend) {
               const pointer = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0;
-              return this.originalTasks.has(engine.features.get('task-memory')?.worldID(pointer));
+              return (
+                this.world.engineMessages &&
+                this.originalTasks.has(engine.features.get('task-memory')?.worldID(pointer))
+              );
             }
-            const task =
-              address === this.abi.baseMessage
-                ? this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0)
-                : this.graphTask(args[0]);
-            return !task || !this.originalTasks.has(task.record.id);
+            if (address === this.abi.baseMessage)
+              return !this.originalTasks.has(
+                this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0).record.id,
+              );
+            return (
+              !this.originalTasks.has(engine.currentTaskID) &&
+              !this.descriptor(args[0]) &&
+              !this.originalTasks.has(this.graphTask(args[0])?.record.id)
+            );
           },
           fn,
         );
@@ -120,6 +143,7 @@ export class NativeGraphicsPlatform {
     patch(this.abi.planeBroadcast, 'native plane descendant packets', 5, (args) =>
       this.broadcastPlane(args),
     );
+    patch(this.abi.taskSend, 'native plane task message router', 7, (args) => this.routeTask(args));
     patch(this.abi.graphDestroy, 'shared graph destroy', 1, ([id]) => this.destroyGraph(id));
     patch(this.abi.graphShown, 'shared graph query visibility', 2, ([id, out]) => {
       const task = this.graphTask(id);
@@ -181,10 +205,33 @@ export class NativeGraphicsPlatform {
       : nativeID;
     return worldID == null ? null : this.world.graphics.get(worldID);
   }
+  descriptor(nativeID) {
+    if (!this.engine.features.get('renderer')?.initialized) return 0;
+    return findUnsignedTreeWord(this.process, this.process.load(this.refs.manager), nativeID >>> 0);
+  }
+  attachment(nativeID) {
+    const p = this.process,
+      descriptor = this.descriptor(nativeID);
+    if (
+      !descriptor ||
+      findUnsignedTreeWord(p, p.load(this.refs.view + this.abi.graphTypes), nativeID >>> 0) !== 1
+    )
+      return null;
+    const model = [16, 20, 24, 12, 8].map((at) => p.load(descriptor + at)).find(Boolean);
+    if (!model) return null;
+    const vector = (at, count) =>
+      Array.from({ length: count }, (_, i) => bitsFloat(p.load(model + at + i * 4)));
+    return {
+      base: vector(8, 3),
+      pos: vector(56, 3),
+      matrix: vector(104, 16),
+      display: Boolean(p.load(descriptor + 4)),
+    };
+  }
   async routeTask([sender, target, raw, w, l, flags, out]) {
-    const senderID = this.world.resolveTaskID(sender, this.engine.currentTaskID);
-    if (senderID == null) throw new Error('Native graph sender is outside its Top');
-    const targetID = this.world.resolveTaskID(target, senderID),
+    const p = this.process,
+      origin = this.task(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0).record.id,
+      targetID = this.world.resolveTaskID(target, origin),
       record = this.world.objects.objects.get(targetID);
     if (!record || record.state !== 'active') return 0;
     const message =
@@ -193,25 +240,23 @@ export class NativeGraphicsPlatform {
         payload: this.memory,
         nativePointer: true,
         nativeResult: out,
-        nativeSenderWorldID: senderID,
+        nativeSender: sender,
         flags,
         fromHost: true,
       },
-      value = await this.world.sendNativeEngine(target, senderID, message, w, l, context);
+      value = await this.world.sendNativeEngine(target, origin, message, w, l, context);
     if (out && Number.isInteger(value)) {
       const word =
         raw === 1
           ? await this.engine.features
               .get('task-memory')
-              .pointer(this.world.resolveTaskID(value, senderID))
+              .pointer(this.world.resolveTaskID(value, origin))
           : value;
       this.process.store(out, word);
     }
     return Number(Boolean(context.nativeRouted));
   }
   enableOriginalTask(task) {
-    const p = this.process;
-    p.store(p.load(task.pointer) + 16, this.nativeRouteTrap);
     this.originalTasks.add(task.record.id);
   }
   async baseMessage([sender, rawMessage, w, l, flags, out]) {
@@ -575,7 +620,6 @@ export class NativeGraphicsPlatform {
       owned: [...this.owned],
       bitmapHandles: [...this.bitmapHandles],
       boundaries: this.nativeBoundaries.map((entry) => entry.trap),
-      nativeRouteTrap: this.nativeRouteTrap,
       rendering: this.graphRendering.snapshot(),
     });
   }
@@ -584,16 +628,13 @@ export class NativeGraphicsPlatform {
     this.engine.refs.graphics = this.refs;
     this.owned = new Set(state.owned);
     this.bitmapHandles = new Map(state.bitmapHandles);
-    this.nativeRouteTrap = state.nativeRouteTrap;
     this.graphRendering.restore(state.rendering);
     if (state.boundaries.length !== this.nativeBoundaries.length)
       throw new Error('Native graphics instruction boundary count differs');
     state.boundaries.forEach((trap, index) => (this.nativeBoundaries[index].trap = trap));
   }
   recoverTrap(trap) {
-    return trap.name === 'native graph task message router'
-      ? { args: 7, real: false, handler: (args) => this.routeTask(args) }
-      : this.graphRendering.recoverTrap(trap);
+    return this.graphRendering.recoverTrap(trap);
   }
   async close() {
     this.graphRendering.close();

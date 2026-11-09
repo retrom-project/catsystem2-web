@@ -59,12 +59,14 @@ IDs, original destruction, START sizing, parent/surface transforms, a real KCS
 motion, the declared empty group, all three area-task kinds, incoming/outgoing
 wipe selection, intermediate VRAM, completion and fresh-World continuation.
 
-The FES drivers are original code. The SimplePlane/BasePlane message receivers
-still use the current host adapter after their original construction; replacing
-that adapter with the complete original receiver and GraphManager/model path
-is in progress. Their advanced geometry, all message combinations, complete
-transformation variants and final browser transition acceptance remain open.
-These bounded fixtures do not establish full-game completion.
+The first-frame child enters the original SimplePlane/BasePlane receiver.
+The two-profile browser test verifies original model dimensions, color,
+parent-relative position, scale and surface texture offset through FES.
+It also exercises the drawing surface's original base plane and its fresh
+GPU restoration. Original slider and scrollbar input, notification and
+motion tests run with the initialized native view in both profiles.
+Advanced geometry, additional message combinations and end-to-end game
+transition coverage remain separate acceptance work.
 
 Primary references: [CPLANE](https://cs2.suki.jp/manual/fes/code/o_cplane.html),
 [PLANE](https://cs2.suki.jp/manual/fes/code/o_plane.html). Frozen executable

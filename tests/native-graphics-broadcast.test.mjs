@@ -2,7 +2,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativePlaneReceiver } from '../src/native/graphics-task.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { createTextureMemoryWorld } from './fixtures/texture-clear-fixture.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -81,7 +80,7 @@ for (const [profile, path, broadcast, rawMessage] of [
           return owner;
         },
         world = make();
-      let fresh, plane, restored;
+      let fresh;
       try {
         // The packet helper has no renderer dependency. Mount the original
         // task constructors without starting the game's GPU bootstrap here.
@@ -98,7 +97,6 @@ for (const [profile, path, broadcast, rawMessage] of [
           probe = (parent, nativeID) =>
             world.objects.create({ kind: 0x7ffe, parent, nativeID, name: 'Packet probe' }),
           branch = await probe(parent, 120);
-        plane = new NativePlaneReceiver(world.graphics.get(parent));
         await probe(branch, 80);
         await probe(parent, signedID);
         const removed = await probe(parent, 99);
@@ -118,11 +116,10 @@ for (const [profile, path, broadcast, rawMessage] of [
             await engine.call(broadcast, args, pointer, { task: parent });
             return { packets: trace.slice(), result: p.load(result), source: p.load(source) };
           },
-          actual = await run(engine, plane.task.pointer),
+          actual = await run(engine, world.graphics.get(parent).pointer),
           saved = world.snapshot();
         fresh = make();
         await fresh.restore(saved);
-        restored = new NativePlaneReceiver(fresh.graphics.get(parent));
 
         const original = allocate(88),
           vft = allocate(28),
@@ -163,10 +160,11 @@ for (const [profile, path, broadcast, rawMessage] of [
           source: 33,
         });
         assert.deepEqual(actual, reference);
-        assert.deepEqual(await run(fresh.nativeEngine, restored.task.pointer), reference);
+        assert.deepEqual(
+          await run(fresh.nativeEngine, fresh.graphics.get(parent).pointer),
+          reference,
+        );
       } finally {
-        restored?.close();
-        plane?.close();
         await fresh?.close({ flushFiles: false });
         await world.close({ flushFiles: false });
       }

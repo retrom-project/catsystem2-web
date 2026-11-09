@@ -41,6 +41,7 @@ import { nativeInputBitmapMask } from './input.mjs';
 import { installNativeRasterKernels } from './raster-kernel.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTexturePageView } from './texture-memory.mjs';
+import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
@@ -101,6 +102,12 @@ export class NativeGraphics {
   }
   get(id) {
     return this.tasks.get(id >>> 0) || null;
+  }
+  virtualSize() {
+    const engine = this.world.nativeEngine;
+    if (!engine?.features.get('renderer')?.initialized) return this.view.virtualSize();
+    const view = engine.features.get('graphics-platform').refs.view;
+    return [engine.process.load(view + 24), engine.process.load(view + 28)];
   }
   get cursorAllowed() {
     return this.cursor.state.allowed;
@@ -373,6 +380,9 @@ export class NativeGraphics {
   }
 
   attachment(id) {
+    const platform = this.world.nativeEngine?.features.get('graphics-platform'),
+      native = platform?.attachment(id);
+    if (native) return native;
     const graph = this.graphs.get(id >>> 0);
     if (!graph) return null;
     const bytes = graph.kx2,
@@ -387,7 +397,10 @@ export class NativeGraphics {
     };
   }
   graphHandle(taskID) {
-    return this.tasks.get(taskID >>> 0)?.graph ? taskID >>> 0 : -1;
+    const task = this.tasks.get(taskID >>> 0);
+    if (task?.receiver)
+      return task.nativePlatform.descriptor(task.record.nativeID) ? task.record.nativeID : -1;
+    return task?.graph ? taskID >>> 0 : -1;
   }
   customGraph(record, { width, height, drawGPU }) {
     if (!Number.isFinite(width) || !Number.isFinite(height) || typeof drawGPU !== 'function')
@@ -464,6 +477,7 @@ export class NativeGraphicTask {
       constructed = true;
       this.nativeLayout = layout;
       await this.taskMemory.ready(this.record);
+      this.bindOriginalReceiver();
       return this.pointer;
     } catch (error) {
       if (constructed) await this.close({ fromHost });
@@ -479,6 +493,16 @@ export class NativeGraphicTask {
   }
   get input() {
     return this.world.inputFor?.(this.record.id);
+  }
+  bindOriginalReceiver() {
+    this.receiver = new NativePlaneReceiver(this);
+    this.state = null;
+  }
+  beforeChildren() {
+    this.receiver?.beforeChildren();
+  }
+  drawTick(frame) {
+    return this.receiver?.drawTick(frame);
   }
   machine(sender) {
     const machine = this.world.objects.machine(sender);
@@ -513,6 +537,8 @@ export class NativeGraphicTask {
     this.sync();
   }
   makeGraph(shape) {
+    if (this.receiver)
+      throw new Error('Mounted planes create models through their original receiver');
     this.graph = {
       ...shape,
       renderOrder: this.graphics.allocateRenderOrder(),
@@ -528,6 +554,7 @@ export class NativeGraphicTask {
     this.sync();
   }
   async message(words, context = {}) {
+    if (this.receiver) return this.receiver.message(words, context);
     const [sender, id, w, l] = words;
     if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
       return this.base.message(words, context);
@@ -955,11 +982,10 @@ export class NativeGraphicTask {
     );
   }
   snapshot() {
+    if (this.receiver) return { pointer: this.pointer };
     return structuredClone({ state: this.state, graph: this.graph, pointer: this.pointer });
   }
   restore(data) {
-    this.state = structuredClone(data.state);
-    this.graph = structuredClone(data.graph);
     this.pointer = data.pointer ?? 0;
     if (this.pointer && [2, 6].includes(this.record.kind)) {
       const engine = this.world.nativeEngine;
@@ -968,13 +994,20 @@ export class NativeGraphicTask {
       this.taskMemory = engine.features.get('task-memory');
       if (engine.process.load(this.pointer + 4) !== (this.record.nativeID ?? this.record.id))
         throw new Error('Native graphic checkpoint task identity differs');
+      this.bindOriginalReceiver();
+      return;
     }
+    this.state = structuredClone(data.state);
+    this.graph = structuredClone(data.graph);
     if (this.graph) this.graphics.graphs.set(this.record.id, this.graph);
     this.sync();
   }
   closeGraph() {
-    this.input?.unregister(this.record.id);
-    this.unload();
+    if (this.receiver) this.receiver.close();
+    else {
+      this.input?.unregister(this.record.id);
+      this.unload();
+    }
     this.graphics.tasks.delete(this.record.id);
   }
   async close({ fromHost = false } = {}) {
@@ -989,9 +1022,9 @@ export class NativeGraphicTask {
           this.pointer,
           { task: this.record.id },
         );
-        this.taskMemory.unbind(this.record.id);
       }
     } finally {
+      if (this.nativeLayout) this.taskMemory.unbind(this.record.id);
       this.closeGraph();
       this.nativeClosed = true;
     }
@@ -1040,23 +1073,6 @@ export function installNativeGraphics(world) {
   return graphics;
 }
 
-class Packet {
-  constructor(words = []) {
-    this.data = new Uint8Array(Math.max(64, words.length * 4));
-    this.view = new DataView(this.data.buffer);
-    words.forEach((word, i) => this.store(i * 4, word));
-  }
-  load(address) {
-    return this.view.getUint32(address, true);
-  }
-  store(address, word) {
-    this.view.setUint32(address, word, true);
-  }
-  bytes(address, size) {
-    if (address + size > this.data.length) throw new Error('Native graphics packet bounds');
-    return this.data.subarray(address, address + size);
-  }
-}
 export const NATIVE_GRAPHICS_IDS = Object.freeze([
   0x4e, 0x4f, 0x50, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x62,
   0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6c, 0x6d, 0x6e, 0x350, 0x351, 0x157, 0x158,
@@ -1089,7 +1105,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     return done();
   }
   if (!args[0]) return [0x59, 0x62].includes(id) ? value(0) : done();
-  const packet = (words) => new Packet(words),
+  const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>
       world.sendNativeEngine(args[0], task.id, message, w, l, {
         ...(payload ? { payload } : {}),

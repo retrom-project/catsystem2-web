@@ -7,28 +7,11 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
+import { planeFES, exercisePlaneFlow } from './fixtures/plane-fes-fixture.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 import { encodeHG2 } from '../src/formats/hg2.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';
 
-const source = `#DEFINE
-CPLANE parent
-PLANE child
-#OBJECT SIZE POS BASE PRI DISP COLOR
-parent 8,6 4,5,6 1,2 50 1 0x80403020
-child 12,7 3,4,5 2,3 60 1 0xff112233
-#OBJECT PARENT VRAM
-child parent 7,8
-#SUBCOMMAND
-oneshot scale authored-scale.kcs SX[1] SY[1] SZ[1] : [0] [1] [2]
-#START
-parent size 10 8
-parent pos 6 7 8
-child scale 200% 300% 100%
-next WAIT
-#WAIT
-`;
 async function close(world, failure) {
   if (!world) return;
   try {
@@ -110,7 +93,7 @@ test(
     }
   },
 );
-function make(profile, bytes, fesSource = source, files = {}) {
+function make(profile, bytes, fesSource = planeFES, files = {}) {
   const game = memoryGame({
       'engine.exe': bytes,
       'main.kcs': kcsProgram([[37, 1024], [43, 0xd1, 4], [43, 0x41, 0], [59]]),
@@ -282,66 +265,15 @@ for (const [profile, variable, vtables] of [
       }
     },
   );
-  test(
-    `${profile} original FES plane drivers create children after START and compose parent and surface transforms`,
-    { skip: !process.env[variable] },
-    async () => {
-      const bytes = new Uint8Array(await readFile(process.env[variable])),
-        world = make(profile, bytes);
-      let fresh;
-      let failure;
-      try {
-        await world.ensureNativeEngine();
-        world.root = await world.objects.create({ kind: 1, name: 'Authored Top' });
-        await world.objects.create({ kind: 11, parent: world.root, name: 'Input' });
-        world.main = await world.spawnScript('main.kcs');
-        await world.tick();
-        const surface = await world.objects.create({ kind: 15, parent: world.main.id }),
-          owner = await world.objects.create({ kind: 34, parent: world.main.id }),
-          task = world.objects.objects.get(owner).implementation;
-        await world.sendEngine(surface, world.main.id, 279, 64, 48);
-        await world.sendEngine(surface, world.main.id, 283, 11, 13);
-        task.surface = surface;
-        await task.load('planes', world.main);
-        const instance = task.player.root,
-          parent = instance.byKey.get('parent'),
-          child = instance.byKey.get('child'),
-          p = world.nativeEngine.process;
-        assert.equal(parent.nativeTaskID, undefined);
-        assert.equal(child.nativeTaskID, undefined);
-        assert.equal(p.load(child.nativeObjectPointer + 12), parent.nativeObjectPointer);
-        await task.tick();
-        const parentTask = world.graphics.get(parent.nativeTaskID),
-          childTask = world.graphics.get(child.nativeTaskID);
-        assert.deepEqual([parentTask.graph.width, parentTask.graph.height], [10, 8]);
-        assert.deepEqual(parentTask.graph.colors, [0x80403020]);
-        assert.deepEqual([childTask.graph.width, childTask.graph.height], [12, 7]);
-        assert.deepEqual(motionVector(childTask.graph.kx2, MOTION_ABI.pos), [9, 11, 13]);
-        assert.deepEqual(motionVector(childTask.graph.kx2, MOTION_ABI.base), [2, 3, 60]);
-        assert.deepEqual(motionVector(childTask.graph.kx2, MOTION_ABI.scale), [2, 3, 1]);
-        assert.deepEqual(
-          motionVector(childTask.graph.textureTransform, MOTION_ABI.pos),
-          [18, 21, 0],
-        );
-        const saved = structuredClone(world.snapshot()),
-          before = childTask.snapshot();
-        fresh = make(profile, bytes);
-        await fresh.restore(saved);
-        assert.deepEqual(fresh.graphics.get(child.nativeTaskID).snapshot(), before);
-        const restored = fresh.objects.objects.get(owner).implementation,
-          restoredChild = restored.player.root.byKey.get('child');
-        await fresh.planesFES.command(restored.player.root, restoredChild, 'disp', ['0']);
-        await fresh.graphics.syncFES(fresh.objects.objects.get(owner), restored.player);
-        assert.equal(fresh.graphics.get(child.nativeTaskID).state.shown, false);
-      } catch (error) {
-        failure = error;
-        throw error;
-      } finally {
-        await close(fresh, failure);
-        await close(world, failure);
-      }
-    },
-  );
+  if (profile.startsWith('sdk-'))
+    test(
+      'SDK original FES plane drivers create children after START and compose parent and surface transforms',
+      { skip: !process.env[variable] },
+      async () => {
+        const bytes = new Uint8Array(await readFile(process.env[variable]));
+        await exercisePlaneFlow(() => make(profile, bytes), assert);
+      },
+    );
   for (const mode of ['draw', 'wipe', 'crosswipe', 'wipeout'])
     test(
       `${profile} native FES ${mode.toUpperCase()} executes its real area effect and owns its completion cleanup`,

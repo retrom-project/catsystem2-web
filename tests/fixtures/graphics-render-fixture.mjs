@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 import { createTextureMemoryWorld } from './texture-clear-fixture.mjs';
-import { NativePlaneReceiver } from '../../src/native/graphics-task.mjs';
 import { floatBits, bitsFloat } from '../../src/kcs.mjs';
 
 const packet = (words = []) => {
@@ -36,37 +35,26 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
       await owner.stageRenderer.render(owner.graphics.stage, null, owner.particles.drawItems());
       return owner.stageRenderer.renderer.ctx.getImageData(0, 0, 16, 16).data;
     },
-    shape = async (receiver, color, position = [2, 3, 0], priority = 100) => {
-      const sender = receiver.task.record.nativeID;
-      await receiver.message([sender, 42, 0, 0], {
-        payload: packet([0, 0, 0, floatBits(4), floatBits(3), 0, 0, color]),
-      });
-      await receiver.message([sender, 49, 0, 0], {
-        payload: packet([0, 0, priority].map(floatBits)),
-      });
-      await receiver.message([sender, 51, 0, 0], { payload: packet(position.map(floatBits)) });
-      await receiver.message([sender, 48, 0, 1]);
+    send = (task, message, w = 0, l = 0, payload = undefined) =>
+      task.world.sendEngine(task.record.id, task.record.id, message, w, l, { payload }),
+    shape = async (task, color, position = [2, 3, 0], priority = 100) => {
+      await send(task, 42, 0, 0, packet([0, 0, 0, floatBits(4), floatBits(3), 0, 0, color]));
+      await send(task, 49, 0, 0, packet([0, 0, priority].map(floatBits)));
+      await send(task, 51, 0, 0, packet(position.map(floatBits)));
+      await send(task, 48, 0, 1);
     },
-    modelVector = async (receiver, message) => {
+    modelVector = async (task, message) => {
       const output = packet();
-      await receiver.message([receiver.task.record.nativeID, message, 0, 0], { payload: output });
+      await send(task, message, 0, 0, output);
       return [0, 4, 8].map((at) => bitsFloat(output.load(at)));
     },
-    inheritPosition = (receiver, message, position) =>
-      receiver.message([receiver.task.record.nativeID, message, 0, 0], {
-        payload: packet(position.map(floatBits)),
-      }),
-    bindPlane = (task) => {
-      const receiver = new NativePlaneReceiver(task);
-      task.message = receiver.message.bind(receiver);
-      return receiver;
-    };
+    inheritPosition = (task, message, position) =>
+      send(task, message, 0, 0, packet(position.map(floatBits)));
   let fresh;
   try {
     await world.initialize('main.kcs');
     const tops = [],
-      tasks = [],
-      receivers = [];
+      tasks = [];
     for (let i = 0; i < 2; i++) {
       const top = await world.objects.create({
           kind: 1,
@@ -77,7 +65,6 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         id = await world.objects.create({ kind: 2, parent: top, name: 'Original plane' + i });
       tops.push(top);
       tasks.push(world.graphics.get(id));
-      receivers.push(bindPlane(tasks[i]));
     }
     const platform = await world.getNativeFeature('graphics-platform'),
       engine = world.nativeEngine,
@@ -89,8 +76,8 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
       tasks[0].record.id !== tasks[1].record.id &&
       tasks[0].record.nativeID === tasks[1].record.nativeID;
     checks.sharedView = tasks.every((task) => p.load(task.pointer + 104) === platform.refs.view);
-    await shape(receivers[0], 0xffe02040);
-    checks.queryBeforeCreate = equal(await modelVector(receivers[1], 61), [0, 0, 100]);
+    await shape(tasks[0], 0xffe02040);
+    checks.queryBeforeCreate = equal(await modelVector(tasks[1], 61), [0, 0, 100]);
     // No host graph renderer has been attached yet. This is the full original
     // view -> GraphManager -> D3D -> Present chain, not a JS geometry oracle.
     const gpu = world.getNativeGPU(),
@@ -109,8 +96,8 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     checks.originalVisible = colors(original, [224, 32, 64]) === 12;
     checks.stage = equal(await render(world), original);
     checks.noHostModel = tasks.every((task) => task.graph === null);
-    await shape(receivers[1], 0xff40e020, [2, 3, 0], 200);
-    checks.alias = equal(await modelVector(receivers[0], 61), [0, 0, 200]);
+    await shape(tasks[1], 0xff40e020, [2, 3, 0], 200);
+    checks.alias = equal(await modelVector(tasks[0], 61), [0, 0, 200]);
     const green = await render(world);
     checks.replaced = colors(green, [64, 224, 32]) === 12 && colors(green, [224, 32, 64]) === 0;
 
@@ -121,26 +108,18 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         name: 'Original texture',
       }),
       textured = world.graphics.get(texturedID),
-      textureReceiver = new NativePlaneReceiver(textured),
       image = world.graphics.images.get(world.graphics.images.create(8, 4)),
       pixels = await image.pixels();
     tasks.push(textured);
-    receivers.push(textureReceiver);
     for (let y = 0; y < 4; y++)
       for (let x = 0; x < 8; x++)
         pixels.set([37 + x * 17, 9 + y * 50, (x ^ y) * 21 + 3, 255], (y * 8 + x) * 4);
     await image.changed();
     await world.graphics.output(image, [60, 62]);
-    await textureReceiver.message([nativeID, 41, 0, 0], {
-      payload: packet([60, 62, 0, 8, 4, 0, 0, 0].map(floatBits)),
-    });
-    await textureReceiver.message([nativeID, 49, 0, 0], {
-      payload: packet([60, 62, 250].map(floatBits)),
-    });
-    await textureReceiver.message([nativeID, 51, 0, 0], {
-      payload: packet([2, 10, 0].map(floatBits)),
-    });
-    await textureReceiver.message([nativeID, 48, 0, 1]);
+    await send(textured, 41, 0, 0, packet([60, 62, 0, 8, 4, 0, 0, 0].map(floatBits)));
+    await send(textured, 49, 0, 0, packet([60, 62, 250].map(floatBits)));
+    await send(textured, 51, 0, 0, packet([2, 10, 0].map(floatBits)));
+    await send(textured, 48, 0, 1);
     const texturedPixels = await render(world);
     let difference = 0;
     for (let i = 0; i < green.length; i += 4)
@@ -162,7 +141,7 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     const afterParticle = await render(world);
     checks.particleLast =
       colors(afterParticle, [64, 224, 32]) === 0 && colors(afterParticle, [0, 0, 255]) > 0;
-    await shape(receivers[1], 0xff40e020, [2, 3, 0], 200);
+    await shape(tasks[1], 0xff40e020, [2, 3, 0], 200);
     const afterNative = await render(world),
       pointer = await descriptor();
     checks.nativeLast =
@@ -205,9 +184,7 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         colors(afterFinalBackground, [0, 0, 255]) +
           colors(afterFinalBackground, backgroundColor) ===
           256;
-      await receivers[1].message([nativeID, 49, 0, 0], {
-        payload: packet([0, 0, 56000].map(floatBits)),
-      });
+      await send(tasks[1], 49, 0, 0, packet([0, 0, 56000].map(floatBits)));
       particle.bank.priority = 55000;
       const between = await render(world);
       checks.backgroundBeforeNative =
@@ -225,9 +202,7 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
       backgroundFields.forEach((offset, i) => p.store(manager + offset, savedBackground[i]));
       p.free(background);
       particle.bank.priority = 200;
-      await receivers[1].message([nativeID, 49, 0, 0], {
-        payload: packet([0, 0, 200].map(floatBits)),
-      });
+      await send(tasks[1], 49, 0, 0, packet([0, 0, 200].map(floatBits)));
     }
     const finalPixels = await render(world);
     const host = world.particles.host,
@@ -260,10 +235,10 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         nativeID: 0x100,
         name: 'Attached child plane',
       }),
-      child = bindPlane(world.graphics.get(childID));
+      child = world.graphics.get(childID);
     await shape(child, 0xffffff00);
     await inheritPosition(child, 53, [0, 0, 1]);
-    await inheritPosition(receivers[1], 51, [7, 8, 0]);
+    await inheritPosition(tasks[1], 51, [7, 8, 0]);
     checks.inheritedPos = equal(await modelVector(child, 62), [7, 8, 0]);
     const inheritedPixels = await render(world);
     checks.inheritedPixels = colors(inheritedPixels, [255, 255, 0]) > 0;
@@ -272,8 +247,8 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     await fresh.ensureNativeEngine();
     fresh.nativeEngine.process.trap('authored earlier transient render trap', 0, () => 0);
     await fresh.restore(saved);
-    const restored = tasks.map((task) => bindPlane(fresh.graphics.get(task.record.id))),
-      restoredChild = bindPlane(fresh.graphics.get(childID));
+    const restored = tasks.map((task) => fresh.graphics.get(task.record.id)),
+      restoredChild = fresh.graphics.get(childID);
     checks.freshQuery = equal(await modelVector(restored[0], 61), [0, 0, 200]);
     const freshPlatform = await fresh.getNativeFeature('graphics-platform');
     checks.freshDescriptor =
@@ -282,7 +257,7 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     checks.freshPixels = equal(await render(fresh), inheritedPixels);
     checks.freshOrder =
       fresh.particles.get(particleID).bank.nativeRenderOrder === particle.bank.nativeRenderOrder;
-    await receivers[0].message([nativeID, 3, 0, 0]);
+    await world.objects.destroy(tasks[0].record.id);
     checks.sharedDelete = (await descriptor()) === 0;
     checks.removedOrder = !world.graphics.nativeRenderOrder.has(pointer);
     const removed = await render(world);
@@ -294,28 +269,28 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     checks.freshInheritedPixels =
       !equal(moved, inheritedPixels) && colors(moved, [255, 255, 0]) > 0;
 
-    const customID = await fresh.objects.create({
-        kind: 2,
-        parent: fresh.main.id,
-        nativeID: 0x200,
-        name: 'Original custom plane',
-      }),
-      custom = bindPlane(fresh.graphics.get(customID)),
-      customNativeID = custom.task.record.nativeID,
+    const name = new TextEncoder().encode('Original custom plane\0');
+    fresh.main.machine.bytes(128, name.length).set(name);
+    const call = (id, args) =>
+        fresh.runtime.native('main', id, args, fresh.main.machine, fresh.main),
+      created = await call(0x42, [2, fresh.nativeTaskID(fresh.main.id), 128]),
+      customNativeID = created.value,
+      customID = fresh.resolveTaskID(customNativeID, fresh.main.id),
+      custom = fresh.graphics.get(customID),
       sendCustom = (message, payload) =>
         fresh.sendEngine(customID, fresh.main.id, message, 0, 0, { payload }),
       freshEngine = fresh.nativeEngine,
       fp = freshEngine.process,
       getDescriptor = (id) => freshEngine.call(raw.descriptor, [id], freshPlatform.refs.manager);
-    await sendCustom(45);
+    await call(0x50, [customNativeID]);
     const customDescriptor = await getDescriptor(customNativeID),
       customModel = customDescriptor && fp.load(customDescriptor + 8);
-    checks.customPlane = Boolean(customModel) && fp.load(custom.task.pointer + 336) === 5;
+    checks.customPlane = Boolean(customModel) && fp.load(custom.pointer + 336) === 5;
     if (!sdk && customModel) {
-      const callback = fp.load(fp.load(custom.task.pointer) + 24);
+      const callback = fp.load(fp.load(custom.pointer) + 24);
       const registered = await freshEngine.call(
         0x67e3d0,
-        [customNativeID, 2, callback, custom.task.pointer, 0],
+        [customNativeID, 2, callback, custom.pointer, 0],
         undefined,
         { task: customID },
       );
@@ -323,34 +298,47 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         registered === 1 &&
         equal(
           [236, 240, 244, 248].map((at) => fp.load(customModel + at)),
-          [2, callback, custom.task.pointer, 1],
+          [2, callback, custom.pointer, 1],
         ) &&
         !freshEngine.features.get('m2').graphics.callbacks.has(customID);
     }
-    const createPlane = fresh.objects.factories.get(2);
-    fresh.objects.factories.set(2, async (...args) => {
-      const task = await createPlane(...args);
-      bindPlane(task);
-      return task;
-    });
-    try {
-      await sendCustom(46, packet([0, 0, 0, floatBits(4), floatBits(3), 32, 1, 0xffffffff, 2, 1]));
-    } finally {
-      fresh.objects.factories.set(2, createPlane);
-    }
-    const tiles = fresh.objects.children(custom.task.record);
-    checks.customTiles = fp.load(custom.task.pointer + 336) === 9 && tiles.length === 2;
+    await sendCustom(46, packet([0, 0, 0, floatBits(4), floatBits(3), 32, 1, 0xffffffff, 2, 1]));
+    const tiles = fresh.objects.children(custom.record);
+    checks.customTiles = fp.load(custom.pointer + 336) === 9 && tiles.length === 2;
     for (const [i, tile] of tiles.entries()) {
       const task = fresh.graphics.get(tile.id),
         tileDescriptor = await getDescriptor(tile.nativeID);
       checks['tile' + i] =
         Boolean(tileDescriptor && fp.load(tileDescriptor + 16)) &&
-        fp.load(task.pointer + 12) === custom.task.pointer &&
+        fp.load(task.pointer + 12) === custom.pointer &&
         equal(
           [176, 180, 336].map((at) => fp.load(task.pointer + at)),
           [floatBits(4), floatBits(3), 1],
         );
     }
+    const trailID = await fresh.objects.create({
+        kind: 2,
+        parent: fresh.main.id,
+        nativeID: 0x305,
+        name: 'Native trail',
+      }),
+      trail = fresh.graphics.get(trailID),
+      auxiliary = [0x3050001, 0x3050002],
+      configuration = packet([2, 1, 0, 0, 0, 0, 0, floatBits(2), 0, 0, 0, 0, 0]);
+    await shape(trail, 0xff203050, [5, 5, 0], 800);
+    await send(trail, 79, 1, 0, configuration);
+    const history = fp.load(trail.pointer + 320);
+    checks.trailModels =
+      Boolean(history) && (await Promise.all(auxiliary.map(getDescriptor))).every(Boolean);
+    await inheritPosition(trail, 51, [9, 6, 0]);
+    await fresh.tick();
+    checks.trailFrame =
+      Boolean(history) &&
+      fp.load(history + 28) === floatBits(9) &&
+      fp.load(history + 128 + 28) === floatBits(7);
+    await fresh.objects.destroy(trailID);
+    await fresh.objects.release(trailID);
+    checks.trailCleanup = !(await Promise.all(auxiliary.map(getDescriptor))).some(Boolean);
     return checks;
   } finally {
     await fresh?.close({ flushFiles: false });

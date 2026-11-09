@@ -4,10 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import {
-  conditionalNativeGraphicsBoundary,
-  NativePlaneReceiver,
-} from '../src/native/graphics-task.mjs';
+import { conditionalNativeGraphicsBoundary } from '../src/native/graphics-task.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -93,7 +90,7 @@ test(
       random: new ParticleRandom(),
       storage: { read: async () => null, write: async () => true },
     });
-    let receiver, buttonReceiver, fresh;
+    let fresh;
     try {
       await world.initialize('main.kcs');
       const id = await world.objects.create({
@@ -104,44 +101,56 @@ test(
         task = world.graphics.get(id),
         platform = await world.getNativeFeature('graphics-platform');
       await platform.ensureRenderer();
-      receiver = new NativePlaneReceiver(task);
-      const sender = world.nativeTaskID(world.main.id),
-        source = packet([0, 0, 0, floatBits(12), floatBits(7), 0, 0, 0xff314159]);
-      assert.equal(
-        await receiver.message([sender, 42, 0, 0], { payload: source }),
-        NATIVE_UNWRITTEN_WORD,
-      );
+      const source = packet([0, 0, 0, floatBits(12), floatBits(7), 0, 0, 0xff314159]),
+        send = (message, w, l, context = {}) =>
+          world.sendEngine(id, world.main.id, message, w, l, context);
+      assert.equal(await send(42, 0, 0, { payload: source }), NATIVE_UNWRITTEN_WORD);
       // The host graph adapter was not called: the real model lives in the
       // original GraphManager, while no derived browser graph exists yet.
       assert.equal(task.graph, null);
       const size = packet([]);
-      assert.equal(
-        await receiver.message([sender, 75, 0, 4], { payload: size }),
-        NATIVE_UNWRITTEN_WORD,
-      );
+      assert.equal(await send(75, 0, 4, { payload: size }), NATIVE_UNWRITTEN_WORD);
       assert.deepEqual([bitsFloat(size.load(0)), bitsFloat(size.load(4))], [12, 7]);
-      await receiver.message([sender, 49, 0, 0], {
+      await send(49, 0, 0, {
         payload: packet([floatBits(3), floatBits(5), floatBits(17)]),
       });
       const base = packet([]);
-      await receiver.message([sender, 61, 0, 0], { payload: base });
+      await send(61, 0, 0, { payload: base });
       assert.deepEqual(
         [0, 4, 8].map((at) => bitsFloat(base.load(at))),
         [3, 5, 17],
       );
-      const button = await world.objects.create({ kind: 6, parent: id, name: 'Authored input' }),
-        buttonTask = world.graphics.get(button);
-      buttonReceiver = new NativePlaneReceiver(buttonTask);
+      const button = await world.objects.create({ kind: 6, parent: id, name: 'Authored input' });
       const binding = packet([1, 2, 9, 10, 7, 0]);
-      assert.equal(await buttonReceiver.message([sender, 89, 0, 0], { payload: binding }), 1);
-      const region = world.inputFor(button).get(button);
+      assert.equal(
+        await world.sendEngine(button, world.main.id, 89, 0, 0, { payload: binding }),
+        1,
+      );
+      const input = world.inputFor(button),
+        region = input.get(button);
       assert.ok(region);
       assert.deepEqual(region.bounds, [1, 2, 9, 10]);
       assert.equal(region.priority, 7);
-      await buttonReceiver.message([sender, 90, 0, 0]);
-      assert.equal(world.inputFor(button).get(button), null);
+      let valueBeforeChild;
+      world.objects.register(0x7ffd, (record) => ({
+        ...world.base(record),
+        async tick() {
+          valueBeforeChild = world.nativeEngine.process.load(
+            world.graphics.get(button).pointer + 120,
+          );
+          await world.sendEngine(button, record.id, 94, 0, 7);
+        },
+      }));
+      await world.objects.create({ kind: 0x7ffd, parent: button, name: 'Input word observer' });
+      await world.sendEngine(button, world.main.id, 94, 0, 99);
+      await world.tick();
+      assert.equal(valueBeforeChild, 0);
+      assert.equal(await world.sendEngine(button, world.main.id, 4), 7);
+      assert.equal(await world.sendEngine(button, world.main.id, 4), 0);
+      await world.objects.release(button);
+      assert.equal(input.get(button), null);
       const unknown = {};
-      assert.equal(await receiver.message([sender, 0x7ffe, 0, 0], unknown), NATIVE_UNWRITTEN_WORD);
+      assert.equal(await send(0x7ffe, 0, 0, unknown), NATIVE_UNWRITTEN_WORD);
       assert.equal(unknown.nativeUnhandled, true);
       const saved = structuredClone(world.snapshot());
       fresh = new NativeWorld({
@@ -157,9 +166,8 @@ test(
       await fresh.ensureNativeEngine();
       fresh.nativeEngine.process.trap('authored earlier transient trap', 0, () => 0);
       await fresh.restore(saved);
-      const restored = new NativePlaneReceiver(fresh.graphics.get(id)),
-        result = packet([]);
-      await restored.message([fresh.nativeTaskID(fresh.main.id), 61, 0, 0], { payload: result });
+      const result = packet([]);
+      await fresh.sendEngine(id, fresh.main.id, 61, 0, 0, { payload: result });
       assert.deepEqual(
         [0, 4, 8].map((at) => bitsFloat(result.load(at))),
         [3, 5, 17],
@@ -167,8 +175,6 @@ test(
     } finally {
       await fresh?.close({ flushFiles: false });
       await world.close({ flushFiles: false });
-      receiver?.close();
-      buttonReceiver?.close();
     }
   },
 );

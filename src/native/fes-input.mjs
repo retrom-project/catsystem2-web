@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Native FES input/task mapping: 628D60, 629E00, 62C480, 65C750.
 // Each FES BUTTON owns a real base-plane task; the low button is independent.
-const packet = (words) => ({ load: (address) => words[address / 4] >>> 0 });
+import { NativeGraphicsPacket } from './graphics-task.mjs';
+const packet = (words) => new NativeGraphicsPacket(words);
 const valid = (object) => object?.type === 'BUTTON' && !object.deleted && object.enable;
 export class FESInput {
   constructor(record, world) {

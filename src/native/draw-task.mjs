@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Drawing task constructor/message entry: game 5F3C00/5F3F50.
-import { bitsFloat, nativeReply } from '../kcs.mjs';
-import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
+import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
+import { NativeGraphicsPacket } from './graphics-task.mjs';
 export class NativeDrawTask {
   constructor(graphics, record) {
     this.graphics = graphics;
@@ -59,19 +59,20 @@ export class NativeDrawTask {
             name: 'base plane',
           });
           this.state.basePlane = id;
-          const plane = this.graphics.get(id);
-          plane.makeGraph({
-            type: 1,
-            x: 0,
-            y: 0,
-            z: 0,
-            width: this.world.game.width,
-            height: this.world.game.height,
-            vram: true,
-          });
-          plane.state.shown = false;
-          setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, 1000]);
-          plane.sync();
+          const [width, height] = this.graphics.virtualSize(),
+            shape = new NativeGraphicsPacket([
+              0,
+              0,
+              0,
+              floatBits(width),
+              floatBits(height),
+              32,
+              1,
+              -1,
+            ]);
+          await this.graphics.send(id, this.record.id, 41, 0, 0, shape);
+          await this.graphics.send(id, this.record.id, 47, 0, 0, null, 1);
+          await this.setBasePriority(1000);
         }
         return 0;
       }
@@ -212,11 +213,7 @@ export class NativeDrawTask {
         return 0;
       }
       case 297: {
-        const plane = this.graphics.get(this.state.basePlane);
-        if (plane?.graph) {
-          setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, l | 0]);
-          plane.sync();
-        }
+        await this.setBasePriority(l | 0);
         return 0;
       }
       case 298: {
@@ -297,11 +294,28 @@ export class NativeDrawTask {
       await this.insertBaseImage();
     }
     this.state.baseVisible = Boolean(handle);
-    const plane = this.graphics.get(this.state.basePlane);
-    if (plane) {
-      plane.state.shown = this.state.baseVisible;
-      plane.sync();
-    }
+    if (this.state.basePlane)
+      await this.graphics.send(
+        this.state.basePlane,
+        this.record.id,
+        47,
+        0,
+        Number(this.state.baseVisible),
+        null,
+        1,
+      );
+  }
+  async setBasePriority(priority) {
+    if (this.state.basePlane)
+      await this.graphics.send(
+        this.state.basePlane,
+        this.record.id,
+        49,
+        0,
+        0,
+        new NativeGraphicsPacket([0, 0, floatBits(priority)]),
+        1,
+      );
   }
   entry(key) {
     return this.state.renderer?.items.find((item) => item.key === key >>> 0);

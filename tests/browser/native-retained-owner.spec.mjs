@@ -114,6 +114,12 @@ for (const [profile, variable] of [
           'emotedriver.dll',
           new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL)),
         );
+      const planeFixture = await readFile(
+        new URL('../fixtures/browser-native-world.mjs', import.meta.url),
+      );
+      await page.route('**/tests/fixtures/browser-native-world.mjs', (route) =>
+        route.fulfill({ body: planeFixture, contentType: 'text/javascript' }),
+      );
       await page.route('**/retained-owner-fixture/**', async (route) => {
         const name = decodeURIComponent(
             new URL(route.request().url()).pathname.slice('/retained-owner-fixture/'.length),
@@ -130,7 +136,7 @@ for (const [profile, variable] of [
               { MotionLibrary },
               { ParticleRandom },
               { StageRenderer },
-              { MOTION_ABI, setMotionVector },
+              { placeBrowserNativePlane },
               { floatBits },
             ] = await Promise.all([
               import('/src/native/world.mjs'),
@@ -138,7 +144,7 @@ for (const [profile, variable] of [
               import('/src/motion/library.mjs'),
               import('/src/ppi/random.mjs'),
               import('/src/render/stage.mjs'),
-              import('/src/motion/abi.mjs'),
+              import('/tests/fixtures/browser-native-world.mjs'),
               import('/src/kcs.mjs'),
             ]),
             files = new Map(
@@ -260,16 +266,17 @@ for (const [profile, variable] of [
               ]);
             await call(0x154, [nativeID]);
             const planeID = await world.objects.create({
-                kind: 2,
-                parent: world.root,
-                name: 'Authored uploaded surface',
-              }),
-              plane = world.graphics.get(planeID);
-            plane.makeGraph({ type: 1, width: 8, height: 6, vram: true });
-            setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, 1000]);
-            setMotionVector(plane.graph.kx2, MOTION_ABI.pos, [0, 6, 0]);
-            setMotionVector(plane.graph.kx2, MOTION_ABI.scale, [1, -1, 1]);
-            plane.sync();
+              kind: 2,
+              parent: world.root,
+              name: 'Authored uploaded surface',
+            });
+            await placeBrowserNativePlane(world, planeID, {
+              width: 8,
+              height: 6,
+              priority: 1000,
+              position: [0, 6, 0],
+              scale: [1, -1, 1],
+            });
             await render(world);
             const first = pixels(world),
               cpu = Array.from(

@@ -31,11 +31,30 @@ Public tests execute each frozen engine's full view-to-Present path and compare
 it with StageRenderer using the same D3D platform. They cover visible color
 rectangles, asymmetric cross-page 32/16-bit texture models, same-number Top
 aliasing, replacement, deletion, particle ties in both insertion orders,
-background ordering and fresh process/GPU restoration. This is not independent
-Windows screen-pixel evidence. The ordinary kind 2/6 default message dispatcher
-has not yet switched to the original receiver; these tests explicitly use
-`NativePlaneReceiver`. Other model families and arbitrary model callbacks need
-their own exercised inputs before being declared complete.
+background ordering and fresh process/GPU restoration. The comparison uses
+each mounted executable's original draw path on the browser D3D platform.
+Other model families and arbitrary model callbacks require their own cases.
+
+## Mounted plane tasks
+
+Kinds 2 and 6 use their original packet and derived receivers by default.
+KCS and FES task creation supplies the native task pointer and view. The
+World owns common task routing, clocks and input delivery. The receiver owns
+the graph models and derived task fields. Its checkpoint records the guest
+task pointer and restores that binding to the native state.
+
+The original BasePlane clears its input response before processing children.
+Drag message 6 carries two POINT addresses. Host packets marshal both points
+into the shared process, and guest packets retain their original addresses.
+The shared send entry (`5DD860`, SDK `4B9AA0`) also handles the BasePlane
+destructor's direct query and input unregistration. The vtables retain their
+original entries.
+
+Drawing-surface messages 279, 296 and 297 use the base plane's original
+shape, visibility and priority messages. The surface keeps its retained
+bitmap and texture upload responsibilities. The two-profile fixtures exercise
+the rendered base image, hide it after restore and compare the visible pixels
+before and after restoration.
 
 The original SimplePlane descendant helper (`5DFBD0`, SDK `4BBF70`)
 dispatches through the World's task route table. It visits signed native IDs
@@ -51,6 +70,12 @@ SimplePlane messages 45 and 46 execute the original entries and allocate
 their original graph models. The tiled path creates two real child tasks
 through the World router in the two-profile browser fixture. The same game
 build also exercises ordinary native callback registration alongside M2.
+The original trail phase updates its history and auxiliary model IDs, with
+cleanup through the owning SimplePlane. These auxiliary IDs share the native
+view without requiring a World task of the same number.
+
+The movie graph variants of messages 43 and 44 reach the original DirectShow
+loading path. Its VMR9 and Texture Renderer services remain platform work.
 
 ## VRAM pages
 

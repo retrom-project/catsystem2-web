@@ -34,7 +34,9 @@ for (const [profile, variable] of [
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, names }) => {
-        const { browserNativeWorld } = await import('/tests/fixtures/browser-native-world.mjs'),
+        const { browserNativeWorld, placeBrowserNativePlane } = await import(
+            '/tests/fixtures/browser-native-world.mjs'
+          ),
           files = new Map(
             await Promise.all(
               names.map(async (name) => [
@@ -72,16 +74,11 @@ for (const [profile, variable] of [
         try {
           await world.initialize('main.kcs');
           const planeID = await world.objects.create({
-              kind: 2,
-              parent: world.root,
-              name: 'Native VRAM surface',
-            }),
-            plane = world.graphics.get(planeID);
-          plane.makeGraph({ type: 1, width: 64, height: 48, vram: true });
-          const { MOTION_ABI, setMotionVector } = await import('/src/motion/abi.mjs');
-          setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, 300]);
-          plane.state.shown = true;
-          plane.sync();
+            kind: 2,
+            parent: world.root,
+            name: 'Native VRAM surface',
+          });
+          await placeBrowserNativePlane(world, planeID, { width: 64, height: 48, priority: 300 });
           await render(world);
           const before = pixels(world),
             task = world.main,
@@ -111,7 +108,7 @@ for (const [profile, variable] of [
                   vram: [...vp.slice((7 * vram.width + 5) * 4, (7 * vram.width + 5) * 4 + 4)],
                   dimensions: [vram.width, vram.height],
                   planes: Object.keys(world.graphics.stage.planes),
-                  shown: plane.state.shown,
+                  shown: world.graphics.attachment(world.nativeTaskID(planeID))?.display,
                 }),
             );
           }

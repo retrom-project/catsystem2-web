@@ -34,10 +34,9 @@ for (const [profile, variable] of [
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, names }) => {
-        const [{ browserNativeWorld }, { MOTION_ABI, setMotionVector }] = await Promise.all([
-            import('/tests/fixtures/browser-native-world.mjs'),
-            import('/src/motion/abi.mjs'),
-          ]),
+        const { browserNativeWorld, placeBrowserNativePlane } = await import(
+            '/tests/fixtures/browser-native-world.mjs'
+          ),
           files = new Map(
             await Promise.all(
               names.map(async (name) => [
@@ -94,22 +93,25 @@ for (const [profile, variable] of [
               kind: 2,
               parent: world.root,
               name: 'Capture background',
-            }),
-            background = world.graphics.get(backgroundID);
-          background.makeGraph({ type: 2, width: 64, height: 48, colors: [0xff204060] });
-          setMotionVector(background.graph.kx2, MOTION_ABI.base, [0, 0, 300]);
-          background.state.shown = true;
-          background.sync();
+            });
+          await placeBrowserNativePlane(world, backgroundID, {
+            width: 64,
+            height: 48,
+            color: 0xff204060,
+            priority: 300,
+          });
           const patchID = await world.objects.create({
-              kind: 2,
-              parent: world.root,
-              name: 'Asymmetric capture patch',
-            }),
-            patch = world.graphics.get(patchID);
-          patch.makeGraph({ type: 2, x: 4, y: 5, width: 12, height: 10, colors: [0xffc03050] });
-          setMotionVector(patch.graph.kx2, MOTION_ABI.base, [0, 0, 61000]);
-          patch.state.shown = true;
-          patch.sync();
+            kind: 2,
+            parent: world.root,
+            name: 'Asymmetric capture patch',
+          });
+          await placeBrowserNativePlane(world, patchID, {
+            width: 12,
+            height: 10,
+            color: 0xffc03050,
+            position: [4, 5, 0],
+            priority: 61000,
+          });
           await render(world);
           const displayed = pixels(world),
             imageHandle = (await call(0x71, [])).value,

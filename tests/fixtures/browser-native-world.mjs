@@ -6,6 +6,8 @@ import { MotionLibrary } from '../../src/motion/library.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
 import { StageRenderer } from '../../src/render/stage.mjs';
 import { ImageStore } from '../../src/formats/hg3.mjs';
+import { floatBits } from '../../src/kcs.mjs';
+import { NativeGraphicsPacket } from '../../src/native/graphics-task.mjs';
 
 export function browserNativeWorld({ profile, files, width = 64, height = 48, storage }) {
   const names = [...files.keys()],
@@ -72,3 +74,43 @@ export function browserNativeWorld({ profile, files, width = 64, height = 48, st
   world.stageRenderer = stageRenderer;
   return world;
 }
+
+export async function placeBrowserNativePlane(
+  world,
+  id,
+  { width, height, color, position = [0, 0, 0], priority = 0, scale = [1, 1, 1] },
+) {
+  const send = (message, words) =>
+    world.sendEngine(id, world.main.id, message, 0, 0, {
+      payload: new NativeGraphicsPacket(words),
+    });
+  await send(color === undefined ? 41 : 42, [
+    0,
+    0,
+    0,
+    floatBits(width),
+    floatBits(height),
+    32,
+    1,
+    color ?? 0xffffffff,
+  ]);
+  await send(49, [0, 0, floatBits(priority)]);
+  await send(51, position.map(floatBits));
+  await send(66, scale.map(floatBits));
+  await world.sendEngine(id, world.main.id, 48, 0, 1);
+}
+
+const check = (condition, message) => {
+  if (!condition) throw new Error(message || 'Original task assertion failed');
+};
+const equal = (a, b) =>
+  ArrayBuffer.isView(a) && ArrayBuffer.isView(b)
+    ? a.length === b.length && a.every((n, i) => n === b[i])
+    : JSON.stringify(a) === JSON.stringify(b);
+export const browserAssert = {
+  ok: check,
+  equal: (a, b, message) => check(a === b, message ?? `${a} differs from ${b}`),
+  deepEqual: (a, b, message) =>
+    check(equal(a, b), message ?? `${JSON.stringify(a)} differs from ${JSON.stringify(b)}`),
+  notDeepEqual: (a, b, message) => check(!equal(a, b), message ?? 'Task state stayed equal'),
+};
