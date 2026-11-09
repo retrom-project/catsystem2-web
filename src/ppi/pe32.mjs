@@ -5,6 +5,14 @@ import { FLOATING_POINT_REGISTERS } from './floating-point.mjs';
 const GDT_ADDRESS = 0x7ffd0000;
 const INITIAL_TEB = 0x7ffde000;
 const FLAT_DATA_SELECTOR = 16;
+const TEB_SELECTOR = 24;
+
+class PE32ThreadStop extends Error {
+  constructor(outcome) {
+    super('PE32 thread suspended or exited');
+    this.outcome = outcome;
+  }
+}
 
 export function parsePE32(bytes, { allowExecutable = false } = {}) {
   const b = new Binary(bytes, 'PPI PE32');
@@ -175,6 +183,7 @@ export class PE32Process {
     this.cpu.reg_write_i32(unicorn.X86_REG_FPCW, 0x37f);
     this.cpu.reg_write_i32(unicorn.X86_REG_FPTAG, 0xffff);
     this.cpu.reg_write_i32(unicorn.X86_REG_MXCSR, 0x1f80);
+    this.initialRegisters = this.registers();
     this.cpu.hook_add(
       unicorn.HOOK_CODE,
       (_cpu, address) => {
@@ -194,33 +203,36 @@ export class PE32Process {
   }
   initializeThreadEnvironment(stackBase) {
     const cpu = this.cpu,
-      uc = this.uc,
-      flags = uc.PROT_READ | uc.PROT_WRITE;
-    this.teb = INITIAL_TEB;
-    this.map(this.teb, 4096, 'teb', flags);
-    this.store(this.teb, 0xffffffff);
-    this.store(this.teb + 4, stackBase);
-    this.store(this.teb + 8, this.stackBottom);
-    this.store(this.teb + 0x18, this.teb);
-    this.store(this.teb + 0x20, 1); // Process ID
-    this.store(this.teb + 0x24, 1); // Initial thread ID
-
+      uc = this.uc;
+    this.map(INITIAL_TEB, 4096, 'teb', uc.PROT_READ | uc.PROT_WRITE);
+    this.initializeTEB(INITIAL_TEB, this.stackBottom, stackBase, 1);
     this.map(GDT_ADDRESS, 4096, 'gdt', uc.PROT_READ);
     const code = 8,
-      thread = 24,
       gdtr = new Uint8Array(24),
       layout = new DataView(gdtr.buffer);
     this.write(GDT_ADDRESS + code, segmentDescriptor(0, 0xfffff, 0x9b, 0xc0));
     this.write(GDT_ADDRESS + FLAT_DATA_SELECTOR, segmentDescriptor(0, 0xfffff, 0x93, 0xc0));
-    this.write(GDT_ADDRESS + thread, segmentDescriptor(this.teb, 0xfff, 0x93, 0x40));
     // Unicorn's uc_x86_mmr uses an aligned 64-bit base, even in 32-bit mode.
     layout.setBigUint64(8, BigInt(GDT_ADDRESS), true);
-    layout.setUint32(16, thread + 7, true);
+    layout.setUint32(16, TEB_SELECTOR + 7, true);
     cpu.reg_write(uc.X86_REG_GDTR, gdtr);
     cpu.reg_write_i32(uc.X86_REG_CS, code);
     for (const segment of ['DS', 'ES', 'SS', 'GS'])
       cpu.reg_write_i32(uc['X86_REG_' + segment], FLAT_DATA_SELECTOR);
-    cpu.reg_write_i32(uc.X86_REG_FS, thread);
+    this.selectTEB(INITIAL_TEB);
+  }
+  initializeTEB(teb, stackBottom, stackBase, id) {
+    this.store(teb, 0xffffffff);
+    this.store(teb + 4, stackBase);
+    this.store(teb + 8, stackBottom);
+    this.store(teb + 0x18, teb);
+    this.store(teb + 0x20, 1); // Process ID
+    this.store(teb + 0x24, id);
+  }
+  selectTEB(teb) {
+    this.write(GDT_ADDRESS + TEB_SELECTOR, segmentDescriptor(teb, 0xfff, 0x93, 0x40));
+    this.teb = teb;
+    this.cpu.reg_write_i32(this.uc.X86_REG_FS, TEB_SELECTOR);
   }
   hasFlatDataSegments(...segments) {
     return segments.every(
@@ -755,12 +767,14 @@ export class PE32Process {
         }
         throw fault;
       }
-      this.pendingError.nativeFault ??= nativeFault;
+      if (!(this.pendingError instanceof PE32ThreadStop))
+        this.pendingError.nativeFault ??= nativeFault;
     } finally {
       this.rasterBudget = previousRasterBudget;
     }
     if (this.pendingError) {
-      this.pendingError.nativeFault ??= this.faultState();
+      if (!(this.pendingError instanceof PE32ThreadStop))
+        this.pendingError.nativeFault ??= this.faultState();
       throw this.pendingError;
     }
     if (this.pendingHost) {
@@ -800,12 +814,20 @@ export class PE32Process {
       }),
     };
   }
-  async callAsync(address, args = [], thisPointer, { rasterBudget } = {}) {
+  async callAsync(address, args = [], thisPointer, { rasterBudget, resumedImport } = {}) {
     if (this.asyncEnabled)
       throw new Error('PE32 asynchronous native execution cannot be reentered');
     this.asyncEnabled = true;
-    let resume = false;
+    let resume = Boolean(resumedImport);
     try {
+      if (resumedImport) {
+        address = this.cpu.reg_read_i32(this.uc.X86_REG_EIP) >>> 0;
+        const trap = this.traps.get(address);
+        if (!trap || trap.real) throw new Error('PE32 thread continuation is not a Win32 import');
+        if (resumedImport.value !== undefined)
+          this.cpu.reg_write_i32(this.uc.X86_REG_EAX, resumedImport.value >>> 0);
+        this.skippingHost = address;
+      }
       for (;;) {
         try {
           return this.call(address, args, thisPointer, { resume, rasterBudget });
@@ -835,37 +857,78 @@ export class PE32Process {
       this.awaitingHost = false;
     }
   }
-  async callFromHost(address, args = [], thisPointer, options) {
+  callFromHost(address, args = [], thisPointer, options) {
+    return this.withSavedExecution(() => {
+      const sp = this.cpu.reg_read_i32(this.uc.X86_REG_ESP) >>> 0;
+      if (sp - 0x100 < this.stackBottom)
+        throw new Error('Nested native call exhausted the guest stack');
+      this.stackTop = (sp - 0x100) & ~15;
+      return this.callAsync(address, args, thisPointer, options);
+    }, true);
+  }
+  stopThread(outcome) {
+    if (!this.threadCanStop) throw new Error('PE32 thread control requires its native entry frame');
+    throw new PE32ThreadStop(outcome);
+  }
+  runThread(context, address, parameter, resumeImport) {
+    if (this.teb !== INITIAL_TEB)
+      throw new Error('PE32 threads must be scheduled from the initial thread');
+    return this.withSavedExecution(async () => {
+      const { teb, stackBottom, stackTop, registers } = context;
+      this.selectTEB(teb);
+      this.stackBottom = stackBottom;
+      this.stackTop = stackTop;
+      this.writeRegisters(registers ?? this.initialRegisters);
+      let resumedImport;
+      if (registers) {
+        const value = resumeImport();
+        if (value === null) return null;
+        resumedImport = { value };
+      }
+      this.threadCanStop = true;
+      try {
+        const exitCode = await this.callAsync(address, [parameter], undefined, { resumedImport });
+        context.registers = null;
+        return { exitCode };
+      } catch (error) {
+        if (!(error instanceof PE32ThreadStop)) throw error;
+        context.registers = error.outcome.wait ? this.registers() : null;
+        return error.outcome;
+      }
+    });
+  }
+  async withSavedExecution(operation, hostOnly = false) {
     // The host callback runs inside Unicorn's code hook until it yields. A
     // microtask lets that hook stop the emulator before entering guest code.
-    await Promise.resolve();
-    if (!this.asyncEnabled || !this.awaitingHost || !this.pendingHost)
-      throw new Error('Nested native calls require a suspended host callback');
+    if (hostOnly || this.asyncEnabled) {
+      await Promise.resolve();
+      if (!this.asyncEnabled || !this.awaitingHost || !this.pendingHost)
+        throw new Error('Nested native calls require a suspended host callback');
+    }
     const saved = {
       registers: this.registers(),
+      teb: this.teb,
+      stackBottom: this.stackBottom,
+      stackTop: this.stackTop,
+      asyncEnabled: this.asyncEnabled,
+      awaitingHost: this.awaitingHost,
       pendingHost: this.pendingHost,
       skippingHost: this.skippingHost,
-      stackTop: this.stackTop,
       pendingError: this.pendingError,
+      threadCanStop: this.threadCanStop,
     };
-    const sp = this.cpu.reg_read_i32(this.uc.X86_REG_ESP) >>> 0;
-    if (sp - 0x100 < this.stackBottom)
-      throw new Error('Nested native call exhausted the guest stack');
-    this.stackTop = (sp - 0x100) & ~15;
     this.asyncEnabled = false;
     this.pendingHost = null;
     this.skippingHost = null;
     this.awaitingHost = false;
+    this.threadCanStop = false;
     try {
-      return await this.callAsync(address, args, thisPointer, options);
+      return await operation();
     } finally {
-      this.writeRegisters(saved.registers);
-      this.stackTop = saved.stackTop;
-      this.pendingHost = saved.pendingHost;
-      this.skippingHost = saved.skippingHost;
-      this.pendingError = saved.pendingError;
-      this.asyncEnabled = true;
-      this.awaitingHost = true;
+      const { registers, teb, ...execution } = saved;
+      if (this.teb !== teb) this.selectTEB(teb);
+      this.writeRegisters(registers);
+      Object.assign(this, execution);
     }
   }
   loadModule(bytes, resolveImport, name = 'particle.ppi') {
