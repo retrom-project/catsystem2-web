@@ -3,7 +3,8 @@
 // PTCL and PPI share kcTaskParticle. MSG 13A's leading DWORD selects the family.
 import { Particles } from '../particles.mjs';
 import { nativeReply, bitsFloat } from '../kcs.mjs';
-import { nativeEngineWord } from './engine-message.mjs';
+import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
+import { NativeParticleCommands } from './particle-commands.mjs';
 
 export const NATIVE_PARTICLE_IDS = Object.freeze([
   0x10f, 0x110, 0x111, 0x112, 0x113, 0x1aa, 0x1ab, 0x2b5,
@@ -69,7 +70,7 @@ export class NativeParticleTask {
     this.record = record;
     this.key = `task:${record.id}`;
     this.base = this.world.base(record);
-    this.state = { active: false, alpha: 255, attachment: -1 };
+    this.state = { active: false, alpha: 256, attachment: -1 };
   }
   get bank() {
     return this.owner.host.get(this.key);
@@ -145,12 +146,14 @@ export class NativeParticleTask {
       case 0x13e:
         return Number(this.active);
       case 0x13f: {
+        if (context.nativePointer && !l)
+          throw new RangeError('Native particle registers require a mapped VM address');
         const values = context.registers || registers(this.source(sender, context).bytes(l, 128));
         if (this.bank) host.set(this.key, values);
         return 0;
       }
       case 0x140:
-        this.state.alpha = l | 0;
+        this.state.alpha = (l | 0) >= 255 ? 256 : l | 0;
         if (this.bank) host.alpha(this.key, this.state.alpha);
         return 0;
       case 0x141:
@@ -183,9 +186,17 @@ export function installNativeParticles(world, options) {
   const particles = new NativeParticles(world, options);
   world.particles = particles;
   world.objects.register(16, (record) => particles.create(record));
+  const mounted = world.game.names?.('exe').length > 0;
+  if (mounted)
+    world.registerNativeFeature(
+      'particle-commands',
+      (engine) => new NativeParticleCommands(engine, world),
+    );
   for (const id of NATIVE_PARTICLE_IDS)
-    world.runtime.register('main', id, (args, machine, task) =>
-      nativeParticles(id, args, machine, task, world),
+    world.runtime.register('main', id, async (args, machine, task) =>
+      mounted && NativeParticleCommands.has(id)
+        ? (await world.getNativeFeature('particle-commands')).apply(id, args, machine, task)
+        : nativeParticles(id, args, machine, task, world),
     );
   return particles;
 }
@@ -213,7 +224,10 @@ export async function nativeParticles(id, args, machine, task, world) {
     });
     return value(1);
   }
-  if (id === 0x112) return value(await send(0x13e));
+  if (id === 0x112) {
+    const result = await send(0x13e);
+    return value(result === NATIVE_UNWRITTEN_WORD ? 0 : result);
+  }
   if (id === 0x110) await send(0x13b);
   else if (id === 0x111) await send(0x13c);
   else if (id === 0x113)

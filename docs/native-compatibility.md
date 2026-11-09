@@ -11,7 +11,7 @@ SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    631 |             82 |                     19 |                     277 |
+| SDK / 2.6.1.74  | 1,009 |                    637 |             82 |                     19 |                     271 |
 | Game / 2.6.1.76 | 1,055 |                    893 |             58 |                     17 |                      87 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
@@ -49,6 +49,14 @@ and Wipe1/Fade source replacement render and continue after restore. Raster
 retains its original drawing callback; Hydro leaves the update unhandled. `C7`
 copies and sends the matrix packet, which Raster and SimplePlane ignore. Other
 `C4` receiver types still require implementation and verification.
+
+Main `110..113`, `1AA` and `1AB` execute both original particle control
+wrappers. They send start, stop, active query, 128-byte register block,
+opacity or attachment messages to the calling Top's task namespace. The
+active query returns zero if no task writes its output. The original
+particle receivers store signed opacity values at or above 255 as 256,
+and graph ID zero as -1. The live VM payload and task state are checked
+against both original receivers.
 
 The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
 wrappers and VM translators with 40,612 comparisons across both engines.

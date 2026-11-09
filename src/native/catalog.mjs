@@ -2862,8 +2862,8 @@ const hostDescriptions = [
   [0x1b4, 'preload.start', [], 'void'],
   [0x1b5, 'preload.complete', ['i32 threshold'], 'bool'],
   [0x1b6, 'preload.age', [], 'void'],
-  [0x1aa, 'particle.setDrawMode', ['handle task', 'word mode'], 'void'],
-  [0x1ab, 'particle.setBlend', ['handle task', 'word blend'], 'void'],
+  [0x1aa, 'particle.setAlpha', ['word task', 'i32 alpha'], 'void'],
+  [0x1ab, 'particle.attachGraph', ['word task', 'word graphID'], 'void'],
   [0x1bf, 'fes.start', ['handle task', 'format* filename'], 'void'],
   [0x1c0, 'fes.update', ['handle task'], 'void'],
   [0x1c1, 'fes.bindSurface', ['handle task', 'handle surface'], 'void'],
@@ -3318,6 +3318,14 @@ for (const id of [0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb]) {
   const fact = {
     ...recovered76.get(id),
     evidence: 'both-pinned-area-effect-wrappers-and-native-receiver-browser-tests',
+  };
+  recovered76.set(id, fact);
+  recovered74.set(id, fact);
+}
+for (const id of [0x110, 0x111, 0x112, 0x113, 0x1aa, 0x1ab]) {
+  const fact = {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-particle-wrappers-and-original-receiver-tests',
   };
   recovered76.set(id, fact);
   recovered74.set(id, fact);
