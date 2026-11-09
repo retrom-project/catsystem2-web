@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { Binary } from '../src/binary.mjs';
-import { KCSMachine, encodeCP932, formatNativeAt } from '../src/kcs.mjs';
+import { KCSMachine, encodeCP932, formatNative, formatNativeAt } from '../src/kcs.mjs';
 import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
@@ -41,7 +41,10 @@ const engine = await NativeEngineProcess.open({ profile, bytes }),
   domains = [0, 0x80000000, original.memory.length],
   argv = p.allocate(8),
   outputWord = p.allocate(4),
-  services = { formatBytes: formatNativeAt };
+  services = {
+    formatBytes: formatNativeAt,
+    format: (address, machine) => formatNative(machine.string(address), machine),
+  };
 
 const backing = (m) => [m.memory, m.shared, ...m.blocks],
   put = (m, at, input) => {
@@ -66,10 +69,15 @@ async function check(id, args, label, fixture) {
   try {
     args.forEach((arg, i) => p.store(argv + i * 4, arg));
     p.store(outputWord, 0xcccccccc);
-    reference = {
-      control: await engine.call(p.load(table + id * 4), [bridge.pointer, 0, argv, outputWord]),
-      value: p.load(outputWord),
-    };
+    const control = await engine.call(p.load(table + id * 4), [
+        bridge.pointer,
+        0,
+        argv,
+        outputWord,
+      ]),
+      value = p.load(outputWord);
+    reference = control === 1 ? { control, value } : { control };
+    if (control !== 1) assert.equal(value, 0xcccccccc);
   } finally {
     bridge.close();
   }
@@ -140,9 +148,69 @@ try {
         put(m, 64, 'a'.repeat(length));
         put(m, 0x80000040, 'a'.repeat(1024));
       });
+  const numbers = [
+    '',
+    ' ',
+    '　12',
+    ' \t+12.5e+2rest',
+    '\r\v-1.2',
+    '0x',
+    '0x1p2',
+    '-0xF',
+    '0xFFFFFFFF',
+    '4294967296',
+    '2147483648',
+    '1.2e-',
+    '1.2e+12!',
+    '1D2',
+    '1d+2',
+    '+1d2',
+    '1D-2',
+    '1,5',
+    'INF',
+    '-Inf',
+    '+Infinity',
+    'nan(SNAN)',
+    '-1.#IND',
+    '1e500',
+    '-1e-500',
+    '-.0',
+    '-.',
+    '1e39',
+    '1e-46',
+    '7.006492321624085e-46',
+    '1.000000059604644775390625',
+    '1.000000059604644775390626',
+    '3.40282356779733661637539395458142568448e38',
+    '%04d[G2048].%d[L128]d-2',
+  ];
+  for (const domain of domains) {
+    const address = domain + 64;
+    for (const input of numbers)
+      for (const id of [0x19, 0x1a])
+        await check(id, [address], JSON.stringify(input), (m) => put(m, address, input));
+    for (const input of [
+      '',
+      '%',
+      '12',
+      '12abc%',
+      '+0%',
+      '-12%',
+      '1.5%',
+      ' 12%',
+      '0x10%',
+      '0xFFFFFFFF%',
+      '100%',
+      '2147483648%',
+    ])
+      for (const base of [0, 1, 80, 0x80000000, 0xffffffff])
+        await check(0x2e, [address, base], JSON.stringify(input), (m) => put(m, address, input));
+  }
+  await check(0x2e, [0x7fffffff, 80], 'unmapped operand', () => {});
+  await check(0x2e, [0, 80], 'mapped zero operand', (m) => put(m, 0, '100%'));
   await writeFile(
     output,
-    JSON.stringify({ profile, sha256, calls, comparisons, slots: '0D..18' }, null, 2) + '\n',
+    JSON.stringify({ profile, sha256, calls, comparisons, slots: '0D..1A and 2E' }, null, 2) + '\n',
   );
   console.log(`Original basic strings: ${calls} calls, ${comparisons} comparisons`);
 } finally {

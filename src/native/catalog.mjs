@@ -3362,7 +3362,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
   )
     recovered74.set(id, { ...fact, evidence: 'pinned-2.6.1.74-wrapper-and-subsystem-contract' });
 }
-for (let id = 0x0d; id <= 0x18; id++) {
+for (const id of [...Array.from({ length: 14 }, (_, offset) => 0x0d + offset), 0x2e]) {
   const fact = {
     ...recovered76.get(id),
     evidence: 'both-pinned-original-basic-string-wrappers-and-full-memory-differential',

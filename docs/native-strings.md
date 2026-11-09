@@ -37,6 +37,19 @@ formatter and translator against the VM primitives. It checks return words and
 all data, stack, shared and extension bytes, including valid overlapping
 destinations, raw CP932 boundaries and recursive formatted references.
 
+Main `19` accepts an optional sign followed by a wrapping decimal or
+hexadecimal prefix; a decimal point after the digits rejects that integer.
+`1A` uses the original CRT decimal syntax with ASCII whitespace and either
+`E` or `D` exponents. Text spellings of infinity do not parse; overflow of a
+valid decimal can still return an infinite float. `2E` applies its unsigned
+base only to a mapped string ending in `%` with a valid integer prefix. It
+rounds the multiply and divide to binary32, then uses the original signed
+truncation. It writes one NUL and leaves later bytes in place.
+
+The combined runner compares **4,332 results and memory regions over 1,083
+calls per profile**. Numeric cases include malformed prefixes, formatted
+operands, rounding, unsigned bases, and mapped-zero and unmapped addresses.
+
 ## Startup SCRIPT replacement
 
 Main `0x3EA(destination, formattedSource)` copies a formatted source, then

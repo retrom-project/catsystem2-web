@@ -164,6 +164,22 @@ test('native integer parsing accepts hexadecimal and wraps words without accepti
   assert.equal(result(m, 0x19, [100], literal), 0);
 });
 
+test('original numeric text accepts D exponents and writes one NUL for percentages', () => {
+  const m = machine();
+  for (const [text, expected] of [
+    ['-1.25D2tail', -125],
+    ['+Infinity', 0],
+    ['　12', 0],
+  ]) {
+    put(m, 100, text);
+    assert.equal(result(m, 0x1a, [100], literal), floatBits(expected));
+  }
+  put(m, 100, '-12%');
+  assert.deepEqual(invoke(m, 0x2e, [100, 80]), { control: 2 });
+  assert.deepEqual([...m.bytes(100, 5)], [45, 57, 0, 37, 0]);
+  assert.deepEqual(invoke(m, 0x2e, [0x7fffffff, 80]), { control: 2 });
+});
+
 test('native list splitting, selection and joining preserve list terminators and trailing space', () => {
   const m = machine();
   put(m, 100, ' a,猫,,c ');

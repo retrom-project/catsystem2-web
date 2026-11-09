@@ -98,6 +98,11 @@ export function parseNativeIntegerPrefix(text) {
 export function parseNativeInteger(text) {
   return parseNativeIntegerPrefix(text)?.value ?? null;
 }
+function parseNativeFloat(text) {
+  // These CRTs consume an ASCII decimal prefix, including a D exponent.
+  const prefix = /^[\t-\r ]*[+-]?(?:\d+\.?\d*|\.\d+)(?:[eEdD][+-]?\d+)?/.exec(text);
+  return prefix ? Number.parseFloat(prefix[0].replace(/[dD]/, 'e')) : 0;
+}
 function format(services, m, address) {
   if (typeof services.format !== 'function') return undefined;
   const text = services.format(address, m);
@@ -312,8 +317,7 @@ export function nativeStandard(id, args, m, services = {}) {
       a = formatted(args[0]);
       if (a === undefined) return undefined;
       if (id === 0x19) return value(parseNativeInteger(a) ?? 0);
-      const number = Number.parseFloat(a);
-      return value(floatBits(Number.isNaN(number) ? 0 : number));
+      return value(floatBits(parseNativeFloat(a)));
     }
     case 0x1b:
       requireArguments(1);
@@ -509,9 +513,20 @@ export function nativeStandard(id, args, m, services = {}) {
     }
     case 0x2e: {
       requireArguments(2);
-      a = m.string(args[0]);
-      const number = parseNativeInteger(a);
-      if (a.endsWith('%') && number !== null) {
+      let region;
+      try {
+        region = m.region(args[0] >>> 0);
+      } catch {
+        return done();
+      }
+      const [buffer, start] = region,
+        end = buffer.indexOf(0, start);
+      if (end < 0) throw new Error('Native percent operand is not NUL terminated');
+      if (end > start && buffer[end - 1] === 37) {
+        const number = parseNativeInteger(
+          new TextDecoder('shift_jis').decode(buffer.subarray(start, end)),
+        );
+        if (number === null) return done();
         const scaled = Math.fround(
           Math.fround(Math.fround(number) * Math.fround(args[1] >>> 0)) / 100,
         );
@@ -519,7 +534,7 @@ export function nativeStandard(id, args, m, services = {}) {
           Number.isFinite(scaled) && scaled >= -2147483648 && scaled < 2147483648
             ? Math.trunc(scaled)
             : -2147483648;
-        write(m, args[0], encodeCP932(String(n)));
+        write(m, args[0], encodeCP932(String(n)), 1);
       }
       return done();
     }
