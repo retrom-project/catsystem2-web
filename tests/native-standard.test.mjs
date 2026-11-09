@@ -82,6 +82,29 @@ test('native copy/append return a flat VM pointer and preserve two terminator by
   });
   assert.equal(m.string(300), '長い文字');
 });
+
+test('raw append preserves the original forward stores when a string appends to itself', () => {
+  const m = machine();
+  m.bytes(64, 36).fill(33);
+  put(m, 64, 'abcde');
+  m.store(96, 0, 1);
+  assert.equal(result(m, 0x0f, [64, 64]), 64);
+  assert.equal(m.string(64), 'abcdeabcdea' + '!'.repeat(21));
+  assert.deepEqual([...m.bytes(95, 4)], [33, 0, 0, 33]);
+  assert.throws(() => invoke(m, 0x0d, [65, 64]), /overlaps its unread source/);
+});
+
+test('formatted comparisons see the second formatter overwrite the first scratch string', () => {
+  const m = machine(),
+    text = 'a'.repeat(1024);
+  put(m, 64, text);
+  put(m, 2048, text);
+  assert.equal(result(m, 0x14, [64, 2048], literal), 97);
+  assert.equal(result(m, 0x16, [64, 2048], literal), 97);
+  put(m, 64, text.slice(1));
+  assert.equal(result(m, 0x14, [64, 2048], literal) | 0, -97);
+});
+
 test('an explicit byte formatter preserves UTF8 and invalid CP932 without a text round trip', () => {
   const m = machine(),
     bytes = Uint8Array.from([...new TextEncoder().encode('猫'), 0x81, 0x30, 0xfa, 0x40]);

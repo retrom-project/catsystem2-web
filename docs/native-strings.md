@@ -18,6 +18,25 @@ pointer translator and actual CRT `sprintf`, with **7,628 comparisons per
 profile**. It compares every output and canary byte for numeric fields,
 recursive strings, the three address domains, UTF-8, CP932 and invalid bytes.
 
+## Basic string operations
+
+Both pinned engines implement main `0D..18`: raw and formatted copy,
+append, byte length and comparison, and CP932 byte/character truncation.
+Copy and append write two NUL bytes and return a VM address. Raw append copies
+the terminating byte in the same forward DWORD and byte sequence as the
+original, then finds the new end. When the source and destination overlap,
+later reads can see bytes just written. An overlapping raw copy that overwrites
+its unread terminator has no defined completed result and receives a diagnostic.
+
+Raw comparisons reverse the arguments. Formatted comparisons use the given
+order and two scratch strings 1,024 bytes apart; the second can replace the
+first's suffix. Case-sensitive results subtract signed bytes; the original
+case-insensitive path folds ASCII letters and subtracts unsigned bytes.
+`verify-native-basic-strings.mjs` compares both complete original wrappers,
+formatter and translator against the VM primitives. It checks return words and
+all data, stack, shared and extension bytes, including valid overlapping
+destinations, raw CP932 boundaries and recursive formatted references.
+
 ## Startup SCRIPT replacement
 
 Main `0x3EA(destination, formattedSource)` copies a formatted source, then

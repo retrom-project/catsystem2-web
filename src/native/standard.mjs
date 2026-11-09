@@ -26,6 +26,40 @@ function write(m, address, bytes, zeroes = 2) {
   target.set(bytes);
   target.fill(0, bytes.length);
 }
+function forwardsIntoSource(source, destination) {
+  return (
+    source.buffer === destination.buffer &&
+    destination.byteOffset > source.byteOffset &&
+    destination.byteOffset < source.byteOffset + source.byteLength
+  );
+}
+function appendCString(m, address, tail, source) {
+  const append = address + cstring(m, address).length;
+  if (source !== undefined) {
+    const from = m.bytes(source, tail.length + 1),
+      to = m.bytes(append, from.length);
+    if (forwardsIntoSource(from, to)) {
+      // The original copies DWORDs and then individual bytes, including the
+      // first NUL. With overlap, each read can see earlier stores.
+      const input = new DataView(from.buffer, from.byteOffset, from.length),
+        output = new DataView(to.buffer, to.byteOffset, to.length);
+      let at = 0;
+      for (; at + 4 <= from.length; at += 4) output.setUint32(at, input.getUint32(at, true), true);
+      for (; at < from.length; at++) to[at] = from[at];
+      const [buffer, offset] = m.region(address),
+        end = buffer.indexOf(0, offset);
+      if (end < 0) throw new Error('Native string append removed the terminating NUL');
+      m.store(address + end - offset, 0, 2);
+      return;
+    }
+  }
+  write(m, append, tail);
+}
+function formattedCString(services, m, address) {
+  const bytes = formatBytes(services, m, address),
+    end = bytes?.indexOf(0);
+  return end >= 0 ? bytes.subarray(0, end) : bytes;
+}
 function doubleByte(bytes, at) {
   const lead = bytes[at],
     trail = bytes[at + 1];
@@ -222,18 +256,19 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x0f:
     case 0x10:
       requireArguments(2);
-      b = id === 0x0e || id === 0x10 ? formatBytes(services, m, args[1]) : cstring(m, args[1]);
+      b = id === 0x0e || id === 0x10 ? formattedCString(services, m, args[1]) : cstring(m, args[1]);
       if (b === undefined) return undefined;
-      a = id >= 0x0f ? cstring(m, args[0]) : new Uint8Array();
-      out = new Uint8Array(a.length + b.length);
-      out.set(a);
-      out.set(b, a.length);
-      write(m, args[0], out);
+      if (id >= 0x0f) appendCString(m, args[0], b, id === 0x0f ? args[1] : undefined);
+      else {
+        if (id === 0x0d && forwardsIntoSource(m.bytes(args[1], b.length + 1), m.bytes(args[0], 1)))
+          throw new Error('Native string copy overlaps its unread source and terminating NUL');
+        write(m, args[0], b);
+      }
       return value(args[0]);
     case 0x11:
     case 0x12:
       requireArguments(1);
-      a = id === 0x12 ? formatBytes(services, m, args[0]) : cstring(m, args[0]);
+      a = id === 0x12 ? formattedCString(services, m, args[0]) : cstring(m, args[0]);
       return a === undefined ? undefined : value(a.length);
     case 0x13:
     case 0x14:
@@ -241,8 +276,16 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x16:
       requireArguments(2);
       if (id === 0x14 || id === 0x16) {
-        a = formatBytes(services, m, args[0]);
-        b = formatBytes(services, m, args[1]);
+        a = formattedCString(services, m, args[0]);
+        b = formattedCString(services, m, args[1]);
+        // The two original formatter destinations are 1,024 bytes apart.
+        // The second call replaces the first string's suffix if it reaches it.
+        if (a?.length >= 1024 && b) {
+          out = new Uint8Array(1024 + b.length);
+          out.set(a.subarray(0, 1024));
+          out.set(b, 1024);
+          a = out;
+        }
       } else {
         a = cstring(m, args[1]);
         b = cstring(m, args[0]);

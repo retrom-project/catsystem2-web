@@ -90,7 +90,7 @@ unique keys, including fallback results.
 
 | Main table      | Slots | Recovered declarations | Original no-op | Original constant zero | Unresolved declarations |
 | --------------- | ----: | ---------------------: | -------------: | ---------------------: | ----------------------: |
-| SDK / 2.6.1.74  | 1,009 |                    666 |             82 |                     19 |                     242 |
+| SDK / 2.6.1.74  | 1,009 |                    678 |             82 |                     19 |                     230 |
 | Game / 2.6.1.76 | 1,055 |                    917 |             58 |                     17 |                      63 |
 
 Both generic/MOT tables contain 45 recovered declarations. The separate PTCL
