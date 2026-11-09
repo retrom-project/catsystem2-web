@@ -83,7 +83,10 @@ export class FESObject {
     return this.channel ?? this.key;
   }
   get motionBusy() {
-    return Boolean(this.nativeMotionBusy || this.motionTarget?.busy() || this.motions.length);
+    return (
+      !this.deleted &&
+      Boolean(this.nativeMotionBusy || this.motionTarget?.busy() || this.motions.length)
+    );
   }
   attachMotion(library) {
     if (!this.motionTarget)

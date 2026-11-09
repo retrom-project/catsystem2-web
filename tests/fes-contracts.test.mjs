@@ -44,6 +44,27 @@ test('FES rettitle posts the native application event and continues until the ho
   assert.equal(player.root.label, 'WAIT');
 });
 
+test('a native transition removed while waiting does not block the remaining live motion', async () => {
+  const player = await screen(
+      '#DEFINE\nPLANE transition\nPLANE live\n#START\nwait\nnext READY\n#READY\n',
+    ),
+    transition = player.root.byKey.get('transition'),
+    live = player.root.byKey.get('live');
+  transition.nativeMotionBusy = true;
+  live.nativeMotionBusy = true;
+  await player.step();
+  assert.equal(player.root.label, 'START');
+
+  // The original resource driver deletes the transition before its next
+  // frame callback can refresh the last sampled motion word.
+  transition.deleted = true;
+  await player.step();
+  assert.equal(player.root.label, 'START');
+  live.nativeMotionBusy = false;
+  await player.step();
+  assert.equal(player.root.label, 'READY');
+});
+
 test('FES Steam commands preserve the null-manager branch and optional provider calls', async () => {
   const source =
       '#START\nsteam_achievement\nsteam_achievement AUTHORED\nsteam_enablescreenshot\nsteam_enablescreenshot 0\nnext WAIT\n#WAIT\n',
