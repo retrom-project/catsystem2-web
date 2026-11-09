@@ -172,13 +172,13 @@ export class NativeInputDevice {
       this.visibility += visible ? 1 : -1;
       return this.visibility;
     });
+    e.kernel.windowViews.fallbackLong = (window, index) => {
+      if (window !== 1) return undefined;
+      if (index === -21) return this.refs.userData;
+      if (index === -6) return e.module.base;
+      throw new Error(`Input window field ${index} has no host contract`);
+    };
     for (const suffix of ['A', 'W']) {
-      add('USER32.dll', `GetWindowLong${suffix}`, 2, ([window, index]) => {
-        if (window !== 1) return 0;
-        if ((index | 0) === -21) return this.refs.userData;
-        if ((index | 0) === -6) return e.module.base;
-        throw new Error(`Input window field ${index | 0} has no host contract`);
-      });
       add('USER32.dll', `FindWindow${suffix}`, 2, () => 0);
       add('USER32.dll', `RegisterWindowMessage${suffix}`, 1, ([name]) => {
         const key = p.string(name, suffix === 'W');

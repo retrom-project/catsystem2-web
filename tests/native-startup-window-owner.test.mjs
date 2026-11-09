@@ -6,6 +6,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import { initializeNativeStartupMenu } from '../src/native/engine-startup-menu.mjs';
+import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
 import {
   initializeNativeWindowOwner,
   releaseNativeWindowOwner,
@@ -67,6 +68,96 @@ for (const [profile, variable, suffix] of [
       } finally {
         await restored?.close();
         await first.close();
+      }
+    },
+  );
+}
+
+for (const [profile, variable, create] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x5bf870],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0x70e4c0],
+]) {
+  test(
+    `${profile} original kcWindow opens its main and menu windows`,
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        open = () =>
+          NativeEngineProcess.open({
+            profile,
+            bytes,
+            bootstrapOwner: { displaySize: () => [1391, 703] },
+            configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+            readFile: async () => null,
+          }),
+        engine = await open(),
+        p = engine.process,
+        block = NATIVE_STARTUP_BLOCKS[profile],
+        rect = p.allocate(16, true);
+      let fresh;
+      try {
+        await initializeNativeWindowClass(engine);
+        await initializeNativeStartupMenu(engine);
+        await initializeNativeWindowOwner(engine);
+        p.store(rect + 8, 640);
+        p.store(rect + 12, 480);
+        const owner = p.load(block),
+          menu = p.load(block + 36),
+          classRecord = engine.refs.windowClass,
+          atom = p.load(classRecord) & 0xffff,
+          proc = engine.kernel.windowClasses.classes.get(atom).procedure,
+          messages = [],
+          removeHook = p.beforeInstruction(proc, 'record startup window creation messages', () => {
+            const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+            messages.push([p.load(sp + 4), p.load(sp + 8)]);
+          });
+        let handle;
+        try {
+          handle = await engine.call(
+            create,
+            [classRecord, rect, 0xca0000, 0x800a0000, menu, 0],
+            owner,
+          );
+        } finally {
+          removeHook();
+        }
+        const windows = engine.kernel.windowViews.windows,
+          helper = p.load(p.load(owner + 48) + 4),
+          root = windows.get(handle),
+          popup = windows.get(helper),
+          call = (name, ...args) =>
+            p.call(engine.kernel.resolve({ dll: 'USER32.dll', name }), args),
+          suffix = profile.startsWith('sdk-') ? 'A' : 'W';
+        assert.equal(p.load(owner), handle);
+        assert.equal(handle, 1);
+        assert.notEqual(helper, handle);
+        assert.deepEqual(messages, [
+          ...[0x24, 0x81, 0x83, 1].map((message) => [handle, message]),
+          ...[0x81, 0x83, 1, 5, 3].map((message) => [helper, message]),
+        ]);
+        assert.deepEqual(root.bounds, [372, 70, 1018, 594]);
+        assert.deepEqual(root.client, [375, 111, 640, 480]);
+        assert.deepEqual(popup.bounds, [0, 0, 1391, 19]);
+        assert.equal(popup.parent, handle);
+        assert.equal(root.title, 'kcWindow');
+        assert.equal(popup.title, 'kcMenuWindow');
+        assert.equal(root.menu, p.load(menu + 8));
+        assert.equal(popup.menu, root.menu);
+        assert.equal(call('GetWindowLong' + suffix, handle, -21), owner);
+        assert.equal(call('UnregisterClass' + suffix, atom, engine.module.base), 0);
+        assert.equal(engine.kernel.lastError, 1412);
+
+        fresh = await open();
+        fresh.restore(engine.snapshot());
+        assert.deepEqual(fresh.kernel.windowViews.windows, windows);
+        await releaseNativeWindowOwner(fresh);
+        assert.equal(fresh.kernel.windowViews.windows.size, 0);
+        assert.equal(fresh.kernel.windowViews.quit, 0);
+        assert.equal(fresh.kernel.windowMenus.menus.has(root.menu), true);
+        assert.equal(windows.size, 2);
+      } finally {
+        await fresh?.close();
+        await engine.close();
       }
     },
   );

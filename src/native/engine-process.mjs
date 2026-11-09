@@ -16,6 +16,7 @@ import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
 import { NativeWindowsClasses } from './windows-class.mjs';
 import { NativeWindowsMenus } from './windows-menus.mjs';
+import { NativeWindowsViews } from './windows-views.mjs';
 import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
@@ -111,6 +112,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.events = new NativeWindowsEvents(this);
     this.windowClasses = new NativeWindowsClasses(this);
     this.windowMenus = new NativeWindowsMenus(this);
+    this.windowViews = new NativeWindowsViews(this);
     this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
     this.comDepth = 0;
@@ -736,6 +738,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       events: this.events.snapshot(),
       windowClasses: this.windowClasses.snapshot(),
       windowMenus: this.windowMenus.snapshot(),
+      windowViews: this.windowViews.snapshot(),
       threadHandles: this.threadHandles.snapshot(),
       comMemory: this.comMemory.snapshot(),
       comDepth: this.comDepth,
@@ -756,6 +759,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.events.restore(state.events);
     this.windowClasses.restore(state.windowClasses);
     this.windowMenus.restore(state.windowMenus);
+    this.windowViews.restore(state.windowViews);
     this.threadHandles.restore(state.threadHandles);
     this.comMemory.restore(state.comMemory);
     if (!Number.isSafeInteger(state.comDepth) || state.comDepth < 0)

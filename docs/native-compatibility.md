@@ -101,8 +101,18 @@ game `70E080`). It initializes the callback list and critical section and
 retains an unnamed, automatic-reset event in both of the original fields.
 The fresh-process tests restore a signaled event and consume it independently.
 The original destructors release the event and the list before the menu and
-class owners close. Creating the Win32 window and attaching the resulting
-menu to the browser view remain separate steps.
+class owners close.
+
+The original window wrappers (SDK `5BF870`, game `70E4C0`) also run
+against the virtual desktop in the window tests. They create a centered
+main window and a hidden menu window through the original
+[CreateWindowEx](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw)
+imports. An authored probe in the pinned Wine host supplies the window-frame
+sizes and callback order for the reviewed styles. The original WndProc
+sees the same creation messages, and the destructor detaches the shared
+menu before destroying the windows. The tests verify those handles after
+an independent process restore. Application startup still uses the browser
+view; wiring this creation path into the boot sequence is a separate step.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original

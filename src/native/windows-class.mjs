@@ -21,6 +21,8 @@ export class NativeWindowsClasses {
       register('UnregisterClass' + suffix, 2, ([name, instance]) => {
         const entry = this.lookup(name, instance, wide);
         if (!entry) return this.error(CLASS_MISSING);
+        if ([...kernel.windowViews.windows.values()].some(({ atom }) => atom === entry.atom))
+          return this.error(1412); // ERROR_CLASS_HAS_WINDOWS
         this.classes.delete(entry.atom);
         return 1;
       });
