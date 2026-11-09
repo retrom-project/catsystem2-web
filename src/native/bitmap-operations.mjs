@@ -17,6 +17,7 @@ export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
     [0x178, 2, 2, 0x64a9e0, 0x517630],
     [0x179, 1, 1, 0x64c080, 0x518be0],
     [0x17a, 2, 2, 0x64ca40, 0x519430],
+    [0x1d4, 2, 2, 0x64c770, 0x5192a0],
     [0x22e, 2, 2, 0x64b9c0, 0x518580],
     [0x234, 2, 2, 0x64c950, 0x519340],
     [0x281, 2, 2, 0x64c8e0, 0x5192d0],
@@ -29,9 +30,24 @@ export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
 const byID = new Map(NATIVE_BITMAP_OPERATION_CONTRACTS.map((s) => [s.id, s])),
   rawBitmapOperations = new Map([
     [0x7a, 'resize'],
+    [0x1d4, 'rotation'],
     [0x281, 'alpha'],
     [0x2c1, 'resize'],
   ]);
+
+function checkRotationFootprint(p, wrapper, angle) {
+  if (angle !== 90 && angle !== 180 && angle !== 270) return;
+  const bitmap = p.load(wrapper),
+    width = p.load(bitmap + 4),
+    height = p.load(bitmap + 8),
+    rowBytes = (angle === 180 ? width : height) * p.load(bitmap + 24);
+  // The original helper uses a four-byte pitch for an unaligned row.
+  if (width && height && rowBytes > 4 && rowBytes % 4)
+    throw new RangeError(
+      `Original bitmap rotation cannot fit a ${rowBytes}-byte row in a four-byte stride`,
+    );
+}
+
 export class NativeBitmapOperations {
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
@@ -42,7 +58,7 @@ export class NativeBitmapOperations {
           ? 1
           : -1;
     if (this.profileIndex < 0) throw new Error('Bitmap operations require a reviewed engine');
-    this.rawInputs = new Map();
+    this.inputChecks = new Map();
     const p = this.process,
       addresses = new Set(
         [...rawBitmapOperations.keys()].map((id) => byID.get(id).handlers[this.profileIndex]),
@@ -50,16 +66,24 @@ export class NativeBitmapOperations {
     // The allocation can be released while a call is queued.
     this.detachInputs = Array.from(addresses, (address) =>
       p.beforeInstruction(address, 'check original bitmap input', () => {
-        if (!this.rawInputs.size) return;
+        if (!this.inputChecks.size) return;
         const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0,
           argv = p.load(sp + 12),
-          raw = this.rawInputs.get(argv);
-        if (
-          raw &&
-          engine.features.get('render-sources')?.bitmapWrapperIdentity(p.load(argv)) !==
-            raw.identity
-        )
-          throw new Error(`Native bitmap ${raw.operation} wrapper was released before execution`);
+          request = this.inputChecks.get(argv);
+        if (!request) return;
+        const pointer = p.load(argv),
+          live = request.rawIdentity
+            ? engine.features.get('render-sources')?.bitmapWrapperIdentity(pointer) ===
+              request.rawIdentity
+            : request.wrapper?.pointer === pointer &&
+              engine.features.get('bitmap-memory')?.refs.wrappers.get(request.input) ===
+                request.wrapper &&
+              p.allocations.has(pointer);
+        if (!live)
+          throw new Error(
+            `Native bitmap ${request.operation} wrapper was released before execution`,
+          );
+        if (request.operation === 'rotation') checkRotationFootprint(p, pointer, p.load(argv + 4));
       }),
     );
     engine.registerFeature('bitmap-operations', this);
@@ -77,13 +101,12 @@ export class NativeBitmapOperations {
     while (words.length < count) words.push(machine.nativeArgument(words.length));
     const operation = rawBitmapOperations.get(id),
       input = words[0] >>> 0;
-    let raw;
+    let rawIdentity;
     if (operation && input && !this.world.runtime.handles.records.has(input)) {
-      const identity = this.engine.features.get('render-sources')?.bitmapWrapperIdentity(input);
-      if (!identity) throw new Error(`Unknown or released bitmap ${operation} input ${input}`);
-      raw = { operation, identity };
+      rawIdentity = this.engine.features.get('render-sources')?.bitmapWrapperIdentity(input);
+      if (!rawIdentity) throw new Error(`Unknown or released bitmap ${operation} input ${input}`);
     }
-    const bitmaps = raw ? null : await this.world.getNativeFeature('bitmap-memory');
+    const bitmaps = rawIdentity ? null : await this.world.getNativeFeature('bitmap-memory');
     if (bitmaps && (id !== 0x16f || words[5])) {
       words[0] = await bitmaps.wrapper(words[0]);
       if (id === 0x16f) words[5] = await bitmaps.wrapper(words[5]);
@@ -105,7 +128,13 @@ export class NativeBitmapOperations {
       host = platform ? (memory ? await memory.pointer(task.id) : p.allocate(120, true)) : 0;
     try {
       words.forEach((v, i) => p.store(argv + i * 4, v));
-      if (raw) this.rawInputs.set(argv, raw);
+      if (rawIdentity || (id === 0x1d4 && input))
+        this.inputChecks.set(argv, {
+          operation,
+          rawIdentity,
+          input,
+          wrapper: bitmaps?.refs.wrappers.get(input),
+        });
       p.store(out, 0xcccccccc);
       if (platform) p.store(host + 116, platform.refs.view);
       const params = [bridge.pointer, host, argv, out],
@@ -120,7 +149,7 @@ export class NativeBitmapOperations {
         throw new Error('Original bitmap wrapper returned an unexpected control');
       return nativeReply(control, control === 1 ? p.load(out) : undefined);
     } finally {
-      this.rawInputs.delete(argv);
+      this.inputChecks.delete(argv);
       try {
         bridge.close();
       } finally {

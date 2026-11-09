@@ -237,7 +237,7 @@ for (const [profile, variable] of [
     },
   );
   test(
-    `${profile} decoded bitmap adoption retains original metadata, attributes and identity through resize`,
+    `${profile} decoded bitmap adoption retains metadata, attributes and identity through resize and rotation`,
     { skip: !process.env[variable] },
     async () => {
       const f = await bitmapMemoryFixture(
@@ -269,6 +269,35 @@ for (const [profile, variable] of [
         assert.deepEqual(bitmap.state.attributes, [
           { id: 7, rect: [20, -40, 60, -80], color: 0xff800123 },
         ]);
+        const alias = f.images.alias(h, 7),
+          wrapper = await f.memory.wrapper(alias),
+          before = (await bitmap.pixels()).slice(),
+          canvasHeight = p.load(pointer + 32),
+          rotate = (angle) => f.operations.apply(0x1d4, [alias, angle], f.machine, { id: 1 });
+        assert.deepEqual(await rotate(89), { control: 2 });
+        assert.deepEqual(await rotate(90), { control: 2 });
+        assert.equal(p.load(wrapper), pointer);
+        assert.equal(p.load(p.load(p.load(p.load(pointer + 72))) + 20), attributeData);
+        assert.deepEqual([bitmap.width, bitmap.height], [6, 8]);
+        assert.deepEqual(bitmap.state.attributes, [
+          { id: 7, rect: [canvasHeight + 40, 20, 60, -80], color: 0xff800123 },
+        ]);
+        const expected = new Uint8Array(before.length);
+        for (let y = 0; y < 8; y++)
+          for (let x = 0; x < 6; x++) {
+            const at = 4 * (8 * x + 7 - y);
+            expected.set(before.subarray(at, at + 4), 4 * (6 * y + x));
+          }
+        assert.deepEqual([...(await f.images.get(alias).pixels())], [...expected]);
+
+        p.store(pointer + 24, 3);
+        const header = p.read(pointer, 92),
+          pixels = p.read(p.load(pointer + 12), p.load(pointer + 16));
+        await assert.rejects(rotate(180), /cannot fit a 18-byte row/);
+        assert.deepEqual(p.read(pointer, 92), header);
+        assert.deepEqual(p.read(p.load(pointer + 12), p.load(pointer + 16)), pixels);
+        p.store(pointer + 24, 4);
+        await f.images.release(alias);
         buffers.releasePointer(block);
         await f.images.release(h);
         assert.equal(p.allocations.has(pointer), false);

@@ -54,6 +54,7 @@ original wrappers:
 | 178             | Mode 1 grayscale, 2 sepia, 3 inversion                          | 2       |
 | 179             | Cached alpha-presence query                                     | 1       |
 | 17A             | Set the alpha-presence hint; it does not scale pixels           | 2       |
+| 1D4             | Rotate pixels, dimensions, anchors and attributes by 90° steps  | 2       |
 | 22E             | Mirror pixels, offsets, anchors and attribute coordinates       | 2       |
 | 234             | Set the raw bitmap mask word                                    | 2       |
 | 281             | Scale the 32-bit bitmap alpha by a percentage                   | 2       |
@@ -64,7 +65,7 @@ unwritten for a null owner, preserving the GCALL `CCCCCCCC` sentinel. `16F` with
 no source does not dereference the destination. VM address zero is valid, and
 missing argument words read the adjacent mapped GCALL area.
 
-Both resize slots share an original handler. The resize and alpha operations
+Both resize slots share an original handler. The resize, rotation and alpha operations
 accept logical bitmap handles and original render-source wrappers. A logical
 handle resolves through the bitmap bridge. A render-source wrapper keeps its
 original pointer and ownership. The adapter checks that allocation identity
@@ -82,17 +83,22 @@ word for horizontal mirroring and zero for vertical mirroring. Its original
 routine updates the corresponding offset and anchor using the raw canvas
 dimension, and edits attribute payloads in place. Aliases keep one bitmap
 identity. `234` updates the mask word without changing stored pixel bytes.
+`1D4` uses SDK `5192A0` and game `64C770`. The original helper recognizes 90,
+180 and 270 degrees; other values keep the bitmap unchanged. The browser
+rejects a rotation when the helper would assign a four-byte stride to an
+unaligned row wider than four bytes, before changing the bitmap.
 `281` modifies only alpha bytes in a 32-bit bitmap. Its native lookup table
 multiplies the alpha by the percentage modulo 2³², divides the unsigned
 product by 100 and saturates at 255. Null input, other pixel depths and
 100 percent leave the image unchanged. RGB, row padding and cached alpha
 hints keep their previous values.
 
-`verify-native-bitmap-operations.mjs` compares **1,346 complete calls and 8,627
-checks for the game**, **1,272 calls and 8,109 checks for the SDK**, **16,736
-comparisons total**. It covers eighteen game slots and seventeen SDK slots
+`verify-native-bitmap-operations.mjs` compares **1,420 complete calls and 9,071
+checks for the game**, **1,346 calls and 8,553 checks for the SDK**, **17,624
+comparisons total**. It covers nineteen game slots and eighteen SDK slots
 (including the identical resize handlers), two-, three- and four-byte native
-pixels, metadata, color modes, all 256 alpha inputs and padded rows, clipping
+pixels, padded right-angle rotations, metadata, color modes, all 256 alpha
+inputs and padded rows, clipping
 and overlap, four VM domains, null gates, untouched bytes and all live
 allocations. The VRAM upload is an
 explicit test boundary. Original arithmetic and dispatch execute in the mounted

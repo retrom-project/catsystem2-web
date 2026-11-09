@@ -96,6 +96,27 @@ const reset = (bpp = 4) => {
     for (const v of fixture.machine.blocks) v.fill(0x3c);
   }
 };
+function rotationSource(width, height, bpp) {
+  const stride = ((width * bpp + 3) & ~3) + 4,
+    bytes = Uint8Array.from({ length: stride * height }, (_, i) => (i * 23 + 17) & 255);
+  for (const fixture of [raw, f]) {
+    const p = fixture.process,
+      bitmap = p.load(pointers.get(h)),
+      storage = fixture.buffers.allocateData(bytes.length);
+    fixture.buffers.releaseData(p.load(bitmap + 12));
+    p.write(storage, bytes);
+    for (const [offset, value] of [
+      [4, width],
+      [8, height],
+      [12, storage],
+      [16, bytes.length],
+      [20, stride],
+      [28, width + 3],
+      [32, height + 4],
+    ])
+      p.store(bitmap + offset, value);
+  }
+}
 async function run(spec, args) {
   const words = [...args];
   while (!words.length) words.push(a.nativeArgument(0));
@@ -218,6 +239,27 @@ try {
           case 0x17a:
             args = [h, [0, 1, 50, 100, 200, 0xffffffff][n % 6]];
             break;
+          case 0x1d4: {
+            const [width, height] = (
+              bpp === 2
+                ? [
+                    [6, 4],
+                    [4, 1],
+                  ]
+                : bpp === 3
+                  ? [
+                      [4, 4],
+                      [1, 4],
+                    ]
+                  : [
+                      [4, 3],
+                      [3, 5],
+                    ]
+            )[n % 2];
+            rotationSource(width, height, bpp);
+            args = [h, [0, 90, 180, 270, -90, 360, 89, 271][(n + (n >> 3)) % 8]];
+            break;
+          }
           case 0x22e:
             args = [h, [0, 1, 2, 0xffffffff][n % 4]];
             break;
@@ -287,7 +329,7 @@ try {
         comparisons,
         covered: Object.fromEntries([...covered].map(([id, n]) => [id.toString(16), n])),
         scope:
-          'All profile-available original wrapper slots (including identical 7A/2C1 resize aliases), canvas/offset queries, every alpha index with padded rows and the game-only 402 pixel getter, with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
+          'All profile-available original wrapper slots (including identical 7A/2C1 resize aliases), canvas/offset queries, every alpha index with padded rows, valid right-angle rotations and the game-only 402 pixel getter, with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
       },
       null,
       2,

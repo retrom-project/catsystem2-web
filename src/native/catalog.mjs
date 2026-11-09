@@ -1644,6 +1644,7 @@ const extendedDescriptions = [
   [0x178, 'bitmap.colorTransform', ['handle bitmap', 'word mode'], 'void'],
   [0x179, 'bitmap.hasAlpha', ['handle bitmap'], 'bool'],
   [0x17a, 'bitmap.setAlphaHint', ['handle bitmap', 'word enabled'], 'void'],
+  [0x1d4, 'bitmap.rotateRightAngle', ['handle|nativePtr bitmap', 'i32 degrees'], 'void'],
   [0x22e, 'bitmap.mirror', ['handle nullableBitmap', 'word horizontal'], 'void'],
   [0x234, 'bitmap.setMask', ['handle nullableBitmap', 'word mask'], 'void'],
   [0x281, 'bitmap.scaleAlpha', ['handle|nativePtr bitmap', 'u32 percentage'], 'void'],
@@ -3253,7 +3254,7 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
     [0x191, 0x193, 0x194].includes(id) ||
     (id >= 0x1b2 && id <= 0x1b6) ||
     [0x185, 0x186].includes(id) ||
-    [0xee, 0xf4, 0xf6, 0x1d5, 0x281].includes(id) ||
+    [0xee, 0xf4, 0xf6, 0x1d4, 0x1d5, 0x281].includes(id) ||
     (id >= 0x341 && id <= 0x344) ||
     [0x16c, 0x16d, 0x16e, 0x170, 0x177, 0x1af].includes(id) ||
     (id >= 0x17b && id <= 0x180) ||
