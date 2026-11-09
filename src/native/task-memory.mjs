@@ -20,6 +20,8 @@ export class NativeTaskMemory {
     this.inlineHostBindings = new Map();
     this.frameFields = new Uint8Array(24);
     this.frameWords = new DataView(this.frameFields.buffer);
+    this.vmFields = new Uint8Array(20);
+    this.vmWords = new DataView(this.vmFields.buffer);
     if (engine.module) this.installBaseReceiver();
     this.detachDestruction = this.process.beforeInstruction(
       this.sdk ? 0x4b9120 : 0x5dcf00,
@@ -741,16 +743,14 @@ export class NativeTaskMemory {
         this.refs.arenas.set(pointer, size);
         return pointer;
       };
-    for (const [offset, value] of [
-      [20, mapping.memory.pointer],
-      [32, machine.fp],
-      [36, machine.memory.length],
-      [40, mapping.shared.pointer],
-      [44, machine.shared.length],
-      [48, vm.container],
-      [1388, vm.scratch],
-    ])
-      p.store(vm.pointer + offset, value);
+    p.store(vm.pointer + 20, mapping.memory.pointer);
+    this.vmWords.setUint32(0, machine.fp, true);
+    this.vmWords.setUint32(4, mapping.memory.capacity, true);
+    this.vmWords.setUint32(8, mapping.shared.pointer, true);
+    this.vmWords.setUint32(12, mapping.shared.capacity, true);
+    this.vmWords.setUint32(16, vm.container, true);
+    p.write(vm.pointer + 32, this.vmFields);
+    p.store(vm.pointer + 1388, vm.scratch);
     const oldNodes = new Map(vm.nodeIDs.map((key, index) => [key, vm.nodes[index]]));
     vm.nodes = mapping.blockIDs.map((key) => {
       const node = oldNodes.get(key) ?? allocate(16);
@@ -760,15 +760,15 @@ export class NativeTaskMemory {
     vm.nodeIDs = [...mapping.blockIDs];
     for (const pointer of oldNodes.values()) this.freeVMBuffer({ pointer });
     p.store(vm.container, vm.head);
-    p.store(vm.container + 4, machine.blocks.length);
-    const nodes = [vm.head, ...vm.nodes.slice(0, machine.blocks.length)];
+    p.store(vm.container + 4, mapping.blocks.length);
+    const nodes = [vm.head, ...vm.nodes];
     nodes.forEach((pointer, index) => {
       p.store(pointer, nodes[(index + 1) % nodes.length]);
       p.store(pointer + 4, nodes[(index + nodes.length - 1) % nodes.length]);
     });
-    machine.blocks.forEach((bytes, index) => {
-      p.store(vm.nodes[index] + 8, mapping.blocks[index].pointer);
-      p.store(vm.nodes[index] + 12, bytes.length);
+    mapping.blocks.forEach((storage, index) => {
+      p.store(vm.nodes[index] + 8, storage.pointer);
+      p.store(vm.nodes[index] + 12, storage.capacity);
     });
     const record = this.world.objects.objects.get(id),
       task = this.refs.entries.get(id);
@@ -861,6 +861,9 @@ export class NativeTaskMemory {
       for (const record of this.world.objects.objects.values())
         if (record.state === 'active') {
           await this.pointer(record.id, synchronized);
+          // A synchronized Script prefix has already bound its VM through
+          // vmPointer(). Other callers still need their independent arena.
+          if (record.kind === 12 && synchronized.has(this.refs.entries.get(record.id))) continue;
           const machine = this.machine(record.id);
           if (machine) this.mapMachine(record.id, machine);
         }
