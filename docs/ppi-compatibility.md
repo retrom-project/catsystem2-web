@@ -174,13 +174,22 @@ browser's complete quad, backup, transform, visibility, VM data and
 random stream state at the six sampled frames.
 
 The Chromium test takes the original 100-particle arguments from SDK
-`spl2_ptc.cst`, uses its `fg_snow.hg3` texture, and compares the original
-DrawUP quads with the mounted browser World. The original texture loader
-allocates a 32×32 surface for the cropped 21×22 source and leaves transparent
-padding. The cropped browser image has the same alpha and differences in
-JPEG color samples. This test supplies the original atlas bytes to both
-GPU submissions to isolate projection. The matched submissions and fresh
-World produce identical frame pixels.
+`spl2_ptc.cst`. Each original PE and the mounted browser World load
+`fg_snow.hg3` independently and compare the uploaded atlas, DrawUP quads
+and full frame pixels. The mounted path executes the original particle
+loader's image decode and texture upload. The JPEG colors and transparent
+padding come from its 32×32 Texture9, while the script reads the cropped
+21×22 source dimensions. The bank retains that Texture9 until reload or
+destruction. A fresh World binds the restored texture handle and reproduces
+the frame without decoding the image again.
+
+The original task keeps the image dimensions and depth priority when its
+texture name is empty. A nonempty name that fails to open stores 256×256
+and the new depth priority. The external-draw branch preserves those three
+fields and the previous focal depth. Normal draws recompute focal depth
+from the incoming priority and retain that priority separately for layer
+ordering. Both original receivers are exercised through these reloads.
+An asymmetric HG2 also checks the original upload's row direction.
 
 ## PPI DLL ABI
 

@@ -17,8 +17,10 @@ test('a mounted game PPI preserves original particle ties across native planes a
       await readFile(new URL('../fixtures/ppi-graph-world-golden.json', import.meta.url)),
     ),
     rgba = new Uint8Array(64 * 64 * 4);
+  // The Wine oracle uploads a red top and blue bottom directly to D3D9.
+  // Original HG2 particle upload reverses the encoded rows.
   for (let i = 0; i < rgba.length; i += 4)
-    rgba.set(i < rgba.length / 2 ? [255, 0, 0, 255] : [0, 0, 255, 255], i);
+    rgba.set(i < rgba.length / 2 ? [0, 0, 255, 255] : [255, 0, 0, 255], i);
   const [exe, emote, plugin, atlas] = await Promise.all([
     readFile(CATSYSTEM2_ENGINE_EXE),
     readFile(CATSYSTEM2_EMOTE_DLL),

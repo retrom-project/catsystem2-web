@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { identity, scaling } from '../motion/matrix.mjs';
 import { roundX87Single } from './x87.mjs';
+import { nativeParticleNear } from './numeric.mjs';
 
 const f = Math.fround;
 // Scalar D3DX MatrixMultiply and Vec4Transform in both reviewed executables.
@@ -57,22 +58,26 @@ function rotation(axis, [cos, sin]) {
   return matrix;
 }
 
-export function nativeParticleNear(priority) {
-  return f(f(65000 - f(priority)) - 1000);
-}
-
 // The caller gates this path on the original scalar dispatch, nearest
 // rounding and masked exceptions. Trigonometry uses the guest's FSINCOS.
 export function projectNativeParticle(
   particle,
-  { width, height, priority, alpha, zShift, screenMatrix, screenShift },
+  {
+    width,
+    height,
+    priority,
+    near = nativeParticleNear(priority),
+    alpha,
+    zShift,
+    screenMatrix,
+    screenShift,
+  },
   sincos,
   precision,
 ) {
   const round = precision === 24 ? roundX87Single : round53,
     halfX = (width >>> 0) >>> 1,
-    halfY = (height >>> 0) >>> 1,
-    near = nativeParticleNear(priority);
+    halfY = (height >>> 0) >>> 1;
   if (!particle.scale.every(Number.isFinite) || !particle.pos.every(Number.isFinite)) return null;
   // The original multiplies the scale by identity. Every stored zero in
   // this affine matrix has a positive zero term, including a -0 scale.

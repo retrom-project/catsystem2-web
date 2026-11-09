@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Run the fixed PE's original particle receiver and frame callback.
-import { encodeCP932, floatBits } from '../../src/kcs.mjs';
+import { bitsFloat, encodeCP932, floatBits } from '../../src/kcs.mjs';
 
 const profiles = {
   'sdk-4.01-engine-2.6.1.74': {
@@ -49,6 +49,18 @@ export async function originalPTCLTask(engine, view, spec) {
       } finally {
         for (const pointer of [out, name, packet]) p.free(pointer);
       }
+    },
+    reload = async ({ texture, count, priority, registers, externalDraw }) => {
+      p.zero(packet, 0x290);
+      p.write(packet + 4, encodeCP932(spec.program + '\0'));
+      p.write(packet + 132, encodeCP932((texture ?? '') + '\0'));
+      p.store(packet + 260, count);
+      p.store(packet + 264, floatBits(priority));
+      registers.forEach((value, i) => p.store(packet + 268 + i * 4, floatBits(value)));
+      p.store(packet + 396, Number(externalDraw ?? false));
+      await send(314, packet);
+      if (!p.load(task + 116) || !p.load(task + 784))
+        throw new Error('Original PTCL load did not initialize its VM');
     };
   try {
     spec.bind?.(task);
@@ -56,22 +68,28 @@ export async function originalPTCLTask(engine, view, spec) {
     if ((await engine.call(profile.construct, [spec.id ?? 713, name, 60, view], task)) !== task)
       throw new Error('Original PTCL construction did not return its task');
     constructed = true;
-    p.write(packet + 4, encodeCP932(spec.program + '\0'));
-    p.write(packet + 132, encodeCP932((spec.texture ?? '') + '\0'));
-    p.store(packet + 260, spec.count);
-    p.store(packet + 264, floatBits(spec.priority));
-    spec.registers.forEach((value, i) => p.store(packet + 268 + i * 4, floatBits(value)));
-    p.store(packet + 396, Number(spec.externalDraw ?? false));
-    await send(314, packet);
-    const vm = p.load(task + 116);
-    if (!vm || !p.load(task + 784)) throw new Error('Original PTCL load did not initialize its VM');
+    await reload(spec);
     return {
       task,
-      vm,
+      get vm() {
+        return p.load(task + 116);
+      },
+      reload: (options) => reload({ ...spec, ...options }),
       send,
       step: (frame) => engine.call(profile.frame, [frame, 0], task),
       field: (offset, stride) => p.read(p.load(task + offset), spec.count * stride),
-      data: (size) => p.read(p.load(vm + 20), size),
+      data: (size) => p.read(p.load(p.load(task + 116) + 20), size),
+      atlas: () => {
+        const wrapper = p.load(task + 120),
+          descriptor = wrapper && p.load(wrapper);
+        return {
+          pointer: descriptor && p.load(descriptor + 20),
+          width: bitsFloat(p.load(task + 816)),
+          height: bitsFloat(p.load(task + 820)),
+          priority: bitsFloat(p.load(task + 824)),
+          near: bitsFloat(p.load(task + 828)),
+        };
+      },
       close,
     };
   } catch (error) {

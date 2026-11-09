@@ -4,6 +4,7 @@
 import { Particles } from '../particles.mjs';
 import { particleGeometry } from '../ppi/geometry.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
+import { NativeParticleTextures } from './particle-textures.mjs';
 import { nativeParticleBounds } from './particle-bounds.mjs';
 import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
@@ -22,11 +23,17 @@ export class NativeParticles {
   constructor(world, options = {}) {
     this.world = world;
     this.tasks = new Map();
-    if (world.game.names?.('exe').length)
+    const mounted = world.game.names?.('exe').length > 0;
+    if (mounted) {
       world.registerNativeFeature(
         'particle-projection',
         (engine) => new NativeParticleProjection(engine),
       );
+      world.registerNativeFeature(
+        'particle-textures',
+        (engine) => new NativeParticleTextures(engine, world),
+      );
+    }
     this.host = new Particles(world.graphics.stage, {
       game: world.game,
       images: world.images,
@@ -34,6 +41,15 @@ export class NativeParticles {
       clock: world.clock,
       onDebug: (message) => world.host.nativeLog?.(message),
       nativeThread: () => world.nativeEngine?.process,
+      atlas: mounted
+        ? {
+            load: async (spec, previous) =>
+              (await world.getNativeFeature('particle-textures')).load(spec, previous),
+            frame: (pointer) => world.nativeEngine.features.get('particle-textures').frame(pointer),
+            release: (pointer) =>
+              world.nativeEngine.features.get('particle-textures').release(pointer),
+          }
+        : undefined,
       scriptBounds: (...args) => nativeParticleBounds(world.nativeEngine, ...args),
       projectGeometry: async (particles, geometry) =>
         world.nativeEngine
@@ -134,11 +150,13 @@ export class NativeParticleTask {
             return new TextDecoder('shift_jis')
               .decode(end < 0 ? part : part.subarray(0, end))
               .replace(/^@cat\/(?:ptcl|ptclpi|image)\//, '');
-          };
+          },
+          texture = string(132);
         await this.load({
           family: view.getUint32(0, true) ? 'plugin' : 'script',
           program: string(4),
-          texture: string(132),
+          texture,
+          nativeTextureName: texture ? bytes.slice(132, 260) : undefined,
           count: view.getUint32(260, true),
           priority: view.getFloat32(264, true),
           registers: registers(bytes.subarray(268, 396)),

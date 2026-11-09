@@ -51,11 +51,21 @@ export function rotateVector(vector, axis, radians) {
   throw new RangeError(`Unknown particle rotation axis: ${axis}`);
 }
 
-export function projectionBounds(z, width, height, priority, precision = 24) {
+export function nativeParticleNear(priority) {
+  return f(f(65000 - f(priority)) - 1000);
+}
+
+export function projectionBounds(
+  z,
+  width,
+  height,
+  priority,
+  near = nativeParticleNear(priority),
+  precision = 24,
+) {
   const halfX = f((width >>> 0) >>> 1),
     halfY = f((height >>> 0) >>> 1),
     depth = f(65000 - f(f(priority) + f(z))),
-    near = f(f(65000 - f(priority)) - 1000),
     denominator = depth === near ? 1 : f(depth - near),
     scale = Math.max(0, f(1000 / denominator)),
     reciprocalW = f(1 / denominator),

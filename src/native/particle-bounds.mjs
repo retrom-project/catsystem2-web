@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { floatBits } from '../kcs.mjs';
 import { nearestX87Precision } from '../ppi/floating-point.mjs';
-import { nativeParticleNear } from '../ppi/native-projection-math.mjs';
-import { projectionBounds } from '../ppi/numeric.mjs';
+import { nativeParticleNear, projectionBounds } from '../ppi/numeric.mjs';
 
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
@@ -17,8 +16,15 @@ const layouts = {
   },
 };
 
-export function nativeParticleBounds(engine, z, width, height, priority) {
-  if (!engine) return projectionBounds(z, width, height, priority);
+export function nativeParticleBounds(
+  engine,
+  z,
+  width,
+  height,
+  priority,
+  near = nativeParticleNear(priority),
+) {
+  if (!engine) return projectionBounds(z, width, height, priority, near);
   const p = engine.process,
     layout = layouts[engine.profile];
   if (!layout) throw new Error('Unknown original PTCL screen bounds layout');
@@ -28,7 +34,7 @@ export function nativeParticleBounds(engine, z, width, height, priority) {
     Number.isFinite(z) &&
     [2, 3, 19].every((slot, i) => p.load(layout.dispatch + slot * 4) === layout.scalar[i])
   ) {
-    const bounds = projectionBounds(z, width, height, priority, precision);
+    const bounds = projectionBounds(z, width, height, priority, near, precision);
     if (bounds.every(Number.isFinite)) return bounds;
   }
   if (p.asyncEnabled) throw new Error('Original PTCL screen bounds require a settled task tick');
@@ -43,7 +49,7 @@ export function nativeParticleBounds(engine, z, width, height, priority) {
     // fields. Its VM translator writes four words into a local data region.
     p.store(task + 104, view);
     p.store(task + 824, floatBits(priority));
-    p.store(task + 828, floatBits(nativeParticleNear(priority)));
+    p.store(task + 828, floatBits(near));
     p.store(view + 24, width);
     p.store(view + 28, height);
     p.store(vm + 20, output);

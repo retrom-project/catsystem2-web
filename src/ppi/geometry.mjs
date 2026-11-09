@@ -8,6 +8,7 @@ import {
   transform,
 } from '../motion/matrix.mjs';
 import { readPPIRecord } from './abi.mjs';
+import { nativeParticleNear } from './numeric.mjs';
 const f = Math.fround;
 
 // Produce the native pretransformed XYZRHW+DIFFUSE+UV triangle-strip records.
@@ -19,6 +20,7 @@ export function projectParticle(
     width,
     height,
     priority = 0,
+    near = nativeParticleNear(priority),
     alpha = 256,
     zShift = 0,
     screenMatrix = identity(),
@@ -30,8 +32,7 @@ export function projectParticle(
     matrix = multiply(matrix, rotation(axis, particle.rot[index]));
   matrix = multiply(matrix, translation(...particle.pos));
   const halfX = (width >>> 0) >>> 1,
-    halfY = (height >>> 0) >>> 1,
-    near = f(f(65000 - f(priority)) - 1000);
+    halfY = (height >>> 0) >>> 1;
   return particle.vertices.map((vertex) => {
     let position = transform(
       [

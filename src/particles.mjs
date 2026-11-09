@@ -25,6 +25,7 @@ export class Particles {
       epoch = 0,
       onDebug = null,
       nativeThread,
+      atlas,
       projectGeometry = particleGeometry,
       scriptBounds,
     } = {},
@@ -38,6 +39,7 @@ export class Particles {
     this.attachment = attachment;
     this.onDebug = onDebug;
     this.nativeThread = nativeThread;
+    this.atlas = atlas;
     this.projectGeometry = projectGeometry;
     this.scriptBounds = scriptBounds;
     this.clock = clock;
@@ -183,9 +185,10 @@ export class Particles {
     bank.attachment = attachment;
     return attachment?.id ?? bank.attachPlane;
   }
-  async load(key, spec) {
+  async load(key, { nativeTextureName, ...spec }) {
     if (!this.game || !this.images)
       throw new Error('Particles require game resources and an image store');
+    const previous = this.banks.get(key)?.nativeAtlas;
     if (this.banks.has(key)) this.end(key, { stop: false });
     const bank = this.create(key);
     Object.assign(bank, {
@@ -201,6 +204,19 @@ export class Particles {
       attachmentNamespace: spec.attachmentNamespace || 'graph',
       speed: spec.speed ?? 1,
     });
+    try {
+      await this.loadBank(bank, spec, previous, nativeTextureName);
+    } catch (error) {
+      try {
+        this.end(key, { stop: false });
+      } catch (cleanup) {
+        error.cleanup = cleanup;
+      }
+      throw error;
+    }
+    return bank;
+  }
+  async loadBank(bank, spec, previous, nativeTextureName) {
     if (!['script', 'plugin'].includes(bank.family))
       throw new Error(`Unknown particle executable family ${bank.family}`);
     if (!Number.isSafeInteger(bank.count) || bank.count < 0 || bank.count > 1000000)
@@ -212,19 +228,25 @@ export class Particles {
         ? this.game.nativeResources.resolveLoose(bank.program, category)
         : this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs');
     if (bank.program === null) throw new Error(`Missing ${category} mount for ${spec.program}`);
-    let texture;
-    if (bank.texture) {
+    if (this.atlas) {
+      const texture = nativeTextureName ?? bank.texture;
+      bank.nativeAtlas = await this.atlas.load(
+        { texture, priority: bank.priority, externalDraw: bank.externalDraw },
+        previous,
+      );
+      if (bank.texture && !bank.externalDraw && !bank.nativeAtlas.pointer)
+        this.events.push({ type: 'missing-texture', name: bank.texture, bank: bank.key });
+    } else if (bank.texture) {
       try {
-        texture = this.resource('image', bank.texture, 'hg3');
+        bank.texture = this.resource('image', bank.texture, 'hg3');
       } catch (error) {
         if (!String(error.message).startsWith('Missing image resource:')) throw error;
-        this.events.push({ type: 'missing-texture', name: bank.texture, bank: key });
+        this.events.push({ type: 'missing-texture', name: bank.texture, bank: bank.key });
+        bank.texture = null;
       }
     }
-    bank.texture = texture || null;
-    bank.image = texture ? await this.images.frame(texture) : white;
-    bank.width = texture ? bank.image.width : 256;
-    bank.height = texture ? bank.image.height : 256;
+    bank.texture ||= null;
+    await this.bindBankImage(bank);
     const attachPlane = this.refreshAttachment(bank);
     const common = {
       name: bank.program,
@@ -234,7 +256,8 @@ export class Particles {
       screenWidth: this.stage.width,
       screenHeight: this.stage.height,
       fps: this.fps,
-      priority: bank.priority,
+      priority: bank.nativeAtlas?.priority ?? bank.priority,
+      near: bank.nativeAtlas?.near,
       registers: spec.registers || [],
       attachPlane,
       attachment: () => bank.attachment,
@@ -265,8 +288,19 @@ export class Particles {
     bank.loaded = true;
     bank.nativeRenderOrder = this.stage.nativeGraphics?.allocateRenderOrder?.();
     this.metadata(bank);
-    if (spec.autoStart) this.start(key);
-    return bank;
+    if (spec.autoStart) this.start(bank.key);
+  }
+  async bindBankImage(bank) {
+    const atlas = bank.nativeAtlas;
+    if (atlas) {
+      bank.image = atlas.pointer ? this.atlas.frame(atlas.pointer) : white;
+      bank.width = atlas.width;
+      bank.height = atlas.height;
+    } else {
+      bank.image = bank.texture ? await this.images.frame(bank.texture) : white;
+      bank.width = bank.texture ? bank.image.width : 256;
+      bank.height = bank.texture ? bank.image.height : 256;
+    }
   }
   get(key) {
     return this.banks.get(key) || null;
@@ -299,6 +333,7 @@ export class Particles {
     if (stop) this.stop(key);
     bank.instance?.close?.({ stop: false });
     if (bank.instance) bank.instance.active = false;
+    if (bank.nativeAtlas?.pointer) this.atlas.release(bank.nativeAtlas.pointer);
     this.banks.delete(key);
     delete this.stage.emitters[String(key)];
   }
@@ -459,7 +494,8 @@ export class Particles {
       geometry: await this.projectGeometry(particles, {
         width: projection?.width ?? this.stage.width,
         height: projection?.height ?? this.stage.height,
-        priority: bank.priority,
+        priority: bank.nativeAtlas?.priority ?? bank.priority,
+        near: bank.nativeAtlas?.near,
         alpha,
         zShifts: bank.instance.zShifts,
         screenMatrix: projection?.screenMatrix ?? bank.screenMatrix,
@@ -518,6 +554,7 @@ export class Particles {
         family: bank.family,
         program: bank.program,
         texture: bank.texture,
+        nativeAtlas: bank.nativeAtlas && { ...bank.nativeAtlas },
         count: bank.count,
         priority: bank.priority,
         alpha: bank.alpha,
@@ -569,9 +606,7 @@ export class Particles {
     for (const saved of state.banks) {
       const bank = { ...saved, registers: new Float32Array(saved.registers) };
       this.banks.set(bank.key, bank);
-      bank.image = bank.texture ? await this.images.frame(bank.texture) : white;
-      bank.width = bank.texture ? bank.image.width : 256;
-      bank.height = bank.texture ? bank.image.height : 256;
+      await this.bindBankImage(bank);
       if (bank.family === 'plugin') bank.instance = this.runtime.instances.get(saved.nativeID);
       else {
         const script = await readKCS(await this.game.require(bank.program));
@@ -582,7 +617,8 @@ export class Particles {
           height: bank.height,
           screenWidth: this.stage.width,
           screenHeight: this.stage.height,
-          priority: bank.priority,
+          priority: bank.nativeAtlas?.priority ?? bank.priority,
+          near: bank.nativeAtlas?.near,
           fps: this.fps,
           random: this.random,
           screenBounds: this.scriptBounds,

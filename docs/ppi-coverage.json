@@ -1070,8 +1070,8 @@
       "programs": ["SDK wind.kcs version 1", "SDK snow.kcs version 2"],
       "frames": [0, 1, 2, 15, 60, 61],
       "state": "native vertices, backups, transforms, visibility, VM data and random streams match",
-      "pixels": "SDK snow DrawUP words and full frames match in Chromium with the original atlas supplied to both submissions",
-      "textureGap": "original fg_snow allocates 32x32 for the 21x22 crop and differs in JPEG RGB samples"
+      "pixels": "SDK snow uploaded atlas, DrawUP words and full frames match in Chromium against both frozen PE receivers",
+      "texture": "Both mounted profiles run the original JPEG decode and 32x32 upload for the 21x22 crop. A fresh World rebinds the Texture9. Cold blank, reload with blank, missing file and external-draw preserve the original depth and dimension rules."
     },
     "textureUV": "2 original-instruction cases verify integer-word vs float-word inputs"
   },

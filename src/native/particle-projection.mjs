@@ -4,7 +4,8 @@ import { identity } from '../motion/matrix.mjs';
 import { readPTCLQuad, writePTCLQuad } from '../ppi/abi.mjs';
 import { nearestX87Precision } from '../ppi/floating-point.mjs';
 import { particleDepthOrder } from '../ppi/geometry.mjs';
-import { nativeParticleNear, projectNativeParticle } from '../ppi/native-projection-math.mjs';
+import { projectNativeParticle } from '../ppi/native-projection-math.mjs';
+import { nativeParticleNear } from '../ppi/numeric.mjs';
 
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
@@ -219,7 +220,7 @@ export class NativeParticleProjection {
       ])
         p.store(task + field, block + count * stride);
       p.store(task + 824, floatBits(options.priority));
-      p.store(task + 828, floatBits(nativeParticleNear(options.priority)));
+      p.store(task + 828, floatBits(options.near ?? nativeParticleNear(options.priority)));
       p.store(task + 852, options.alpha);
       p.store(view + 24, options.width);
       p.store(view + 28, options.height);

@@ -40,6 +40,7 @@ export class ParticleScriptInstance {
       screenHeight,
       fps = 60,
       priority = 0,
+      near,
       registers = [],
       attachPlane = -1,
       attachment = () => null,
@@ -61,6 +62,7 @@ export class ParticleScriptInstance {
     this.screenHeight = screenHeight >>> 0;
     this.fps = fps >>> 0;
     this.priority = f(priority);
+    this.near = near;
     this.attachPlane = attachPlane | 0;
     this.attachment = attachment;
     this.random = random;
@@ -258,6 +260,7 @@ export class ParticleScriptInstance {
           this.screenWidth,
           this.screenHeight,
           this.priority,
+          this.near,
         );
         args.slice(1).forEach((address, i) => putFloat(address, bounds[i]));
         return voidReply();

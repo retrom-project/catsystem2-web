@@ -4,20 +4,34 @@ import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
+import { encodeHG2 } from '../../src/formats/hg2.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
-test('SDK snow keeps original PTCL state, submitted vertices and matched-texture pixels', async ({
-  page,
-}) => {
-  const exe = process.env.CATSYSTEM2_SDK_EXE,
+for (const [label, profile] of [
+  ['SDK', 'sdk-4.01-engine-2.6.1.74'],
+  ['game', 'nekopara-vol3-engine-2.6.1.76'],
+])
+  test(`${label} loads the original SDK snow atlas and restores its pixels`, ({ page }) =>
+    checkSnowScene(page, label, profile));
+
+async function checkSnowScene(page, label, profile) {
+  const sdk = process.env.CATSYSTEM2_SDK_EXE,
+    exe = label === 'SDK' ? sdk : process.env.CATSYSTEM2_ENGINE_EXE,
+    dll = process.env.CATSYSTEM2_EMOTE_DLL,
     assets = ['scene/spl2_ptc.cst', 'ptcl/snow.kcs', 'image/fg_snow.hg3'];
-  test.skip(!exe || !assets.every((path) => existsSync(resolve(dirname(exe), path))));
+  test.skip(
+    !exe ||
+      !sdk ||
+      (label === 'game' && !dll) ||
+      !assets.every((path) => existsSync(resolve(dirname(sdk), path))),
+  );
   test.setTimeout(180000);
   const files = new Map([
     ['engine.exe', await readFile(exe)],
+    ...(label === 'game' ? [['emotedriver.dll', await readFile(dll)]] : []),
     ['main.kcs', kcsProgram([[37, 1024], [43, 0x47, 4], [59]])],
     ...(await Promise.all(
-      assets.map(async (path) => [path, await readFile(resolve(dirname(exe), path))]),
+      assets.map(async (path) => [path, await readFile(resolve(dirname(sdk), path))]),
     )),
   ]);
   expect(assets.map((path) => createHash('sha256').update(files.get(path)).digest('hex'))).toEqual([
@@ -25,6 +39,14 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
     '2aa8485f69abbbe046537582284284458400db577e02b3daf13013a740713bd6',
     'e017a3810b36b3ef510757ce7374e2e3dd74daa60df27f70b2fa75e24f74676c',
   ]);
+  files.set(
+    'image/asymmetric.hg2',
+    await encodeHG2({
+      width: 2,
+      height: 2,
+      rgba: new Uint8Array([255, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 255, 0, 0, 255, 255]),
+    }),
+  );
   for (const file of ['browser-native-world.mjs', 'original-ptcl-task.mjs'])
     await page.route('**/tests/fixtures/' + file, (route) =>
       route.fulfill({
@@ -41,7 +63,7 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
   });
   await page.goto('/');
   const result = await page.evaluate(
-    async (names) => {
+    async ({ names, profile }) => {
       const [
         { browserNativeWorld, placeBrowserNativePlane },
         { originalPTCLTask, particleFields },
@@ -72,7 +94,7 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
         height = 600,
         make = () =>
           browserNativeWorld({
-            profile: 'sdk-4.01-engine-2.6.1.74',
+            profile,
             files,
             width,
             height,
@@ -96,7 +118,7 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
         };
         await begin(source);
         await begin(browser);
-        const render = async (world, atlas) => {
+        const render = async (world) => {
           const gpu = world.stageRenderer.gpu,
             draw = gpu.drawGeometry,
             words = [];
@@ -105,9 +127,9 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
             if (image.width > 1) {
               // The original renderer submits each strip as two triangles.
               // The browser submits the same vertices in one bank batch.
-              const vertices = atlas
-                ? geometry.flatMap((entry) => entry.vertices)
-                : [...geometry[0].vertices, geometry[1].vertices[2]];
+              const vertices = geometry.flatMap(({ vertices: quad }) =>
+                quad.length === 4 ? [quad[0], quad[1], quad[2], quad[2], quad[1], quad[3]] : quad,
+              );
               for (const { x, y, z, w, color, u, v } of vertices)
                 words.push(
                   floatBits(x),
@@ -118,9 +140,7 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
                   floatBits(u),
                   floatBits(v),
                 );
-              if (atlas) image = atlas;
-              else
-                texture ??= { width: image.width, height: image.height, rgba: image.rgba.slice() };
+              texture ??= { width: image.width, height: image.height, rgba: image.rgba.slice() };
             }
             return draw.call(this, geometry, image, options);
           };
@@ -139,6 +159,13 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
           return { words, texture, pixels };
         };
         const ground = (await render(browser)).pixels;
+        const snow = {
+          program: 'ptcl/' + program + '.kcs',
+          texture: 'image/' + texture + '.hg3',
+          count: Number(count),
+          priority: Number(priority),
+          registers: registers.map(Number),
+        };
         await source.getNativeFeature('engine-files');
         rawID = await source.objects.create({ kind: 16, parent: source.root });
         taskMemory = await source.getNativeFeature('task-memory');
@@ -146,36 +173,49 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
           source.nativeEngine,
           source.nativeEngine.features.get('graphics-platform').refs.view,
           {
+            ...snow,
             id: source.nativeTaskID(rawID),
             bind: (pointer) =>
               taskMemory.bind(source.objects.objects.get(rawID), pointer, { ready: false }),
-            program: 'ptcl/' + program + '.kcs',
-            texture: 'image/' + texture + '.hg3',
-            count: Number(count),
-            priority: Number(priority),
-            registers: registers.map(Number),
+            texture: '',
           },
         );
-        await raw.send(315);
         const task = await browser.objects.create({ kind: 16, parent: browser.root }),
+          candidate = browser.particles.get(task),
           nativeID = browser.nativeTaskID(task),
           m = browser.main.machine,
           call = (id, args) => browser.runtime.native('main', id, args, m, browser.main);
-        m.writeString('ptcl/' + program + '.kcs', 128);
-        m.writeString('image/' + texture + '.hg3', 256);
-        registers.map(Number).forEach((value, i) => m.store(384 + i * 4, floatBits(value)));
-        const loaded = await call(0x10f, [
-          nativeID,
-          128,
-          256,
-          Number(count),
-          floatBits(Number(priority)),
-          384,
-        ]);
+        const load = (texture) => {
+          m.writeString(texture, 256);
+          return call(0x10f, [nativeID, 128, 256, snow.count, floatBits(snow.priority), 384]);
+        };
+        const fields = (atlas) => [
+          Boolean(atlas.pointer),
+          atlas.width,
+          atlas.height,
+          atlas.priority,
+          atlas.near,
+        ];
+        const lifecycle = [];
+        const compareAtlas = () => {
+          const original = fields(raw.atlas()),
+            current = fields(candidate.bank.nativeAtlas);
+          if (!original.every((value, i) => Object.is(value, current[i])))
+            throw new Error(`PTCL texture state differs: ${original} vs ${current}`);
+          lifecycle.push(current);
+        };
+        m.writeString(snow.program, 128);
+        snow.registers.forEach((value, i) => m.store(384 + i * 4, floatBits(value)));
+        await load('');
+        compareAtlas();
+        await raw.reload(snow);
+        const loaded = await load(snow.texture);
+        compareAtlas();
+        await raw.send(315);
         await call(0x110, [nativeID]);
-        const bank = browser.particles.get(task).bank,
+        const bank = candidate.bank,
           pixels = [];
-        let atlas;
+        let atlasDimensions;
         for (const frame of [2, 3, 4, 17, 62, 63]) {
           // Jumping the same task clock in both worlds also exercises frame delta.
           source.frame = browser.frame = frame - 1;
@@ -195,29 +235,70 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
           const expectedData = raw.data(bank.instance.machine.data.length);
           if (!bank.instance.machine.data.every((byte, i) => byte === expectedData[i]))
             throw new Error('PTCL VM data differs at frame ' + frame);
-          const reference = await render(source);
-          atlas = reference.texture;
-          const current = await render(browser, atlas);
+          const reference = await render(source),
+            current = await render(browser),
+            atlas = reference.texture;
           if (
-            current.words.length !== 100 * 28 ||
-            !current.words.every((word, i) => word === reference.words[i])
+            atlas.width !== current.texture?.width ||
+            atlas.height !== current.texture?.height ||
+            !atlas.rgba.every((byte, i) => byte === current.texture.rgba[i])
           )
-            throw new Error('PTCL DrawUP words differ at frame ' + frame);
+            throw new Error('PTCL uploaded atlas differs at frame ' + frame);
+          atlasDimensions = [atlas.width, atlas.height];
+          const mismatch = current.words.findIndex((word, i) => word !== reference.words[i]);
+          if (
+            current.words.length !== 100 * 42 ||
+            current.words.length !== reference.words.length ||
+            mismatch !== -1
+          )
+            throw new Error(
+              `PTCL DrawUP words differ at frame ${frame}: ${current.words.length}/${reference.words.length}, word ${mismatch}: ${current.words[mismatch]}/${reference.words[mismatch]}`,
+            );
           pixels.push([reference.pixels, current.pixels]);
         }
-        await raw.close();
-        raw = null;
-        taskMemory.unbind(rawID);
-        await source.close();
         fresh = make();
         await fresh.restore(structuredClone(browser.snapshot()));
+        const restoredBank = fresh.particles.get(task).bank,
+          pointer = bank.nativeAtlas.pointer,
+          d3d = (world) => world.nativeEngine.features.get('renderer').d3d;
+        if (
+          restoredBank.nativeAtlas.pointer !== pointer ||
+          d3d(fresh).objects.get(pointer).references !== 1
+        )
+          throw new Error('Fresh PTCL atlas did not retain its original texture owner');
+        const restored = (await render(fresh)).pixels;
+        for (const spec of [
+          { texture: '', priority: 3000 },
+          { texture: 'image/missing.hg3', priority: 4000 },
+          { texture: snow.texture, priority: 1000, externalDraw: true },
+        ]) {
+          await raw.reload(spec);
+          await candidate.load({ ...snow, family: 'script', ...spec });
+          compareAtlas();
+        }
+        if (d3d(browser).objects.has(pointer) || !d3d(fresh).objects.has(pointer))
+          throw new Error('PTCL reload leaked its old texture or released the fresh owner');
+        const hg2 = { texture: 'image/asymmetric.hg2', priority: 6000 };
+        await raw.reload(hg2);
+        await candidate.load({ ...snow, family: 'script', ...hg2 });
+        compareAtlas();
+        const originalHG2 = d3d(source).frame(raw.atlas().pointer),
+          currentHG2 = candidate.bank.image;
+        if (
+          originalHG2.width !== currentHG2.width ||
+          originalHG2.height !== currentHG2.height ||
+          !originalHG2.rgba.every((byte, i) => byte === currentHG2.rgba[i])
+        )
+          throw new Error('PTCL uploaded HG2 rows differ');
         return {
           loaded,
           dimensions: [bank.width, bank.height],
           ground,
           pixels,
-          atlasDimensions: [atlas.width, atlas.height],
-          restored: (await render(fresh, atlas)).pixels,
+          atlasDimensions,
+          lifecycle,
+          restored,
+          hg2: [...currentHG2.rgba],
         };
       } finally {
         await raw?.close();
@@ -227,13 +308,22 @@ test('SDK snow keeps original PTCL state, submitted vertices and matched-texture
         await source.close();
       }
     },
-    [...files.keys()],
+    { names: [...files.keys()], profile },
   );
   expect(result.loaded).toEqual({ control: 1, value: 1 });
   expect(result.dimensions).toEqual([21, 22]);
   expect(result.atlasDimensions).toEqual([32, 32]);
+  expect(result.lifecycle).toEqual([
+    [false, 0, 0, 0, 59000],
+    [true, 21, 22, 5000, 59000],
+    [false, 21, 22, 5000, 61000],
+    [false, 256, 256, 4000, 60000],
+    [false, 256, 256, 4000, 60000],
+    [true, 2, 2, 6000, 58000],
+  ]);
+  expect(result.hg2).toEqual([0, 0, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 0, 0, 255]);
   for (const [native, web] of result.pixels) expect(web).toBe(native);
   const last = result.pixels.at(-1)[1];
   expect(last).not.toBe(result.ground);
   expect(result.restored).toBe(last);
-});
+}
