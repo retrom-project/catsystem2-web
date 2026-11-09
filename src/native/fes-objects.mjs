@@ -7,6 +7,7 @@ import { planeState } from './fes-graphics.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
 import { objectMotionState } from '../motion/target.mjs';
 import { tokenizeNativeFESSoundConfiguration } from './fes-sound-config.mjs';
+import { withNativeFESGallery } from './fes-gallery.mjs';
 
 export class NativeFESObjectRuntime {
   constructor(engine, world) {
@@ -847,9 +848,13 @@ export class NativeFESObjectRuntime {
     p.write(source, command);
     p.write(name, objectName);
     try {
+      const execute = () => this.call(fn, [this.interpreter, source, name, index]);
       return await this.withContext(
         { ...context, instance, object, pointer, tokens, fontSource: verb === 'userfontobj' },
-        () => this.call(fn, [this.interpreter, source, name, index]),
+        () =>
+          verb === 'loadlist' || verb === 'loadlist2'
+            ? withNativeFESGallery(this, instance, execute)
+            : execute(),
       );
     } finally {
       p.free(name);

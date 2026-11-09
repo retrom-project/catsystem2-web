@@ -233,6 +233,7 @@ export class GalleryLibrary {
     const bytes = await this.read(listFile);
     if (!bytes?.length) this.diagnostic?.({ resource: listFile, error: 'CG list was not found' });
     const gallery = new CGGallery(bytes?.length ? readCGList(bytes) : null, registry);
+    gallery.listBytes = bytes;
     gallery.storage = { file, entry };
     return gallery;
   }

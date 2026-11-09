@@ -78,6 +78,16 @@ pixels and final owner destruction in both profiles. Authored clients explicitly
 configure their texture regions; a zero-sized native texture grid does not
 silently gain VRAM pages.
 
+The SDK CG viewer declares an IMAGE and uses `loadlist2` to select from its
+registered CGs. Both pinned engines execute their original `loadlist` and
+`loadlist2` handlers. The current FES instance's CGL file and serialized
+registration bytes are copied through the original list readers into a scoped
+native owner. The interpreter restores its previous pointer after the command.
+This keeps the FES registration source authoritative and lets the original
+handlers resolve the variant and load the image. Authored tests distinguish
+unfiltered and seen-only selection by exact colored pixels, check that a miss
+preserves the image, and restore the drawn surface in a fresh World.
+
 DIFIMAGE's original `refex` handler accepts the same real 64-byte image owner.
 Its original frame driver sends a retained kind-3 source to the drawing task,
 retaining the owner separately from the FES reference. Authored KCS loads an

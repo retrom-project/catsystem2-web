@@ -359,7 +359,17 @@ test('official SDK registers and opens CG, music and scene replay from its own t
     const list = await pixels(page);
     await press(thumbnail);
     await until(page, 'cgview#WAIT', 150);
+    const picture = () =>
+        page.evaluate(() => {
+          const object = window.catSystem2.activeFES().root.byKey.get('img_cg');
+          return object?.nativeImageHandle ? object.nativeImageMetrics : null;
+        }),
+      loaded = await picture();
+    expect(loaded, 'The original gallery IMAGE must hold a decoded CG').not.toBeNull();
+    expect(loaded.width).toBeGreaterThan(0);
+    expect(loaded.height).toBeGreaterThan(0);
     expect((await freshAtSameFrame(page)).sha256).not.toBe(list.sha256);
+    expect(await picture()).toEqual(loaded);
     const canvas = await page.locator('#screen').boundingBox();
     await page.mouse.move(canvas.x + canvas.width * 0.25, canvas.y + canvas.height * 0.4);
     await step(page);

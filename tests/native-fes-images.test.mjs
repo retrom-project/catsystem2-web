@@ -15,6 +15,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
+import { CGRegistry } from '../src/gallery.mjs';
 import { hg3, memoryGame, kcsProgram } from './helpers.mjs';
 
 const source = `#DEFINE
@@ -105,6 +106,17 @@ function imageWindow() {
     bytes.set(body, at);
     at += body.length;
   }
+  return bytes;
+}
+function cgList(name, variants) {
+  const bytes = new Uint8Array(4 + 12 + 72 + variants.length * 256),
+    view = new DataView(bytes.buffer);
+  view.setUint32(0, 0x004c4743, true);
+  view.setUint32(12, 1, true);
+  bytes.set(encodeCP932(name), 20);
+  view.setUint32(84, variants.length, true);
+  for (const [index, variant] of variants.entries())
+    bytes.set(encodeCP932(variant), 88 + index * 256);
   return bytes;
 }
 async function imageFile(format) {
@@ -1405,3 +1417,84 @@ for (const [profile, variable] of [
         }
       },
     );
+
+for (const [profile, variable] of [
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
+])
+  test(
+    `${profile} original gallery IMAGE selects a seen CG and restores its exact drawn pixels`,
+    { skip: !process.env[variable] },
+    async () => {
+      const source = `#DEFINE
+IMAGE picture
+#OBJECT POS PRI DISP
+picture 8,6 20 1
+#START
+cgreg_init gallery.dat 0x50 authored.dat
+picture loadlist2 0 0 0 0
+next WAIT
+#WAIT
+#UNSEEN
+picture loadlist 0 record 0 0
+next WAIT
+#MISSING
+picture loadlist2 0 0 1 0
+next WAIT
+`,
+        seen = new CGRegistry(),
+        data = new NativeGlobalFile(),
+        red = Uint8Array.of(213, 5, 15, 255),
+        green = Uint8Array.of(6, 173, 19, 255),
+        image = (rgba) => hg3(2, 2, Uint8Array.from([...rgba, ...rgba, ...rgba, ...rgba]));
+      seen.registerReference('seen', true);
+      data.write(0x50, seen.write());
+      const saved = await data.file(),
+        files = {
+          'authored.dat': cgList('record', ['unseen', 'seen']),
+          'unseen.hg3': image(red),
+          'seen.hg3': image(green),
+        },
+        storage = {
+          read: async (name) => (name === 'gallery.dat' ? saved : null),
+          write: async () => true,
+        },
+        exe = new Uint8Array(await readFile(process.env[variable])),
+        make = () => fixture(profile, exe, 'hg3', source, { files, storage }),
+        first = await make();
+      let fresh;
+      try {
+        const { id, surface, task } = await start(first);
+        const render = async (world) => {
+            const draw = world.graphics.drawTasks.get(surface);
+            await draw.render();
+            return (await world.graphics.images.get(draw.state.renderer.bitmap).pixels()).slice();
+          },
+          jump = async (world, player, label) => {
+            await player.notify(label);
+            await world.graphics.syncFES(world.objects.objects.get(id), player);
+            return render(world);
+          },
+          expectedFrame = (rgba) => {
+            const pixels = new Uint8ClampedArray(64 * 48 * 4);
+            for (const y of [6, 7])
+              for (const x of [8, 9]) pixels.set(rgba, ((47 - y) * 64 + x) * 4);
+            return pixels;
+          },
+          expected = expectedFrame(green);
+        assert.equal(task.player.root.byKey.get('picture').nativeImageMetrics?.width, 2);
+        assert.deepEqual(await render(first), expected);
+        assert.deepEqual(await jump(first, task.player, 'MISSING'), expected);
+        fresh = await make();
+        await fresh.restore(first.snapshot());
+        assert.deepEqual(await render(fresh), expected);
+        const restored = fresh.objects.objects.get(id).implementation.player,
+          unfiltered = await jump(fresh, restored, 'UNSEEN');
+        assert.deepEqual(unfiltered, expectedFrame(red));
+        assert.deepEqual(await render(first), expected);
+      } finally {
+        await fresh?.close();
+        await first.close();
+      }
+    },
+  );
