@@ -735,7 +735,7 @@ for (const [profile, variable] of [
   );
 
   test(
-    profile + ' KCS Wipe3 and WipeAlpha3 match original transition frames after restore',
+    profile + ' KCS WipeAlpha, Wipe3 and WipeAlpha3 match original transition frames after restore',
     async ({ page }) => {
       const sdk = profile.startsWith('sdk-');
       test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
@@ -748,7 +748,7 @@ for (const [profile, variable] of [
         files = new Map([
           ['mask.hg2', await encodeHG2({ width: 8, height: 6, rgba: mask }, { crop: false })],
           ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
-          ...[30, 31].map((kind) => [
+          ...[28, 30, 31].map((kind) => [
             kind + '.kcs',
             kcsProgram(
               [
@@ -802,19 +802,29 @@ for (const [profile, variable] of [
             actors = [],
             call = (owner, id, ...args) =>
               owner.runtime.native('main', id, args, owner.main.machine, owner.main),
-            weight = (frame, x) =>
-              Math.max(0, Math.min(256, 128 * (frame - (4 - Math.floor((4 * maskRamp[x]) / 255))))),
+            weight = (kind, frame, x, forced) => {
+              if (kind === 28)
+                return Math.max(
+                  0,
+                  Math.min(256, 128 * (forced ? 4 : Math.min(frame, 3)) - 256 + maskRamp[x]),
+                );
+              const tick = kind === 31 && !forced ? Math.min(frame, 5) : frame;
+              return Math.max(
+                0,
+                Math.min(256, 128 * (tick - (4 - Math.floor((4 * maskRamp[x]) / 255)))),
+              );
+            },
             checkFrame = async (owner, frame, forced = false) => {
               const stage = owner.stageRenderer;
               await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
               const pixels = stage.renderer.ctx.getImageData(0, 0, 64, 48).data,
                 p = owner.nativeEngine.process;
-              for (const { alpha, fadeIn, x, work } of actors) {
+              for (const { kind, alpha, fadeIn, x, work } of actors) {
                 const data = p.load(work + 12),
                   stride = p.load(work + 20);
                 for (let row = 0; row < 6; row++)
                   for (let col = 0; col < 7; col++) {
-                    const factor = weight(alpha && !forced ? Math.min(frame, 5) : frame, col),
+                    const factor = weight(kind, frame, col, forced),
                       component = (255 * factor) >> 8,
                       a = fadeIn ? component : 255 - component,
                       pixel = (64 * (3 + row) + x + col) * 4,
@@ -869,15 +879,20 @@ for (const [profile, variable] of [
               [30, 0],
               [31, 0],
               [31, 1],
+              [28, 0],
+              [28, 1],
             ].entries()) {
-              const alpha = kind === 31,
+              const alpha = kind !== 30,
+                singleInterval = kind === 28,
                 x = 4 + index * 12,
                 script = await world.spawnScript(kind + '.kcs', { parent: world.main.id }),
                 machine = script.machine,
                 packet = machine.allocate(68) + 1,
-                fields = alpha
-                  ? [4, 2, picture, 0, 0, mask, x, 3, 8, 6, fadeIn, 0, 0]
-                  : [4, 2, src, 0, 0, next, 0, 0, mask, x, 3, 0, 0, 0, 0];
+                fields = singleInterval
+                  ? [4, picture, 0, 0, mask, x, 3, 8, 6, fadeIn, 0, 0]
+                  : alpha
+                    ? [4, 2, picture, 0, 0, mask, x, 3, 8, 6, fadeIn, 0, 0]
+                    : [4, 2, src, 0, 0, next, 0, 0, mask, x, 3, 0, 0, 0, 0];
               machine.store(96, world.nativeTaskID(world.main.id));
               machine.store(100, packet);
               machine.bytes(packet, 64).fill(0xa5);
@@ -886,12 +901,17 @@ for (const [profile, variable] of [
               await world.runtime.scheduler.execute(script);
               const id = world.resolveTaskID(machine.load(128), script.id),
                 pointer = world.objects.objects.get(id).implementation.pointer,
-                work = p.load(pointer + (alpha ? 160 : 168));
+                work = p.load(pointer + (singleInterval ? 156 : alpha ? 160 : 168));
               assert.equal(p.load(pointer + 64), kind);
               assert.equal(machine.load(132), 1);
               assert.ok(p.allocations.has(work));
               assert.deepEqual(machine.bytes(packet, 64), before, 'C4 preserves all VM words');
-              actors.push({ alpha, fadeIn, x, id, script, pointer, work });
+              if (singleInterval)
+                assert.deepEqual(
+                  [p.load(pointer + 112), p.load(pointer + 124)],
+                  [pictureWrapper, mask],
+                );
+              actors.push({ kind, alpha, fadeIn, x, id, script, pointer, work });
             }
             assert.equal(
               p.load(sourcePixel),
@@ -932,14 +952,15 @@ for (const [profile, variable] of [
               await world.tick();
               await checkFrame(world, frame);
             }
-            for (const { alpha, id, pointer, work } of actors) {
+            for (const { kind, alpha, id, pointer, work } of actors) {
               assert.deepEqual(await call(world, 0xc8, world.nativeTaskID(id)), {
                 control: 1,
                 value: 0,
               });
-              const packet = new Uint8Array(alpha ? 12 : 24),
+              const singleInterval = kind === 28,
+                packet = new Uint8Array(singleInterval ? 20 : alpha ? 12 : 24),
                 v = new DataView(packet.buffer);
-              v.setUint32(8, destinationWrapper, true);
+              v.setUint32(singleInterval ? 4 : 8, destinationWrapper, true);
               if (!alpha) v.setUint32(20, pictureWrapper, true);
               await fresh.sendEngine(id, fresh.main.id, 260, 0, 0, {
                 payload: {
@@ -950,7 +971,7 @@ for (const [profile, variable] of [
                   },
                 },
               });
-              assert.equal(rp.load(pointer + 116), destinationWrapper);
+              assert.equal(rp.load(pointer + (singleInterval ? 112 : 116)), destinationWrapper);
               if (!alpha) assert.equal(rp.load(pointer + 128), pictureWrapper);
               await fresh.objects.release(id);
               assert.equal(rp.allocations.has(work), false);

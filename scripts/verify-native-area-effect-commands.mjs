@@ -1200,6 +1200,115 @@ try {
         return result >>> 0;
       };
     p.store(parent + 72, 60);
+    for (const fadeIn of [0, 1]) {
+      activeEffect = await engine.call(factory, [28, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      const table = p.load(activeEffect),
+        fields = [4, picture.wrapper, 0, 0, mask.wrapper, 4, 3, width, height, fadeIn, 0, 0],
+        configure = async (words) => {
+          p.write(source, new Uint8Array(56).fill(0xa5));
+          words.forEach((word, i) => p.store(source + 4 * i, word));
+          const bytes = p.read(source, 56);
+          equal(await callWipe(0xc4, 112), { control: 2 });
+          equal(p.read(source, 56), bytes, 'original WipeAlpha preserves input and canary');
+        },
+        expectAlpha = (bitmap, elapsed) => {
+          const base = Math.floor((512 * elapsed) / 4) - 256,
+            pixels = intensity.map((level) => {
+              const value = (255 * Math.max(0, Math.min(256, base + level))) >> 8;
+              return (((fadeIn ? value : 255 - value) << 24) | 0xff0000) >>> 0;
+            });
+          equal(
+            raster.splice(0),
+            [
+              {
+                bitmap,
+                sx: 0,
+                sy: 0,
+                w: width,
+                h: height,
+                x: 4,
+                y: 3,
+                pixels: Array.from({ length: height }, () => pixels),
+              },
+            ],
+            'original WipeAlpha upload rectangle and every color word',
+          );
+        };
+      equal(table, sdk ? 0x9932e4 : 0x8ce004, 'original WipeAlpha factory');
+      equal(p.allocations.get(activeEffect), 0xc4);
+      equal(p.load(table + 28), sdk ? 0x4cbed0 : 0x5f1690, 'original WipeAlpha receiver');
+      equal(p.load(table + 12), sdk ? 0x4cbbd0 : 0x5f1360, 'original WipeAlpha draw');
+      equal(p.load(activeEffect + 104), view, 'original WipeAlpha shared view');
+      equal(await callWipe(0xc5), { control: 2 });
+      equal(await callWipe(0xc8), { control: 1, value: 0 });
+      for (const index of [1, 4])
+        for (const rejected of [0, rgb24.wrapper]) {
+          const invalid = fields.slice();
+          invalid[index] = rejected;
+          await configure(invalid);
+          equal(p.load(activeEffect + 160), 0, 'missing or 24-bit input fails initialization');
+          equal(p.load(activeEffect + 156), 0, 'invalid input creates no working bitmap');
+        }
+      const borrowed = [picture, mask],
+        backing = ({ bitmap }) => p.read(p.load(bitmap + 12), height * p.load(bitmap + 20)),
+        sourceBytes = borrowed.map(backing),
+        references = borrowed.map(({ bitmap }) => p.load(bitmap + 80));
+      await configure(fields);
+      equal(p.read(activeEffect + 108, 48), p.read(source, 48), 'original WipeAlpha packet copy');
+      equal(p.load(activeEffect + 160), 1);
+      const work = p.load(activeEffect + 156);
+      equal(p.allocations.get(work), 92, 'WipeAlpha owns its work bitmap');
+      equal(p.load(p.load(work + 12)), fadeIn ? 0x00ff0000 : previous, 'initial work alpha');
+      equal(await callWipe(0xc5), { control: 2 });
+      equal(await callWipe(0xc8), { control: 1, value: 1 });
+      for (let elapsed = 1; elapsed <= 4; elapsed++) {
+        await frame(20 + elapsed);
+        expectAlpha(work, Math.min(elapsed, 3));
+      }
+      equal(await callWipe(0xc8), { control: 1, value: 0 });
+      equal(await callWipe(0xcb), { control: 2 });
+      equal(raster.length, 0, 'inactive CB leaves WipeAlpha alone');
+      equal(await callWipe(0xc6), { control: 2 });
+      expectAlpha(work, 4);
+      equal(await callWipe(0xc5), { control: 2 });
+      equal(await callWipe(0xcb), { control: 2 });
+      expectAlpha(work, 4);
+      equal(await callWipe(0xc8), { control: 1, value: 0 });
+
+      const before = p.read(activeEffect, 0xc4);
+      p.store(replacement + 4, destination.wrapper);
+      [nativeID, sender, sdk ? 255 : 260, 0, replacement, 0].forEach((word, i) =>
+        p.store(packet + 4 * i, word),
+      );
+      await engine.call(p.load(table + 24), [packet, out], activeEffect);
+      new DataView(before.buffer).setUint32(112, destination.wrapper, true);
+      equal(p.read(activeEffect, 0xc4), before, 'raw replacement changes only the source wrapper');
+      equal(await callWipe(0xca, 0xffffffff), { control: 2 });
+      equal(p.read(activeEffect, 0xc4), before, 'CA does not address WipeAlpha');
+
+      const missing = fields.slice();
+      missing[4] = 0;
+      await configure(missing);
+      equal(p.load(activeEffect + 160), 0);
+      equal(p.load(activeEffect + 156), 0);
+      equal(p.allocations.has(work), false, 'reinitialization frees the previous work bitmap');
+      const clipped = fields.slice();
+      clipped[0] = 0;
+      clipped[10] = clipped[11] = 1;
+      await configure(clipped);
+      equal(p.load(activeEffect + 108), 1, 'original WipeAlpha clamps zero duration');
+      equal([p.load(activeEffect + 188), p.load(activeEffect + 192)], [width - 1, height - 1]);
+      const replacementWork = p.load(activeEffect + 156);
+      await engine.call(p.load(table), [1], activeEffect);
+      equal(p.allocations.has(activeEffect), false, 'original destructor releases WipeAlpha');
+      equal(p.allocations.has(replacementWork), false, 'original destructor releases new work');
+      equal(
+        borrowed.map(({ bitmap }) => p.load(bitmap + 80)),
+        references,
+      );
+      equal(borrowed.map(backing), sourceBytes, 'the borrowed color and mask bytes stay intact');
+    }
     for (const [kind, fadeIn] of [
       [30, 0],
       [31, 0],
@@ -1389,7 +1498,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, UnderWater/Weather/WipeCircle/TileRev/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle, TileRev, Wipe and Hydro execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Weather/WipeCircle/TileRev/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/WipeAlpha/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle, TileRev, Wipe and Hydro execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,

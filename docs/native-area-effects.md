@@ -5,6 +5,13 @@ profiles run the original constructor, packet receiver, frame update, masked
 bitmap drawing and destructor in the shared PE process. The area effect writes
 to the native view's bitmap upload path.
 
+Kind 28 runs the original WipeAlpha task. Its 48-byte initializer borrows a
+32-bit source and a 32-bit mask at offsets 4 and 16. The mask's blue byte and
+the elapsed frame determine the working alpha, and the work bitmap keeps the
+source RGB. Natural completion uploads the last calculated work bitmap.
+`C6` and active `CB` calculate the endpoint before uploading. The destructor
+releases the work bitmap while the caller keeps both borrowed images.
+
 Kinds 30 and 31 run the original Wipe3 and WipeAlpha3 tasks through that same
 path. Wipe3's 60-byte initializer borrows bitmaps at offsets 8, 20 and 32. It
 copies destination RGB into fully transparent pixels of the borrowed source.
@@ -105,10 +112,10 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 909 receiver checks
-per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
-WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe, Weather, WipeCircle and
-TileRev paths.
+receiver writes, output canaries and unwritten replies. Its 1,029 receiver checks
+per profile execute the original Wipe2, Wipe1/Fade, WipeAlpha, Raster, Hydro,
+Wipe3, WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe, Weather, WipeCircle
+and TileRev paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
@@ -121,10 +128,11 @@ stop and active destruction. It also verifies that the original `C7` packet is a
 stack copy and has no visual effect. Source ownership stays with the KCS resource
 list or bitmap owner. Frozen executables and raw reports stay outside version control.
 
-The wrapper checks cover the routing envelope for every `C4` kind. Native
+The wrapper and receiver checks cover every `C4` factory kind. Native
 initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak,
-Wipe1, Fade, Wipe2, Wipe3 and WipeAlpha3. Kind 28 still needs direct receiver
-and pixel verification.
+Wipe1, Fade, WipeAlpha, Wipe2, Wipe3 and WipeAlpha3. The WipeAlpha cases
+exercise both directions, exact alpha words and uploads, rejected formats,
+clipping, reinitialization and borrowed image lifetime.
 
 The Wipe browser cases run authored KCS against both mounted engines, verify
 unchanged nonempty GPU pixels and restore the pending task with its owned
