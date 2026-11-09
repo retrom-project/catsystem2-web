@@ -182,12 +182,15 @@ generate a new message. Both fixed engines wake their original loops for
 timer input and dispatch the guest `TIMERPROC`. The active timers and any
 already generated messages survive a settled checkpoint. [SetTimer](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-settimer), [KillTimer and generated messages](https://devblogs.microsoft.com/oldnewthing/20141205-00/?p=43463).
 
-Both WinMain versions create the named, initially nonsignaled
-`CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The
-virtual Windows namespace shares the event state across handles in one
-process, applies wait and signal access, and removes the name when the
-last handle closes. Both versions retain and release the event through the
-original startup slot; a restored process owns a separate copy of the state.
+The original WinMain window preludes (SDK `43EBD9`, game `52D031`) create
+the named `CoreSystem2ConfigEvent`, register the application callback with
+the native window hook list and construct the original 24-byte IME owner.
+The reviewed Script menu messages now enter the registered callback through
+the original WndProc. The browser routes the remaining application window
+services. The default IMM context shares open status and position across the
+virtual thread's windows. The two engine destructors restore and release
+that state, and the native hook is removed before destroying the window.
+Fixed-binary tests cover event, hook and IME ownership after a fresh restore.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original

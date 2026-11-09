@@ -27,7 +27,7 @@ export async function runNativeStackSpan(engine, first, after, frameSize, prepar
       throw new Error(`Original ${label} exhausted its guest stack`);
     p.zero(stack, frameSize);
     cpu.reg_write_i32(uc.X86_REG_ESP, stack);
-    prepare(stack, cpu, uc);
+    prepare?.(stack, cpu, uc);
   });
   try {
     const leave = p.beforeInstruction(after, `${label} exit`, () => {

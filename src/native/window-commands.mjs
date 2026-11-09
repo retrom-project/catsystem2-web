@@ -6,6 +6,8 @@ export const NATIVE_WINDOW_COMMAND_CALLBACKS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': 0x531670,
 });
 
+export const isNativeWindowCommandMessage = (message) => message >= 0x469 && message <= 0x46c;
+
 const scriptMessages = new Map([
     [0x34d, 0x469],
     [0x34e, 0x46a],

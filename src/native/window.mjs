@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
 import {
+  isNativeWindowCommandMessage,
   NATIVE_WINDOW_COMMAND_CALLBACKS,
   nativeWindowLanguageCommand,
   nativeWindowMessageCommand,
@@ -44,6 +45,8 @@ export class NativeWindow {
     });
   }
   handlesBrowserMessage(message, wParam) {
+    if (isNativeWindowCommandMessage(message))
+      return !this.world.nativeEngine?.refs.applicationWindowHook;
     if (message === 0x111) {
       const command = wParam & 0xffff;
       return (
@@ -56,7 +59,7 @@ export class NativeWindow {
     return (
       message === 0x10 ||
       message === 0x410 ||
-      (message >= 0x467 && message <= 0x470 && message !== 0x46d) ||
+      [0x467, 0x468, 0x46e, 0x46f, 0x470].includes(message) ||
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
   }
@@ -218,7 +221,8 @@ export class NativeWindow {
       await this.sendEvent(21);
       return true;
     }
-    if (message.message >= 0x469 && message.message <= 0x46c) {
+    if (isNativeWindowCommandMessage(message.message)) {
+      if (this.world.nativeEngine?.refs.applicationWindowHook) return true;
       if (this.opened) {
         const { nativeEngine, profile } = this.world;
         // These four branches only post their command and never write the
