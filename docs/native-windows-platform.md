@@ -92,6 +92,26 @@ load 16-bit NE resources.
 [version queries](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew),
 [Wine 8.0 version API](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/kernelbase/version.c).
 
+## Resources in mapped PE images
+
+The original A/W `FindResource` and `FindResourceEx` imports resolve numeric
+IDs, decimal `#ID` strings and named types and entries in the mounted module.
+The lookup uses the requested language and its neutral forms; for a neutral
+request it also tries the browser UI language and the virtual system defaults.
+The final fallback for that request is the first language entry. This scope
+is resources in the mapped PE; external Windows MUI files are not mounted.
+
+`SizeofResource`, `LoadResource` and `LockResource` address the original
+resource descriptor and payload in guest memory. Handles are scoped to
+their module and retain their addresses after a fresh restore without
+allocating a separate copy. Both original imports read their own version and
+named startup resources; the fixtures distribute none of those payloads.
+The same 18 lookups and 108 output fields were checked under pinned Wine 8.0
+using an authored PE and the two fixed executables loaded as data.
+[PE resource directories](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#the-rsrc-section),
+[FindResourceEx](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-findresourceexw),
+[LockResource](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-lockresource).
+
 ## Shell folders for the native engine
 
 The folder helper at Game `6A80C0` and SDK `5784F0` calls the original

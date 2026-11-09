@@ -11,6 +11,7 @@ import { installNativeFileTimes } from './file-time.mjs';
 import { installWindowsPrintf } from './windows-format.mjs';
 import { installNativeFileSearch } from './file-search.mjs';
 import { NativeWindowsModules } from './windows-modules.mjs';
+import { installNativeResourceAPIs } from './windows-resources.mjs';
 import { installNativeVersionAPIs } from './windows-version.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
@@ -719,6 +720,10 @@ export class NativeEngineProcess {
     try {
       engine.identity = identity;
       engine.name = name ?? 'engine.exe';
+      installNativeResourceAPIs(
+        engine.kernel,
+        () => options.configuration?.fields.uiLanguage ?? 0x411,
+      );
       installNativeVersionAPIs(engine.kernel, engine.name, readPEVersionResource(bytes).slice());
       // Only the private loader input receives IMAGE_FILE_DLL. The original
       // bytes and all executable instructions retain their user-mounted source.
