@@ -56,6 +56,20 @@ for (const [profile, variable] of [
         );
         assert.deepEqual(await call(0x219, [h, alias]), { control: 1, value: 1 });
         assert.deepEqual(images.get(h).state.attributes, images.get(alias).state.attributes);
+        const beforeAlias = structuredClone(images.get(s).state.attributes),
+          first = p.load(p.load(p.load(source + 72))),
+          attributeData = p.load(first + 20),
+          released = [],
+          stop = p.observeFree((address) => {
+            if (address === first || address === attributeData) released.push(address);
+          });
+        try {
+          assert.deepEqual(await call(0x219, [s, alias]), { control: 1, value: 1 });
+        } finally {
+          stop();
+        }
+        assert.deepEqual(released, [], 'self-copy keeps the native attribute node and its payload');
+        assert.deepEqual(images.get(s).state.attributes, beforeAlias);
         [h, 0, 0, s, 0, 0, alias, 0, 0].forEach((v, i) => m.store(768 + i * 4, v));
         [0, 0, 4, 3].forEach((v, i) => m.store(832 + i * 4, v));
         const before = m.bytes(768, 80).slice();
@@ -82,6 +96,7 @@ for (const [profile, variable] of [
         await call(0x21a, [h, 0, 0]);
         assert.deepEqual(await images.get(h).pixels(), beforeFilter);
         const noCanvas = images.create(2, 2, 1);
+        assert.deepEqual(await call(0x219, [noCanvas, noCanvas]), { control: 1, value: 1 });
         await call(0x21a, [noCanvas, 0, 0]);
         assert.deepEqual(
           [images.get(noCanvas).width, images.get(noCanvas).height],

@@ -18,6 +18,15 @@ read-only overlapping inputs keep their original values. Attribute outputs use
 the actual VM data, stack, shared memory or extended allocation, including
 aliased destinations and the original low-16-bit attribute key.
 
+Main `219` and the image-owner counterpart `2D5` share the original attribute
+copy helper. Copying a populated bitmap to itself can erase the node being
+traversed and hang, depending on the guest heap layout. Both browser wrappers
+recognize shared bitmap backing, preserve the original successful return and
+keep the attributes and their native nodes intact. Distinct bitmap backings
+still run the original copy. The raw differential compares distinct copies
+and an empty self-copy; the public tests check that populated self-copies
+never release their own attribute storage.
+
 The two transfer interfaces preserve their distinct treatment of destination
 dimensions and clipping. `73` with destination zero uploads to the caller's
 actual native view and configured VRAM texture pages. A visible VRAM plane

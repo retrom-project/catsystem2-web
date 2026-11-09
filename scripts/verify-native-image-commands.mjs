@@ -256,7 +256,8 @@ try {
             ];
             break;
           case 0x219:
-            args = [h, n % 3 === 0 ? h : n % 2 === 0 ? alias : s];
+            // A populated self-copy can invalidate the original iterator.
+            args = n % 3 === 0 ? [s, h] : [h, n % 2 === 0 ? alias : s];
             break;
           case 0x21a:
             args = [h, [-1, 0, 1, 2, 3, 256][n % 6], [-1, 0, 1, 2, 3, 256][(n + 1) % 6]];
@@ -264,6 +265,16 @@ try {
         }
         await run(spec, args);
       }
+    if (spec.id === 0x219) {
+      await reset();
+      for (const fixture of [raw, f])
+        await fixture.memory.call(
+          fixture.memory.layout.clearAttributes,
+          [],
+          await fixture.memory.pointer(h),
+        );
+      await run(spec, [h, h]);
+    }
     if (spec.id === 0x21a)
       for (const bpp of [3, 4]) {
         await reset(bpp);

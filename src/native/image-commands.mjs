@@ -3,6 +3,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeHG3DecodeContext } from './hg3-delta.mjs';
+import { sameNativeBitmap } from './bitmap-memory.mjs';
 
 export const NATIVE_IMAGE_COMMAND_CONTRACTS = Object.freeze(
   [
@@ -72,7 +73,12 @@ export class NativeImageCommands {
     if (active && !warmup) {
       if (words[0]) words[0] = await bitmaps.wrapper(words[0]);
       if (id === 0x73 || id === 0x74) words[5] = await bitmaps.wrapper(words[5]);
-      if (id === 0x219) words[1] = await bitmaps.wrapper(words[1]);
+      if (id === 0x219) {
+        words[1] = await bitmaps.wrapper(words[1]);
+        // The original replaces destination nodes while iterating the source.
+        // Keep its successful self-copy result without invalidating that iterator.
+        if (sameNativeBitmap(this.process, words[0], words[1])) return nativeReply(1, 1);
+      }
     }
     let platform;
     if (warmup) {

@@ -3,6 +3,12 @@
 // materialization; host RGBA and Canvas objects are derived presentation views.
 import { installNativeBitmapOperations } from './bitmap-operations.mjs';
 import { installNativeBitmapFactories } from './bitmap-factory.mjs';
+
+export function sameNativeBitmap(process, first, second) {
+  const data = first && process.load(first);
+  return Boolean(data && second && process.load(second) === data);
+}
+
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
     construct: 0x68b3e0,

@@ -5,6 +5,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 import { nativeHG3DecodeContext } from './hg3-delta.mjs';
+import { sameNativeBitmap } from './bitmap-memory.mjs';
 
 const rows = [
   [0x2c6, 1, 1, 0x654110, 0x51ef30],
@@ -157,7 +158,12 @@ export class NativeImageOwners {
       // A null operand leaves the other word unexamined in the original.
       if (id !== 0x2d5 || (words[0] && words[1])) {
         words[0] = this.pointer(words[0]);
-        if (id === 0x2d5) words[1] = this.pointer(words[1]);
+        if (id === 0x2d5) {
+          words[1] = this.pointer(words[1]);
+          const p = this.process;
+          if (sameNativeBitmap(p, p.load(words[0] + 12), p.load(words[1] + 12)))
+            return nativeReply(1, 1);
+        }
       }
       if (id === 0x2de || id === 0x2df) words[5] = this.pointer(words[5]);
     }

@@ -61,6 +61,23 @@ for (const [profile, variable] of [
           const next = (await call(0x2c6, [256])).value;
           assert.ok(next, name);
           if (name === 'attr.hg3') {
+            const data = p.load(p.load(f.images.pointer(next) + 12)),
+              first = p.load(p.load(p.load(data + 72))),
+              attributeData = p.load(first + 20),
+              released = [],
+              stop = p.observeFree((address) => {
+                if (address === first || address === attributeData) released.push(address);
+              });
+            try {
+              assert.deepEqual(await call(0x2d5, [next, next]), { control: 1, value: 1 });
+            } finally {
+              stop();
+            }
+            assert.deepEqual(
+              released,
+              [],
+              'self-copy keeps the native attribute node and its payload',
+            );
             m.bytes(768, 24).fill(0xa5);
             assert.equal((await call(0x2d4, [next, 0x10007, 768, 772, 776, 780, 784])).value, 1);
             assert.deepEqual(
@@ -77,6 +94,7 @@ for (const [profile, variable] of [
         assert.equal(f.handles.records.size, prior);
         assert.equal((await call(0x2d5, [0, 0x41414141])).value, 1);
         assert.equal((await call(0x2d5, [0x41414141, 0])).value, 1);
+        assert.equal((await call(0x2d5, [h, h])).value, 1);
         m.nativeArgumentBase = 3000;
         m.store(3000, h);
         await call(0x2c7, []);
