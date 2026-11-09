@@ -167,3 +167,16 @@ tree's sentinel constructor and teardown in the engine process. Missing
 files and keys still use the original fallback text. Tests exercise an
 authored CP932 override, duplicate keys, an intentionally empty value, a
 long value, and a fresh process with no file available at restore time.
+
+## File server startup
+
+The original platform prelude constructs one `kcFileServer` before Settings
+at Game `5D3060` and SDK `4B0020`. Both constructors initialize their own
+file and cache lists in the guest. Their original destructors clear the
+singleton and release those lists after Engine teardown.
+
+The original loose file entry opens through the mounted Windows drive. Tests
+use its native IFile virtual methods to read a prefix, restore the still-open
+descriptor in a fresh process, read the exact remainder and reach EOF without
+reopening the source. Archive selection and the mounted resource opener keep
+their separate contracts.

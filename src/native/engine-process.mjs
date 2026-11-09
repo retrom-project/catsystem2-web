@@ -17,6 +17,7 @@ import { NativeWindowsEvents } from './windows-events.mjs';
 import { installNativeKnownFolders } from './windows-folders.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeSDKLanguage, releaseSDKLanguage } from './engine-language.mjs';
+import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -761,6 +762,7 @@ export class NativeEngineProcess {
         engine.process.read(image.d3dxBaseline[0], 74 * 4),
       );
       if (options.bootstrapOwner) {
+        await initializeNativeFileServer(engine);
         await initializeSDKLanguage(engine);
         await engine.initializeOwner(image, options.bootstrapOwner);
       } else {
@@ -1047,6 +1049,11 @@ export class NativeEngineProcess {
       }
       try {
         releaseSDKLanguage(this);
+      } catch (error) {
+        errors.push(error);
+      }
+      try {
+        await releaseNativeFileServer(this);
       } catch (error) {
         errors.push(error);
       }

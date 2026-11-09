@@ -11,6 +11,70 @@ import {
 } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 
+for (const [profile, variable, openFile, wide] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4b22c0, false],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0x5d57a0, true],
+])
+  test(
+    `${profile} original file server continues an open loose file in a fresh engine`,
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        content = Uint8Array.of(17, 83, 0, 47, 10, 255, 21),
+        reads = [],
+        mount = (mounted) =>
+          NativeEngineProcess.open({
+            profile,
+            bytes,
+            bootstrapOwner: { glyphs: {} },
+            configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+            readFile: async (path) => {
+              if (path !== 'dir/loose.bin') return null;
+              reads.push(path);
+              return mounted ? content : null;
+            },
+          }),
+        first = await mount(true),
+        { process: p } = first,
+        name = p.allocate(64, true),
+        destination = p.allocate(8, true),
+        server = first.refs.fileServer;
+      let fresh;
+      try {
+        first.kernel.writeString(name, 'dir\\loose.bin', wide);
+        const file = await p.callAsync(openFile, [name, 1], server);
+        assert.ok(file);
+        assert.deepEqual(reads, ['dir/loose.bin']);
+        const table = p.load(file),
+          read = p.load(table + 12),
+          destroy = p.load(table);
+        assert.equal(await p.callAsync(read, [destination, 3], file), 3);
+        assert.deepEqual(p.read(destination, 3), content.subarray(0, 3));
+        const saved = first.snapshot();
+        await p.callAsync(destroy, [1], file);
+        assert.equal(first.kernel.files.size, 0);
+
+        fresh = await mount(false);
+        fresh.restore(saved);
+        assert.equal(fresh.refs.fileServer, server);
+        const restored = fresh.process;
+        assert.equal(await restored.callAsync(read, [destination, 8], file), 4);
+        assert.deepEqual(restored.read(destination, 4), content.subarray(3));
+        assert.equal(await restored.callAsync(read, [destination, 8], file), 0);
+        await restored.callAsync(destroy, [1], file);
+        assert.equal(fresh.kernel.files.size, 0);
+        assert.deepEqual(reads, ['dir/loose.bin'], 'restore continues the saved open descriptor');
+      } finally {
+        await fresh?.close();
+        await first.close();
+      }
+      for (const engine of [first, fresh]) {
+        assert.equal(engine.refs.fileServer, undefined);
+        assert.equal(engine.process.allocations.has(server), false);
+      }
+    },
+  );
+
 for (const [profile, variable, encoding] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'Shift_JIS'],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 'UTF-8'],
