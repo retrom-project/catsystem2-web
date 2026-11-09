@@ -481,12 +481,32 @@ export class PE32Process {
     this.write(address, b);
   }
   stringBytes(address, wide = false, includeTerminator = false) {
-    const result = [];
-    for (let i = 0; i < 1024 * 1024; i++) {
-      const b = this.read(address + i * (wide ? 2 : 1), wide ? 2 : 1),
-        n = b[0] | (wide ? b[1] << 8 : 0);
-      if (n || includeTerminator) result.push(...b);
-      if (!n) return Uint8Array.from(result);
+    const unit = wide ? 2 : 1,
+      limit = 1024 * 1024 * unit,
+      chunks = [];
+    for (let offset = 0; offset < limit; ) {
+      const at = (address + offset) >>> 0,
+        page = 4096 - (at & 4095),
+        // Never probe the next page after a terminator. An unaligned wide
+        // code unit can itself cross the boundary, as in the original read.
+        size = Math.min(64, Math.max(unit, page - (page % unit)), limit - offset),
+        bytes = this.read(at, size);
+      let end = 0;
+      while (end < size && (bytes[end] || (wide && bytes[end + 1]))) end += unit;
+      if (end < size) {
+        const tail = end + (includeTerminator ? unit : 0);
+        if (!offset) return tail === size ? bytes : bytes.slice(0, tail);
+        const result = new Uint8Array(offset + tail);
+        let index = 0;
+        for (const chunk of chunks) {
+          result.set(chunk, index);
+          index += chunk.length;
+        }
+        result.set(bytes.subarray(0, tail), offset);
+        return result;
+      }
+      chunks.push(bytes);
+      offset += size;
     }
     throw new Error('PE32 unterminated string');
   }

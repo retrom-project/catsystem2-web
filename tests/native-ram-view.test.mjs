@@ -10,6 +10,29 @@ const store = (view, value) =>
 const load = (view) =>
   new DataView(view.buffer, view.byteOffset, view.byteLength).getUint32(0, true);
 
+test('PE strings stop at the terminator before an unmapped page and preserve unaligned wide units', async () => {
+  const p = new PE32Process(await loadUnicorn()),
+    page = 0x33000000,
+    boundary = page + 4096;
+  try {
+    p.map(page, 4096);
+    const ansi = new Uint8Array(73).fill(0x61);
+    ansi.set([0x81, 0x40, 0], ansi.length - 3);
+    p.write(boundary - ansi.length, ansi);
+    assert.deepEqual(p.stringBytes(boundary - ansi.length, false, true), ansi);
+    assert.deepEqual(p.stringBytes(boundary - ansi.length), ansi.slice(0, -1));
+
+    p.write(boundary - 3, Uint8Array.of(0, 0xd8, 0));
+    assert.throws(() => p.stringBytes(boundary - 3, true), /PE32 memory read failed/);
+    p.map(boundary, 4096);
+    assert.deepEqual(p.stringBytes(boundary - 3, true, true), Uint8Array.of(0, 0xd8, 0, 0));
+    assert.equal(p.string(boundary - 3, true), '\ud800');
+    assert.equal(p.stringBytes(boundary - 1, true).buffer.byteLength, 0);
+  } finally {
+    p.close();
+  }
+});
+
 test('late instruction boundaries observe already translated code and detach cleanly', async () => {
   const p = new PE32Process(await loadUnicorn()),
     code = 0x5000;
