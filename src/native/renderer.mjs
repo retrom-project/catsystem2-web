@@ -149,6 +149,27 @@ export class NativeRenderer {
     if (!this.initializing) this.initializing = this.initializeView();
     return this.initializing;
   }
+  initializeCapabilities() {
+    if (this.initializingCaps) return this.initializingCaps;
+    if (this.refs.caps) return Promise.resolve(this.refs.caps);
+    this.initializingCaps = this.constructCapabilities().finally(() => {
+      this.initializingCaps = null;
+    });
+    return this.initializingCaps;
+  }
+  async constructCapabilities() {
+    const { process: p, layout } = this;
+    if (p.load(layout.capsGlobal))
+      throw new Error('Native display capabilities already have an owner');
+    this.refs.caps = p.allocate(0x6cc, true);
+    const mode = Number(Boolean(this.world.bootstrapOwner));
+    if (
+      (await this.call(layout.capsConstruct, [mode], this.refs.caps)) !== this.refs.caps ||
+      p.load(layout.capsGlobal) !== this.refs.caps
+    )
+      throw new Error('Original display-capability initialization did not bind its owner');
+    return this.refs.caps;
+  }
   async initializeView() {
     const p = this.process,
       layout = this.layout,
@@ -157,12 +178,7 @@ export class NativeRenderer {
     // Load the driver/platform imports first; initialize that manager only
     // once, as part of the original view constructor below.
     if (!this.engine.profile.startsWith('sdk-')) await world.getNativeFeature('m2');
-    if (p.load(layout.capsGlobal))
-      throw new Error('Native display capabilities already have an owner');
-    this.refs.caps = p.allocate(0x6cc, true);
-    await this.call(layout.capsConstruct, [0], this.refs.caps);
-    if (p.load(layout.capsGlobal) !== this.refs.caps)
-      throw new Error('Original display-capability initialization did not bind its owner');
+    await this.initializeCapabilities();
     const previous = { renderer: this.platform.refs.renderer, manager: this.platform.refs.manager };
     p.store(layout.coreGlobal, 0);
     this.refs.viewStarted = true;

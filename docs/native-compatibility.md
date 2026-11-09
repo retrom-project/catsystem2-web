@@ -74,6 +74,13 @@ another World cannot lock out the current one. Tests cover the original
 constructor and destructor, repeated acquisition on the virtual Win32
 thread, shared handles and fresh restore.
 
+The original display capability constructor runs in application startup mode
+before the instance mutex and desktop probe. It enumerates the virtual D3D9
+adapter and records the browser audio endpoint through the original
+DirectSound callback. Creating the rendering view reuses that capability
+record. Both frozen builds restore the record and its sound list before any
+view device exists, without repeating the enumeration.
+
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
 UTF-8 file in the original code. The browser caches the end of that immutable

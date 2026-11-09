@@ -8,6 +8,65 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
+for (const [profile, variable, wide] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', false],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', true],
+])
+  test(
+    `${profile} cold platform enumerates display and sound before creating a view device`,
+    { skip: !process.env[variable] },
+    async () => {
+      const game = memoryGame({
+          'engine.exe': new Uint8Array(await readFile(process.env[variable])),
+          'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
+        }),
+        make = () => {
+          const random = new ParticleRandom();
+          return new NativeWorld({
+            game,
+            profile,
+            random,
+            images: {},
+            audio: {},
+            host: {},
+            bootstrapOwner: {},
+            configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+            motionLibrary: new MotionLibrary(game, { profile, random }),
+            storage: { read: async () => null, write: async () => true },
+          });
+        },
+        audioQuery = `dsound.dll!DirectSoundEnumerate${wide ? 'W' : 'A'}`,
+        first = make(),
+        fresh = make();
+      try {
+        const renderer = await first.getNativeFeature('renderer'),
+          caps = await renderer.initializeCapabilities(),
+          read = (device) => {
+            const p = device.process,
+              sounds = p.load(caps + 1732),
+              head = p.load(sounds);
+            assert.equal(device.initialized, false);
+            assert.equal(device.d3d.deviceCreated, false);
+            assert.equal(p.load(device.layout.capsGlobal), caps);
+            assert.equal(p.load(caps + 1736), 1);
+            assert.equal(p.load(caps + 88), 4096);
+            assert.equal(p.load(sounds + 4), 1);
+            return p.string(p.load(head) + 8, wide);
+          };
+        assert.equal(read(renderer), 'Browser audio output');
+        assert.equal(first.nativeEngine.kernel.calls.get(audioQuery), 1);
+        const restored = await fresh.getNativeFeature('renderer');
+        fresh.nativeEngine.restore(structuredClone(first.nativeEngine.snapshot()));
+        assert.equal(await restored.initializeCapabilities(), caps);
+        assert.equal(read(restored), 'Browser audio output');
+        assert.equal(fresh.nativeEngine.kernel.calls.has(audioQuery), false);
+      } finally {
+        await fresh.close({ flushFiles: false });
+        await first.close({ flushFiles: false });
+      }
+    },
+  );
+
 test(
   'SDK full original display/view/core/manager/DIB initialization owns one device and restores all original pointers',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },

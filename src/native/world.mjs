@@ -815,6 +815,7 @@ export class NativeWorld {
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     if (this.bootstrapOwner) {
       await checkNativeDirectXStartup(this.nativeEngine);
+      await (await this.getNativeFeature('renderer')).initializeCapabilities();
       await initializeNativeStartupInstance(this.nativeEngine);
       await initializeNativeDesktop(this.nativeEngine);
     }
