@@ -18,6 +18,8 @@ export class NativeTaskMemory {
     this.mappingMachines = new Set();
     this.hostSources = new WeakMap();
     this.inlineHostBindings = new Map();
+    this.frameFields = new Uint8Array(24);
+    this.frameWords = new DataView(this.frameFields.buffer);
     if (engine.module) this.installBaseReceiver();
     this.detachDestruction = this.process.beforeInstruction(
       this.sdk ? 0x4b9120 : 0x5dcf00,
@@ -212,17 +214,16 @@ export class NativeTaskMemory {
       at = entry.pointer;
     p.store(at + 4, record.nativeID ?? record.id);
     p.store(at + 12, await this.pointer(record.parent, synchronized));
-    for (const [offset, value] of [
-      [64, record.flags ?? record.kind],
-      [72, record.frameRate],
-      [80, record.exitCode ?? -1],
-      [84, Number(Boolean(record.destroyRequested))],
-      [88, record.pausedFrames ?? 0],
-      [92, record.userValue ?? 0],
-      [96, record.lastFrame ?? 0],
-      [100, record.effectiveFrame ?? 0],
-    ])
-      p.store(at + offset, value);
+    p.store(at + 64, record.flags ?? record.kind);
+    p.store(at + 72, record.frameRate);
+    const frame = this.frameWords;
+    frame.setUint32(0, record.exitCode ?? -1, true);
+    frame.setUint32(4, Number(Boolean(record.destroyRequested)), true);
+    frame.setUint32(8, record.pausedFrames ?? 0, true);
+    frame.setUint32(12, record.userValue ?? 0, true);
+    frame.setUint32(16, record.lastFrame ?? 0, true);
+    frame.setUint32(20, record.effectiveFrame ?? 0, true);
+    p.write(at + 80, this.frameFields);
     if (this.engine.features.get('renderer')?.initialized === true) {
       const view = this.engine.features.get('graphics-platform')?.refs.view;
       if (!view) throw new Error('Initialized native renderer has no shared view');
