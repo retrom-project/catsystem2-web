@@ -35,6 +35,8 @@ async function startGame(page) {
     nativeTitle: true,
     inputOwner: true,
     acceleratorCount: 11,
+    applicationHook: true,
+    displayOwner: true,
   });
 }
 

@@ -96,13 +96,16 @@ export function startupWindow(page) {
       handle = world.window.handle,
       view = kernel.windowViews.windows.get(handle),
       owner = view?.userData,
-      input = refs.inputDevice;
+      input = refs.inputDevice,
+      startup = world.profile.startsWith('sdk-') ? 0xcb2440 : 0xbafa80;
     return {
       handle,
       client: view?.client.slice(2),
       nativeTitle: Boolean(view?.title && view.title === document.title),
       inputOwner: Boolean(owner && input?.pointer && p.load(owner + 8) === input.pointer),
       acceleratorCount: owner && kernel.accelerators.tables.get(p.load(owner + 12))?.rows.length,
+      applicationHook: refs.applicationWindowHook === handle,
+      displayOwner: p.allocations.get(p.load(startup + 8)) === 36,
     };
   });
 }

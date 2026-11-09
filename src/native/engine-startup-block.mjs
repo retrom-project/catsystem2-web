@@ -36,8 +36,9 @@ export async function runNativeStackSpan(engine, first, after, frameSize, prepar
       cpu.reg_write_i32(uc.X86_REG_EIP, p.sentinel);
     });
     try {
-      await engine.call(first);
+      const result = await engine.call(first);
       if (!finished) throw new Error(`Original ${label} did not reach its exit boundary`);
+      return result;
     } finally {
       leave();
     }

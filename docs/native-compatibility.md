@@ -192,6 +192,13 @@ virtual thread's windows. The two engine destructors restore and release
 that state, and the native hook is removed before destroying the window.
 Fixed-binary tests cover event, hook and IME ownership after a fresh restore.
 
+The WinMain prelude also posts `0x40B` through its original USER32 import.
+The registered application callback creates the native display-mode owner,
+selects the configured or desktop dimensions and posts `0x40C`. The World
+handles `0x40C` as the boundary for browser devices and the Script entry.
+Tests restore the queued `0x40B` in a fresh process and compare both display
+dimension branches, message order and destructor ownership.
+
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
 destructors close it. The virtual Windows instance uses the

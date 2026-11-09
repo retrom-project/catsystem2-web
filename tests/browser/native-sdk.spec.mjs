@@ -59,6 +59,8 @@ async function startSDK(page) {
     nativeTitle: true,
     inputOwner: true,
     acceleratorCount: 4,
+    applicationHook: true,
+    displayOwner: true,
   });
 }
 

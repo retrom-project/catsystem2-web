@@ -38,7 +38,10 @@ import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { initializeNativeStartupMenu, refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
 import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
-import { initializeNativeApplicationWindow } from './engine-startup-application.mjs';
+import {
+  initializeNativeApplicationWindow,
+  NATIVE_APPLICATION_SERVICES_MESSAGE,
+} from './engine-startup-application.mjs';
 import { runNativeWindowPump } from './engine-window-pump.mjs';
 import {
   createNativeStartupWindow,
@@ -665,7 +668,9 @@ export class NativeWorld {
   async processWindowMessages() {
     if (this.window.opened) {
       const exit = await runNativeWindowPump(this.nativeEngine, this.window.handle, {
-        handles: (message, wParam) => this.window.handlesBrowserMessage(message, wParam),
+        handles: (message, wParam) =>
+          (message === NATIVE_APPLICATION_SERVICES_MESSAGE && this.startupScript !== undefined) ||
+          this.window.handlesBrowserMessage(message, wParam),
         deliver: (message) => this.dispatchWindowMessage(message),
         stopping: () => this.disposalRequested || this.quitRequested,
       });
@@ -679,6 +684,15 @@ export class NativeWorld {
     }
   }
   async dispatchWindowMessage(message) {
+    if (
+      message.message === NATIVE_APPLICATION_SERVICES_MESSAGE &&
+      this.startupScript !== undefined
+    ) {
+      const name = this.startupScript;
+      delete this.startupScript;
+      await this.initializeApplicationServices(name);
+      return;
+    }
     if (await this.window.message(message)) return;
     if ([0x46e, 0x46f, 0x470].includes(message.message)) {
       const field = ['ui', 'main', 'sub'][message.message - 0x46e];
@@ -858,13 +872,25 @@ export class NativeWorld {
       await initializeNativeStartupMenu(this.nativeEngine);
       await initializeNativeWindowOwner(this.nativeEngine);
       await createNativeStartupWindow(this.nativeEngine);
-      for (const { message, wParam, lParam } of this.windowMessages.splice(0))
-        this.window.post(message, wParam, lParam);
       await initializeNativeAccelerators(this.nativeEngine);
       await (await this.getNativeFeature('input-device')).pointer();
       await setNativeWindowCaption(this.nativeEngine);
       await initializeNativeApplicationWindow(this.nativeEngine);
-    }
+      this.startupScript = name;
+      try {
+        await this.processWindowMessages();
+        if (!this.main || this.quitRequested)
+          throw new Error('Original application startup did not reach the Script entry');
+      } finally {
+        delete this.startupScript;
+      }
+      for (const { message, wParam, lParam } of this.windowMessages.splice(0))
+        this.window.post(message, wParam, lParam);
+    } else await this.initializeApplicationServices(name);
+    await this.tick();
+    return this.main;
+  }
+  async initializeApplicationServices(name) {
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();
     this.refreshTitle();
@@ -877,8 +903,6 @@ export class NativeWorld {
       frameRate: this.configuration.screen.fps,
     });
     this.main = await this.spawnScript(name, { parent: this.root });
-    await this.tick();
-    return this.main;
   }
   async spawnScript(name, { parent = this.root, context = {}, initialExecute = false } = {}) {
     const id = await this.objects.create({ kind: 12, parent, name });
