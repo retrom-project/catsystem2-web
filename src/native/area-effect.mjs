@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original CPU-area effects. These borrow their source/destination bitmap
-// wrappers; the FES resource list owns the wrappers and task lifetime.
+// Original area effects share the mounted view and borrow caller bitmaps.
 import { NativeScreenEffectTask } from './screen-effect.mjs';
 import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
+    18: { construct: 0x5ee060, size: 0x94, vtable: 0x8cdcb0, requiresRenderer: true },
+    25: { construct: 0x5efbd0, size: 0xb4, vtable: 0x8cde20 },
     26: { construct: 0x5efc30, size: 0xc8, vtable: 0x8cde44 },
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
     28: { construct: 0x5f10e0, size: 0xc4, vtable: 0x8ce004 },
     29: { construct: 0x5f1aa0, size: 0xc8, vtable: 0x8ce0d4 },
   },
   'sdk-4.01-engine-2.6.1.74': {
+    18: { construct: 0x4c8990, size: 0x94, vtable: 0x992f90, requiresRenderer: true },
+    25: { construct: 0x4ca500, size: 0xb4, vtable: 0x993100 },
     26: { construct: 0x4ca560, size: 0xc8, vtable: 0x993124 },
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
     28: { construct: 0x4cb950, size: 0xc4, vtable: 0x9932e4 },
@@ -38,7 +41,7 @@ export class NativeAreaEffects {
     if (!this.abi) throw new Error('CPU-area effects require a reviewed engine profile');
     this.requiresRenderer = false;
     this.rawMessage = areaEffectRawMessage;
-    this.payloadBytes = { 260: 20, 274: 56, 275: 44, 276: 48 };
+    this.payloadBytes = { 260: 20, 263: 20, 264: 20, 274: 56, 275: 44, 276: 48 };
     this.routeTrap = this.process.trap('native CPU-area effect task router', 7, (args) =>
       this.route(args),
     );
@@ -47,7 +50,10 @@ export class NativeAreaEffects {
   }
   async create(record, options) {
     const task = new NativeScreenEffectTask(this, record);
-    if (!options.restoring) await task.construct();
+    if (!options.restoring) {
+      if (task.abi.requiresRenderer) await this.platform.ensureRenderer();
+      await task.construct();
+    }
     return task;
   }
   async route([sender, target, raw, w, l, flags, out]) {
@@ -85,7 +91,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [26, 27, 28, 29])
+  for (const kind of [18, 25, 26, 27, 28, 29])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );

@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { encodeHG2 } from '../../src/formats/hg2.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
+const programSize = (ops) => ops.reduce((offset, op) => offset + 1 + (op.length - 1) * 5, 0);
 const wait = [
     [37, 1800],
     [43, 0x47, 4],
@@ -24,7 +25,7 @@ const wait = [
     [43, 0xc8, 4],
     [38, 132],
   ],
-  waitingPC = start.reduce((offset, instruction) => offset + 1 + (instruction.length - 1) * 5, 0);
+  waitingPC = programSize(start);
 
 async function openAreaFixture(page, profile, variable, files) {
   files.set('engine.exe', await readFile(process.env[variable]));
@@ -243,7 +244,7 @@ for (const [profile, variable] of [
       test.setTimeout(180000);
       const green = Uint8Array.from({ length: 8 * 6 * 4 }, (_, i) => (i % 2 ? 255 : 0)),
         replace = [...wait, [39, waitingPC], target, [37, [0x14, 104]], [43, 0xca, 8]],
-        replacePC = waitingPC + replace.reduce((offset, op) => offset + 1 + (op.length - 1) * 5, 0),
+        replacePC = waitingPC + programSize(replace),
         files = new Map([
           [
             'replacement.hg2',
@@ -434,6 +435,233 @@ for (const [profile, variable] of [
             );
             assert.deepEqual(await call(fresh, 0x2c0, records, 1), { control: 2 });
           } finally {
+            await fresh?.close({ flushFiles: false });
+            await world.close({ flushFiles: false });
+          }
+        },
+        { profile, names, sdk },
+      );
+    },
+  );
+
+  test(
+    profile + ' KCS C9 changes the live Raster graph and restores its callback',
+    async ({ page }) => {
+      const sdk = profile.startsWith('sdk-');
+      test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
+      test.setTimeout(180000);
+      const begin = [
+          [37, 18],
+          ...start.slice(1),
+          target,
+          [37, 1],
+          [37, 0xffffffff],
+          [43, 0xc9, 12],
+        ],
+        adjust = [
+          ...wait,
+          [39, programSize(begin)],
+          target,
+          [37, 0],
+          [37, [0x14, 104]],
+          [43, 0xc9, 12],
+        ],
+        files = new Map([
+          ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
+          [
+            'raster.kcs',
+            kcsProgram(
+              [
+                ...begin,
+                ...adjust,
+                ...wait,
+                [39, programSize(begin) + programSize(adjust)],
+                target,
+                [43, 0xc6, 4],
+                [59],
+              ],
+              [[64, 'Authored Raster']],
+            ),
+          ],
+        ]),
+        names = await openAreaFixture(page, profile, variable, files);
+      await page.evaluate(
+        async ({ profile, names, sdk }) => {
+          const {
+              browserNativeWorld,
+              browserAssert: assert,
+              placeBrowserNativePlane,
+            } = await import('/tests/fixtures/browser-native-world.mjs'),
+            { floatBits } = await import('/src/kcs.mjs'),
+            files = new Map(
+              await Promise.all(
+                names.map(async (name) => {
+                  const response = await fetch('/area-effect-fixture/' + name);
+                  if (!response.ok) throw new Error('Missing Raster fixture ' + name);
+                  return [name, new Uint8Array(await response.arrayBuffer())];
+                }),
+              ),
+            ),
+            make = () => {
+              const world = browserNativeWorld({
+                  profile,
+                  files,
+                  storage: { read: async () => null, write: async () => true },
+                }),
+                texture = world.configuration.fields.texture;
+              texture.size.set([64, 64]);
+              texture.grid.set([1, 1]);
+              texture.bppY.set([0, 1]);
+              texture.areas[0].set([0, 0, 1, 1]);
+              texture.bpp = 32;
+              return world;
+            },
+            world = make(),
+            call = (owner, id, ...args) =>
+              owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+            render = async (owner) => {
+              const stage = owner.stageRenderer;
+              await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
+              return stage.renderer.ctx.getImageData(0, 0, 64, 48).data;
+            },
+            pixel = (image, x, y) =>
+              Array.from(image.slice((64 * y + x) * 4, (64 * y + x) * 4 + 4));
+          let fresh, detach;
+          try {
+            await world.initialize('main.kcs');
+            const p = world.nativeEngine.process,
+              platform = await world.getNativeFeature('graphics-platform'),
+              plane = await world.objects.create({
+                kind: 2,
+                parent: world.root,
+                name: 'Warp target',
+              }),
+              color = [17, 210, 60, 255],
+              graph = world.nativeTaskID(plane);
+            await placeBrowserNativePlane(world, plane, {
+              width: 32,
+              height: 24,
+              position: [12, 8, 0],
+              priority: 300,
+            });
+            const image = (await call(world, 0x70, 32, 24)).value;
+            await call(world, 0x75, image, 0, 0, 32, 24, 0xff11d23c);
+            await call(world, 0x73, 0, 0, 0, 32, 24, image, 0, 0, 32, 24);
+            const baseline = await render(world),
+              descriptor = platform.descriptor(graph),
+              model = p.load(descriptor + 16) || p.load(descriptor + 8),
+              callback = sdk ? 0x4c8db0 : 0x5ee480;
+            assert.deepEqual(pixel(baseline, 14, 10), color);
+            assert.deepEqual(pixel(baseline, 47, 10), [0, 0, 0, 255]);
+            const script = await world.spawnScript('raster.kcs', { parent: world.main.id }),
+              vm = script.machine,
+              init = vm.allocate(20),
+              update = 0x80000120,
+              first = [graph, 0x80000001, floatBits(0), floatBits(64), floatBits(8)],
+              next = [0xffffffff, 0x87654321, floatBits(12), floatBits(64), floatBits(8)];
+            vm.store(96, world.nativeTaskID(world.main.id));
+            vm.store(100, init);
+            vm.store(104, update);
+            first.forEach((word, i) => vm.store(init + i * 4, word));
+            vm.bytes(update, 24).fill(0xa5);
+            next.forEach((word, i) => vm.store(update + i * 4, word));
+            const original = vm.bytes(update, 24).slice();
+            await world.runtime.scheduler.execute(script);
+            const nativeID = vm.load(128),
+              id = world.resolveTaskID(nativeID, script.id),
+              effect = world.objects.objects.get(id).implementation,
+              pointer = effect.pointer;
+            assert.equal(vm.load(132), 1);
+            assert.equal(p.load(pointer + 108), platform.refs.manager);
+            assert.equal(p.load(model + 236), callback);
+            assert.equal(p.load(model + 244), pointer);
+            let draws = 0;
+            detach = p.beforeInstruction(
+              callback,
+              'observe original Raster graph callback',
+              () => draws++,
+            );
+            await world.tick();
+            assert.deepEqual(await render(world), baseline, 'zero amplitude preserves the graph');
+            assert.ok(draws > 0, 'original renderer executes the Raster callback');
+            const phase = p.load(pointer + 140);
+            assert.equal(
+              (await world.runtime.scheduler.send(script.id, [1, 2, 3, 4])).accepted,
+              true,
+            );
+            assert.deepEqual(
+              [112, 120, 124, 128, 132, 140].map((at) => p.load(pointer + at)),
+              [graph, 1, floatBits(12), floatBits(1 / 64), floatBits(8), phase],
+            );
+            assert.deepEqual(vm.bytes(update, 24), original);
+            const warped = await render(world);
+            assert.deepEqual(pixel(warped, 14, 10), [0, 0, 0, 255], 'the left edge moves');
+            assert.deepEqual(
+              pixel(warped, 47, 10),
+              color,
+              'the deformed graph covers the right edge',
+            );
+
+            detach();
+            detach = undefined;
+            fresh = make();
+            await fresh.restore(structuredClone(world.snapshot()));
+            const rp = fresh.nativeEngine.process;
+            assert.equal(fresh.objects.objects.get(id).implementation.pointer, pointer);
+            assert.equal(rp.load(model + 236), callback);
+            assert.deepEqual(await render(fresh), warped);
+            await world.tick();
+            await fresh.tick();
+            const moving = await render(world);
+            assert.ok(
+              moving.some((byte, i) => byte !== warped[i]),
+              'Raster phase advances',
+            );
+            assert.deepEqual(
+              await render(fresh),
+              moving,
+              'fresh graph follows the same native phase',
+            );
+            assert.equal(
+              (await fresh.runtime.scheduler.send(script.id, [4, 3, 2, 1])).accepted,
+              true,
+            );
+            assert.equal(rp.load(model + 236), 0);
+            assert.equal(rp.load(model + 244), 0);
+            assert.deepEqual(
+              await render(fresh),
+              baseline,
+              'native stop restores unwarped vertices',
+            );
+            await world.objects.release(id);
+            assert.equal(
+              p.load(model + 236),
+              0,
+              'active destruction detaches the original callback',
+            );
+            assert.equal(p.allocations.has(pointer), false);
+            assert.deepEqual(await render(world), baseline);
+
+            const hydro = await fresh.objects.create({
+                kind: 25,
+                parent: fresh.root,
+                name: 'Hydro',
+              }),
+              hydroID = fresh.nativeTaskID(hydro),
+              hydroPointer = fresh.objects.objects.get(hydro).implementation.pointer,
+              untouched = rp.read(hydroPointer, 180);
+            assert.deepEqual(await call(fresh, 0xc4, hydroID, 0xffffffff), { control: 2 });
+            assert.deepEqual(await call(fresh, 0xc9, hydroID, 0, 0xffffffff), { control: 2 });
+            assert.deepEqual(rp.read(hydroPointer, 180), untouched);
+            const memory = await fresh.getNativeFeature('task-memory');
+            assert.deepEqual(await call(fresh, 0xc8, hydroID), {
+              control: 1,
+              value: await memory.pointer(fresh.main.id),
+            });
+            await fresh.objects.release(hydro);
+            assert.equal(rp.allocations.has(hydroPointer), false);
+          } finally {
+            detach?.();
             await fresh?.close({ flushFiles: false });
             await world.close({ flushFiles: false });
           }

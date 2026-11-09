@@ -7,7 +7,7 @@ import { NativeAreaEffectCommands } from '../src/native/area-effect-commands.mjs
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
-import { KCSMachine, readKCS } from '../src/kcs.mjs';
+import { floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
 
 const [filename, output] = process.argv.slice(2);
@@ -29,18 +29,36 @@ const sdk = profile.startsWith('sdk-'),
   mainTable = sdk ? 0xb3c900 : 0xa2dd38,
   m = new KCSMachine(await readKCS(kcsProgram([[59]])), {}, new Uint8Array(512)),
   out = p.allocate(12, true),
-  argv = p.allocate(8, true),
+  argv = p.allocate(12, true),
   host = p.allocate(8, true),
   vtable = p.allocate(20, true),
   sender = 17,
   scratchFill = new Uint8Array(12).fill(0xa5),
   packet = p.allocate(24, true),
-  secondMessage = [265, 263, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 274, 277, 278],
+  initMessages = [265, 263, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 274, 277, 278],
+  followUpMessages = new Map([
+    [0xc4, new Map(initMessages.map((message, index) => [17 + index, message]))],
+    [
+      0xc9,
+      new Map([
+        [18, 264],
+        [25, 273],
+      ]),
+    ],
+    [
+      0xca,
+      new Map([
+        [26, 260],
+        [27, 260],
+      ]),
+    ],
+  ]),
   commands = new Map([
     [0xc4, 13],
     [0xc5, 257],
     [0xc6, 258],
     [0xc8, 259],
+    [0xc9, 13],
     [0xca, 13],
     [0xcb, 261],
   ]);
@@ -58,6 +76,7 @@ const equal = (actual, expected, label) => {
   if (activeEffect) receiverChecks++;
   else wrapperChecks++;
 };
+const observedBytes = (message) => ([260, 264, 273].includes(message) ? 20 : 56);
 const observe = (from, target, message, w, l, flags, result) => {
   if (message === 259 || message === 13) statusInput = p.load(result);
   events.push({
@@ -66,9 +85,9 @@ const observe = (from, target, message, w, l, flags, result) => {
     message,
     w,
     flags,
-    source: l ? Array.from(p.read(l, message === 260 ? 20 : 56)) : null,
+    source: l ? Array.from(p.read(l, observedBytes(message))) : null,
     initial:
-      message === 13 && commandID !== 0xca
+      message === 13 && commandID === 0xc4
         ? statusInput
         : message === 13 || message === 259
           ? 'caller'
@@ -140,70 +159,70 @@ try {
   for (const [id, firstMessage] of commands) {
     commandID = id;
     const isInit = id === 0xc4,
-      isReplacement = id === 0xca,
-      queriesKind = isInit || isReplacement,
+      hasSelector = id === 0xc9,
+      queriesKind = firstMessage === 13,
+      kindMessages = followUpMessages.get(id),
       values = queriesKind
         ? [...Array.from({ length: 33 }, (_, i) => i), ...words.slice(2)]
         : words;
     for (const target of words)
-      for (replyWord of values)
-        for (const address of queriesKind ? locations : [0])
-          for (writeReply of [false, true]) {
-            const args = queriesKind ? [target, address] : [target],
-              before = vmState(),
-              memory = new NativeKCSMemory(p, m);
-            events = [];
-            let native;
-            try {
-              native = await callOriginal(id, args, memory.pointer);
-            } finally {
-              memory.close();
-            }
-            const followUp = writeReply
-                ? isInit
-                  ? secondMessage[replyWord - 17]
-                  : isReplacement && (replyWord === 26 || replyWord === 27)
-                    ? 260
-                    : undefined
-                : undefined,
-              expectedMessages = [firstMessage, ...(followUp ? [followUp] : [])],
-              expectedEvents = events;
-            equal(
-              events.map((event) => event.message),
-              expectedMessages,
-              'original message IDs',
-            );
-            if (isInit) equal(events[0].initial, mainTable + 4 * id, 'GCALL slot remains in ECX');
-            if (isReplacement) equal(statusInput, host, 'CA kind query starts with caller word');
-            if (followUp)
+      for (const selector of hasSelector ? [0, 1, 0xffffffff] : [0])
+        for (replyWord of values)
+          for (const address of queriesKind ? locations : [0])
+            for (writeReply of [false, true]) {
+              const args = [target],
+                before = vmState(),
+                memory = new NativeKCSMemory(p, m);
+              if (hasSelector) args.push(selector);
+              if (queriesKind) args.push(address);
+              events = [];
+              let native;
+              try {
+                native = await callOriginal(id, args, memory.pointer);
+              } finally {
+                memory.close();
+              }
+              const followUp =
+                  writeReply && selector === 0 ? kindMessages?.get(replyWord) : undefined,
+                expectedMessages = [firstMessage, ...(followUp ? [followUp] : [])],
+                expectedEvents = events;
               equal(
-                events[1].source,
-                address === 0xffffffff
-                  ? null
-                  : Array.from(m.bytes(address, isReplacement ? 20 : 56)),
-                'original VM address translation',
+                events.map((event) => event.message),
+                expectedMessages,
+                'original message IDs',
               );
-            equal(
-              [...p.read(out, 4), ...p.read(out + 8, 4)],
-              new Array(8).fill(0xa5),
-              'original result canaries',
-            );
-            if (native.control === 2)
-              equal(p.load(out + 4), 0xa5a5a5a5, 'original void result is unwritten');
-            events = [];
-            const actual = await adapter.apply(id, args, m, { id: 41 });
-            if (isReplacement)
-              equal(p.allocations.has(statusInput), false, 'CA kind query used caller scratch');
-            if (id === 0xc8 && !writeReply) {
-              equal(native.value, host, 'unwritten original C8 copies the caller pointer');
-              equal(actual.value, statusInput, 'adapter preserves the unwritten caller word');
-              native.value = actual.value;
+              if (isInit) equal(events[0].initial, mainTable + 4 * id, 'GCALL slot remains in ECX');
+              if (queriesKind && !isInit)
+                equal(statusInput, host, 'kind query starts with caller word');
+              if (followUp)
+                equal(
+                  events[1].source,
+                  address === 0xffffffff
+                    ? null
+                    : Array.from(m.bytes(address, observedBytes(followUp))),
+                  'original VM address translation',
+                );
+              equal(
+                [...p.read(out, 4), ...p.read(out + 8, 4)],
+                new Array(8).fill(0xa5),
+                'original result canaries',
+              );
+              if (native.control === 2)
+                equal(p.load(out + 4), 0xa5a5a5a5, 'original void result is unwritten');
+              events = [];
+              const actual = await adapter.apply(id, args, m, { id: 41 });
+              if (queriesKind && !isInit)
+                equal(p.allocations.has(statusInput), false, 'kind query used caller scratch');
+              if (id === 0xc8 && !writeReply) {
+                equal(native.value, host, 'unwritten original C8 copies the caller pointer');
+                equal(actual.value, statusInput, 'adapter preserves the unwritten caller word');
+                native.value = actual.value;
+              }
+              equal(actual, native, 'complete wrapper result');
+              equal(events, expectedEvents, 'complete original packet envelope and bytes');
+              equal(vmState(), before, 'all VM regions remain unchanged');
+              operations++;
             }
-            equal(actual, native, 'complete wrapper result');
-            equal(events, expectedEvents, 'complete original packet envelope and bytes');
-            equal(vmState(), before, 'all VM regions remain unchanged');
-            operations++;
-          }
   }
 
   // The reference path uses the original task factory and original receivers.
@@ -485,6 +504,104 @@ try {
       await engine.call(bitmapRelease, [], bitmap);
       p.free(wrapper);
     }
+    // Observe the exact original GraphManager callback envelope. The mounted
+    // browser regression also runs the actual graph manager and renderer.
+    const manager = p.allocate(32, true),
+      callbacks = [],
+      callback = sdk ? 0x4c8db0 : 0x5ee480,
+      vertices = p.allocate(40, true),
+      graph = 0x80000022,
+      install = sdk ? 0x555060 : 0x67e3d0;
+    p.store(view + 4, 1);
+    p.store(view + 8, manager);
+    engine.patch(
+      install,
+      'original Raster graph callback boundary',
+      5,
+      (args) => {
+        assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0, manager);
+        callbacks.push(args);
+        return 1;
+      },
+      { calleePops: true },
+    );
+    for (const fps of [30, 60, 144]) {
+      p.store(parent + 72, fps);
+      for (const mode of [1, 0x80000001]) {
+        const converted = Boolean(mode & 0x80000000),
+          rawFields = [graph, mode, floatBits(0), floatBits(8), floatBits(10)];
+        activeEffect = await engine.call(factory, [18, name, out + 4], parent);
+        nativeID = p.load(out + 4);
+        equal(p.load(activeEffect), sdk ? 0x992f90 : 0x8cdcb0, 'original Raster vtable');
+        equal(p.load(activeEffect + 108), manager, 'original Raster view capability');
+        rawFields.forEach((word, i) => p.store(source + 4 * i, word));
+        equal(await callWipe(0xc4, 112), { control: 2 }, 'Raster initializer control');
+        equal(await callWipe(0xc5), { control: 2 }, 'Raster start control');
+        equal(
+          callbacks.pop(),
+          [graph, callback, 0, activeEffect, 0],
+          'original graph callback install',
+        );
+        equal(await callWipe(0xc8), { control: 1, value: 1 }, 'Raster becomes active');
+        const update = [0xffffffff, 0x12345678, floatBits(4), floatBits(8), floatBits(30)],
+          before = p.read(activeEffect, 148),
+          expected = new DataView(before.buffer);
+        p.write(replacement, new Uint8Array(24).fill(0xa5));
+        update.forEach((word, i) => p.store(replacement + i * 4, word));
+        const input = p.read(replacement, 24);
+        equal(
+          await callWipe(0xc9, 1, 0xffffffff),
+          { control: 2 },
+          'nonzero selector ignores VM address',
+        );
+        equal(p.read(activeEffect, 148), before, 'nonzero selector leaves the actor unchanged');
+        expected.setUint32(124, update[2], true);
+        expected.setUint32(128, converted ? floatBits(1 / 8) : update[3], true);
+        expected.setUint32(132, converted ? floatBits(fps / 2) : update[4], true);
+        equal(await callWipe(0xc9, 0, 176), { control: 2 }, 'Raster update control');
+        equal(p.read(activeEffect, 148), before, 'only the original Raster fields change');
+        equal(p.read(replacement, 24), input, 'Raster preserves parameter packet bytes');
+        const words = [8, 2, 0.5, 1, 8, 6, 0.25, 1].map(floatBits),
+          canary = 0xa5a55a5a;
+        [...words, canary, canary].forEach((word, i) => p.store(vertices + i * 4, word));
+        equal(
+          await engine.call(callback, [activeEffect, 2, vertices, 0]),
+          1,
+          'original Raster draws vertices',
+        );
+        words[0] = floatBits(12);
+        words[4] = floatBits(4);
+        equal(
+          Array.from({ length: 10 }, (_, i) => p.load(vertices + 4 * i)),
+          [...words, canary, canary],
+          'original Raster vertex bytes and tail',
+        );
+        equal(await callWipe(0xc6), { control: 2 }, 'Raster stop control');
+        equal(callbacks.pop(), [graph, 0, 0, 0, 0], 'native stop detaches the callback');
+        equal(await callWipe(0xc8), { control: 1, value: 0 }, 'Raster becomes inactive');
+        await callWipe(0xc5);
+        equal(callbacks.pop(), [graph, callback, 0, activeEffect, 0], 'native restart reattaches');
+        await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
+        equal(callbacks.pop(), [graph, 0, 0, 0, 0], 'active Raster destruction detaches');
+        equal(p.allocations.has(activeEffect), false, 'original Raster destruction frees task');
+      }
+    }
+    p.free(vertices);
+    p.free(manager);
+    activeEffect = await engine.call(factory, [25, name, out + 4], parent);
+    nativeID = p.load(out + 4);
+    equal(p.load(activeEffect), sdk ? 0x993100 : 0x8cde20, 'original Hydro vtable');
+    const hydro = p.read(activeEffect, 180);
+    equal(await callWipe(0xc4, 0xffffffff), { control: 2 }, 'Hydro ignores original C4 payload');
+    equal(await callWipe(0xc9, 0, 0xffffffff), { control: 2 }, 'Hydro ignores original C9 payload');
+    equal(
+      await callWipe(0xc8),
+      { control: 1, value: host },
+      'Hydro status leaves result unwritten',
+    );
+    equal(p.read(activeEffect, 180), hydro, 'original Hydro receiver preserves its task data');
+    await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
+    equal(p.allocations.has(activeEffect), false, 'original Hydro destruction frees task');
     await engine.call(p.load(p.load(parent)), [1], parent);
   } finally {
     memory.close();
@@ -500,9 +617,9 @@ try {
         wrapperChecks,
         receiverChecks,
         wrapperBoundary:
-          'Original six GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
+          'Original seven GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, Wipe1/Fade/Wipe2 receivers, per-frame bitmap draws and destructors. Authored caller, bitmaps and view; upload captured before device.',
+          'Original factories, Raster/Hydro/Wipe1/Fade/Wipe2 receivers, per-frame draws and destructors. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,
