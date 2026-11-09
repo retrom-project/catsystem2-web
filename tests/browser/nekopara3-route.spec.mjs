@@ -13,7 +13,14 @@ test('main route reaches every chapter, decodes both movies and returns to the n
     reportedScenes = new Set();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await launch(page);
+  // A fresh native profile skips read text only. Route acceptance must opt in
+  // to skipping unread dialogue through the real persisted preference.
+  await launch(page, { preferences: '<MESSAGE><skip_full>1</skip_full></MESSAGE>' });
+  expect(
+    await page.evaluate(() =>
+      new DataView(window.catSystem2.world.configuration.blocks[1].buffer).getUint32(8 * 4, true),
+    ),
+  ).toBe(1);
   // Read-only observations around the real CST reader. Return values, source
   // bytes and script execution are unchanged; repeated localized reads of one
   // line count as one message, including when Ctrl advances several per frame.

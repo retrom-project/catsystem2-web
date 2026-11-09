@@ -52,9 +52,22 @@ export async function button(page, name, extra = false) {
 export async function noError(page) {
   await expect(page.locator('#error')).toBeHidden();
 }
-export async function launch(page) {
+export async function launch(page, { preferences = '' } = {}) {
   await frameClock(page);
   await page.goto('/');
+  if (preferences)
+    await page.evaluate(async (xml) => {
+      const { NativeFileStorage } = await import('/src/native/storage.mjs'),
+        { identity } = await (await fetch('/game.json')).json(),
+        storage = new NativeFileStorage({}, identity);
+      await storage.open();
+      try {
+        if (!(await storage.write('setup.xml', new TextEncoder().encode(xml))))
+          throw new Error('Could not save the native input preferences fixture');
+      } finally {
+        storage.close();
+      }
+    }, `<?xml version="1.0" encoding="UTF-8"?><document>${preferences}</document>`);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,

@@ -26,7 +26,12 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
     };
     Object.defineProperty(navigator, 'getGamepads', { value: () => [window.testPad] });
   });
-  await launch(page);
+  // The native default disables joystick input. The retired ScenePlayer did
+  // not honor that setting, so a fake pad alone no longer enables this path.
+  await launch(page, { preferences: '<KEY><enable_joypad>1</enable_joypad></KEY>' });
+  expect(await page.evaluate(() => window.catSystem2.world.configuration.keys.enableJoypad)).toBe(
+    1,
+  );
   await pad(page, 13);
   await pad(page, 0);
   await until(page, 'meswnd#WAIT', 900);
