@@ -4,6 +4,7 @@
 import { floatBits } from '../kcs.mjs';
 import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
 import { installNativeRasterKernels } from './raster-kernel.mjs';
+import { installNativeEngineWorkers } from './engine-workers.mjs';
 
 const ABI = {
   game: {
@@ -68,11 +69,9 @@ export class NativeRetainedDraw {
     this.abi = ABI[this.sdk ? 'sdk' : 'game'];
     this.items = new Map();
     this.renderers = new Map();
-    this.threads = new Map();
-    this.nextThread = 0x51000000;
     for (const [name, definition] of nativeRectangleDefinitions(this.process))
       engine.registerWindows('USER32.dll', name, definition);
-    if (!this.sdk) this.installPrefetch();
+    if (!this.sdk) installNativeEngineWorkers(engine);
     engine.registerFeature('retained-draw', this);
   }
   call(address, args, pointer, task) {
@@ -85,57 +84,6 @@ export class NativeRetainedDraw {
   }
   record(draw, key) {
     return this.items.get(this.key(draw, key));
-  }
-  installPrefetch() {
-    const { engine, process: p } = this,
-      previousClose = engine.kernel.overrides.get('kernel32.dll!CloseHandle');
-    // 5DB720 only stores its two arguments and calls _beginthreadex. The
-    // reviewed image worker has no interaction with scripts. Browser loading
-    // completes that worker before the first presented image frame.
-    engine.patch(
-      0x5db720,
-      'retained image prefetch worker platform',
-      2,
-      async ([owner, callback]) => {
-        if (callback !== 0x747d40)
-          throw new Error(`Unrecovered native worker callback 0x${callback.toString(16)}`);
-        const thread = p.cpu.reg_read_i32(p.uc.X86_REG_ECX) >>> 0,
-          handle = this.nextThread++;
-        p.store(thread + 16, callback);
-        p.store(thread + 20, owner);
-        p.store(thread, handle);
-        p.store(thread + 4, handle);
-        this.threads.set(handle, { completed: false });
-        await engine.callFromHost(callback, [thread, owner]);
-        this.threads.get(handle).completed = true;
-        return 1;
-      },
-      { calleePops: true },
-    );
-    engine.registerWindows('KERNEL32.dll', 'Sleep', {
-      count: 1,
-      fn: ([duration]) => {
-        if (duration > 1)
-          throw new Error('Native image worker requested an unrecovered timed sleep');
-        return 0;
-      },
-    });
-    engine.registerWindows('KERNEL32.dll', 'GetExitCodeThread', {
-      count: 2,
-      fn: ([handle, output]) => {
-        const thread = this.threads.get(handle);
-        if (!thread) throw new Error('Native image worker queried an unknown thread handle');
-        p.store(output, thread.completed ? 0 : 259);
-        return 1;
-      },
-    });
-    engine.registerWindows('KERNEL32.dll', 'CloseHandle', {
-      count: 1,
-      fn: (args) => {
-        if (this.threads.delete(args[0])) return 1;
-        return previousClose.fn(args);
-      },
-    });
   }
   async create(draw, key) {
     const id = this.key(draw, key);
@@ -573,15 +521,11 @@ export class NativeRetainedDraw {
     return structuredClone({
       items: [...this.items],
       renderers: [...this.renderers],
-      threads: [...this.threads],
-      nextThread: this.nextThread,
     });
   }
   restore(state) {
     this.items = new Map(state.items);
     this.renderers = new Map(state.renderers);
-    this.threads = new Map(state.threads);
-    this.nextThread = state.nextThread;
   }
   async close() {
     for (const surface of [...this.renderers.keys()]) await this.releaseRenderer(surface);
@@ -590,6 +534,5 @@ export class NativeRetainedDraw {
       this.items.delete(id);
       await this.releaseMirror(record.image);
     }
-    this.threads.clear();
   }
 }

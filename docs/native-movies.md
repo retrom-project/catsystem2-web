@@ -57,3 +57,26 @@ A second browser test runs authored KCS through the complete `CatSystem2`
 instance for both frozen profiles. It checks the root/InputTask routing,
 cursor/update gates, normal renderer suppression, live movie handles across
 fresh World restore, old World disposal and explicit decoder close.
+
+## Native workers for plane movies
+
+The original CThread start and destructor run in the mounted engine. The
+shared `engine-workers` feature schedules the reviewed callbacks at the
+CRT `_beginthreadex` boundary. It also owns the existing retained-image
+worker. Native thread exit queries and closes use the same handle service.
+
+The movie MemStream in each profile prefetches three 4 MiB blocks using its
+original reader, file cursor and ring. When the native reader sleeps for a
+missing block, the original producer runs one iteration. The completion
+callback also runs one iteration at a time. Its original code owns the
+running word, repeat count, rewind and restart. The worker checks the native
+stop condition before yielding, so the original destructor can join and
+release its thread. The host preserves the parked handles across fresh
+restore, with buffer contents and cursors in the guest checkpoint.
+
+The two-profile worker tests read and seek across block boundaries and verify
+the live allocation and lock counts after native destruction. A supplied
+DirectShow event and control boundary exercises completion, repeat,
+terminal exit and stop after a fresh restore. The VMR9 filter and texture
+presentation path are separate platform work. [VMR-9 allocator-presenter
+contract](https://learn.microsoft.com/en-us/windows/win32/directshow/supplying-a-custom-allocator-presenter-for-vmr-9)

@@ -42,6 +42,7 @@ import { installNativeRasterKernels } from './raster-kernel.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTexturePageView } from './texture-memory.mjs';
 import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
+import { installNativeEngineWorkers } from './engine-workers.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
@@ -1034,6 +1035,7 @@ export class NativeGraphicTask {
 export function installNativeGraphics(world) {
   if (world.registerNativeFeature) {
     world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
+    world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
     world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {
       await world.getNativeFeature('bitmap-memory');
