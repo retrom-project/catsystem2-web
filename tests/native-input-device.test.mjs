@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NativeSystemClock } from '../src/native/clock.mjs';
 import { NativeInput } from '../src/native/input.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { NativeInputDevice } from '../src/native/input-device.mjs';
@@ -30,6 +31,7 @@ for (const [profile, variable] of [
             bytes,
             profile,
             configuration,
+            clock: new NativeSystemClock({ utcNow: () => 0 }),
             now: () => 0,
           }),
           input = new NativeInput({ configuration }),
@@ -101,6 +103,9 @@ for (const [profile, variable] of [
         await device.finishFrame();
         assert.equal(await device.touch([{ id: 55, x: 100, y: 80, phase: 'down' }]), 1);
         assert.equal(bindings.pointerActivation, true);
+        const user32 = engine.kernel.moduleHandle('user32.dll');
+        assert.ok(user32);
+        assert.ok(engine.kernel.moduleHandle('winmm.dll'));
         await device.touch([{ id: 55, x: 120, y: 80, phase: 'move' }]);
         await device.poll();
         const bank = bindings.snapshot(),
@@ -109,6 +114,7 @@ for (const [profile, variable] of [
         fresh = await make();
         fresh.world.inputBindings.restore(bank);
         fresh.engine.restore(snapshot);
+        assert.equal(fresh.engine.kernel.moduleHandle('user32.dll'), user32);
         assert.equal(await fresh.device.pointer(), ptr);
         assert.equal(fresh.device.refs.window, windowPointer);
         assert.equal(await fresh.device.touch([{ id: 55, x: 120, y: 80, phase: 'up' }]), 1);

@@ -232,21 +232,6 @@ export class NativeInputDevice {
       p.store(out + 40, 0xffff);
       return 0;
     });
-    for (const suffix of ['A', 'W']) {
-      const name = `LoadLibrary${suffix}`,
-        previousLoad = e.kernel.overrides.get(`kernel32.dll!${name}`)?.fn;
-      add('KERNEL32.dll', name, 1, ([address]) => {
-        const library = p
-          .string(address, suffix === 'W')
-          .toLowerCase()
-          .replace(/\.dll$/, '');
-        if (library === 'user32') return 0x10002;
-        if (previousLoad) return previousLoad([address]);
-        const handle = e.kernel.moduleHandle(library + '.dll');
-        if (!handle) e.kernel.lastError = 126;
-        return handle;
-      });
-    }
     const touchDefinitions = {
       RegisterTouchWindow: { count: 2, fn: () => 1 },
       GetTouchInputInfo: {
@@ -261,24 +246,13 @@ export class NativeInputDevice {
       },
       CloseTouchInputHandle: { count: 1, fn: ([handle]) => Number(this.handles.delete(handle)) },
     };
-    for (const [name, definition] of Object.entries(touchDefinitions))
+    const touchExports = new Map();
+    for (const [name, definition] of Object.entries(touchDefinitions)) {
       add('USER32.dll', name, definition.count, definition.fn);
-    const old =
-      e.kernel.overrides.get('kernel32.dll!GetProcAddress')?.fn ??
-      e.kernel.definitions.get('GetProcAddress').fn;
-    e.registerWindows('KERNEL32.dll', 'GetProcAddress', {
-      count: 2,
-      fn: ([module, name]) => {
-        if (module !== 0x10002) return old([module, name]);
-        const requested = p.string(name);
-        return touchDefinitions[requested] ? e.resolve({ dll: 'USER32.dll', name: requested }) : 0;
-      },
-    });
-    const previousFree = e.kernel.overrides.get('kernel32.dll!FreeLibrary')?.fn;
-    e.registerWindows('KERNEL32.dll', 'FreeLibrary', {
-      count: 1,
-      fn: ([module]) => (module === 0x10002 ? 1 : previousFree ? previousFree([module]) : 0),
-    });
+      touchExports.set(name, e.resolve({ dll: 'USER32.dll', name }));
+    }
+    // Both original constructors resolve these through the shared DLL loader.
+    e.kernel.registerHostModule('user32.dll', touchExports);
     for (const suffix of ['A', 'W'])
       add('USER32.dll', `PostMessage${suffix}`, 4, ([window, message, w, l]) => {
         if (window !== 1) return 0;
