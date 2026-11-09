@@ -35,6 +35,8 @@ export function nativeTask(id, args, machine, task, services) {
     case 0x43:
       check(1);
       if (!objects?.release) return undefined;
+      if (world && objects.objects.get(resolve(args[0]))?.implementation?.pointer)
+        return then(world.sendNativeEngine(args[0], task.id, 3), voidResult);
       return then(
         objects.destroy
           ? objects.destroy(resolve(args[0]), task.id)
@@ -56,15 +58,21 @@ export function nativeTask(id, args, machine, task, services) {
       if (id === 0x4a) {
         const record = records.get(resolve(args[0]));
         if (!record) return result(-1);
-        if (record.kind === 1) {
-          // Main4A passes &its task-pointer parameter as the output word. A
-          // routed Root handler leaves that initialized pointer untouched.
-          if (!world) throw new Error('The native root type query retains its caller task pointer');
-          return then(
-            world.getNativeFeature('task-memory').then((memory) => memory.pointer(task.id)),
-            result,
-          );
+        if (world && (record.implementation?.pointer || record.kind === 1)) {
+          const context = {};
+          return then(world.sendNativeEngine(args[0], task.id, 13, 0, 0, context), (value) => {
+            if (!context.nativeRouted) return result(-1);
+            if (value !== NATIVE_UNWRITTEN_WORD) return result(nativeEngineWord(value));
+            // The original wrapper passes its initialized caller pointer as
+            // the reply word. A routed receiver can leave that word intact.
+            return then(
+              world.getNativeFeature('task-memory').then((memory) => memory.pointer(task.id)),
+              result,
+            );
+          });
         }
+        if (record.kind === 1)
+          throw new Error('The native root type query retains its caller task pointer');
         return result(record.flags ?? record.kind);
       }
       if (id === 0x4b) {

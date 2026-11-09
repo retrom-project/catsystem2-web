@@ -990,6 +990,72 @@ try {
     equal(p.read(activeEffect, 180), hydro, 'original Hydro receiver preserves its task data');
     await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original Hydro destruction frees task');
+
+    activeEffect = await engine.call(factory, [17, name, out + 4], parent);
+    nativeID = p.load(out + 4);
+    const underwater = p.load(activeEffect),
+      underwaterBytes = p.read(activeEffect, 0x84),
+      messages = [];
+    equal(underwater, sdk ? 0x992f6c : 0x8cdc8c, 'original UnderWater factory');
+    equal(p.allocations.get(activeEffect), 0x84);
+    const stopObserving = p.beforeInstruction(
+      p.load(underwater + 28),
+      'observe original UnderWater receiver',
+      () => {
+        const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
+        messages.push(p.load(sp + 8));
+      },
+    );
+    try {
+      for (const [id, args, message, control] of [
+        [0xc4, [0xffffffff], 13, 2],
+        [0xc5, [], 257, 2],
+        [0xc6, [], 258, 2],
+        [0xc7, [240], 262, 2],
+        [0xc8, [], 259, 1],
+        [0xc9, [0, 0xffffffff], 13, 2],
+        [0xca, [0xffffffff], 13, 2],
+        [0xcb, [], 261, 2],
+        [0x43, [], 3, 2],
+        [0x4a, [], 13, 1],
+      ]) {
+        equal(
+          await callWipe(id, ...args),
+          control === 1 ? { control, value: host } : { control },
+          'UnderWater keeps the original wrapper result',
+        );
+        equal(
+          messages.splice(0),
+          [sdk && message >= 257 ? message - 5 : message],
+          'only the original routed message arrives',
+        );
+        equal(
+          p.read(activeEffect, 0x84),
+          underwaterBytes,
+          'the receiver preserves every task byte',
+        );
+      }
+      for (const message of [2, 3, 13, 23, 24, 29, sdk ? 260 : 265]) {
+        [nativeID, sender, message, 0xffffffff, 0, 0].forEach((word, i) =>
+          p.store(packet + 4 * i, word),
+        );
+        p.write(out, scratchFill);
+        equal(await engine.call(p.load(underwater + 24), [packet, out + 4], activeEffect), 0);
+        equal(p.read(out, 12), scratchFill, 'handled original packet leaves reply and canaries');
+        equal(p.read(activeEffect, 0x84), underwaterBytes);
+      }
+      equal(await engine.call(p.load(underwater + 8), [201, out], activeEffect), 1);
+      equal(p.read(activeEffect, 0x84), underwaterBytes, 'logic leaves Base state untouched');
+      const drawBytes = underwaterBytes.slice();
+      new DataView(drawBytes.buffer).setUint32(100, 201, true);
+      equal(await engine.call(p.load(underwater + 12), [201], activeEffect), 1);
+      equal(p.read(activeEffect, 0x84), drawBytes, 'only the original draw clock advances');
+    } finally {
+      stopObserving();
+    }
+    await engine.call(p.load(underwater), [1], activeEffect);
+    equal(p.allocations.has(activeEffect), false, 'original UnderWater destructor frees task');
+
     // Both extended wipes use a 256-entry table followed by a separate
     // blend interval. The 32-bit reference assets also exercise transparent RGB.
     const intensity = [0, 64, 128, 192, 255, 192, 128, 64],
@@ -1201,7 +1267,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, Raster/Hydro/RainDrop/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Raster/Hydro/RainDrop/GlassBreak/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater executes original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,

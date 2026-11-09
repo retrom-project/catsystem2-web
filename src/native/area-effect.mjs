@@ -5,6 +5,7 @@ import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {
+    17: { construct: 0x5ee010, size: 0x84, vtable: 0x8cdc8c, baseLogic: false },
     18: { construct: 0x5ee060, size: 0x94, vtable: 0x8cdcb0, requiresRenderer: true },
     19: { construct: 0x5ee790, size: 0xd0, vtable: 0x8cdd0c, requiresRenderer: true },
     20: { construct: 0x5ef0d0, size: 0x9c, vtable: 0x8cdd34, requiresRenderer: true },
@@ -17,6 +18,7 @@ const ABI = {
     31: { construct: 0x5f2db0, size: 0x4c8, vtable: 0x8ce23c, payloadBytes: { 260: 12 } },
   },
   'sdk-4.01-engine-2.6.1.74': {
+    17: { construct: 0x4c8940, size: 0x84, vtable: 0x992f6c, baseLogic: false },
     18: { construct: 0x4c8990, size: 0x94, vtable: 0x992f90, requiresRenderer: true },
     19: { construct: 0x4c90c0, size: 0xd0, vtable: 0x992fec, requiresRenderer: true },
     20: { construct: 0x4c9a00, size: 0x9c, vtable: 0x993014, requiresRenderer: true },
@@ -110,7 +112,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [18, 19, 20, 25, 26, 27, 28, 29, 30, 31])
+  for (const kind of [17, 18, 19, 20, 25, 26, 27, 28, 29, 30, 31])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );

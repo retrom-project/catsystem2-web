@@ -147,6 +147,9 @@ export class NativeScreenEffectTask {
     if (!this.abi) throw new Error(`Unrecovered screen-effect task kind ${record.kind}`);
     record.flags ??= 0;
   }
+  get runsBaseLogic() {
+    return this.abi.baseLogic !== false;
+  }
   async invoke(
     address,
     args = [],

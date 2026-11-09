@@ -197,6 +197,7 @@ export class NativeObjects {
         { ...context, nativeSenderWorldID: sender },
       );
     record.destroyRequested = true;
+    if (record.implementation?.runsBaseLogic === false) record.hostDestroyRequested = true;
     return true;
   }
   machine(id) {
@@ -224,6 +225,12 @@ export class NativeObjects {
     const visit = async (record, clock) => {
       if (record.state !== 'active') return;
       clock >>>= 0;
+      if (record.implementation.runsBaseLogic === false) {
+        // These original vtables replace the Base logic phase entirely.
+        if (record.hostDestroyRequested) await this.release(record.id);
+        else await record.implementation.tick?.(clock);
+        return;
+      }
       if (record.userValue)
         record.pausedFrames = ((record.pausedFrames ?? 0) + clock - (record.lastFrame ?? 0)) >>> 0;
       else record.effectiveFrame = clock;

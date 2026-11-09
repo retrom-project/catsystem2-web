@@ -57,6 +57,12 @@ to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
 GraphManager callback. Stop or destruction removes that callback. Hydro's
 receiver leaves this message unhandled; the wrapper still completes.
 
+UnderWater (kind 17) is an original task without a rendered surface. Its
+receiver leaves query outputs unwritten and ignores the KCS delete message.
+The original draw bookkeeping still advances its draw clock. The tested
+lifecycle covers UnderWater as a child; registering children under it needs
+separate task namespace handling.
+
 RainDrop (kind 19) takes the original 40-byte `C4` packet and updates its
 separate source and projected arrays using the native clock and shared random
 stream. The original graph callback draws pretransformed diffuse line lists.
@@ -79,9 +85,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 562 receiver checks
+receiver writes, output canaries and unwritten replies. Its 620 receiver checks
 per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
-WipeAlpha3, RainDrop and GlassBreak paths.
+WipeAlpha3, UnderWater, RainDrop and GlassBreak paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
