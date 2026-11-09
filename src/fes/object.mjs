@@ -170,6 +170,8 @@ export function objectCommand(s, o, sub, args, context = {}) {
     return nativeResult(player.nativeImages.command(s, o, sub, args, context));
   if (player?.nativeData?.supports(o) && FES_BUILTIN_VERBS.has(sub) && sub !== 'delete')
     return nativeResult(player.nativeData.command(s, o, sub, args, context));
+  if (player?.nativeParticles?.supports(o) && FES_BUILTIN_VERBS.has(sub))
+    return nativeResult(player.nativeParticles.command(s, o, sub, args, context));
   if (player?.nativeEffects?.supports(o) && FES_BUILTIN_VERBS.has(sub))
     return nativeResult(player.nativeEffects.command(s, o, sub, args, context));
   if (player?.nativePlanes?.supports(o) && FES_BUILTIN_VERBS.has(sub))

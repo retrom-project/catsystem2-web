@@ -99,11 +99,15 @@ export class NativeFESObjectRuntime {
               name: p.string(l),
             });
           const implementation = world.objects.objects.get(id).implementation;
-          if (!Number.isInteger(implementation.pointer) || !implementation.pointer) {
+          // Native registration writes its actual task prefix to the guest
+          // output, including for host-owned receivers such as particles.
+          const pointer =
+            world.sendNativeEngine && result ? p.load(result) : implementation.pointer;
+          if (!pointer) {
             await world.objects.release(id);
             throw new Error(`Original FES task factory ${w} has no original guest task instance`);
           }
-          value = implementation.pointer;
+          value = pointer;
           context.object.nativeTaskID = id;
         } else {
           const task =
@@ -421,10 +425,12 @@ export class NativeFESObjectRuntime {
     args = [],
     pointer,
     task = this.context?.instance.runtimeID ?? this.objects.get(pointer)?.owner,
+    messageContext,
   ) {
+    const options = { task, messageContext };
     return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, { task })
-      : this.engine.call(address, args, pointer, { task });
+      ? this.engine.callFromHost(address, args, pointer, options)
+      : this.engine.call(address, args, pointer, options);
   }
   async create(instance, object) {
     if (object.nativeObjectPointer != null) {
@@ -515,13 +521,20 @@ export class NativeFESObjectRuntime {
     const list = this.initializationLists.get(instance.runtimeID);
     if (!list) return;
     const p = this.process,
-      record = this.world.objects.objects.get(instance.runtimeID);
-    await this.withContext({ instance, resourceDrivers: true }, async () => {
+      record = this.world.objects.objects.get(instance.runtimeID),
+      context = { instance, resourceDrivers: true },
+      types = this.types;
+    await this.withContext(context, async () => {
       p.store(this.driver + 4, this.world.nativeTaskID(instance.runtimeID));
       p.store(this.driver + 88, record.pausedFrames ?? 0);
       p.store(this.driver + 100, record.effectiveFrame ?? 0);
       p.store(this.driver + 384, list);
-      await this.call(this.sdk ? 0x504e50 : 0x62da50, [], this.driver);
+      await this.call(this.sdk ? 0x504e50 : 0x62da50, [], this.driver, instance.runtimeID, {
+        // The list driver can visit several object types during one call.
+        get categoryFilenameCapacity() {
+          return types.get(context.object?.nativeType)?.categoryFilenameCapacity;
+        },
+      });
     });
   }
   async planeAssociationPhase(instance, beforeScript) {

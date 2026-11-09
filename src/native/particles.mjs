@@ -9,6 +9,7 @@ import { nativeParticleBounds } from './particle-bounds.mjs';
 import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleCommands } from './particle-commands.mjs';
+import { installNativeFESParticles } from './fes-particles.mjs';
 
 export const NATIVE_PARTICLE_IDS = Object.freeze([
   0x10f, 0x110, 0x111, 0x112, 0x113, 0x1aa, 0x1ab, 0x2b5,
@@ -220,11 +221,13 @@ export function installNativeParticles(world, options) {
   world.particles = particles;
   world.objects.register(16, (record) => particles.create(record));
   const mounted = world.game.names?.('exe').length > 0;
-  if (mounted)
+  if (mounted) {
+    installNativeFESParticles(world);
     world.registerNativeFeature(
       'particle-commands',
       (engine) => new NativeParticleCommands(engine, world),
     );
+  }
   for (const id of NATIVE_PARTICLE_IDS)
     world.runtime.register('main', id, async (args, machine, task) =>
       mounted && NativeParticleCommands.has(id)

@@ -66,6 +66,7 @@ function bindFESGraphics(graphics, record, player) {
   if (graphics.world.controlsFES) player.nativeControls = graphics.world.controlsFES;
   if (graphics.world.imagesFES) player.nativeImages = graphics.world.imagesFES;
   if (graphics.world.dataFES) player.nativeData = graphics.world.dataFES;
+  if (graphics.world.particlesFES) player.nativeParticles = graphics.world.particlesFES;
   if (graphics.world.effectsFES) player.nativeEffects = graphics.world.effectsFES;
   if (graphics.world.planesFES) player.nativePlanes = graphics.world.planesFES;
   if (graphics.world.areaFES) player.nativeArea = graphics.world.areaFES;
@@ -99,6 +100,8 @@ export async function initializeFESGraphics(graphics, record, player) {
       await player.nativeText.initialize(instance, object);
     else if (player.nativeData?.supports(object))
       await player.nativeData.initialize(instance, object);
+    else if (player.nativeParticles?.supports(object))
+      await player.nativeParticles.initialize(instance, object);
     else if (player.nativeEffects?.supports(object))
       await player.nativeEffects.initialize(instance, object);
     else if (player.nativePlanes?.supports(object))
@@ -163,6 +166,10 @@ export async function syncFESGraphics(graphics, record, player, { restoring = fa
   if (player.nativeData)
     for (const object of instance.objects)
       if (player.nativeData.supports(object)) await player.nativeData.initialize(instance, object);
+  if (!restoring && player.nativeParticles)
+    for (const object of instance.objects)
+      if (player.nativeParticles.supports(object))
+        await player.nativeParticles.initialize(instance, object);
   if (!restoring && player.nativeArea)
     for (const object of instance.objects)
       if (player.nativeArea.supports(object)) await player.nativeArea.initialize(instance, object);
@@ -172,7 +179,12 @@ export async function syncFESGraphics(graphics, record, player, { restoring = fa
     instance.objects.some((object) => player.nativeEffects.supports(object))
   )
     await player.nativeEffects.update(instance);
-  else if (!restoring && instance.objects.some((object) => player.nativeArea?.supports(object)))
+  else if (
+    !restoring &&
+    instance.objects.some(
+      (object) => player.nativeArea?.supports(object) || player.nativeParticles?.supports(object),
+    )
+  )
     await (await graphics.world.getNativeFeature('fes-objects')).runResourceDrivers(instance);
   for (const object of instance.objects.filter(
     (o) => o.isPlane && !player.nativeM2?.supports(o) && !player.nativePlanes?.supports(o),
@@ -237,6 +249,7 @@ export async function syncFESGraphics(graphics, record, player, { restoring = fa
       player.nativeLog?.supports(object) ||
       player.nativeControls?.supports(object) ||
       player.nativeData?.supports(object) ||
+      player.nativeParticles?.supports(object) ||
       player.nativeEffects?.supports(object) ||
       player.nativePlanes?.supports(object) ||
       player.nativeArea?.supports(object)
@@ -381,10 +394,12 @@ export async function setFESBaseImage(graphics, instance, object) {
 export async function closeFESGraphics(graphics, record, player) {
   for (const players of graphics.fesSurfaces.values()) players.delete(record.id);
   const effects = player?.root?.objects.some((object) => player.nativeEffects?.supports(object)),
-    area = player?.root?.objects.some((object) => player.nativeArea?.supports(object));
+    area = player?.root?.objects.some((object) => player.nativeArea?.supports(object)),
+    particles = player?.root?.objects.filter((object) => player.nativeParticles?.supports(object));
   if (effects) await player.nativeEffects.closeOwner(player.root, { runDrivers: false });
   if (area) await player.nativeArea.closeOwner(player.root);
-  if (effects || area)
+  for (const object of particles || []) await player.nativeParticles.close(player.root, object);
+  if (effects || area || particles?.length)
     await (await graphics.world.getNativeFeature('fes-objects')).runResourceDrivers(player.root);
   const runtime = graphics.world.nativeEngine?.features.get('fes-objects'),
     order = new Map(runtime?.destructionOrder().map((pointer, i) => [pointer, i]) || []),

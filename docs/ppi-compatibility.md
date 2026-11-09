@@ -368,6 +368,15 @@ CST particle subcommands; lower-level lifecycle methods cover those operations.
 The previous `ptcl`/`ptclp` aliases had no original-script evidence and are not
 accepted as invented scene commands.
 
+The FES `PARTICLE` object uses the same task type. The original 348-byte
+object constructors (`5EFFD0` in the SDK, `74FDF0` in the game) and resource
+allocation routines (`500390` / `628D60`) create one `FE Particle` child per
+object. The resource-list frame drivers invoke `5310E0` / `6616F0` to send
+the load, registers, alpha, start, stop, busy and attachment packets.
+The SDK packet IDs in that range are five lower. The browser tests exercise
+both families from FES commands and compare rendered pixels after restoring
+an active attached effect in a fresh World.
+
 For CST attachment, the original wrapper selects plane index+27 from its unified
 scene graph and supplies that graph handle to the particle task. The attachment
 provider receives `(id, {namespace, bank})` and returns `{id,base,pos,disp}`;
