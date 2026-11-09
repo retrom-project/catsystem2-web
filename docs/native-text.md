@@ -114,6 +114,10 @@ that canvas offset. Negative destinations advance the source into the retained
 texture page. Empty source intersections return zero. A valid intersection can
 return one even when it affects no allocated destination pixels.
 
+STRING, STRING8 and NVSTRING take their texture address from the original
+`VRAM` field. The enclosing Draw's origin applies to its retained image
+surface. Text still samples its own address when the two origins differ.
+
 The shared `graphics-platform` feature owns one view/renderer/manager set and
 native bitmap transfers. M2 and text consume the same platform records and GPU
 context. Task identifiers read from the PE belong to the current Top namespace.

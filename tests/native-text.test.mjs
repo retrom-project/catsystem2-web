@@ -1027,6 +1027,9 @@ for (const [profile, variable, types] of [
             [96, 64, 12345, 1, 0x80223344],
           );
           assert.deepEqual([740, 744, 748].map(float), [1, 2, 0]);
+          // An independent retained Draw surface can start on a different
+          // page. Its rectangle does not change the text task's own address.
+          world.player.nativeDraw = { target: 23, width: 128, height: 96, offset: [256, 512] };
           const laterColor = instance.byKey.get('str[1]'),
             laterPointer = await runtime.create(instance, laterColor);
           assert.equal(p.load(laterPointer + 192), 0x55667788);
@@ -1039,6 +1042,8 @@ for (const [profile, variable, types] of [
             await world.graphics.syncFES(world.objects.objects.get(world.owner), world.player);
           assert.deepEqual([object.x, object.y, object.z], [7, 8, 9]);
           const task = world.graphics.get(object.nativeTaskID);
+          assert.deepEqual([740, 744, 748].map(float), [1, 2, 0]);
+          assert.deepEqual(task.text.vram, [1, 2]);
           assert.deepEqual(
             Array.from(new Float32Array(task.graph.kx2.buffer, task.graph.kx2.byteOffset + 24, 3)),
             [17, 28, 9],

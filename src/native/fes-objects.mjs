@@ -696,15 +696,13 @@ export class NativeFESObjectRuntime {
     p.store(pointer + 184, object.pri);
     p.store(pointer + 188, Number(object.disp && !instance.player.nativeInput?.state.sleeping));
     p.store(pointer + 192, view.getUint32(MOTION_ABI.color, true));
-    const offset = instance.player.nativeDraw?.offset ?? [0, 0],
-      vram = new Float32Array([
-        Math.trunc(object.vramX) + offset[0],
-        Math.trunc(object.vramY) + offset[1],
-        object.vramZ,
-        0,
-      ]);
     const vramOffset = this.adapter(object.nativeType).vramOffset;
-    if (vramOffset != null) p.write(pointer + vramOffset, new Uint8Array(vram.buffer));
+    if (vramOffset != null) {
+      // Text drivers upload to their own configured page, independently of
+      // the Draw task that owns the surrounding retained images.
+      const vram = new Float32Array([object.vramX, object.vramY, object.vramZ, 0]);
+      p.write(pointer + vramOffset, new Uint8Array(vram.buffer));
+    }
     p.store(pointer + 16, 1);
   }
   async runDriver(
