@@ -136,8 +136,21 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
         name: 'Original PPI',
       }),
       particle = world.particles.get(particleID);
-    await particle.load({ family: 'plugin', program: 'tie.ppi', count: 1, priority: 200 });
-    await particle.message([nativeID, 0x13b, 0, 0]);
+    const loadParticle = async (priority) => {
+      await particle.load({
+        family: 'plugin',
+        program: 'tie.ppi',
+        texture: 'tie.hg3',
+        count: 1,
+        priority,
+      });
+      await particle.message([nativeID, 0x13b, 0, 0]);
+    };
+    await loadParticle(200);
+    checks.particleTexture =
+      particle.bank.nativeAtlas.pointer !== 0 &&
+      particle.bank.width === 16 &&
+      particle.bank.height === 16;
     const afterParticle = await render(world);
     checks.particleLast =
       colors(afterParticle, [64, 224, 32]) === 0 && colors(afterParticle, [0, 0, 255]) > 0;
@@ -175,9 +188,9 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
       p.store(manager + backgroundFields[i], value),
     );
     try {
-      particle.bank.priority = 55000;
+      await loadParticle(55000);
       checks.finalBackground = colors(await render(world), backgroundColor) === 256;
-      particle.bank.priority = 55001;
+      await loadParticle(55001);
       const afterFinalBackground = await render(world);
       checks.afterFinalBackground =
         colors(afterFinalBackground, [0, 0, 255]) > 0 &&
@@ -185,11 +198,11 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
           colors(afterFinalBackground, backgroundColor) ===
           256;
       await send(tasks[1], 49, 0, 0, packet([0, 0, 56000].map(floatBits)));
-      particle.bank.priority = 55000;
+      await loadParticle(55000);
       const between = await render(world);
       checks.backgroundBeforeNative =
         colors(between, backgroundColor) === 244 && colors(between, [64, 224, 32]) === 12;
-      particle.bank.priority = 55001;
+      await loadParticle(55001);
       const above = await render(world);
       checks.callbackAfterBackground =
         colors(above, [0, 0, 255]) > 0 &&
@@ -201,7 +214,7 @@ export async function exerciseGraphRendering(profile, files, stageRendererFactor
     } finally {
       backgroundFields.forEach((offset, i) => p.store(manager + offset, savedBackground[i]));
       p.free(background);
-      particle.bank.priority = 200;
+      await loadParticle(200);
       await send(tasks[1], 49, 0, 0, packet([0, 0, 200].map(floatBits)));
     }
     const finalPixels = await render(world);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { kcsProgram } from '../helpers.mjs';
+import { hg3, kcsProgram } from '../helpers.mjs';
 import { nativeParticleFixture } from '../fixtures/ppi-native-fixture.mjs';
 import { planeFES } from '../fixtures/plane-fes-fixture.mjs';
 
@@ -31,6 +31,7 @@ for (const [profile, variable] of [
         ]),
       ],
       ['@cat/ptclpi/tie.ppi', nativeParticleFixture({ color: 0xff0000ff })],
+      ['tie.hg3', hg3(16, 16, new Uint8Array(16 * 16 * 4).fill(255))],
     ]);
     if (!profile.startsWith('sdk-'))
       files.set(
