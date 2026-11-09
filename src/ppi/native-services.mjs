@@ -5,6 +5,10 @@ import { windowsWideCharToMultiByte } from './windows-widechar.mjs';
 
 const PAGE_SIZE = 4096,
   ALLOCATION_GRANULARITY = 65536;
+const TLS_INLINE = 64,
+  TLS_COUNT = 1088,
+  TEB_TLS_SLOTS = 0xe10,
+  TEB_TLS_EXPANSION_SLOTS = 0xf94;
 
 export class PPIWindowsServices {
   constructor(process, { clock, now = () => performance.now(), epoch } = {}) {
@@ -13,8 +17,7 @@ export class PPIWindowsServices {
     this.now = clock ? () => clock.now() : now;
     this.epoch = epoch ?? clock?.epoch ?? Date.now() - this.now();
     this.lastError = 0;
-    this.tls = new Map();
-    this.nextTLS = 0;
+    this.tls = new Set();
     this.locks = new Map();
     this.functions = new Map();
     this.calls = new Map();
@@ -102,25 +105,40 @@ export class PPIWindowsServices {
         for (let i = 0; i < values.length; i++) process.store(out + i * 4, values[i]);
       });
     def('TlsAlloc', 0, () => {
-      if (this.nextTLS >= 1088) {
+      let index = 0;
+      while (this.tls.has(index)) index++;
+      if (index === TLS_COUNT) {
         this.lastError = 8;
         return 0xffffffff;
       }
-      const index = this.nextTLS++;
-      this.tls.set(index, 0);
+      process.store(this.tlsSlot(index, true), 0);
+      this.tls.add(index);
       return index;
     });
-    def('TlsFree', 1, ([index]) => Number(this.tls.delete(index)));
-    def('TlsGetValue', 1, ([index]) => {
-      this.lastError = this.tls.has(index) ? 0 : 87;
-      return this.tls.get(index) || 0;
-    });
-    def('TlsSetValue', 2, ([index, value]) => {
-      if (!this.tls.has(index)) {
+    def('TlsFree', 1, ([index]) => {
+      if (!this.tls.delete(index)) {
         this.lastError = 87;
         return 0;
       }
-      this.tls.set(index, value);
+      const slot = this.tlsSlot(index, false);
+      if (slot) process.store(slot, 0);
+      return 1;
+    });
+    def('TlsGetValue', 1, ([index]) => {
+      if (index >= TLS_COUNT) {
+        this.lastError = 87;
+        return 0;
+      }
+      this.lastError = 0;
+      const slot = this.tlsSlot(index, false);
+      return slot ? process.load(slot) : 0;
+    });
+    def('TlsSetValue', 2, ([index, value]) => {
+      if (index >= TLS_COUNT) {
+        this.lastError = 87;
+        return 0;
+      }
+      process.store(this.tlsSlot(index, true), value);
       return 1;
     });
     def('GetLastError', 0, () => this.lastError);
@@ -584,11 +602,20 @@ export class PPIWindowsServices {
     }
     return 1;
   }
+  tlsSlot(index, create) {
+    if (index < TLS_INLINE) return TEB_TLS_SLOTS + index * 4;
+    const p = this.process;
+    let slots = p.load(TEB_TLS_EXPANSION_SLOTS);
+    if (!slots && create) {
+      slots = p.allocate((TLS_COUNT - TLS_INLINE) * 4, true);
+      p.store(TEB_TLS_EXPANSION_SLOTS, slots);
+    }
+    return slots ? slots + (index - TLS_INLINE) * 4 : 0;
+  }
   snapshot() {
     return {
       lastError: this.lastError,
       tls: [...this.tls],
-      nextTLS: this.nextTLS,
       locks: [...this.locks],
       exceptionFilter: this.exceptionFilter || 0,
       heaps: [...this.heaps].map(([handle, heap]) => [
@@ -605,8 +632,12 @@ export class PPIWindowsServices {
   }
   restore(state) {
     this.lastError = state.lastError;
-    this.tls = new Map(state.tls);
-    this.nextTLS = state.nextTLS;
+    this.tls = new Set(state.tls);
+    if (
+      this.tls.size !== state.tls.length ||
+      [...this.tls].some((index) => !Number.isInteger(index) || index < 0 || index >= TLS_COUNT)
+    )
+      throw new Error('Invalid native TLS allocation bitmap');
     this.locks = new Map(state.locks);
     this.exceptionFilter = state.exceptionFilter;
     this.heaps = new Map(
