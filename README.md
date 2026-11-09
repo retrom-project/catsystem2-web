@@ -145,3 +145,6 @@ GPU 上耗时较长。
 来源、提交和 SDK 原生对照指纹见 [references.json](references.json)。
 MPL-2.0；GARbro 的 MIT 归属及其他说明见 [NOTICE.md](NOTICE.md)。
 本仓库不分发游戏素材或原生引擎二进制。
+
+Main matrix/vector migration has 92 authored GCALL cases per ABI, captured in
+`tests/fixtures/geometry-golden.json`; see [calculation semantics](docs/native-vector-matrix.md).

@@ -10,12 +10,16 @@ import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
 import { readKCS, nativeReply } from '../../src/kcs.mjs';
 import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
 import { memoryGame, kcsProgram } from '../helpers.mjs';
+import { NATIVE_MATRIX_OPERATIONS } from '../../src/native/matrix.mjs';
+import { NATIVE_GEOMETRY_OPERATIONS } from '../../src/native/geometry.mjs';
 
 const independent = {
   generic: new Set(['math.sin', 'math.cos', 'matrix.copy', 'vector4.normalize']),
   main: new Set([
     'math.linearInterpolate',
     'math.roundInteger',
+    ...NATIVE_MATRIX_OPERATIONS,
+    ...NATIVE_GEOMETRY_OPERATIONS,
     ...Object.values(NATIVE_ABIS)[0]
       .tables.main.entries.filter((e) => e.family === 'math')
       .map((e) => e.name),
@@ -51,12 +55,18 @@ function imageMemory(engine) {
       bytes: engine.process.read(engine.module.base + section.address, section.size).slice(),
     }));
 }
-function imageWrites(engine, before) {
+function imageWrites(engine, before, projectedRanges = []) {
   const result = [];
   for (const section of before) {
     const after = engine.process.read(section.address, section.bytes.length);
     for (let at = 0; at < after.length; at++)
-      if (section.bytes[at] !== after[at])
+      if (
+        section.bytes[at] !== after[at] &&
+        !projectedRanges.some(
+          ({ address, bytes }) =>
+            section.address + at >= address && section.address + at < address + bytes,
+        )
+      )
         result.push({
           region: section.name,
           offset: at,
@@ -67,7 +77,16 @@ function imageWrites(engine, before) {
   return result;
 }
 
-function originalReply(engine, table, id, args, machine, evidence, allowedBoundaries = []) {
+function originalReply(
+  engine,
+  table,
+  id,
+  args,
+  machine,
+  evidence,
+  allowedBoundaries = [],
+  adapter,
+) {
   const p = engine.process,
     abi = nativeABI(engine.profile),
     allocations = new Map(p.allocations);
@@ -94,7 +113,7 @@ function originalReply(engine, table, id, args, machine, evidence, allowedBounda
     p.cpu.reg_write_i32(p.uc.X86_REG_FPCW, abi.floatingPoint.x87ControlWord);
     p.cpu.reg_write_i32(p.uc.X86_REG_MXCSR, abi.floatingPoint.mxcsr);
     p.lastTrap = null;
-    const control = p.call(address, [bridge.pointer, 0, argv, out + 4]);
+    const control = p.call(address, [bridge.pointer, adapter?.caller ?? 0, argv, out + 4]);
     for (const boundary of boundaries)
       assert.ok(
         allowedBoundaries.includes(boundary),
@@ -107,7 +126,19 @@ function originalReply(engine, table, id, args, machine, evidence, allowedBounda
     assert.equal(watch.written, written, 'original result-word write contract');
     evidence.outputWrites.push(watch.written);
     if (!written) assert.equal(p.load(out + 4), 0xcccccccc, 'original void output');
-    evidence.peWrites.push(...imageWrites(engine, before));
+    evidence.peWrites.push(...imageWrites(engine, before, adapter?.projectedRanges));
+    // Keep the raw evidence as well as comparing these bytes through the
+    // independently observed domain state; no PE mutation disappears silently.
+    evidence.projectedWrites.push(
+      ...imageWrites(engine, before).filter((write) => {
+        const section = before.find((s) => s.name === write.region);
+        return adapter?.projectedRanges?.some(
+          ({ address, bytes }) =>
+            section.address + write.offset >= address &&
+            section.address + write.offset < address + bytes,
+        );
+      }),
+    );
     assert.equal(
       p.cpu.reg_read_i32(p.uc.X86_REG_FPCW),
       abi.floatingPoint.x87ControlWord,
@@ -141,7 +172,7 @@ function originalReply(engine, table, id, args, machine, evidence, allowedBounda
   }
 }
 
-export async function observeNativeCase(fixture, oracleEngine = null) {
+export async function observeNativeCase(fixture, oracleEngine = null, oracleAdapter) {
   const { profile, table, id, args, initial } = fixture;
   const abi = nativeABI(profile),
     entry = abi.tables[table]?.entries[id];
@@ -153,10 +184,19 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
     'fixture matches the reviewed signature',
   );
   if (oracleEngine) assert.equal(oracleEngine.profile, profile, 'oracle ABI');
+  if (oracleAdapter)
+    assert.ok(oracleEngine, 'only the independent oracle lane accepts a PE adapter');
+  const adapter = oracleAdapter?.prepare(oracleEngine, fixture);
   const instructions = [...args.map((word) => [37, word]), [43, id, args.length * 4], [59]];
   const bytes = kcsProgram(instructions),
     trace = [],
-    evidence = { peWrites: [], floatingPoint: [], outputWrites: [], hostBoundaries: [] };
+    evidence = {
+      peWrites: [],
+      floatingPoint: [],
+      outputWrites: [],
+      hostBoundaries: [],
+      projectedWrites: [],
+    };
   let lastReply;
   const observeReply = (reply) => {
     assert.ok(
@@ -185,6 +225,7 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
             machine,
             evidence,
             fixture.oracle?.boundaries,
+            adapter,
           ),
         );
       }
@@ -209,6 +250,7 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
       events: motion.messages,
       nativeCalls: trace,
       oracleEvidence: evidence.floatingPoint,
+      projectedPEWrites: evidence.projectedWrites,
     };
   }
   const game = memoryGame({ 'case.kcs': bytes }),
@@ -226,6 +268,8 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
   world.ensureNativeEngine = () => {
     throw new Error('JS differential lane attempted to load the EXE');
   };
+  if (initial?.matrixWords)
+    new Uint32Array(world.calculations.matrix.buffer).set(initial.matrixWords);
   try {
     const dispatch = world.runtime.native.bind(world.runtime);
     world.runtime.native = (nativeTable, nativeID, words, machine, task, scheduler) => {
@@ -244,6 +288,7 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
             machine,
             evidence,
             fixture.oracle?.boundaries,
+            adapter,
           ),
         );
       }
@@ -265,7 +310,16 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
         ? evidence.outputWrites.at(-1)
         : Object.hasOwn(lastReply, 'value'),
       value: lastReply.value,
-      memory: vmMemory(task.machine),
+      memory: {
+        ...vmMemory(task.machine),
+        ...(fixture.domain === 'matrix'
+          ? {
+              'state:current-matrix': oracleEngine
+                ? adapter.memory()['state:current-matrix']
+                : world.calculations.matrix.slice(),
+            }
+          : {}),
+      },
       peWrites: evidence.peWrites,
       handles: world.runtime.handles.snapshot(),
       tasks: {
@@ -287,6 +341,7 @@ export async function observeNativeCase(fixture, oracleEngine = null) {
       events: structuredClone(scheduler.events),
       nativeCalls: trace,
       oracleEvidence: evidence.floatingPoint,
+      projectedPEWrites: evidence.projectedWrites,
     };
   } catch (error) {
     const task = world.main ?? [...world.runtime.scheduler.tasks.values()].at(-1);

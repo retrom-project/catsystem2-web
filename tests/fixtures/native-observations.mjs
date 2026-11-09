@@ -5,7 +5,7 @@ import { bitsFloat } from '../../src/kcs.mjs';
 export function compareFloatWord(
   actual,
   expected,
-  { ulp = 0, nan = 'exact' } = {},
+  { ulp = 0, nan = 'exact', atol = 0, rtol = 0 } = {},
   label = 'float',
 ) {
   assert.ok(
@@ -13,7 +13,13 @@ export function compareFloatWord(
     `${label} unsigned word`,
   );
   assert.ok(
-    Number.isSafeInteger(ulp) && ulp >= 0 && ['classification', 'exact'].includes(nan),
+    Number.isSafeInteger(ulp) &&
+      ulp >= 0 &&
+      ['classification', 'exact'].includes(nan) &&
+      Number.isFinite(atol) &&
+      atol >= 0 &&
+      Number.isFinite(rtol) &&
+      rtol >= 0,
     `${label} tolerance policy`,
   );
   if (actual === expected) return;
@@ -32,7 +38,11 @@ export function compareFloatWord(
     `${label} exact zero/infinity`,
   );
   const ordered = (word) => (word & 0x80000000 ? 0xffffffff - word : word + 0x80000000);
-  assert.ok(Math.abs(ordered(actual) - ordered(expected)) <= ulp, `${label} exceeds ${ulp} ULP`);
+  assert.ok(
+    Math.abs(ordered(actual) - ordered(expected)) <= ulp ||
+      Math.abs(a - b) <= atol + rtol * Math.max(Math.abs(a), Math.abs(b)),
+    `${label} exceeds ${ulp} ULP and absolute/relative budget`,
+  );
 }
 
 function compareBytes(actual, expected, ranges, label) {

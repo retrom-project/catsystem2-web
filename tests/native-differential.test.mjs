@@ -70,6 +70,10 @@ test('comparison detects control, output, VM/PE bytes, handle ownership and task
 
 test('floating tolerance is per word and cannot mask exact zero, infinity, integer or unrelated byte changes', () => {
   compareFloatWord(0x3f800001, 0x3f800000, { ulp: 1 });
+  compareFloatWord(floatBits(1.001), floatBits(1), { atol: 0.002 });
+  compareFloatWord(floatBits(1001), floatBits(1000), { rtol: 0.002 });
+  assert.throws(() => compareFloatWord(floatBits(1.003), floatBits(1), { atol: 0.002 }), /budget/);
+  assert.throws(() => compareFloatWord(floatBits(1), floatBits(2), { atol: Infinity }), /policy/);
   assert.throws(() => compareFloatWord(0x3f800002, 0x3f800000, { ulp: 1 }), /ULP/);
   assert.throws(() => compareFloatWord(0, 0x80000000, { ulp: 10 }), /zero/);
   assert.throws(() => compareFloatWord(0x7f800000, 0xff800000, { ulp: 10 }), /infinity/);

@@ -998,6 +998,7 @@ export class NativeWorld {
       configurationDirty: this.configurationDirty,
       runtime: this.runtime.snapshot(),
       graphics: this.graphics.snapshot(),
+      calculations: { matrix: this.calculations.matrix.slice() },
       sound: this.sound.snapshot(),
       particles: this.particles.snapshot(),
       objects: this.objects.snapshot(),
@@ -1019,6 +1020,7 @@ export class NativeWorld {
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);
+    this.calculations.matrix.set(state.calculations.matrix);
     this.configuration.restore(state.configuration);
     this.globalStrings.restore(state.globalStrings);
     this.soundConfiguration.restore(state.soundConfiguration);

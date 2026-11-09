@@ -1,73 +1,51 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main CC..CF uses the supplied original engine's matrix implementation and
-// D3DX dispatch. The current matrix for a translated NULL pointer remains in
-// that shared process, together with the original matrix stack.
-import { nativeReply } from '../kcs/vm.mjs';
-
-const operations = {
-  'nekopara-vol3-engine-2.6.1.76': {
-    rotate: [0x678680, 0x6786e0, 0x678740],
-    translate: 0x678820,
-    scale: 0x6787a0,
-    identity: 0x678500,
-  },
-  'sdk-4.01-engine-2.6.1.74': {
-    rotate: [0x54f400, 0x54f460, 0x54f4c0],
-    translate: 0x54f5a0,
-    scale: 0x54f520,
-    identity: 0x54f280,
-  },
-};
-export class NativeMatrices {
-  constructor(engine) {
-    this.engine = engine;
-    this.operations = operations[engine.profile];
-    if (!this.operations) throw new Error('Native matrices require a reviewed engine profile');
-    engine.registerFeature('matrix', this);
-  }
-  async apply(id, args, machine) {
-    if (id < 0xcc || id > 0xcf) return undefined;
-    const count = id === 0xcf ? 1 : 4;
-    if (args.length !== count)
-      throw new Error(`Native matrix 0x${id.toString(16)} expects ${count} arguments`);
-    let mapped = false;
-    try {
-      machine.region(args[0] >>> 0, 1);
-      mapped = true;
-    } catch {
-      /* Native VM translates an unmapped address to NULL. */
-    }
-    const bytes = mapped ? machine.bytes(args[0], 64).slice() : null,
-      p = this.engine.process,
-      pointer = mapped ? p.allocate(64, true) : 0;
-    try {
-      if (bytes) p.write(pointer, bytes);
-      if (id === 0xcc) {
-        for (let i = 0; i < 3; i++)
-          await this.engine.call(this.operations.rotate[i], [pointer, args[i + 1]]);
-      } else
-        await this.engine.call(
-          this.operations[id === 0xcd ? 'translate' : id === 0xce ? 'scale' : 'identity'],
-          [pointer, ...args.slice(1)],
-        );
-      if (bytes) {
-        const result = p.read(pointer, 64);
-        machine.bytes(args[0], 64).set(result);
-      }
-      return nativeReply(2);
-    } finally {
-      if (pointer) p.free(pointer);
-    }
-  }
-  snapshot() {
-    return {};
-  }
-  restore() {}
+import { nativeABI } from './abi/index.mjs';
+import { nativeReply, bitsFloat } from '../kcs/vm.mjs';
+import { identity, translation, scaling } from '../motion/matrix.mjs';
+import { multiplyNativeMatrix } from './calculation-math.mjs';
+import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
+import { nativeScalarMath } from './scalar-math.mjs';
+export const NATIVE_MATRIX_OPERATIONS = Object.freeze([
+  'matrix.rotateXYZ',
+  'matrix.translate',
+  'matrix.scale',
+  'matrix.identity',
+]);
+function rotation(axis, word) {
+  // D3DX uses FSINCOS directly. Outside its finite argument range the
+  // pinned oracle leaves the operand on top; its second pop reads zero.
+  // The scalar CRT path performs range reduction and is not interchangeable.
+  const angle = bitsFloat(word),
+    outOfRange = Number.isFinite(angle) && Math.abs(angle) >= 2 ** 63,
+    c = outOfRange ? angle : bitsFloat(nativeScalarMath('math.cos', [word], null, 1).value),
+    s = outOfRange ? 0 : bitsFloat(nativeScalarMath('math.sin', [word], null, 1).value),
+    m = identity();
+  if (axis === 0) [m[5], m[6], m[9], m[10]] = [c, s, -s, c];
+  if (axis === 1) [m[0], m[2], m[8], m[10]] = [c, -s, s, c];
+  if (axis === 2) [m[0], m[1], m[4], m[5]] = [c, s, -s, c];
+  return m;
+}
+export function nativeMatrix(operation, args, machine, state) {
+  const count = operation === 'matrix.identity' ? 1 : 4;
+  if (args.length !== count) throw new Error(`${operation} expects ${count} arguments`);
+  const storage = matrixStorage(machine, args[0] >>> 0, state);
+  let m = floats(storage.read());
+  if (operation === 'matrix.identity') m = identity();
+  else if (operation === 'matrix.rotateXYZ')
+    for (let i = 0; i < 3; i++) m = multiplyNativeMatrix(m, rotation(i, args[i + 1]));
+  else
+    m = multiplyNativeMatrix(
+      m,
+      (operation === 'matrix.translate' ? translation : scaling)(...args.slice(1).map(bitsFloat)),
+    );
+  storage.write(floatBytes(m));
+  return nativeReply(2);
 }
 export function installNativeMatrices(world) {
-  world.registerNativeFeature('matrix', (engine) => new NativeMatrices(engine));
-  for (let id = 0xcc; id <= 0xcf; id++)
-    world.runtime.register('main', id, async (args, machine) =>
-      (await world.getNativeFeature('matrix')).apply(id, args, machine),
-    );
+  world.calculations = { matrix: new Uint8Array(64) };
+  for (const entry of nativeABI(world.profile).tables.main.entries)
+    if (NATIVE_MATRIX_OPERATIONS.includes(entry.name))
+      world.runtime.register('main', entry.id, (args, machine) =>
+        nativeMatrix(entry.name, args, machine, world.calculations),
+      );
 }

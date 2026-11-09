@@ -266,11 +266,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/geometry.mjs": {
-      "addresses": 18,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/global-strings-bridge.mjs": {
       "addresses": 2,
       "calls": 1,
@@ -338,11 +333,6 @@
     },
     "src/native/input-device.mjs": {
       "addresses": 32,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/matrix.mjs": {
-      "addresses": 12,
       "calls": 2,
       "references": 0
     },

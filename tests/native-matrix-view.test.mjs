@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeMatrices } from '../src/native/matrix.mjs';
+import { NativeMatrices } from '../oracle/matrix.mjs';
 import { KCSMachine, floatBits, bitsFloat } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 for (const [profile, variable] of [

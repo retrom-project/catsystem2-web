@@ -1,41 +1,52 @@
-# Matrix and vector wrappers
+# Matrix and vector calculations
 
-[The geometry adapter](../src/native/geometry.mjs) executes all nine original
-main wrappers `0x15E..166` and their original D3DX/SSE helpers in the shared
-engine process. It shares the current matrix and stack with
-[main `0xCC..CF`](../src/native/matrix.mjs). No second matrix state or JavaScript
-arithmetic approximation is introduced.
+Main `0xCC..CF` and `0x15E..166` are synchronous JavaScript operations in
+[`matrix.mjs`](../src/native/matrix.mjs) and
+[`geometry.mjs`](../src/native/geometry.mjs). They use no EXE or transitional calls.
+The existing generic motion calculations are unchanged.
 
-| ID        | Parameters                | Behavior                                                                     | Control |
-| --------- | ------------------------- | ---------------------------------------------------------------------------- | ------- |
-| 15E       | VM matrix                 | In-place inverse; an unmapped VM pointer selects the original current matrix | 2       |
-| 15F       | VM destination, VM source | Four sequential 16-byte copies                                               | 2       |
-| 160       | VM vector4                | In-place normalization                                                       | 2       |
-| 161 / 162 | VM vector4, VM vector4    | In-place addition / subtraction                                              | 2       |
-| 163 / 164 | VM vector4                | Length / squared length, returned as raw float bits                          | 1       |
-| 165       | VM vector4, VM float      | In-place scale; the second argument is a pointer to a float                  | 2       |
-| 166       | VM vector4, VM matrix4    | Four-component matrix transformation                                         | 2       |
+| ID        | Parameters                | Behavior                                                   | Control |
+| --------- | ------------------------- | ---------------------------------------------------------- | ------- |
+| CC        | matrix, x/y/z radians     | Row-vector matrix, postmultiply X then Y then Z            | 2       |
+| CD / CE   | matrix, x/y/z             | Postmultiply translation / scale                           | 2       |
+| CF        | matrix                    | Identity                                                   | 2       |
+| 15E       | matrix                    | In-place inverse; singular inputs remain unchanged         | 2       |
+| 15F       | destination, source       | Four sequential 16-byte copies                             | 2       |
+| 160       | vector4                   | Normalize; squared length at or below FLT_MIN becomes zero | 2       |
+| 161 / 162 | destination, source       | Sequential component addition / subtraction                | 2       |
+| 163 / 164 | vector4                   | Length / squared length as raw f32 bits                    | 1       |
+| 165       | vector4, pointer to float | In-place scale                                             | 2       |
+| 166       | vector4, matrix4          | Four-component row-vector transform                        | 2       |
 
-A VM address of zero maps to the beginning of data memory. It does not select
-the native current matrix. Only the original translator's unmapped-pointer
-result invokes `15E`'s fallback. Other wrappers retain their original pointer
-requirements. Overlapping operands follow the original instruction order;
-`15F` is not a `memmove`. Singular inverses, zero-length vectors, infinities,
-subnormal values, signed zero and NaN payloads remain original CPU behavior.
-Missing arguments read the still-mapped adjacent GCALL words.
+Address zero is valid VM memory. Only an unmapped matrix address selects the
+World-owned current matrix. Its initial 64 bytes are zero, as observed in both
+fresh original images. World checkpoints own and restore these bytes independently;
+there is no second mutable current-matrix state in the product. The original global
+references belong to the migrated matrix helpers; renderer calls with explicit
+matrix storage do not consume this fallback. No PE projection is required here.
 
-`scripts/verify-native-geometry.mjs` compares all nine full wrappers against
-the adapter in each frozen engine: **1,162 calls and 6,098 comparisons per
-profile**, **12,196 comparisons total**. Cases cover data, stack, shared and
-extension-block addresses, overlapping/cross-region operands, raw exceptional
-float words, output canaries, current native matrix state and independent
-fresh-process continuation. Arithmetic helpers are not replaced; ordinary
-CRT and operating-system service boundaries remain supplied by the shared
-engine environment.
+Copies and add/subtract retain forward instruction ordering, including overlapping
+operands. Float32 storage and the normal x87 PC=24 intermediate rounding points
+are explicit in [`calculation-math.mjs`](../src/native/calculation-math.mjs).
+D3DX rotation uses direct FSINCOS: for finite magnitudes at least 2^63, the pinned
+oracle leaves the argument as cosine and reads zero on its second stack pop.
+This observed backend behavior differs from the scalar CRT reduction path and is
+preserved for the canonical fresh FP state. Outside the FSINCOS input range, an
+empty-stack pop can expose prior popped register contents in the oracle; reproducing
+that undefined cross-call residue remains `needs-review`. The differential adapter
+resets the complete fresh FP state for each authored input and does not claim to
+cover that residue. This is not a hardware accuracy claim. Plugin-modified precision state remains outside the approved contract.
 
-Four optional public tests check concrete scalar/vector/matrix results,
-pointer-valued scale, sequential overlap, extended/shared addresses and
-independent restored engine RAM. A full SDK World test additionally checks
-runtime dispatch, immediate CPU-to-VM aliasing and caller writes before the first
-restored call. These tests establish the wrapper and shared
-memory contract; they do not measure renderer pixels or device precision.
+[`geometry-cases.mjs`](../tests/fixtures/geometry-cases.mjs) contains 92 authored
+GCALL cases per ABI: current and explicit matrices, fractional and singular inputs,
+exceptional vectors, aliases, unaligned copies, shared and extension storage.
+Every declared f32 output uses 1 ULP, atol=rtol=0; all other memory, controls,
+handles and task state compare exactly. No tolerance was enlarged to pass samples.
+The oracle adapter observes original current-matrix RAM as semantic state and keeps
+raw projected PE write evidence; all other PE writes remain exact comparisons.
+Public golden fixtures retain every compared f32 word explicitly and exact hashes
+for the remaining bytes. Public World checkpoint tests reject EXE initialization.
+
+The old facades and exhaustive original-only verifier remain under `oracle/` and
+`scripts/verify-native-{matrices,geometry}.mjs` for CPU evidence. Their agreement with
+the original code is separate from the independent JS differential lane.

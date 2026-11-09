@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeMatrices } from '../src/native/matrix.mjs';
+import { NativeMatrices } from '../oracle/matrix.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { KCSMachine, floatBits } from '../src/kcs/vm.mjs';

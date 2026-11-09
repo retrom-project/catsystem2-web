@@ -1,0 +1,3879 @@
+{
+  "scope": "Authored main matrix/vector inputs, original table handlers and semantic current-matrix RAM, normal FPCW 0x007f/MXCSR 0x1f80. Declared f32 words retained explicitly; all other bytes hashed exactly.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "cases": {
+        "matrix.identity zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1051828412, 1060011905, 1059384179, 0, 3211687569, 1051276864, 1041996022, 0,
+                3185568410, 3207011861, 1061152139, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1051828412, 1060011905, 1059384179, 0, 3211687569, 1051276864, 1041996022, 0,
+                3185568410, 3207011861, 1061152139, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1057703199, 1066936254, 1069661647, 0, 3227194020, 1073894416, 3200051577, 0,
+                3227604480, 3231670046, 1084598399, 0, 1062778807, 3225056212, 1091138177,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1057703199, 1066936254, 1069661647, 0, 3227194020, 1073894416, 3200051577, 0,
+                3227604480, 3231670046, 1084598399, 0, 1062778807, 3225056212, 1091138177,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                3198461396, 3178295192, 1080986849, 0, 3210580091, 3205934946, 1091325939, 0,
+                3207145536, 3206886804, 1096125953, 0, 1081769192, 1085986942, 1085895994,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                3198461396, 3178295192, 1080986849, 0, 3210580091, 3205934946, 1091325939, 0,
+                3207145536, 3206886804, 1096125953, 0, 1081769192, 1085986942, 1085895994,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1045220557,
+                3207803699, 1066192077, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1045220557,
+                3207803699, 1066192077, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1090519040,
+                1065353216, 1084227584, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1090519040,
+                1065353216, 1084227584, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1085276160, 3226468352, 1091567616,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1085276160, 3226468352, 1091567616,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1045220557, 0, 0, 0, 0, 3207803699, 0, 0, 0, 0, 1066192077, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1045220557, 0, 0, 0, 0, 3207803699, 0, 0, 0, 0, 1066192077, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1086324736, 0, 0, 0, 0, 1098907648, 0, 0, 0, 0, 3246391296, 0, 1097859072,
+                3242196992, 3244294144, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1086324736, 0, 0, 0, 0, 1098907648, 0, 0, 0, 0, 3246391296, 0, 1097859072,
+                3242196992, 3244294144, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1056964608, 3204448256, 1086324736, 0, 1065353216, 3214934016, 1096810496, 0,
+                1069547520, 3219128320, 1102053376, 0, 1075838976, 1061158912, 1096810496,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1056964608, 3204448256, 1086324736, 0, 1065353216, 3214934016, 1096810496, 0,
+                1069547520, 3219128320, 1102053376, 0, 1075838976, 1061158912, 1096810496,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                1061158912, 3210739712, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                1061158912, 3210739712, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse singular": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse singular current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse tiny": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse tiny current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "b8bad40a16097495ecbb784ebce097dc1deee5c0ee2395e46b2e35d9b84afd0c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3e1f62f2e33ea48d3b0c3e03c894d20d6134cce00e07ad8573e219dcc8aa9a53",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 80/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e7d2eb840c690a026e34cd9a1cb8e03f166d6a0b849722196ac03e5bfbf223dd",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/80": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "7abf9c13599573a010494e496b7b281865ea373650023e52d15d0ed712f397cc",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 65/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "6774f9fd0253ce91878c6d04826ce21bfce4fe6a056e5a394a42f011cefe0c3c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 0,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 3,4,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1058642330, 1061997773, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1065353216, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1.1,-2.3,0.25,4.7": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1045589644, 3202088756, 1027558713, 1063307145]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1e+30,1e+30,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1e-30,1e-30,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 0,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 3,4,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1084227584,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1084227584]
+            }
+          ],
+          "memory": {
+            "memory": "38cff9fd148a284aa3894ef3c81c34c5dc250ccaf8d3fa8f40e20aed5a0471c3",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1065353216]
+            }
+          ],
+          "memory": {
+            "memory": "ffbebafcc43feb62e45d7d1fd9e1e7f8e999d13f90f753a57c90948fee91e203",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1.1,-2.3,0.25,4.7": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1084967465,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1084967465]
+            }
+          ],
+          "memory": {
+            "memory": "1c0b14685a52cc95115ba3b079cb38e9b00089a8c1bcea758eeebf23560e2eeb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1e+30,1e+30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "7457124a7be5d4633c360ef7d1010eb75b95f1e00b0d92b4763d0bdc8dacfa08",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1e-30,1e-30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "bb8f6875a7f5d0028fe5aab88fc0caf27b4b92ab9910b4bd7a974a9539ca94f5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 0,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 3,4,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1103626240,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1103626240]
+            }
+          ],
+          "memory": {
+            "memory": "38cff9fd148a284aa3894ef3c81c34c5dc250ccaf8d3fa8f40e20aed5a0471c3",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1065353216]
+            }
+          ],
+          "memory": {
+            "memory": "ffbebafcc43feb62e45d7d1fd9e1e7f8e999d13f90f753a57c90948fee91e203",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1.1,-2.3,0.25,4.7": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1105541201,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1105541201]
+            }
+          ],
+          "memory": {
+            "memory": "1c0b14685a52cc95115ba3b079cb38e9b00089a8c1bcea758eeebf23560e2eeb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1e+30,1e+30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "7457124a7be5d4633c360ef7d1010eb75b95f1e00b0d92b4763d0bdc8dacfa08",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1e-30,1e-30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "bb8f6875a7f5d0028fe5aab88fc0caf27b4b92ab9910b4bd7a974a9539ca94f5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3221225472, 1075838976, 1093664768, 1086324736]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "07462b6c900b44344807b84b62a3eb3a16e7fdd8f493a4d1bb1b2f1ac83399ee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1073741824, 1082130432, 1086324736, 1090519040]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3ba53cb720cd47ef65dd0bbccc84c35c8cc3dcb550450ac7b9c23eb43bd797f6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1077936128, 1084227584, 1088421888, 1091567616]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "5558aaf46f4a924f45aa33321839e4f1d202945f8b443420ed3e5ae86d6c70b8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 68/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 68,
+              "words": [1077936128, 1086324736, 1092616192, 1097859072]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3f3918c2fa0e3a9955558877d6b93ea630b8bc4d5f516a355383c254f278d3da",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1082130432, 1069547520, 3231711232, 1073741824]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "07462b6c900b44344807b84b62a3eb3a16e7fdd8f493a4d1bb1b2f1ac83399ee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3ba53cb720cd47ef65dd0bbccc84c35c8cc3dcb550450ac7b9c23eb43bd797f6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3212836864, 3212836864, 3212836864, 3212836864]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "5558aaf46f4a924f45aa33321839e4f1d202945f8b443420ed3e5ae86d6c70b8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 68/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 68,
+              "words": [1065353216, 1073741824, 1073741824, 1077936128]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3f3918c2fa0e3a9955558877d6b93ea630b8bc4d5f516a355383c254f278d3da",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 2147483648, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fb7da37e1c90cacc3204facf29a2862b154934104e42d95ff969ff4c7e3c290e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer -1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3213675725, 1073741824, 3225419776, 3196059648]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "51209a8162118289f0a34533905a10b2a5003d64eb32d5b685c1fece36aac614",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 0.125": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1041026253, 3196059648, 1052770304, 1023410176]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f21dadb6f24853343b45b874aef07921b2521352d4dc3c859d0d05377f91d6df",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 3.7": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1082277233, 3236744397, 1093769626, 1064094925]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "aa973b628cf928875e778ffb98e48ff5d775e554577dc69e2a734cad0825575d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1067450368, 3223322624, 1078355558, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "2b96a61fa50618918ad332d8ba1ca708d4670c929b04a7c4efe12cbf19331c56",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 2,0,0,0,0,4,0,0,0,0,8,0,5,-3,7,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1102315520, 3249537024, 1112748851, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "87b179df25f76eac88fc68da33bb5fbc9167d020b852323871e807543776fe70",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 1,2,3,0,2,5,7,0,3,7,11,0,5,-3,7,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1103914598, 3197737408, 1111582310, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "894a05330e772cf736f3a809db14adc92496d16b0bcb94a0905a6c9fc056e0bb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy shared to heap": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "30b16352daeeff1da0f69517dd9ca5338aefd9e3edf1e5ea939cbc98f72348c2",
+            "shared": "467106fee694d36da8ec1ce9b6d8421bcb19204cf727b354b4db3dbbab0ffd4c",
+            "block:1": "ab0d0f9aae7c74c3b988b38e741787e699bf077b7e0472335604655d8675e063",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "normalize heap": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "block:1",
+              "offset": 8,
+              "words": [1058642330, 1061997773, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065452229, 1053202868, 1061195708, 1022739087, 3223088555, 1074064117, 3201613326,
+                3164854026, 3207454014, 3210560288, 1051894075, 1036831949, 1076969949, 3212485262,
+                1084831088, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1066242409, 3208156021, 1047435150, 1022739087, 1050119504, 1077575418, 3216376856,
+                3164854026, 3205790434, 1051260355, 1065437102, 1036831949, 1081711002, 3224580915,
+                1085066445, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1046562735, 1056629063, 1046562735, 1022739087, 1031127696, 3221351301, 3217366712,
+                3164854026, 3186999952, 3197066281, 1065185444, 1036831949, 1060991140, 1069295861,
+                1083661354, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.inverse fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1067973533, 1045870989, 1053206338, 3180822798, 1059855940, 1051144987, 1062189330,
+                3183615066, 1072365195, 1007836603, 1072695750, 3195551496, 3241503032, 3187905607,
+                3237573583, 1074233037
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1096354366, 3245641564, 1102965637, 1082964050]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "67716ae030542d6ce2d95b386f63f12d67143d174d569c35615dce817080a5bb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "rotate large argument": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize exceptional Infinity,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [4290772992, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize exceptional NaN,1,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length exceptional Infinity,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "c0a98ec6da41dfa6f28bc07f411b743e413b35c82861d68af6f8272e0b8fb963",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length exceptional NaN,1,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2143289344,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2143289344]
+            }
+          ],
+          "memory": {
+            "memory": "a0409e7523a6e2c1900172a00fbe83028dcf9a7f6335478b366ecacbfb67038c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared exceptional Infinity,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "c0a98ec6da41dfa6f28bc07f411b743e413b35c82861d68af6f8272e0b8fb963",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared exceptional NaN,1,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2143289344,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2143289344]
+            }
+          ],
+          "memory": {
+            "memory": "a0409e7523a6e2c1900172a00fbe83028dcf9a7f6335478b366ecacbfb67038c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        }
+      }
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "cases": {
+        "matrix.identity zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.identity dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1051828412, 1060011905, 1059384179, 0, 3211687569, 1051276864, 1041996022, 0,
+                3185568410, 3207011861, 1061152139, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1051828412, 1060011905, 1059384179, 0, 3211687569, 1051276864, 1041996022, 0,
+                3185568410, 3207011861, 1061152139, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1057703199, 1066936254, 1069661647, 0, 3227194020, 1073894416, 3200051577, 0,
+                3227604480, 3231670046, 1084598399, 0, 1062778807, 3225056212, 1091138177,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1057703199, 1066936254, 1069661647, 0, 3227194020, 1073894416, 3200051577, 0,
+                3227604480, 3231670046, 1084598399, 0, 1062778807, 3225056212, 1091138177,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                3198461396, 3178295192, 1080986849, 0, 3210580091, 3205934946, 1091325939, 0,
+                3207145536, 3206886804, 1096125953, 0, 1081769192, 1085986942, 1085895994,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                3198461396, 3178295192, 1080986849, 0, 3210580091, 3205934946, 1091325939, 0,
+                3207145536, 3206886804, 1096125953, 0, 1081769192, 1085986942, 1085895994,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1045220557,
+                3207803699, 1066192077, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1045220557,
+                3207803699, 1066192077, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1090519040,
+                1065353216, 1084227584, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1090519040,
+                1065353216, 1084227584, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1085276160, 3226468352, 1091567616,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1085276160, 3226468352, 1091567616,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale zero": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale zero current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale identity": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1045220557, 0, 0, 0, 0, 3207803699, 0, 0, 0, 0, 1066192077, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale identity current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1045220557, 0, 0, 0, 0, 3207803699, 0, 0, 0, 0, 1066192077, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "487b832da35b4f5fcc11b872571a1cbc8b11ef0868bd5c122c455be332bdcf86",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1086324736, 0, 0, 0, 0, 1098907648, 0, 0, 0, 0, 3246391296, 0, 1097859072,
+                3242196992, 3244294144, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f0c385c2d2e722a314406c568ba863714be8c35c63f3df19e7c82e2404eba2aa",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1086324736, 0, 0, 0, 0, 1098907648, 0, 0, 0, 0, 3246391296, 0, 1097859072,
+                3242196992, 3244294144, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "1fc0154606aaf32fb365b26899b314de631d35232d46bc2fdd3fa221ac0d9db5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1056964608, 3204448256, 1086324736, 0, 1065353216, 3214934016, 1096810496, 0,
+                1069547520, 3219128320, 1102053376, 0, 1075838976, 1061158912, 1096810496,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "68bc2da666c30646b7e16544aae1e14d766887471b213ce627c09fe5c16c5856",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1056964608, 3204448256, 1086324736, 0, 1065353216, 3214934016, 1096810496, 0,
+                1069547520, 3219128320, 1102053376, 0, 1075838976, 1061158912, 1096810496,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "9bbb7a4d1c20347bc55e20458da4832de87f6115d74e3f3c34c8b9ff3c2f5965",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse affine": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                1061158912, 3210739712, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse affine current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                1061158912, 3210739712, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse dense": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse dense current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse singular": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse singular current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse tiny": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "inverse tiny current": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [
+                1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1343554297, 0, 0, 0, 0, 1065353216
+              ]
+            }
+          ],
+          "memory": {
+            "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "b8bad40a16097495ecbb784ebce097dc1deee5c0ee2395e46b2e35d9b84afd0c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3e1f62f2e33ea48d3b0c3e03c894d20d6134cce00e07ad8573e219dcc8aa9a53",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 80/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "e7d2eb840c690a026e34cd9a1cb8e03f166d6a0b849722196ac03e5bfbf223dd",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 64/80": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "7abf9c13599573a010494e496b7b281865ea373650023e52d15d0ed712f397cc",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy 65/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "6774f9fd0253ce91878c6d04826ce21bfce4fe6a056e5a394a42f011cefe0c3c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 0,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 3,4,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1058642330, 1061997773, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1065353216, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1.1,-2.3,0.25,4.7": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1045589644, 3202088756, 1027558713, 1063307145]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1e+30,1e+30,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize 1e-30,1e-30,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 0,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 3,4,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1084227584,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1084227584]
+            }
+          ],
+          "memory": {
+            "memory": "38cff9fd148a284aa3894ef3c81c34c5dc250ccaf8d3fa8f40e20aed5a0471c3",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1065353216]
+            }
+          ],
+          "memory": {
+            "memory": "ffbebafcc43feb62e45d7d1fd9e1e7f8e999d13f90f753a57c90948fee91e203",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1.1,-2.3,0.25,4.7": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1084967465,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1084967465]
+            }
+          ],
+          "memory": {
+            "memory": "1c0b14685a52cc95115ba3b079cb38e9b00089a8c1bcea758eeebf23560e2eeb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1e+30,1e+30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "7457124a7be5d4633c360ef7d1010eb75b95f1e00b0d92b4763d0bdc8dacfa08",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length 1e-30,1e-30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "bb8f6875a7f5d0028fe5aab88fc0caf27b4b92ab9910b4bd7a974a9539ca94f5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 0,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 3,4,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1103626240,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1103626240]
+            }
+          ],
+          "memory": {
+            "memory": "38cff9fd148a284aa3894ef3c81c34c5dc250ccaf8d3fa8f40e20aed5a0471c3",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1065353216,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1065353216]
+            }
+          ],
+          "memory": {
+            "memory": "ffbebafcc43feb62e45d7d1fd9e1e7f8e999d13f90f753a57c90948fee91e203",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1.1,-2.3,0.25,4.7": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 1105541201,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [1105541201]
+            }
+          ],
+          "memory": {
+            "memory": "1c0b14685a52cc95115ba3b079cb38e9b00089a8c1bcea758eeebf23560e2eeb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1e+30,1e+30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "7457124a7be5d4633c360ef7d1010eb75b95f1e00b0d92b4763d0bdc8dacfa08",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared 1e-30,1e-30,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 0,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [0]
+            }
+          ],
+          "memory": {
+            "memory": "bb8f6875a7f5d0028fe5aab88fc0caf27b4b92ab9910b4bd7a974a9539ca94f5",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3221225472, 1075838976, 1093664768, 1086324736]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "07462b6c900b44344807b84b62a3eb3a16e7fdd8f493a4d1bb1b2f1ac83399ee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1073741824, 1082130432, 1086324736, 1090519040]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3ba53cb720cd47ef65dd0bbccc84c35c8cc3dcb550450ac7b9c23eb43bd797f6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 64/68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1077936128, 1084227584, 1088421888, 1091567616]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "5558aaf46f4a924f45aa33321839e4f1d202945f8b443420ed3e5ae86d6c70b8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.add 68/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 68,
+              "words": [1077936128, 1086324736, 1092616192, 1097859072]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3f3918c2fa0e3a9955558877d6b93ea630b8bc4d5f516a355383c254f278d3da",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/128": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1082130432, 1069547520, 3231711232, 1073741824]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "07462b6c900b44344807b84b62a3eb3a16e7fdd8f493a4d1bb1b2f1ac83399ee",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3ba53cb720cd47ef65dd0bbccc84c35c8cc3dcb550450ac7b9c23eb43bd797f6",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 64/68": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3212836864, 3212836864, 3212836864, 3212836864]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "5558aaf46f4a924f45aa33321839e4f1d202945f8b443420ed3e5ae86d6c70b8",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.subtract 68/64": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 68,
+              "words": [1065353216, 1073741824, 1073741824, 1077936128]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3f3918c2fa0e3a9955558877d6b93ea630b8bc4d5f516a355383c254f278d3da",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 2147483648, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fb7da37e1c90cacc3204facf29a2862b154934104e42d95ff969ff4c7e3c290e",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer -1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [3213675725, 1073741824, 3225419776, 3196059648]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "51209a8162118289f0a34533905a10b2a5003d64eb32d5b685c1fece36aac614",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 0.125": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1041026253, 3196059648, 1052770304, 1023410176]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "f21dadb6f24853343b45b874aef07921b2521352d4dc3c859d0d05377f91d6df",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "scale pointer 3.7": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1082277233, 3236744397, 1093769626, 1064094925]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "aa973b628cf928875e778ffb98e48ff5d775e554577dc69e2a734cad0825575d",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1067450368, 3223322624, 1078355558, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "2b96a61fa50618918ad332d8ba1ca708d4670c929b04a7c4efe12cbf19331c56",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 2,0,0,0,0,4,0,0,0,0,8,0,5,-3,7,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1102315520, 3249537024, 1112748851, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "87b179df25f76eac88fc68da33bb5fbc9167d020b852323871e807543776fe70",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform 1,2,3,0,2,5,7,0,3,7,11,0,5,-3,7,1": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1103914598, 3197737408, 1111582310, 1082130432]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "894a05330e772cf736f3a809db14adc92496d16b0bcb94a0905a6c9fc056e0bb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "copy shared to heap": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "30b16352daeeff1da0f69517dd9ca5338aefd9e3edf1e5ea939cbc98f72348c2",
+            "shared": "467106fee694d36da8ec1ce9b6d8421bcb19204cf727b354b4db3dbbab0ffd4c",
+            "block:1": "ab0d0f9aae7c74c3b988b38e741787e699bf077b7e0472335604655d8675e063",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "normalize heap": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "block:1",
+              "offset": 8,
+              "words": [1058642330, 1061997773, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.rotateXYZ fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065452229, 1053202868, 1061195708, 1022739087, 3223088555, 1074064117, 3201613326,
+                3164854026, 3207454014, 3210560288, 1051894075, 1036831949, 1076969949, 3212485262,
+                1084831088, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.translate fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1066242409, 3208156021, 1047435150, 1022739087, 1050119504, 1077575418, 3216376856,
+                3164854026, 3205790434, 1051260355, 1065437102, 1036831949, 1081711002, 3224580915,
+                1085066445, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.scale fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1046562735, 1056629063, 1046562735, 1022739087, 1031127696, 3221351301, 3217366712,
+                3164854026, 3186999952, 3197066281, 1065185444, 1036831949, 1060991140, 1069295861,
+                1083661354, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "39ba7adc715f14aca2ab90af46a40bc4da71f2d961adeb629a7834ee111aa78a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "matrix.inverse fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1067973533, 1045870989, 1053206338, 3180822798, 1059855940, 1051144987, 1062189330,
+                3183615066, 1072365195, 1007836603, 1072695750, 3195551496, 3241503032, 3187905607,
+                3237573583, 1074233037
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "transform fractional": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [1096354366, 3245641564, 1102965637, 1082964050]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "67716ae030542d6ce2d95b386f63f12d67143d174d569c35615dce817080a5bb",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "rotate large argument": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [
+                1065353216, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1065353216
+              ]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize exceptional Infinity,0,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [4290772992, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.normalize exceptional NaN,1,0,0": {
+          "control": 2,
+          "resultWritten": false,
+          "floatingMemory": [
+            {
+              "region": "memory",
+              "offset": 64,
+              "words": [0, 0, 0, 0]
+            },
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ],
+          "memory": {
+            "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length exceptional Infinity,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "c0a98ec6da41dfa6f28bc07f411b743e413b35c82861d68af6f8272e0b8fb963",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.length exceptional NaN,1,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2143289344,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2143289344]
+            }
+          ],
+          "memory": {
+            "memory": "a0409e7523a6e2c1900172a00fbe83028dcf9a7f6335478b366ecacbfb67038c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared exceptional Infinity,0,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2139095040,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2139095040]
+            }
+          ],
+          "memory": {
+            "memory": "c0a98ec6da41dfa6f28bc07f411b743e413b35c82861d68af6f8272e0b8fb963",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        },
+        "vector4.lengthSquared exceptional NaN,1,0,0": {
+          "control": 1,
+          "resultWritten": true,
+          "value": 2143289344,
+          "floatingMemory": [
+            {
+              "region": "state:current-matrix",
+              "offset": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+              "region": "memory",
+              "offset": 4096,
+              "words": [2143289344]
+            }
+          ],
+          "memory": {
+            "memory": "a0409e7523a6e2c1900172a00fbe83028dcf9a7f6335478b366ecacbfb67038c",
+            "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+          }
+        }
+      }
+    }
+  }
+}

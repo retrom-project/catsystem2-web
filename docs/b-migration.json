@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 103, "oracle": 135, "differential": 2 },
+    "counts": { "js": 104, "oracle": 135, "differential": 3 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -41,6 +41,7 @@
         "tests/native-audio-pcm.test.mjs",
         "tests/native-bank.test.mjs",
         "tests/native-bitmap-upload.test.mjs",
+        "tests/native-calculations.test.mjs",
         "tests/native-calendar.test.mjs",
         "tests/native-character-names.test.mjs",
         "tests/native-clipboard-browser.test.mjs",
@@ -263,6 +264,7 @@
         "tests/transitional-template.test.mjs"
       ],
       "differential": [
+        "tests/differential/native-geometry.test.mjs",
         "tests/differential/native-math.test.mjs",
         "tests/differential/native-scalar.test.mjs"
       ]
@@ -1238,33 +1240,6 @@
       },
       {
         "kind": "index",
-        "file": "src/native/geometry.mjs",
-        "line": 27,
-        "expression": "this.profileIndex",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "index",
-        "file": "src/native/geometry.mjs",
-        "line": 33,
-        "expression": "this.profileIndex",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "index",
-        "file": "src/native/geometry.mjs",
-        "line": 53,
-        "expression": "this.profileIndex",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "index",
         "file": "src/native/image-commands.mjs",
         "line": 27,
         "expression": "this.profileIndex",
@@ -1460,24 +1435,6 @@
         "line": 16,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/geometry.mjs",
-        "line": 28,
-        "expression": "engine.profile === 'nekopara-vol3-engine-2.6.1.76'",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/geometry.mjs",
-        "line": 30,
-        "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 3,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -2969,15 +2926,6 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "va",
-        "file": "src/native/geometry.mjs",
-        "line": 53,
-        "expression": "spec.handlers[this.profileIndex]",
-        "domain": 3,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "exe-layout",
         "file": "src/native/graphics-process.mjs",
         "line": 59,
@@ -3145,15 +3093,6 @@
         "line": 283,
         "expression": "NATIVE_STARTUP_BLOCKS[this.engine.profile]",
         "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/matrix.mjs",
-        "line": 24,
-        "expression": "operations[engine.profile]",
-        "domain": 3,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -3779,17 +3718,17 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 24, "exeVASelectionSites": 254, "needsReview": 0 }
+    "totals": { "profileIndexSites": 21, "exeVASelectionSites": 250, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
-    "remainingProfileIndexSites": 24,
-    "remainingExeVASelectionSites": 254,
+    "remainingProfileIndexSites": 21,
+    "remainingExeVASelectionSites": 250,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 884,
-      "original-handler": 779,
-      "exe-region": 31,
+      "pure-js": 910,
+      "original-handler": 761,
+      "exe-region": 23,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
@@ -3806,14 +3745,14 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 617,
-    "runtimeFiles": 330,
-    "fileDomains": { "3": 27, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
-    "fileNeedsReview": 143,
-    "exeDependencyFiles": 128,
-    "exeDependencies": { "addresses": 2092, "calls": 191, "references": 6 },
+    "nativeNeedsReview": 619,
+    "runtimeFiles": 332,
+    "fileDomains": { "3": 29, "4": 34, "5": 31, "6": 39, "7": 23, "8": 147, "9": 29 },
+    "fileNeedsReview": 141,
+    "exeDependencyFiles": 126,
+    "exeDependencies": { "addresses": 2062, "calls": 187, "references": 6 },
     "nonNativeGroups": 11,
-    "executionSites": 565
+    "executionSites": 561
   },
   "profiles": [
     {
@@ -7474,16 +7413,18 @@
           "hexID": "0xcc",
           "semanticName": "matrix.rotateXYZ",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
-          "review": "traced",
-          "reviewReasons": []
+          "review": "needs-review",
+          "reviewReasons": [
+            "正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。"
+          ]
         },
         {
           "table": "main",
@@ -7491,13 +7432,13 @@
           "hexID": "0xcd",
           "semanticName": "matrix.translate",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -7508,13 +7449,13 @@
           "hexID": "0xce",
           "semanticName": "matrix.scale",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -7525,13 +7466,13 @@
           "hexID": "0xcf",
           "semanticName": "matrix.identity",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10136,13 +10077,13 @@
           "hexID": "0x15e",
           "semanticName": "matrix.inverse",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10153,13 +10094,13 @@
           "hexID": "0x15f",
           "semanticName": "matrix.copy",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10170,13 +10111,13 @@
           "hexID": "0x160",
           "semanticName": "vector4.normalize",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10187,13 +10128,13 @@
           "hexID": "0x161",
           "semanticName": "vector4.add",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10204,13 +10145,13 @@
           "hexID": "0x162",
           "semanticName": "vector4.subtract",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10221,13 +10162,13 @@
           "hexID": "0x163",
           "semanticName": "vector4.length",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10238,13 +10179,13 @@
           "hexID": "0x164",
           "semanticName": "vector4.lengthSquared",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10255,13 +10196,13 @@
           "hexID": "0x165",
           "semanticName": "vector4.scale",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -10272,13 +10213,13 @@
           "hexID": "0x166",
           "semanticName": "vector4.transform",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -25152,12 +25093,6 @@
           "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
         {
-          "name": "geometry",
-          "registration": "src/native/geometry.mjs:77",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "draw-commands",
           "registration": "src/native/draw-commands.mjs:119",
           "modules": [],
@@ -25281,12 +25216,6 @@
           "name": "particle-commands",
           "registration": "src/native/particles.mjs:228",
           "modules": ["src/native/particle-commands.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "matrix",
-          "registration": "src/native/matrix.mjs:68",
-          "modules": [],
           "dependencies": []
         },
         {
@@ -28972,16 +28901,18 @@
           "hexID": "0xcc",
           "semanticName": "matrix.rotateXYZ",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
-          "review": "traced",
-          "reviewReasons": []
+          "review": "needs-review",
+          "reviewReasons": [
+            "正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。"
+          ]
         },
         {
           "table": "main",
@@ -28989,13 +28920,13 @@
           "hexID": "0xcd",
           "semanticName": "matrix.translate",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -29006,13 +28937,13 @@
           "hexID": "0xce",
           "semanticName": "matrix.scale",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -29023,13 +28954,13 @@
           "hexID": "0xcf",
           "semanticName": "matrix.identity",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/matrix.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/matrix.mjs:70",
-          "features": ["matrix"],
-          "dependencies": ["src/native/matrix.mjs"],
+          "registration": "src/native/matrix.mjs:48",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31606,13 +31537,13 @@
           "hexID": "0x15e",
           "semanticName": "matrix.inverse",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31623,13 +31554,13 @@
           "hexID": "0x15f",
           "semanticName": "matrix.copy",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31640,13 +31571,13 @@
           "hexID": "0x160",
           "semanticName": "vector4.normalize",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31657,13 +31588,13 @@
           "hexID": "0x161",
           "semanticName": "vector4.add",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31674,13 +31605,13 @@
           "hexID": "0x162",
           "semanticName": "vector4.subtract",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31691,13 +31622,13 @@
           "hexID": "0x163",
           "semanticName": "vector4.length",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31708,13 +31639,13 @@
           "hexID": "0x164",
           "semanticName": "vector4.lengthSquared",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31725,13 +31656,13 @@
           "hexID": "0x165",
           "semanticName": "vector4.scale",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -31742,13 +31673,13 @@
           "hexID": "0x166",
           "semanticName": "vector4.transform",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/geometry.mjs",
           "domain": 3,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/geometry.mjs:79",
-          "features": ["geometry"],
-          "dependencies": ["src/native/geometry.mjs"],
+          "registration": "src/native/geometry.mjs:70",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-vector-matrix.md"],
           "review": "traced",
           "reviewReasons": []
@@ -47431,12 +47362,6 @@
           "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
         {
-          "name": "geometry",
-          "registration": "src/native/geometry.mjs:77",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "draw-commands",
           "registration": "src/native/draw-commands.mjs:119",
           "modules": [],
@@ -47566,12 +47491,6 @@
           "name": "particle-commands",
           "registration": "src/native/particles.mjs:228",
           "modules": ["src/native/particle-commands.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "matrix",
-          "registration": "src/native/matrix.mjs:68",
-          "modules": [],
           "dependencies": []
         },
         {
@@ -48894,6 +48813,32 @@
         }
       ],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/calculation-math.mjs",
+      "sourceSha256": "41d7f32bfbf142c1e787f5e56a04dd39a90c510a259e9ff8144ed0f72ad32cd1",
+      "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-vector-matrix.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/calculation-memory.mjs",
+      "sourceSha256": "f2f2bcf0b738398e30792055c9008c4b73d363d3275c8a37e09e7a1f5f0c8e8b",
+      "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/calendar.mjs",
@@ -52239,46 +52184,16 @@
     },
     {
       "file": "src/native/geometry.mjs",
-      "sourceSha256": "08e8e9ccca18c7ffb2a0865929b0d3732e16ab30b276bc71e26702e16e83fa56",
+      "sourceSha256": "0fced02e4c934e578eb2f60c83c580da4cf1f783b505a377f9ae564da061315b",
       "domain": 3,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 18, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "callFromHost", "getNativeFeature", "in-image-literals"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-vector-matrix.md"],
-      "executionSites": [
-        {
-          "line": 57,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 58,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
-      "indirectSites": [
-        {
-          "line": 43,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 80,
-          "method": "getNativeFeature",
-          "feature": "geometry",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/global-strings-bridge.mjs",
@@ -53464,39 +53379,16 @@
     },
     {
       "file": "src/native/matrix.mjs",
-      "sourceSha256": "92e1ef8ba0c0505bbc42632eab7c95e1a19161b06c92f94518fb085a57ef301f",
+      "sourceSha256": "080fd4f09145d2341f0136b08ff72456f17c2cbec47b817c0f42f5b31e266cb1",
       "domain": 3,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 12, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "in-image-literals"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md", "docs/native-vector-matrix.md"],
-      "executionSites": [
-        {
-          "line": 47,
-          "method": "call",
-          "target": "this.operations.rotate[i]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 49,
-          "method": "call",
-          "target": "this.operations[id === 0xcd ? 'translate' : id === 0xce ? 'scale' : 'identity']",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 2 },
-      "indirectSites": [
-        {
-          "line": 71,
-          "method": "getNativeFeature",
-          "feature": "matrix",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/mesh.mjs",
@@ -58086,7 +57978,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "ebf44357194c42aa3c0e44095bd965b4f0b281c973294e39ead3fa4fa9316b5d",
+      "sourceSha256": "e97603f91aab23900ed6c5847f25328872444e0c7579eba391cfd62d4809e22c",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58159,14 +58051,14 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1042,
+          "line": 1044,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1043,
+          "line": 1045,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -63258,22 +63150,6 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/geometry.mjs",
-          "line": 57,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/geometry.mjs",
-          "line": 58,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/hg3-delta.mjs",
           "line": 44,
           "method": "beforeInstruction",
@@ -63390,22 +63266,6 @@
           "line": 92,
           "method": "call",
           "target": "spec.handlers[Number(this.sdk)]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/matrix.mjs",
-          "line": 47,
-          "method": "call",
-          "target": "this.operations.rotate[i]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/matrix.mjs",
-          "line": 49,
-          "method": "call",
-          "target": "this.operations[id === 0xcd ? 'translate' : id === 0xce ? 'scale' : 'identity']",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

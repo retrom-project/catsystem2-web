@@ -91,7 +91,7 @@ const domains = {
   9: '插件边界',
 };
 const ownedModules = {
-  3: 'arguments calendar geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
+  3: 'arguments calendar calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game',
   5: 'bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
@@ -129,7 +129,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'geometry rectangles view-geometry database content-databases section-table nametable bitmap-factory ' +
+    'rectangles view-geometry database content-databases section-table nametable bitmap-factory ' +
     'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'configuration-query input-commands registry image-file image-composite render-sources ' +
     'unicode-output utf8 record-queue tile-game script-xml task-dump tile-plane-command ' +
@@ -138,7 +138,6 @@ const originalWrappers = new Set(
   ).split(' '),
 );
 const reviewedRegions = new Map([
-  ['matrix', ['matrix']],
   ['text-plain', ['text']],
   ['gallery-tables', ['data-buffers', 'engine-files']],
   ['scene-checkpoint', ['scene-checkpoints', 'engine-files']],
@@ -533,6 +532,10 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           }
         }
       }
+      if (table === 'main' && entry.name === 'matrix.rotateXYZ')
+        reasons.push(
+          '正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。',
+        );
       if (!entry.name) reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
       if (
         (table === 'generic' && [39, 40].includes(entry.id)) ||
