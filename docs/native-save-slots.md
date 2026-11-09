@@ -14,6 +14,12 @@ original CSS signature, tag, compressed ordered entries and payload. All save
 commands use the interpreter's inherited context directory and the same virtual
 file storage as KCS and SAVEPANEL.
 
+With an empty context, both native handlers form a drive-rooted filename
+such as `\save0001.dat`. The Win32 boundary resolves it at the mounted
+game's virtual drive root regardless of the current directory. Both native
+save scans and CSS writes are exercised with this context; they use the same
+per-game store as relative paths.
+
 | FES command     | Original behavior                                                                                                                      |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `datasave`      | Write the supplied global-file object to `save%04d.dat`.                                                                               |

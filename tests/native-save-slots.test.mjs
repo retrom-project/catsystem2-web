@@ -19,6 +19,35 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
 ]) {
   test(
+    `${profile} original FES save scan with an empty context uses the virtual drive root`,
+    { skip: !process.env[variable] },
+    async () => {
+      const fixture = await saveSlotFixture(
+          new Uint8Array(await readFile(process.env[variable])),
+          profile,
+          { directory: '' },
+        ),
+        { slots, instance, engine, files, globals, handles } = fixture;
+      try {
+        engine.kernel.cwd = 'working/subdirectory';
+        await slots.command(instance, 'newsave', 'newsave 850 0 2');
+        assert.equal(globals.get(850), 0xffffffff);
+        const file = new NativeGlobalFile(1729);
+        file.write(0, Uint8Array.of(13, 10, 0));
+        const handle = handles.add('global-file', file);
+        await slots.command(instance, 'datasave', `datasave 1 ${handle}`);
+        assert.deepEqual([...files.files.keys()], ['save0001.dat']);
+        const saved = await NativeGlobalFile.fromFile(await files.read('save0001.dat'));
+        assert.equal(saved.tag, 1729);
+        await slots.command(instance, 'newsave', 'newsave 850 0 2');
+        assert.equal(globals.get(850), 1);
+        assert.equal(engine.kernel.path('local.dat'), 'working/subdirectory/local.dat');
+      } finally {
+        await engine.close();
+      }
+    },
+  );
+  test(
     `${profile} original FES save commands share CSS data, slot dates and file lifecycle`,
     {
       skip: !process.env[variable],

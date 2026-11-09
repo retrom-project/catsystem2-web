@@ -495,7 +495,9 @@ export class NativeEngineWindows extends PPIWindowsServices {
     let path = value.replaceAll('\\', '/');
     if (/^c:\/catsystem2-web(?:\/|$)/i.test(path))
       path = path.replace(/^c:\/catsystem2-web\/?/i, '');
-    else if (/^[a-z]:|^\/|^\\/i.test(path)) return path;
+    // A single root separator selects the current virtual drive's root.
+    else if (path.startsWith('/') && !path.startsWith('//')) path = path.slice(1);
+    else if (/^[a-z]:|^\/\//i.test(path)) return path;
     else if (this.cwd) path = this.cwd + '/' + path;
     const parts = [];
     for (const part of path.split('/')) {
