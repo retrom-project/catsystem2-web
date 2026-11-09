@@ -994,6 +994,7 @@ try {
       [17, 'UnderWater', 0x84, [0x8cdc8c, 0x992f6c], [0x5ee030, 0x4c8960]],
       [22, 'Weather', 0xd4, [0x8cddb4, 0x993094], [0x5efaf0, 0x4ca420]],
       [23, 'WipeCircle', 0xb8, [0x8cddd8, 0x9930b8], [0x5efb40, 0x4ca470]],
+      [24, 'TileRev', 0xd0, [0x8cddfc, 0x9930dc], [0x5efb90, 0x4ca4d0]],
     ]) {
       activeEffect = await engine.call(factory, [kind, name, out + 4], parent);
       nativeID = p.load(out + 4);
@@ -1364,7 +1365,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, UnderWater/Weather/WipeCircle/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Weather/WipeCircle/TileRev/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle, TileRev and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,
