@@ -5,6 +5,7 @@ import {
   installNativeDxDiagnostics,
   releaseNativeDxDiagnostics,
 } from './windows-dx-diagnostics.mjs';
+import { installNativeProfileStrings } from './windows-profile.mjs';
 
 export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
   'sdk-4.01-engine-2.6.1.74': Object.freeze({
@@ -16,6 +17,8 @@ export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
     directX: 408,
     detectDirectX: 0x47f380,
     checkDirectX: 0x546940,
+    manufacturer: 860,
+    model: 1116,
     wide: false,
   }),
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -27,6 +30,8 @@ export const NATIVE_SYSTEM_INFORMATION = Object.freeze({
     directX: 792,
     detectDirectX: 0x5afe20,
     checkDirectX: 0x66f600,
+    manufacturer: 1628,
+    model: 2140,
     wide: true,
   }),
 });
@@ -105,10 +110,11 @@ export async function initializeNativeSystemInformation(engine) {
     throw new Error('Original system information already has an owner');
   installSystemInformationAPIs(engine);
   installNativeDxDiagnostics(engine);
+  installNativeProfileStrings(engine.kernel);
   const pointer = p.allocate(layout.size, true);
-  // Select the original OS, DirectX and memory branches.
+  // Select the original OS, DirectX, memory and OEM branches.
   if (
-    (await p.callAsync(layout.construct, [0x07, 1], pointer)) !== pointer ||
+    (await p.callAsync(layout.construct, [0x27, 1], pointer)) !== pointer ||
     p.load(layout.global) !== pointer
   )
     throw new Error('Original system information did not establish its singleton');

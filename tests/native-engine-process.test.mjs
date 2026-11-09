@@ -20,6 +20,7 @@ import { readNativeStartupPreferences } from '../src/native/engine-preferences.m
 import { NativeWorld } from '../src/native/world.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { memoryGame } from './helpers.mjs';
 
 for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
@@ -51,6 +52,8 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
             edition: p.string(pointer + (layout.wide ? 536 : 280), layout.wide),
             directX: p.load(pointer + layout.directX),
             directXName: p.string(pointer + layout.directX + 4, layout.wide),
+            manufacturer: p.string(pointer + layout.manufacturer, layout.wide),
+            model: p.string(pointer + layout.model, layout.wide),
             memory: Array.from({ length: 4 }, (_, i) => p.load(pointer + layout.memory + 4 * i)),
           };
         };
@@ -63,6 +66,8 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
           edition: 'Professional',
           directX: 0x90003,
           directXName: '9.0c',
+          manufacturer: '',
+          model: '',
           memory: [127, 128, 127, 128],
         });
         for (const name of [
@@ -115,6 +120,48 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
       for (const engine of [first, fresh]) {
         assert.equal(engine.refs.systemInformation, undefined);
         assert.equal(engine.process.allocations.has(pointer), false);
+      }
+    },
+  );
+  test(
+    `${profile} original OEM discovery tries each Windows directory independently`,
+    { skip: !fixture },
+    async () => {
+      const paths = [
+          '@cat/windows/Oeminfo.ini',
+          '@cat/windows/system/Oeminfo.ini',
+          '@cat/windows/system32/Oeminfo.ini',
+        ],
+        encode = (text) =>
+          layout.wide
+            ? new Uint8Array(Uint16Array.from('\ufeff' + text, (c) => c.charCodeAt(0)).buffer)
+            : encodeCP932(text),
+        values = [
+          '[Other]\r\nManufacturer=Ignored\r\nModel=Ignored\r\n',
+          '[general]\r\nMANUFACTURER = "仮想工房"\r\nModel=\r\n',
+          "; installed in system32\r\n[GeNeRaL]\r\nmodel='猫型2'\r\n",
+        ].map(encode),
+        reads = [],
+        engine = await NativeEngineProcess.open({
+          profile,
+          bytes: new Uint8Array(await readFile(fixture)),
+          bootstrapOwner: {},
+          configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+          readFile: async (path) => {
+            const index = paths.indexOf(path);
+            if (index < 0) return null;
+            reads.push(path);
+            return values[index];
+          },
+        });
+      try {
+        const p = engine.process,
+          pointer = engine.refs.systemInformation;
+        assert.equal(p.string(pointer + layout.manufacturer, layout.wide), '仮想工房');
+        assert.equal(p.string(pointer + layout.model, layout.wide), '猫型2');
+        assert.deepEqual(reads, [paths[0], paths[1], ...paths]);
+      } finally {
+        await engine.close();
       }
     },
   );

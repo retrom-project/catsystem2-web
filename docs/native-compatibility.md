@@ -18,12 +18,11 @@ desktop registration and device checks stay outside this block; the browser
 still mounts prepared archives.
 The original platform prelude also constructs the system information record
 (SDK `49FBE0`, game `5C3460`) before file-server and Settings startup. The
-version, DirectX and memory branches run in the original code. Their Windows
-imports describe the virtual 32-bit Windows 7 SP1 environment, the Direct3D 9
-adapter and its guest memory budget. The record and its DLL export bindings
-survive a fresh process. The original destructor clears the singleton on
-close. CPU and OEM discovery in the same constructor still require
-separate services.
+version, DirectX, memory and OEM branches run in the original code. Their
+Windows imports describe the virtual 32-bit Windows 7 SP1 environment, the
+Direct3D 9 adapter and its guest memory budget. The record and its DLL export
+bindings survive a fresh process. The original destructor clears the singleton
+on close. CPU discovery in the same constructor remains separate.
 The Windows boundaries follow the
 [version structure](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw)
 and [memory status structure](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex).
@@ -40,6 +39,14 @@ DirectX/D3DX gate (SDK `546940`, game `66F600`). Tests verify the original
 without leaking guest allocations. The virtual adapter exposes Direct3D 9;
 the original DLL-version fallback and the optional Direct3D 11 probe remain
 outside this path.
+
+OEM discovery uses the original A/W profile-string calls and searches the
+virtual Windows directory, `system`, then `system32`. Manufacturer and model
+are resolved independently and remain empty when no OEM file is mounted.
+Tests give both engines a manufacturer in the second directory and a model
+in the third; the SDK reads CP932 and the game reads UTF-16. The mounted
+[profile-string API](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprivateprofilestringw)
+also preserves case-insensitive section/key lookup and quoted values.
 
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
