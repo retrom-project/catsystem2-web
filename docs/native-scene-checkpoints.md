@@ -12,4 +12,13 @@ Branching removes checkpoints whose signed positions are at or above its argumen
 
 `scripts/verify-native-scene-branch.mjs` executes complete `3E2` and `3E1` wrappers against both frozen PEs. Each passes 3,049 comparisons across 613 calls, including full path/seen serialization, bank/dirty state and all four VM domains. Only `3E1`'s uninitialized bytes after each copied name terminator are excluded; all defined metadata and content are compared.
 
+Main `3A6` formats both names as raw VM strings before it copies the
+source's unsigned seen value. The original history folds ASCII bytes
+(including matching bytes in multibyte names), does not strip extensions,
+and adds a record only when the source matches and the destination is new.
+The raw alias survives a fresh history restore. The original SDK `528A80`
+and game `642780` wrappers pass 144 comparisons across 48 calls each in
+`scripts/verify-native-seen-alias.mjs`, covering all four VM domains and
+untouched path records.
+
 Two public fixture tests dispatch through World, restore into a fresh World, continue storage, restoration and branching, and check independent ownership, raw UTF-8/invalid bytes, unaffected outside variables/strings, original branch quirks, self-copy and null-scene behavior. Full game history/replay UI acceptance remains a separate requirement.

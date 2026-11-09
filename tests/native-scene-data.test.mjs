@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { Binary } from '../src/binary.mjs';
+import { formatNativeAt } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
@@ -170,6 +171,36 @@ test('history preserves unsigned maxima, consecutive path coalescing and clipped
   h.aliasSeen('main', 'alias');
   assert.equal(h.seenValue('ALIAS'), 0xffffffff);
   assert.deepEqual(new NativeSceneHistory().restore(h.snapshot()).snapshot(), h.snapshot());
+});
+
+test('formatted seen aliases preserve raw bytes and values across native history import', () => {
+  const m = machine(),
+    data = new NativeSceneData(),
+    handles = new NativeHandles(),
+    handle = handles.add('scene-data', data),
+    services = { handles, formatBytes: formatNativeAt },
+    alias = Uint8Array.of(0x81, 0x30, 0xff, 0x51);
+  data.history.markSeen('source', -1);
+  m.writeString('%s[G512]', 128);
+  m.writeString('%s[G768]', 256);
+  m.writeString('SOURCE', 512);
+  m.writeStringBytes(alias, 768);
+  assert.equal(nativeSceneData(0x3a6, [handle, 128, 256], m, services).control, 2);
+
+  const restored = new NativeSceneHistory();
+  restored.decode('seen', data.history.encode('seen', true));
+  assert.deepEqual(
+    restored.seen[1].nameBytes.subarray(0, alias.length + 1),
+    Uint8Array.of(...alias, 0),
+  );
+  assert.equal(restored.seenValue(alias), 0xffffffff);
+  assert.equal(restored.seenValue(Uint8Array.of(0x81, 0x30, 0xff, 0x71)), 0xffffffff);
+  assert.equal(restored.seenValue(Uint8Array.of(0x81, 0x30, 0xfe, 0x51)), 0);
+  assert.throws(
+    () => nativeSceneData(0x3a6, [handle, 128, 0x7fffffff], m, services),
+    /unmapped format string/,
+  );
+  assert.equal(nativeSceneData(0x3a6, [0, 128, 0x7fffffff], m, services).control, 2);
 });
 
 test('history string substitution snapshots only referenced values and expands once', () => {

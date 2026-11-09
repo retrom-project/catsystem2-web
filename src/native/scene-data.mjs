@@ -16,6 +16,18 @@ const word = (value) => nativeReply(1, value >>> 0);
 const done = () => nativeReply(2);
 const stripExtension = (name) => String(name).replace(/\.[^\\/.]*$/, '');
 const lower = (name) => String(name).replace(/[A-Z]/g, (char) => char.toLowerCase());
+const seenKeys = new WeakMap();
+const nameBytes = (name) => {
+  const bytes = name instanceof Uint8Array ? name : encodeCP932(String(name)),
+    nul = bytes.indexOf(0);
+  return nul < 0 ? bytes : bytes.subarray(0, nul);
+};
+function foldedName(name) {
+  let key = '';
+  for (const byte of nameBytes(name))
+    key += String.fromCharCode(byte >= 65 && byte <= 90 ? byte + 32 : byte);
+  return key;
+}
 const cbytes = (machine, address) => {
   const result = [];
   for (let at = address >>> 0; ; at++) {
@@ -225,7 +237,17 @@ export class NativeSceneHistory {
     this.path = [];
   }
   findSeen(scene) {
-    return this.seen.find((entry) => !entry.scene || lower(entry.scene) === lower(scene)) ?? null;
+    const key = foldedName(scene);
+    return (
+      this.seen.find((entry) => {
+        let name = seenKeys.get(entry);
+        if (name === undefined) {
+          name = foldedName(entry.nameBytes ?? entry.scene);
+          seenKeys.set(entry, name);
+        }
+        return !name || name === key;
+      }) ?? null
+    );
   }
   markSeen(scene, value) {
     scene = resetName(scene);
@@ -271,8 +293,13 @@ export class NativeSceneHistory {
   }
   aliasSeen(source, destination) {
     const entry = this.findSeen(source);
-    if (entry && !this.findSeen(destination))
-      this.seen.push(record(resetName(destination), entry.value));
+    if (entry && !this.findSeen(destination)) {
+      const name = nameBytes(destination);
+      if (name.length > 31) throw new Error('Native scene history name exceeds its 32-byte field');
+      const field = new Uint8Array(32);
+      field.set(name);
+      this.seen.push({ ...record(decoder.decode(name), entry.value), nameBytes: field });
+    }
   }
   encode(side, includeExtra = false) {
     if (!['seen', 'path'].includes(side)) throw new Error('Invalid native scene history list');
@@ -476,15 +503,26 @@ export function nativeSceneData(id, args, machine, services = {}) {
           : 0,
     );
   }
-  if ([0x148, 0x149, 0x14c, 0x3a6].includes(id)) {
+  if (id === 0x3a6) {
+    if (!services.formatBytes && !services.format) return undefined;
+    if (!mapped(machine, args[1]) || !mapped(machine, args[2]))
+      throw new Error('Native scene alias dereferences an unmapped format string');
+    const formatted = (at) =>
+        services.formatBytes
+          ? services.formatBytes(at, machine)
+          : encodeCP932(services.format(at, machine)),
+      source = formatted(args[1]),
+      destination = formatted(args[2]);
+    if (source.length >= 128 || destination.length >= 128)
+      throw new Error('Native scene alias exceeds its 128-byte format buffer');
+    history.aliasSeen(source, destination);
+    return done();
+  }
+  if ([0x148, 0x149, 0x14c].includes(id)) {
     if (!services.format) return undefined;
     let name = services.format(args[1], machine);
-    if (direct && id !== 0x3a6) name = stripExtension(name);
+    if (direct) name = stripExtension(name);
     if (id === 0x14c) return word(history.seenValue(name));
-    if (id === 0x3a6) {
-      history.aliasSeen(name, services.format(args[2], machine));
-      return done();
-    }
     let index = -1;
     if (name) {
       if (id === 0x148) history.markSeen(name, args[2]);

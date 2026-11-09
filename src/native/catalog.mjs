@@ -3370,6 +3370,15 @@ for (const id of [...Array.from({ length: 14 }, (_, offset) => 0x0d + offset), 0
   recovered74.set(id, fact);
   recovered76.set(id, fact);
 }
+{
+  const id = 0x3a6,
+    fact = {
+      ...recovered76.get(id),
+      evidence: 'both-pinned-original-scene-alias-wrappers-and-raw-history-differential',
+    };
+  recovered74.set(id, fact);
+  recovered76.set(id, fact);
+}
 for (let id = 0x24e; id <= 0x251; id++) {
   const fact = {
     ...recovered76.get(id),
