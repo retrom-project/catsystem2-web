@@ -3,6 +3,9 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { windowsMultiByteToWideChar } from './windows-multibyte.mjs';
 import { windowsWideCharToMultiByte } from './windows-widechar.mjs';
 
+const PAGE_SIZE = 4096,
+  ALLOCATION_GRANULARITY = 65536;
+
 export class PPIWindowsServices {
   constructor(process, { clock, now = () => performance.now(), epoch } = {}) {
     this.process = process;
@@ -81,6 +84,23 @@ export class PPIWindowsServices {
     def('VirtualAlloc', 4, (args) => this.virtualAllocate(...args));
     def('VirtualFree', 3, (args) => this.virtualFree(...args));
     def('VirtualProtect', 4, (args) => this.virtualProtect(...args));
+    for (const name of ['GetSystemInfo', 'GetNativeSystemInfo'])
+      def(name, 1, ([out]) => {
+        // SYSTEM_INFO for the single virtual i686 processor. Its family,
+        // model and stepping match the fixed backend's CPUID leaf 1.
+        const values = [
+          0,
+          PAGE_SIZE,
+          0x10000,
+          0x7ffeffff,
+          1,
+          1,
+          586,
+          ALLOCATION_GRANULARITY,
+          0x3c040006,
+        ];
+        for (let i = 0; i < values.length; i++) process.store(out + i * 4, values[i]);
+      });
     def('TlsAlloc', 0, () => {
       if (this.nextTLS >= 1088) {
         this.lastError = 8;
@@ -399,16 +419,16 @@ export class PPIWindowsServices {
     if (!region) {
       if (address && !(type & 0x2000)) return fail(487);
       let base = address
-        ? Math.floor(address / 65536) * 65536
+        ? Math.floor(address / ALLOCATION_GRANULARITY) * ALLOCATION_GRANULARITY
         : type & 0x100000
           ? 0x70000000
           : 0x40000000;
-      const length = Math.ceil((size + (address ? address - base : 0)) / 4096) * 4096;
+      const length = Math.ceil((size + (address ? address - base : 0)) / PAGE_SIZE) * PAGE_SIZE;
       if (!address) {
         while (
           this.process.regions.some((r) => base < r.address + r.size && base + length > r.address)
         ) {
-          base += type & 0x100000 ? -65536 : 65536;
+          base += type & 0x100000 ? -ALLOCATION_GRANULARITY : ALLOCATION_GRANULARITY;
           if (base < 0x10000 || base + length >= 0x7ffe0000) return fail(8);
         }
       }
@@ -423,8 +443,10 @@ export class PPIWindowsServices {
       region = { address: base, size: length, committed: new Map() };
       this.virtual.set(base, region);
     } else if (type & 0x2000) return fail(487);
-    const start = created ? region.address : Math.floor(address / 4096) * 4096,
-      end = created ? region.address + region.size : Math.ceil((address + size) / 4096) * 4096;
+    const start = created ? region.address : Math.floor(address / PAGE_SIZE) * PAGE_SIZE,
+      end = created
+        ? region.address + region.size
+        : Math.ceil((address + size) / PAGE_SIZE) * PAGE_SIZE;
     if (type & 0x1000) {
       const permissions = this.memoryPermissions(protection);
       for (let page = start; page < end; page += 4096) {
