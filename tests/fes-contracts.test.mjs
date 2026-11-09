@@ -44,6 +44,57 @@ test('FES rettitle posts the native application event and continues until the ho
   assert.equal(player.root.label, 'WAIT');
 });
 
+test('FES messagebox pauses decoding and writes only the original affirmative results', async () => {
+  for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+    const responses = [6, 7, 0, 1],
+      calls = [],
+      globals = { 21: 91, 22: 92, 23: 93 },
+      player = await screen(
+        String.raw`#START
+messagebox (20 + 1) 2 上書き\_確認 $str4
+$20=$21+4
+messagebox 22 2 題名 続けますか？
+messagebox 23 9 既定 本文
+messagebox -1 0 通知 終了
+next WAIT
+#WAIT
+`,
+        {
+          globals,
+          strings: { 4: '第一行\n第二行' },
+          host: {
+            soundConfigTokens: (line) => tokenizeNativeFESSoundConfiguration(line, profile),
+            messageBox(detail) {
+              calls.push(detail);
+              if (calls.length === 1)
+                return new Promise((resolve) => {
+                  answer = () => resolve(responses.shift());
+                });
+              return responses.shift();
+            },
+          },
+        },
+      );
+    let answer;
+    const step = player.step();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(calls.length, 1);
+    assert.equal(player.root.global(21), 91);
+    assert.equal(player.root.global(20), 0);
+    answer();
+    await step;
+    assert.deepEqual(calls, [
+      { buttons: 4, caption: '上書き 確認', message: '第一行\n第二行' },
+      { buttons: 4, caption: '題名', message: '続けますか？' },
+      { buttons: 0, caption: '既定', message: '本文' },
+      { buttons: 0, caption: '通知', message: '終了' },
+    ]);
+    assert.deepEqual(globals, { 20: 5, 21: 1, 22: 0, 23: 0 });
+    assert.equal(player.root.label, 'WAIT');
+    assert.deepEqual([...player.unsupportedCommands], []);
+  }
+});
+
 test('a native transition removed while waiting does not block the remaining live motion', async () => {
   const player = await screen(
       '#DEFINE\nPLANE transition\nPLANE live\n#START\nwait\nnext READY\n#READY\n',

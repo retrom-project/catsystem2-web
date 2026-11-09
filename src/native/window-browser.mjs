@@ -87,7 +87,16 @@ export class BrowserNativeWindow {
     this.engine = engine;
     this.dialog = null;
   }
-  async show(title, build, { confirm = false, closeLabel = confirm ? 'Cancel' : 'Close' } = {}) {
+  async show(
+    title,
+    build,
+    {
+      confirm = false,
+      closeLabel = confirm ? 'Cancel' : 'Close',
+      focusFirst = false,
+      dismiss = true,
+    } = {},
+  ) {
     if (this.dialog) throw new Error('A native window dialog is already open');
     const dialog = element('dialog'),
       heading = element('h2', title),
@@ -113,8 +122,9 @@ export class BrowserNativeWindow {
     };
     close.onclick = this.cancel;
     dialog.addEventListener('keydown', (event) => event.stopPropagation());
-    dialog.addEventListener('cancel', () => {
-      answer = false;
+    dialog.addEventListener('cancel', (event) => {
+      if (!dismiss) event.preventDefault();
+      else answer = false;
     });
     dialog.addEventListener(
       'close',
@@ -133,7 +143,7 @@ export class BrowserNativeWindow {
       });
       if (this.dialog !== dialog) return await result;
       dialog.showModal();
-      close.focus();
+      (focusFirst ? buttons.firstElementChild : close).focus();
       return await result;
     } catch (error) {
       this.dialog = null;
@@ -318,22 +328,37 @@ export class BrowserNativeWindow {
       },
     );
   }
+  async messageBox({ caption, message, buttons = 0 }) {
+    if (![0, 1, 4].includes(buttons)) throw new Error('Unreviewed FES message box button flags');
+    const yesNo = buttons === 4,
+      accepted = await this.show(
+        caption,
+        (body, actions, finish) => {
+          const label = element('p', message);
+          label.style.whiteSpace = 'pre-wrap';
+          body.append(label);
+          if (buttons) {
+            const accept = element('button', yesNo ? 'Yes' : 'OK');
+            accept.onclick = () => finish(true);
+            actions.prepend(accept);
+          }
+        },
+        {
+          closeLabel: yesNo ? 'No' : buttons ? 'Cancel' : 'OK',
+          focusFirst: true,
+          dismiss: !yesNo,
+        },
+      );
+    return yesNo ? (accepted ? 6 : 7) : !buttons || accepted ? 1 : 2;
+  }
   async perform(action, world) {
     switch (action.type) {
       case 'confirm-title':
       case 'confirm-close':
         return this.confirm(action);
       case 'script-message-box':
-        await this.show(
-          action.caption,
-          (body) => {
-            const message = element('p', action.message);
-            message.style.whiteSpace = 'pre-wrap';
-            body.append(message);
-          },
-          { closeLabel: 'OK' },
-        );
-        return 1;
+      case 'fes-message-box':
+        return this.messageBox(action);
       case 'save-directory':
         return this.files(world);
       case 'game-configuration':

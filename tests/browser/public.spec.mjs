@@ -463,6 +463,42 @@ test('script message boxes display literal text and acknowledge OK and Escape', 
   }
 });
 
+test('FES dialog buttons produce the original Win32 result and Yes/No ignores Escape', async ({
+  page,
+}) => {
+  await page.goto('/');
+  for (const [buttons, action, expected] of [
+    [1, 'OK', 1],
+    [1, 'Escape', 2],
+    [4, 'Yes', 6],
+    [4, 'No', 7],
+  ]) {
+    const result = page.evaluate(async (buttons) => {
+      const { BrowserNativeWindow } = await import('/src/native/window-browser.mjs');
+      return new BrowserNativeWindow({}).perform({
+        type: 'fes-message-box',
+        buttons,
+        caption: 'Save changes?',
+        message: 'Keep the new state?',
+      });
+    }, buttons);
+    result.catch(() => {});
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByRole('button', { name: buttons === 4 ? 'Yes' : 'OK', exact: true }),
+    ).toBeFocused();
+    if (buttons === 4) {
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeVisible();
+    }
+    if (action === 'Escape') await page.keyboard.press('Escape');
+    else await dialog.getByRole('button', { name: action, exact: true }).click();
+    expect(await result).toBe(expected);
+    await expect(dialog).toHaveCount(0);
+  }
+});
+
 test('native movie decoding, audible PCM, loop completion and fresh decoder restoration use real browser media', async ({
   page,
 }) => {

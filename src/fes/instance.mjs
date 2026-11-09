@@ -907,6 +907,35 @@ export class FESInstance {
         store(0, date.getUTCDay());
         break;
       }
+      case 'messagebox': {
+        if (typeof host.messageBox !== 'function')
+          throw new Error('FES messagebox requires its browser dialog service');
+        const tokens = host.soundConfigTokens ? host.soundConfigTokens(line).slice(1) : args;
+        if (tokens.length < 4)
+          throw new Error('FES messagebox requires a variable, type, title and text');
+        const index = this.value(this.soundArgument(tokens[0])),
+          type = this.value(this.soundArgument(tokens[1])),
+          text = (token) =>
+            nativeArgumentDecoder
+              .decode(this.argumentBytes(token))
+              .split('\0', 1)[0]
+              .replace(/\\_/g, ' ')
+              .replace(/\\n/g, '\n');
+        // FES sends the ANSI packet in both profiles. Only IDOK and IDYES
+        // map to one; -1 suppresses the variable-bank write altogether.
+        this.player.enqueue(
+          Promise.resolve(
+            host.messageBox({
+              buttons: type === 1 ? 1 : type === 2 ? 4 : 0,
+              caption: text(tokens[2]),
+              message: text(tokens[3]),
+            }),
+          ).then((result) => {
+            if (index !== -1) this.setGlobal(index >>> 0, Number(result === 1 || result === 6));
+          }),
+        );
+        return { action: 'flush' };
+      }
       case 'rettitle':
         if (typeof host.postWindowMessage !== 'function')
           throw new Error('FES rettitle requires the native window message host');

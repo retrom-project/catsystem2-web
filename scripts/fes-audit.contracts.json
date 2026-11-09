@@ -1793,11 +1793,11 @@
       "id": "fes.reference.cn.messagebox",
       "domain": "fes-command",
       "names": ["messagebox"],
-      "status": "missing",
+      "status": "platform-substitution",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/messagebox.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/browser/public.spec.mjs"],
+      "note": "Both original receivers use ANSI MessageBox, map IDOK/IDYES to 1 and skip variable -1. The browser dialog preserves the button sets and waits before FES continues.",
       "signatures": ["messagebox [v] [type] [title] [mes]"]
     },
     {

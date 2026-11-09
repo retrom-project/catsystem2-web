@@ -711,6 +711,9 @@ export class NativeWorld {
       nativeSaveCommand(verb, line, instance) {
         return world.saveSlots.command(instance, verb, line);
       },
+      messageBox(message) {
+        return world.window.action('fes-message-box', message);
+      },
       postWindowMessage(message) {
         world.windowMessages.push({
           message: message.message >>> 0,
