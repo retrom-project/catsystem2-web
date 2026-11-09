@@ -14,6 +14,7 @@ const compare = (a, b) => {
   for (let i = 0; i < Math.min(a.length, b.length); i++) if (a[i] !== b[i]) return a[i] - b[i];
   return a.length - b.length;
 };
+const foldAscii = (byte) => (byte >= 0x41 && byte <= 0x5a ? byte + 0x20 : byte);
 export class NativeDictionary {
   constructor() {
     this.entries = new Map();
@@ -32,6 +33,17 @@ export class NativeDictionary {
   }
   firstKeyFor(value) {
     return this.ordered().find((entry) => entry.value === value >>> 0)?.key;
+  }
+  firstValueForKeyPrefix(bytes) {
+    const query = terminated(bytes);
+    for (const { key, value } of this.ordered()) {
+      if (
+        key.length <= query.length &&
+        key.every((byte, i) => foldAscii(byte) === foldAscii(query[i]))
+      )
+        return value;
+    }
+    return 0;
   }
   ordered() {
     return [...this.entries.values()].sort((a, b) => compare(a.key, b.key));

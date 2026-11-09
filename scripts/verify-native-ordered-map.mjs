@@ -176,6 +176,49 @@ try {
     [0x2a8, [7, 0xffffffff]],
   ])
     await operation(id, args, 0, 0);
+  if (!profile.startsWith('sdk-')) {
+    const { value: handle } = browser(0x203, []),
+      { value: nativeHandle } = await original(0x203);
+    const insert = async (key, value) => {
+      put(64, key);
+      await operation(0x205, [64, value], handle, nativeHandle);
+    };
+    for (const [key, value] of [
+      ['cat', 8],
+      ['CAT_LONG', 7],
+      ['Cat', 6],
+      ['ab', 2],
+      ['a', 1],
+      ['Zero', 0],
+      ['zero', 3],
+      [Uint8Array.of(0x81, 0x41), 9],
+      [Uint8Array.of(0x81, 0x82), 10],
+    ])
+      await insert(key, value);
+    put(1024, 'cat');
+    const queries = [
+      '%s[G1024]_longer',
+      'catfish',
+      'ca',
+      'ABc',
+      'ZeRoed',
+      '',
+      'missing',
+      Uint8Array.of(0x81, 0x61, 0x7a),
+      Uint8Array.of(0x81, 0x83),
+    ];
+    const addresses = [64, 8192 + 64, 0x80000040, source.memory.length + 64];
+    for (const [i, query] of queries.entries()) {
+      const at = addresses[i % addresses.length];
+      put(at, query);
+      await operation(0x41c, [at], handle, nativeHandle);
+    }
+    await insert('', 0xfedcba98);
+    put(64, 'CAT_LONG');
+    await operation(0x41c, [64], handle, nativeHandle);
+    await operation(0x41c, [0xffffffff], 0, 0);
+    await operation(0x204, [], handle, nativeHandle);
+  }
   await writeFile(
     output,
     JSON.stringify(
@@ -185,7 +228,10 @@ try {
         passed,
         operations,
         scope:
-          'Original complete main2A3..2A8 wrappers and formatter/tree helpers. All four constructors/destructors share one original function; cross-use with raw first-insert and formatted overwrite families, CP932/UTF-8/invalid bytes, empty/NUL keys, reverse byte ordering, removal, explicit defaults, null handles, data/stack/shared/block destinations and all canaries. Only reviewed engine allocation/CRT platform services are supplied.',
+          'Original complete main2A3..2A8 wrappers and formatter/tree helpers. All four constructors/destructors share one original function; cross-use with raw first-insert and formatted overwrite families, CP932/UTF-8/invalid bytes, empty/NUL keys, reverse byte ordering, removal, explicit defaults, null handles, data/stack/shared/block destinations and all canaries. Only reviewed engine allocation/CRT platform services are supplied.' +
+          (profile.startsWith('sdk-')
+            ? ''
+            : ' Includes game main41C prefix matching through the original formatter and CRT.'),
       },
       null,
       2,

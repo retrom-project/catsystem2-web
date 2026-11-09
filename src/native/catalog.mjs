@@ -1402,6 +1402,7 @@ const extendedDescriptions = [
   [0x416, 'utf8.truncateCharacters', ['VMptr text', 'u32 characterLimit'], 'u32'],
   [0x419, 'text.extractPlainUTF8', ['VMptr destination', 'format* source'], 'u32'],
   [0x41b, 'utf8.findCP932Key', ['VMptr UTF8Text', 'VMptr CP932Key'], 'u32'],
+  [0x41c, 'dictionary.findKeyPrefix', ['handle dictionary', 'format* query'], 'word'],
   [0x8f, 'script.load', ['nativeID target', 'format* filename', 'bool initialExecute'], 'void'],
   [0x8c, 'reserved.unwrittenWord', ['...ignoredArguments'], 'word'],
   [0x8e, 'reserved.unwrittenWord', ['...ignoredArguments'], 'word'],
