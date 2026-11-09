@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { asfHeaderSize, nativeASFProfile } from '../src/native/movie-asf.mjs';
+import { asfHeaderSize, nativeASFProfile, nativeASFSeekable } from '../src/native/movie-asf.mjs';
 
 const fixture = () => readFile(new URL('./fixtures/native-plane-movie.wmv', import.meta.url));
 const profile = (source) => {
@@ -198,4 +198,70 @@ test('ASF requires complete bounded headers and a matching file ID on the data o
   const withShortObject = Buffer.from(source);
   withShortObject.writeBigUInt64LE(23n, 30 + 16);
   assert.throws(() => profile(withShortObject), /Invalid ASF object size/);
+});
+
+test('Windows Media discovers the time indexes through the physical ASF object headers', async () => {
+  const bytes = await fixture(),
+    { end } = profile(bytes).data,
+    index = bytes.subarray(end),
+    properties = profileFixture(bytes),
+    [file, extension, ...tracks] = properties.objects;
+  const full = (hex, size) => {
+    const object = Buffer.alloc(size);
+    Buffer.from(hex, 'hex').copy(object);
+    object.writeBigUInt64LE(BigInt(size), 16);
+    object.writeUInt32LE(1000, 24);
+    object.writeUInt16LE(1, 28);
+    object.writeUInt16LE(1, size - 4);
+    object.writeUInt16LE(3, size - 2);
+    return object;
+  };
+  const parameters = full('df29e2d6da35d111903400a0c90349be', 34),
+    fullIndex = full('d329e2d6da35d111903400a0c90349be', 38),
+    withParameters = Buffer.concat([extension, parameters]);
+  withParameters.writeBigUInt64LE(BigInt(withParameters.length), 16);
+  withParameters.writeUInt32LE(withParameters.length - 46, 42);
+
+  const edit = (source, update) => {
+    const copy = Buffer.from(source);
+    update(copy);
+    return copy;
+  };
+  const withTail = (source, ...tail) =>
+    Buffer.concat([source.subarray(0, profile(source).data.end), ...tail]);
+  const parameterized = properties.withObjects([file, withParameters, ...tracks]);
+  for (const [label, source, expected] of [
+    ['simple index', bytes, true],
+    ['no index despite file flags', withTail(bytes), false],
+    ['seekable flag cleared', edit(bytes, (copy) => copy.writeUInt32LE(0, 118)), true],
+    ['broadcast file', edit(bytes, (copy) => copy.writeUInt32LE(3, 118)), false],
+    ['short simple index header', withTail(bytes, index.subarray(0, 55)), false],
+    ['simple index header only', withTail(bytes, index.subarray(0, 56)), true],
+    [
+      'simple index declaration shorter than its header',
+      withTail(
+        bytes,
+        edit(index, (copy) => copy.writeBigUInt64LE(55n, 16)),
+      ),
+      true,
+    ],
+    ['object ahead of simple index', withTail(bytes, Buffer.alloc(24), index), true],
+    ['one byte ahead of simple index', withTail(bytes, Buffer.alloc(1), index), false],
+    ['full index without parameters', withTail(bytes, fullIndex), false],
+    ['parameters without index', withTail(parameterized), false],
+    ['full index with parameters', withTail(parameterized, fullIndex), true],
+    ['truncated full index header', withTail(parameterized, fullIndex.subarray(0, 37)), false],
+    ['simple index after unmatched parameters', withTail(parameterized, index), true],
+  ]) {
+    let reads = 0;
+    const parsed = profile(source);
+    const seekable = await nativeASFSeekable(parsed, source.length, (at, count) => {
+      assert.ok(at >= BigInt(parsed.data.end), label);
+      assert.ok(count <= 56 && at + BigInt(count) <= BigInt(source.length), label);
+      reads++;
+      return source.subarray(Number(at), Number(at) + count);
+    });
+    assert.equal(seekable, expected, label);
+    assert.ok(reads <= 2, label);
+  }
 });

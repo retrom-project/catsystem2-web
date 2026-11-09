@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Windows Media reader boundary consumed by the original 2.6.1.76 ASF filter.
-import { InvalidASF, asfHeaderSize, nativeASFProfile } from './movie-asf.mjs';
+import { InvalidASF, asfHeaderSize, nativeASFProfile, nativeASFSeekable } from './movie-asf.mjs';
 import { nativeASFSamples } from './movie-asf-samples.mjs';
 
 const E_POINTER = 0x80004003;
 const E_INVALIDARG = 0x80070057;
+const E_NOTIMPL = 0x80004001;
 const NS_E_INVALID_REQUEST = 0xc00d002b;
 const NS_E_INVALID_DATA = 0xc00d002f;
 const NS_E_INVALID_STREAM = 0xc00d003c;
@@ -113,7 +114,7 @@ export class NativeWindowsMediaReader {
       if (FAILED(await this.call(input, 12, stat, 1)))
         throw new InvalidASF('ASF stream Stat failed');
       const size = u64(p.load(stat + 8), p.load(stat + 12));
-      const seek = (at) => this.call(input, 5, at, 0, 0, 0);
+      const seek = (at) => this.call(input, 5, ...DWORD(BigInt(at)), 0, 0);
       const read = async (address, length) => {
         p.store(stat + 16, 0);
         const status = await this.call(input, 3, address, length, stat + 16);
@@ -126,7 +127,15 @@ export class NativeWindowsMediaReader {
       content = p.allocate(length + 50, true);
       if (FAILED(await seek(0))) throw new InvalidASF('ASF stream seek failed');
       await read(content, length + 50);
-      return nativeASFProfile(p.read(content, length), p.read(content + length, 50), size);
+      const profile = nativeASFProfile(p.read(content, length), p.read(content + length, 50), size);
+      const readAt = async (offset, count) => {
+        if (FAILED(await seek(offset))) throw new InvalidASF('ASF index seek failed');
+        await read(content, count);
+        return p.read(content, count);
+      };
+      const seekable = await nativeASFSeekable(profile, size, readAt);
+      if (FAILED(await seek(profile.data.start))) throw new InvalidASF('ASF data seek failed');
+      return { ...profile, seekable };
     } finally {
       if (content) p.free(content);
       p.free(stat);
@@ -160,9 +169,15 @@ export class NativeWindowsMediaReader {
     await this.status(record, 13);
     return 0;
   }
-  async start(record, lo, hi, _durationLow, _durationHigh, rate, context) {
+  async start(record, lo, hi, durationLow, durationHigh, rate, context) {
     if (!record.opened || record.playing) return NS_E_INVALID_REQUEST;
-    if (rate !== 0x3f800000 || u64(lo, hi) > record.duration) return E_INVALIDARG;
+    // CCustomWMFilter starts an unbounded range at the normal rate. The
+    // reader checks raw nonzero positions for seekability before truncating
+    // the 100-nanosecond units to the ASF reader's millisecond range.
+    if (rate !== 0x3f800000 || durationLow || durationHigh || (hi | 0) < 0) return E_NOTIMPL;
+    const position = u64(lo, hi);
+    if ((position && !record.seekable) || position / 10000n > record.duration / 10000n)
+      return NS_E_INVALID_REQUEST;
     record.playing = true;
     record.context = context;
     await this.status(record, 11);
@@ -247,14 +262,20 @@ export class NativeWindowsMediaReader {
   }
   attribute(record, stream, name, type, output, size) {
     if (!stream || !name || !type || !size) return E_POINTER;
-    if (this.readWord(stream) || this.process.string(name, true) !== 'Duration')
-      return NS_E_ATTRIBUTE_NOT_FOUND;
-    const capacity = this.readWord(size);
-    this.writeWord(size, 8);
-    this.process.store(type, 4);
+    const streamNumber = this.readWord(stream);
+    if (streamNumber && streamNumber !== 0xffff) return NS_E_ATTRIBUTE_NOT_FOUND;
+    const attribute = this.process.string(name, true).toLowerCase(),
+      isDuration = attribute === 'duration';
+    if (!isDuration && attribute !== 'seekable') return NS_E_ATTRIBUTE_NOT_FOUND;
+    const capacity = this.readWord(size),
+      required = isDuration ? 8 : 4;
+    this.writeWord(stream, 0);
+    this.writeWord(size, required);
+    if (output && capacity < required) return ASF_E_BUFFERTOOSMALL;
+    this.process.store(type, isDuration ? 4 : 3);
     if (!output) return 0;
-    if (capacity < 8) return ASF_E_BUFFERTOOSMALL;
-    this.engine.kernel.write64(output, record.duration);
+    if (isDuration) this.engine.kernel.write64(output, record.duration);
+    else this.process.store(output, Number(record.seekable));
     return 0;
   }
   filter(pointer) {

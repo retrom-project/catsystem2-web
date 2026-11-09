@@ -429,6 +429,22 @@ adapter. The packet reader covers uncorrected finite ASF packets.
 [ASF specification](https://download.microsoft.com/download/7/9/0/790fecaa-f64a-4a5e-a430-0bccdab3f1b4/ASF_Specification.doc)
 [Windows Media synchronous reader](https://learn.microsoft.com/en-us/windows/win32/wmformat/to-retrieve-media-samples-with-the-synchronous-reader)
 
+The Windows Media reader uses the mounted stream's time indexes for its
+`Seekable` attribute and `Start` range validation. The Simple Index
+header follows the Data object. A full Index also uses Index Parameters
+in the ASF header extension. Nonbroadcast audio-only files can seek
+without an index. Indexed video accepts forward positions within the
+millisecond-truncated duration. Unindexed video can start at zero, and
+the original reader rejects positive positions with `0xC00D002B`.
+The pinned DLL comparison covers 302 immediate `Start` results for
+the filter's unbounded, normal-rate call shape. Both browser renderers
+exercise that boundary through the original WMV output pin's
+`IMediaSeeking::SetPositions` at `0x70D1A0`, including the original
+stop and restart. The downstream browser decoder continues to own
+display positioning. Compressed preroll delivery, finite ranges and
+striding remain separate from this validation.
+[Asynchronous reader time seeking](https://learn.microsoft.com/en-us/windows/win32/wmformat/to-seek-by-time-using-the-asynchronous-reader)
+
 ## Legacy Hap5 frame decoding
 
 The two original Hap constructors at `0x6FC750` and `0x5BAC80`

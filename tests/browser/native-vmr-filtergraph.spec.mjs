@@ -68,6 +68,11 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
       );
       badPacket[Number(badPacket.readBigUInt64LE(16)) + 50 + 13] = 0x80;
       files['movie/invalid-packet.wmv'] = [...badPacket];
+      const dataObject = Number(source.readBigUInt64LE(16)),
+        end = dataObject + Number(source.readBigUInt64LE(dataObject + 16)),
+        unindexed = Buffer.from(source.subarray(0, end));
+      unindexed.writeBigUInt64LE(BigInt(end), 70);
+      files['movie/unindexed.wmv'] = [...unindexed];
     }
     await page.goto('/');
     const result = await page.evaluate(
@@ -145,6 +150,14 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             },
             ['movie/clip.' + extension]: sidecar,
           };
+          if (wmv && gamePE) {
+            const unindexed = Uint8Array.from(files['movie/unindexed.wmv']);
+            game.media['movie/unindexed.wmv'] = {
+              ...sidecar,
+              sourceSize: unindexed.length,
+              sourceSha256: await nativeImageIdentity(unindexed),
+            };
+          }
         }
         const moduleReferences = (world) =>
           (ogg
@@ -314,6 +327,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
               rendered: graph.wmRendered.size,
               clock: reader.userClock,
               duration: Number(reader.duration),
+              seekable: reader.seekable,
               streams: reader.streams.map(
                 ({ number, kind, words, maxSample, compressed, allocate }) => [
                   number,
@@ -462,6 +476,73 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
                   )) === sha256
                 : decoder.source?.url === url,
             firstBoundMedia = await decoderUsesSource(decoders[0]);
+          const nativeSeek = async (context, record, times) => {
+            const { p, direct, world } = context,
+              scratch = p.allocate(64, true),
+              [name, stream, attribute, type, length, iid, pinOut, position] = [
+                scratch,
+                scratch + 20,
+                scratch + 24,
+                scratch + 28,
+                scratch + 32,
+                scratch + 36,
+                scratch + 52,
+                scratch + 56,
+              ],
+              reader = direct.wmReader.filter(record.wmFilter),
+              pin = record.wmPins.keys().next().value;
+            let seeking = 0;
+            try {
+              world.nativeEngine.kernel.writeString(name, 'seekable', true);
+              const getAttribute = async (capacity) => {
+                p.write(stream, Uint8Array.of(0xff, 0xff));
+                p.write(length, Uint8Array.of(capacity, 0));
+                p.store(type, 0xcafed00d);
+                p.store(attribute, 0x12345678);
+                return [
+                  await direct.call(
+                    reader.interfaces.wmHeader,
+                    5,
+                    stream,
+                    name,
+                    type,
+                    attribute,
+                    length,
+                  ),
+                  p.read(stream, 2)[0],
+                  p.load(type),
+                  p.read(length, 2)[0],
+                  p.load(attribute),
+                ];
+              };
+              const reported = [await getAttribute(3), await getAttribute(4)];
+              [0x36b73880, 0x11cfc2c8, 0x8000468b, 0x60ef6c5f].forEach((word, index) =>
+                p.store(iid + index * 4, word),
+              );
+              if (await direct.call(pin, 0, iid, pinOut))
+                throw new Error('Original Windows Media pin did not expose IMediaSeeking');
+              seeking = p.load(pinOut);
+              if (p.load(seeking) !== 0x8f080c)
+                throw new Error('Windows Media pin returned a different IMediaSeeking interface');
+              const observed = [];
+              for (const time of times) {
+                world.nativeEngine.kernel.write64(position, BigInt(time));
+                const status = await direct.call(seeking, 14, position, 1, 0, 0);
+                observed.push([
+                  status,
+                  p.load(record.wmFilter + 172),
+                  reader.playing,
+                  reader.clockRequest === null ? null : Number(reader.clockRequest),
+                ]);
+              }
+              return { reported, observed };
+            } finally {
+              if (seeking) await direct.call(seeking, 2);
+              p.free(scratch);
+            }
+          };
+          const indexedSeek =
+            wmv && (await nativeSeek(first, graph, [9000000, 28930001, 28940000, 0]));
           const videoSize = await direct.call(graph.interfaces.video, 34, info, info + 4);
           const [width, height] = [p.load(info), p.load(info + 4)];
           const wait = async (predicate) => {
@@ -615,6 +696,19 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             joined = (await command(third, 0x10b, loopHandle)).value,
             stoppedThread = worker(third) === undefined && !third.p.load(loopMovie + 388);
           await third.world.objects.release(loopPlane);
+          let unindexedSeek;
+          if (wmv) {
+            const target = await third.world.objects.create({
+              kind: 2,
+              parent: third.world.root,
+              name: 'unindexed movie plane',
+            });
+            await load(third, target, 'unindexed');
+            const movie = [...third.direct.objects.values()].find(({ movie }) => movie);
+            const pause = await third.direct.call(movie.interfaces.control, 8);
+            unindexedSeek = { pause, ...(await nativeSeek(third, movie, [1, 0])) };
+            await third.world.objects.release(target);
+          }
           return {
             rejected,
             replaced,
@@ -643,6 +737,8 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
             splitFilters: [connectedFilters, freshFilters],
             windowsMedia: [wmTopology, freshWM],
             windowsMediaTypes: [firstWMTypes, freshWMTypes],
+            indexedSeek,
+            unindexedSeek,
             rejectedCodec,
             rejectedPacket,
             rejectedHandleReleased,
@@ -735,12 +831,36 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
         rendered: 2,
         clock: true,
         duration: 28930000,
+        seekable: true,
         streams: [
           [1, 'video', 0x32564d57, 2304, true, true],
           [2, 'audio', 0x161, 512, true, true],
         ],
       };
       expect(result.windowsMedia).toEqual([topology, topology]);
+      expect(result.indexedSeek).toEqual({
+        reported: [
+          [0xc00d07d1, 0, 0xcafed00d, 4, 0x12345678],
+          [0, 0, 3, 4, 1],
+        ],
+        observed: [
+          [0, 9000000, true, 10000000],
+          [0, 28930001, true, 29930001],
+          [0xc00d002b, 28940000, false, null],
+          [0, 0, true, 1000000],
+        ],
+      });
+      expect(result.unindexedSeek).toEqual({
+        pause: 0,
+        reported: [
+          [0xc00d07d1, 0, 0xcafed00d, 4, 0x12345678],
+          [0, 0, 3, 4, 0],
+        ],
+        observed: [
+          [0xc00d002b, 1, false, null],
+          [0, 0, true, 1000000],
+        ],
+      });
       const type = (major, subtype, format, length, identifier) => {
         const tail = [0x00100000, 0xaa000080, 0x719b3800];
         return {
