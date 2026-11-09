@@ -413,3 +413,32 @@ including malformed input, the original output pins and media types,
 several canvas colors, a 440 Hz signal, completion, replay, an independent
 fresh World and release of the native filter and IStream. SDK tests
 verify the original rejection through both Plane commands.
+
+## Legacy Hap5 frame decoding
+
+The two original Hap constructors at `0x6FC750` and `0x5BAC80`
+register the `vidc.Hap5` driver under `dsfilter/HAPCODEC.dll`. The
+Game constructor supplies the path in UTF-16. SDK 4.01 converts it
+to ANSI before calling `ICInstall`. The pinned Wine test observes a
+successful registry write for both encodings, followed by a successful
+`ICOpen` only for ANSI. The original connect method enumerates the
+CAsyncReader output and asks DirectShow to render it.
+[ICInstall](https://learn.microsoft.com/en-us/windows/win32/api/vfw/nf-vfw-icinstall)
+
+The frame decoder reads Hap5 video packets from AVI and AVI continuation
+segments. The pinned HapCodec uses the four-byte Hap header with a
+24-bit payload size and accepts raw BC3 and single-block Snappy payloads.
+The original driver returns the BC3 block array or, when
+requested, positive-height bottom-up BGRA32. The Web decoder exposes the
+same RGB and alpha samples in top-down RGBA order. The tests compare all
+3,072 output bytes for each compression mode and a frame with varied
+BC3 endpoints and selectors. Longer section headers and chunked Snappy
+belong to newer Hap variants. The pinned driver returned success while
+the destination stayed zero for the tested extended-header Snappy packets.
+[Original Hap decoder source](https://github.com/Vidvox/hap-directshow/blob/23064e2f8459917de58c2b49aa511492e599ce9a/Source/External/hap/hap.cpp)
+
+The comparison uses RenderHeads Hap DirectShow v1.0.10, installer SHA-256
+`dc5fe2386988847f4c9f32c2bdc4a7becf5857cf84a730b4131397a3736ee908`.
+The extracted x86 `HapCodec.dll` SHA-256 is
+`be668219992b7028dc3411af834b44af3439c82b2ec4a25c9616f64084bf9b18`.
+[Vidvox release](https://github.com/Vidvox/hap-directshow/releases/tag/v1.0.10)
