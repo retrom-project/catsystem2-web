@@ -133,8 +133,7 @@ export function installNativeFESPlanes(world) {
         ],
         async beforeDriver(runtime, instance, object, pointer) {
           await world.planesFES.advance(instance, object);
-          const surface = instance.player.surface,
-            offset = surface == null ? [0, 0] : world.graphics.surface(surface).offset || [0, 0];
+          const offset = instance.player.nativeDraw?.offset ?? [0, 0];
           offset.forEach((word, i) =>
             runtime.process.store(runtime.driver + abi.offset + i * 4, word),
           );

@@ -696,8 +696,7 @@ export class NativeFESObjectRuntime {
     p.store(pointer + 184, object.pri);
     p.store(pointer + 188, Number(object.disp && !instance.player.nativeInput?.state.sleeping));
     p.store(pointer + 192, view.getUint32(MOTION_ABI.color, true));
-    const surface = instance.player.surface,
-      offset = surface == null ? [0, 0] : this.world.graphics.surface(surface).offset || [0, 0],
+    const offset = instance.player.nativeDraw?.offset ?? [0, 0],
       vram = new Float32Array([
         Math.trunc(object.vramX) + offset[0],
         Math.trunc(object.vramY) + offset[1],

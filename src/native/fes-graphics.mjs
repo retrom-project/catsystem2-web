@@ -76,7 +76,9 @@ function bindFESGraphics(graphics, record, player) {
     record.implementation?.surface ??
     [...graphics.fesSurfaces].find(([, p]) => p.get(owner) === player)?.[0];
   const draw = surfaceID == null ? null : graphics.drawTasks.get(surfaceID);
-  player.surface = surfaceID;
+  player.surface = graphics.rememberFESSurface(surfaceID, player) ? surfaceID : null;
+  if (player.surface != null && graphics.fesSurfaces.get(surfaceID)?.get(owner) !== player)
+    graphics.bindFES(surfaceID, player, owner);
   return { instance, owner, surfaceID, draw };
 }
 

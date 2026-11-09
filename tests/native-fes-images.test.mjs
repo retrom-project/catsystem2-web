@@ -684,6 +684,37 @@ saved[0] getflag -1 12
       }
     },
   );
+  test(
+    `${profile} a surviving FES sends to its original Draw ID after the target is destroyed`,
+    { skip: !process.env[variable] },
+    async () => {
+      const source =
+          '#DEFINE\nIMAGE picture\n#OBJECT FILE DISP\npicture authored 1\n#START\nnext WAIT\n#WAIT\n',
+        exe = new Uint8Array(await readFile(process.env[variable])),
+        world = await fixture(profile, exe, 'hg3', source);
+      let restored;
+      try {
+        const { id, surface, task } = await start(world),
+          target = world.nativeTaskID(surface);
+        assert.equal(task.player.nativeDraw.target, target);
+        await world.objects.release(surface);
+        await task.tick();
+        assert.equal(task.player.surface, null);
+        assert.equal(task.player.nativeDraw.target, target);
+
+        restored = await fixture(profile, exe, 'hg3', source);
+        await restored.restore(structuredClone(world.snapshot()));
+        const fresh = restored.objects.objects.get(id).implementation;
+        await fresh.tick();
+        assert.equal(fresh.player.surface, null);
+        assert.equal(fresh.player.nativeDraw.target, target);
+        assert.equal(fresh.player.root.label, 'WAIT');
+      } finally {
+        await restored?.close();
+        await world.close();
+      }
+    },
+  );
 }
 
 for (const [profile, variable] of [

@@ -43,6 +43,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTexturePageView } from './texture-memory.mjs';
 import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
 import { installNativeEngineWorkers } from './engine-workers.mjs';
+import { NativeVMR9 } from './vmr9.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
@@ -167,10 +168,23 @@ export class NativeGraphics {
     if (!player) return;
     if (!Number.isSafeInteger(owner))
       throw new Error('FES surface binding requires its native owner task');
+    this.rememberFESSurface(id, player);
     for (const players of this.fesSurfaces.values()) players.delete(owner);
     if (!this.fesSurfaces.has(id)) this.fesSurfaces.set(id, new Map());
     this.fesSurfaces.get(id).set(owner, player);
     player.nativeGraphics = this;
+  }
+  rememberFESSurface(id, player) {
+    const draw = this.drawTasks.get(id),
+      renderer = draw?.state.renderer;
+    if (!renderer) return false;
+    player.nativeDraw = {
+      target: this.world.objects.objects.get(id)?.nativeID ?? id,
+      width: renderer.width,
+      height: renderer.height,
+      offset: [...(draw.state.offset ?? [0, 0])],
+    };
+    return true;
   }
   async ensureVRAM(width, height) {
     let bitmap = this.vramHandle ? this.images.get(this.vramHandle) : null;
@@ -1035,6 +1049,7 @@ export class NativeGraphicTask {
 export function installNativeGraphics(world) {
   if (world.registerNativeFeature) {
     world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
+    world.registerNativeFeature('vmr9', (engine) => new NativeVMR9(engine));
     world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
     world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {

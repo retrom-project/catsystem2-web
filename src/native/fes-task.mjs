@@ -187,6 +187,7 @@ export function createNativeFESTask(world, record) {
         player: this.player?.snapshot() ?? null,
         input: input.snapshot(),
         surface: this.surface,
+        drawBinding: this.player?.nativeDraw ?? null,
         soundTaskID: this.soundTaskID,
         sleepValue: this.sleepValue,
         stringsInherited: this.stringsInherited,
@@ -246,7 +247,9 @@ export function createNativeFESTask(world, record) {
         this.player.root.resultValue = this.resultValue;
       }
       this.player.nativeInput = input;
-      if (this.surface !== null) world.graphics.bindFES(this.surface, this.player, record.id);
+      this.player.nativeDraw = state.drawBinding ?? null;
+      if (world.graphics.drawTasks.get(this.surface)?.state.renderer)
+        world.graphics.bindFES(this.surface, this.player, record.id);
       if (!world.restoring) await world.graphics.syncFES(record, this.player);
       world.host.nativeFESLoaded?.(record, this.player, world);
     },

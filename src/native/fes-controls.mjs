@@ -222,10 +222,9 @@ export function nativeFESControlAdapter(runtime, type) {
     },
     async beforeDriver(runtime, instance, object, pointer) {
       await advanceNative(runtime, instance, object, pointer);
-      const surface = instance.player.surface;
-      if (surface == null)
-        throw new Error('Native FES control driver requires its renderer surface');
-      runtime.process.store(runtime.driver + 408, runtime.world.nativeTaskID(surface));
+      const draw = instance.player.nativeDraw;
+      if (!draw) throw new Error('Native FES control driver requires its renderer surface');
+      runtime.process.store(runtime.driver + 408, draw.target);
     },
     afterDriver(runtime, instance, object, pointer) {
       pull(runtime, object, pointer);

@@ -100,9 +100,7 @@ export function nativeFESLogAdapter(runtime, type) {
     },
     async syncObject(runtime, instance, object, pointer) {
       const p = runtime.process,
-        surface = instance.player.surface,
-        offset =
-          surface == null ? [0, 0] : runtime.world.graphics.surface(surface).offset || [0, 0],
+        offset = instance.player.nativeDraw?.offset ?? [0, 0],
         previous = object.nativeLogSurfaceOffset || [0, 0];
       if (offset[0] !== previous[0] || offset[1] !== previous[1]) {
         await runtime.call(

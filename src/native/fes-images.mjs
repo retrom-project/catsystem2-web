@@ -341,15 +341,10 @@ export function nativeFESImageAdapter(runtime, type) {
       }
       if (type === 11 || type === 12) await runtime.world.getNativeFeature('text');
       await runtime.world.imagesFES.advance(instance, object);
-      const surfaceID = instance.player.surface;
-      const draw = runtime.world.graphics.drawTasks.get(surfaceID),
-        width = draw?.state.renderer?.width ?? 0,
-        height = draw?.state.renderer?.height ?? 0;
-      runtime.process.store(
-        runtime.driver + 408,
-        surfaceID == null ? 0xffffffff : runtime.world.nativeTaskID(surfaceID),
-      );
-      [0, 0, width, height].forEach((word, i) =>
+      const draw = instance.player.nativeDraw;
+      // FES stores a raw Draw target, not a pointer to its lifetime.
+      runtime.process.store(runtime.driver + 408, draw?.target ?? 0xffffffff);
+      [0, 0, draw?.width ?? 0, draw?.height ?? 0].forEach((word, i) =>
         runtime.process.store(runtime.driver + 392 + i * 4, word),
       );
       if (type === 6) {

@@ -51,6 +51,12 @@ The original script task parent-attachment hook determines string-bank
 inheritance. A FES-owned KCS task remains a real child task; FES text does not
 substitute a hardcoded configuration, gallery or story handler.
 
+The native Draw binding keeps a task ID and the last drawing rectangle and
+offset. A Draw owned by a finishing script can disappear before its FES
+finishes its current frame. Drivers retain the original ID for task routing;
+the missing receiver has no live surface. Both profiles exercise this order
+and restore a checkpoint taken between those two task lifetimes.
+
 Source loading and object frame execution are separate phases. The original
 game `628D60` and SDK `500390` allocate empty bitmap wrappers and the eagerly
 owned button, scroll, slider and text children. They leave PLANE, CPLANE and
