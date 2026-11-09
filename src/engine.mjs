@@ -30,7 +30,6 @@ import { NativeFileStorage } from './native/storage.mjs';
 import { parseNativeXML } from './native/xml.mjs';
 import { NATIVE_PROFILES } from './native/catalog.mjs';
 import { NativeInputBindings } from './native/input-bindings.mjs';
-import { applyNativePreferences } from './native/preferences.mjs';
 import { browserWindowsLanguageID } from './native/windows-language-ids.mjs';
 import { NativeSteam } from './native/steam.mjs';
 
@@ -156,12 +155,6 @@ export class CatSystem2 {
       this.onState(this.status());
       return;
     }
-    const preferences = await this.nativeStorage.readSaved(this.world.preferencesName);
-    if (preferences && !applyNativePreferences(this.world.configuration, preferences))
-      this.host.nativeDiagnostic?.({
-        type: 'preferences-invalid',
-        file: this.world.preferencesName,
-      });
     const soundConfiguration = this.world.soundConfiguration;
     if (soundConfiguration.loaded && soundConfiguration.filename) {
       const soundPreferences = await this.nativeStorage.readSaved(soundConfiguration.filename);

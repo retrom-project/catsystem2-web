@@ -31,6 +31,7 @@ import { NativeFESSound } from './fes-sound.mjs';
 import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
 import { NativeEngineProcess } from './engine-process.mjs';
+import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { installNativeMatrices } from './matrix.mjs';
 import { installNativeText } from './text-task.mjs';
 import { NativeGlobalStrings } from './global-strings.mjs';
@@ -785,6 +786,12 @@ export class NativeWorld {
   }
 
   async initialize(name) {
+    if (this.bootstrapOwner)
+      await readNativeStartupPreferences(
+        await this.ensureNativeEngine(),
+        (name) => this.storage.readSaved?.(name),
+        (detail) => this.host.nativeDiagnostic?.(detail),
+      );
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

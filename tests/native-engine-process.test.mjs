@@ -11,6 +11,8 @@ import {
 } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
+import { serializeNativePreferences } from '../src/native/preferences.mjs';
+import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -35,6 +37,7 @@ for (const [profile, variable, encoding] of [
           'config.int/gamedef.xml': xml(321),
         }),
         reads = [],
+        preferences = new NativeConfiguration({ profile, uiLanguage: 0x411 }),
         make = () => {
           const random = new ParticleRandom(),
             configuration = new NativeConfiguration({ profile, uiLanguage: 0x411 });
@@ -57,25 +60,37 @@ for (const [profile, variable, encoding] of [
             },
           });
         },
-        world = make(),
-        fresh = make(),
         read = (engine, address) => {
           const offset =
             NATIVE_CONFIGURATION_MEMORY_LAYOUTS[profile].blocks[1] -
             NATIVE_ENGINE_IMAGES[profile].settingsOffset;
           return engine.process.load(address + offset + 9 * 4);
         };
+      new DataView(preferences.blocks[1].buffer).setUint32(9 * 4, 647, true);
+      preferences.setField('screen.width', 913);
+      preferences.setField('general.disableMovie', 1);
+      const world = make(),
+        fresh = make();
       try {
         const engine = await world.ensureNativeEngine();
         assert.ok(reads.includes('config.int/gamedef.xml'));
         assert.ok(!reads.includes('gamedef.xml'));
         assert.equal(read(engine, engine.refs.defaultSettings), 321);
         assert.equal(read(engine, engine.refs.settings), 513);
+        await readNativeStartupPreferences(engine, (name) => {
+          assert.equal(name, 'setup.xml');
+          return serializeNativePreferences(preferences);
+        });
+        assert.equal(read(engine, engine.refs.settings), 647);
+        assert.equal(world.configuration.getField('screen.width'), 913);
+        assert.equal(world.configuration.getField('general.disableMovie'), 1);
         const saved = engine.snapshot(),
           restored = await fresh.ensureNativeEngine();
+        assert.equal(read(restored, restored.refs.settings), 513);
         restored.restore(saved);
         assert.equal(read(restored, restored.refs.defaultSettings), 321);
-        assert.equal(read(restored, restored.refs.settings), 513);
+        assert.equal(read(restored, restored.refs.settings), 647);
+        assert.equal(fresh.configuration.getField('screen.width'), 913);
       } finally {
         await fresh.close();
         await world.close();
