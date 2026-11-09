@@ -9,18 +9,35 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 test(
-  'SDK KCS links, loads and advances an original JavaScript task through fresh World restore',
+  'SDK KCS links, loads and calls original JavaScript with a shared string bank across restore',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const profile = 'sdk-4.01-engine-2.6.1.74',
       executable = await readFile(process.env.CATSYSTEM2_SDK_EXE),
       script = new TextEncoder().encode(
         'var next = (function () { var count = 0; return function () { return ++count; }; }());\n' +
-          'function GameLoop(frame) { if (next() === 2) cfExit(42); }',
+          'var ready = false;\n' +
+          'function Enable(args) {\n' +
+          '  var s = args[0], missing = args[1];\n' +
+          '  var words = cfGetStrVar(100, 2);\n' +
+          '  if (s === "\\u65e5\\u672c" && missing === "" && words[0] === s && words[1] === missing) {\n' +
+          '    cfSetStrVar(102, "\\u78ba\\u8a8d");\n' +
+          '    cfSetStrVar(103, "");\n' +
+          '    ready = true;\n' +
+          '  }\n' +
+          '}\n' +
+          'function GameLoop(frame) {\n' +
+          '  if (ready && next() === 2 && cfGetStrVar(100) === "updated") {\n' +
+          '    cfSetStrVar(104, "complete"); cfExit(42);\n' +
+          '  }\n' +
+          '}',
       ),
       own = [37, [0x14, 64]],
       target = [37, [0x14, 68]],
       start = [
+        [37, 100],
+        [37, 320],
+        [43, 0x114, 8],
         [43, 0x44, 0],
         [38, 64],
         [37, 55],
@@ -37,6 +54,14 @@ test(
         target,
         [37, 7],
         [43, 0x3ee, 8],
+        target,
+        [37, 352],
+        [37, 100],
+        [37, 2],
+        [43, 0x3d0, 16],
+        [37, 102],
+        [37, 96],
+        [43, 0x115, 8],
       ],
       idle = start.reduce((pc, op) => pc + 1 + (op.length - 1) * 5, 0),
       program = kcsProgram(
@@ -44,6 +69,8 @@ test(
         [
           [256, 'Authored JavaScript'],
           [288, 'authored.js'],
+          [320, '日本'],
+          [352, 'Enable'],
         ],
       ),
       make = () => {
@@ -82,19 +109,25 @@ test(
       assert.equal(p.load(pointer + 156), world.nativeTaskID(world.main.id));
       assert.equal(p.load(pointer + 608), 7);
       assert.equal(p.load(pointer + 140), 1, 'the original V8 load succeeded');
+      assert.equal(world.main.machine.string(96), '確認');
+      const bank = world.runtime.stringBank(world.main, false);
+      assert.equal(bank.get(103), '');
       const input = world.resolveTaskID(p.load(pointer + 192), id);
       assert.equal(world.objects.objects.get(input).parent, id);
       assert.equal(world.objects.objects.get(input).kind, 6);
       await world.tick();
       assert.equal(record.exitCode, -1);
+      bank.set(100, 'updated');
       fresh = make();
       await fresh.restore(structuredClone(world.snapshot()));
       await fresh.tick();
       assert.equal(fresh.objects.objects.get(id).exitCode, 42);
+      assert.equal(fresh.runtime.stringBank(fresh.main, false).get(104), 'complete');
       assert.equal(fresh.nativeEngine.process.load(pointer + 144), 0);
       assert.equal(record.exitCode, -1);
       await world.tick();
       assert.equal(record.exitCode, 42);
+      assert.equal(bank.get(104), 'complete');
     } finally {
       await fresh?.close();
       await world.close();

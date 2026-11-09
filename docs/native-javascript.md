@@ -19,5 +19,12 @@ fresh PE process. The tests also verify the allocator and task teardown.
 KCS creates the original kind 55 task; its `3CE` link message creates a real
 input child, `3CF` runs the mounted script through the original filename
 formatter and loader, and `3EE` updates the original task option word.
-The linked KCS variable and string banks and the tutorial's drawing and sound
-need their own integration coverage.
+`3D0` formats the function name and passes the selected KCS strings as one
+JavaScript array. The original receiver converts CP932 to UTF-8 and passes an
+empty string for an absent index. Its `cfGetStrVar` and `cfSetStrVar` callbacks
+read and write the calling Script's live string bank. The test calls from KCS
+with Japanese text, reads back a JavaScript write in KCS, and verifies later
+reads and writes after restoring into a fresh World.
+
+The linked integer bank and the tutorial's drawing and sound need their own
+integration coverage.
