@@ -150,6 +150,18 @@ window requests. Character messages also resolve the game's Shift+N
 secondary-language OFF entry. System-menu accelerators and the remaining
 native message pump are separate.
 
+The virtual USER32 thread now owns posted messages for windows and the
+thread itself. The pinned Wine probe checks nonremoving reads, child-window
+and message-range filtering, removal when a window is destroyed, and
+quit-code delivery through the 28-byte x86 `MSG` record.
+[`PeekMessage`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-peekmessagew)
+and [`GetMessage`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)
+share that queue. `DispatchMessage` invokes the registered window procedure
+and returns its result. A settled checkpoint preserves pending posts and the
+last received message independently of the original process. The queue
+contracts cover explicit posts and dispatch, with timer callbacks and
+generated input handled separately.
+
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The
 virtual Windows namespace shares the event state across handles in one

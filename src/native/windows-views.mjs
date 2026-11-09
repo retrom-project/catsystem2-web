@@ -5,6 +5,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 const DESKTOP = 2;
 const WS_VISIBLE = 0x10000000;
 const WS_POPUP = 0x80000000;
+const WS_CHILD = 0x40000000;
 const INVALID_WINDOW = 1400;
 const INVALID_MENU = 1401;
 const INVALID_INDEX = 1413;
@@ -21,7 +22,7 @@ const LONG_FIELDS = new Map([
 
 function margins(style, menu, extended) {
   const base = (style & ~WS_VISIBLE) >>> 0;
-  if (extended || ![0, 0xca0000, 0x800a0000, 0xc0000000].includes(base))
+  if (extended || ![0, 0xca0000, WS_CHILD, WS_POPUP, 0x800a0000, 0xc0000000].includes(base))
     throw new Error(
       `Unreviewed native window frame 0x${base.toString(16)}/0x${extended.toString(16)}`,
     );
@@ -53,6 +54,7 @@ export class NativeWindowsViews {
     }
     register('DestroyWindow', 1, ([handle]) => this.destroy(handle));
     register('IsWindow', 1, ([handle]) => Number(handle === DESKTOP || this.windows.has(handle)));
+    register('IsChild', 2, ([parent, child]) => Number(this.isChild(parent, child)));
     register(
       'GetMenu',
       1,
@@ -75,9 +77,6 @@ export class NativeWindowsViews {
       window.style = ((window.style & ~WS_VISIBLE) | (command ? WS_VISIBLE : 0)) >>> 0;
       return Number(Boolean(previous));
     });
-    register('PostQuitMessage', 1, ([code]) => {
-      this.quit = code | 0;
-    });
     register('SetRectEmpty', 1, ([at]) => {
       if (!at) return this.error(87);
       this.process.zero(at, 16);
@@ -91,6 +90,25 @@ export class NativeWindowsViews {
   error(code) {
     this.kernel.lastError = code;
     return 0;
+  }
+  isChildWindow(window) {
+    return (window.style & 0xc0000000) === WS_CHILD;
+  }
+  isChild(parent, handle) {
+    let window = this.windows.get(handle);
+    for (
+      let remaining = this.windows.size;
+      remaining && window && this.isChildWindow(window);
+      remaining--
+    ) {
+      if (window.parent === parent) return true;
+      window = this.windows.get(window.parent);
+    }
+    return false;
+  }
+  forget(handle) {
+    this.windows.delete(handle);
+    this.kernel.messageQueue.dropWindow(handle);
   }
   readRect(at) {
     return Array.from({ length: 4 }, (_, i) => this.process.load(at + i * 4) | 0);
@@ -191,7 +209,7 @@ export class NativeWindowsViews {
       return this.error(INVALID_WINDOW);
     // The original popup menu helper combines WS_POPUP and WS_CHILD. In
     // that case the ninth word still identifies a menu, as on the original host.
-    const child = (style & 0xc0000000) === 0x40000000;
+    const child = this.isChildWindow({ style });
     if (menu && !child && !this.kernel.windowMenus.menus.has(menu)) return this.error(INVALID_MENU);
     const handle = this.next,
       bounds = [x | 0, y | 0, (x | 0) + (width | 0), (y | 0) + (height | 0)],
@@ -252,7 +270,7 @@ export class NativeWindowsViews {
       return handle;
     } finally {
       p.free(scratch);
-      if (!keep) this.windows.delete(handle);
+      if (!keep) this.forget(handle);
     }
   }
   async destroy(handle) {
@@ -269,7 +287,7 @@ export class NativeWindowsViews {
         this.kernel.windowMenus.destroy(window.menu);
       return 1;
     } finally {
-      this.windows.delete(handle);
+      this.forget(handle);
     }
   }
   snapshot() {

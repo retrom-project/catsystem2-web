@@ -17,6 +17,7 @@ import { NativeWindowsEvents } from './windows-events.mjs';
 import { NativeWindowsClasses } from './windows-class.mjs';
 import { NativeWindowsMenus } from './windows-menus.mjs';
 import { NativeWindowsViews } from './windows-views.mjs';
+import { NativeWindowsMessages } from './windows-messages.mjs';
 import { NativeWindowsAccelerators } from './windows-accelerators.mjs';
 import { NativeWindowsThreadHandles } from './windows-thread-handles.mjs';
 import { NativeCOMTaskMemory } from './windows-com-memory.mjs';
@@ -115,6 +116,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.windowClasses = new NativeWindowsClasses(this);
     this.windowMenus = new NativeWindowsMenus(this);
     this.windowViews = new NativeWindowsViews(this);
+    this.messageQueue = new NativeWindowsMessages(this);
     this.accelerators = new NativeWindowsAccelerators(this);
     this.threadHandles = new NativeWindowsThreadHandles(this);
     this.comMemory = new NativeCOMTaskMemory(this);
@@ -742,6 +744,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       windowClasses: this.windowClasses.snapshot(),
       windowMenus: this.windowMenus.snapshot(),
       windowViews: this.windowViews.snapshot(),
+      messageQueue: this.messageQueue.snapshot(),
       accelerators: this.accelerators.snapshot(),
       threadHandles: this.threadHandles.snapshot(),
       comMemory: this.comMemory.snapshot(),
@@ -764,6 +767,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.windowClasses.restore(state.windowClasses);
     this.windowMenus.restore(state.windowMenus);
     this.windowViews.restore(state.windowViews);
+    this.messageQueue.restore(state.messageQueue);
     this.accelerators.restore(state.accelerators);
     this.threadHandles.restore(state.threadHandles);
     this.comMemory.restore(state.comMemory);
@@ -1146,6 +1150,10 @@ export class NativeEngineProcess {
   }
   async close() {
     if (this.closed) return;
+    if (this.kernel.messageQueue.waiters.size) {
+      this.kernel.messageQueue.cancelWaits();
+      await this.queue;
+    }
     const errors = [];
     try {
       for (const feature of [...this.features.values()].reverse())
@@ -1189,6 +1197,7 @@ export class NativeEngineProcess {
         }
       }
     } finally {
+      this.kernel.messageQueue.cancelWaits();
       this.kernel.events.closeAll();
       this.kernel.threadHandles.closeAll();
       try {
