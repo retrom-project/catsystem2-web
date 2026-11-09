@@ -6,7 +6,8 @@ const SDK = 'sdk-4.01-engine-2.6.1.74',
   DEFAULT_ISOLATE = 0xc981cc,
   ALLOCATOR = 0xc73b60,
   ALLOCATOR_VTABLE = 0x98e758,
-  FLAGS = '--noconcurrent_sweeping --noparallel_sweeping --noconcurrent_recompilation';
+  FLAGS =
+    '--noconcurrent_sweeping --noparallel_sweeping --noconcurrent_recompilation --nouse_idle_notification';
 
 export async function initializeSDKJavaScript(engine) {
   const p = engine.process;
@@ -21,8 +22,8 @@ export async function initializeSDKJavaScript(engine) {
   const flags = p.allocate(FLAGS.length + 1, true);
   try {
     engine.kernel.writeString(flags, FLAGS);
-    // Apply the original V8 flags for a guest with one CPU thread. The
-    // script engine, compiler and allocator still execute in the guest.
+    // Use original V8 settings for one guest CPU and a clock that advances
+    // between game frames. Allocation-triggered collection remains native.
     if ((await p.callAsync(0x665d70, [flags, FLAGS.length])) !== 0)
       throw new Error('The original SDK JavaScript platform rejected the thread settings');
     if ((await p.callAsync(0x49f9d7)) !== 1)
