@@ -63,7 +63,14 @@ for (const [profile, path] of [
         randomMemory.initialize({ fromClock: false });
         new NativeEngineFiles(engine, { game, getNativeFeature: () => buffers });
         const view = p.allocate(0x120, true),
-          manager = p.allocate(0x220, true);
+          manager = p.allocate(0x220, true),
+          graphs = p.allocate(8, true),
+          head = p.allocate(24, true);
+        // The native receiver searches an empty graph map before using the external draw path.
+        p.store(manager, graphs);
+        p.store(graphs, head);
+        for (const offset of [0, 4, 8]) p.store(head + offset, head);
+        p.store(head + 12, 0x0101); // Black sentinel with the nil flag set
         p.store(view + 4, 1);
         p.store(view + 8, manager);
         p.store(view + 24, 800);
