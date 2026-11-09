@@ -57,7 +57,12 @@ test(
     let fresh;
     const state = engine.refs.startupLanguage;
     try {
-      assert.equal(reads[0], 'language.txt', 'original file probe precedes the Engine owner');
+      const language = reads.indexOf('language.txt');
+      assert.ok(
+        language > reads.findLastIndex((path) => path.endsWith('/Oeminfo.ini')) &&
+          language < reads.indexOf('config/startup.xml'),
+        'the original language file is read after the system survey and before startup settings',
+      );
       assert.equal(state.loaded, true);
       assert.deepEqual(lookup(engine, '$TITLE$Fallback'), {
         text: '日本語ラベル',
