@@ -34,11 +34,13 @@ for (const [profile, variable] of [
       await page.goto('/');
       await page.evaluate(
         async ({ profile, names, layout, rgba }) => {
-          const [{ browserNativeWorld, placeBrowserNativePlane }, { exerciseRenderSourcesWorld }] =
-            await Promise.all([
-              import('/tests/fixtures/browser-native-world.mjs'),
-              import('/tests/fixtures/render-sources-world.mjs'),
-            ]);
+          const [
+            { browserNativeWorld, placeBrowserNativePlane },
+            { exerciseRenderSourcesWorld, exerciseRenderSourceResize },
+          ] = await Promise.all([
+            import('/tests/fixtures/browser-native-world.mjs'),
+            import('/tests/fixtures/render-sources-world.mjs'),
+          ]);
           const files = new Map(
             await Promise.all(
               names.map(async (name) => {
@@ -74,24 +76,34 @@ for (const [profile, variable] of [
             },
           };
           let plane;
-          const frame = async (world) => {
-            if (!plane) {
-              plane = await world.objects.create({ kind: 2, parent: world.root });
-              await placeBrowserNativePlane(world, plane, { width: 64, height: 48, priority: 300 });
-            }
-            const renderer = world.stageRenderer;
-            await renderer.render(world.graphics.stage, null, world.particles.drawItems());
-            const pixels = renderer.renderer.ctx.getImageData(0, 0, 64, 48).data,
-              colors = new Set();
-            for (let at = 0; at < rgba.length; at += 4)
-              colors.add(rgba.slice(at, at + 4).join(','));
-            let matched = 0;
-            for (let at = 0; at < pixels.length; at += 4)
-              if (colors.has(pixels.subarray(at, at + 4).join(','))) matched++;
-            assert.equal(matched, 12, 'all authored pixels from both source records reach the GPU');
-            return pixels;
-          };
+          const show = async (world) => {
+              const id = await world.objects.create({ kind: 2, parent: world.root });
+              await placeBrowserNativePlane(world, id, { width: 64, height: 48, priority: 300 });
+              return id;
+            },
+            readFrame = async (world) => {
+              const renderer = world.stageRenderer;
+              await renderer.render(world.graphics.stage, null, world.particles.drawItems());
+              return renderer.renderer.ctx.getImageData(0, 0, 64, 48).data;
+            },
+            frame = async (world) => {
+              if (!plane) plane = await show(world);
+              const pixels = await readFrame(world),
+                colors = new Set();
+              for (let at = 0; at < rgba.length; at += 4)
+                colors.add(rgba.slice(at, at + 4).join(','));
+              let matched = 0;
+              for (let at = 0; at < pixels.length; at += 4)
+                if (colors.has(pixels.subarray(at, at + 4).join(','))) matched++;
+              assert.equal(
+                matched,
+                12,
+                'all authored pixels from both source records reach the GPU',
+              );
+              return pixels;
+            };
           await exerciseRenderSourcesWorld(make, layout, rgba, assert, frame);
+          await exerciseRenderSourceResize(make, layout, assert, { show, pixels: readFrame });
         },
         { profile, names: [...files.keys()], layout, rgba: [...rgba] },
       );

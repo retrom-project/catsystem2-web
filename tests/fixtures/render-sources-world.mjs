@@ -392,3 +392,152 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     await world.close({ flushFiles: false });
   }
 }
+
+export async function exerciseRenderSourceResize(make, layout, assert, preview) {
+  const world = make(),
+    source = 768,
+    call = (owner, id, args) =>
+      owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+    reject = async (operation, expected) => {
+      try {
+        await operation;
+      } catch (error) {
+        assert.equal(expected.test(error.message), true, error.message);
+        return;
+      }
+      throw new Error('Invalid raw bitmap resize was accepted');
+    },
+    run = async (owner, name, input) => {
+      const task = await owner.spawnScript(name);
+      task.machine.store(256, input);
+      await owner.runtime.scheduler.execute(task);
+      return task;
+    };
+  let fresh;
+  try {
+    await world.initialize('main.kcs');
+    const m = world.main.machine,
+      p = world.nativeEngine.process,
+      plain = m.load(4),
+      plainBitmap = p.load(plain);
+    assert.equal(m.load(0), 1);
+    assert.deepEqual(await call(world, 0x7a, [plain, 8, 6]), { control: 2 });
+    assert.deepEqual([p.load(plainBitmap + 4), p.load(plainBitmap + 8)], [8, 6]);
+    const logical = (await call(world, 0x70, [3, 2])).value;
+    await call(world, 0x174, [logical, 3, 2]);
+    assert.deepEqual(await call(world, 0x2c1, [logical, 6, 4]), { control: 2 });
+    const logicalBitmap = world.graphics.images.get(logical);
+    assert.deepEqual([logicalBitmap.width, logicalBitmap.height], [6, 4]);
+    await call(world, 0x72, [logical]);
+    m.writeString('raw-resize.hg3', 1024);
+    assert.deepEqual(await call(world, 0x2bf, [1024, source, 1]), { control: 1, value: 1 });
+    assert.equal(m.load(source), 2);
+    const script = await run(world, 'raw-resize.kcs', m.load(source + 4)),
+      wrapper = script.machine.load(252),
+      bitmap = p.load(wrapper),
+      surface = await world.objects.create({ kind: 15, parent: world.main.id }),
+      nativeSurface = world.nativeTaskID(surface);
+    assert.equal(p.allocations.get(wrapper), layout.wrapperBytes);
+    assert.equal(world.runtime.handles.records.has(wrapper), false);
+    assert.deepEqual([p.load(bitmap + 4), p.load(bitmap + 8)], [6, 4]);
+
+    const clone = p.allocate(layout.wrapperBytes);
+    try {
+      p.write(clone, p.read(wrapper, layout.wrapperBytes));
+      await reject(call(world, 0x2c1, [clone, 3, 2]), /Unknown or released bitmap resize/);
+    } finally {
+      p.free(clone);
+    }
+
+    await call(world, 0x100, [nativeSurface, 64, 48]);
+    await call(world, 0x104, [nativeSurface, 0, 0]);
+    if (preview) await preview.show(world);
+    const bind = async (owner) => {
+      await bindBitmapSource(owner, wrapper, nativeSurface);
+      await call(owner, 0x154, [nativeSurface]);
+    };
+    const checkPixels = async (owner, width, height) => {
+      const draw = owner.graphics.drawTasks.get(surface),
+        offscreen = await owner.graphics.images.get(draw.state.renderer.bitmap).pixels(),
+        color = [49, 151, 211, 255],
+        expected = new Uint8ClampedArray(64 * 48 * 4),
+        positions = [];
+      for (let y = 1; y < 1 + height; y++)
+        for (let x = 4; x < 4 + width; x++) {
+          const pixel = y * 64 + x;
+          expected.set(color, ((47 - y) * 64 + x) * 4);
+          positions.push(pixel);
+        }
+      assert.deepEqual(offscreen, expected, 'original Draw output after raw resize');
+      if (preview) {
+        const pixels = await preview.pixels(owner),
+          actual = [];
+        for (let i = 0; i < pixels.length; i += 4)
+          if (color.every((v, j) => v === pixels[i + j])) actual.push(i / 4);
+        assert.deepEqual(actual, positions, 'raw resize pixels reach the original tiled view');
+      }
+    };
+    await bind(world);
+    await checkPixels(world, 6, 4);
+    fresh = make();
+    await fresh.restore(structuredClone(world.snapshot()));
+    const engine = fresh.nativeEngine,
+      fp = engine.process,
+      saved = fresh.runtime.scheduler.tasks.get(script.id).machine.load(252);
+    assert.equal(saved, wrapper);
+    await checkPixels(fresh, 6, 4);
+    await call(fresh, 0x102, [nativeSurface, 1]);
+    await run(fresh, 'raw-resize-again.kcs', saved);
+    assert.deepEqual([fp.load(bitmap + 4), fp.load(bitmap + 8)], [12, 8]);
+    assert.deepEqual([p.load(bitmap + 4), p.load(bitmap + 8)], [6, 4]);
+    await bind(fresh);
+    await checkPixels(fresh, 12, 8);
+
+    // Queue a resize while the wrapper is still live, but let release run first.
+    let resume, rejected;
+    const gate = new Promise((resolve) => (resume = resolve)),
+      waitQueued = async (count) => {
+        for (let i = 0; i < 100 && engine.pendingCalls < count; i++) await Promise.resolve();
+        assert.equal(engine.pendingCalls, count, 'resize and release reached the native queue');
+      },
+      wrapperBytes = fp.read(wrapper, layout.wrapperBytes),
+      bitmapBytes = fp.allocations.get(bitmap),
+      references = fp.load(bitmap + 80);
+    engine.queue = engine.queue.then(() => gate);
+    const release = call(fresh, 0x2c0, [source, 1]);
+    try {
+      await waitQueued(1);
+      rejected = reject(call(fresh, 0x7a, [saved, 3, 2]), /released before execution/);
+      await waitQueued(2);
+    } finally {
+      resume();
+      await release;
+      await rejected;
+    }
+    assert.equal(fp.allocations.has(saved), false);
+    assert.equal(fp.allocations.get(bitmap), bitmapBytes, 'Draw still owns the resized bitmap');
+    assert.equal(fp.load(bitmap + 80), references - 1);
+    await reject(call(fresh, 0x2c1, [saved, 3, 2]), /Unknown or released bitmap resize/);
+    const occupied = [];
+    try {
+      while (fp.freeBlocks[0]?.address < saved) {
+        const { address, size } = fp.freeBlocks[0];
+        occupied.push(fp.allocate(Math.min(size, saved - address)));
+      }
+      const reused = fp.allocate(layout.wrapperBytes);
+      occupied.push(reused);
+      assert.equal(reused, saved, 'reuse the exact released address and allocation size');
+      fp.write(reused, wrapperBytes);
+      await reject(call(fresh, 0x7a, [saved, 3, 2]), /Unknown or released bitmap resize/);
+    } finally {
+      for (const pointer of occupied.reverse()) fp.free(pointer);
+    }
+    await checkPixels(fresh, 12, 8);
+    await call(fresh, 0x2c0, [0, 1]);
+    await call(world, 0x2c0, [source, 1]);
+    await call(world, 0x2c0, [0, 1]);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
+}

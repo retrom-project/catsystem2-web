@@ -1661,7 +1661,7 @@ const extendedDescriptions = [
   ],
   [0x1bd, 'window.messageBox', ['format* text'], 'void'],
   [0x1cc, 'bitmap.composeFile', ['format* filename'], 'handle'],
-  [0x2c1, 'bitmap.resize', ['handle bitmap', 'u32 width', 'u32 height'], 'void'],
+  [0x2c1, 'bitmap.resize', ['handle|nativePtr bitmap', 'u32 width', 'u32 height'], 'void'],
   [
     0x2bf,
     'draw.loadRenderSources',
@@ -2743,7 +2743,7 @@ const hostDescriptions = [
   [0x76, 'bitmap.clone', ['handle bitmap'], 'handle'],
   [0x77, 'bitmap.size', ['handle bitmap', 'VMptr width', 'VMptr height'], 'void'],
   [0x79, 'bitmap.tone', ['handle bitmap', 'word red', 'word green', 'word blue'], 'void'],
-  [0x7a, 'bitmap.resize', ['handle bitmap', 'u32 width', 'u32 height'], 'void'],
+  [0x7a, 'bitmap.resize', ['handle|nativePtr bitmap', 'u32 width', 'u32 height'], 'void'],
   [0x90, 'input.register', ['word sender', 'i32 priority', 'VMptr rectangle', 'word mask'], 'void'],
   [0x91, 'input.unregisterCurrentTask', [], 'void'],
   [0x92, 'input.setPriority', ['handle owner', 'i32 priority'], 'void'],

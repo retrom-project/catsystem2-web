@@ -8,10 +8,13 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame } from './helpers.mjs';
 import { renderSourceWorldFiles } from './fixtures/render-sources-fixture.mjs';
-import { exerciseRenderSourcesWorld } from './fixtures/render-sources-world.mjs';
+import {
+  exerciseRenderSourcesWorld,
+  exerciseRenderSourceResize,
+} from './fixtures/render-sources-world.mjs';
 
 test(
-  'SDK live KCS render sources retain both Draw types through a fresh World',
+  'SDK live KCS render sources retain Draw and resize identities through a fresh World',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const profile = 'sdk-4.01-engine-2.6.1.74',
@@ -44,5 +47,6 @@ test(
         });
       };
     await exerciseRenderSourcesWorld(make, layout, rgba, assert);
+    await exerciseRenderSourceResize(make, layout, assert);
   },
 );

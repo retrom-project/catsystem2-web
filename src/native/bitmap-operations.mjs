@@ -36,6 +36,21 @@ export class NativeBitmapOperations {
           ? 1
           : -1;
     if (this.profileIndex < 0) throw new Error('Bitmap operations require a reviewed engine');
+    this.rawResizes = new Map();
+    const p = this.process,
+      address = byID.get(0x2c1).handlers[this.profileIndex];
+    // The allocation can be released while a call is queued.
+    this.detachResize = p.beforeInstruction(address, 'check original bitmap resize input', () => {
+      if (!this.rawResizes.size) return;
+      const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0,
+        argv = p.load(sp + 12),
+        identity = this.rawResizes.get(argv);
+      if (
+        identity &&
+        engine.features.get('render-sources')?.bitmapWrapperIdentity(p.load(argv)) !== identity
+      )
+        throw new Error('Native bitmap resize wrapper was released before execution');
+    });
     engine.registerFeature('bitmap-operations', this);
   }
   async apply(id, args, machine, task) {
@@ -49,8 +64,17 @@ export class NativeBitmapOperations {
       if (!words[5]) count = 6;
     } else if (!words[0] && id !== 0x16a && id !== 0x16b) count = 1;
     while (words.length < count) words.push(machine.nativeArgument(words.length));
-    const bitmaps = await this.world.getNativeFeature('bitmap-memory');
-    if (id !== 0x16f || words[5]) {
+    let raw;
+    if (
+      (id === 0x7a || id === 0x2c1) &&
+      words[0] &&
+      !this.world.runtime.handles.records.has(words[0] >>> 0)
+    ) {
+      raw = this.engine.features.get('render-sources')?.bitmapWrapperIdentity(words[0] >>> 0);
+      if (!raw) throw new Error(`Unknown or released bitmap resize input ${words[0] >>> 0}`);
+    }
+    const bitmaps = raw ? null : await this.world.getNativeFeature('bitmap-memory');
+    if (bitmaps && (id !== 0x16f || words[5])) {
       words[0] = await bitmaps.wrapper(words[0]);
       if (id === 0x16f) words[5] = await bitmaps.wrapper(words[5]);
     }
@@ -71,6 +95,7 @@ export class NativeBitmapOperations {
       host = platform ? (memory ? await memory.pointer(task.id) : p.allocate(120, true)) : 0;
     try {
       words.forEach((v, i) => p.store(argv + i * 4, v));
+      if (raw) this.rawResizes.set(argv, raw);
       p.store(out, 0xcccccccc);
       if (platform) p.store(host + 116, platform.refs.view);
       const params = [bridge.pointer, host, argv, out],
@@ -85,6 +110,7 @@ export class NativeBitmapOperations {
         throw new Error('Original bitmap wrapper returned an unexpected control');
       return nativeReply(control, control === 1 ? p.load(out) : undefined);
     } finally {
+      this.rawResizes.delete(argv);
       try {
         bridge.close();
       } finally {
@@ -98,6 +124,9 @@ export class NativeBitmapOperations {
     return {};
   }
   restore() {}
+  close() {
+    this.detachResize();
+  }
 }
 export function installNativeBitmapOperations(world) {
   world.registerNativeFeature(

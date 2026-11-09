@@ -11,6 +11,11 @@ export const NATIVE_RENDER_SOURCE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x2c5, words: 2, control: 1, handlers: [0x644480, 0x51cb30] }),
 ]);
 
+const wrapperLayouts = [
+  { stride: 136, bytes: 536, arrayResult: 0x64c5c1, frameResult: 0x644492 },
+  { stride: 72, bytes: 276, arrayResult: 0x5190c9, frameResult: 0x51cb42 },
+];
+
 export class NativeRenderSources {
   constructor(engine, world) {
     this.engine = engine;
@@ -18,7 +23,39 @@ export class NativeRenderSources {
     this.sdk = engine.profile === 'sdk-4.01-engine-2.6.1.74';
     if (!this.sdk && engine.profile !== 'nekopara-vol3-engine-2.6.1.76')
       throw new Error('Native render sources require a reviewed engine profile');
+    const p = engine.process,
+      { stride, bytes, arrayResult, frameResult } = wrapperLayouts[Number(this.sdk)],
+      eax = () => p.cpu.reg_read_i32(p.uc.X86_REG_EAX) >>> 0;
+    this.wrapperBytes = bytes;
+    this.wrappers = new Map();
+    this.detach = [
+      p.observeFree((pointer) => this.wrappers.delete(pointer)),
+      // The original loader still holds its translated destination in EDI.
+      p.beforeInstruction(arrayResult, 'observe original 2BF image wrappers', () => {
+        const count = eax(),
+          destination = p.cpu.reg_read_i32(p.uc.X86_REG_EDI) >>> 0;
+        for (let i = 0; i < count; i++) {
+          const record = destination + i * stride;
+          if (p.load(record) === 1) this.rememberWrapper(p.load(record + 4));
+        }
+      }),
+      p.beforeInstruction(frameResult, 'observe original 2C5 image wrapper', () => {
+        this.rememberWrapper(eax());
+      }),
+    ];
     engine.registerFeature('render-sources', this);
+  }
+  rememberWrapper(pointer) {
+    if (
+      this.engine.process.allocations.get(pointer) === this.wrapperBytes &&
+      !this.wrappers.has(pointer)
+    )
+      this.wrappers.set(pointer, Symbol());
+  }
+  bitmapWrapperIdentity(pointer) {
+    const identity = this.wrappers.get(pointer),
+      p = this.engine.process;
+    if (identity && p.allocations.get(p.load(pointer)) >= 92) return identity;
   }
   async apply(id, args, machine, task) {
     const spec = NATIVE_RENDER_SOURCE_CONTRACTS.find((entry) => entry.id === id);
@@ -81,9 +118,18 @@ export class NativeRenderSources {
     }
   }
   snapshot() {
-    return {};
+    return { wrappers: [...this.wrappers.keys()] };
   }
-  restore() {}
+  restore(state) {
+    this.wrappers.clear();
+    for (const pointer of state.wrappers) this.rememberWrapper(pointer);
+    if (this.wrappers.size !== state.wrappers.length)
+      throw new Error('Invalid native render-source wrapper identities');
+  }
+  close() {
+    for (const detach of this.detach.reverse()) detach();
+    this.wrappers.clear();
+  }
 }
 
 export function installNativeRenderSources(world) {

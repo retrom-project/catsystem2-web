@@ -544,6 +544,11 @@ export class PE32Process {
     else if (zero && size) this.write(address, new Uint8Array(size));
     return address;
   }
+  observeFree(listener) {
+    this.freeObservers ??= new Set();
+    this.freeObservers.add(listener);
+    return () => this.freeObservers.delete(listener);
+  }
   free(address) {
     if (!address) return true;
     const size = this.allocations.get(address);
@@ -559,6 +564,7 @@ export class PE32Process {
         this.freeBlocks.splice(i, 1);
       } else i++;
     }
+    this.freeObservers?.forEach((listener) => listener(address));
     return true;
   }
   trap(name, args, callback, real = false) {
@@ -964,6 +970,7 @@ export class PE32Process {
       this.transferSize = 0;
       this.borrowedRanges.length = 0;
       this.ramViews.clear();
+      this.freeObservers?.clear();
     }
   }
 }

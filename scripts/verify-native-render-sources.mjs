@@ -136,6 +136,11 @@ async function compare(id, args) {
     'original prefetch boundary state',
   );
   check(q.read(adapted.view, 0x118), p.read(raw.view, 0x118), 'whole original view');
+  check(
+    adapted.sources.snapshot(),
+    raw.sources.snapshot(),
+    'live render-source wrapper identities',
+  );
   calls[callName[id]]++;
   return reply.value;
 }
@@ -263,35 +268,50 @@ async function checkGeometry(animated) {
   await compare(0x2c0, [source, 1]);
 }
 
-async function consumeFrame(fixture, wrapper) {
-  const { process, engine } = fixture,
+async function consumeFrame(fixture, wrapper, id, mounted) {
+  const { process, engine, machine, operations } = fixture,
     bitmap = process.load(wrapper),
     fields = [4, 8, 28, 32],
     doubled = fields.map((offset) => 2 * process.load(bitmap + offset)),
-    argv = process.allocate(12),
-    out = process.allocate(12),
-    canaries = new Uint8Array(12).fill(0xa5),
-    address = process.load(table + 0x2c1 * 4);
-  try {
-    check(address, sdk ? 0x519270 : 0x64c8b0, 'independent original resize slot');
-    [wrapper, ...doubled.slice(2)].forEach((word, i) => process.store(argv + 4 * i, word));
-    process.write(out, canaries);
-    check(await engine.call(address, [0, 0, argv, out + 4]), 2, 'original bitmap resize control');
-    check(process.read(out, 12), canaries, 'original bitmap resize preserves the result');
-    check(process.load(wrapper), bitmap, 'the original consumer keeps the same bitmap object');
+    words = [wrapper, ...doubled.slice(2)];
+  if (mounted)
     check(
-      fields.map((offset) => process.load(bitmap + offset)),
-      doubled,
-      'original resize uses the borrowed frame bitmap',
+      await operations.apply(id, words, machine, { id: 1 }),
+      { control: 2 },
+      'mounted bitmap resize control',
     );
-    return {
-      bitmap: process.read(bitmap, 92),
-      pixels: process.read(process.load(bitmap + 12), doubled[1] * process.load(bitmap + 20)),
-    };
-  } finally {
-    process.free(out);
-    process.free(argv);
+  else {
+    const address = process.load(table + id * 4),
+      bridge = new NativeKCSMemory(process, machine),
+      argv = process.allocate(12),
+      out = process.allocate(12),
+      canaries = new Uint8Array(12).fill(0xa5);
+    check(address, sdk ? 0x519270 : 0x64c8b0, 'independent original resize slot');
+    try {
+      words.forEach((word, i) => process.store(argv + 4 * i, word));
+      process.write(out, canaries);
+      check(
+        await engine.call(address, [bridge.pointer, 0, argv, out + 4], undefined, { task: 1 }),
+        2,
+        'original bitmap resize control',
+      );
+      check(process.read(out, 12), canaries, 'original bitmap resize preserves the result');
+    } finally {
+      bridge.close();
+      process.free(out);
+      process.free(argv);
+    }
   }
+  check(process.load(wrapper), bitmap, 'the original consumer keeps the same bitmap object');
+  check(
+    fields.map((offset) => process.load(bitmap + offset)),
+    doubled,
+    'original resize uses the borrowed frame bitmap',
+  );
+  return {
+    bitmap: process.read(bitmap, 92),
+    pixels: process.read(process.load(bitmap + 12), doubled[1] * process.load(bitmap + 20)),
+  };
 }
 
 async function checkFrames(animated) {
@@ -376,12 +396,17 @@ async function checkFrames(animated) {
   }
   check(references(p), before, 'original wrapper lookup acquires no references');
   check(references(q), before, 'mounted wrapper lookup acquires no references');
-  const selected = await lookup(2);
-  check(
-    await consumeFrame(adapted, selected),
-    await consumeFrame(raw, wrappers[2]),
-    'complete original 2C1 consumes the returned pointer and writes identical pixels',
-  );
+  for (const [ordinal, id] of [
+    [2, 0x2c1],
+    [3, 0x7a],
+  ]) {
+    const selected = await lookup(ordinal);
+    check(
+      await consumeFrame(adapted, selected, id, true),
+      await consumeFrame(raw, wrappers[ordinal], id, false),
+      'complete original resize consumes the returned pointer and writes identical pixels',
+    );
+  }
   return wrappers;
 }
 

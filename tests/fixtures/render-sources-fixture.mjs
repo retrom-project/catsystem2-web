@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NativeRenderSources } from '../../src/native/render-sources.mjs';
 import { NativeRetainedDraw } from '../../src/native/retained-draw.mjs';
+import { NativeBitmapOperations } from '../../src/native/bitmap-operations.mjs';
+import { NativeHandles } from '../../src/native/handles.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { kcsProgram } from '../helpers.mjs';
 import { imageCompositeFiles } from './image-composite-fixture.mjs';
@@ -46,6 +48,12 @@ export async function renderSourceFiles() {
   files.set(
     'sequence.hg3',
     authoredHG3([0, 7, 2, 21, 4, 15, 9, 11].map((id, i) => ({ ...frames[i % 3], id }))),
+  );
+  const solid = Uint8Array.from({ length: 24 }, (_, i) => [49, 151, 211, 255][i % 4]);
+  files.set('raw-resize.anm', animation);
+  files.set(
+    'raw-resize.hg3',
+    authoredHG3([0, 2].map((id) => ({ id, width: 3, height: 2, rgba: solid }))),
   );
   return { files, frames };
 }
@@ -122,6 +130,25 @@ export async function renderSourceWorldFiles(profile, executable, driver) {
       [59],
     ]),
   );
+  const wait = [[37, 1800], [43, 0x47, 4], [59]];
+  files.set(
+    'raw-resize.kcs',
+    kcsProgram([
+      [37, [0x14, 256]],
+      [37, 0],
+      [43, 0x2c5, 8],
+      [38, [4, 252]],
+      [37, [0x14, 252]],
+      [37, 6],
+      [37, 4],
+      [43, 0x2c1, 12],
+      ...wait,
+    ]),
+  );
+  files.set(
+    'raw-resize-again.kcs',
+    kcsProgram([[37, [0x14, 256]], [37, 12], [37, 8], [43, 0x7a, 12], ...wait]),
+  );
   return { files, layout, rgba: frames[0].rgba };
 }
 
@@ -132,5 +159,14 @@ export async function renderSourceFixture(bytes, profile) {
   for (const [name, data] of files) fixture.files.set(name, data);
   const retained = new NativeRetainedDraw(fixture.engine, fixture.world),
     sources = new NativeRenderSources(fixture.engine, fixture.world);
-  return { ...fixture, frames, retained, sources, layout: RENDER_SOURCE_LAYOUTS[profile] };
+  fixture.world.runtime = { handles: new NativeHandles() };
+  const operations = new NativeBitmapOperations(fixture.engine, fixture.world);
+  return {
+    ...fixture,
+    frames,
+    retained,
+    sources,
+    operations,
+    layout: RENDER_SOURCE_LAYOUTS[profile],
+  };
 }

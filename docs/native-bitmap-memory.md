@@ -44,7 +44,7 @@ original wrappers:
 
 | IDs             | Operation                                                       | Control |
 | --------------- | --------------------------------------------------------------- | ------- |
-| 7A / 2C1        | Canvas-relative resize; identical original handler              | 2       |
+| 7A / 2C1        | Canvas-relative resize of logical or render-source bitmaps      | 2       |
 | 16A / 16B       | Canvas size with image-size fallback; signed image offset       | 2       |
 | 16F             | Clipped source/destination blit, or source upload to VRAM       | 2       |
 | 171             | Packed color multiplication, including original byte arithmetic | 2       |
@@ -62,6 +62,13 @@ Null branches preserve each original early return. `179` leaves its result word
 unwritten for a null owner, preserving the GCALL `CCCCCCCC` sentinel. `16F` with
 no source does not dereference the destination. VM address zero is valid, and
 missing argument words read the adjacent mapped GCALL area.
+
+Both resize slots share an original handler. A registered logical bitmap
+handle resolves through the bitmap bridge. A render-source wrapper keeps
+its original pointer and ownership. A queued resize checks the same
+allocation identity again at handler entry. Freed wrappers and unrelated
+allocations are rejected before resize can mutate the bitmap. See
+[Native render-source arrays](native-render-sources.md).
 
 `16A` and `16B` translate and zero both VM outputs even when the owner is null.
 For a live bitmap, each zero canvas dimension independently falls back to its

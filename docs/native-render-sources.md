@@ -75,25 +75,29 @@ The retained source keeps ownership of its wrapper and worker. The query
 adds no reference, so the wrapper's lifetime follows the retained source.
 Its original address persists in both the VM and the restored PE heap.
 
-The original 2C1 wrapper can resize the bitmap through that borrowed
-pointer. The Draw receiver can use the unwrapped bitmap and hold its own
-bitmap reference. The browser's KCS 2C1 dispatcher currently requires a
-logical bitmap handle. Passing the borrowed pointer through that dispatcher
-remains open.
+The KCS resize aliases 2C1 and 7A accept this pointer and the tag 1 wrappers
+returned by 2BF. Each entry is recorded at the original producer's result
+instruction and removed when the wrapper allocation is freed. The Draw
+receiver can retain the unwrapped bitmap independently. That reference
+keeps the bitmap alive while the released wrapper is already invalid for
+resize. Fresh restoration reconstructs the recorded live wrapper identities
+against the restored heap.
 
 The direct wrapper comparison in `scripts/verify-native-render-sources.mjs`
 checks 1,116 load and release calls and 131 geometry calls per fixed
-executable. It adds 48 frame calls on the game and 47 on the SDK, with
-13,464 and 13,449 comparisons in total. It compares control and output
+executable. It adds 49 frame calls on the game and 48 on the SDK, with
+14,776 and 14,760 comparisons in total. It compares control and output
 bytes, all VM regions, live native allocations, prefetch state, file
-candidates and the original view. The frame cases include signed limits,
-adjacent stack arguments, sparse IDs, an empty map and a missing wrapper.
+candidates, the wrapper index and the original view. The frame cases include
+signed limits, adjacent stack arguments, sparse IDs, an empty map and a
+missing wrapper.
 On the game, the verifier completes an authored pending frame at the return
 from the original `Sleep(0)` call and checks the existing worker's lifetime.
-The returned pointer is also passed to the complete original 2C1 wrapper
-to compare the resized metadata and pixels. The reference mounts authored
-HG2, HG3, ANM and manifest bytes through the shared IFile, raster,
-compression and image-prefetch platform boundaries.
+The returned pointers also pass through the mounted 2C1 and 7A dispatchers.
+Their resized metadata and pixels match independent calls to the original
+wrappers. The reference mounts authored HG2, HG3, ANM and manifest bytes
+through the shared IFile, raster, compression and image-prefetch platform
+boundaries.
 
 The SDK World and both Chromium profiles use an authored KCS caller,
 exercise live argument aliasing, and send both source tags through the Draw
@@ -103,4 +107,8 @@ its reference. The frame caller stores the borrowed wrapper in VM memory
 and sends its bitmap to Draw before and after restoring. The tests verify
 independent fresh-process release and the last Draw reference's
 destruction. Chromium also compares the authored colors and the restored
-view pixels.
+view pixels. A second authored KCS caller resizes a borrowed frame and
+draws 24 exact pixels. After restoration it uses the saved pointer through
+7A and draws 96 exact pixels. The tests reject a queued resize after
+release and an unrelated allocation at the same address with the same
+size and bytes. See [Browser image tests](../playwright.image.config.mjs).

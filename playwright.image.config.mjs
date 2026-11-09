@@ -5,6 +5,7 @@ export default {
     'native-image-owners.spec.mjs',
     'native-bitmap-upload.spec.mjs',
     'native-image-composite.spec.mjs',
+    'native-render-sources.spec.mjs',
     'native-tile-plane.spec.mjs',
   ],
   outputDir: '.local/playwright-image',
