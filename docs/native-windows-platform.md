@@ -170,6 +170,14 @@ long value, and a fresh process with no file available at restore time.
 
 ## File server startup
 
+The mounted process acquires its COM initialization through the original
+Ole32 import before creating its startup owners (Game `5C3218`, SDK
+`49F928`). The virtual application thread keeps one count shared with the
+original movie loaders. A nested `CoInitialize` returns `S_FALSE` and still
+requires `CoUninitialize`. The count survives a fresh process restore.
+The application releases its reference after the native owners and movie
+objects close. [Microsoft COM initialization](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex)
+
 The original platform prelude constructs one `kcFileServer` before Settings
 at Game `5D3060` and SDK `4B0020`. Both constructors initialize their own
 file and cache lists in the guest. Their original destructors clear the

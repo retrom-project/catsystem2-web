@@ -201,9 +201,16 @@ for (const [profile, variable, encoding] of [
         assert.deepEqual(values(engine), [(617 << 16) | 913, (719 << 16) | 1237]);
         assert.ok(requests.includes('config/startup.xml'));
         assert.equal(engine.textWindows.objects.size, 0);
+        const [initialize, uninitialize] = image.comImports;
+        assert.equal(engine.kernel.comDepth, 1);
+        assert.equal(engine.process.call(engine.process.load(initialize), [0]), 1);
         restored = await make();
         restored.restore(engine.snapshot());
         assert.deepEqual(values(restored), values(engine));
+        assert.equal(restored.kernel.comDepth, 2);
+        restored.process.call(restored.process.load(uninitialize));
+        engine.process.call(engine.process.load(uninitialize));
+        assert.equal(restored.kernel.comDepth, 1);
         await restored.releaseOwner();
         assert.equal(restored.process.load(image.ownerGlobal), 0);
         assert.equal(engine.process.load(image.ownerGlobal), engine.refs.owner);
@@ -212,6 +219,8 @@ for (const [profile, variable, encoding] of [
         await restored?.close();
         await engine.close();
       }
+      assert.equal(restored.kernel.comDepth, 0);
+      assert.equal(engine.kernel.comDepth, 0);
     },
   );
 

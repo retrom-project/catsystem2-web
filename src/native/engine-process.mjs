@@ -29,6 +29,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     settingsGlobal: 0xb91bfc,
     settingsOffset: 0x418,
     ownerBootstrap: [0x7148f0, 0x714970, 0xb91c00, 0x140e4, 0x27ed0],
+    comImports: [0x8c6798, 0x8c679c],
     readGameDefaults: 0x7129d0,
     crtHelpers: [0x7a8807, 0x7ab2e1, 0x7ab24e, 0x79f8fb, 0x7ad3bb],
     zlib: 0x82c550,
@@ -49,6 +50,7 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
     settingsGlobal: 0xc965d4,
     settingsOffset: 0x210,
     ownerBootstrap: [0x5c5790, 0x5c57e0, 0xc965d8, 0x10924, 0x2114c],
+    comImports: [0x98e618, 0x98e624],
     readGameDefaults: 0x5c4180,
     crtHelpers: [0x63e90c, 0x64044e, 0x6403bb, 0x637b5b, 0x6427db],
     zlib: 0x869e70,
@@ -91,6 +93,20 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.fileProviders = new Map();
     this.events = new NativeWindowsEvents(this);
     this.comMemory = new NativeCOMTaskMemory(this);
+    this.comDepth = 0;
+    this.register('OLE32.dll', 'CoInitialize', {
+      count: 1,
+      fn: ([reserved]) => {
+        if (reserved) return 0x80070057;
+        return this.comDepth++ ? 1 : 0;
+      },
+    });
+    this.register('OLE32.dll', 'CoUninitialize', {
+      count: 0,
+      fn: () => {
+        if (this.comDepth) this.comDepth--;
+      },
+    });
     installNativeFileTimes(this, {
       ...options,
       wallNow: options.wallNow ?? (options.clock ? () => options.clock.utcNow() : undefined),
@@ -671,6 +687,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
       errorMode: this.errorMode,
       events: this.events.snapshot(),
       comMemory: this.comMemory.snapshot(),
+      comDepth: this.comDepth,
       ...(this.hostModules ? { hostModules: this.hostModules.snapshot() } : {}),
       nextFile: this.nextFile,
       files: [...this.files].map(([handle, file]) => [handle, { ...file, bytes: [...file.bytes] }]),
@@ -687,6 +704,9 @@ export class NativeEngineWindows extends PPIWindowsServices {
     this.errorMode = state.errorMode;
     this.events.restore(state.events);
     this.comMemory.restore(state.comMemory);
+    if (!Number.isSafeInteger(state.comDepth) || state.comDepth < 0)
+      throw new Error('Invalid native COM initialization depth');
+    this.comDepth = state.comDepth;
     if (state.hostModules) {
       if (!this.hostModules)
         throw new Error('Native checkpoint Windows module providers are absent');
@@ -768,6 +788,10 @@ export class NativeEngineProcess {
         engine.process.read(image.d3dxBaseline[0], 74 * 4),
       );
       if (options.bootstrapOwner) {
+        // WinMain opens the application apartment before the platform owners.
+        if (engine.process.call(engine.process.load(image.comImports[0]), [0]) !== 0)
+          throw new Error('Native application COM initialization did not open a new apartment');
+        engine.refs.applicationCOM = true;
         await initializeNativeFileServer(engine);
         await initializeSDKLanguage(engine);
         await engine.initializeOwner(image, options.bootstrapOwner);
@@ -1069,6 +1093,15 @@ export class NativeEngineProcess {
         await releaseNativeFileServer(this);
       } catch (error) {
         errors.push(error);
+      }
+      if (this.refs.applicationCOM) {
+        try {
+          const address = NATIVE_ENGINE_IMAGES[this.profile].comImports[1];
+          this.process.call(this.process.load(address));
+          delete this.refs.applicationCOM;
+        } catch (error) {
+          errors.push(error);
+        }
       }
     } finally {
       this.kernel.events.closeAll();

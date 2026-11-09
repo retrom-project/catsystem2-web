@@ -88,18 +88,10 @@ export class NativeDirectShow {
     this.tables = new Map();
     this.decoders = new Map();
     this.samples = new Map();
-    // The application thread owns one COM apartment. The original kcVideo
-    // open acquires and releases a nested initialization on that thread.
-    this.apartment = 1;
-    const register = (name, count, fn) => engine.registerWindows('OLE32.dll', name, { count, fn });
-    register('CoInitialize', 1, ([reserved]) => {
-      if (reserved) return E_INVALIDARG;
-      return this.apartment++ ? 1 : 0;
+    engine.registerWindows('OLE32.dll', 'CoCreateInstance', {
+      count: 5,
+      fn: (args) => this.createInstance(...args),
     });
-    register('CoUninitialize', 0, () => {
-      if (this.apartment) this.apartment--;
-    });
-    register('CoCreateInstance', 5, (args) => this.createInstance(...args));
     this.webm = new NativeWebMFilters(this, UNKNOWN);
     engine.registerFeature('directshow', this);
   }
@@ -168,7 +160,7 @@ export class NativeDirectShow {
     p.store(output, 0);
     if (!clsid || !iid) return E_POINTER;
     if (outer || ![1, 3].includes(context)) return E_INVALIDARG;
-    if (!this.apartment) return 0x800401f0;
+    if (!this.engine.kernel.comDepth) return 0x800401f0;
     let record;
     if (this.guid(clsid, FILTER_GRAPH)) {
       if (!GUIDS.graph.some((guid) => this.guid(iid, guid))) return E_NOINTERFACE;
@@ -675,7 +667,6 @@ export class NativeDirectShow {
   snapshot() {
     if (this.updating) throw new Error('Cannot checkpoint a running Plane movie update');
     return structuredClone({
-      apartment: this.apartment,
       tables: [...this.tables],
       objects: [...this.objects].map(([pointer, record]) => [
         pointer,
@@ -685,7 +676,6 @@ export class NativeDirectShow {
   }
   restore(state) {
     const p = this.process;
-    this.apartment = state.apartment;
     this.tables = new Map(state.tables);
     for (const [kind, table] of this.tables) {
       const contract = CONTRACTS[kind];
