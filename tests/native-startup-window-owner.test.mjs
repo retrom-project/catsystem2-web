@@ -7,7 +7,9 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import { initializeNativeStartupMenu } from '../src/native/engine-startup-menu.mjs';
 import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
+import { NativeInputDevice } from '../src/native/input-device.mjs';
 import {
+  createNativeStartupWindow,
   initializeNativeWindowOwner,
   releaseNativeWindowOwner,
 } from '../src/native/engine-startup-window.mjs';
@@ -73,9 +75,9 @@ for (const [profile, variable, suffix] of [
   );
 }
 
-for (const [profile, variable, create] of [
-  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x5bf870],
-  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0x70e4c0],
+for (const [profile, variable, menuFlag, hook] of [
+  ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 48804, 0xc9659c],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 51728, 0xb91bc4],
 ]) {
   test(
     `${profile} original kcWindow opens its main and menu windows`,
@@ -93,14 +95,23 @@ for (const [profile, variable, create] of [
         engine = await open(),
         p = engine.process,
         block = NATIVE_STARTUP_BLOCKS[profile],
-        rect = p.allocate(16, true);
+        device = (instance) =>
+          new NativeInputDevice(instance, {
+            configuration: instance.options.configuration,
+            input: { x: 0, y: 0 },
+            host: {},
+            game: { width: 640, height: 480 },
+            windowMessages: [],
+          });
       let fresh;
       try {
         await initializeNativeWindowClass(engine);
         await initializeNativeStartupMenu(engine);
         await initializeNativeWindowOwner(engine);
-        p.store(rect + 8, 640);
-        p.store(rect + 12, 480);
+        engine.options.configuration.setField('screen.width', 640);
+        engine.options.configuration.setField('screen.height', 480);
+        engine.configurationMemory.push();
+        p.store(engine.refs.settings + menuFlag, 1);
         const owner = p.load(block),
           menu = p.load(block + 36),
           classRecord = engine.refs.windowClass,
@@ -111,17 +122,13 @@ for (const [profile, variable, create] of [
             const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
             messages.push([p.load(sp + 4), p.load(sp + 8)]);
           });
-        let handle;
         try {
-          handle = await engine.call(
-            create,
-            [classRecord, rect, 0xca0000, 0x800a0000, menu, 0],
-            owner,
-          );
+          await createNativeStartupWindow(engine);
         } finally {
           removeHook();
         }
-        const windows = engine.kernel.windowViews.windows,
+        const handle = p.load(owner),
+          windows = engine.kernel.windowViews.windows,
           helper = p.load(p.load(owner + 48) + 4),
           root = windows.get(handle),
           popup = windows.get(helper),
@@ -147,10 +154,25 @@ for (const [profile, variable, create] of [
         assert.equal(call('UnregisterClass' + suffix, atom, engine.module.base), 0);
         assert.equal(engine.kernel.lastError, 1412);
 
+        const input = device(engine),
+          nativeInput = await input.pointer(),
+          hookOwner = p.load(hook);
+        assert.equal(p.load(owner + 8), nativeInput);
+        assert.equal(input.refs.userData, owner);
+        assert.equal(p.load(nativeInput), handle);
+        assert.equal(p.allocations.get(hookOwner), 8);
         fresh = await open();
+        const freshInput = device(fresh);
         fresh.restore(engine.snapshot());
         assert.deepEqual(fresh.kernel.windowViews.windows, windows);
+        assert.equal(await freshInput.pointer(), nativeInput);
+        await freshInput.close();
+        assert.equal(fresh.process.load(owner + 8), 0);
+        assert.equal(fresh.process.allocations.has(nativeInput), false);
+        assert.equal(p.load(owner + 8), nativeInput);
         await releaseNativeWindowOwner(fresh);
+        assert.equal(fresh.process.load(hook), 0);
+        assert.equal(fresh.process.allocations.has(hookOwner), false);
         assert.equal(fresh.kernel.windowViews.windows.size, 0);
         assert.equal(fresh.kernel.windowViews.quit, 0);
         assert.equal(fresh.kernel.windowMenus.menus.has(root.menu), true);

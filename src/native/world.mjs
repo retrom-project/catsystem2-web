@@ -37,7 +37,10 @@ import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { initializeNativeStartupMenu } from './engine-startup-menu.mjs';
-import { initializeNativeWindowOwner } from './engine-startup-window.mjs';
+import {
+  createNativeStartupWindow,
+  initializeNativeWindowOwner,
+} from './engine-startup-window.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
@@ -828,6 +831,8 @@ export class NativeWorld {
       await initializeNativeWindowClass(this.nativeEngine);
       await initializeNativeStartupMenu(this.nativeEngine);
       await initializeNativeWindowOwner(this.nativeEngine);
+      await createNativeStartupWindow(this.nativeEngine);
+      await (await this.getNativeFeature('input-device')).pointer();
     }
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

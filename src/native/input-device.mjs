@@ -3,10 +3,12 @@
 // constructor. The returned pointer is its real object, with original key and
 // gesture code, rather than a task prefix or an opaque JS handle.
 import { nativeSystemMetric } from './engine-desktop.mjs';
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
     construct: 0x70f560,
+    fromWindow: 0x70e740,
     destruct: 0x70f740,
     windowEvent: 0x710f30,
     poll: 0x70fbb0,
@@ -24,6 +26,7 @@ const layouts = {
   },
   'sdk-4.01-engine-2.6.1.74': {
     construct: 0x5c0830,
+    fromWindow: 0x5bfab0,
     destruct: 0x5c09d0,
     windowEvent: 0x5c24e0,
     poll: 0x5c0e40,
@@ -40,6 +43,7 @@ const layouts = {
     joy: 0x5c0ac0,
   },
 };
+const emptyInput = () => ({ pointer: 0, window: 0, userData: 0, windowOwner: 0, ready: false });
 const categories = [
   ['keyboard', 4, 24],
   ['touch', 8, 40],
@@ -63,7 +67,7 @@ export class NativeInputDevice {
     engine.registerFeature('input-device', this);
   }
   get refs() {
-    return (this.engine.refs.inputDevice ??= { pointer: 0, window: 0, userData: 0, ready: false });
+    return (this.engine.refs.inputDevice ??= emptyInput());
   }
   get bindings() {
     return this.world.inputBindings;
@@ -263,12 +267,23 @@ export class NativeInputDevice {
   }
   async pointer() {
     if (this.refs.ready) return this.refs.pointer;
-    const p = this.process;
-    this.refs.pointer = p.allocate(18636, true);
-    this.refs.userData = p.allocate(12, true);
-    p.store(this.refs.userData + 8, this.refs.pointer);
+    const p = this.process,
+      window = this.engine.kernel.windowViews.windows.get(1),
+      owner = window && p.load(NATIVE_STARTUP_BLOCKS[this.engine.profile]);
+    if (owner && (window.userData !== owner || p.load(owner + 8)))
+      throw new Error('Original window already owns a different input device');
     try {
-      await this.call(this.layout.construct, [1, 0], this.refs.pointer);
+      if (owner) {
+        this.refs.pointer = await this.call(this.layout.fromWindow, [], owner);
+        this.refs.windowOwner = this.refs.userData = owner;
+        if (!this.refs.pointer || p.load(owner + 8) !== this.refs.pointer)
+          throw new Error('Original window did not retain its input device');
+      } else {
+        this.refs.pointer = p.allocate(18636, true);
+        this.refs.userData = p.allocate(12, true);
+        p.store(this.refs.userData + 8, this.refs.pointer);
+        await this.call(this.layout.construct, [1, 0], this.refs.pointer);
+      }
       this.refs.window = p.load(this.refs.pointer + 8);
       this.refs.ready = true;
       if (this.bindings) {
@@ -280,9 +295,20 @@ export class NativeInputDevice {
       this.push();
       return this.refs.pointer;
     } catch (error) {
-      p.free(this.refs.pointer);
-      p.free(this.refs.userData);
-      Object.assign(this.refs, { pointer: 0, window: 0, userData: 0, ready: false });
+      if (owner) {
+        const pointer = p.load(owner + 8);
+        if (pointer)
+          try {
+            Object.assign(this.refs, { pointer, userData: owner, windowOwner: owner, ready: true });
+            await this.close();
+          } catch (cleanup) {
+            error.cleanup = cleanup;
+          }
+      } else {
+        p.free(this.refs.pointer);
+        p.free(this.refs.userData);
+      }
+      Object.assign(this.refs, emptyInput());
       throw error;
     }
   }
@@ -429,13 +455,23 @@ export class NativeInputDevice {
   }
   async close() {
     if (!this.refs.ready) return;
-    const pointer = this.refs.pointer,
-      data = this.refs.userData;
+    const { pointer, userData, windowOwner } = this.refs,
+      p = this.process;
     this.refs.ready = false;
+    if (windowOwner) {
+      const actual = p.load(windowOwner + 8);
+      if (!actual && !p.allocations.has(pointer)) {
+        // An original WM_DESTROY can already have released the device.
+        Object.assign(this.refs, emptyInput());
+        return;
+      }
+      if (actual !== pointer) throw new Error('Original input owner changed before release');
+      p.store(windowOwner + 8, 0);
+    }
     await this.call(this.layout.destruct, [], pointer);
-    this.process.free(pointer);
-    this.process.free(data);
-    Object.assign(this.refs, { pointer: 0, window: 0, userData: 0, ready: false });
+    if (!p.free(pointer) || (!windowOwner && !p.free(userData)))
+      throw new Error('Original input allocation could not be released');
+    Object.assign(this.refs, emptyInput());
   }
   snapshot() {
     return {
