@@ -9,6 +9,7 @@ export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
     [0xc4, 2, 2, 0x641600, 0x529770],
     [0xc5, 1, 2, 0x6419a0, 0x529b10],
     [0xc6, 1, 2, 0x6419d0, 0x529b40],
+    [0xc7, 2, 2, 0x641880, 0x5299f0],
     [0xc8, 1, 1, 0x641840, 0x5299b0],
     [0xc9, 3, 2, 0x641910, 0x529a80],
     [0xca, 2, 2, 0x641a00, 0x529b70],
@@ -75,8 +76,12 @@ export class NativeAreaEffectCommands {
       throw new Error('Unexpected original area effect envelope');
     const record = world.objects.objects.get(world.resolveTaskID(target, origin)),
       area = this.engine.features.get('area-effects'),
-      schema = area && record?.implementation?.owner === area ? bitmapPackets.get(message) : null;
-    const copy = schema ? await this.bitmapPacket(l, schema) : 0;
+      areaTask = area && record?.implementation?.owner === area,
+      schema = areaTask ? bitmapPackets.get(message) : null,
+      // C7 can target arbitrary tasks. Only the SDK area receivers use the
+      // five-slot offset for this raw packet.
+      delivered = this.sdk && message === 262 && record && !areaTask ? raw + 2 : message,
+      copy = schema ? await this.bitmapPacket(l, schema) : 0;
     try {
       const context = {
           payload: p,
@@ -86,7 +91,7 @@ export class NativeAreaEffectCommands {
           fromHost: true,
           flags,
         },
-        value = await world.sendNativeEngine(target, origin, message, w, copy || l, context);
+        value = await world.sendNativeEngine(target, origin, delivered, w, copy || l, context);
       if (out && Number.isInteger(value)) {
         p.store(out, value);
         if (message === 259 && query) query.written = true;
@@ -101,6 +106,9 @@ export class NativeAreaEffectCommands {
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
     if (!spec) return undefined;
+    // PE32 maps its low system page. A failed VM translation must not make
+    // the original C7 copy read a matrix from that page.
+    if (id === 0xc7) machine.bytes(args[1] ?? machine.nativeArgument(1), 64);
     const memory =
       this.world.objects.machine(task.id) === machine
         ? await this.world.getNativeFeature('task-memory')

@@ -57,6 +57,7 @@ const sdk = profile.startsWith('sdk-'),
     [0xc4, 13],
     [0xc5, 257],
     [0xc6, 258],
+    [0xc7, 262],
     [0xc8, 259],
     [0xc9, 13],
     [0xca, 13],
@@ -76,7 +77,10 @@ const equal = (actual, expected, label) => {
   if (activeEffect) receiverChecks++;
   else wrapperChecks++;
 };
-const observedBytes = (message) => ([260, 264, 273].includes(message) ? 20 : 56);
+const observedBytes = (message) => {
+  if (message === 262) return 64;
+  return [260, 264, 273].includes(message) ? 20 : 56;
+};
 const observe = (from, target, message, w, l, flags, result) => {
   if (message === 259 || message === 13) statusInput = p.load(result);
   events.push({
@@ -93,6 +97,7 @@ const observe = (from, target, message, w, l, flags, result) => {
           ? 'caller'
           : null,
   });
+  if (message === 262) p.write(l, new Uint8Array(64).fill(0x5a));
   return writeReply ? replyWord : undefined;
 };
 const adapter = new NativeAreaEffectCommands(engine, {
@@ -153,13 +158,18 @@ const vmState = () => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) =
 try {
   const block = m.allocate(512),
     locations = [0, 112, 0x80000040, block + 128, 0xffffffff],
+    matrixLocations = [0, 113, 0x80000041, block + 129, block + 448],
     words = [0, 1, 0x80000000, 0xffffffff];
-  for (const [i, address] of locations.slice(0, -1).entries())
-    m.bytes(address, 56).set(Uint8Array.from({ length: 56 }, (_, j) => (i * 23 + j * 37) & 255));
+  for (const [i, address] of [
+    ...new Set([...locations.slice(0, -1), ...matrixLocations]),
+  ].entries())
+    m.bytes(address, 64).set(Uint8Array.from({ length: 64 }, (_, j) => (i * 23 + j * 37) & 255));
   for (const [id, firstMessage] of commands) {
     commandID = id;
     const isInit = id === 0xc4,
       hasSelector = id === 0xc9,
+      matrix = id === 0xc7,
+      addresses = matrix ? matrixLocations : firstMessage === 13 ? locations : [0],
       queriesKind = firstMessage === 13,
       kindMessages = followUpMessages.get(id),
       values = queriesKind
@@ -168,13 +178,13 @@ try {
     for (const target of words)
       for (const selector of hasSelector ? [0, 1, 0xffffffff] : [0])
         for (replyWord of values)
-          for (const address of queriesKind ? locations : [0])
+          for (const address of addresses)
             for (writeReply of [false, true]) {
               const args = [target],
                 before = vmState(),
                 memory = new NativeKCSMemory(p, m);
               if (hasSelector) args.push(selector);
-              if (queriesKind) args.push(address);
+              if (queriesKind || matrix) args.push(address);
               events = [];
               let native;
               try {
@@ -192,6 +202,12 @@ try {
                 'original message IDs',
               );
               if (isInit) equal(events[0].initial, mainTable + 4 * id, 'GCALL slot remains in ECX');
+              if (matrix)
+                equal(
+                  events[0].source,
+                  Array.from(m.bytes(address, 64)),
+                  'original C7 copies all matrix bytes',
+                );
               if (queriesKind && !isInit)
                 equal(statusInput, host, 'kind query starts with caller word');
               if (followUp)
@@ -223,6 +239,25 @@ try {
               equal(vmState(), before, 'all VM regions remain unchanged');
               operations++;
             }
+  }
+
+  for (const address of [0xffffffff, block + 449])
+    await assert.rejects(adapter.apply(0xc7, [1, address], m, { id: 41 }), /KCS memory/);
+
+  const faultMemory = new NativeKCSMemory(p, m);
+  events = [];
+  p.cpu.mem_protect(0, 4096, 0);
+  try {
+    await assert.rejects(
+      callOriginal(0xc7, [1, 0xffffffff], faultMemory.pointer),
+      (error) =>
+        error.nativeFault?.pc === (sdk ? 0x529a1b : 0x6418ab) &&
+        error.nativeFault.registers.EAX === 0,
+    );
+    equal(events.length, 0, 'original C7 faults on NULL translation before dispatch');
+  } finally {
+    p.cpu.mem_protect(0, 4096, p.uc.PROT_ALL);
+    faultMemory.close();
   }
 
   // The reference path uses the original task factory and original receivers.
@@ -543,6 +578,12 @@ try {
           'original graph callback install',
         );
         equal(await callWipe(0xc8), { control: 1, value: 1 }, 'Raster becomes active');
+        const matrix = Uint8Array.from({ length: 64 }, (_, i) => i * 29 + 7),
+          rasterState = p.read(activeEffect, 148);
+        p.write(source + 128, matrix);
+        equal(await callWipe(0xc7, 240), { control: 2 }, 'original C7 returns its void control');
+        equal(p.read(activeEffect, 148), rasterState, 'Raster ignores the matrix packet');
+        equal(p.read(source + 128, 64), matrix, 'C7 preserves caller matrix');
         const update = [0xffffffff, 0x12345678, floatBits(4), floatBits(8), floatBits(30)],
           before = p.read(activeEffect, 148),
           expected = new DataView(before.buffer);
@@ -617,7 +658,7 @@ try {
         wrapperChecks,
         receiverChecks,
         wrapperBoundary:
-          'Original seven GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
+          'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
           'Original factories, Raster/Hydro/Wipe1/Fade/Wipe2 receivers, per-frame draws and destructors. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
       },

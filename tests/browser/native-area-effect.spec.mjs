@@ -445,7 +445,7 @@ for (const [profile, variable] of [
   );
 
   test(
-    profile + ' KCS C9 changes the live Raster graph and restores its callback',
+    profile + ' KCS C9 and C7 use the original Raster graph and packet receivers',
     async ({ page }) => {
       const sdk = profile.startsWith('sdk-');
       test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
@@ -466,6 +466,16 @@ for (const [profile, variable] of [
           [37, [0x14, 104]],
           [43, 0xc9, 12],
         ],
+        sendMatrix = [
+          ...wait,
+          [39, programSize(begin) + programSize(adjust)],
+          target,
+          [37, [0x14, 108]],
+          [43, 0xc7, 8],
+          [37, [0x14, 92]],
+          [37, [0x14, 108]],
+          [43, 0xc7, 8],
+        ],
         files = new Map([
           ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
           [
@@ -474,8 +484,9 @@ for (const [profile, variable] of [
               [
                 ...begin,
                 ...adjust,
+                ...sendMatrix,
                 ...wait,
-                [39, programSize(begin) + programSize(adjust)],
+                [39, programSize(begin) + programSize(adjust) + programSize(sendMatrix)],
                 target,
                 [43, 0xc6, 4],
                 [59],
@@ -557,11 +568,16 @@ for (const [profile, variable] of [
               vm = script.machine,
               init = vm.allocate(20),
               update = 0x80000120,
+              matrix = vm.allocate(68) + 1,
+              matrixBytes = Uint8Array.from({ length: 64 }, (_, i) => (i * 23 + 17) & 255),
               first = [graph, 0x80000001, floatBits(0), floatBits(64), floatBits(8)],
               next = [0xffffffff, 0x87654321, floatBits(12), floatBits(64), floatBits(8)];
+            vm.store(92, graph);
             vm.store(96, world.nativeTaskID(world.main.id));
             vm.store(100, init);
             vm.store(104, update);
+            vm.store(108, matrix);
+            vm.bytes(matrix, 64).set(matrixBytes);
             first.forEach((word, i) => vm.store(init + i * 4, word));
             vm.bytes(update, 24).fill(0xa5);
             next.forEach((word, i) => vm.store(update + i * 4, word));
@@ -622,6 +638,53 @@ for (const [profile, variable] of [
               moving,
               'fresh graph follows the same native phase',
             );
+            const expectedMessage = sdk ? 257 : 262,
+              receiverPackets = [],
+              actorState = rp.read(pointer, 148),
+              stopObserving = rp.beforeInstruction(
+                sdk ? 0x4b9610 : 0x5dd3e0,
+                'observe original C7 packet',
+                () => {
+                  const sp = rp.cpu.reg_read_i32(rp.uc.X86_REG_ESP) >>> 0,
+                    packet = rp.load(sp + 4);
+                  if (rp.load(packet + 8) !== expectedMessage) return;
+                  const value = rp.load(packet + 16);
+                  receiverPackets.push({
+                    target: rp.load(packet),
+                    from: rp.load(packet + 4),
+                    w: rp.load(packet + 12),
+                    flags: rp.load(packet + 20),
+                    bytes: [...rp.read(value, 64)],
+                  });
+                  rp.store(value, 0xa5a55a5a);
+                },
+              );
+            try {
+              assert.equal(
+                (await fresh.runtime.scheduler.send(script.id, [4, 3, 2, 1])).accepted,
+                true,
+              );
+            } finally {
+              stopObserving();
+            }
+            assert.deepEqual(
+              receiverPackets,
+              [nativeID, graph].map((target) => ({
+                target,
+                from: fresh.nativeTaskID(script.id),
+                w: 0,
+                flags: 0,
+                bytes: [...matrixBytes],
+              })),
+            );
+            const restored = fresh.runtime.scheduler.tasks.get(script.id);
+            assert.deepEqual(
+              restored.machine.bytes(matrix, 64),
+              matrixBytes,
+              'C7 delivers a stack copy',
+            );
+            assert.deepEqual(rp.read(pointer, 148), actorState, 'Raster ignores the matrix packet');
+            assert.deepEqual(await render(fresh), moving, 'C7 preserves the active graph');
             assert.equal(
               (await fresh.runtime.scheduler.send(script.id, [4, 3, 2, 1])).accepted,
               true,
