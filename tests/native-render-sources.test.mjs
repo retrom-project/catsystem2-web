@@ -9,6 +9,7 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame } from './helpers.mjs';
 import { renderSourceWorldFiles } from './fixtures/render-sources-fixture.mjs';
 import {
+  exerciseBitmapAlpha,
   exerciseRenderSourcesWorld,
   exerciseRenderSourceResize,
 } from './fixtures/render-sources-world.mjs';
@@ -48,5 +49,6 @@ test(
       };
     await exerciseRenderSourcesWorld(make, layout, rgba, assert);
     await exerciseRenderSourceResize(make, layout, assert);
+    await exerciseBitmapAlpha(make, assert);
   },
 );

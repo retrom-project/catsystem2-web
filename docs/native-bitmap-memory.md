@@ -56,6 +56,7 @@ original wrappers:
 | 17A             | Set the alpha-presence hint; it does not scale pixels           | 2       |
 | 22E             | Mirror pixels, offsets, anchors and attribute coordinates       | 2       |
 | 234             | Set the raw bitmap mask word                                    | 2       |
+| 281             | Scale the 32-bit bitmap alpha by a percentage                   | 2       |
 | 402 (game only) | Packed native pixel at canvas coordinates                       | 1       |
 
 Null branches preserve each original early return. `179` leaves its result word
@@ -63,12 +64,12 @@ unwritten for a null owner, preserving the GCALL `CCCCCCCC` sentinel. `16F` with
 no source does not dereference the destination. VM address zero is valid, and
 missing argument words read the adjacent mapped GCALL area.
 
-Both resize slots share an original handler. A registered logical bitmap
-handle resolves through the bitmap bridge. A render-source wrapper keeps
-its original pointer and ownership. A queued resize checks the same
-allocation identity again at handler entry. Freed wrappers and unrelated
-allocations are rejected before resize can mutate the bitmap. See
-[Native render-source arrays](native-render-sources.md).
+Both resize slots share an original handler. The resize and alpha operations
+accept logical bitmap handles and original render-source wrappers. A logical
+handle resolves through the bitmap bridge. A render-source wrapper keeps its
+original pointer and ownership. The adapter checks that allocation identity
+again at native handler entry, so a queued operation fails if its borrowed
+wrapper has been released. See [Native render-source arrays](native-render-sources.md).
 
 `16A` and `16B` translate and zero both VM outputs even when the owner is null.
 For a live bitmap, each zero canvas dimension independently falls back to its
@@ -81,19 +82,28 @@ word for horizontal mirroring and zero for vertical mirroring. Its original
 routine updates the corresponding offset and anchor using the raw canvas
 dimension, and edits attribute payloads in place. Aliases keep one bitmap
 identity. `234` updates the mask word without changing stored pixel bytes.
+`281` modifies only alpha bytes in a 32-bit bitmap. Its native lookup table
+multiplies the alpha by the percentage modulo 2³², divides the unsigned
+product by 100 and saturates at 255. Null input, other pixel depths and
+100 percent leave the image unchanged. RGB, row padding and cached alpha
+hints keep their previous values.
 
-`verify-native-bitmap-operations.mjs` compares **1,258 complete calls and 8,071
-checks for the game**, **1,184 calls and 7,553 checks for the SDK**, **15,624
-comparisons total**. It covers seventeen game slots and sixteen SDK slots
-(including the identical resize handlers), two-, three- and four-byte native pixels,
-metadata, color modes, alpha/cache state, clipping and overlap, four VM domains,
-null gates, untouched bytes and all live allocations. The VRAM upload is an
+`verify-native-bitmap-operations.mjs` compares **1,346 complete calls and 8,627
+checks for the game**, **1,272 calls and 8,109 checks for the SDK**, **16,736
+comparisons total**. It covers eighteen game slots and seventeen SDK slots
+(including the identical resize handlers), two-, three- and four-byte native
+pixels, metadata, color modes, all 256 alpha inputs and padded rows, clipping
+and overlap, four VM domains, null gates, untouched bytes and all live
+allocations. The VRAM upload is an
 explicit test boundary. Original arithmetic and dispatch execute in the mounted
 image. The reference process runs original scanline code, while the adapter uses
 the separately verified raster acceleration. Its upload boundary also asserts
 the original calling view in ECX. Both complete World/browser tests exercise
 `16F` with a zero destination through the real visible VRAM plane and verify
-GPU pixels in a fresh restored World.
+GPU pixels in a fresh restored World. The authored `281` KCS tests cover a
+logical alias and a borrowed HG2 wrapper through fresh restore. They also
+queue a release ahead of an alpha operation and verify the stale wrapper is
+rejected.
 
 Public original-engine tests additionally cover persistent wrapper identities,
 strong and borrowed aliases, source destruction, independent restored worlds,

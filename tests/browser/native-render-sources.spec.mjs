@@ -36,7 +36,7 @@ for (const [profile, variable] of [
         async ({ profile, names, layout, rgba }) => {
           const [
             { browserNativeWorld, placeBrowserNativePlane },
-            { exerciseRenderSourcesWorld, exerciseRenderSourceResize },
+            { exerciseBitmapAlpha, exerciseRenderSourcesWorld, exerciseRenderSourceResize },
           ] = await Promise.all([
             import('/tests/fixtures/browser-native-world.mjs'),
             import('/tests/fixtures/render-sources-world.mjs'),
@@ -104,6 +104,7 @@ for (const [profile, variable] of [
             };
           await exerciseRenderSourcesWorld(make, layout, rgba, assert, frame);
           await exerciseRenderSourceResize(make, layout, assert, { show, pixels: readFrame });
+          await exerciseBitmapAlpha(make, assert);
         },
         { profile, names: [...files.keys()], layout, rgba: [...rgba] },
       );

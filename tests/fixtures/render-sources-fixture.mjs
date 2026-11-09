@@ -149,6 +149,10 @@ export async function renderSourceWorldFiles(profile, executable, driver) {
     'raw-resize-again.kcs',
     kcsProgram([[37, [0x14, 256]], [37, 12], [37, 8], [43, 0x7a, 12], ...wait]),
   );
+  files.set(
+    'bitmap-alpha.kcs',
+    kcsProgram([[37, [0x14, 256]], [37, [0x14, 260]], [43, 0x281, 8], [59]]),
+  );
   return { files, layout, rgba: frames[0].rgba };
 }
 

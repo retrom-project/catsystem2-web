@@ -541,3 +541,103 @@ export async function exerciseRenderSourceResize(make, layout, assert, preview) 
     await world.close({ flushFiles: false });
   }
 }
+
+export async function exerciseBitmapAlpha(make, assert) {
+  const world = make(),
+    call = (owner, id, args) =>
+      owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+    imageColor = async (owner, handle) => [
+      ...(await owner.graphics.images.get(handle).pixels()).slice(0, 4),
+    ],
+    scale = async (owner, input, percentage) => {
+      const task = await owner.spawnScript('bitmap-alpha.kcs', { parent: owner.main.id });
+      try {
+        task.machine.store(256, input);
+        task.machine.store(260, percentage);
+        await owner.runtime.scheduler.execute(task);
+        assert.equal(task.status, 'finished');
+        assert.deepEqual([task.machine.load(256), task.machine.load(260)], [input, percentage]);
+      } finally {
+        await owner.objects.release(task.id);
+      }
+    },
+    expectRejection = async (operation, expected) => {
+      try {
+        await operation;
+      } catch (error) {
+        assert.equal(expected.test(error.message), true, error.message);
+        return;
+      }
+      throw new Error('Invalid alpha-scaler bitmap input was accepted');
+    };
+  let fresh;
+  try {
+    await world.initialize('main.kcs');
+    const p = world.nativeEngine.process,
+      m = world.main.machine,
+      wrapper = m.load(4),
+      bitmap = p.load(wrapper),
+      pixel = p.load(bitmap + 12),
+      before = p.load(pixel),
+      references = p.load(bitmap + 80),
+      withAlpha = (value) => ((before & 0xffffff) | (value << 24)) >>> 0,
+      alpha = before >>> 24;
+    assert.equal(m.load(0), 1);
+    assert.equal(p.load(bitmap + 24), 4);
+    assert.equal(alpha > 0, true);
+    assert.equal(world.runtime.handles.records.has(wrapper), false);
+    await scale(world, wrapper, 25);
+    assert.equal(p.load(pixel), withAlpha(alpha >>> 2));
+    assert.equal(p.load(bitmap + 80), references);
+
+    const handle = (await call(world, 0x70, [3, 2])).value,
+      alias = world.graphics.images.alias(handle, world.main.id);
+    await world.graphics.images.get(handle).fill(0, 0, 3, 2, 0x89123456);
+    await call(world, 0x17a, [handle, 0]);
+    await scale(world, alias, 50);
+    assert.deepEqual(await imageColor(world, handle), [18, 52, 86, 68]);
+    assert.deepEqual(await call(world, 0x179, [alias]), { control: 1, value: 0 });
+    assert.deepEqual(await call(world, 0x281, [0]), { control: 2 });
+
+    fresh = make();
+    await fresh.restore(structuredClone(world.snapshot()));
+    const engine = fresh.nativeEngine,
+      rp = engine.process,
+      saved = fresh.main.machine.load(4);
+    assert.equal(saved, wrapper);
+    assert.equal(rp.load(saved), bitmap);
+    await scale(fresh, alias, 200);
+    await scale(fresh, saved, 200);
+    assert.deepEqual(await imageColor(fresh, handle), [18, 52, 86, 136]);
+    assert.deepEqual(await imageColor(world, handle), [18, 52, 86, 68]);
+    assert.equal(rp.load(pixel), withAlpha((alpha >>> 2) * 2));
+    assert.equal(p.load(pixel), withAlpha(alpha >>> 2));
+    assert.equal(rp.load(bitmap + 80), references);
+
+    const waitQueued = async (count) => {
+      for (let i = 0; i < 100 && engine.pendingCalls < count; i++) await Promise.resolve();
+      assert.equal(engine.pendingCalls, count);
+    };
+    let resume, rejected;
+    const gate = new Promise((resolve) => (resume = resolve));
+    engine.queue = engine.queue.then(() => gate);
+    const release = call(fresh, 0x2c0, [0, 1]);
+    try {
+      await waitQueued(1);
+      rejected = expectRejection(call(fresh, 0x281, [saved, 25]), /released before execution/);
+      await waitQueued(2);
+    } finally {
+      resume();
+      await release;
+      await rejected;
+    }
+    await expectRejection(call(fresh, 0x281, [saved, 25]), /Unknown or released bitmap alpha/);
+    assert.equal(rp.allocations.has(saved), false);
+    assert.equal(p.allocations.has(wrapper), true);
+    assert.deepEqual(await call(world, 0x2c0, [0, 1]), { control: 2 });
+    assert.equal(p.allocations.has(wrapper), false);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
+}

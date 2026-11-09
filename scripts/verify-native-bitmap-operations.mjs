@@ -50,6 +50,9 @@ for (const handle of [h, s]) {
   check(pb, pa, 'same original wrapper pointer');
   pointers.set(handle, pa);
 }
+const alphaPercentages = [
+  0, 1, 37, 50, 75, 99, 100, 101, 150, 255, 1000, 0x01010101, 0x80000000, 0xffffffff,
+];
 const block = a.allocate(1024);
 check(b.allocate(1024), block, 'same extended VM base');
 const reset = (bpp = 4) => {
@@ -221,8 +224,52 @@ try {
           case 0x234:
             args = [h, [0, 1, 0xff123456, 0x80123456, 0xffffffff][n % 5]];
             break;
+          case 0x281:
+            args = [h, alphaPercentages[n % alphaPercentages.length]];
+            break;
         }
         await run(spec, args);
+      }
+    if (spec.id === 0x281)
+      for (const percentage of alphaPercentages) {
+        reset(4);
+        const width = 256,
+          stride = width * 4 + 12,
+          height = 2,
+          data = new Uint8Array(stride * height).fill(0x6d);
+        for (let row = 0; row < height; row++)
+          for (let x = 0; x < width; x++)
+            data.set([x, x ^ 0x9c, (37 * x) & 255, row ? 255 - x : x], row * stride + x * 4);
+        for (const fixture of [raw, f]) {
+          const process = fixture.process,
+            bitmap = process.load(pointers.get(h)),
+            storage = fixture.buffers.allocateData(data.length);
+          fixture.buffers.releaseData(process.load(bitmap + 12));
+          process.write(storage, data);
+          for (const [offset, value] of [
+            [4, width],
+            [8, height],
+            [12, storage],
+            [16, data.length],
+            [20, stride],
+            [76, 1],
+          ])
+            process.store(bitmap + offset, value);
+        }
+        await run(spec, [h, percentage]);
+        const bitmap = p.load(pointers.get(h)),
+          expected = data.slice();
+        for (let row = 0; row < height; row++)
+          for (let x = 0; x < width; x++) {
+            const at = row * stride + x * 4 + 3;
+            expected[at] = Math.min(255, Math.floor((Math.imul(data[at], percentage) >>> 0) / 100));
+          }
+        check(
+          p.read(p.load(bitmap + 12), data.length),
+          expected,
+          'native alpha LUT and padded rows',
+        );
+        check(p.load(bitmap + 76), 1, 'native alpha scaler preserves the mask word');
       }
     reset();
     a.nativeArgumentBase = b.nativeArgumentBase = 7000;
@@ -240,7 +287,7 @@ try {
         comparisons,
         covered: Object.fromEntries([...covered].map(([id, n]) => [id.toString(16), n])),
         scope:
-          'All profile-available original wrapper slots (including identical 7A/2C1 resize aliases), canvas/offset queries and the game-only 402 pixel getter, with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
+          'All profile-available original wrapper slots (including identical 7A/2C1 resize aliases), canvas/offset queries, every alpha index with padded rows and the game-only 402 pixel getter, with persistent bitmap aliases, native BPP2/3/4 arithmetic, clipping/overlap, raw metadata, four VM domains, NULL/CCCC/adjacent-word behavior and all allocation bytes. VRAM upload is explicit boundary; arithmetic/dispatch is original except separately verified exact raster scanline kernels.',
       },
       null,
       2,
