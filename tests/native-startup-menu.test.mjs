@@ -16,7 +16,7 @@ import {
 
 for (const [profile, variable, normalCount, load, suffix] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 4, 0x5bf3c0, 'A'],
-  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 6, 0x70e000, 'W'],
+  ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 5, 0x70e000, 'W'],
 ]) {
   test(
     `${profile} owns its original standard and author menus and restores their handles`,
@@ -60,7 +60,7 @@ for (const [profile, variable, normalCount, load, suffix] of [
         assert.notEqual(replacement, normal);
         assert.equal(tree.has(normal), false);
         assert.equal(tree.has(normalSystem), false);
-        assert.equal(get(first, 'GetMenuItemCount', replacement), normalCount + 1);
+        assert.equal(get(first, 'GetMenuItemCount', replacement), suffix === 'A' ? 5 : 7);
         assert.equal(tree.get(replacement)[0].label, '$0011-0001$システム(&S)');
 
         await releaseNativeStartupMenu(first);
@@ -140,6 +140,51 @@ for (const [profile, variable, normalCount, load, suffix] of [
         assert.equal(system.find(({ id }) => id === 40002).label, '保存して終了');
         assert.equal(system.find(({ id }) => id === 119).label, 'タイトル画面に戻る(&T)');
         assert.ok(system.some(({ type, label }) => type === 0x800 && !label));
+      } finally {
+        await engine.close();
+      }
+    },
+  );
+
+  test(
+    `${profile} applies the original settings flags to optional menu commands`,
+    { skip: !process.env[variable] },
+    async () => {
+      const bytes = new Uint8Array(await readFile(process.env[variable])),
+        engine = await NativeEngineProcess.open({
+          profile,
+          bytes,
+          bootstrapOwner: {},
+          configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+          readFile: async () => null,
+        }),
+        p = engine.process,
+        query = engine.kernel.resolve({ dll: 'USER32.dll', name: 'GetMenuItemInfo' + suffix }),
+        out = p.allocate(48, true),
+        flags =
+          suffix === 'A'
+            ? [
+                [46104, 118],
+                [47368, 40034],
+              ]
+            : [
+                [47924, 118],
+                [50032, 40034],
+                [57540, 40063],
+              ];
+      try {
+        p.store(out, 48);
+        for (let enabled = 0; enabled < 1 << flags.length; enabled++) {
+          for (const [i, [offset]] of flags.entries())
+            p.store(engine.refs.settings + offset, (enabled >>> i) & 1);
+          await initializeNativeStartupMenu(engine);
+          const owner = p.load(NATIVE_STARTUP_BLOCKS[profile] + 36),
+            root = p.load(owner + 8);
+          for (const [i, [, id]] of flags.entries())
+            assert.equal(p.call(query, [root, id, 0, out]), (enabled >>> i) & 1, `command ${id}`);
+          assert.equal(p.call(query, [root, 40002, 0, out]), 1);
+          await releaseNativeStartupMenu(engine);
+        }
       } finally {
         await engine.close();
       }

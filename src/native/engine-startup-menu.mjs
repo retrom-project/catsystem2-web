@@ -8,6 +8,19 @@ const layouts = {
   'nekopara-vol3-engine-2.6.1.76': [0x70df70, 0x70e000, 0x9e3230, 0x5ac260],
 };
 
+// WinMain consults the active Settings after translating the resource.
+const optionalCommands = {
+  'sdk-4.01-engine-2.6.1.74': [
+    [46104, 118],
+    [47368, 40034],
+  ],
+  'nekopara-vol3-engine-2.6.1.76': [
+    [47924, 118],
+    [50032, 40034],
+    [57540, 40063],
+  ],
+};
+
 export async function initializeNativeStartupMenu(engine) {
   const p = engine.process,
     slot = NATIVE_STARTUP_BLOCKS[engine.profile] + 36,
@@ -23,7 +36,11 @@ export async function initializeNativeStartupMenu(engine) {
     if (!(await engine.call(load, [engine.module.base, resource], owner)))
       throw new Error(`Original startup menu resource ${resource} could not be loaded`);
     p.store(slot, owner);
-    await engine.call(localize, [], p.load(owner + 8));
+    const handle = p.load(owner + 8);
+    await engine.call(localize, [], handle);
+    const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
+    for (const [offset, id] of optionalCommands[engine.profile])
+      if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);
   } finally {
     if (p.load(slot) !== owner) p.free(owner);
   }

@@ -87,7 +87,10 @@ each menu recursively through
 [MENUITEMINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuiteminfow).
 They use the original language tree to select a translation, an intentionally
 empty label, or the resource's fallback. Tests cover both code pages and
-nested labels. Attaching the resulting menu to the browser window remains
+nested labels. The WinMain settings checks then remove disabled manual,
+message-window reset and, in the game profile, social commands through
+[DeleteMenu](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-deletemenu).
+Attaching the resulting menu to the browser window remains
 a separate step.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`

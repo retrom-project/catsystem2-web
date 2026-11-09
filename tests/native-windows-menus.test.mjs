@@ -5,7 +5,7 @@ import { NativeEngineWindows } from '../src/native/engine-process.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 
-test('Win32 menu text queries preserve the exact ANSI and Unicode buffer boundaries', async () => {
+test('Win32 menu queries preserve buffer boundaries and deletion releases submenu handles', async () => {
   const p = new PE32Process(await loadUnicorn()),
     kernel = new NativeEngineWindows(p),
     command = { id: 17, label: 'space', type: 0, state: 0, children: null },
@@ -72,6 +72,12 @@ test('Win32 menu text queries preserve the exact ANSI and Unicode buffer boundar
     assert.equal(call('GetMenuItemInfoW', menu, 999, 0, info), 0);
     assert.equal(kernel.lastError, 1456);
     assert.equal(p.load(info + 40), 1);
+    assert.equal(call('DeleteMenu', menu, 17, 0), 1);
+    assert.equal(call('GetMenuItemInfoW', menu, 17, 0, info), 0);
+    assert.equal(call('GetMenuItemCount', sub), 1);
+    assert.equal(call('DeleteMenu', menu, 0, 0x400), 1);
+    assert.equal(call('GetMenuItemCount', menu), 0);
+    assert.equal(call('GetMenuItemCount', sub), 0xffffffff);
   } finally {
     p.close();
   }

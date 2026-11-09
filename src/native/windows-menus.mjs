@@ -67,6 +67,7 @@ export class NativeWindowsMenus {
       register('SetMenuItemInfo' + suffix, 4, (args) => this.itemInfo(args, wide, true));
     }
     register('DestroyMenu', 1, ([handle]) => this.destroy(handle));
+    register('DeleteMenu', 3, ([handle, item, flags]) => this.remove(handle, item, flags));
     register('GetMenuItemCount', 1, ([handle]) => {
       const menu = this.menus.get(handle);
       return menu ? menu.length : this.error(MENU_MISSING, -1);
@@ -113,25 +114,39 @@ export class NativeWindowsMenus {
     for (const { submenu } of menu) if (this.menus.has(submenu)) this.destroy(submenu);
     return 1;
   }
-  command(menu, id) {
-    for (const entry of menu) {
-      if ((entry.id ?? entry.submenu) === id) return entry;
+  locate(menu, id, byPosition) {
+    if (byPosition) return id < menu.length ? [menu, id] : null;
+    for (let index = 0; index < menu.length; index++) {
+      const entry = menu[index];
+      if ((entry.id ?? entry.submenu) === id) return [menu, index];
       const child = this.menus.get(entry.submenu);
       if (child) {
-        const match = this.command(child, id);
+        const match = this.locate(child, id, false);
         if (match) return match;
       }
     }
-    return undefined;
+    return null;
+  }
+  remove(handle, item, flags) {
+    const menu = this.menus.get(handle);
+    if (!menu) return this.error(MENU_MISSING);
+    const location = this.locate(menu, item, flags & 0x400);
+    if (!location) return this.error(ITEM_MISSING);
+    const [items, index] = location,
+      [{ submenu }] = items.splice(index, 1);
+    if (this.menus.has(submenu)) this.destroy(submenu);
+    return 1;
   }
   itemInfo([handle, item, byPosition, at], wide, write) {
     const p = this.kernel.process,
       menu = this.menus.get(handle);
     if (!menu) return this.error(MENU_MISSING);
     if (!at || ![44, 48].includes(p.load(at))) return this.error(INVALID_PARAMETER);
-    const entry = byPosition ? menu[item] : this.command(menu, item);
-    if (!entry) return this.error(ITEM_MISSING);
-    const mask = p.load(at + 4),
+    const location = this.locate(menu, item, byPosition);
+    if (!location) return this.error(ITEM_MISSING);
+    const [items, index] = location,
+      entry = items[index],
+      mask = p.load(at + 4),
       supported = write ? MIIM_STRING : 0x147;
     if (mask & ~supported)
       throw new Error(`Unsupported native menu item information mask 0x${mask.toString(16)}`);
