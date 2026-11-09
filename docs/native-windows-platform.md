@@ -159,3 +159,11 @@ code-page metadata. Text measurement uses the same loaded faces through
 Canvas. The browser does not require access to the host's installed font
 inventory.
 [OpenType Windows metrics](https://learn.microsoft.com/en-us/typography/opentype/spec/os2)
+
+The SDK calls its optional `language.txt` loader at `47E690` before the
+owner factory. That code reads the file from the mounted drive and inserts
+ANSI labels into its original static lookup tree. The browser runs the
+tree's sentinel constructor and teardown in the engine process. Missing
+files and keys still use the original fallback text. Tests exercise an
+authored CP932 override, duplicate keys, an intentionally empty value, a
+long value, and a fresh process with no file available at restore time.
