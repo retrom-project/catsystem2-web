@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
 import test from 'node:test';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { loadNativeGameStartupLanguage } from '../src/native/engine-language.mjs';
+import { parseNativeXML } from '../src/native/xml.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import {
@@ -44,10 +48,10 @@ for (const [profile, variable, normalCount, load, suffix] of [
         assert.equal(get(first, 'GetMenuItemCount', normalSystem), 4);
         assert.equal(get(first, 'GetSubMenu', normal, normalCount), 0);
         assert.equal(get(first, 'GetSubMenu', normalSystem, 0), 0);
-        assert.equal(tree.get(normal)[0].label, '$0011-0001$システム(&S)');
+        assert.equal(tree.get(normal)[0].label, 'システム(&S)');
         assert.deepEqual(
           tree.get(normalSystem).find(({ id }) => id === 40002),
-          { id: 40002, label: '$0011-0004$ゲームの終了(&X)', type: 0, state: 0, submenu: 0 },
+          { id: 40002, label: 'ゲームの終了(&X)', type: 0, state: 0, submenu: 0 },
         );
         assert.ok(tree.get(normalSystem).some(({ type }) => type === 0x800));
 
@@ -57,6 +61,7 @@ for (const [profile, variable, normalCount, load, suffix] of [
         assert.equal(tree.has(normal), false);
         assert.equal(tree.has(normalSystem), false);
         assert.equal(get(first, 'GetMenuItemCount', replacement), normalCount + 1);
+        assert.equal(tree.get(replacement)[0].label, '$0011-0001$システム(&S)');
 
         await releaseNativeStartupMenu(first);
         assert.equal(tree.size, 0);
@@ -68,8 +73,9 @@ for (const [profile, variable, normalCount, load, suffix] of [
           debug = get(first, 'GetSubMenu', handle, normalCount);
         assert.equal(get(first, 'GetMenuItemCount', handle), normalCount + 1);
         assert.equal(get(first, 'GetMenuItemCount', debug), suffix === 'A' ? 6 : 7);
-        assert.equal(tree.get(handle).at(-1).label, '$0011-0020$デバッグ(&D)');
+        assert.equal(tree.get(handle).at(-1).label, 'デバッグ(&D)');
         assert.equal(first.kernel.calls.get('user32.dll!LoadMenu' + suffix), 3);
+        assert.ok(first.kernel.calls.get('user32.dll!SetMenuItemInfo' + suffix) > normalCount * 2);
 
         fresh = await open();
         fresh.restore(first.snapshot());
@@ -87,6 +93,55 @@ for (const [profile, variable, normalCount, load, suffix] of [
       } finally {
         await fresh?.close();
         await first.close();
+      }
+    },
+  );
+
+  test(
+    `${profile} localizes nested menu labels through the original UI catalogue`,
+    { skip: !process.env[variable] },
+    async () => {
+      const filename = process.env[variable],
+        wide = suffix === 'W',
+        bytes = new Uint8Array(await readFile(filename)),
+        startup = wide
+          ? new Uint8Array(await readFile(resolve(dirname(filename), 'config/startup.xml')))
+          : null,
+        source =
+          '$0011-0001$\r\nメニュー(Menu)\r\n$0011-0004$\r\n保存して終了\r\n$0011-0005$\r\n$empty$\r\n',
+        catalogue = wide ? new TextEncoder().encode(source) : encodeCP932(source),
+        engine = await NativeEngineProcess.open({
+          profile,
+          bytes,
+          bootstrapOwner: {},
+          configuration: new NativeConfiguration({
+            profile,
+            startup: startup && parseNativeXML(startup, 'utf-8'),
+            uiLanguage: 0x409,
+          }),
+          readFile: async (name) =>
+            name === (wide ? 'language_en.txt' : 'language.txt')
+              ? catalogue
+              : name === 'config/startup.xml'
+                ? startup
+                : null,
+        });
+      try {
+        if (wide) await loadNativeGameStartupLanguage(engine);
+        assert.equal(engine.refs.startupLanguage.loaded, true);
+        await initializeNativeStartupMenu(engine);
+        const p = engine.process,
+          owner = p.load(NATIVE_STARTUP_BLOCKS[profile] + 36),
+          tree = engine.kernel.windowMenus.menus,
+          top = tree.get(p.load(owner + 8)),
+          system = tree.get(top[0].submenu);
+        assert.equal(top[0].label, 'メニュー(Menu)');
+        assert.equal(top[1].label, '');
+        assert.equal(system.find(({ id }) => id === 40002).label, '保存して終了');
+        assert.equal(system.find(({ id }) => id === 119).label, 'タイトル画面に戻る(&T)');
+        assert.ok(system.some(({ type, label }) => type === 0x800 && !label));
+      } finally {
+        await engine.close();
       }
     },
   );

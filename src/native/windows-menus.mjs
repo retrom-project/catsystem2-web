@@ -1,14 +1,24 @@
 // SPDX-License-Identifier: MPL-2.0
 // USER32 standard RT_MENU templates and process-local menu handles.
 import { Binary } from '../binary.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 
 const FIRST_HANDLE = 0x5b000000;
 const MENU_MISSING = 1401;
+const ITEM_MISSING = 1456;
+const INVALID_PARAMETER = 87;
+const MIIM_STRING = 0x40;
+const ITEM_WORDS = [
+  [0x100, 8, 'type'],
+  [0x001, 12, 'state'],
+  [0x002, 16, 'id'],
+  [0x004, 20, 'submenu'],
+];
 const INVALID_DATA = 13;
 const MENU_POPUP = 0x10;
 const MENU_END = 0x80;
 const MENU_SEPARATOR = 0x800;
-const TYPE_FLAGS = 0x4b64;
+const TYPE_FLAGS = 0x6b64;
 const STATE_FLAGS = 0x100b;
 const unicode = new TextDecoder('utf-16le', { ignoreBOM: true });
 
@@ -50,8 +60,12 @@ export class NativeWindowsMenus {
     this.menus = new Map();
     this.nextHandle = FIRST_HANDLE;
     const register = (name, count, fn) => kernel.register('USER32.dll', name, { count, fn });
-    for (const suffix of ['A', 'W'])
+    for (const suffix of ['A', 'W']) {
+      const wide = suffix === 'W';
       register('LoadMenu' + suffix, 2, ([instance, name]) => this.load(instance, name, suffix));
+      register('GetMenuItemInfo' + suffix, 4, (args) => this.itemInfo(args, wide, false));
+      register('SetMenuItemInfo' + suffix, 4, (args) => this.itemInfo(args, wide, true));
+    }
     register('DestroyMenu', 1, ([handle]) => this.destroy(handle));
     register('GetMenuItemCount', 1, ([handle]) => {
       const menu = this.menus.get(handle);
@@ -98,6 +112,59 @@ export class NativeWindowsMenus {
     this.menus.delete(handle);
     for (const { submenu } of menu) if (this.menus.has(submenu)) this.destroy(submenu);
     return 1;
+  }
+  command(menu, id) {
+    for (const entry of menu) {
+      if ((entry.id ?? entry.submenu) === id) return entry;
+      const child = this.menus.get(entry.submenu);
+      if (child) {
+        const match = this.command(child, id);
+        if (match) return match;
+      }
+    }
+    return undefined;
+  }
+  itemInfo([handle, item, byPosition, at], wide, write) {
+    const p = this.kernel.process,
+      menu = this.menus.get(handle);
+    if (!menu) return this.error(MENU_MISSING);
+    if (!at || ![44, 48].includes(p.load(at))) return this.error(INVALID_PARAMETER);
+    const entry = byPosition ? menu[item] : this.command(menu, item);
+    if (!entry) return this.error(ITEM_MISSING);
+    const mask = p.load(at + 4),
+      supported = write ? MIIM_STRING : 0x147;
+    if (mask & ~supported)
+      throw new Error(`Unsupported native menu item information mask 0x${mask.toString(16)}`);
+    if (!write)
+      for (const [field, offset, key] of ITEM_WORDS)
+        if (mask & field) p.store(at + offset, entry[key] ?? entry.submenu);
+    if (mask & MIIM_STRING) {
+      const pointer = p.load(at + 36);
+      if (write) entry.label = pointer ? p.string(pointer, wide) : '';
+      else this.readLabel(entry, at, pointer, wide);
+    }
+    return 1;
+  }
+  readLabel(entry, at, pointer, wide) {
+    const p = this.kernel.process,
+      label = entry.type & (MENU_SEPARATOR | 0x104) ? '' : entry.label,
+      capacity = p.load(at + 40),
+      encoded = wide ? null : encodeCP932(label),
+      length = wide ? label.length : encoded.length;
+    let written = length;
+    if (pointer && capacity) {
+      written = Math.min(length, capacity - 1);
+      if (wide) this.kernel.writeString(pointer, label.slice(0, written), true);
+      else if (encoded.length < capacity) {
+        p.write(pointer, encoded);
+        p.write(pointer + encoded.length, Uint8Array.of(0));
+      } else {
+        // The ANSI API's short-buffer conversion can fill the supplied buffer.
+        // Its count still excludes the slot reserved for the terminator.
+        p.write(pointer, encoded.subarray(0, capacity));
+      }
+    }
+    p.store(at + 40, written);
   }
   snapshot() {
     return structuredClone({ menus: this.menus, nextHandle: this.nextHandle });

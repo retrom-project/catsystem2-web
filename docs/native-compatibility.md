@@ -82,7 +82,13 @@ The virtual USER32 reads each embedded standard RT_MENU tree, including
 submenus, command IDs, separators and UTF-16 labels. The original destructor
 frees the owner and recursively releases the handles. Both profiles check
 the normal and author resources, reload and fresh-process ownership.
-Menu localization and attachment to the browser window are separate steps.
+The original localization walkers (SDK `47EE90`, game `5AC260`) visit
+each menu recursively through
+[MENUITEMINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuiteminfow).
+They use the original language tree to select a translation, an intentionally
+empty label, or the resource's fallback. Tests cover both code pages and
+nested labels. Attaching the resulting menu to the browser window remains
+a separate step.
 
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
