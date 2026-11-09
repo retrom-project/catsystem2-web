@@ -728,8 +728,16 @@ export class PE32Process {
       suspended.hostSuspended = true;
       throw suspended;
     }
-    if (this.cpu.reg_read_i32(this.uc.X86_REG_EIP) >>> 0 !== this.sentinel)
-      throw new Error('PE32 execution instruction budget exhausted');
+    if (this.cpu.reg_read_i32(this.uc.X86_REG_EIP) >>> 0 !== this.sentinel) {
+      const error = new Error('PE32 execution instruction budget exhausted');
+      error.nativeFault = {
+        ...this.faultState(),
+        entry: address >>> 0,
+        resumed: resume,
+        instructionLimit: this.budget,
+      };
+      throw error;
+    }
     return this.cpu.reg_read_i32(this.uc.X86_REG_EAX) >>> 0;
   }
   faultState() {

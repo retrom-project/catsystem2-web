@@ -17,7 +17,14 @@ let engine,
 const fail = (error) => {
   $('error').hidden = false;
   $('error').textContent = error.message;
-  $('diagnostics').textContent = `${error.stack}\n${JSON.stringify(engine?.status(), null, 2)}`;
+  $('diagnostics').textContent = `${error.stack}\n${JSON.stringify(
+    {
+      ...engine?.status(),
+      failure: { details: error.details, kcs: error.kcs, nativeFault: error.nativeFault },
+    },
+    null,
+    2,
+  )}`;
   console.error(error);
 };
 const enqueue = (action) =>

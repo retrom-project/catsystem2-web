@@ -21,6 +21,28 @@ function setWords(registers, words) {
   for (const [name, value] of Object.entries(words)) registers[name] = Uint8Array.from(word(value));
 }
 
+test('an exhausted guest call retains its stopped PC and stack for diagnosis', async () => {
+  const p = new PE32Process(await loadUnicorn(), { heapSize: 0x10000, budget: 24 }),
+    code = p.allocate(16, true);
+  // mov eax, 0x1234; jmp $
+  p.write(code, [0xb8, ...word(0x1234), 0xeb, 0xfe]);
+  try {
+    await assert.rejects(p.callAsync(code, [0x5678]), (error) => {
+      assert.equal(error.message, 'PE32 execution instruction budget exhausted');
+      const fault = error.nativeFault;
+      assert.equal(fault.entry, code);
+      assert.equal(fault.pc, code + 5);
+      assert.equal(fault.instructionLimit, 24);
+      assert.equal(fault.registers.EAX, 0x1234);
+      assert.equal(fault.stackAddress, fault.registers.ESP);
+      assert.deepEqual(fault.stack.slice(0, 2), [p.sentinel, 0x5678]);
+      return true;
+    });
+  } finally {
+    p.close();
+  }
+});
+
 test('host budget accounting is read-only when idle, invalid, stopping or insufficient', async () => {
   const p = await smallProcess(),
     code = p.allocate(32, true),
