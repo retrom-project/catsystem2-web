@@ -5,9 +5,13 @@ to green after 1.4 seconds. The lower region remains blue. The audio is
 a 440 Hz sine wave. The AVI supplies the native reader. The VP9/Opus WebM serves as its browser sidecar and as an independent
 WebM source with no Vorbis pin. The VP8/Vorbis WebM supplies a native
 source with both video and audio pins.
+The OGV supplies Theora and Vorbis. Its prepared MP4 has sparse video
+frames and exercises the detached decoder clock after a seek.
 
 Reproduction commands
 
 ffmpeg -nostdin -hide_banner -loglevel error -filter_threads 1 -f lavfi -i 'color=c=red:s=32x24:r=20:d=2.8' -f lavfi -i 'sine=frequency=440:sample_rate=48000:duration=2.8' -vf "drawbox=x=0:y=12:w=32:h=12:c=blue:t=fill,drawbox=x=0:y=0:w=32:h=12:c=lime:t=fill:enable='gte(t,1.4)'" -c:v mjpeg -q:v 3 -pix_fmt yuvj420p -threads 1 -c:a libmp3lame -b:a 32k -shortest -y tests/fixtures/native-plane-movie.avi
 ffmpeg -nostdin -hide_banner -loglevel error -i tests/fixtures/native-plane-movie.avi -c:v libvpx-vp9 -lossless 1 -pix_fmt yuv420p -threads 1 -c:a libopus -b:a 32k -y tests/fixtures/native-plane-movie.webm
 ffmpeg -nostdin -hide_banner -loglevel error -i tests/fixtures/native-plane-movie.avi -c:v libvpx -b:v 160k -pix_fmt yuv420p -threads 1 -c:a libvorbis -q:a 3 -y tests/fixtures/native-plane-movie-vp8.webm
+ffmpeg -nostdin -hide_banner -loglevel error -i tests/fixtures/native-plane-movie.avi -c:v libtheora -q:v 8 -pix_fmt yuv420p -threads 1 -c:a libvorbis -q:a 3 -y tests/fixtures/native-plane-movie.ogv
+ffmpeg -nostdin -hide_banner -loglevel error -i pipe:0 -map 0:v:0 -map '0:a?' -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart -y tests/fixtures/native-plane-movie-ogv.mp4 < tests/fixtures/native-plane-movie.ogv

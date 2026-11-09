@@ -235,6 +235,9 @@ Plane's geometry and visibility. The browser's end event wakes the
 original completion worker, which updates the running word and repeat
 count. A restored active movie retains its presented texture and
 opens its decoder at the saved position on the first active update.
+Texture sampling follows the detached media element's 100-nanosecond
+playback position. A sparse H.264 stream can advance after seeking
+while the browser's compositor frame count remains fixed.
 [DirectShow playback states](https://learn.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-run)
 [DirectShow completion](https://learn.microsoft.com/en-us/windows/win32/api/control/nf-control-imediaevent-waitforcompletion)
 

@@ -77,7 +77,8 @@ export class BrowserNativeMovie {
     return { width, height, rgba: ctx.getImageData(0, 0, width, height).data };
   }
   frameStamp() {
-    return this.video.getVideoPlaybackQuality?.().totalVideoFrames ?? this.position();
+    // A detached texture movie may advance while its compositor count stays fixed.
+    return this.position();
   }
   volume(decibels) {
     this.video.volume = Math.max(0, Math.min(1, 10 ** (decibels / 2000)));
