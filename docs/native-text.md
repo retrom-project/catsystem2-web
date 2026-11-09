@@ -58,6 +58,11 @@ the same configuration rules used by KCS; it does not build a second map.
 Authored tests include Japanese, musical symbols, a literal nested expression,
 and `A` to `AA` replacement to detect an accidental second pass.
 
+The original object handlers scan the full command buffer for their requested
+tail. For example, `layout fontind 1 Font Name.ttf` reads the index separately
+and gives FreeType `Font Name.ttf`. STRING8 places its UTF-8 text in that same
+buffer so the native tail reader and subsequent conversion see the original bytes.
+
 Native font resource streams use the shared [resource search](native-resource-search.md)
 and original MemoryFile operations. This permits the executable's own FreeType
 path to read a mounted font file, independently of the browser GDI substitution.

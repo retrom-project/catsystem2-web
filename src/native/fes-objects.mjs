@@ -166,10 +166,6 @@ export class NativeFESObjectRuntime {
       p.zero(out + bytes.length, 1);
       return 1;
     });
-    patch(0x766590, 0x602210, 'FES object remaining parameters', 2, ([, index]) => {
-      const c = this.requireContext();
-      return c.tokens?.[index] === undefined ? 0 : c.arguments;
-    });
     patch(
       0x755520,
       0x5f3a80,
@@ -814,29 +810,26 @@ export class NativeFESObjectRuntime {
       p = this.process,
       tokens = [object.baseName, verb, ...args],
       encodeText = ['str', 'apend'].includes(verb),
-      content = encodeText
-        ? this.encode(object, args.join(' '))
-        : encodeCP932(args.slice(verb === 'layout' ? 1 : 0).join(' '));
-    if (content.length >= 4096)
-      throw new RangeError('Native FES object command exceeds its source buffer');
-    const command = encodeCP932(tokens.join(' ') + '\0'),
+      prefix = encodeCP932(`${object.baseName} ${verb}${args.length ? ' ' : ''}`),
+      content = encodeText ? this.encode(object, args.join(' ')) : encodeCP932(args.join(' ')),
+      command = new Uint8Array(prefix.length + content.length + 1),
       objectName = encodeCP932(object.baseName + '\0');
+    // The original tail reader can start after any parameter. STRING8
+    // supplies its text bytes in the same command buffer it scans.
+    command.set(prefix);
+    command.set(content, prefix.length);
     if (command.length > 4096 || objectName.length > 128) {
       throw new RangeError('Native FES command or object name exceeds its source record');
     }
     const source = p.allocate(command.length, true),
-      name = p.allocate(objectName.length, true),
-      tail = p.allocate(content.length + 1, true);
+      name = p.allocate(objectName.length, true);
     p.write(source, command);
     p.write(name, objectName);
-    p.write(tail, content);
     try {
-      return await this.withContext(
-        { ...context, instance, object, pointer, tokens, arguments: tail },
-        () => this.call(fn, [this.interpreter, source, name, index]),
+      return await this.withContext({ ...context, instance, object, pointer, tokens }, () =>
+        this.call(fn, [this.interpreter, source, name, index]),
       );
     } finally {
-      p.free(tail);
       p.free(name);
       p.free(source);
     }

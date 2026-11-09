@@ -780,7 +780,7 @@ for (const [profile, variable, types] of [
       const bytes = new Uint8Array(await readFile(process.env[variable]));
       for (const type of types)
         for (const referenced of [false, true]) {
-          const source = `#DEFINE\n${type} str\n${referenced ? 'IMAGE' : 'VIEW'} font\n#OBJECT ${referenced ? 'SIZE2' : 'SIZE'} POS PRI DISP\nstr ${referenced ? 'area:7' : '96,64'} 0,0 60000 1\n#OBJECT FILE IDN\nfont glyphs -1\n#START\nstr layout frame 2\nstr layout font Authored\nstr userfontobj font\nstr userfont 0x8740 1\n${type === 'NVSTRING' ? 'str insert\nstr apend' : 'str str'} A\\nB\nstr draw\nnext WAIT\n#WAIT\n#QUERY\n${type === 'NVSTRING' ? 'str endpos 8 9' : 'str linecnt 7'}\nstr isdraw\n`,
+          const source = `#DEFINE\n${type} str\n${referenced ? 'IMAGE' : 'VIEW'} font\n#OBJECT ${referenced ? 'SIZE2' : 'SIZE'} POS PRI DISP\nstr ${referenced ? 'area:7' : '96,64'} 0,0 60000 1\n#OBJECT FILE IDN\nfont glyphs -1\n#START\nstr layout frame 2\nstr layout ${type === 'NVSTRING' ? 'font Authored' : 'fontind 0 Authored Face'}\nstr userfontobj font\nstr userfont 0x8740 1\n${type === 'NVSTRING' ? 'str insert\nstr apend' : 'str str'} A\\nB\nstr draw\nnext WAIT\n#WAIT\n#QUERY\n${type === 'NVSTRING' ? 'str endpos 8 9' : 'str linecnt 7'}\nstr isdraw\n`,
             first = await fixture(profile, bytes, source);
           let second;
           try {
@@ -792,6 +792,14 @@ for (const [profile, variable, types] of [
             const nativeTextTask = first.graphics.get(
               first.player.root.byKey.get('str').nativeTaskID,
             );
+            if (type !== 'NVSTRING') {
+              const object = first.player.root.byKey.get('str'),
+                name = first.engine.process.string(
+                  object.nativeObjectPointer + 892,
+                  !profile.startsWith('sdk-'),
+                );
+              assert.equal(name, 'Authored Face');
+            }
             if (type === 'STRING' && !referenced) {
               const buffers = await first.getNativeFeature('data-buffers'),
                 handle = await buffers.load('glyphs', first.owner),
