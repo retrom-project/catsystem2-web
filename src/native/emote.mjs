@@ -301,7 +301,7 @@ export class NativeM2 {
     if (this.closed) return;
     const errors = [];
     try {
-      if (this.initialized) await this.engine.call(0x57cdf0);
+      if (this.initialized && this.process.load(0xb9bd94)) await this.engine.call(0x57cdf0);
     } catch (error) {
       errors.push(error);
     } finally {

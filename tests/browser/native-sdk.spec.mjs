@@ -61,6 +61,9 @@ async function startSDK(page) {
     acceleratorCount: 4,
     applicationHook: true,
     displayOwner: true,
+    graphicsOwner: true,
+    graphicsWorker: true,
+    graphicsTasks: true,
     soundBankCount: 32,
     soundWorker: true,
   });
@@ -73,7 +76,12 @@ async function restoreFresh(page) {
         old = engine.world;
       await engine.restore(await engine.snapshot());
       await engine.render();
-      return engine.world !== old && engine.world.nativeEngine.refs.nativeOwner;
+      return (
+        engine.world !== old &&
+        engine.world.nativeEngine.refs.nativeOwner &&
+        old.nativeEngine.closed &&
+        !old.nativeEngine.refs.applicationGraphics
+      );
     }),
   ).toBe(true);
 }

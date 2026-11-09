@@ -37,6 +37,9 @@ async function startGame(page) {
     acceleratorCount: 11,
     applicationHook: true,
     displayOwner: true,
+    graphicsOwner: true,
+    graphicsWorker: true,
+    graphicsTasks: true,
     soundBankCount: 64,
     soundWorker: true,
   });
@@ -75,9 +78,18 @@ test('the original game accelerators select the main and secondary languages aft
       const e = window.catSystem2,
         previous = e.world;
       await e.restore(await e.snapshot());
-      return e.world !== previous;
+      return (
+        e.world !== previous &&
+        previous.nativeEngine.closed &&
+        !previous.nativeEngine.refs.applicationGraphics
+      );
     }),
   ).toBe(true);
+  expect(await startupWindow(page)).toMatchObject({
+    graphicsOwner: true,
+    graphicsWorker: true,
+    graphicsTasks: true,
+  });
   expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
   await page.keyboard.press('Shift+KeyN');
   await step(page, 2);

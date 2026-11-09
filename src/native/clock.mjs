@@ -70,7 +70,22 @@ export class NativeSystemClock {
       this.elapsed = add(this.elapsed, delta);
       this.lastExternal = current;
     }
-    return this.elapsed;
+    if (!this.waiting) return this.elapsed;
+    const minimum = add(this.waiting.elapsed, fromNumber(performance.now() - this.waiting.started));
+    return subtract(minimum, this.elapsed).numerator > 0n ? minimum : this.elapsed;
+  }
+  async whileWaiting(operation) {
+    if (this.waiting) throw new Error('Native clock already follows a blocking wait');
+    this.waiting = { elapsed: this.sample(), started: performance.now() };
+    try {
+      return await operation();
+    } finally {
+      try {
+        this.elapsed = this.sample();
+      } finally {
+        delete this.waiting;
+      }
+    }
   }
   advance(fps) {
     if (this.external) return this.now();

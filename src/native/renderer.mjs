@@ -152,25 +152,35 @@ export class NativeRenderer {
     // once, as part of the original view constructor below.
     if (!this.engine.profile.startsWith('sdk-')) await world.getNativeFeature('m2');
     await this.initializeCapabilities();
-    const previous = { renderer: this.platform.refs.renderer, manager: this.platform.refs.manager };
     p.store(layout.coreGlobal, 0);
     this.refs.viewStarted = true;
     await this.call(layout.viewConstruct, [world.window?.handle ?? 1, 1, 0], this.view);
-    const view3D = p.load(this.view + 4),
-      manager = p.load(this.view + 8),
+    return this.bindView(this.view);
+  }
+  adoptApplicationView(view) {
+    if (this.refs.viewStarted || this.initialized || this.initializing)
+      throw new Error('Original graphics startup requires a free renderer');
+    return this.bindView(view);
+  }
+  bindView(view) {
+    const { process: p, layout, platform } = this,
+      view3D = p.load(view + 4),
+      manager = p.load(view + 8),
       renderer = p.load(layout.coreGlobal);
     if (!view3D || !manager || !renderer || p.load(renderer + 308) !== this.d3d.device)
       throw new Error('Original native view/renderer initialization failed');
     if (p.load(view3D + 4) !== manager)
       throw new Error('Original native view and graph manager disagree');
-    Object.assign(this.platform.refs, { view3D, manager, renderer });
-    for (const pointer of Object.values(previous)) {
-      if (!this.platform.owned.has(pointer) || !p.free(pointer))
+    const temporary = [platform.refs.renderer, platform.refs.manager];
+    if (view !== this.view) temporary.push(this.view);
+    for (const pointer of temporary) {
+      if (!platform.owned.has(pointer) || !p.free(pointer))
         throw new Error('Temporary graphics records have no single owner');
-      this.platform.owned.delete(pointer);
+      platform.owned.delete(pointer);
     }
+    Object.assign(platform.refs, { view, view3D, manager, renderer });
     this.refs.initialized = true;
-    this.platform.sync();
+    platform.sync();
     return this;
   }
   snapshot() {

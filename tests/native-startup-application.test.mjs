@@ -7,7 +7,7 @@ import { releaseNativeConfigurationEvent } from '../src/native/engine-configurat
 import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import {
-  initializeNativeApplicationAudio,
+  initializeNativeApplicationServices,
   initializeNativeApplicationWindow,
   NATIVE_APPLICATION_SERVICES_MESSAGE,
   releaseNativeApplicationWindow,
@@ -72,7 +72,7 @@ for (const [profile, variable] of [
               assert.equal(process.allocations.get(process.load(block + 8)), 36);
               messages.push(packet.message);
               if (packet.message === NATIVE_APPLICATION_SERVICES_MESSAGE)
-                await initializeNativeApplicationAudio(engine);
+                await initializeNativeApplicationServices(engine);
             },
             stopping: () => false,
           }),

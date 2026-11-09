@@ -43,6 +43,7 @@ import { releaseNativeWindowOwner } from './engine-startup-window.mjs';
 import { releaseNativeConfigurationEvent } from './engine-configuration-event.mjs';
 import {
   installNativeApplicationWindowBoundary,
+  releaseNativeApplicationGraphics,
   releaseNativeApplicationWindow,
 } from './engine-startup-application.mjs';
 
@@ -1206,6 +1207,11 @@ export class NativeEngineProcess {
     if (this.pendingCalls) await this.queue;
     const errors = [];
     try {
+      try {
+        await releaseNativeApplicationGraphics(this);
+      } catch (error) {
+        errors.push(error);
+      }
       for (const feature of [...this.features.values()].reverse())
         try {
           await feature.close?.();

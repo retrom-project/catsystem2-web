@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // The opening application callback reads the native SOUNDGROUP/MASTER/PART tree.
-import { initializeNativeApplicationAudio } from './engine-startup-application.mjs';
+import { initializeNativeApplicationServices } from './engine-startup-application.mjs';
 
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': {
@@ -125,7 +125,10 @@ export async function readNativeStartupSoundConfiguration(
     throw new Error('Original sound configuration requires an idle startup owner');
   let parsed = false,
     preferencesParsed = false;
-  const detach = [];
+  const detach = [],
+    finishSoundRead = () => {
+      if (kernel.fileProviders.delete(provider)) kernel.readFile = readFile;
+    };
   try {
     detach.push(
       p.beforeInstruction(layout.parsed, 'original sound XML accepted', () => {
@@ -144,7 +147,7 @@ export async function readNativeStartupSoundConfiguration(
     // The mounted XML and the user's same-named preferences are different files.
     kernel.readFile = (name) => (game.readLoose ? game.readLoose(name) : game.read(name));
     const loaded = startupWindow
-      ? await initializeNativeApplicationAudio(engine)
+      ? await initializeNativeApplicationServices(engine, { graphics: true, finishSoundRead })
       : await engine.call(layout.load, [], refs.owner);
     Object.assign(sound, {
       filename: file,
@@ -157,8 +160,7 @@ export async function readNativeStartupSoundConfiguration(
     if (loaded && !parsed) diagnostic?.({ type: 'sound-configuration-invalid', file });
     if (parsed && saved && !preferencesParsed) diagnostic?.({ type: 'preferences-invalid', file });
   } finally {
-    kernel.readFile = readFile;
-    kernel.fileProviders.delete(provider);
+    finishSoundRead();
     for (const unhook of detach.reverse()) unhook();
   }
 }

@@ -251,10 +251,15 @@ selects the configured or desktop dimensions and posts `0x40C`. The registered
 `0x40C` callback reads the original sound configuration and constructs
 `CsSound` with the live Settings flags. Its original CRT thread waits on the
 native device events. The SDK initializes 32 channel owners and the game
-initializes 64. The callback returns through its original epilogue after
-audio setup, and the World continues with browser graphics and the Script task.
-On close, the `CsSound` destructor signals and joins the worker, closes its
-handles and releases the channel owners.
+initializes 64. The callback starts the native graphics thread, creates
+its `kcView` and `BASE TASK`, then attaches the window input device to the view.
+The World binds that Top and its original input and sound children to the
+browser task graph, and shares the thread's renderer with the browser stage.
+The worker retains its startup pause while the World drives frame rendering
+through the adopted view. On close the original graphics destructor joins
+the worker and releases the Top and the view before the display and DLL
+services close. The `CsSound` destructor signals and joins its own worker,
+closes its handles and releases the channel owners.
 Tests restore the queued `0x40B` in a fresh process and compare both display
 dimension branches, message order and destructor ownership.
 
