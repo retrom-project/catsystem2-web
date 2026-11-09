@@ -124,3 +124,37 @@ the resulting asymmetric pixels, alpha and a second frame after fresh
 restore. These tests supply surfaces at the presenter boundary. The
 DirectShow filter graph and decoder connection for the Plane message still
 need separate integration.
+
+## VMR9 allocator negotiation
+
+The shared `vmr9` feature implements the allocator's Notify interface. It
+queries the original allocator for its presenter and retains both native
+interfaces. The original `AdviseNotify` supplies the renderer's device and
+monitor. `AllocateSurfaceHelper` creates the requested texture, offscreen
+or render-target surfaces on that device. The allocation honors the
+requested and minimum buffer counts. Failure to meet the minimum releases
+all surfaces allocated for that request.
+[AllocateSurfaceHelper contract](<https://learn.microsoft.com/en-us/previous-versions/ms787121(v=vs.85)>)
+
+The original `InitializeDevice` still computes the power-of-two surface
+dimensions, display rectangle and fallback flags. The browser receives a
+reference to each allocated surface through the original `GetSurface`.
+It calls the original presenter for start, frame delivery and stop. Device
+renegotiation and disconnection run the original termination callback and
+release the acquired references. Checkpoints retain the existing guest
+COM identities and shared device pixels, including while presenting.
+
+The pinned Wine 8 probe covers 20 allocator requests, including texture
+and plain-surface pools, count validation, conflicting flags and display
+format negotiation. Pixel format availability follows the shared D3D
+device. For example, the browser reports its unsupported-format HRESULT
+for YUY2. DXVA allocation and an external D3D device or monitor remain
+unsupported. Events route to the containing graph's registered sink.
+[VMR9 interface definitions](https://github.com/wine-mirror/wine/blob/master/include/vmr9.idl)
+
+Both frozen profiles run the original allocator and presenter in a
+mounted Chromium World. An asymmetric 3×5 frame reaches the original 4×8
+texture with its padding intact. The checks cover three buffers,
+continuation after fresh restore, device renegotiation, the original
+offscreen fallback, and release of guest allocations and COM references.
+The frames in these tests are supplied directly at the decoder surface.

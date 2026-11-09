@@ -2,7 +2,7 @@
 import base from './playwright.config.mjs';
 export default {
   ...base,
-  testMatch: ['emote-native.spec.mjs', 'native-vmr-surface.spec.mjs'],
+  testMatch: ['emote-native.spec.mjs', 'native-vmr-*.spec.mjs'],
   outputDir: '.local/playwright-emote',
   use: {
     ...base.use,
