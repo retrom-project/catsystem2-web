@@ -71,6 +71,59 @@ function fixture(profile, extraFiles = {}) {
 }
 
 for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74']) {
+  test(`${profile} FES save entries export and restore the selected private bank`, async () => {
+    const files = {
+        'saved.fes': new TextEncoder().encode('#START\nnext WAIT\n#WAIT\n#_LOAD_\nnext WAIT\n'),
+      },
+      world = fixture(profile, files),
+      invoke = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main),
+      ok = { control: 1, value: 1 },
+      miss = { control: 1, value: 0 };
+    let fresh;
+    try {
+      await world.initialize('main.kcs');
+      const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+        nativeID = world.nativeTaskID(id),
+        file = (await invoke(world, 0xee, [0])).value;
+      assert.deepEqual(await invoke(world, 0x289, [0, 22, nativeID]), miss);
+      assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), miss);
+      world.main.machine.writeString('saved', 64);
+      await invoke(world, 0x1bf, [nativeID, 64]);
+      const fes = world.objects.objects.get(id),
+        key = fes.context.fesVariableContextKey,
+        bank = world.runtime.variableBank(world.main);
+      bank.registerContext(world.main.id);
+      bank.selectContext(world.main.id);
+      const selected = bank.context(world.main.id).words;
+      selected[0] = 0xfedcba98;
+      selected[511] = 0x12345678;
+      bank.context(key).words[0] = 31;
+      assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), ok);
+      const store = world.runtime.handles.get(file, 'global-file'),
+        bytes = store.read(22);
+      assert.equal(bytes.length, 2048);
+      assert.deepEqual(bytes, new Uint8Array(selected.buffer));
+      store.write(23, Uint8Array.of(0x12, 0x34, 0x56));
+      selected.fill(0);
+      fresh = fixture(profile, files);
+      await fresh.restore(structuredClone(world.snapshot()));
+      const restored = fresh.objects.objects.get(id).implementation,
+        restoredBank = fresh.runtime.variableBank(fresh.main);
+      assert.deepEqual(await invoke(fresh, 0x28a, [file, 24, nativeID]), miss);
+      assert.deepEqual(await invoke(fresh, 0x28a, [file, 22, nativeID]), ok);
+      assert.equal(restoredBank.selectedContext, fresh.main.id);
+      assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfedcba98);
+      assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
+      assert.equal(restoredBank.context(key).words[0], 31);
+      assert.equal(restored.player.root.label, '_LOAD_');
+      assert.deepEqual(await invoke(fresh, 0x28a, [file, 23, nativeID]), ok);
+      assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfe563412);
+      assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
   test(`${profile} execfes allocates an independent private bank context for each child interpreter`, async () => {
     const world = fixture(profile, {
       'parent.fes': new TextEncoder().encode('#START\n\\0=19\nexecfes child 3\nnext WAIT\n#WAIT\n'),

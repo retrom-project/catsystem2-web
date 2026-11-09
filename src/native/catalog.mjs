@@ -2661,6 +2661,8 @@ const hostDescriptions = [
   [0x285, 'fes.setLocal', ['handle fes', 'u32 index', 'word value'], 'void'],
   [0x286, 'fes.getLocal', ['handle fes', 'u32 index'], 'word'],
   [0x287, 'fes.sleep', ['handle fes', 'word value'], 'void'],
+  [0x289, 'fes.saveLocalBank', ['handle globalFile', 'word entry', 'nativeID fes'], 'bool'],
+  [0x28a, 'fes.loadLocalBank', ['handle globalFile', 'word entry', 'nativeID fes'], 'bool'],
   [0x277, 'fes.createObject', ['handle fes', 'u32 type', 'format* name', 'u32 count'], 'void'],
   [0x278, 'fes.initializeObjects', ['handle fes', 'format* columns', 'format* row'], 'void'],
   [0x298, 'fes.setNamedLocal', ['handle fes', 'format* name', 'word value'], 'void'],
@@ -3342,8 +3344,8 @@ for (const [id, name, parameters, result] of extendedDescriptions) {
       0x179, 0x17a, 0x22e, 0x234, 0x2c1,
     ].includes(id) ||
     [
-      0x276, 0x277, 0x278, 0x285, 0x286, 0x287, 0x298, 0x299, 0x29a, 0x29b, 0x29c, 0x2e2, 0x372,
-      0x373,
+      0x276, 0x277, 0x278, 0x285, 0x286, 0x287, 0x289, 0x28a, 0x298, 0x299, 0x29a, 0x29b, 0x29c,
+      0x2e2, 0x372, 0x373,
     ].includes(id) ||
     (id >= 0xcc && id <= 0xcf) ||
     (id >= 0x263 && id <= 0x26d) ||

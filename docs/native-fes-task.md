@@ -47,6 +47,15 @@ receiver ID (game 35, SDK 33). Sound disposal routes to that saved ID even when
 the Top has already released its sound task; queries still require a written
 output word.
 
+KCS `289` asks the FES task for a transfer size, then sends the same message
+with a buffer and stores the count and bytes actually returned in a CSS entry.
+`28A` sends the first stored entry with its exact byte count. A missing entry
+returns zero; a present entry sends the import message even when it is empty.
+The FES task copies only the supplied prefix of the selected private bank
+and selects `_LOAD_` after a nonempty transfer when that label exists. Entries
+are read from the logical save records; unused native heap capacity can retain
+bytes from a previous allocation and does not belong to the CSS payload.
+
 The original script task parent-attachment hook determines string-bank
 inheritance. A FES-owned KCS task remains a real child task; FES text does not
 substitute a hardcoded configuration, gallery or story handler.
@@ -73,11 +82,12 @@ types and ID fields, and absence of frame-driver calls. Production tests cover
 the load-before-first-frame state, an image window with a header filename and
 `START` sizing, and repeated rendering without additional driver or image loads.
 
-`scripts/verify-native-fes-task.mjs` executes all 22 implemented FES main
-wrappers against each frozen PE: 352 authored cases per profile. It compares
+`scripts/verify-native-fes-task.mjs` executes 24 FES main
+wrappers against each frozen PE: 362 authored cases per profile. It compares
 control codes, output words and complete task transport packets. The probe
 supplies only formatting, category resolution and task transport boundaries;
-it is not a differential test of the complete FES interpreter. It confirms the
+for CSS transfers it also compares the native global-file payload byte for
+byte. It confirms the
 native `0x278` quirk: both profiles expand `argv[1]` twice and do not read the
 row argument. The independent SDK context-name field is +452, versus game
 +712.

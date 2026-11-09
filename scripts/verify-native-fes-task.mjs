@@ -7,6 +7,8 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { nativeFES, NATIVE_FES_IDS } from '../src/native/fes.mjs';
 import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { NativeHandles } from '../src/native/handles.mjs';
+import { NativeGlobalFile } from '../src/native/persistence.mjs';
 
 const counts = new Map([
   [0x1bf, 2],
@@ -49,10 +51,14 @@ for (const [flag, profile] of [
       caller = p.allocate(1024, true),
       vtable = p.allocate(32, true),
       out = p.allocate(4, true);
+    const handles = new NativeHandles(),
+      table = NATIVE_PROFILES[profile].tables.main.va,
+      localBank = Uint8Array.from({ length: 2048 }, (_, i) => Math.imul(i, 0x6792) >>> 4);
     let traces = [],
       id,
       args,
-      variant;
+      variant,
+      transfer;
     const string = (address, payload) => (payload ? payload.string(address) : p.string(address)),
       load = (address, payload) => (payload ? payload.load(address) : p.load(address)),
       normalize = (sender, target, message, w, l, payload) => {
@@ -64,11 +70,27 @@ for (const [flag, profile] of [
         if (message === 351) l = 'word-output';
         return { sender, target, message, w, l };
       };
+    function transportBank(sender, target, message, size, address, memory) {
+      if (message === 344) {
+        traces.push({ sender, target, message, size, bytes: memory.read(address, size) });
+        return 0;
+      }
+      traces.push({ sender, target, message, size, buffer: Boolean(address) });
+      if (!address) return transfer.capacity;
+      memory.write(address, localBank.subarray(0, transfer.written));
+      return transfer.written;
+    }
     const transport = p.trap(
       'authored FES wrapper transport',
       7,
-      ([sender, target, message, w, l, , result]) => {
+      ([sender, target, message, w, l, flags, result]) => {
         const canonical = sdk && message >= 326 ? message + 5 : message;
+        if (transfer) {
+          assert.equal(flags, 0);
+          const value = transportBank(sender, target, canonical, w, l, p);
+          if (result) p.store(result, value);
+          return 1;
+        }
         traces.push(
           normalize(sender, target, canonical, w, l, {
             string: (a) => p.string(a),
@@ -125,14 +147,19 @@ for (const [flag, profile] of [
       world = {
         objects: { objects: records },
         resolveTaskID: (x) => x,
-        runtime: { services: { format: (offset) => formatted(offset) } },
-        sendNativeEngine: (_target, _sender, message, w = 0, l = 0, context = {}) => {
+        runtime: { handles, services: { format: (offset) => formatted(offset) } },
+        sendNativeEngine: (target, sender, message, w = 0, l = 0, context = {}) => {
+          if (transfer)
+            return transportBank(sender, target, message, w, l, {
+              read: (at, size) => context.payload.bytes(at, size),
+              write: (at, bytes) => context.payload.bytes(at, bytes.length).set(bytes),
+            });
           traces.push(normalize(7, args[0], message, w, l, context.payload));
           if (message === 351) context.payload.store(l, 0x12345678);
           return 0x12345678;
         },
       };
-    for (id of NATIVE_FES_IDS)
+    for (id of NATIVE_FES_IDS.filter((id) => counts.has(id)))
       for (variant = 0; variant < 16; variant++) {
         args = Array.from({ length: counts.get(id) }, (_, i) => (i ? 64 + i * 64 : variant % 4));
         if (id === 0x1c6) args = [64];
@@ -148,10 +175,7 @@ for (const [flag, profile] of [
         p.store(out, 0xcccccccc);
         p.zero(vm + 64, 260);
         traces = [];
-        const control = await engine.call(
-            p.load(NATIVE_PROFILES[profile].tables.main.va + id * 4),
-            [0, caller, argv, out],
-          ),
+        const control = await engine.call(p.load(table + id * 4), [0, caller, argv, out]),
           expected = {
             control,
             value: control === 1 ? p.load(out) : null,
@@ -176,7 +200,68 @@ for (const [flag, profile] of [
         );
         total++;
       }
-    console.log(`${profile}: ${NATIVE_FES_IDS.length * 16} original FES wrapper cases passed`);
+    const scratch = p.allocate(localBank.length, true),
+      tag = 0x28a00001,
+      guest = (id, args) => {
+        args.forEach((word, i) => p.store(argv + 4 * i, word));
+        p.store(out, 0xcccccccc);
+        return engine.call(p.load(table + id * 4), [0, caller, argv, out]);
+      },
+      transfers = [
+        { id: 0x289, absent: true },
+        { id: 0x289, capacity: 0 },
+        { id: 0x289, capacity: 2048, written: 2048 },
+        { id: 0x289, capacity: 2048, written: 7 },
+        { id: 0x289, capacity: 2048, written: 0 },
+        { id: 0x28a, absent: true },
+        { id: 0x28a },
+        { id: 0x28a, length: 0 },
+        { id: 0x28a, length: 3 },
+        { id: 0x28a, length: 2048 },
+      ];
+    p.write(scratch, localBank);
+    for (transfer of transfers) {
+      assert.equal(await guest(0xee, [0]), 1);
+      const guestFile = p.load(out),
+        descriptor = p.load(guestFile),
+        file = new NativeGlobalFile(),
+        handle = handles.add('global-file', file);
+      try {
+        // The original lookup scans allocated capacity, including uninitialized
+        // bytes left by a previous allocation. Author a clean save buffer.
+        p.zero(p.load(descriptor), p.load(descriptor + 4));
+        if (transfer.length !== undefined) {
+          await engine.call(sdk ? 0x624220 : 0x78c160, [tag, scratch, transfer.length], guestFile);
+          file.write(tag, localBank.subarray(0, transfer.length));
+        }
+        traces = [];
+        const control = await guest(transfer.id, [transfer.absent ? 0 : guestFile, tag, 19]),
+          expected = { control, value: p.load(out) },
+          expectedTraces = traces;
+        traces = [];
+        assert.deepEqual(
+          await nativeFES(
+            transfer.id,
+            [transfer.absent ? 0 : handle, tag, 19],
+            memory,
+            task,
+            world,
+          ),
+          expected,
+          `${profile}: ${JSON.stringify(transfer)}`,
+        );
+        assert.deepEqual(traces, expectedTraces);
+        assert.deepEqual(p.read(p.load(descriptor), p.load(descriptor + 8)), file.payload());
+        total++;
+      } finally {
+        await guest(0xf6, [guestFile]);
+        handles.release(handle, 'global-file');
+      }
+    }
+    p.free(scratch);
+    console.log(
+      `${profile}: ${counts.size * 16 + transfers.length} original FES wrapper cases passed`,
+    );
   } finally {
     await engine.close();
   }

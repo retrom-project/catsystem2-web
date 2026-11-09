@@ -5,7 +5,7 @@ import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 
 export const NATIVE_FES_IDS = Object.freeze([
   0x1bf, 0x1c0, 0x1c1, 0x1c2, 0x1c3, 0x1c4, 0x1c5, 0x1c6, 0x276, 0x277, 0x278, 0x285, 0x286, 0x287,
-  0x298, 0x299, 0x29a, 0x29b, 0x29c, 0x2e2, 0x372, 0x373,
+  0x289, 0x28a, 0x298, 0x299, 0x29a, 0x29b, 0x29c, 0x2e2, 0x372, 0x373,
 ]);
 
 function byteMemory(data) {
@@ -56,6 +56,34 @@ function stringsPacket(values, start = 16) {
   return { addresses, memory: byteMemory(data) };
 }
 
+async function persistFESBank(id, [handle, tag, target], task, world) {
+  const reply = (value) => nativeReply(1, value);
+  if (!handle) return reply(0);
+  const file = world.runtime.handles.get(handle, 'global-file'),
+    send = (message, size = 0, address = 0, payload) =>
+      world.sendNativeEngine(target, task.id, message, size, address, { payload }),
+    address = 4;
+  if (id === 0x28a) {
+    const bytes = file.read(tag);
+    if (bytes === null) return reply(0);
+    const packet = new Uint8Array(address + bytes.length);
+    packet.set(bytes, address);
+    await send(344, bytes.length, address, byteMemory(packet));
+    return reply(1);
+  }
+  const size = nativeEngineWord(await send(343), 'FES save entry size');
+  if (!size) return reply(0);
+  if (size > 0x10000000) throw new RangeError('FES save entry exceeds the save size limit');
+  const packet = new Uint8Array(address + size),
+    written = nativeEngineWord(
+      await send(343, size, address, byteMemory(packet)),
+      'FES save entry bytes written',
+    );
+  if (written > size) throw new RangeError('FES save entry exceeds its allocated buffer');
+  file.write(tag, packet.subarray(address, address + written));
+  return reply(1);
+}
+
 export function nativeFES(id, args, machine, task, world) {
   const count = new Map([
     [0x1bf, 2],
@@ -72,6 +100,8 @@ export function nativeFES(id, args, machine, task, world) {
     [0x285, 3],
     [0x286, 2],
     [0x287, 2],
+    [0x289, 3],
+    [0x28a, 3],
     [0x298, 3],
     [0x299, 1],
     [0x29a, 1],
@@ -84,6 +114,7 @@ export function nativeFES(id, args, machine, task, world) {
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS FES native 0x${id.toString(16)} expects ${count} arguments`);
+  if (id === 0x289 || id === 0x28a) return persistFESBank(id, args, task, world);
   const own = world.objects.objects.get(task.id),
     done = () => nativeReply(2),
     value = (n) => nativeReply(1, nativeEngineWord(n, `FES native 0x${id.toString(16)}`)),
