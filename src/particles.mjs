@@ -162,12 +162,12 @@ export class Particles {
       namespace: bank.attachmentNamespace,
       bank: bank.key,
     });
-    if (!attachment)
+    if (!attachment && (bank.family !== 'plugin' || bank.attachmentNamespace !== 'graph'))
       throw new Error(`Particle attachment graph is unavailable: ${bank.attachPlane}`);
     if (bank.attachmentNamespace === 'cst' && !Number.isInteger(attachment.id))
       throw new Error('CST particle attachment requires its resolved native graph id');
     bank.attachment = attachment;
-    return attachment.id ?? bank.attachPlane;
+    return attachment?.id ?? bank.attachPlane;
   }
   async load(key, spec) {
     if (!this.game || !this.images)
@@ -263,6 +263,8 @@ export class Particles {
   stop(key) {
     const bank = this.banks.get(key);
     if (!bank) return;
+    if (bank.family === 'plugin' && bank.attachmentNamespace === 'graph' && bank.instance)
+      bank.instance.attachPlane = this.refreshAttachment(bank);
     bank.instance?.stop();
     bank.started = false;
     bank.retireAt = null;

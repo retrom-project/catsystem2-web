@@ -338,11 +338,19 @@ accepted as invented scene commands.
 For CST attachment, the original wrapper selects plane index+27 from its unified
 scene graph and supplies that graph handle to the particle task. The attachment
 provider receives `(id, {namespace, bank})` and returns `{id,base,pos,disp}`;
-CST namespace requires its resolved native graph ID. Choosing an actor merely
-because its numeric bank exists is not a valid mapping. Missing graph mapping
-produces a diagnostic. HG3 texture dimensions use the cropped `stdinfo` width/
-height, as confirmed by original image loader stores and `sub_68cdc0`; logical
-canvas width/height are separate metadata.
+CST namespace requires its resolved native graph ID. An unavailable provider
+or an unresolved CST plane mapping produces a diagnostic. HG3 texture
+dimensions use the cropped `stdinfo` width/height, as confirmed by original
+image loader stores and `sub_68cdc0`. Logical canvas width and height are
+separate metadata.
+
+For a native graph handle, the PPI callback adapter follows game
+`5F6560` and SDK `4D0DA0`. Each Init, Exec and Stop reads the current
+base, position and visibility from the view. A missing model preserves the
+DLL object's previous values while the graph handle stays in the attachment
+field. Passing zero to the attachment command selects `-1` and clears all
+seven values on the next callback. The DLL heap preserves these fields
+across a checkpoint.
 
 The final screen matrix belongs to the global graph manager:
 `0x67c4d0` uses manager+0x60 and shifts+0xe4/+0xe8. Particles read
@@ -490,6 +498,15 @@ vertices byte for byte. The crop containing the equal-depth overlap
 matches exactly, with a one-level tolerance in the other crops. A new
 World restored after frame 2 produces identical whole frames and particle
 records at restoration and during continuation.
+
+`ppi-attachment.spec.mjs` compares the live 32-byte attachment fields with
+each original engine during changes to a native plane's KX2 transform and
+visibility, Stop, restart, unload, fresh restore, model recreation, and
+detach. The mounted `em_question.ppi` matches 11 independent Wine callback
+records. Nine 8×8 interior crops match Wine D3D9 exactly. A few X coordinates
+are within one float32 ULP of the original x87 projection with control word
+`007F`. The complete frame is identical immediately after restoring the
+checkpoint taken with the attached graph absent.
 
 The observed D3D9 device does not advertise `D3DPRASTERCAPS_WBUFFER`. It accepts
 `D3DZB_USEW` while retaining z-based XYZRHW depth; the browser matches this

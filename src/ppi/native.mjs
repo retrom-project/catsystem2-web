@@ -131,9 +131,13 @@ export class NativePPI {
     });
     p.write(this.parameterAddress, record);
     p.store(this.instance + 20, this.attachPlane);
-    this.writeVector(this.instance + 24, attachment?.base || [0, 0, 0]);
-    this.writeVector(this.instance + 36, attachment?.pos || [0, 0, 0]);
-    p.store(this.instance + 48, attachment?.disp || 0);
+    // The native graph getters preserve the fields of an unresolved model.
+    if (this.attachPlane === -1) p.zero(this.instance + 24, 28);
+    else if (attachment) {
+      this.writeVector(this.instance + 24, attachment.base || [0, 0, 0]);
+      this.writeVector(this.instance + 36, attachment.pos || [0, 0, 0]);
+      p.store(this.instance + 48, attachment.disp || 0);
+    }
   }
   virtual(slot, args) {
     return this.invoke(
