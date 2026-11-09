@@ -93,8 +93,10 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
   const { stride } = layout,
     marker = 0x42424242,
     aliasCount = 4100,
+    metadataWords = [0, 0, 3, 2, 7, 8, 4, 2, 1],
     world = make(),
     call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main),
+    metadataAt = (machine, address) => metadataWords.map((_, i) => machine.load(address + 4 * i)),
     recordAt = (machine, address) => ({
       tag: machine.load(address),
       pointer: machine.load(address + 4),
@@ -191,6 +193,30 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     assert.deepEqual(await call(world, 0x2c3, [0xffffffff, 0, ...drawWords(0xffffffff, 0)]), {
       control: 2,
     });
+    const query = await world.spawnScript('metadata.kcs'),
+      qm = query.machine,
+      queryAddress = layout.wide ? 0x64bc70 : 0x518830;
+    qm.store(256, animated.pointer);
+    qm.bytes(aliasCount, 40).fill(0xa5);
+    let observed = false;
+    const detach = p.beforeInstruction(queryAddress, 'observe live retained geometry argv', () => {
+      const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0,
+        argv = p.load(sp + 12);
+      assert.equal(p.load(argv), animated.pointer);
+      assert.equal(p.load(argv + 4), aliasCount);
+      assert.equal(argv + 4, p.load(p.load(sp + 4) + 20) + aliasCount);
+      observed = true;
+    });
+    try {
+      await world.runtime.scheduler.execute(query);
+    } finally {
+      detach();
+    }
+    assert.equal(observed, true);
+    assert.equal(qm.load(252), 1);
+    assert.deepEqual(metadataAt(qm, aliasCount), metadataWords);
+    assert.equal(qm.load(aliasCount + 36), 0xa5a5a5a5);
+    assert.equal(p.load(animated.pointer + 188), 2, 'metadata does not acquire a reference');
     const spareRecord = shared + stride;
     for (const original of [true, false]) {
       assert.deepEqual(await call(world, 0x2bf, [source, spareRecord, 1]), {
@@ -289,6 +315,15 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     await call(fresh, 0x2c0, [block, 2]);
     assert.equal(fp.allocations.has(bitmap.pointer), false);
     assert.equal(fp.load(rawBitmap + 80), bitmapReferences - 1);
+    assert.equal(fp.load(animated.pointer + 188), references - 1);
+    const queryDestination = 0x80000180;
+    fm.bytes(queryDestination, 40).fill(0xa5);
+    assert.deepEqual(await call(fresh, 0x2c2, [animated.pointer, queryDestination]), {
+      control: 1,
+      value: 1,
+    });
+    assert.deepEqual(metadataAt(fm, queryDestination), metadataWords);
+    assert.equal(fm.load(queryDestination + 36), 0xa5a5a5a5);
     assert.equal(fp.load(animated.pointer + 188), references - 1);
     const released = sourceBytes.slice();
     released.fill(0, 0, 8);

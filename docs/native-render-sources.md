@@ -6,10 +6,10 @@ of emitted records. Main 2C0 takes a KCS array address and an unsigned release
 count and returns control 2. The adapter executes both original wrappers
 with the native VM translator and the caller's initialized view.
 
-| Fixed profile           | Main 2BF / factory  | Main 2C0 | Record stride | Name field      |
-| ----------------------- | ------------------- | -------- | ------------- | --------------- |
-| NEKOPARA Vol.3 2.6.1.76 | 0x64C520 / 0x674F40 | 0x64B860 | 136 bytes     | 64 UTF-16 units |
-| SDK 4.01 2.6.1.74       | 0x519040 / 0x54C0F0 | 0x518420 | 72 bytes      | 64 ANSI bytes   |
+| Fixed profile           | Main 2BF / factory  | Main 2C0 | Main 2C2 / helper   | Record stride | Name field      |
+| ----------------------- | ------------------- | -------- | ------------------- | ------------- | --------------- |
+| NEKOPARA Vol.3 2.6.1.76 | 0x64C520 / 0x674F40 | 0x64B860 | 0x64BC70 / 0x746E60 | 136 bytes     | 64 UTF-16 units |
+| SDK 4.01 2.6.1.74       | 0x519040 / 0x54C0F0 | 0x518420 | 0x518830 / 0x5E7A50 | 72 bytes      | 64 ANSI bytes   |
 
 Each record starts with two DWORDs for its tag and native pointer. Tag 1
 holds an original image wrapper, which owns its decoded bitmap. Tag 2 holds
@@ -40,15 +40,37 @@ object. KCS memory and the shared native process checkpoint preserve these
 record bytes and pointer identities. Restoration leaves each World with its
 own native heap and releases.
 
+## Retained image geometry
+
+Main 2C2 takes an original retained-record pointer and a KCS output address.
+It returns control 1 with a success word. A null source or an unmapped
+destination returns zero and leaves the destination untouched. Otherwise
+the wrapper clears exactly 36 bytes and reads the static bitmap or the
+first entry of the original animation frame map. An empty retained record
+or first entry without a bitmap returns zero with the cleared output.
+
+On success the nine words are the signed image offsets, pixel dimensions,
+canvas dimensions, bytes per pixel, and signed base coordinates, in that
+order. Each zero canvas dimension uses its matching pixel dimension. The
+wrapper uses the original VM translator, including a mapped VM address
+zero and a destination that overlaps the GCALL arguments. The caller
+supplies a live retained-record pointer and writable storage for all
+36 bytes. The query leaves source reference counts intact.
+
 The direct wrapper comparison in `scripts/verify-native-render-sources.mjs`
-checks 1,114 complete calls and 11,370 comparisons per fixed executable.
-It compares control and output bytes, all VM regions, live native
-allocations, prefetch state, file candidates and the original view. The
-reference mounts authored HG2, HG3, ANM and manifest bytes. It uses the shared
-IFile, raster, compression and image-prefetch platform boundaries.
+checks 1,116 load and release calls and 131 geometry calls per fixed
+executable, with 12,949 comparisons. It compares control and output bytes,
+all VM regions, live native allocations, prefetch state, file candidates and
+the original view. Geometry cases cover a static source, a multi-frame
+source, empty and null sources, an unavailable frame, zero canvas
+dimensions, all VM memory domains and result canaries. The reference mounts
+authored HG2, HG3, ANM and manifest bytes through the shared IFile, raster,
+compression and image-prefetch platform boundaries.
 
 The SDK World and both Chromium profiles use an authored KCS caller,
 exercise live argument aliasing, and send both source tags through the Draw
-receiver. They verify independent fresh-process release and the last Draw
-reference's destruction. Chromium also compares the authored colors and the
-restored view pixels.
+receiver. The geometry caller writes over its own second argument. In the
+fresh World it queries the same native record after the array releases
+its reference. The tests verify independent fresh-process release and the
+last Draw reference's destruction. Chromium also compares the authored
+colors and the restored view pixels.

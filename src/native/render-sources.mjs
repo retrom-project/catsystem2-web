@@ -7,6 +7,7 @@ import { NativeKCSMemory } from './kcs-memory.mjs';
 export const NATIVE_RENDER_SOURCE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x2bf, words: 3, control: 1, handlers: [0x64c520, 0x519040] }),
   Object.freeze({ id: 0x2c0, words: 2, control: 2, handlers: [0x64b860, 0x518420] }),
+  Object.freeze({ id: 0x2c2, words: 2, control: 1, handlers: [0x64bc70, 0x518830] }),
 ]);
 
 export class NativeRenderSources {
@@ -28,6 +29,7 @@ export class NativeRenderSources {
           ? await world.getNativeFeature('task-memory')
           : null,
       load = id === 0x2bf,
+      returnsWord = spec.control === 1,
       platform = load ? await world.getNativeFeature('graphics-platform') : null;
     if (platform) await platform.ensureRenderer();
     if (taskMemory) taskMemory.vmPointer(task.id);
@@ -66,9 +68,9 @@ export class NativeRenderSources {
           ? await this.engine.callFromHost(address, params, undefined, options)
           : await this.engine.call(address, params, undefined, options),
         value = p.load(out);
-      if (control !== spec.control || (!load && value !== NATIVE_RESULT_SENTINEL))
+      if (control !== spec.control || (!returnsWord && value !== NATIVE_RESULT_SENTINEL))
         throw new Error('Original render-source wrapper changed its output contract');
-      return nativeReply(control, load ? value : undefined);
+      return nativeReply(control, returnsWord ? value : undefined);
     } finally {
       try {
         bridge?.close();

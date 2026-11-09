@@ -98,6 +98,18 @@ export async function renderSourceWorldFiles(profile, executable, driver) {
       [59],
     ]),
   );
+  files.set(
+    'metadata.kcs',
+    kcsProgram([
+      [37, [0x14, 256]],
+      [37, 4100],
+      [43, 0x2c2, 8],
+      [38, [4, 252]],
+      [37, 1800],
+      [43, 0x47, 4],
+      [59],
+    ]),
+  );
   return { files, layout, rgba: frames[0].rgba };
 }
 

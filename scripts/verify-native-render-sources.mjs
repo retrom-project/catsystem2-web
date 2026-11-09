@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Independently invoke the complete original 2BF/2C0 pair on authored RAM.
+// Independently invoke the original 2BF/2C0/2C2 wrappers on authored RAM.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -34,6 +34,7 @@ const raw = await renderSourceFixture(bytes, profile),
   sdk = profile.startsWith('sdk-'),
   load = p.load(table + 0x2bf * 4),
   release = p.load(table + 0x2c0 * 4),
+  geometry = p.load(table + 0x2c2 * 4),
   cases = [
     '',
     'probe.hg2',
@@ -63,7 +64,7 @@ const raw = await renderSourceFixture(bytes, profile),
     Uint8Array.of(0x82, 0xff, 0x41),
     new TextEncoder().encode('日本語.hg3'),
   ];
-const calls = { load: 0, release: 0 },
+const calls = { load: 0, release: 0, geometry: 0 },
   produced = { bitmap: 0, retained: 0, empty: 0, multiple: 0 };
 let comparisons = 0;
 const check = (actual, expected, label) => {
@@ -83,6 +84,7 @@ const check = (actual, expected, label) => {
 
 async function compare(id, args) {
   const loading = id === 0x2bf,
+    returnsWord = id !== 0x2c0,
     count = loading ? 3 : 2,
     words = Array.from({ length: count }, (_, i) =>
       i < args.length ? args[i] : a.nativeArgument(i),
@@ -100,12 +102,12 @@ async function compare(id, args) {
     if (host) p.store(host + 116, raw.view);
     words.forEach((word, i) => p.store(argv + i * 4, word));
     p.write(out, new Uint8Array(12).fill(0xcc));
-    control = await raw.engine.call(loading ? load : release, [
-      bridge.pointer,
-      host,
-      argv,
-      out + 4,
-    ]);
+    control = await raw.engine.call(
+      p.load(table + id * 4),
+      [bridge.pointer, host, argv, out + 4],
+      undefined,
+      { task: 1 },
+    );
     result = p.read(out, 12);
   } finally {
     bridge.close();
@@ -115,10 +117,10 @@ async function compare(id, args) {
   }
   const value = new DataView(result.buffer).getUint32(4, true),
     reply = await adapted.sources.apply(id, args, b, { id: 1 });
-  check(reply, loading ? { control, value } : { control }, 'original control and output word');
+  check(reply, returnsWord ? { control, value } : { control }, 'original control and output word');
   check(
-    loading ? [...result.subarray(0, 4), ...result.subarray(8)] : [...result],
-    new Array(loading ? 8 : 12).fill(0xcc),
+    returnsWord ? [...result.subarray(0, 4), ...result.subarray(8)] : [...result],
+    new Array(returnsWord ? 8 : 12).fill(0xcc),
     'original output write boundary',
   );
   check(b.memory, a.memory, 'whole VM data and stack');
@@ -126,10 +128,14 @@ async function compare(id, args) {
   check(b.blocks, a.blocks, 'all extended blocks, raw names and pointer words');
   check(adapted.requests, raw.requests, 'original file candidate order');
   check(allocations(q), allocations(p), 'all live native allocations and bytes');
-  check(adapted.retained.snapshot(), raw.retained.snapshot(), 'original prefetch boundary state');
+  check(
+    adapted.engine.features.get('engine-workers')?.snapshot(),
+    raw.engine.features.get('engine-workers')?.snapshot(),
+    'original prefetch boundary state',
+  );
   check(q.read(adapted.view, 0x118), p.read(raw.view, 0x118), 'whole original view');
-  calls[loading ? 'load' : 'release']++;
-  return loading ? value : undefined;
+  calls[loading ? 'load' : returnsWord ? 'geometry' : 'release']++;
+  return returnsWord ? value : undefined;
 }
 
 async function run(source, destination, initialized) {
@@ -161,10 +167,105 @@ async function run(source, destination, initialized) {
   return count;
 }
 
+async function checkGeometry(animated) {
+  const source = 768,
+    argumentsAt = 4800,
+    frameRecord = (process) => process.load(process.load(process.load(animated + 60))),
+    sourceAt = (process, object) => process.load(process.load(object + 8)),
+    geometryOf = (process, bitmap) => {
+      const at = (offset) => process.load(bitmap + offset);
+      return [
+        at(36),
+        at(40),
+        at(4),
+        at(8),
+        at(28) || at(4),
+        at(32) || at(8),
+        at(24),
+        at(48),
+        at(52),
+      ];
+    };
+  check(await compare(0x2bf, [put(2080, 'rgb.hg3'), source, 1]), 1, 'original static bitmap');
+  check(a.load(source), 1, 'static source is an original bitmap wrapper');
+  const fixtures = [];
+  for (const fixture of [raw, adapted]) {
+    const { process, engine, machine, retained } = fixture,
+      empty = process.allocate(retainedBytes, true),
+      still = process.allocate(retainedBytes, true);
+    for (const object of [empty, still])
+      await engine.call(retained.abi.construct, [0, 16, 16], object, { task: 1 });
+    await engine.call(retained.abi.bitmap, [process.load(machine.load(source + 4))], still, {
+      task: 1,
+    });
+    fixtures.push({ empty, still });
+  }
+  check(fixtures[0], fixtures[1], 'same original retained identities');
+  const [{ empty, still }] = fixtures,
+    stillBitmap = sourceAt(p, still),
+    frame = frameRecord(p),
+    frameWrapper = p.load(frame + 20),
+    zeroWords = new Array(9).fill(0),
+    stillWords = geometryOf(p, stillBitmap),
+    animationWords = geometryOf(p, p.load(frameWrapper));
+  check(stillWords.slice(0, 6), [0xffffffff, 2, 4, 1, 6, 9], 'authored signed static geometry');
+  check(stillWords.slice(7), [1, 2], 'authored static base');
+  check(animationWords, [0, 0, 3, 2, 7, 8, 4, 2, 1], 'authored animation frame geometry');
+
+  async function query(object, destination, length, fill, value, words) {
+    const args = [object, destination];
+    for (const m of [a, b]) {
+      m.nativeArgumentBase = argumentsAt;
+      args.forEach((word, i) => m.store(argumentsAt + i * 4, word));
+      if (words) m.bytes(destination, 44).fill(fill);
+    }
+    check(await compare(0x2c2, args.slice(0, length)), value, 'retained geometry status');
+    if (!words) return;
+    check(
+      Array.from({ length: 9 }, (_, i) => b.load(destination + i * 4)),
+      words,
+      'all nine VM geometry words',
+    );
+    check(b.bytes(destination + 36, 8), new Uint8Array(8).fill(fill), 'VM result tail canary');
+  }
+  for (const destination of [0, 127, 4609, 0x80000040, block + 37])
+    for (const length of [0, 1, 2])
+      for (const fill of [0xa5, 0x5a]) {
+        const marker = (fill * 0x01010101) >>> 0;
+        await query(0, destination, length, fill, 0, new Array(9).fill(marker));
+        await query(empty, destination, length, fill, 0, zeroWords);
+        await query(still, destination, length, fill, 1, stillWords);
+        await query(animated, destination, length, fill, 1, animationWords);
+      }
+  for (const destination of [0x7fffffff, 0x80000400, 0xffffffff])
+    for (const object of [0, animated, 0xdeadbeef]) await query(object, destination, 2, 0xa5, 0);
+
+  for (const process of [p, q]) {
+    process.store(stillBitmap + 28, 0);
+    process.store(stillBitmap + 32, 0);
+  }
+  await query(still, 128, 2, 0xa5, 1, geometryOf(p, stillBitmap));
+  // Exercise the original animation lookup when the first entry has no image.
+  for (const process of [p, q]) process.store(frame + 20, 0);
+  await query(animated, 128, 2, 0x5a, 0, zeroWords);
+  for (const process of [p, q]) process.store(frame + 20, frameWrapper);
+
+  for (const fixture of [raw, adapted]) {
+    const { engine, retained, machine } = fixture;
+    for (const object of [still, empty])
+      await engine.call(retained.abi.release, [], object, { task: 1 });
+    // Queries into VM address zero reused the original array storage.
+    machine.store(0, 2);
+    machine.store(4, animated);
+  }
+  await compare(0x2c0, [source, 1]);
+}
+
 try {
   check(blockB, block, 'same extended VM block');
   check(load, sdk ? 0x519040 : 0x64c520, 'independent frozen load slot');
   check(release, sdk ? 0x518420 : 0x64b860, 'independent frozen release slot');
+  check(geometry, sdk ? 0x518830 : 0x64bc70, 'independent frozen geometry slot');
   const regions = [
     [2080, 0],
     [2080, 512],
@@ -275,6 +376,7 @@ try {
   );
   const pointer = a.load(4);
   check(b.load(4), pointer, 'same raw retained pointer');
+  await checkGeometry(pointer);
   await raw.engine.call(retainedRetain, [], pointer);
   await adapted.engine.call(retainedRetain, [], pointer);
   for (const m of [a, b]) {
@@ -285,7 +387,11 @@ try {
   check(q.load(pointer + 188), 1, 'an independently retained source remains live');
   await compare(0x2c0, [stride, 1]);
   check(q.allocations.has(pointer), false, 'last retained source runs its destructor');
-  check(adapted.retained.threads.size, 0, 'prefetch handles close at final release');
+  check(
+    adapted.engine.features.get('engine-workers')?.threads.size ?? 0,
+    0,
+    'prefetch handles close at final release',
+  );
   assert.ok(produced.bitmap && produced.retained && produced.multiple && produced.empty);
   const report = {
     profile,
@@ -302,7 +408,7 @@ try {
   };
   await writeFile(output, JSON.stringify(report, null, 2) + '\n');
   console.log(
-    `Render sources passed ${calls.load + calls.release} complete original calls/${comparisons} comparisons`,
+    `Render sources passed ${calls.load + calls.release} load/release calls, ${calls.geometry} geometry calls and ${comparisons} comparisons`,
   );
 } finally {
   await adapted.close();
