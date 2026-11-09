@@ -229,7 +229,11 @@ for (const [profile, variable, normal, mask, copy, btype] of [
                 }))
                   p.cpu.reg_write_i32(p.uc['X86_REG_' + name], value);
                 p.cpu.emu_start(kernels.abi[kind], kernels.abi[kind] + 2, 0, 100000);
-                return { registers: p.registers(), bytes: p.read(arena, 65536) };
+                return {
+                  registers: p.registers(),
+                  bytes: p.read(arena, 65536),
+                  budget: p.instructionBudget(),
+                };
               };
             assert.deepEqual(
               runInstruction(true),
@@ -256,6 +260,7 @@ for (const [profile, variable, normal, mask, copy, btype] of [
                 registers: p.registers(),
                 bytes: p.read(arena, 65536),
                 stack: p.read(stack, 2048),
+                budget: p.instructionBudget(),
               };
             };
           assert.deepEqual(await runCopy(true), await runCopy(false), `CRT copy ${n}`);

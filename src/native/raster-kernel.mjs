@@ -107,7 +107,7 @@ export class NativeRasterKernels {
     if (value === undefined) return p.cpu.reg_read_i32(index) >>> 0;
     p.cpu.reg_write_i32(index, value >>> 0);
   }
-  range(address, length, write = false) {
+  range(address, length, write = false, regions) {
     if (
       !Number.isSafeInteger(address) ||
       !Number.isSafeInteger(length) ||
@@ -124,7 +124,7 @@ export class NativeRasterKernels {
     )
       return false;
     let cursor = address;
-    for (const { begin, end, perms } of this.process.cpu.mem_regions()) {
+    for (const { begin, end, perms } of regions ?? this.process.cpu.mem_regions()) {
       const first = Number(begin),
         last = Number(end) + 1;
       if (cursor < first || cursor >= last) continue;
@@ -309,18 +309,44 @@ export class NativeRasterKernels {
     this.reg('EBX', (d[1] >>> 0) + t);
     return true;
   }
+  repeatRegions() {
+    const p = this.process,
+      layout = p.executableRanges;
+    // PE32 drops this key after mapping or protection changes. Without a
+    // current key, read permissions again instead of reusing an old layout.
+    if (!layout) return p.cpu.mem_regions();
+    if (this.repeatLayout?.layout !== layout)
+      this.repeatLayout = { layout, regions: p.cpu.mem_regions() };
+    return this.repeatLayout.regions;
+  }
+  repeatFits(count, flags) {
+    // TF and RF can change how the original string instruction stops.
+    if (!count || flags & 0x10100) return false;
+    const { active, counter, limit } = this.process.instructionBudget();
+    // This backend visits REP once per element and once with ECX=0. The
+    // first visit is already counted at the hook, so count visits remain.
+    return active && (limit === 0n || limit - counter >= BigInt(count));
+  }
   stos(kind) {
-    const count = this.reg('ECX'),
+    const p = this.process,
+      count = this.reg('ECX'),
+      flags = this.reg('EFLAGS'),
       width = kind === 'stosByte' ? 1 : 4,
-      step = this.reg('EFLAGS') & 0x400 ? -width : width,
+      step = flags & 0x400 ? -width : width,
       current = this.reg('EDI'),
       start = step < 0 ? current - (count - 1) * width : current,
       size = count * width;
     // ES is flat in the reviewed process. Unusual segments, wrapped ranges
     // and protected/executable destinations retain original CPU execution.
-    if (!count || this.reg('ES') !== 0 || !this.range(start, size, true)) return false;
-    const bytes = this.process.view(start, size),
-      value = this.reg('EAX');
+    if (
+      !this.repeatFits(count, flags) ||
+      this.reg('ES') !== 0 ||
+      !this.range(start, size, true, this.repeatRegions())
+    )
+      return false;
+    const value = this.reg('EAX'),
+      bytes = p.view(start, size);
+    if (!p.consumeInstructions(count)) return false;
     if (width === 1) bytes.fill(value & 255);
     else if (bytes.byteOffset % 4 === 0)
       new Uint32Array(bytes.buffer, bytes.byteOffset, count).fill(value);
@@ -335,25 +361,32 @@ export class NativeRasterKernels {
   }
   movs(address, width) {
     const count = this.reg('ECX'),
+      flags = this.reg('EFLAGS'),
       source = this.reg('ESI'),
       destination = this.reg('EDI'),
-      step = this.reg('EFLAGS') & 0x400 ? -width : width,
+      step = flags & 0x400 ? -width : width,
       firstSource = step < 0 ? source - (count - 1) * width : source,
       firstDestination = step < 0 ? destination - (count - 1) * width : destination,
       size = count * width;
     if (
-      !count ||
+      !this.repeatFits(count, flags) ||
       this.reg('ES') !== 0 ||
       this.reg('DS') !== 0 ||
-      !this.range(firstSource, size) ||
-      !this.range(firstDestination, size, true) ||
       (source !== destination && overlaps(firstSource, size, firstDestination, size))
     )
       return false;
-    const p = this.process;
+    const p = this.process,
+      regions = this.repeatRegions();
+    if (
+      !this.range(firstSource, size, false, regions) ||
+      !this.range(firstDestination, size, true, regions)
+    )
+      return false;
     p.view(firstSource, size);
-    p.view(firstDestination, size);
-    p.view(firstDestination, size).set(p.view(firstSource, size));
+    const output = p.view(firstDestination, size),
+      input = p.view(firstSource, size);
+    if (!p.consumeInstructions(count)) return false;
+    output.set(input);
     this.reg('ECX', 0);
     this.reg('ESI', source + step * count);
     this.reg('EDI', destination + step * count);
