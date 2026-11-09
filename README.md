@@ -62,6 +62,9 @@ CAT2_GAME_URL=http://localhost:4101 npm run test:route
 只遍历脚本命令，不验证时序、音频或画面。`test:native-game` 使用固定的
 NEKOPARA Vol. 3 输入，从浏览器启动原生 World，验证语言选择、标题、真实输入和
 导入 checkpoint 后的对话像素，并继续阅读到实际加载大型 HG3 后的下一段对白。
+另一条用例通过真实点击推进到原场景第一个 PPI，比较粒子对画面的像素贡献，
+检查新 World 恢复后整帧一致且粒子继续运行。可用 `-- --grep 'original scene particle'`
+单独运行；在软件 GPU 上执行完整路径耗时较长。
 `test:game` 和 `test:route` 是旧播放器的
 交互及完整路线用例，依赖旧播放器的场景状态，不能作为原生 World 的验收证据。
 

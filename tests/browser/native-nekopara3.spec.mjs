@@ -6,6 +6,90 @@ import { frameClock, state, step, until, clickNativeButton, pixels } from './nat
 
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
 const profile = 'nekopara-vol3-engine-2.6.1.76';
+const firstSceneParticle = 'ptclpi\\em_note.ppi';
+
+async function startGame(page) {
+  const response = await page.request.get('/game.json');
+  expect(response.ok(), 'Mount the frozen private game on CAT2_GAME_URL').toBe(true);
+  expect((await response.json()).identity).toBe(sourceIdentity);
+  await frameClock(page);
+  await page.goto('/');
+  await page.click('#start');
+  await page.waitForFunction(
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { polling: 100, timeout: 180_000 },
+  );
+  expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+}
+
+async function sceneParticle(page, draw = false) {
+  return page.evaluate(
+    async ({ program, draw }) => {
+      const engine = window.catSystem2,
+        { world } = engine,
+        bank = [...world.particles.host.banks.values()].find(
+          (bank) =>
+            bank.family === 'plugin' &&
+            bank.program === program &&
+            bank.started &&
+            bank.instance?.active &&
+            !bank.externalDraw,
+        );
+      if (!bank) return null;
+      const particle = {
+        program: bank.program,
+        texture: bank.texture,
+        attachment: bank.attachPlane,
+        count: bank.count,
+        counter: bank.clockValue,
+      };
+      if (!draw) return particle;
+      const { canvas, context } = engine.renderer,
+        rgba = () => context.getImageData(0, 0, canvas.width, canvas.height).data;
+      await engine.render();
+      const visible = rgba(),
+        externalDraw = bank.externalDraw;
+      let hidden;
+      try {
+        bank.externalDraw = true;
+        await engine.render();
+        hidden = rgba();
+      } finally {
+        bank.externalDraw = externalDraw;
+        await engine.render();
+      }
+      let pixels = 0;
+      for (let i = 0; i < visible.length; i += 4)
+        if (
+          visible[i] !== hidden[i] ||
+          visible[i + 1] !== hidden[i + 1] ||
+          visible[i + 2] !== hidden[i + 2] ||
+          visible[i + 3] !== hidden[i + 3]
+        )
+          pixels++;
+      return {
+        ...particle,
+        frame: world.frame,
+        pixels,
+        sha256: new Uint8Array(await crypto.subtle.digest('SHA-256', visible)).toHex(),
+      };
+    },
+    { program: firstSceneParticle, draw },
+  );
+}
+
+async function moveToDialogue(page) {
+  const canvas = await page.locator('#screen').boundingBox();
+  await page.mouse.move(canvas.x + canvas.width * 0.6, canvas.y + canvas.height * 0.65);
+}
+
+async function advanceDialogue(page) {
+  await page.mouse.down();
+  await step(page, 2);
+  await page.mouse.up();
+  await step(page, 4);
+}
 
 async function waitForLine(page, line, { drawn = true, advance = false } = {}) {
   for (let i = 0; i < 100; i++) {
@@ -22,12 +106,8 @@ async function waitForLine(page, line, { drawn = true, advance = false } = {}) {
       { line, drawn },
     );
     if (ready) return;
-    if (advance) {
-      await page.mouse.down();
-      await step(page, 2);
-      await page.mouse.up();
-      await step(page, 4);
-    } else await step(page, 6);
+    if (advance) await advanceDialogue(page);
+    else await step(page, 6);
   }
   throw new Error(`Native writer did not reach the expected dialogue: ${line}`);
 }
@@ -78,18 +158,7 @@ test('cold native language, title and opening dialogue continue through the orig
 }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  const response = await page.request.get('/game.json');
-  expect(response.ok(), 'Mount the frozen private game on CAT2_GAME_URL').toBe(true);
-  expect((await response.json()).identity).toBe(sourceIdentity);
-  await frameClock(page);
-  await page.goto('/');
-  await page.click('#start');
-  await page.waitForFunction(
-    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
-    undefined,
-    { polling: 100, timeout: 180_000 },
-  );
-  expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+  await startGame(page);
   const language = await until(page, 'langselect#WAIT', 900);
   const image = await pixels(page);
   expect(image.colors).toBeGreaterThan(32);
@@ -152,8 +221,7 @@ test('cold native language, title and opening dialogue continue through the orig
   const imageLoads = () =>
       page.evaluate(() => window.catSystem2.world.runtime.calls.get('main:710') ?? 0),
     beforeLoads = await imageLoads();
-  const canvas = await page.locator('#screen').boundingBox();
-  await page.mouse.move(canvas.x + canvas.width * 0.6, canvas.y + canvas.height * 0.65);
+  await moveToDialogue(page);
   await step(page, 2);
   await page.mouse.down();
   await step(page, 2);
@@ -162,6 +230,52 @@ test('cold native language, title and opening dialogue continue through the orig
   await waitForLine(page, 'Will you be dining in today?', { drawn: false });
   await waitForLine(page, 'If you like first flush', { drawn: false, advance: true });
   expect(await imageLoads()).toBeGreaterThan(beforeLoads);
+  expect((await state(page)).unsupported).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test('original scene particle changes the rendered frame and continues after a fresh World', async ({
+  page,
+}) => {
+  // Native E-mote is CPU intensive under headless Chromium's software GPU.
+  test.setTimeout(60 * 60_000);
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await startGame(page);
+  await until(page, 'langselect#WAIT', 900);
+  await clickNativeButton(page, 'decide');
+  await until(page, 'title#WAIT', 240);
+  await clickNativeButton(page, 'btn1[0]');
+  await until(page, 'meswnd#WAIT', 900);
+  await moveToDialogue(page);
+  let visible;
+  for (let i = 0; i < 170; i++) {
+    await advanceDialogue(page);
+    if (!(await sceneParticle(page))) continue;
+    visible = await sceneParticle(page, true);
+    if (visible?.pixels > 0) break;
+  }
+  expect(visible, 'First PPI in the original scene must become visible').toMatchObject({
+    program: firstSceneParticle,
+    texture: 'image.lst/tex_em04.hg3',
+    count: 3,
+  });
+  expect(visible.pixels).toBeGreaterThan(0);
+  expect(visible.attachment).toBeGreaterThan(0);
+  expect(
+    await page.evaluate(async () => {
+      const engine = window.catSystem2,
+        previous = engine.world;
+      await engine.restore(await engine.snapshot());
+      await engine.render();
+      return engine.world !== previous;
+    }),
+  ).toBe(true);
+  expect(await sceneParticle(page, true)).toEqual(visible);
+  await step(page, 3);
+  const continued = await sceneParticle(page);
+  expect(continued).toMatchObject({ attachment: visible.attachment, count: visible.count });
+  expect(continued.counter).toBeGreaterThan(visible.counter);
   expect((await state(page)).unsupported).toEqual([]);
   expect(errors).toEqual([]);
 });
