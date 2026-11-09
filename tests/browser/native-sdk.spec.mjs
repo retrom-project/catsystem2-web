@@ -74,6 +74,44 @@ async function restoreFresh(page) {
   ).toBe(true);
 }
 
+test('the original SDK accelerator consumes Alt+Enter and leaves bare Enter with native input', async ({
+  page,
+}) => {
+  await startSDK(page);
+  await step(page, 2);
+  const enter = () =>
+    page.evaluate(() => ({
+      held: window.catSystem2.inputBindings.browserKeys.get('Enter') ?? 0,
+      fullscreen: Boolean(document.fullscreenElement),
+    }));
+  await page.keyboard.down('Enter');
+  await step(page, 2);
+  expect(await enter()).toEqual({ held: 13, fullscreen: false });
+  await page.keyboard.up('Enter');
+  await step(page, 2);
+
+  const toggle = async () => {
+    await page.keyboard.down('Alt');
+    await page.keyboard.down('Enter');
+    await step(page, 2);
+    await page.keyboard.up('Enter');
+    await page.keyboard.up('Alt');
+  };
+  await toggle();
+  expect(await enter()).toEqual({ held: 0, fullscreen: true });
+  await toggle();
+  expect(await enter()).toEqual({ held: 0, fullscreen: false });
+  await restoreFresh(page);
+  await page.keyboard.press('Alt+F1');
+  const frame = step(page, 2);
+  const pause = page
+    .getByRole('dialog')
+    .filter({ has: page.getByRole('heading', { name: 'Game paused' }) });
+  await expect(pause).toBeVisible();
+  await pause.getByRole('button', { name: 'Resume' }).click();
+  await frame;
+});
+
 async function freshAtSameFrame(page) {
   const before = await state(page),
     image = await pixels(page),

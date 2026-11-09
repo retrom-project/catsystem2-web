@@ -38,6 +38,52 @@ async function startGame(page) {
   });
 }
 
+test('the original game accelerators select the main and secondary languages after a fresh World', async ({
+  page,
+}) => {
+  await startGame(page);
+  const preferences = () =>
+    page.evaluate(() => {
+      const { world } = window.catSystem2,
+        { main, sub, entries } = world.configuration.language,
+        { process, kernel } = world.nativeEngine,
+        menu = process.load(process.load(0xbafa80 + 36) + 8);
+      return {
+        main,
+        sub,
+        keys: entries.map(({ accel, accelsub }) => [accel[0], accelsub[0]]),
+        selected: [40075 + main, 40085 + (sub === 0xffffffff ? entries.length : sub)].map(
+          (command) => Boolean(kernel.windowMenus.commandLocation(menu, command)?.entry.state & 8),
+        ),
+      };
+    });
+  const initial = await preferences(),
+    target = initial.main === 0 ? 1 : 0,
+    [key, subKey] = initial.keys[target];
+  await page.keyboard.press('Key' + String.fromCharCode(key));
+  await step(page, 2);
+  expect(await preferences()).toMatchObject({ main: target, selected: [true, true] });
+  await page.keyboard.press('Shift+Key' + String.fromCharCode(subKey));
+  await step(page, 2);
+  expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
+  expect(
+    await page.evaluate(async () => {
+      const e = window.catSystem2,
+        previous = e.world;
+      await e.restore(await e.snapshot());
+      return e.world !== previous;
+    }),
+  ).toBe(true);
+  expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
+  await page.keyboard.press('Shift+KeyN');
+  await step(page, 2);
+  expect(await preferences()).toMatchObject({
+    main: target,
+    sub: 0xffffffff,
+    selected: [true, true],
+  });
+});
+
 async function sceneParticle(page, draw = false) {
   return page.evaluate(
     async ({ program, draw }) => {

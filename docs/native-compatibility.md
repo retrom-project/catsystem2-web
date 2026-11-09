@@ -138,12 +138,17 @@ layouts distinct: eight bytes in the PE resource and six in x86
 [ACCEL](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-accel).
 Tests cover missing language keys, independent restore and release of the
 dynamic table. The pinned Wine probe also verifies the copy's untouched
-padding and capacity boundary. The ANSI and Unicode `TranslateAccelerator`
+padding and capacity boundary. The ANSI and Unicode
+[`TranslateAccelerator`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-translateacceleratora)
 imports now match virtual and character messages and synchronously send the
 original application menu notifications and command. The pinned Wine probe
 checks exact modifiers, nested or disabled items, capture and minimization.
-This covers the engine's application accelerator tables; system menu
-accelerators and wiring the browser keyboard into the loop are separate.
+The standalone browser checks the current window's original table before
+posting a key press to its input device. It queues the accelerator's menu
+notifications and command for the same application dispatcher as Script
+window requests. Character messages also resolve the game's Shift+N
+secondary-language OFF entry. System-menu accelerators and the remaining
+native message pump are separate.
 
 Both WinMain versions create the named, initially nonsignaled
 `CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The

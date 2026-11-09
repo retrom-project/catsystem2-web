@@ -2,6 +2,7 @@
 // Window message/action ordering from the two original application handlers.
 import { nativeWindowLanguageCommand, nativeWindowMessageCommand } from './window-commands.mjs';
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
+import { browserVirtualKey } from './input-bindings.mjs';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
     119, 40045, 40002, 40008, 40009, 40012, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
@@ -20,6 +21,38 @@ export class NativeWindow {
       wParam: wParam >>> 0,
       lParam: lParam >>> 0,
     });
+  }
+  keyboardCommand(event) {
+    const engine = this.world.nativeEngine,
+      owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
+      key = browserVirtualKey(event);
+    if (!owner || !key || event.metaKey) return null;
+    const table = engine.process.load(owner + 12),
+      accelerators = engine.kernel.accelerators,
+      modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
+      extended =
+        /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(
+          event.code,
+        ),
+      data = (event.altKey ? 1 << 29 : 0) | (extended ? 1 << 24 : 0),
+      keyCommand = accelerators.match(table, event.altKey ? 0x104 : 0x100, key, data, modifiers);
+    if (keyCommand !== null || event.key?.length !== 1) return keyCommand;
+    let character = event.key.charCodeAt(0);
+    if (event.ctrlKey && !event.getModifierState?.('AltGraph')) {
+      const upper = event.key.toUpperCase().charCodeAt(0);
+      if (upper < 64 || upper > 95) return null;
+      character = upper & 31;
+    }
+    // A missed virtual-key match can still generate WM_CHAR, notably the
+    // game's original ASCII Shift+N secondary-language OFF entry.
+    return accelerators.match(table, event.altKey ? 0x106 : 0x102, character, data, modifiers);
+  }
+  async postKeyboardCommand(command) {
+    const accelerators = this.world.nativeEngine?.kernel.accelerators;
+    if (!accelerators) return;
+    await accelerators.dispatch(this.handle, command, (message, wParam, lParam) =>
+      this.post(message, wParam, lParam),
+    );
   }
   text(value) {
     return this.world.globalStrings.get(value);

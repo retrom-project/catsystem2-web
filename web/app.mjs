@@ -219,14 +219,25 @@ canvas.addEventListener(
   { passive: false },
 );
 document.addEventListener('keydown', (event) => {
-  if (!engine || !running || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
-  if (engine.inputBindings.acceptsKeyboard(event)) {
-    event.preventDefault();
-    enqueue(async () => {
-      await engine.audio.unlock();
-      engine.inputBindings.keyboard(event, true);
-    }).catch(() => {});
-  }
+  if (
+    !engine ||
+    !running ||
+    event.defaultPrevented ||
+    event.target.isContentEditable ||
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)
+  )
+    return;
+  const current = engine,
+    nativeWindow = current.world?.window,
+    command = nativeWindow?.keyboardCommand(event) ?? null;
+  if (command === null && !current.inputBindings.acceptsKeyboard(event)) return;
+  event.preventDefault();
+  enqueue(async () => {
+    if (engine !== current || !running) return;
+    await current.audio.unlock();
+    if (command === null) current.inputBindings.keyboard(event, true);
+    else await current.world?.window.postKeyboardCommand(command);
+  }).catch(() => {});
 });
 document.addEventListener('keyup', (event) => {
   if (engine && running) enqueue(() => engine.inputBindings.keyboard(event, false)).catch(() => {});
