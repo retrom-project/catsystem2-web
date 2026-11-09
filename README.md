@@ -75,8 +75,10 @@ npm run dev -- --port 4111 --game /path/to/sdk/system
 CAT2_SDK_URL=http://localhost:4111 npm run test:native-sdk
 ```
 
-该测试通过实际鼠标进入教程，验证原生标题和选项画面在新 World 中逐像素恢复，
-并确认恢复后的选择可以继续。
+这些用例通过实际鼠标进入教程，验证原生标题和选项画面在新 World 中逐像素恢复，
+并确认恢复后的选择可以继续。鉴赏用例从教程完成注册，再打开 CG、播放和停止音乐、
+进入并退出回想；可用 `-- --grep 'registers and opens'` 单独运行。完整教程路径在软件
+GPU 上耗时较长。
 
 已有浏览器可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` 复用。
 不要将私有游戏、截图、存档或反编译数据库添加到本仓库。

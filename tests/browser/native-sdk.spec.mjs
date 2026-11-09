@@ -47,10 +47,7 @@ async function startSDK(page) {
   expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
 }
 
-async function freshAtSameFrame(page) {
-  const before = await state(page),
-    image = await pixels(page);
-  expect(image.colors).toBeGreaterThan(32);
+async function restoreFresh(page) {
   expect(
     await page.evaluate(async () => {
       const engine = window.catSystem2,
@@ -60,6 +57,13 @@ async function freshAtSameFrame(page) {
       return engine.world !== old && engine.world.nativeEngine.refs.nativeOwner;
     }),
   ).toBe(true);
+}
+
+async function freshAtSameFrame(page) {
+  const before = await state(page),
+    image = await pixels(page);
+  expect(image.colors).toBeGreaterThan(32);
+  await restoreFresh(page);
   expect(await state(page)).toEqual(before);
   expect(await pixels(page)).toEqual(image);
   return image;
@@ -254,4 +258,157 @@ test('official SDK JavaScript tutorial draws its moving plane and resumes origin
   expect(end.frame - start.frame).toBeGreaterThan(275);
   for (let i = 0; i < 4; i++) await step(page, 6);
   expect(await sdkJavaScriptState(page)).toMatchObject({ playing: false, returned: true });
+});
+
+async function followSDKDialogue(page, label, attempts) {
+  let current;
+  for (let i = 0; i < attempts; i++) {
+    current = await state(page);
+    if (current.stack.includes(label)) return;
+    if (
+      i % 2 === 0 &&
+      current.stack.includes('meswnd_b#WAIT') &&
+      !current.stack.some((entry) => entry.startsWith('select#'))
+    )
+      await advanceSDKDialogue(page);
+    else await step(page, 6);
+  }
+  expect(current.stack, `Original SDK route at frame ${current.frame}`).toContain(label);
+}
+
+const galleryCells = (page) =>
+  page.evaluate(() => {
+    const player = window.catSystem2.activeFES();
+    return {
+      category: player.root.local(130),
+      cells: player
+        .candidates()
+        .filter(({ o }) => o.baseName === 'btn_thumb')
+        .map(({ o }) => ({ key: o.key, registered: player.root.local(200 + o.index) })),
+    };
+  });
+
+const musicGallery = (page) =>
+  page.evaluate(() => {
+    const engine = window.catSystem2,
+      root = engine.activeFES().root,
+      channel = [...engine.audio.channels.values()].find(
+        ({ file }) => file === 'bgm.int/bgm01.ogg',
+      );
+    return {
+      selected: root.local(200),
+      running: root.local(300),
+      playing: Boolean(channel?.playing && channel.source && channel.buffer),
+    };
+  });
+
+const replay = (page) =>
+  page.evaluate(() => {
+    const engine = window.catSystem2,
+      runtime = engine.world.runtime,
+      script = [...runtime.scheduler.tasks.values()].find(({ name }) => name === 'sscript');
+    return {
+      mode: engine.globals[512],
+      scenario: engine.strings[200],
+      dialogue: script ? runtime.stringBank(script, false)?.get(1000) : undefined,
+    };
+  });
+
+test('official SDK registers and opens CG, music and scene replay from its own tutorial', async ({
+  page,
+}) => {
+  test.setTimeout(90 * 60_000);
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  const press = async (key) => {
+    await waitForButton(page, key);
+    await clickNativeButton(page, key);
+  };
+  await test.step('Unlock Extra and register CG and replay in the original tutorial', async () => {
+    await startSDK(page);
+    await until(page, 'title#WAIT', 360);
+    await press('btn1[2]');
+    await press('btn2[1]');
+    await followSDKDialogue(page, 'select#WAIT', 140);
+    // Extra submenu, unlock, CG registration, replay registration, then exit.
+    for (const index of [0, 0, 1, 2]) {
+      await press(`fr1[${index}]`);
+      await until(page, 'select#EXIT', 36);
+      await followSDKDialogue(page, 'select#WAIT', 420);
+    }
+    expect(await page.evaluate(() => window.catSystem2.globals[760])).toBe(1);
+    await press('fr1[3]');
+    await followSDKDialogue(page, 'title#WAIT', 120);
+    await press('btn1[3]');
+    await until(page, 'title#WAIT', 90);
+    await press('btn3[0]');
+  });
+
+  await test.step('Open a registered CG and restore the same image', async () => {
+    await until(page, 'cgmode#SEL_WAIT', 150);
+    let thumbnail;
+    for (const category of [2, 1, 0]) {
+      if ((await galleryCells(page)).category !== category) {
+        await press(`btn_ch[${category}]`);
+        await until(page, 'cgmode#SEL_WAIT', 150);
+      }
+      thumbnail = (await galleryCells(page)).cells.find(({ registered }) => registered > 0)?.key;
+      if (thumbnail) break;
+    }
+    expect(thumbnail, 'A tutorial CG must be available in the gallery').toBeTruthy();
+    const list = await pixels(page);
+    await press(thumbnail);
+    await until(page, 'cgview#WAIT', 150);
+    expect((await freshAtSameFrame(page)).sha256).not.toBe(list.sha256);
+    const canvas = await page.locator('#screen').boundingBox();
+    await page.mouse.move(canvas.x + canvas.width * 0.25, canvas.y + canvas.height * 0.4);
+    await step(page);
+    await page.mouse.down({ button: 'right' });
+    await step(page, 2);
+    await page.mouse.up({ button: 'right' });
+    await step(page, 2);
+    await until(page, 'cgmode#SEL_WAIT', 150);
+  });
+
+  await test.step('Play, restore and stop a gallery track', async () => {
+    await press('btn_sys[2]');
+    await until(page, 'musicmode#SEL_WAIT', 150);
+    await press('btn_track[1]');
+    for (let i = 0; i < 4; i++) await step(page, 6);
+    const playing = { selected: 1, running: 1, playing: true };
+    expect(await musicGallery(page)).toEqual(playing);
+    await restoreFresh(page);
+    expect(await musicGallery(page)).toEqual(playing);
+    await press('btn_ctrl[1]');
+    await step(page, 6);
+    await step(page, 6);
+    expect(await musicGallery(page)).toEqual({ selected: 1, running: 0, playing: false });
+  });
+
+  await test.step('Play a registered scene, restore it and return through end_of_kaisou', async () => {
+    await press('btn_sys[1]');
+    await until(page, 'scenemode#SEL_WAIT', 150);
+    expect(
+      await page.evaluate(() => [900, 901, 902].map((id) => window.catSystem2.globals[id])),
+    ).toEqual([1, 1, 1]);
+    const { cells } = await galleryCells(page);
+    expect(cells[0]).toMatchObject({ key: 'btn_thumb[0]', registered: 1 });
+    const list = await pixels(page);
+    await press(cells[0].key);
+    await until(page, 'flow#SCENEPLAY_WAIT', 150);
+    let scene;
+    for (let i = 0; i < 100; i++) {
+      scene = await replay(page);
+      if (scene.dialogue && (await state(page)).stack.includes('meswnd_b#WAIT')) break;
+      await step(page, 6);
+    }
+    expect(scene).toMatchObject({ mode: -2, scenario: 'rc_000', dialogue: expect.any(String) });
+    expect(scene.dialogue).toContain('end_of_kaisou');
+    expect((await freshAtSameFrame(page)).sha256).not.toBe(list.sha256);
+    expect(await replay(page)).toEqual(scene);
+    await followSDKDialogue(page, 'scenemode#SEL_WAIT', 220);
+    expect((await state(page)).stack).not.toContain('flow#SCENEPLAY_WAIT');
+    expect((await state(page)).unsupported).toEqual([]);
+  });
+  expect(errors).toEqual([]);
 });
