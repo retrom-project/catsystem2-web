@@ -40,8 +40,17 @@ message 293. Main `271` sends the raw enable word through message 295.
 Main `370` packages an index and value into eight bytes (SDK message 307,
 game message 312). The original retained object applies the word to its
 ANM register bank and nested retained animations. An unsigned index above
-63 leaves the bank unchanged. All seven wrappers route zero targets through
-the caller's Top namespace. Missing targets
+63 leaves the bank unchanged.
+
+Main `36F` binds a Draw entry to a sound bank (SDK message 306, game 311).
+Its logic tick queries the current Top's sound task and sets ANM variable 0
+according to the unsigned level comparison. The default threshold is 1000;
+main `371` updates it for an existing link (SDK message 308, game 313).
+Reassigning a link preserves its threshold and enables the new bank without
+disabling the previous one. Passing `0xFFFFFFFF` disables the current bank,
+clears variable 0 and removes the link. The Draw destructor only releases
+its link table. All nine wrappers route zero targets through the caller's
+Top namespace. Missing targets
 retain the original routing result and control code 2.
 
 The complete wrappers execute in the mounted PE. Their task transport maps the
@@ -51,8 +60,8 @@ shared original retained-image decoder, animation and raster routines. A
 single-frame image decodes without retaining its raw buffer descriptor; the
 decoded retained object owns its resulting bitmap independently.
 
-`scripts/verify-native-draw-commands.mjs` passes 11,283 comparisons across 1,925
-complete calls per frozen PE. It checks all seven wrappers, every packet byte,
+`scripts/verify-native-draw-commands.mjs` passes 14,035 comparisons across 2,475
+complete calls per frozen PE. It checks all nine wrappers, every packet byte,
 raw retained pointers and opaque buffer translation, signed and unsigned limits,
 float bits, formatting and ANM resolution from data, shared and extended-block
 addresses, complete VM state, reference counts and output canaries. Device
@@ -63,7 +72,12 @@ and compare the retained record bytes after insertion and updates. They
 exercise both destruction paths and compare the actual Draw pixels and
 independent references after restoring into a fresh World. They write an ANM
 register through its original drawing key and check that the same live bank
-continues independently after restore.
+continues independently after restore. The sound-link cases feed controlled
+levels through the normal sound task, then check its capture words and the
+live ANM variable in both browser profiles.
+[`verify-native-draw-sound.mjs`](../scripts/verify-native-draw-sound.mjs)
+compares the original Draw receiver and logic frame over 121 calls per
+profile, including all sound packets and the unsigned registration order.
 
 The public SDK World test uses complete native view/device initialization,
 decodes an authored HG2 resource, binds and updates its actual pixels, loads an

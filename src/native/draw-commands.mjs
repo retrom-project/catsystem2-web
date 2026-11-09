@@ -12,7 +12,9 @@ export const NATIVE_DRAW_COMMAND_CONTRACTS = Object.freeze(
     [0x26f, 13, 0x644c30, 0x51d270],
     [0x270, 3, 0x644710, 0x51cda0],
     [0x271, 3, 0x644620, 0x51ccb0],
+    [0x36f, 3, 0x644260, 0x51c910],
     [0x370, 4, 0x644800, 0x51ce40],
+    [0x371, 3, 0x644230, 0x51c8e0],
   ].map(([id, words, game, sdk]) => Object.freeze({ id, words, handlers: [game, sdk] })),
 );
 const byID = new Map(NATIVE_DRAW_COMMAND_CONTRACTS.map((spec) => [spec.id, spec]));
@@ -37,7 +39,7 @@ export class NativeDrawCommands {
           message = this.sdk ? rawMessage + 5 : rawMessage;
         if (origin == null || senderWorldID == null)
           throw new Error('Native retained draw command has no calling task namespace');
-        if (![280, 282, 293, 295, 312].includes(message))
+        if (![280, 282, 293, 295, 311, 312, 313].includes(message))
           throw new Error('Native retained draw command sent an unreviewed message');
         const context = {
           payload: this.memory,

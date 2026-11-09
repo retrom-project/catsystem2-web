@@ -120,21 +120,23 @@ try {
                   ? [target, value, words[(sourceIndex + 3) % words.length]]
                   : spec.id === 0x370
                     ? [target, value, [0, 63, 64, 0xffffffff, 0x80000000][sourceIndex], value]
-                    : [
-                        target,
-                        value,
-                        retained
-                          ? [0, retainedPointer, 0xffffffff, retainedPointer, 0x80000000][
-                              sourceIndex
-                            ]
-                          : sourceIndex % 2
-                            ? handle
-                            : 0,
-                        ...Array.from(
-                          { length: 10 },
-                          (_, i) => words[(i + sourceIndex) % words.length],
-                        ),
-                      ],
+                    : spec.id === 0x36f || spec.id === 0x371
+                      ? [target, value, words[(sourceIndex + 6) % words.length]]
+                      : [
+                          target,
+                          value,
+                          retained
+                            ? [0, retainedPointer, 0xffffffff, retainedPointer, 0x80000000][
+                                sourceIndex
+                              ]
+                            : sourceIndex % 2
+                              ? handle
+                              : 0,
+                          ...Array.from(
+                            { length: 10 },
+                            (_, i) => words[(i + sourceIndex) % words.length],
+                          ),
+                        ],
             nativeArgs = args.slice();
           if (spec.words === 13 && !retained && nativeArgs[2]) nativeArgs[2] = pointer;
           nativeArgs.forEach((word, i) => p.store(argv + i * 4, word));
@@ -199,7 +201,7 @@ try {
         operations,
         comparisons,
         scope:
-          'Seven original main2C3/2C4/26E/26F/270/271/370 wrappers, raw retained pointer transport and actual kcBuffer translation, canonical task namespace, all packet bytes, float/unsigned clamp boundaries, original ANM filename search, complete VM domains, original reference counts and result canaries. Draw receiver lifecycle and pixels are checked through World separately.',
+          'Nine original main2C3/2C4/26E/26F/270/271/36F/370/371 wrappers, raw retained pointer transport and actual kcBuffer translation, canonical task namespace, all packet bytes, float/unsigned clamp boundaries, original ANM filename search, complete VM domains, original reference counts and result canaries. Draw receiver lifecycle and pixels are checked through World separately.',
       },
       null,
       2,

@@ -3,6 +3,7 @@
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 export class NativeDrawTask {
   constructor(graphics, record) {
     this.graphics = graphics;
@@ -242,12 +243,33 @@ export class NativeDrawTask {
         }
         return 0;
       }
-      case 312:
-        if (this.state.renderer)
-          await (
-            await this.world.getNativeFeature('retained-draw')
-          ).setAnimationVariable(this, key, load(l), load(l + 4));
+      case 311: {
+        const sound = await this.soundTarget(),
+          links = this.state.registrations,
+          link = links.find((entry) => entry.key === key);
+        if (l === 0xffffffff) {
+          if (link) {
+            await this.soundMessage(sound, 211, link.bank, 0);
+            await this.setAnimationVariable(key, 0, 0);
+            links.splice(links.indexOf(link), 1);
+          }
+        } else {
+          // Reassigning a key preserves its threshold. The original enables
+          // the new bank without sending a disable to the old bank.
+          if (link) link.bank = l;
+          else links.push({ key, bank: l, threshold: 1000 });
+          await this.soundMessage(sound, 211, l, 1);
+        }
         return 0;
+      }
+      case 312:
+        if (this.state.renderer) await this.setAnimationVariable(key, load(l), load(l + 4));
+        return 0;
+      case 313: {
+        const link = this.state.registrations.find((entry) => entry.key === key);
+        if (link) link.threshold = l >>> 0;
+        return 0;
+      }
       case 307:
         store(l, this.entry(key)?.image || 0);
         return 0;
@@ -264,6 +286,40 @@ export class NativeDrawTask {
             `Native drawing message ${message} requires its complete retained renderer`,
           );
         return this.base.message(words, context);
+    }
+  }
+  async setAnimationVariable(key, index, value) {
+    return (await this.world.getNativeFeature('retained-draw')).setAnimationVariable(
+      this,
+      key,
+      index,
+      value,
+    );
+  }
+  async soundTarget() {
+    return nativeEngineWord(
+      await this.world.sendNativeEngine(
+        0,
+        this.record.id,
+        this.world.engineMessages.layout.rootStart + 3,
+      ),
+      'Draw sound task lookup',
+    );
+  }
+  soundMessage(target, message, bank, value = 0) {
+    const raw = this.world.profile.startsWith('sdk-') ? message - 2 : message;
+    return this.world.sendNativeEngine(target, this.record.id, raw, bank, value);
+  }
+  async tick() {
+    const links = this.state.registrations;
+    if (!links.length) return;
+    const sound = await this.soundTarget();
+    for (const link of links.toSorted((a, b) => a.key - b.key)) {
+      const level = nativeEngineWord(
+        await this.soundMessage(sound, 212, link.bank),
+        'Draw sound level query',
+      );
+      await this.setAnimationVariable(link.key, 0, Number(level >= link.threshold));
     }
   }
   snapshot() {

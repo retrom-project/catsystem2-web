@@ -335,6 +335,29 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     assert.equal(p.load(variable), 0xf1234567);
     await call(world, 0x370, [nativeSurface, 1, 63, 42]);
     assert.equal(p.load(variable), 0xf1234567, 'the other Draw key has no effect on the ANM');
+    const levels = new Map(),
+      levelSource = {
+        channels: new Map(),
+        stop() {},
+        nativeLevel: (key) => levels.get(key) ?? 0,
+      };
+    world.sound.audio = levelSource;
+    await call(world, 0x371, [nativeSurface, 0, 0]);
+    await call(world, 0x36f, [nativeSurface, 0, 2]);
+    assert.equal(world.sound.device[2].property, 1);
+    levels.set('native:2', 999);
+    await draw.tick();
+    assert.equal(p.load(animation + 32), 0);
+    levels.set('native:2', 1000);
+    await draw.tick();
+    assert.equal(p.load(animation + 32), 1);
+    await call(world, 0x371, [nativeSurface, 0, 0x80000000]);
+    await call(world, 0x36f, [nativeSurface, 0, 3]);
+    assert.equal(world.sound.device[2].property, 1);
+    assert.equal(world.sound.device[3].property, 1);
+    levels.set('native:3', 0x7fffffff);
+    await draw.tick();
+    assert.equal(p.load(animation + 32), 0);
     const preview = inspectFrame ? await inspectFrame(world) : null;
     fresh = make();
     await fresh.restore(structuredClone(world.snapshot()));
@@ -347,6 +370,17 @@ export async function exerciseRenderSourcesWorld(make, layout, rgba, assert, ins
     await call(fresh, 0x370, [nativeSurface, 0, 63, 42]);
     assert.equal(fp.load(variable), 42);
     assert.equal(p.load(variable), 0xf1234567, 'the restored ANM has independent memory');
+    fresh.sound.audio = levelSource;
+    assert.equal(fresh.sound.device[3].property, 1);
+    levels.set('native:3', 0x80000000);
+    await restored.tick();
+    assert.equal(fp.load(animation + 32), 1);
+    assert.equal(p.load(animation + 32), 0);
+    await call(fresh, 0x36f, [nativeSurface, 0, 0xffffffff]);
+    assert.equal(fp.load(animation + 32), 0);
+    assert.equal(fresh.sound.device[3].property, 0);
+    assert.equal(fresh.sound.device[2].property, 1);
+    assert.equal(world.sound.device[3].property, 1);
     assert.deepEqual(fm.bytes(block, sourceBytes.length), sourceBytes);
     assert.equal(fp.load(fmMemory.guestAddress(fresh.main.id, fm, block + 4)), animated.pointer);
     assert.equal(fp.load(fmMemory.guestAddress(fresh.main.id, fm, shared + 4)), manifest.pointer);
