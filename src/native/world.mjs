@@ -61,6 +61,7 @@ import { installNativeSectionTables } from './section-table.mjs';
 import { installNativeImageOwners } from './image-owner.mjs';
 import { installNativeGeometry } from './geometry.mjs';
 import { installNativeDrawCommands } from './draw-commands.mjs';
+import { installNativeTilePlaneCommand } from './tile-plane-command.mjs';
 import { installNativeNameTables } from './nametable.mjs';
 import { installNativeEffectCommands } from './effect-commands.mjs';
 import { installNativeViewGeometry } from './view-geometry.mjs';
@@ -367,6 +368,7 @@ export class NativeWorld {
     installNativeImageOwners(this);
     installNativeGeometry(this);
     installNativeDrawCommands(this);
+    installNativeTilePlaneCommand(this);
     installNativeNameTables(this);
     installNativeEffectCommands(this);
     installNativeViewGeometry(this);
