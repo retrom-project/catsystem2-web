@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
@@ -49,7 +50,15 @@ engine.kernel.registerFiles('script-lifecycle', {
     return activeFiles.read(match?.[1] ?? path);
   },
 });
-new NativeEngineFiles(engine, { game: { readCategory: (name) => activeFiles.read(name) } });
+new NativeDataBuffers(engine);
+new NativeEngineFiles(engine, {
+  game: { readCategory: (name) => activeFiles.read(name) },
+  getNativeFeature(name) {
+    const feature = engine.features.get(name);
+    assert.ok(feature, `Missing Script lifecycle oracle feature ${name}`);
+    return feature;
+  },
+});
 engine.registerFeature('task-memory', {
   guestAddress: () => p.load(p.load(activeRaw + 112) + 20),
   // This oracle normalizes VM data addresses at the explicit transport boundary.
