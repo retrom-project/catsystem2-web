@@ -61,8 +61,18 @@ CAT2_GAME_URL=http://localhost:4101 npm run test:route
 `corpus` 检查全部支持格式；`--decode` 解码全部 HG 无损帧与 PSB 模型；`--walk 01`
 只遍历脚本命令，不验证时序、音频或画面。`test:native-game` 使用固定的
 NEKOPARA Vol. 3 输入，从浏览器启动原生 World，验证语言选择、标题、真实输入和
-导入 checkpoint 后的像素一致性。`test:game` 和 `test:route` 是旧播放器的
+导入 checkpoint 后的对话像素与继续阅读。`test:game` 和 `test:route` 是旧播放器的
 交互及完整路线用例，依赖旧播放器的场景状态，不能作为原生 World 的验收证据。
+
+官方 SDK 4.01 有独立的冷启动与教程回归。将固定 SDK 的 `system` 目录挂载到另一端口：
+
+```sh
+npm run dev -- --port 4111 --game /path/to/sdk/system
+CAT2_SDK_URL=http://localhost:4111 npm run test:native-sdk
+```
+
+该测试通过实际鼠标进入教程，验证原生标题和选项画面在新 World 中逐像素恢复，
+并确认恢复后的选择可以继续。
 
 已有浏览器可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` 复用。
 不要将私有游戏、截图、存档或反编译数据库添加到本仓库。

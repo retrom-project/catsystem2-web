@@ -15,6 +15,7 @@
     "test:browser": "playwright test",
     "test:game": "playwright test --config playwright.game.config.mjs",
     "test:native-game": "playwright test --config playwright.native-game.config.mjs",
+    "test:native-sdk": "playwright test --config playwright.native-sdk.config.mjs",
     "test": "node --test tests/*.test.mjs",
     "corpus": "node scripts/corpus.mjs",
     "prepare:media": "node scripts/prepare-media.mjs",

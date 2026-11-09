@@ -1,0 +1,109 @@
+// SPDX-License-Identifier: MPL-2.0
+import { test, expect } from '@playwright/test';
+import { frameClock, state, step, until, clickNativeButton, pixels } from './native-game-input.mjs';
+
+const sourceIdentity = 'fe2025130e0f8f7e776eb96b3df004f3f46e65e7fefbe3b6a7cdd5e239a2f217';
+const profile = 'sdk-4.01-engine-2.6.1.74';
+
+async function startSDK(page) {
+  const response = await page.request.get('/game.json');
+  expect(response.ok(), 'Mount the frozen SDK system directory on CAT2_SDK_URL').toBe(true);
+  expect((await response.json()).identity).toBe(sourceIdentity);
+  await frameClock(page);
+  await page.goto('/');
+  await page.click('#start');
+  await page.waitForFunction(
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { polling: 100, timeout: 180_000 },
+  );
+  expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+}
+
+async function freshAtSameFrame(page) {
+  const before = await state(page),
+    image = await pixels(page);
+  expect(image.colors).toBeGreaterThan(32);
+  expect(
+    await page.evaluate(async () => {
+      const engine = window.catSystem2,
+        old = engine.world;
+      await engine.restore(await engine.snapshot());
+      await engine.render();
+      return engine.world !== old && engine.world.nativeEngine.refs.nativeOwner;
+    }),
+  ).toBe(true);
+  expect(await state(page)).toEqual(before);
+  expect(await pixels(page)).toEqual(image);
+  return image;
+}
+
+async function waitForButton(page, key) {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    if (
+      await page.evaluate(
+        (key) =>
+          window.catSystem2
+            .activeFES()
+            ?.candidates()
+            .some(({ o }) => o.key === key),
+        key,
+      )
+    )
+      return;
+    await step(page, 6);
+  }
+  throw new Error(`Original SDK button did not become active: ${key}`);
+}
+
+test('official SDK starts its original owner and restores the title and tutorial choice', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await startSDK(page);
+  expect(
+    await page.evaluate(() => {
+      const engine = window.catSystem2.world.nativeEngine,
+        { owner, settings, defaultSettings, nativeOwner } = engine.refs;
+      return {
+        nativeOwner,
+        distinctSettings: owner < settings && settings < defaultSettings,
+        nativeFontEnumeration: engine.kernel.calls.get('gdi32.dll!EnumFontFamiliesA'),
+      };
+    }),
+  ).toEqual({ nativeOwner: true, distinctSettings: true, nativeFontEnumeration: 2 });
+  await until(page, 'title#WAIT', 360);
+  const title = await freshAtSameFrame(page);
+  await waitForButton(page, 'btn1[2]');
+  await clickNativeButton(page, 'btn1[2]');
+  await waitForButton(page, 'btn2[1]');
+  await clickNativeButton(page, 'btn2[1]');
+  for (let attempt = 0; attempt < 120; attempt++) {
+    const { stack } = await state(page);
+    if (stack.includes('select#WAIT')) break;
+    if (stack.includes('meswnd_b#WAIT') && !stack.some((label) => label.startsWith('select#'))) {
+      const canvas = await page.locator('#screen').boundingBox();
+      await page.mouse.move(canvas.x + canvas.width * 0.48, canvas.y + canvas.height * 0.61);
+      await step(page, 1);
+      await page.mouse.down();
+      await step(page, 2);
+      await page.mouse.up();
+    }
+    await step(page, 6);
+  }
+  expect((await state(page)).stack).toContain('select#WAIT');
+  const choice = await freshAtSameFrame(page);
+  expect(choice.sha256).not.toBe(title.sha256);
+  expect(
+    await page.evaluate(() =>
+      window.catSystem2
+        .activeFES()
+        .candidates()
+        .map(({ o }) => o.key),
+    ),
+  ).toEqual(['fr1[0]', 'fr1[1]', 'fr1[2]', 'fr1[3]']);
+  await clickNativeButton(page, 'fr1[0]');
+  await until(page, 'select#EXIT', 36);
+  expect(errors).toEqual([]);
+});
