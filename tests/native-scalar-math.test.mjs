@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { verifyScalarMath } from '../scripts/verify-native-scalar-math.mjs';
 import { verifyWordUnpacking } from '../scripts/verify-native-word-unpack.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';

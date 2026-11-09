@@ -8,7 +8,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeRegistry } from '../src/native/registry.mjs';
 import { registryDecodeANSI, registryEncodeANSI } from '../src/native/registry-codepage.mjs';
 import { configurationQueryMachine } from './fixtures/configuration-query-fixture.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';

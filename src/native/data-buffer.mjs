@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Raw kcBuffer ownership, distinct from a decoded bitmap and its wrapper.
 import { nativeReply } from '../kcs/vm.mjs';
-import { NATIVE_ENGINE_IMAGES } from './engine-process.mjs';
 import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
@@ -105,7 +104,7 @@ export class NativeDataBuffers {
   }
   allocateData(size) {
     const p = this.process,
-      heap = p.load(NATIVE_ENGINE_IMAGES[this.engine.profile].heap),
+      heap = p.load(this.engine.image.heap),
       allocation = this.engine.kernel.heapAllocate(heap, 0, length(size) + 4);
     if (!allocation) throw new Error('Native data buffer heap allocation failed');
     // 6A49D0 / 575CE0 return one DWORD after their heap allocation. The
@@ -119,7 +118,7 @@ export class NativeDataBuffers {
       allocation = address - 4,
       references = p.load(allocation) | 0;
     if (references <= 1) {
-      const heap = p.load(NATIVE_ENGINE_IMAGES[this.engine.profile].heap);
+      const heap = p.load(this.engine.image.heap);
       if (!this.engine.kernel.heapRelease(heap, allocation))
         throw new Error('Native data buffer freed unknown heap storage');
     } else p.store(allocation, references - 1);

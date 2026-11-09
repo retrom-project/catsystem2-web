@@ -21,6 +21,10 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
   复现所需精度，不能假定浮点结果逐位一致。
 
 当前仍处于迁移期，下面描述的是尚未替换完的混合实现，不代表目标架构已经完成。
+`src/engine.mjs` 和 `NativeWorld` 通过 `transitionalExe` 显式接收过渡宿主。
+当前页面使用 `web/transitional-entry.mjs` 注入原 EXE 后端；纯入口的静态依赖图
+由 `scripts/check-native-entry.mjs` 检查。领域模块中的剩余地址随第 3–9 阶段迁移。
+共享 Windows 服务位于 `src/native/windows-services.mjs`，独立 DLL 宿主可直接使用。
 `npm run check` 按文件限制现有 EXE 地址、调用和引用的数量，防止依赖增加；
 规则和基线更新方式见 [完成标准](completion.md)。
 
@@ -48,12 +52,13 @@ main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列�
 ```js
 import { GameFiles } from './src/files.mjs';
 import { CatSystem2 } from './src/engine.mjs';
+import { transitionalExe } from './web/transitional-entry.mjs';
 
 // 在用户点击处理函数中解锁音频。
 const audioContext = new AudioContext();
 await audioContext.resume();
 const game = await GameFiles.fromHTTP('/game.json');
-const player = new CatSystem2({ game, canvas, video, audioContext, onState });
+const player = new CatSystem2({ game, canvas, video, audioContext, onState, transitionalExe });
 await player.initialize();
 
 await player.step();

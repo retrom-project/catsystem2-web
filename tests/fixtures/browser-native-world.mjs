@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Authored browser client with a real GPU and an actual mounted fixed engine.
-import { NativeWorld } from '../../src/native/world.mjs';
+import { NativeWorld } from '../../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { MotionLibrary } from '../../src/motion/library.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';

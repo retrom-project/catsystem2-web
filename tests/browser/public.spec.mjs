@@ -319,7 +319,7 @@ test('browser window services apply native preferences, manage real save files, 
   await mountOriginalEngines(page, [sdkProfile]);
   const program = [...kcsProgram([[37, 1024], [43, 0x47, 4], [59]])];
   await page.evaluate(async (program) => {
-    const { CatSystem2 } = await import('/src/engine.mjs'),
+    const { CatSystem2 } = await import('/web/transitional-entry.mjs'),
       { GameFiles, BlobFile } = await import('/src/files.mjs'),
       profile = 'sdk-4.01-engine-2.6.1.74',
       file = (bytes) => new BlobFile(new Blob([bytes])),
@@ -686,7 +686,7 @@ test('full native movie calls preserve view gates and active video across a fres
     media = [...(await readFile(new URL('../fixtures/native-movie.webm', import.meta.url)))];
   const results = await page.evaluate(
     async ({ program, media }) => {
-      const { CatSystem2 } = await import('/src/engine.mjs'),
+      const { CatSystem2 } = await import('/web/transitional-entry.mjs'),
         { GameFiles, BlobFile } = await import('/src/files.mjs'),
         { serializeCheckpoint, deserializeCheckpoint } = await import('/src/checkpoint.mjs'),
         results = [];
@@ -1011,7 +1011,7 @@ test('ordinary native planes draw divided VRAM pages with their own depth and re
 }) => {
   await page.goto('/');
   const result = await page.evaluate(async () => {
-    const { NativeWorld } = await import('/src/native/world.mjs'),
+    const { NativeWorld } = await import('/web/transitional-entry.mjs'),
       { NativeConfiguration } = await import('/src/native/config.mjs'),
       { ParticlesGL } = await import('/src/render/particles-gl.mjs'),
       { MotionLibrary } = await import('/src/motion/library.mjs'),
@@ -1130,7 +1130,7 @@ test('native engine checkpoints restore through a fresh world, reject a broken c
     ),
   ];
   const result = await page.evaluate(async (program) => {
-    const { CatSystem2 } = await import('/src/engine.mjs'),
+    const { CatSystem2 } = await import('/web/transitional-entry.mjs'),
       { GameFiles, BlobFile } = await import('/src/files.mjs'),
       { serializeCheckpoint, deserializeCheckpoint } = await import('/src/checkpoint.mjs'),
       { NativeSoundPacket } = await import('/src/native/sound.mjs');

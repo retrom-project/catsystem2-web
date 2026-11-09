@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Executes the user-supplied PE32 E-mote driver. No proprietary DLL is shipped.
 import { PE32Process } from '../ppi/pe32.mjs';
-import { NativeEngineWindows } from '../native/engine-process.mjs';
+import { NativeEngineWindows } from '../native/windows-services.mjs';
 import { loadUnicorn } from '../ppi/backend.mjs';
 import { EmoteD3D9 } from './native-d3d.mjs';
 import { Binary, inflate } from '../binary.mjs';

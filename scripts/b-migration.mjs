@@ -8,7 +8,12 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
 import { format, resolveConfig } from 'prettier';
-import { IMAGE_RANGES, scanRuntime, compareBaseline } from './check-no-exe-addresses.mjs';
+import {
+  IMAGE_RANGES,
+  scanRuntime,
+  compareBaseline,
+  transitionalRuntimeFiles,
+} from './check-no-exe-addresses.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const output = join(root, 'docs/b-migration.json');
@@ -734,7 +739,7 @@ function tally(items, key) {
 
 async function build() {
   const modules = new Map();
-  for (const file of await filesBelow('src'))
+  for (const file of [...(await filesBelow('src')), ...(await transitionalRuntimeFiles(root))])
     modules.set(file, moduleFacts(file, await readFile(join(root, file), 'utf8')));
   const docs = new Map();
   for (const file of (await readdir(join(root, 'docs')))

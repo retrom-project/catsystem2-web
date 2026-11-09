@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfigurationQueries } from '../src/native/configuration-query.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';

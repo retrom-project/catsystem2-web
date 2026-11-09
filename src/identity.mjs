@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 const hex = (bytes) => [...bytes].map((v) => v.toString(16).padStart(2, '0')).join('');
 const hash = async (bytes) => hex(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)));
+export const binaryIdentity = hash;
 // A bounded-memory tree hash, shared by local directory and HTTP development inputs.
 export async function sourceIdentity(files) {
   const lines = [];

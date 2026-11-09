@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { KCSScheduler } from '../src/kcs/scheduler.mjs';
 import { readKCS, nativeReply } from '../src/kcs.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

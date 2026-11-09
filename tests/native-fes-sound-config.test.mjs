@@ -12,7 +12,7 @@ import {
 } from '../src/native/fes-sound-config.mjs';
 import { EngineHost } from '../src/host.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';

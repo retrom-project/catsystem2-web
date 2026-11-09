@@ -17,7 +17,7 @@ import {
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
 import {

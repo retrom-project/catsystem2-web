@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { conditionalNativeGraphicsBoundary } from '../src/native/graphics-task.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { floatBits, bitsFloat } from '../src/kcs.mjs';

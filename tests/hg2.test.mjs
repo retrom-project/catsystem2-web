@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { HG2, encodeHG2 } from '../src/formats/hg2.mjs';
 import { openImage, ImageStore } from '../src/formats/hg3.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

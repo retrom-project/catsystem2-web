@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // DirectShow connection boundary for the original renderless SimplePlane movie.
-import { nativeImageIdentity } from './engine-process.mjs';
+import { binaryIdentity as nativeImageIdentity } from '../identity.mjs';
 import { NativeHapDriver, NativeHapPlayback } from './movie-hap-playback.mjs';
 import { writeMoviePixels } from './movie-texture-renderer.mjs';
 import { WEBM_CONVERTERS } from './movie-webm.mjs';

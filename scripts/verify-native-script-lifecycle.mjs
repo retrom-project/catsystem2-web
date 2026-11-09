@@ -8,7 +8,7 @@ import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-
 import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';

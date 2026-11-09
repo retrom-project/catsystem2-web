@@ -31,7 +31,7 @@ import { serializeNativePreferences } from './preferences.mjs';
 import { NativeFESSound } from './fes-sound.mjs';
 import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
-import { NativeEngineProcess } from './engine-process.mjs';
+import { requireTransitionalHost } from './transitional-exe.mjs';
 import { checkNativeDirectXStartup } from './engine-system-information.mjs';
 import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
@@ -122,6 +122,7 @@ export class NativeWorld {
     steam = null,
     factories = {},
     bootstrapOwner = null,
+    transitionalExe = null,
   }) {
     Object.assign(this, {
       game,
@@ -134,6 +135,7 @@ export class NativeWorld {
       random,
       motionLibrary,
       bootstrapOwner,
+      transitionalExe,
     });
     this.clock = new NativeSystemClock({
       now: host.nativeTimeGetTime ? () => host.nativeTimeGetTime() : null,
@@ -505,38 +507,43 @@ export class NativeWorld {
   ensureNativeEngine() {
     if (this.closed) throw new Error('Native world is closed');
     if (!this.nativeEngineLoading)
-      this.nativeEngineLoading = NativeEngineProcess.open({
-        game: this.game,
-        profile: this.profile,
-        configuration: this.configuration,
-        bootstrapOwner: this.bootstrapOwner && {
-          ...this.bootstrapOwner,
-          displaySize: () => this.graphics.view.virtualSize(),
-          touchPoints: () => this.host.nativeTouchPoints?.(),
-          mountFiles: async (engine) => {
-            // The native game defaults open through the same mounted file
-            // adapter as gameplay. These factories do not await the World.
-            for (const name of ['data-buffers', 'engine-files'])
-              await this.nativeFeatureFactories.get(name)(engine, this);
+      this.nativeEngineLoading = requireTransitionalHost(
+        this.transitionalExe,
+        this.profile,
+        'process.open',
+      )
+        .open({
+          game: this.game,
+          profile: this.profile,
+          configuration: this.configuration,
+          bootstrapOwner: this.bootstrapOwner && {
+            ...this.bootstrapOwner,
+            displaySize: () => this.graphics.view.virtualSize(),
+            touchPoints: () => this.host.nativeTouchPoints?.(),
+            mountFiles: async (engine) => {
+              // The native game defaults open through the same mounted file
+              // adapter as gameplay. These factories do not await the World.
+              for (const name of ['data-buffers', 'engine-files'])
+                await this.nativeFeatureFactories.get(name)(engine, this);
+            },
           },
-        },
-        readFile: (name) => this.storage.read(name),
-        writeFile: (name, bytes) => this.storage.write(name, bytes),
-        statFile: (name) => this.storage.stat?.(name) ?? null,
-        removeFile: (name) => this.storage.remove?.(name) ?? false,
-        setFileTimes: (name, times) => this.storage.setTimes?.(name, times) ?? false,
-        setFileAttributes: (name, attributes) =>
-          this.storage.setAttributes?.(name, attributes) ?? false,
-        copyFile: (from, to, fail) => this.storage.copy?.(from, to, fail) ?? false,
-        moveFile: (from, to) => this.storage.move?.(from, to) ?? false,
-        diskSpace: () => this.storage.diskSpace?.() ?? null,
-        listFiles: () => this.storage.list?.() ?? [],
-        random: this.random,
-        clock: this.clock,
-        now: () => this.clock.now(),
-        epoch: this.clock.epoch,
-        configurationChanged: () => this.markConfigurationDirty(),
-      })
+          readFile: (name) => this.storage.read(name),
+          writeFile: (name, bytes) => this.storage.write(name, bytes),
+          statFile: (name) => this.storage.stat?.(name) ?? null,
+          removeFile: (name) => this.storage.remove?.(name) ?? false,
+          setFileTimes: (name, times) => this.storage.setTimes?.(name, times) ?? false,
+          setFileAttributes: (name, attributes) =>
+            this.storage.setAttributes?.(name, attributes) ?? false,
+          copyFile: (from, to, fail) => this.storage.copy?.(from, to, fail) ?? false,
+          moveFile: (from, to) => this.storage.move?.(from, to) ?? false,
+          diskSpace: () => this.storage.diskSpace?.() ?? null,
+          listFiles: () => this.storage.list?.() ?? [],
+          random: this.random,
+          clock: this.clock,
+          now: () => this.clock.now(),
+          epoch: this.clock.epoch,
+          configurationChanged: () => this.markConfigurationDirty(),
+        })
         .then(async (engine) => {
           try {
             new NativeGlobalStringsBridge(engine, this.globalStrings);
@@ -891,7 +898,11 @@ export class NativeWorld {
     return this.main;
   }
   async initializeApplicationServices(name) {
-    const m2Bootstrap = await inspectNativeM2Bootstrap(this.game, this.profile),
+    const m2Bootstrap = await inspectNativeM2Bootstrap(
+        this.game,
+        this.profile,
+        this.transitionalExe,
+      ),
       m2 = m2Bootstrap?.required ? await this.getNativeFeature('m2') : null;
     if (this.bootstrapOwner)
       await readNativeStartupSoundConfiguration(

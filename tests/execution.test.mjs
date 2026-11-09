@@ -9,7 +9,7 @@ import { objectCommand, FESObject } from '../src/fes/object.mjs';
 import { Stage, planeNumbers } from '../src/stage.mjs';
 import { ScenePlayer } from '../src/scene.mjs';
 import { AudioMixer } from '../src/audio.mjs';
-import { CatSystem2 } from '../src/engine.mjs';
+import { CatSystem2 } from '../web/transitional-entry.mjs';
 import { catScene, memoryGame, u32, translation } from './helpers.mjs';
 
 test('changing language refreshes cached history and can return from translation to original text', () => {

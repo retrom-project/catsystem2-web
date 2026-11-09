@@ -92,7 +92,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
           { nativeImageIdentity },
           { serializeCheckpoint, deserializeCheckpoint },
         ] = await Promise.all([
-          import('/src/native/world.mjs'),
+          import('/web/transitional-entry.mjs'),
           import('/src/native/config.mjs'),
           import('/src/motion/library.mjs'),
           import('/src/ppi/random.mjs'),

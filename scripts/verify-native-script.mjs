@@ -7,7 +7,7 @@ import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NATIVE_PROFILES } from '../src/native/catalog.mjs';

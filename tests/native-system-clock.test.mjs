@@ -8,7 +8,7 @@ import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NATIVE_PROFILES } from '../src/native/catalog.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

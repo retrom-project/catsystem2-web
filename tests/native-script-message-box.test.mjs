@@ -8,7 +8,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
 import { NATIVE_SCRIPT_MESSAGE_BOX } from '../src/native/script-message-box.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 

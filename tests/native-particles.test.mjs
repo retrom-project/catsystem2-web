@@ -9,7 +9,7 @@ import { KCSMachine, floatBits } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { memoryGame } from './helpers.mjs';

@@ -6,7 +6,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { NativeRectangles } from '../src/native/rectangles.mjs';
 import { rectangleFixture } from './fixtures/rectangle-fixture.mjs';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

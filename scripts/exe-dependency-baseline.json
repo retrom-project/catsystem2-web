@@ -1,11 +1,6 @@
 {
   "version": 1,
   "files": {
-    "src/emote/native-device.mjs": {
-      "addresses": 0,
-      "calls": 0,
-      "references": 1
-    },
     "src/native/area-effect-commands.mjs": {
       "addresses": 16,
       "calls": 2,
@@ -54,17 +49,12 @@
     "src/native/data-buffer.mjs": {
       "addresses": 21,
       "calls": 2,
-      "references": 1
+      "references": 0
     },
     "src/native/database.mjs": {
       "addresses": 18,
       "calls": 2,
       "references": 0
-    },
-    "src/native/directshow.mjs": {
-      "addresses": 0,
-      "calls": 0,
-      "references": 1
     },
     "src/native/draw-commands.mjs": {
       "addresses": 18,
@@ -80,11 +70,6 @@
       "addresses": 15,
       "calls": 0,
       "references": 0
-    },
-    "src/native/emote-bootstrap.mjs": {
-      "addresses": 0,
-      "calls": 0,
-      "references": 1
     },
     "src/native/emote-configuration.mjs": {
       "addresses": 22,
@@ -646,15 +631,15 @@
       "calls": 1,
       "references": 0
     },
-    "src/native/world.mjs": {
-      "addresses": 0,
-      "calls": 0,
-      "references": 4
-    },
     "src/ppi/native-services.mjs": {
       "addresses": 2,
       "calls": 0,
       "references": 0
+    },
+    "web/transitional-entry.mjs": {
+      "addresses": 0,
+      "calls": 0,
+      "references": 4
     }
   }
 }

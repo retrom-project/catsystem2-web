@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile, lstat } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
@@ -161,6 +161,26 @@ export function scanSource(source, filename = 'source.mjs') {
   return counts;
 }
 
+export async function transitionalRuntimeFiles(root) {
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(join(root, 'scripts/transitional-runtime.json'), 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+  if (
+    !Array.isArray(manifest.files) ||
+    manifest.files.some(
+      (file) =>
+        typeof file !== 'string' || !/^(?:web|oracle)\/(?!.*(?:^|\/)\.\.?\/).+\.mjs$/.test(file),
+    ) ||
+    new Set(manifest.files).size !== manifest.files.length
+  )
+    throw new Error('Invalid transitional runtime include list');
+  return manifest.files;
+}
+
 export async function scanRuntime(root) {
   const src = join(root, 'src');
   const files = {};
@@ -177,6 +197,14 @@ export async function scanRuntime(root) {
     }
   }
   await visit(src);
+  for (const name of await transitionalRuntimeFiles(root)) {
+    const path = join(root, name),
+      info = await lstat(path);
+    if (!info.isFile() || info.isSymbolicLink())
+      throw new Error(`Invalid transitional runtime file ${name}`);
+    const counts = scanSource(await readFile(path, 'utf8'), name);
+    if (categories.some((category) => counts[category])) files[name] = counts;
+  }
   return Object.fromEntries(Object.entries(files).sort(([a], [b]) => a.localeCompare(b, 'en')));
 }
 
@@ -199,7 +227,7 @@ function validateBaseline(data) {
     throw new Error('Invalid EXE dependency baseline');
   for (const [name, counts] of Object.entries(data.files)) {
     if (
-      !/^src\/(?!.*(?:^|\/)\.\.?\/).+\.(?:[cm]?js|jsx)$/.test(name) ||
+      !/^(?:src|web|oracle)\/(?!.*(?:^|\/)\.\.?\/).+\.(?:[cm]?js|jsx)$/.test(name) ||
       !counts ||
       Object.keys(counts).length !== categories.length ||
       categories.some((key) => !Number.isSafeInteger(counts[key]) || counts[key] < 0)

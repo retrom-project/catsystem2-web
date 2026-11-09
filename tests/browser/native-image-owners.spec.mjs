@@ -42,7 +42,7 @@ for (const [profile, variable] of [
             { ParticleRandom },
             { ParticlesGL },
           ] = await Promise.all([
-            import('/src/native/world.mjs'),
+            import('/web/transitional-entry.mjs'),
             import('/src/native/config.mjs'),
             import('/src/motion/library.mjs'),
             import('/src/ppi/random.mjs'),

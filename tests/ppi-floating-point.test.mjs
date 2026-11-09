@@ -7,7 +7,7 @@ import { NativePPIRuntime } from '../src/ppi/native.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeWorld } from '../src/native/world.mjs';
+import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

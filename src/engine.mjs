@@ -38,6 +38,7 @@ export class CatSystem2 {
     uiLanguage,
     steam = null,
     randomSeed,
+    transitionalExe = null,
     onState = () => {},
     onClosed = () => {},
   }) {
@@ -50,6 +51,7 @@ export class CatSystem2 {
       requestedNativeProfile: nativeProfile,
       requestedUILanguage: uiLanguage,
       randomSeed,
+      transitionalExe,
       steam,
       globals: {},
       strings: {},
@@ -152,6 +154,7 @@ export class CatSystem2 {
     if (this.game.nativeResources) game.nativeResources = Object.create(this.game.nativeResources);
     audio.game = game;
     const world = new NativeWorld({
+      transitionalExe: this.transitionalExe,
       game,
       images: this.images,
       host: this.host,

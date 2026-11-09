@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { GameFiles } from '../src/files.mjs';
-import { CatSystem2 } from '../src/engine.mjs';
+import { CatSystem2 } from './transitional-entry.mjs';
 import {
   CHECKPOINT_LIMIT,
   serializeCheckpoint,

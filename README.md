@@ -24,6 +24,9 @@ E-mote DLL 和 PPI。目标是以 JavaScript 实现引擎运行时，将原 EXE 
 差分 oracle；独立插件 DLL 仍可通过宿主 API 使用 x86。浏览器服务承接文件、输入、GPU、
 音频及其他已实现的平台边界。启动时不进行脱壳或解密。
 当前固定两版引擎；它们的来源及 SHA-256 见 [references.json](references.json)。
+页面使用 `web/transitional-entry.mjs` 显式注入混合后端。直接使用 `src/engine.mjs`
+的宿主可传入 `transitionalExe`；没有宿主的入口可执行已迁移的 JS 路径，遇到未迁移
+操作会报告 operation 和 ABI。静态入口检查随 `npm run check` 执行。
 
 WMV 影片需要单独安装 FFmpeg，然后执行以下命令，并重启开发服务器：
 

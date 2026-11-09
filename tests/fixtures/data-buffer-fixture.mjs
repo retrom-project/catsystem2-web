@@ -70,6 +70,7 @@ export function dataBufferFixture(profile, options = {}) {
     handles = new NativeHandles(),
     engine = {
       profile,
+      image: NATIVE_ENGINE_IMAGES[profile],
       process,
       kernel: {
         heapAllocate(handle, flags, size) {
