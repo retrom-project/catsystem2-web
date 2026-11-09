@@ -5,12 +5,39 @@ import { frameClock, state, step, until, clickNativeButton, pixels } from './nat
 const sourceIdentity = 'fe2025130e0f8f7e776eb96b3df004f3f46e65e7fefbe3b6a7cdd5e239a2f217';
 const profile = 'sdk-4.01-engine-2.6.1.74';
 
+async function writeSetup(page, logLimit) {
+  await page.evaluate(
+    async ({ profile, sourceIdentity, logLimit }) => {
+      const [{ NativeConfiguration }, { NativeFileStorage }, { serializeNativePreferences }] =
+          await Promise.all([
+            import('/src/native/config.mjs'),
+            import('/src/native/storage.mjs'),
+            import('/src/native/preferences.mjs'),
+          ]),
+        configuration = new NativeConfiguration({ profile }),
+        mounted = window.catSystem2?.nativeStorage,
+        storage = mounted ?? new NativeFileStorage({}, sourceIdentity);
+      new DataView(configuration.blocks[1].buffer).setUint32(9 * 4, logLimit, true);
+      configuration.setField('general.disableMovie', 1);
+      if (!mounted) await storage.open();
+      try {
+        if (!(await storage.write('setup.xml', serializeNativePreferences(configuration))))
+          throw new Error('Could not save the SDK setup fixture');
+      } finally {
+        if (!mounted) storage.close();
+      }
+    },
+    { profile, sourceIdentity, logLimit },
+  );
+}
+
 async function startSDK(page) {
   const response = await page.request.get('/game.json');
   expect(response.ok(), 'Mount the frozen SDK system directory on CAT2_SDK_URL').toBe(true);
   expect((await response.json()).identity).toBe(sourceIdentity);
   await frameClock(page);
   await page.goto('/');
+  await writeSetup(page, 647);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
@@ -56,7 +83,7 @@ async function waitForButton(page, key) {
   throw new Error(`Original SDK button did not become active: ${key}`);
 }
 
-test('official SDK starts its original owner and restores the title and tutorial choice', async ({
+test('official SDK starts with saved setup and restores the title and tutorial choice', async ({
   page,
 }) => {
   const errors = [];
@@ -64,17 +91,35 @@ test('official SDK starts its original owner and restores the title and tutorial
   await startSDK(page);
   expect(
     await page.evaluate(() => {
-      const engine = window.catSystem2.world.nativeEngine,
+      const { nativeEngine: engine, configuration } = window.catSystem2.world,
         { owner, settings, defaultSettings, nativeOwner } = engine.refs;
       return {
         nativeOwner,
         distinctSettings: owner < settings && settings < defaultSettings,
         nativeFontEnumeration: engine.kernel.calls.get('gdi32.dll!EnumFontFamiliesA'),
+        com: engine.kernel.comDepth,
+        nativeRandom: Boolean(engine.refs.randomOwner),
+        nativeLocalTime: engine.kernel.calls.get('kernel32.dll!GetLocalTime'),
+        logLimit: new DataView(configuration.blocks[1].buffer).getUint32(9 * 4, true),
       };
     }),
-  ).toEqual({ nativeOwner: true, distinctSettings: true, nativeFontEnumeration: 2 });
+  ).toEqual({
+    nativeOwner: true,
+    distinctSettings: true,
+    nativeFontEnumeration: 2,
+    com: 1,
+    nativeRandom: true,
+    nativeLocalTime: 1,
+    logLimit: 647,
+  });
   await until(page, 'title#WAIT', 360);
+  await writeSetup(page, 389);
   const title = await freshAtSameFrame(page);
+  expect(
+    await page.evaluate(() =>
+      new DataView(window.catSystem2.world.configuration.blocks[1].buffer).getUint32(9 * 4, true),
+    ),
+  ).toBe(647);
   await waitForButton(page, 'btn1[2]');
   await clickNativeButton(page, 'btn1[2]');
   await waitForButton(page, 'btn2[1]');
