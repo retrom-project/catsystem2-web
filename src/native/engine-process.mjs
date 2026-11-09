@@ -22,6 +22,10 @@ import { installNativeEntropy } from './windows-entropy.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { initializeNativeLanguage, releaseNativeLanguage } from './engine-language.mjs';
 import { initializeNativeFileServer, releaseNativeFileServer } from './engine-file-server.mjs';
+import {
+  initializeNativeSystemInformation,
+  releaseNativeSystemInformation,
+} from './engine-system-information.mjs';
 import { NativeExecutableResources } from './engine-executable-resources.mjs';
 import { initializeSDKJavaScript, releaseSDKJavaScript } from './engine-sdk-javascript.mjs';
 
@@ -802,6 +806,7 @@ export class NativeEngineProcess {
         if (engine.process.call(engine.process.load(image.comImports[0]), [0]) !== 0)
           throw new Error('Native application COM initialization did not open a new apartment');
         engine.refs.applicationCOM = true;
+        await initializeNativeSystemInformation(engine);
         if (options.bootstrapOwner.embeddedJavaScript) await initializeSDKJavaScript(engine);
         await initializeNativeFileServer(engine);
         await initializeNativeLanguage(engine);
@@ -1111,6 +1116,11 @@ export class NativeEngineProcess {
       }
       try {
         await releaseNativeFileServer(this);
+      } catch (error) {
+        errors.push(error);
+      }
+      try {
+        await releaseNativeSystemInformation(this);
       } catch (error) {
         errors.push(error);
       }

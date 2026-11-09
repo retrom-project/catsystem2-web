@@ -10,6 +10,7 @@ import {
   NATIVE_ENGINE_IMAGES,
 } from '../src/native/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NATIVE_SYSTEM_INFORMATION } from '../src/native/engine-system-information.mjs';
 import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
@@ -17,6 +18,82 @@ import { NativeWorld } from '../src/native/world.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { memoryGame } from './helpers.mjs';
+
+for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
+  const fixture = process.env[layout.wide ? 'CATSYSTEM2_ENGINE_EXE' : 'CATSYSTEM2_SDK_EXE'];
+  test(
+    `${profile} cold startup owns original system information and restores its Windows bindings`,
+    { skip: !fixture },
+    async () => {
+      const bytes = new Uint8Array(await readFile(fixture)),
+        open = () =>
+          NativeEngineProcess.open({
+            profile,
+            bytes,
+            bootstrapOwner: {},
+            configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
+            readFile: async () => null,
+            heapSize: 128 * 1024 * 1024,
+          }),
+        first = await open(),
+        pointer = first.refs.systemInformation,
+        read = (engine) => {
+          const p = engine.process;
+          assert.equal(engine.refs.systemInformation, pointer);
+          assert.equal(p.load(layout.global), pointer);
+          assert.equal(p.allocations.get(pointer), layout.size);
+          return {
+            system: Array.from({ length: 5 }, (_, i) => p.load(pointer + i * 4)),
+            name: p.string(pointer + 20, layout.wide),
+            edition: p.string(pointer + (layout.wide ? 536 : 280), layout.wide),
+            memory: Array.from({ length: 4 }, (_, i) => p.load(pointer + layout.memory + 4 * i)),
+          };
+        };
+      let fresh;
+      try {
+        const info = read(first);
+        assert.deepEqual(info, {
+          system: [97, 6, 1, 7601, 32],
+          name: 'Windows 7 (x86)',
+          edition: 'Professional',
+          memory: [127, 128, 127, 128],
+        });
+        for (const name of [
+          'ntdll.dll!RtlGetVersion',
+          `kernel32.dll!GetVersionEx${layout.wide ? 'W' : 'A'}`,
+          'kernel32.dll!IsWow64Process',
+          'kernel32.dll!GetProductInfo',
+          'kernel32.dll!GlobalMemoryStatusEx',
+        ])
+          assert.equal(first.kernel.calls.get(name), 1, name);
+        fresh = await open();
+        fresh.restore(first.snapshot());
+        assert.deepEqual(read(fresh), info);
+        const p = fresh.process,
+          probe = p.allocate(64, true),
+          query = fresh.kernel.resolve({ dll: 'KERNEL32.dll', name: 'GlobalMemoryStatusEx' }),
+          available = () => {
+            p.store(probe, 64);
+            assert.equal(p.call(query, [probe]), 1);
+            return new DataView(p.read(probe, 64).buffer).getBigUint64(16, true);
+          },
+          before = available(),
+          reservation = p.allocate(16 * 1024 * 1024);
+        assert.equal(available(), before - 16n * 1024n * 1024n);
+        p.free(reservation);
+        assert.equal(available(), before);
+        p.free(probe);
+      } finally {
+        await fresh?.close();
+        await first.close();
+      }
+      for (const engine of [first, fresh]) {
+        assert.equal(engine.refs.systemInformation, undefined);
+        assert.equal(engine.process.allocations.has(pointer), false);
+      }
+    },
+  );
+}
 
 for (const [profile, variable, encoding] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'Shift_JIS'],

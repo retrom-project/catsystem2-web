@@ -16,6 +16,17 @@ the original function epilogue. The SDK runs the check before loading game
 defaults; the game runs it after reading setup preferences. The following
 desktop registration and device checks stay outside this block; the browser
 still mounts prepared archives.
+The original platform prelude also constructs the system information record
+(SDK `49FBE0`, game `5C3460`) before file-server and Settings startup. The
+version and memory branches run in the original code. Their Windows imports
+describe the virtual 32-bit Windows 7 SP1 environment and its guest memory
+budget. The record and its DLL export bindings survive a fresh process.
+The original destructor clears the singleton on close. DirectX, sound,
+and OEM discovery in the same constructor still require separate services.
+The Windows boundaries follow the
+[version structure](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw)
+and [memory status structure](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex).
+
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
 UTF-8 file in the original code. The browser caches the end of that immutable
