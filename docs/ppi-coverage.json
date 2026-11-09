@@ -1078,7 +1078,7 @@
   "sceneParticles": {
     "implementation": "src/particles.mjs",
     "families": ["particle", "particle2", "particle3"],
-    "bankSharing": "original game sscript shares one table; stop-all walks 4 entries for particle and 8 for particle2 and particle3. The portable path currently supports banks 0 through 3",
+    "bankSharing": "both fixed sscript builds share one table and load PTCL and PPI in banks 0 through 7; the portable path matches the original stop-all limits of 4 entries for particle and 8 for particle2 and particle3",
     "commands": ["load-and-start executable", "stop", "set", "alpha", "fade"],
     "unverifiedFormerAliases": ["ptcl", "ptclp"],
     "taskMessages": "0x13a..0x141 are task messages, not main GCALL IDs",

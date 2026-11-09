@@ -350,12 +350,15 @@ Load resets resources and counters while retaining the native active flag.
 `NativeWorld` saves the shared guest process once and restores it after the
 task graph, preserving interleaved DLL globals/RNG across live tasks.
 
-The actual CST wrappers in frozen `sscript.kcs` recognize `stop`, `set`, `alpha`
-and `fade`. In the frozen game, all three commands index the same bank
-table. The original stop-all loops use four entries for `particle`
-and eight for `particle2` and `particle3` at script PCs `0736D3`,
-`075B74` and `07DB31`. The portable command path currently limits all
-three to the documented four banks. `set` clears all 32 registers
+The actual CST wrappers in both fixed copies of `sscript.kcs` recognize
+`stop`, `set`, `alpha` and `fade`. All three commands address one eight-slot
+table. The original stop-all loops use four entries for `particle` and eight
+for `particle2` and `particle3`: the comparison PCs are `0702C8`, `072769`,
+`07A5E7` in the SDK and `0736D3`, `075B74`, `07DB31` in the game. The
+shared update loop loads both PTCL and PPI from the upper slots. The portable
+command path supports explicit banks 0–7 and uses the same stop-all limits.
+Run `node scripts/verify-native-particle-banks.mjs FIXTURE_ROOT` to exercise
+those original blocks from both pinned scripts. `set` clears all 32 registers
 before copying the supplied values. Alpha defaults to255; fade defaults to
 30 frames, from0 to255. Fade records its origin on the first owner tick and
 clears only the fade flag at its endpoint. It does not destroy a still-active

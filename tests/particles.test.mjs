@@ -154,6 +154,39 @@ test(
 );
 
 test(
+  'CST particle commands share eight slots while the legacy stop-all clears only the first four',
+  { skip: !available },
+  async () => {
+    const particles = host();
+    const load = (slot) =>
+      particles.command('particle3', [slot, 'probe', 'quad', '1', '10000', '1']);
+    const slots = () => [...particles.banks.keys()];
+    try {
+      await load('0');
+      await load('3');
+      await load('4');
+      await load('7');
+      await particles.command('particle2', ['7', 'set', '6']);
+      assert.equal(particles.get(7).instance.registers[0], 6);
+      await particles.command('particle', ['stop']);
+      assert.deepEqual(slots(), [4, 7]);
+      await particles.command('particle', ['4', 'stop']);
+      assert.deepEqual(slots(), [7]);
+      await particles.command('particle2', ['stop']);
+      assert.deepEqual(slots(), []);
+      await load('7');
+      await particles.command('particle3', ['stop']);
+      assert.deepEqual(slots(), []);
+      assert.equal(particles.runtime.modules.size, 0);
+      await assert.rejects(() => load('8'), /bank/);
+      await assert.rejects(() => load('4294967296'), /bank/);
+    } finally {
+      particles.close();
+    }
+  },
+);
+
+test(
   'particle task load/start/stop/end are separate from main VM native IDs',
   { skip: !available },
   async () => {

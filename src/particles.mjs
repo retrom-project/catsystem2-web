@@ -10,6 +10,7 @@ import { ParticlesGL } from './render/particles-gl.mjs';
 
 const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
 const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
+const sceneBankCount = 8;
 export class Particles {
   constructor(
     stage,
@@ -392,12 +393,16 @@ export class Particles {
       throw new Error(`Unknown particle scene command ${verb}`);
     const words = [...args],
       hasBank = /^\d+$/.test(words[0] || ''),
-      bankNumber = hasBank ? this.number(words.shift()) : null,
+      bankNumber = hasBank ? Number(words.shift()) : null,
       sub = words.shift();
-    if (bankNumber !== null && (bankNumber < 0 || bankNumber > 3))
-      throw new Error('CST particle bank must be between 0 and 3');
+    if (bankNumber !== null && bankNumber >= sceneBankCount)
+      throw new Error(`CST particle bank must be between 0 and ${sceneBankCount - 1}`);
     if (sub === 'stop') {
-      for (const key of bankNumber === null ? [0, 1, 2, 3] : [bankNumber]) this.end(key);
+      if (bankNumber !== null) this.end(bankNumber);
+      else {
+        const count = verb === 'particle' ? 4 : sceneBankCount;
+        for (let key = 0; key < count; key++) this.end(key);
+      }
       return;
     }
     if (bankNumber === null || !sub) throw new Error(`Malformed ${verb} command`);
