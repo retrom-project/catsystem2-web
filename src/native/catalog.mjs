@@ -1977,6 +1977,8 @@ const extendedDescriptions = [
   [0x10c, 'movie.close', ['handle movie'], 'bool'],
   [0x10d, 'movie.playing', ['handle movie'], 'bool'],
   [0x10e, 'movie.redraw', ['handle movie'], 'void'],
+  [0x2bd, 'movie.planeLoad', ['word planeTask', 'format* filename'], 'void'],
+  [0x2be, 'movie.planeBorrow', ['word planeTask'], 'borrowed handle'],
   [0x1a1, 'movie.volume', ['handle movie', 'u32 volume'], 'void'],
   [0x314, 'movie.rectangle', ['handle movie', 'i32 x', 'i32 y', 'i32 width', 'i32 height'], 'void'],
   [0x3e4, 'movie.mode', ['handle movie', 'word mode'], 'void'],
@@ -3294,6 +3296,14 @@ for (let id = 0x32; id <= 0x40; id++)
     ...recovered76.get(id),
     evidence: 'both-pinned-scalar-wrappers-and-28524-full-fpu-differential-comparisons',
   });
+for (const id of [0x2bd, 0x2be]) {
+  const fact = {
+    ...recovered76.get(id),
+    evidence: 'both-pinned-plane-movie-wrappers-and-rendered-filtergraph-browser-tests',
+  };
+  recovered76.set(id, fact);
+  recovered74.set(id, fact);
+}
 const genericNames = [
   'debug.print',
   'math.sin',
