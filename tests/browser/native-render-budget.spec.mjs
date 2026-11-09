@@ -3,23 +3,44 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { kcsProgram } from '../helpers.mjs';
 
-// Full retained manager calls with raster shortcuts disabled and a temporary
-// 1.1B-instruction limit in the oracle. Both frozen PEs produce the same
-// bitmap and instruction totals, including the post-upload continuation.
+// Full original retained manager calls with raster shortcuts disabled and
+// a higher oracle budget. The counts include the post-upload continuation.
 const cases = [
   {
     width: 1280,
     height: 720,
     mode: 4,
+    affine: true,
     instructions: 379413960,
     bitmap: 'd3714ba6ac834373a913bd2e4698c7284cfca5207edfa4ad6e32aaa508bb7ed3',
+    gpu: '5d252cda15aba4ba8710d697add76ce2fbf418e797a32b2c63d79b680929aec5',
   },
   {
     width: 1920,
     height: 1080,
     mode: 5,
+    affine: true,
     instructions: 804811883,
     bitmap: 'efda336aebf7c98edac80ddbe0b4f3f642b7955b33519fe0d2bac10b073e64df',
+    gpu: '01c69b48020d80885583f7cc0325e7c4cc23c5510c621becbbc9484f8d0534bd',
+  },
+  {
+    width: 1920,
+    height: 1080,
+    mode: 4,
+    affine: false,
+    instructions: 288267216,
+    bitmap: 'c3a7fb52004e8b2e84a7881555bb15f58a628fbefa0497bf7f4334498fe524ba',
+    gpu: '0c0b53a2aa51004e8911baeb0f941faf8c00e9e347ca7a206e4b6523552a8900',
+  },
+  {
+    width: 1920,
+    height: 1080,
+    mode: 5,
+    affine: false,
+    instructions: 246795216,
+    bitmap: 'cc38733b455f1702283d68b1395e9692375c621d3a1fdbd6e98aa0ba797b674e',
+    gpu: '0fa0383289458e0f3c59639580d8f17dbe27a984818315cd7f7c37e48ac25aec',
   },
 ];
 
@@ -28,7 +49,7 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
 ])
   for (const sample of cases)
-    test(`${profile} ${sample.width}×${sample.height} affine retained drawing stays within the native execution limit`, async ({
+    test(`${profile} ${sample.width}×${sample.height} ${sample.affine ? 'affine' : 'integer'} BTYPE ${sample.mode} stays within the native execution limit`, async ({
       page,
     }) => {
       const sdk = profile.startsWith('sdk-');
@@ -54,7 +75,7 @@ for (const [profile, variable] of [
       });
       await page.goto('/');
       const result = await page.evaluate(
-        async ({ profile, names, width, height, mode }) => {
+        async ({ profile, names, width, height, mode, affine }) => {
           const [{ browserNativeWorld, placeBrowserNativePlane }, { NativeBitmap }] =
               await Promise.all([
                 import('/tests/fixtures/browser-native-world.mjs'),
@@ -139,13 +160,13 @@ for (const [profile, variable] of [
               ),
               item = await draw.upsert(0x90001, {
                 image,
-                position: [4.25, 2.5],
+                position: affine ? [4.25, 2.5] : [0, 0],
                 base: [0, 0],
-                scale: [0.99, 1.02],
-                rotation: 0.017,
+                scale: affine ? [0.99, 1.02] : [1, 1],
+                rotation: affine ? 0.017 : 0,
                 alpha: 255,
                 visible: true,
-                mode: 1,
+                mode: Number(affine),
               });
             item.layer = 3;
             item.clip = clip;
@@ -201,7 +222,6 @@ for (const [profile, variable] of [
               ),
               gpu: await digest(gpu),
               restoredGPU: await digest(fresh.stageRenderer.gpu.pixels()),
-              nonblack: gpu.some((value, i) => i % 4 !== 3 && value),
               segments,
             };
           } finally {
@@ -215,12 +235,13 @@ for (const [profile, variable] of [
           width: sample.width,
           height: sample.height,
           mode: sample.mode,
+          affine: sample.affine,
         },
       );
       expect(result.bitmap).toBe(sample.bitmap);
       expect(result.restoredBitmap).toBe(sample.bitmap);
-      expect(result.nonblack).toBe(true);
-      expect(result.restoredGPU).toBe(result.gpu);
+      expect(result.gpu).toBe(sample.gpu);
+      expect(result.restoredGPU).toBe(sample.gpu);
       const credit = result.segments.at(-1)?.credit;
       expect(credit).toBeGreaterThan(200000000);
       expect(

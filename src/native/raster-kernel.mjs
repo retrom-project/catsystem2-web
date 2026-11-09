@@ -747,7 +747,7 @@ export class NativeRasterKernels {
       total += row;
       if (total > available) return null;
     }
-    return { skipped: total - row, unchanged };
+    return { skipped: total - row, tail: row, unchanged };
   }
   btype() {
     const p = this.process,
@@ -794,17 +794,35 @@ export class NativeRasterKernels {
       target = row + [0, 0x5e, 0xa9, 0xef, 0x14d, 0x274][mode];
     if (!this.range(entry, 4, false, regions) || p.load(entry) !== target) return false;
     const { active, counter, limit } = p.instructionBudget(),
-      available = limit === 0n ? Infinity : Number(limit - counter) + 1;
-    if (!active || available < descriptor[17] * (20 + 15 * descriptor[16])) return false;
+      available = limit === 0n ? Infinity : Number(limit - counter) + 1,
+      columns = descriptor[16],
+      height = descriptor[17],
+      pixels = columns * height,
+      minimumRow = 20 + 15 * columns;
+    if (!active || available < minimumRow) return false;
+    const budget =
+      // Overlay reaches 125 + 11 instructions for a single pixel.
+      available < height * 20 + pixels * 136 &&
+      this.rasterAllowance(
+        {
+          destination: descriptor[1] >>> 0,
+          width: descriptor[2],
+          height: descriptor[3],
+          pitch: descriptor[8],
+          pixels,
+        },
+        row,
+        [[row, 0x48c]],
+      );
+    if (!budget && available < height * minimumRow) return false;
     const raster = this.raster(pointer, frame, sourceRow, destinationRow, descriptor, regions);
     if (!raster) return false;
     const { descriptor: d, input, output, sourceStep, destinationStep } = raster,
       rows = d[17] - 1,
       sourcePixels = new DataView(input.buffer, input.byteOffset, input.byteLength),
       destinationPixels = new DataView(output.buffer, output.byteOffset, output.byteLength),
-      instructions = this.btypeInstructions(raster, table, available);
-    // Leave the full final native row to restore its registers and locals.
-    if (!instructions || !p.consumeInstructions(instructions.skipped)) return false;
+      instructions = this.btypeInstructions(raster, table, budget ? Infinity : available);
+    if (!this.chargeRasterInstructions(instructions, available, budget, pixels)) return false;
     const blendWidth = instructions.unchanged ? 0 : d[16];
     let s = raster.source,
       t = raster.destination,
@@ -973,18 +991,38 @@ export class NativeRasterKernels {
     }
     return { skipped: total - row, tail: row };
   }
-  originalAffineCode(row, length) {
+  rasterAllowance({ destination, width, height, pitch, pixels }, row, spans) {
     const p = this.process,
-      { base, pe } = this.engine.module;
-    return [
-      [row, length],
-      [this.abi.affineSampler, 0xc2],
-      [this.abi.affineMultiply, 0x34],
-    ].every(([address, size]) => {
+      budget = p.rasterBudget;
+    if (
+      budget?.destination !== destination ||
+      budget.width !== width ||
+      budget.height !== height ||
+      budget.pitch !== pitch ||
+      !(pixels > 0 && pixels <= budget.pixels)
+    )
+      return;
+    const { base, pe } = this.engine.module;
+    for (const [address, size] of spans) {
       for (const boundary of p.executionBoundaries.keys())
-        if (boundary !== row && boundary >= address && boundary < address + size) return false;
-      return p.read(address, size).every((byte, i) => byte === pe.image[address - base + i]);
-    });
+        if (boundary !== row && boundary >= address && boundary < address + size) return;
+      if (!p.read(address, size).every((byte, i) => byte === pe.image[address - base + i])) return;
+    }
+    return budget;
+  }
+  chargeRasterInstructions(cost, available, budget, pixels) {
+    // The full final row restores native registers and locals.
+    if (!cost || cost.tail > available) return false;
+    const credit = cost.skipped + cost.tail > available;
+    if ((credit && !budget) || !this.process.consumeInstructions(credit ? 0 : cost.skipped))
+      return false;
+    if (credit) {
+      // Only simulated rows get extra allowance. The CPU still has its
+      // ordinary budget for the tail, epilogue and any later guest code.
+      budget.pixels -= pixels;
+      budget.credited += cost.skipped;
+    }
+    return true;
   }
   affineBtype() {
     return this.affine(true);
@@ -1159,19 +1197,17 @@ export class NativeRasterKernels {
       columns = right - left,
       rows = bottom - top,
       pixels = columns * rows,
-      minimumRow = 24 + (blendType ? 142 : 141) * columns,
-      budget = p.rasterBudget;
+      minimumRow = 24 + (blendType ? 142 : 141) * columns;
     if (!active || available < minimumRow) return false;
-    const allowCredit =
+    const budget =
       // Transform, sampler, weighting and the longest BTYPE branch.
       available < rows * 24 + pixels * (159 + 61 + 84 + 132) &&
-      budget?.destination === destination &&
-      budget.width === dw &&
-      budget.height === dh &&
-      budget.pitch === ds &&
-      pixels <= budget.pixels &&
-      this.originalAffineCode(rowAddress, layout.codeSize);
-    if (!allowCredit && available < rows * minimumRow) return false;
+      this.rasterAllowance({ destination, width: dw, height: dh, pitch: ds, pixels }, rowAddress, [
+        [rowAddress, layout.codeSize],
+        [this.abi.affineSampler, 0xc2],
+        [this.abi.affineMultiply, 0x34],
+      ]);
+    if (!budget && available < rows * minimumRow) return false;
     p.view(source, sourceSize);
     p.view(destination, destinationSize);
     const input = p.view(source, sourceSize),
@@ -1183,18 +1219,9 @@ export class NativeRasterKernels {
           ? { skipped: 0, tail: 0 }
           : this.affineInstructions(
               { d, table, input, output, px, py, baseX, baseY, mode },
-              allowCredit ? Infinity : available,
+              budget ? Infinity : available,
             );
-    // The final native row replays the sampler calls and all conversions.
-    if (!cost || cost.tail > available) return false;
-    const credit = cost.skipped + cost.tail > available;
-    if ((credit && !allowCredit) || !p.consumeInstructions(credit ? 0 : cost.skipped)) return false;
-    if (credit) {
-      // Only simulated rows get extra allowance. The CPU still has its
-      // ordinary budget for the tail, epilogue and any later guest code.
-      budget.pixels -= pixels;
-      budget.credited += cost.skipped;
-    }
+    if (!this.chargeRasterInstructions(cost, available, budget, pixels)) return false;
     for (let y = top; y < bottom - 1; y++)
       for (let x = left; x < right; x++) {
         const cx = ((x << 15) - px + d[45]) | 0,

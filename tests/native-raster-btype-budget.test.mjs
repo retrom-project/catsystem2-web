@@ -72,7 +72,7 @@ for (const [profile, fixture] of [
           if (p.pendingError) throw p.pendingError;
           return { ...state(p), fault };
         },
-        run = (sample, enabled, limit) => {
+        run = (sample, enabled, limit, invoke = execute) => {
           const {
               pattern = normalPixels,
               tail = pattern,
@@ -136,7 +136,7 @@ for (const [profile, fixture] of [
           p.writeRegisters(initial);
           p.cpu.reg_write_i32(p.uc.X86_REG_ESP, p.stackTop - 8);
           p.cpu.reg_write_i32(p.uc.X86_REG_EFLAGS, 0x8d7);
-          return execute(enabled, start, limit);
+          return invoke(enabled, start, limit);
         },
         originalTrace = (sample) => {
           const trace = [],
@@ -270,6 +270,94 @@ for (const [profile, fixture] of [
         assert.deepEqual(state(fresh.process), state(p));
         assert.equal(original.fault, undefined);
         assert.equal(restored.hits.btype, 1);
+
+        for (const mode of [1, 2, 3, 4, 5]) {
+          const pattern = mode === 4 ? thresholdPixels(127, 128) : thresholdPixels(254, 255),
+            rectangle = {
+              pattern,
+              width: 8,
+              height: 5,
+              tight: true,
+              mode,
+              reverse: mode % 2 === 1,
+            },
+            trace = originalTrace(rectangle),
+            credit = trace.lastIndexOf(row) - trace.indexOf(row),
+            cap = trace.length - credit,
+            allowance = () => ({
+              destination,
+              width: rectangle.width,
+              height: rectangle.height,
+              pitch: rectangle.width * 4,
+              pixels: rectangle.width * rectangle.height,
+              credited: 0,
+            }),
+            invoke = (rasterBudget) => (enabled, address, limit) => {
+              kernels.enabled = enabled;
+              p.budget = limit;
+              let fault;
+              try {
+                p.call(address, [descriptor], undefined, { rasterBudget });
+              } catch (error) {
+                fault = error.message;
+              }
+              assert.equal(p.rasterBudget, undefined);
+              return { ...state(p), fault };
+            },
+            scope = allowance(),
+            completed = run(rectangle, false, trace.length, invoke()),
+            scoped = run(rectangle, true, cap, invoke(scope)),
+            cutoff = run(rectangle, false, cap, invoke());
+          assert.equal(completed.pc, p.sentinel);
+          assert.equal(completed.fault, undefined);
+          assert.deepEqual(scoped, { ...completed, budget: scoped.budget });
+          assert.equal(scoped.budget.counter + BigInt(scope.credited), BigInt(trace.length));
+          assert.equal(scoped.budget.limit, BigInt(cap));
+          assert.equal(scope.credited, credit);
+          assert.equal(scope.pixels, 0);
+          assert.equal(cutoff.fault, 'PE32 execution instruction budget exhausted');
+          assert.deepEqual(run(rectangle, true, cap, invoke(scope)), cutoff);
+          assert.deepEqual(
+            run(rectangle, true, cap, invoke({ ...allowance(), pitch: 36 })),
+            cutoff,
+          );
+          const short = trace.indexOf(row) + 20 + 15 * rectangle.width,
+            shortScope = allowance();
+          assert.deepEqual(
+            run(rectangle, true, short, invoke(shortScope)),
+            run(rectangle, false, short, invoke()),
+          );
+          assert.deepEqual(shortScope, allowance());
+          if (mode === 4) {
+            assert.deepEqual(
+              run(rectangle, true, cap, invoke({ ...allowance(), pixels: NaN })),
+              cutoff,
+            );
+            const observed = allowance(),
+              detach = p.beforeInstruction(
+                row + 0x14d,
+                'observe the original overlay branch',
+                () => {},
+              );
+            try {
+              assert.deepEqual(run(rectangle, true, cap, invoke(observed)), cutoff);
+              assert.deepEqual(observed, allowance());
+            } finally {
+              detach();
+            }
+            const unreadable = { ...rectangle, input: page - rectangle.width * 4 },
+              faultScope = allowance();
+            p.cpu.mem_protect(page, 4096, 0);
+            try {
+              const fault = run(unreadable, false, cap, invoke());
+              assert.match(fault.fault, /READ_PROT/i);
+              assert.deepEqual(run(unreadable, true, cap, invoke(faultScope)), fault);
+              assert.deepEqual(faultScope, allowance());
+            } finally {
+              p.cpu.mem_protect(page, 4096, p.uc.PROT_READ | p.uc.PROT_WRITE);
+            }
+          }
+        }
       } finally {
         await fresh?.close();
         await engine.close();
