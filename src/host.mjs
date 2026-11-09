@@ -52,7 +52,7 @@ export class EngineHost {
   config(name, ex1 = 0, ex2 = 0, context = {}) {
     const service = this.engine.world?.fesConfiguration;
     if (!service) throw new Error('FES configuration requires an initialized native world');
-    return context.m2 ? service.getM2(name, context.part) : service.get(name, ex1, ex2);
+    return context.m2 ? service.getM2(name, context.part) : service.get(name, ex1, ex2, context);
   }
   setConfig(name, value, ex1 = 0, ex2 = 0, context = {}) {
     const service = this.engine.world?.fesConfiguration;

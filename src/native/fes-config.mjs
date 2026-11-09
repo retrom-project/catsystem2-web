@@ -3,6 +3,7 @@
 // Global configuration and the Emote manager have distinct field namespaces.
 const SDK = 'sdk-4.01-engine-2.6.1.74';
 const GAME = 'nekopara-vol3-engine-2.6.1.76';
+const legacyVolumeFields = ['vol_bgm', 'vol_se', 'vol_pcm'];
 const blockFields = Object.freeze({
   vol_master: [0, 1397],
   vol_bgm: [0, 1398],
@@ -95,7 +96,11 @@ export class NativeFESConfiguration {
       (this.configuration.profile !== SDK || !gameFields.has(name))
     );
   }
-  get(name, ex1 = 0, ex2 = 0) {
+  get(name, ex1 = 0, ex2 = 0, { legacyVolume = false } = {}) {
+    if (legacyVolume) {
+      const index = legacyVolumeFields.indexOf(name.toLowerCase());
+      return index >= 0 ? read(this.configuration.blocks[0], index) : undefined;
+    }
     if (!this.recognized(name)) return undefined;
     const config = this.configuration;
     if (name === 'iswindow') return this.isWindow?.();

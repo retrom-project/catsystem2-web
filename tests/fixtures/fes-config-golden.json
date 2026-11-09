@@ -2112,6 +2112,60 @@
           "dirty": 1,
           "stateSHA256": "bab4d006c8de1d89ff7a617634524c7f90b74458bee54688e0dacbe8c5d51399"
         }
+      ],
+      "legacyCases": [
+        {
+          "tokens": [850, "vol_bgm"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 850,
+              "value": 57480
+            }
+          ]
+        },
+        {
+          "tokens": [851, "vol_se"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 851,
+              "value": 57504
+            }
+          ]
+        },
+        {
+          "tokens": [852, "vol_pcm", "ignored_extra"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 852,
+              "value": 57528
+            }
+          ]
+        },
+        {
+          "tokens": [853, "vol_voice"],
+          "writes": []
+        },
+        {
+          "tokens": [854, "VOL_BGM"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 854,
+              "value": 57480
+            }
+          ]
+        },
+        {
+          "tokens": [855],
+          "writes": []
+        },
+        {
+          "tokens": [],
+          "writes": []
+        }
       ]
     },
     {
@@ -4278,6 +4332,60 @@
           "events": [],
           "dirty": 1,
           "stateSHA256": "4186bb4655f364f40733836be43a730abea47944395f92d4aad17ca9fded462f"
+        }
+      ],
+      "legacyCases": [
+        {
+          "tokens": [850, "vol_bgm"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 850,
+              "value": 57480
+            }
+          ]
+        },
+        {
+          "tokens": [851, "vol_se"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 851,
+              "value": 57504
+            }
+          ]
+        },
+        {
+          "tokens": [852, "vol_pcm", "ignored_extra"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 852,
+              "value": 57528
+            }
+          ]
+        },
+        {
+          "tokens": [853, "vol_voice"],
+          "writes": []
+        },
+        {
+          "tokens": [854, "VOL_BGM"],
+          "writes": [
+            {
+              "bank": "number",
+              "index": 854,
+              "value": 57480
+            }
+          ]
+        },
+        {
+          "tokens": [855],
+          "writes": []
+        },
+        {
+          "tokens": [],
+          "writes": []
         }
       ],
       "m2Cases": [

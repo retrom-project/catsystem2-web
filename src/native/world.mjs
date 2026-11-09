@@ -764,7 +764,7 @@ export class NativeWorld {
       config(name, ex1 = 0, ex2 = 0, context = {}) {
         return context.m2
           ? world.fesConfiguration.getM2(name, context.part)
-          : world.fesConfiguration.get(name, ex1, ex2);
+          : world.fesConfiguration.get(name, ex1, ex2, context);
       },
       setConfig(name, value, ex1 = 0, ex2 = 0, context = {}) {
         return context.m2

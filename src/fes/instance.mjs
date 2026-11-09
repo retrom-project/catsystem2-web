@@ -796,6 +796,17 @@ export class FESInstance {
       case 'fileexist':
         store(1, Number(this.player.game.has(this.text(args[0]).split('/').pop())));
         break;
+      case 'config': {
+        if (!args.length) break;
+        const index = p(0);
+        if (args.length < 2) break;
+        const value = host.config?.(this.text(args[1]), 0, 0, {
+          instance: this,
+          legacyVolume: true,
+        });
+        if (value !== undefined) this.setGlobal(index, value);
+        break;
+      }
       case 'getconf': {
         if (args.length < 2) break;
         const value = host.config?.(this.text(args[1]), p(2), p(3), { instance: this });

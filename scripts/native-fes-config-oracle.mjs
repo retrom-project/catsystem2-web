@@ -20,6 +20,7 @@ const profiles = {
     profile: 'nekopara-vol3-engine-2.6.1.76',
     get: 0x77cdb0,
     set: 0x77dd20,
+    legacy: 0x77c060,
     tokens: 0x766440,
     expression: 0x728d80,
     mark: 0x766590,
@@ -45,6 +46,7 @@ const profiles = {
     profile: 'sdk-4.01-engine-2.6.1.74',
     get: 0x616610,
     set: 0x617310,
+    legacy: 0x6158c0,
     tokens: 0x6020c0,
     expression: 0x5d9230,
     mark: 0x602210,
@@ -142,6 +144,7 @@ patch(profile.event, 1, ([packet]) => {
 });
 const hash = (data) => createHash('sha256').update(data).digest('hex');
 const result = [];
+const legacyCases = [];
 const m2Cases = [];
 try {
   for (const row of fesConfigurationCases()) {
@@ -197,6 +200,21 @@ try {
       dirty: p.load(engine + profile.dirty),
       stateSHA256: hash(Buffer.concat(arrays)),
     });
+  }
+  p.write(settings + profile.blocks[0], fesConfigurationFixture(profile.profile).blocks[0]);
+  for (const tokens of [
+    [850, 'vol_bgm'],
+    [851, 'vol_se'],
+    [852, 'vol_pcm', 'ignored_extra'],
+    [853, 'vol_voice'],
+    [854, 'VOL_BGM'],
+    [855],
+    [],
+  ]) {
+    input = { tokens };
+    writes = [];
+    p.call(profile.legacy, [object, 0, 0, dummy, 0]);
+    legacyCases.push({ tokens, writes });
   }
   if (profile.wide) {
     const manager = p.allocate(96, true),
@@ -289,6 +307,7 @@ const output = {
     'FES event enqueue',
   ],
   cases: result,
+  legacyCases,
   m2Cases,
 };
 if (process.argv.includes('--output'))

@@ -1500,11 +1500,11 @@
       "id": "fes.reference.cn.config",
       "domain": "fes-command",
       "names": ["config"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/config.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Deprecated alias in the official manual; not independently implemented.",
+      "implementation": "src/fes/instance.mjs, src/native/fes-config.mjs",
+      "evidence": ["tests/native-fes-config.test.mjs"],
+      "note": "Both frozen handlers read the effective BGM, SE and PCM volumes by case-insensitive key. Missing or unknown keys preserve the destination. Extra tokens have no effect.",
       "signatures": ["config [var] [type]"]
     },
     {

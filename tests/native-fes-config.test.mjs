@@ -63,6 +63,31 @@ for (const profile of golden.profiles)
     }
   });
 
+for (const { profile, legacyCases } of golden.profiles)
+  test(`FES config reads the original effective volumes in ${profile}`, async () => {
+    const configuration = fesConfigurationFixture(profile),
+      service = new NativeFESConfiguration({ configuration }),
+      globals = Object.fromEntries(
+        legacyCases.filter(({ tokens }) => tokens.length).map(({ tokens }) => [tokens[0], 99]),
+      ),
+      source = [
+        '#START',
+        ...legacyCases.map(({ tokens }) => ['config', ...tokens].join(' ')),
+        'getconf 857 vol_bgm',
+        'exit 0',
+      ].join('\n'),
+      game = memoryGame({ 'screen.fes': new TextEncoder().encode(source) }),
+      host = new EngineHost({ world: { fesConfiguration: service } }),
+      player = new FESPlayer(game, {}, host, globals, {});
+    await player.start('screen');
+    await player.step();
+    for (const { tokens, writes } of legacyCases)
+      if (tokens.length) assert.equal(player.globals[tokens[0]], writes[0]?.value ?? 99);
+    assert.equal(player.globals[857], service.get('vol_bgm'));
+    assert.notEqual(player.globals[850], player.globals[857]);
+    assert.equal(player.unsupportedCommands.size, 0);
+  });
+
 test('FES catalogue is exact and unknown fields preserve both numeric and string banks', async () => {
   assert.equal(FES_CONFIGURATION_FIELDS.length, 52);
   const configuration = fesConfigurationFixture(golden.profiles[1].profile),
