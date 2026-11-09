@@ -80,3 +80,47 @@ DirectShow event and control boundary exercises completion, repeat,
 terminal exit and stop after a fresh restore. The VMR9 filter and texture
 presentation path are separate platform work. [VMR-9 allocator-presenter
 contract](https://learn.microsoft.com/en-us/windows/win32/directshow/supplying-a-custom-allocator-presenter-for-vmr-9)
+
+## Shared D3D surface transfers for VMR9
+
+The original SimplePlane receiver's movie message is decimal 43 in 2.6.1.76
+and 41 in SDK 4.01. Both allocator-presenters query the decoder surface for
+its Texture9 container, acquire level zero and call `StretchRect` with
+null rectangles and `D3DTEXF_NONE`. An independent decoder surface is sent
+directly when there is no texture. The presenter releases all the temporary
+surface and container references. The frozen callbacks are `0x6867D0`
+and `0x55D2B0`, respectively.
+
+The shared device's `GetContainer` returns the actual texture through
+`QueryInterface`, including its added reference. Stand-alone surfaces
+expose their device per the Win32 contract. The pinned Wine 8 build instead
+returns `E_NOINTERFACE` with an untouched output for explicitly created
+stand-alone surfaces. The Texture9 query fails under either stand-alone surface behavior.
+The implicit back buffer belongs to a swap chain. A successful query for
+that container still requires the swap chain interface.
+[GetContainer contract](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3dsurface9-getcontainer)
+
+`StretchRect` transfers default-pool A8R8G8B8 and X8R8G8B8 color surfaces
+with full or bounded rectangles and NONE, POINT or LINEAR filters. A
+partial write synchronizes live GPU pixels before updating the same guest
+storage and GPU target. It preserves the pixels outside the destination
+rectangle and the active target, viewport and depth binding. The adapter
+reports its texture-source and point/linear filter caps. YUV, depth,
+multisampling and other surface formats remain outside this transfer path.
+[StretchRect contract](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-stretchrect)
+
+The authored surface oracle captures 48 container queries and 37 transfers
+in pinned Wine. The checks compare texture identity and release counts,
+rectangular alpha and color transfer, failure results and untouched pixels.
+The same-surface scaling and render-target or texture-to-offscreen cases
+follow the documented restrictions and the upstream Windows conformance
+expectations, which differ from the Wine 8 results. Linear samples allow
+one channel step of rounding. Nearest samples allow adjacent texels only
+at exact ties. [Wine D3D9 conformance tests](https://github.com/wine-mirror/wine/blob/master/dlls/d3d9/tests/device.c)
+
+The two-profile tests execute each original `PresentImage` vtable entry
+using authored decoder surfaces and the shared D3D device. Chromium checks
+the resulting asymmetric pixels, alpha and a second frame after fresh
+restore. These tests supply surfaces at the presenter boundary. The
+DirectShow filter graph and decoder connection for the Plane message still
+need separate integration.

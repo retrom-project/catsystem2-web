@@ -10,6 +10,9 @@ import {
 } from '../render/particles-gl.mjs';
 const NOT_AVAILABLE = 0x8876086a;
 const INVALID_CALL = 0x8876086c;
+const SURFACE_BUSY = 0x887601ae;
+const NO_INTERFACE = 0x80004002;
+const NULL_POINTER = 0x80004003;
 const interfaceWords = {
   IUnknown: [0, 0, 0xc0, 0x46000000],
   Direct3D9: [0x81bdcbca, 0x426d64d4, 0x01ad8dae, 0x5c27f447],
@@ -18,6 +21,7 @@ const interfaceWords = {
   BaseTexture9: [0x580ca87e, 0x4d541d3c, 0xd3b71d99, 0xce98c2e3],
   Texture9: [0x85c31227, 0x4f003de5, 0x1af13a9b, 0xb5188cc3],
   Surface9: [0x0cfbaf3a, 0x429a9ff6, 0x79a2b399, 0x9bb8f86a],
+  SwapChain9: [0x794950f2, 0x458aadfc, 0xa1105e90, 0x3b500b0b],
 };
 const formats = new Map([
   [21, 4],
@@ -29,6 +33,51 @@ const formats = new Map([
   [50, 1],
   [51, 2],
 ]);
+
+function isInterface(process, iid, name) {
+  return interfaceWords[name].every((word, index) => process.load(iid + index * 4) === word);
+}
+
+function surfaceBounds(process, surface, pointer) {
+  const bounds = pointer
+    ? Array.from({ length: 4 }, (_, index) => process.load(pointer + index * 4) | 0)
+    : [0, 0, surface.width, surface.height];
+  const [left, top, right, bottom] = bounds;
+  if (
+    left < 0 ||
+    top < 0 ||
+    right <= left ||
+    bottom <= top ||
+    right > surface.width ||
+    bottom > surface.height
+  )
+    return null;
+  return bounds;
+}
+
+function linearSurfaceColor(pixels, stride, width, height, x, y) {
+  x = Math.max(0, Math.min(width - 1, x));
+  y = Math.max(0, Math.min(height - 1, y));
+  const left = Math.floor(x),
+    top = Math.floor(y),
+    right = Math.min(left + 1, width - 1),
+    bottom = Math.min(top + 1, height - 1),
+    fx = x - left,
+    fy = y - top,
+    tl = pixels[top * stride + left],
+    tr = pixels[top * stride + right],
+    bl = pixels[bottom * stride + left],
+    br = pixels[bottom * stride + right];
+  let color = 0;
+  for (let shift = 0; shift < 32; shift += 8) {
+    const leftTop = (tl >>> shift) & 255,
+      leftBottom = (bl >>> shift) & 255,
+      upper = leftTop + (((tr >>> shift) & 255) - leftTop) * fx,
+      lower = leftBottom + (((br >>> shift) & 255) - leftBottom) * fx;
+    color |= Math.round(upper * (1 - fy) + lower * fy) << shift;
+  }
+  return color;
+}
 
 export class EmoteD3D9 {
   constructor(
@@ -427,6 +476,7 @@ export class EmoteD3D9 {
         2,
         (_, [source, destination]) => this.readSurface(source, destination),
       ];
+      methods[34] = ['StretchRect', 5, (_, args) => this.stretchRect(...args)];
       methods[36] = [
         'CreateOffscreenPlainSurface',
         6,
@@ -758,6 +808,11 @@ export class EmoteD3D9 {
           return 0;
         },
       ];
+      methods[11] = [
+        'GetContainer',
+        2,
+        (surface, [iid, output]) => this.getContainer(surface, iid, output),
+      ];
       methods[12] = [
         'GetDesc',
         1,
@@ -896,22 +951,29 @@ export class EmoteD3D9 {
     return Math.max(0, this.textureMemoryBudget - used) >>> 0;
   }
   queryInterface(object, iid, output) {
-    if (!output) return 0x80004003;
+    if (!output) return NULL_POINTER;
     const p = this.process;
     p.store(output, 0);
-    if (!iid) return 0x80004003;
+    if (!iid) return NULL_POINTER;
     const names = ['IUnknown', object.kind];
     if (object.kind === 'Texture9') names.push('BaseTexture9', 'Resource9');
     else if (object.kind === 'Surface9') names.push('Resource9');
-    if (
-      !names.some((name) =>
-        interfaceWords[name].every((word, index) => p.load(iid + index * 4) === word),
-      )
-    )
-      return 0x80004002;
+    if (!names.some((name) => isInterface(p, iid, name))) return NO_INTERFACE;
     this.retain(object);
     p.store(output, object.pointer);
     return 0;
+  }
+  getContainer(surface, iid, output) {
+    if (surface.pointer !== this.backbuffer)
+      return this.queryInterface(this.objects.get(surface.texture || this.device), iid, output);
+    if (!output) return NULL_POINTER;
+    if (
+      iid &&
+      (isInterface(this.process, iid, 'IUnknown') || isInterface(this.process, iid, 'SwapChain9'))
+    )
+      throw new Error('Native back-buffer container requires its implicit swap chain');
+    this.process.store(output, 0);
+    return iid ? NO_INTERFACE : NULL_POINTER;
   }
   release(object) {
     if (!object.references) throw new Error('D3D object released twice');
@@ -1017,7 +1079,8 @@ export class EmoteD3D9 {
     return 0;
   }
   lockSurface(surface, output, rectangle, flags) {
-    surface = this.surfaceData(surface.pointer);
+    const pointer = surface.pointer;
+    surface = this.surfaceData(pointer);
     if (
       !surface ||
       !output ||
@@ -1029,22 +1092,9 @@ export class EmoteD3D9 {
       return INVALID_CALL;
     if (surface.usage & 2 || (surface.usage & 1 && !surface.lockable)) return INVALID_CALL;
     const p = this.process,
-      area = rectangle
-        ? Array.from({ length: 4 }, (_, i) => p.load(rectangle + i * 4) | 0)
-        : [0, 0, surface.width, surface.height];
-    if (
-      area.some((value) => value < 0) ||
-      area[0] >= area[2] ||
-      area[1] >= area[3] ||
-      area[2] > surface.width ||
-      area[3] > surface.height
-    )
-      return INVALID_CALL;
-    if (surface.dirty) {
-      if (!this.gpu) throw new Error('Native surface LockRect requires its GPU readback');
-      this.storePixels(surface, this.gpu.pixels(this.gpuTarget(surface.pointer)));
-      surface.dirty = false;
-    }
+      area = surfaceBounds(p, surface, rectangle);
+    if (!area) return INVALID_CALL;
+    this.syncSurface(pointer, surface);
     p.store(output, surface.pitch);
     p.store(
       output + 4,
@@ -1133,16 +1183,89 @@ export class EmoteD3D9 {
       b.locked
     )
       return INVALID_CALL;
-    if (a.dirty) {
-      if (!this.gpu) throw new Error('Native D3D render-target readback requires its shared GPU');
-      this.storePixels(a, this.gpu.pixels(this.gpuTarget(source)));
-      a.dirty = false;
-    }
+    this.syncSurface(source, a);
     const p = this.process,
       size = a.width * formats.get(a.format);
     for (let y = 0; y < a.height; y++)
       p.write(b.pixels + y * b.pitch, p.read(a.pixels + y * a.pitch, size));
     b.revision++;
+    return 0;
+  }
+  syncSurface(pointer, surface) {
+    if (!surface.dirty) return;
+    if (!this.gpu) throw new Error('Native D3D render-target readback requires its shared GPU');
+    this.storePixels(surface, this.gpu.pixels(this.gpuTarget(pointer)));
+    surface.dirty = false;
+  }
+  stretchRect(source, sourceRect, destination, destinationRect, filter) {
+    const p = this.process,
+      a = this.surfaceData(source),
+      b = this.surfaceData(destination);
+    if (
+      !a?.pixels ||
+      !b?.pixels ||
+      a.pool !== 0 ||
+      b.pool !== 0 ||
+      ![21, 22].includes(a.format) ||
+      ![21, 22].includes(b.format) ||
+      ![0, 1, 2].includes(filter) ||
+      (!(b.usage & 1) && (a.usage & 1 || a.kind === 'Texture9' || b.kind === 'Texture9'))
+    )
+      return INVALID_CALL;
+    if (a.locked || b.locked) return SURFACE_BUSY;
+    const from = surfaceBounds(p, a, sourceRect),
+      to = surfaceBounds(p, b, destinationRect);
+    if (!from || !to) return INVALID_CALL;
+    const [sx, sy, sr, sb] = from,
+      [dx, dy, dr, db] = to,
+      width = dr - dx,
+      height = db - dy,
+      scaleX = (sr - sx) / width,
+      scaleY = (sb - sy) / height,
+      sameSize = scaleX === 1 && scaleY === 1;
+    if (a === b) {
+      if (!sameSize) return INVALID_CALL;
+      if (sx === dx && sy === dy) return 0;
+    }
+    this.syncSurface(source, a);
+    if (dx || dy || dr !== b.width || db !== b.height) this.syncSurface(destination, b);
+    // Read once so overlapping, unscaled rectangles see the original source.
+    const bytes = p.read(a.pixels, a.pitch * a.height),
+      pixels = new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4),
+      stride = a.pitch / 4,
+      result = new Uint32Array(width * height),
+      alpha = a.format === 22 || b.format === 22 ? 0xff000000 : 0;
+    for (let y = 0; y < height; y++) {
+      if (sameSize && !alpha) {
+        const start = (sy + y) * stride + sx;
+        result.set(pixels.subarray(start, start + width), y * width);
+        continue;
+      }
+      const fy = sy + (y + 0.5) * scaleY;
+      for (let x = 0; x < width; x++) {
+        const fx = sx + (x + 0.5) * scaleX;
+        const color =
+          filter === 2 && !sameSize
+            ? linearSurfaceColor(pixels, stride, a.width, a.height, fx - 0.5, fy - 0.5)
+            : pixels[Math.floor(fy) * stride + Math.floor(fx)];
+        result[y * width + x] = color | alpha;
+      }
+    }
+    const output = new Uint8Array(result.buffer),
+      offset = b.pixels + dy * b.pitch + dx * 4;
+    if (width * 4 === b.pitch) p.write(offset, output);
+    else
+      for (let y = 0; y < height; y++)
+        p.write(offset + y * b.pitch, output.subarray(y * width * 4, (y + 1) * width * 4));
+    b.revision++;
+    b.dirty = false;
+    if (b.usage & 1)
+      this.command({
+        type: 'upload',
+        target: destination,
+        rectangle: [dx, dy, width, height],
+        frame: this.frame(b.pointer),
+      });
     return 0;
   }
   writeFloats(address, values) {

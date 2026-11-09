@@ -48,8 +48,9 @@ export function writeD3D9Caps(owner, adapter, type, output) {
       184: 0xffffff,
       188: 1,
       192: 256,
+      208: 0x10, // CAN_STRETCHRECT_FROM_TEXTURES.
       232: 1,
-      240: 1,
+      240: 0x03000300, // StretchRect point/linear minification and magnification.
     };
   p.zero(output, 304);
   for (const [offset, value] of Object.entries(words)) p.store(output + Number(offset), value);
