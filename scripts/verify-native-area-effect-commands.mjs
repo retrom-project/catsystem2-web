@@ -79,6 +79,8 @@ const equal = (actual, expected, label) => {
 };
 const observedBytes = (message) => {
   if (message === 262) return 64;
+  if (message === 277) return 60;
+  if (message === 278) return 52;
   return [260, 264, 273].includes(message) ? 20 : 56;
 };
 const observe = (from, target, message, w, l, flags, result) => {
@@ -643,6 +645,200 @@ try {
     equal(p.read(activeEffect, 180), hydro, 'original Hydro receiver preserves its task data');
     await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original Hydro destruction frees task');
+    // Both extended wipes use a 256-entry table followed by a separate
+    // blend interval. The 32-bit reference assets also exercise transparent RGB.
+    const intensity = [0, 64, 128, 192, 255, 192, 128, 64],
+      threshold = (value) => 4 - Math.floor((4 * value) / 255),
+      weight = (frame, x) => Math.max(0, Math.min(256, 128 * (frame - threshold(intensity[x])))),
+      extendedImages = await Promise.all([
+        makeBitmap((x, y) => (x === 7 && y === 0 ? 0x00ff0000 : previous)),
+        makeBitmap(() => next),
+        makeBitmap((x) => (0xff7f3300 | intensity[x]) >>> 0),
+        makeBitmap(() => previous),
+        makeBitmap(null, [width, height, 3]),
+      ]),
+      [transparent, destination, mask, picture, rgb24] = extendedImages,
+      blend = (src, dst, factor) => {
+        let result = 0;
+        for (let shift = 0; shift < 32; shift += 8)
+          result |=
+            ((((src >>> shift) & 255) * (256 - factor) + ((dst >>> shift) & 255) * factor) >> 8) <<
+            shift;
+        return result >>> 0;
+      };
+    p.store(parent + 72, 60);
+    for (const [kind, fadeIn] of [
+      [30, 0],
+      [31, 0],
+      [31, 1],
+    ]) {
+      activeEffect = await engine.call(factory, [kind, name, out + 4], parent);
+      nativeID = p.load(out + 4);
+      const alpha = kind === 31,
+        workOffset = alpha ? 160 : 168,
+        tableOffset = alpha ? 184 : 192,
+        initializedOffset = alpha ? 164 : 172,
+        size = alpha ? 1224 : 1228,
+        inputImage = alpha ? picture : transparent,
+        fields = alpha
+          ? [4, 2, picture.wrapper, 0, 0, mask.wrapper, 4, 3, width, height, fadeIn, 0, 0]
+          : [
+              4,
+              2,
+              transparent.wrapper,
+              0,
+              0,
+              destination.wrapper,
+              0,
+              0,
+              mask.wrapper,
+              4,
+              3,
+              0,
+              0,
+              0,
+              0,
+            ],
+        configure = (words) => {
+          p.write(source, new Uint8Array(64).fill(0xa5));
+          words.forEach((word, i) => p.store(source + 4 * i, word));
+          return callWipe(0xc4, 112);
+        },
+        expectPixels = (tick, forced = false) => {
+          const pixels = Array.from({ length: height }, (_, y) =>
+            Array.from({ length: width }, (_, x) => {
+              if (!alpha) {
+                const src = x === 7 && y === 0 ? 0x000000ff : previous;
+                return tick === 6 ? next : blend(src, next, weight(tick, x));
+              }
+              const a = (255 * weight(forced ? tick : Math.min(tick, 5), x)) >> 8;
+              return (((fadeIn ? a : 255 - a) << 24) | 0xff0000) >>> 0;
+            }),
+          );
+          equal(raster.length, 1, 'one original extended wipe upload');
+          const { bitmap, ...upload } = raster.pop();
+          equal(
+            upload,
+            { sx: 0, sy: 0, w: width, h: height, x: 4, y: 3, pixels },
+            'all original extended wipe bytes and rectangle',
+          );
+          return bitmap;
+        };
+      const table = sdk ? (alpha ? 0x99351c : 0x993468) : alpha ? 0x8ce23c : 0x8ce188;
+      equal(p.load(activeEffect), table, 'original extended wipe task vtable');
+      equal(p.load(activeEffect + 64), kind, 'factory assigns actual extended wipe kind');
+      equal(p.load(activeEffect + workOffset), 0, 'factory starts without a work bitmap');
+      equal(await callWipe(0xc5), { control: 2 }, 'fresh inactive start control');
+      equal(await callWipe(0xc8), { control: 1, value: 0 }, 'fresh task has not started');
+
+      const sourcePixel = p.load(inputImage.bitmap + 12) + 7 * 4,
+        refs = extendedImages.map(({ bitmap }) => p.load(bitmap + 80));
+      if (alpha)
+        for (const index of [2, 5]) {
+          const unsupported = fields.slice();
+          unsupported[index] = rgb24.wrapper;
+          await configure(unsupported);
+          equal(
+            p.load(activeEffect + initializedOffset),
+            0,
+            'original Alpha3 rejects either 24-bit input',
+          );
+          equal(p.load(activeEffect + workOffset), 0, 'rejected Alpha3 creates no work bitmap');
+        }
+      await configure(fields);
+      equal(p.load(activeEffect + initializedOffset), 1, 'original extended wipe initializes');
+      equal(
+        p.load(sourcePixel),
+        alpha ? previous : 0x000000ff,
+        'Wipe3 prepares transparent source RGB in the borrowed bitmap',
+      );
+      const work = p.load(activeEffect + workOffset);
+      equal(p.allocations.get(work), 92, 'original effect owns a native work bitmap');
+      equal(await callWipe(0xc5), { control: 2 }, 'original extended wipe starts');
+      equal(
+        Array.from({ length: 256 }, (_, i) => p.load(activeEffect + tableOffset + 4 * i)),
+        Array.from({ length: 256 }, (_, i) => threshold(i)),
+        'original per-mask transition table',
+      );
+      equal(await callWipe(0xc8), { control: 1, value: 1 }, 'extended wipe is active');
+      for (let tick = 1; tick <= 6; tick++) {
+        await frame(20 + tick);
+        equal(
+          expectPixels(tick),
+          !alpha && tick === 6 ? destination.bitmap : work,
+          'original upload uses the correct backing identity',
+        );
+      }
+      equal(await callWipe(0xc8), { control: 1, value: 0 }, 'natural end clears active');
+      equal(await callWipe(0xcb), { control: 2 }, 'inactive CB control');
+      equal(raster.length, 0, 'inactive CB produces no upload');
+      await callWipe(0xc6);
+      expectPixels(6, true);
+      await callWipe(0xc5);
+      await callWipe(0xcb);
+      expectPixels(6, true);
+      equal(await callWipe(0xc8), { control: 1, value: 0 }, 'forced end clears active');
+
+      const before = p.read(activeEffect, size),
+        expected = new DataView(before.buffer);
+      p.store(replacement + 8, destination.wrapper);
+      p.store(replacement + 20, picture.wrapper);
+      expected.setUint32(116, destination.wrapper, true);
+      if (!alpha) expected.setUint32(128, picture.wrapper, true);
+      [nativeID, sender, sdk ? 255 : 260, 0, replacement, 0].forEach((word, i) =>
+        p.store(packet + 4 * i, word),
+      );
+      await engine.call(p.load(table + 24), [packet, out], activeEffect);
+      equal(
+        p.read(activeEffect, size),
+        before,
+        'raw message 260 replaces only original borrowed fields',
+      );
+      equal(
+        await callWipe(0xca, 0xffffffff),
+        { control: 2 },
+        'CA does not route to extended wipes',
+      );
+      equal(p.read(activeEffect, size), before, 'CA preserves the extended wipe');
+
+      const missing = fields.slice();
+      missing[alpha ? 5 : 8] = 0;
+      await configure(missing);
+      equal(
+        p.load(activeEffect + initializedOffset),
+        0,
+        'missing source or mask fails initialization',
+      );
+      equal(p.load(activeEffect + workOffset), 0, 'missing bitmap releases old work');
+      equal(p.allocations.has(work), false, 'old original work allocation is gone');
+      const clipped = fields.slice();
+      clipped[0] = clipped[1] = 0;
+      clipped[alpha ? 11 : 13] = clipped[alpha ? 12 : 14] = 1;
+      await configure(clipped);
+      equal(
+        [108, 112].map((at) => p.load(activeEffect + at)),
+        [1, 1],
+        'original interval clamping',
+      );
+      equal(
+        [size - 8, size - 4].map((at) => p.load(activeEffect + at)),
+        [width - 1, height - 1],
+        'original clip dimensions',
+      );
+      const replacementWork = p.load(activeEffect + workOffset);
+      await engine.call(p.load(table), [1], activeEffect);
+      equal(p.allocations.has(activeEffect), false, 'original extended wipe frees its task');
+      equal(p.allocations.has(replacementWork), false, 'original extended wipe frees its work');
+      equal(
+        extendedImages.map(({ bitmap }) => p.load(bitmap + 80)),
+        refs,
+        'borrowed reference counts are unchanged',
+      );
+    }
+    for (const { wrapper, bitmap } of extendedImages) {
+      await engine.call(bitmapRelease, [], bitmap);
+      p.free(wrapper);
+    }
     await engine.call(p.load(p.load(parent)), [1], parent);
   } finally {
     memory.close();
@@ -660,7 +856,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, Raster/Hydro/Wipe1/Fade/Wipe2 receivers, per-frame draws and destructors. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
+          'Original factories, Raster/Hydro/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, per-frame draws and destructors. Observe the Raster graph callback registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,

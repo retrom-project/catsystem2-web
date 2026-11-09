@@ -194,7 +194,8 @@ export class NativeScreenEffectTask {
       l = await this.owner.taskMemory.pointer(context.nativeNewTask);
     const p = this.owner.process,
       allocations = [];
-    const payloadSize = (this.owner.payloadBytes || PAYLOAD_BYTES)[message];
+    const payloadSize =
+      this.abi.payloadBytes?.[message] ?? (this.owner.payloadBytes || PAYLOAD_BYTES)[message];
     if (!context.nativePointer && payloadSize) {
       const memory =
           context.payload ||

@@ -24,6 +24,8 @@ const byID = new Map(NATIVE_AREA_EFFECT_COMMANDS.map((spec) => [spec.id, spec]))
     [274, { size: 56, fields: [4, 16, 28] }],
     [275, { size: 44, fields: [4, 16] }],
     [276, { size: 48, fields: [4, 16] }],
+    [277, { size: 60, fields: [8, 20, 32] }],
+    [278, { size: 52, fields: [8, 20] }],
   ]);
 
 export class NativeAreaEffectCommands {

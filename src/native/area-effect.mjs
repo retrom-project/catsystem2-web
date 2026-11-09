@@ -11,6 +11,8 @@ const ABI = {
     27: { construct: 0x5f0690, size: 0xb0, vtable: 0x8cdef0 },
     28: { construct: 0x5f10e0, size: 0xc4, vtable: 0x8ce004 },
     29: { construct: 0x5f1aa0, size: 0xc8, vtable: 0x8ce0d4 },
+    30: { construct: 0x5f22b0, size: 0x4cc, vtable: 0x8ce188, payloadBytes: { 260: 24 } },
+    31: { construct: 0x5f2db0, size: 0x4c8, vtable: 0x8ce23c, payloadBytes: { 260: 12 } },
   },
   'sdk-4.01-engine-2.6.1.74': {
     18: { construct: 0x4c8990, size: 0x94, vtable: 0x992f90, requiresRenderer: true },
@@ -19,6 +21,8 @@ const ABI = {
     27: { construct: 0x4caf30, size: 0xb0, vtable: 0x9931d0 },
     28: { construct: 0x4cb950, size: 0xc4, vtable: 0x9932e4 },
     29: { construct: 0x4cc2e0, size: 0xc8, vtable: 0x9933b4 },
+    30: { construct: 0x4ccac0, size: 0x4cc, vtable: 0x993468, payloadBytes: { 260: 24 } },
+    31: { construct: 0x4cd560, size: 0x4c8, vtable: 0x99351c, payloadBytes: { 260: 12 } },
   },
 };
 export function areaEffectRawMessage(profile, message) {
@@ -41,7 +45,7 @@ export class NativeAreaEffects {
     if (!this.abi) throw new Error('CPU-area effects require a reviewed engine profile');
     this.requiresRenderer = false;
     this.rawMessage = areaEffectRawMessage;
-    this.payloadBytes = { 260: 20, 263: 20, 264: 20, 274: 56, 275: 44, 276: 48 };
+    this.payloadBytes = { 260: 20, 263: 20, 264: 20, 274: 56, 275: 44, 276: 48, 277: 60, 278: 52 };
     this.routeTrap = this.process.trap('native CPU-area effect task router', 7, (args) =>
       this.route(args),
     );
@@ -91,7 +95,7 @@ export class NativeAreaEffects {
 }
 export function installNativeAreaEffects(world) {
   world.registerNativeFeature('area-effects', (engine) => NativeAreaEffects.open(engine, world));
-  for (const kind of [18, 25, 26, 27, 28, 29])
+  for (const kind of [18, 25, 26, 27, 28, 29, 30, 31])
     world.objects.register(kind, async (record, _objects, options) =>
       (await world.getNativeFeature('area-effects')).create(record, options),
     );

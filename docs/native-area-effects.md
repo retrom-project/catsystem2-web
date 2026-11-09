@@ -5,6 +5,13 @@ profiles run the original constructor, packet receiver, frame update, masked
 bitmap drawing and destructor in the shared PE process. The area effect writes
 to the native view's bitmap upload path.
 
+Kinds 30 and 31 run the original Wipe3 and WipeAlpha3 tasks through that same
+path. Wipe3's 60-byte initializer borrows bitmaps at offsets 8, 20 and 32. It
+copies destination RGB into fully transparent pixels of the borrowed source.
+WipeAlpha3's 52-byte initializer borrows bitmaps at offsets 8 and 20 and
+requires 32-bit sources and mask. Its two alpha directions can end naturally
+on a different frame from the explicit `C6` and `CB` finish operations.
+
 | Main slot | Arguments                  | Control | Game entry | SDK entry | Game / SDK message                    |
 | --------- | -------------------------- | ------- | ---------- | --------- | ------------------------------------- |
 | `C4`      | Task ID, VM packet address | 2       | `641600`   | `529770`  | 13, then 274 / 269 for Wipe2          |
@@ -62,8 +69,9 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 234 receiver checks
-per profile execute the original Wipe2, Wipe1/Fade, Raster and Hydro paths.
+receiver writes, output canaries and unwritten replies. Its 386 receiver checks
+per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3 and
+WipeAlpha3 paths.
 
 `tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
 displays the native upload through a real VRAM plane and compares exact RGBA
@@ -78,4 +86,5 @@ list or bitmap owner. Frozen executables and raw reports stay outside version co
 
 The wrapper checks cover the routing envelope for every `C4` kind. The original
 initializer and browser pixel checks here cover kinds 18 and 29. The remaining
-effect work includes other `C4` receiver types.
+effect work includes other `C4` receiver types. Wipe3 and WipeAlpha3 have
+additional original frame comparisons for kinds 30 and 31 across fresh restore.

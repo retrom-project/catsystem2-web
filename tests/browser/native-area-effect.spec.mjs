@@ -733,4 +733,240 @@ for (const [profile, variable] of [
       );
     },
   );
+
+  test(
+    profile + ' KCS Wipe3 and WipeAlpha3 match original transition frames after restore',
+    async ({ page }) => {
+      const sdk = profile.startsWith('sdk-');
+      test.skip(!process.env[variable] || (!sdk && !process.env.CATSYSTEM2_EMOTE_DLL));
+      test.setTimeout(180000);
+      const maskRamp = [0, 64, 128, 192, 255, 192, 128, 64],
+        mask = Uint8Array.from(
+          { length: 8 * 6 * 4 },
+          (_, i) => [129, 53, maskRamp[(i >>> 2) % 8], 255][i % 4],
+        ),
+        files = new Map([
+          ['mask.hg2', await encodeHG2({ width: 8, height: 6, rgba: mask }, { crop: false })],
+          ['main.kcs', kcsProgram([...wait, [39, 0], [41, 0]])],
+          ...[30, 31].map((kind) => [
+            kind + '.kcs',
+            kcsProgram(
+              [
+                [37, kind],
+                ...start.slice(1),
+                ...wait,
+                [39, waitingPC],
+                target,
+                [43, 0xcb, 4],
+                target,
+                [43, 0xc8, 4],
+                [38, 136],
+                [59],
+              ],
+              [[64, 'Authored extended wipe']],
+            ),
+          ]),
+        ]),
+        names = await openAreaFixture(page, profile, variable, files);
+      await page.evaluate(
+        async ({ profile, names, sdk, maskRamp }) => {
+          const {
+              browserNativeWorld,
+              browserAssert: assert,
+              placeBrowserNativePlane,
+            } = await import('/tests/fixtures/browser-native-world.mjs'),
+            files = new Map(
+              await Promise.all(
+                names.map(async (name) => {
+                  const response = await fetch('/area-effect-fixture/' + name);
+                  if (!response.ok) throw new Error('Missing extended wipe fixture ' + name);
+                  return [name, new Uint8Array(await response.arrayBuffer())];
+                }),
+              ),
+            ),
+            make = () => {
+              const world = browserNativeWorld({
+                  profile,
+                  files,
+                  storage: { read: async () => null, write: async () => true },
+                }),
+                texture = world.configuration.fields.texture;
+              texture.size.set([64, 64]);
+              texture.grid.set([1, 1]);
+              texture.bppY.set([0, 1]);
+              texture.areas[0].set([0, 0, 1, 1]);
+              texture.bpp = 32;
+              return world;
+            },
+            world = make(),
+            actors = [],
+            call = (owner, id, ...args) =>
+              owner.runtime.native('main', id, args, owner.main.machine, owner.main),
+            weight = (frame, x) =>
+              Math.max(0, Math.min(256, 128 * (frame - (4 - Math.floor((4 * maskRamp[x]) / 255))))),
+            checkFrame = async (owner, frame, forced = false) => {
+              const stage = owner.stageRenderer;
+              await stage.render(owner.graphics.stage, null, owner.particles.drawItems());
+              const pixels = stage.renderer.ctx.getImageData(0, 0, 64, 48).data,
+                p = owner.nativeEngine.process;
+              for (const { alpha, fadeIn, x, work } of actors) {
+                const data = p.load(work + 12),
+                  stride = p.load(work + 20);
+                for (let row = 0; row < 6; row++)
+                  for (let col = 0; col < 7; col++) {
+                    const factor = weight(alpha && !forced ? Math.min(frame, 5) : frame, col),
+                      component = (255 * factor) >> 8,
+                      a = fadeIn ? component : 255 - component,
+                      pixel = (64 * (3 + row) + x + col) * 4,
+                      expected = alpha ? [a, 0, 0] : [(255 * (256 - factor)) >> 8, 0, component];
+                    if (alpha)
+                      assert.equal(
+                        p.load(data + row * stride + 4 * col) >>> 24,
+                        a,
+                        'original alpha work pixel',
+                      );
+                    assert.deepEqual(
+                      [...pixels.slice(pixel, pixel + 3)],
+                      expected,
+                      'original transition is visible on the VRAM plane',
+                    );
+                  }
+              }
+              return pixels;
+            };
+          let fresh;
+          try {
+            await world.initialize('main.kcs');
+            const plane = await world.objects.create({ kind: 2, parent: world.root, name: 'VRAM' });
+            await placeBrowserNativePlane(world, plane, { width: 64, height: 48, priority: 300 });
+            const p = world.nativeEngine.process,
+              stride = sdk ? 72 : 136,
+              resource = 0x80000020,
+              vm = world.main.machine;
+            vm.writeString('mask.hg2', 256);
+            vm.bytes(resource, stride).fill(0xa5);
+            assert.deepEqual(await call(world, 0x2bf, 256, resource, 1), { control: 1, value: 1 });
+            assert.equal(vm.load(resource), 1);
+            const mask = vm.load(resource + 4),
+              makeImage = async (color) => {
+                const handle = (await call(world, 0x70, 8, 6)).value;
+                await call(world, 0x75, handle, 0, 0, 8, 6, color);
+                return handle;
+              },
+              src = await makeImage(0xffff0000),
+              next = await makeImage(0xff0000ff),
+              picture = await makeImage(0xffff0000),
+              bitmaps = await world.getNativeFeature('bitmap-memory'),
+              sourceWrapper = await bitmaps.wrapper(src),
+              destinationWrapper = await bitmaps.wrapper(next),
+              pictureWrapper = await bitmaps.wrapper(picture),
+              borrowed = [sourceWrapper, destinationWrapper, pictureWrapper, mask],
+              refs = borrowed.map((wrapper) => p.load(p.load(wrapper) + 80)),
+              sourcePixel = p.load(p.load(sourceWrapper) + 12) + 7 * 4;
+            await call(world, 0x75, src, 7, 0, 1, 6, 0x00ff0000);
+            assert.equal(p.load(sourcePixel), 0x00ff0000);
+            for (const [index, [kind, fadeIn]] of [
+              [30, 0],
+              [31, 0],
+              [31, 1],
+            ].entries()) {
+              const alpha = kind === 31,
+                x = 4 + index * 12,
+                script = await world.spawnScript(kind + '.kcs', { parent: world.main.id }),
+                machine = script.machine,
+                packet = machine.allocate(68) + 1,
+                fields = alpha
+                  ? [4, 2, picture, 0, 0, mask, x, 3, 8, 6, fadeIn, 0, 0]
+                  : [4, 2, src, 0, 0, next, 0, 0, mask, x, 3, 0, 0, 0, 0];
+              machine.store(96, world.nativeTaskID(world.main.id));
+              machine.store(100, packet);
+              machine.bytes(packet, 64).fill(0xa5);
+              fields.forEach((word, i) => machine.store(packet + i * 4, word));
+              const before = machine.bytes(packet, 64).slice();
+              await world.runtime.scheduler.execute(script);
+              const id = world.resolveTaskID(machine.load(128), script.id),
+                pointer = world.objects.objects.get(id).implementation.pointer,
+                work = p.load(pointer + (alpha ? 160 : 168));
+              assert.equal(p.load(pointer + 64), kind);
+              assert.equal(machine.load(132), 1);
+              assert.ok(p.allocations.has(work));
+              assert.deepEqual(machine.bytes(packet, 64), before, 'C4 preserves all VM words');
+              actors.push({ alpha, fadeIn, x, id, script, pointer, work });
+            }
+            assert.equal(
+              p.load(sourcePixel),
+              0x000000ff,
+              'Wipe3 prepares the actual borrowed source',
+            );
+            const currentSource = await world.graphics.images.get(src).pixels();
+            assert.deepEqual(
+              [...currentSource.slice(7 * 4, 8 * 4)],
+              [0, 0, 255, 0],
+              'host bitmap alias observes original transparent RGB preparation',
+            );
+            await world.tick();
+            await checkFrame(world, 1);
+            await world.tick();
+            const before = await checkFrame(world, 2);
+            fresh = make();
+            await fresh.restore(structuredClone(world.snapshot()));
+            assert.deepEqual(await checkFrame(fresh, 2), before);
+            await world.tick();
+            await fresh.tick();
+            assert.deepEqual(await checkFrame(fresh, 3), await checkFrame(world, 3));
+            const rp = fresh.nativeEngine.process;
+            for (const actor of actors) {
+              assert.equal(
+                fresh.objects.objects.get(actor.id).implementation.pointer,
+                actor.pointer,
+              );
+              const restored = fresh.runtime.scheduler.tasks.get(actor.script.id);
+              assert.equal(
+                (await fresh.runtime.scheduler.send(restored.id, [1, 2, 3, 4])).accepted,
+                true,
+              );
+              assert.equal(restored.machine.load(136), 0, 'CB forced completion clears active');
+            }
+            await checkFrame(fresh, 6, true);
+            for (let frame = 4; frame <= 6; frame++) {
+              await world.tick();
+              await checkFrame(world, frame);
+            }
+            for (const { alpha, id, pointer, work } of actors) {
+              assert.deepEqual(await call(world, 0xc8, world.nativeTaskID(id)), {
+                control: 1,
+                value: 0,
+              });
+              const packet = new Uint8Array(alpha ? 12 : 24),
+                v = new DataView(packet.buffer);
+              v.setUint32(8, destinationWrapper, true);
+              if (!alpha) v.setUint32(20, pictureWrapper, true);
+              await fresh.sendEngine(id, fresh.main.id, 260, 0, 0, {
+                payload: {
+                  bytes: (at, size) => {
+                    assert.equal(at, 0);
+                    assert.equal(size, packet.length);
+                    return packet;
+                  },
+                },
+              });
+              assert.equal(rp.load(pointer + 116), destinationWrapper);
+              if (!alpha) assert.equal(rp.load(pointer + 128), pictureWrapper);
+              await fresh.objects.release(id);
+              assert.equal(rp.allocations.has(work), false);
+            }
+            assert.deepEqual(
+              borrowed.map((wrapper) => rp.load(rp.load(wrapper) + 80)),
+              refs,
+            );
+            assert.deepEqual(await call(fresh, 0x2c0, resource, 1), { control: 2 });
+          } finally {
+            await fresh?.close({ flushFiles: false });
+            await world.close({ flushFiles: false });
+          }
+        },
+        { profile, names, sdk, maskRamp },
+      );
+    },
+  );
 }
