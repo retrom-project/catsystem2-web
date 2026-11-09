@@ -179,3 +179,52 @@ test('unnamed semaphores count successful waits and restore independently of eve
     await engine.close();
   }
 });
+
+test('named auto-reset events share state and enforce handle access after restore', async () => {
+  const unicorn = await loadUnicorn(),
+    engine = new NativeEngineProcess(unicorn),
+    { process: p, kernel } = engine,
+    call = api(engine),
+    ansi = p.allocate(64),
+    wide = p.allocate(128),
+    otherCase = p.allocate(128);
+  kernel.writeString(ansi, 'CoreSystem2ConfigEvent');
+  kernel.writeString(wide, 'CoreSystem2ConfigEvent', true);
+  kernel.writeString(otherCase, 'coresystem2configevent', true);
+  let fresh;
+  try {
+    const first = await call('CreateEventA', 0, 0, 0, ansi),
+      duplicate = await call('CreateEventW', 0, 1, 1, wide);
+    assert.ok(first && duplicate && first !== duplicate);
+    assert.equal(await call('GetLastError'), 183);
+    assert.equal(await call('WaitForSingleObject', duplicate, 0), waitTimeout);
+    assert.equal(await call('CreateMutexW', 0, 0, wide), 0);
+    assert.equal(await call('GetLastError'), 6);
+    assert.equal(await call('OpenEventW', 0x100000, 0, otherCase), 0);
+    assert.equal(await call('GetLastError'), 2);
+
+    const wait = await call('OpenEventW', 0x100000, 0, wide),
+      signal = await call('OpenEventA', 2, 0, ansi);
+    assert.equal(await call('SetEvent', wait), 0);
+    assert.equal(await call('GetLastError'), 5);
+    assert.equal(await call('WaitForSingleObject', signal, 0), waitFailed);
+    assert.equal(await call('GetLastError'), 5);
+    assert.equal(await call('SetEvent', signal), 1);
+    assert.equal(await call('CloseHandle', first), 1);
+    assert.equal(await call('CloseHandle', duplicate), 1);
+
+    fresh = new NativeEngineProcess(unicorn);
+    fresh.restore(engine.snapshot());
+    const replay = api(fresh);
+    assert.equal(await replay('WaitForSingleObject', wait, 0), 0);
+    assert.equal(await replay('WaitForSingleObject', wait, 0), waitTimeout);
+    assert.equal(await replay('CloseHandle', signal), 1);
+    assert.equal(await replay('CloseHandle', wait), 1);
+    assert.equal(await replay('OpenEventW', 0x100000, 0, wide), 0);
+    assert.equal(await replay('GetLastError'), 2);
+    assert.equal(await call('WaitForSingleObject', wait, 0), 0);
+  } finally {
+    await fresh?.close();
+    await engine.close();
+  }
+});

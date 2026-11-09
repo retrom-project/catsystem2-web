@@ -4,6 +4,10 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import {
+  initializeNativeConfigurationEvent,
+  releaseNativeConfigurationEvent,
+} from '../src/native/engine-configuration-event.mjs';
 import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
 import { initializeNativeStartupMenu } from '../src/native/engine-startup-menu.mjs';
 import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
@@ -53,6 +57,14 @@ for (const [profile, variable, suffix] of [
         assert.equal(first.kernel.calls.get('kernel32.dll!CreateEvent' + suffix), 1);
         assert.equal(first.kernel.events.wait([event], false, 0), 0x102);
         first.kernel.events.signal(event, true);
+        await initializeNativeConfigurationEvent(first);
+        const configurationEvent = p.load(block + 88);
+        assert.equal(
+          first.kernel.events.events.get(configurationEvent).event,
+          'CoreSystem2ConfigEvent',
+        );
+        assert.equal(first.kernel.events.wait([configurationEvent], false, 0), 0x102);
+        first.kernel.events.signal(configurationEvent, true);
 
         restored = await open();
         restored.restore(first.snapshot());
@@ -67,6 +79,13 @@ for (const [profile, variable, suffix] of [
         assert.equal(restored.process.allocations.has(head), false);
         assert.equal(restored.kernel.locks.has(owner + 60), false);
         assert.equal(restored.kernel.events.events.has(event), false);
+        assert.equal(restored.process.load(block + 88), configurationEvent);
+        assert.equal(restored.kernel.events.wait([configurationEvent], false, 0), 0);
+        await releaseNativeConfigurationEvent(restored);
+        assert.equal(restored.process.load(block + 88), 0);
+        assert.equal(restored.kernel.events.events.has(configurationEvent), false);
+        assert.equal(restored.kernel.events.namedEvents.size, 0);
+        assert.equal(first.kernel.events.wait([configurationEvent], false, 0), 0);
         assert.equal(first.kernel.events.wait([event], false, 0), 0);
       } finally {
         await restored?.close();

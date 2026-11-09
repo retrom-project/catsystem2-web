@@ -38,6 +38,7 @@ import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
 import { initializeNativeWindowClass } from './engine-window-class.mjs';
 import { initializeNativeStartupMenu } from './engine-startup-menu.mjs';
 import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
+import { initializeNativeConfigurationEvent } from './engine-configuration-event.mjs';
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
@@ -846,6 +847,7 @@ export class NativeWorld {
       await initializeNativeAccelerators(this.nativeEngine);
       await (await this.getNativeFeature('input-device')).pointer();
       await setNativeWindowCaption(this.nativeEngine);
+      await initializeNativeConfigurationEvent(this.nativeEngine);
     }
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();

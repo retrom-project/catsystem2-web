@@ -133,6 +133,13 @@ Tests cover missing language keys, independent restore and release of the
 dynamic table. The pinned Wine probe also verifies the copy's untouched
 padding and capacity boundary. The native message loop's accelerator dispatch is separate.
 
+Both WinMain versions create the named, initially nonsignaled
+`CoreSystem2ConfigEvent` through the original ANSI or Unicode string. The
+virtual Windows namespace shares the event state across handles in one
+process, applies wait and signal access, and removes the name when the
+last handle closes. Both versions retain and release the event through the
+original startup slot; a restored process owns a separate copy of the state.
+
 The WinMain block also owns the original instance mutex. SDK `635D60`
 and game `79D1F0` construct it from the active Settings, and their original
 destructors close it. The virtual Windows instance uses the

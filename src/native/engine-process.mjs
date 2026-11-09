@@ -37,6 +37,7 @@ import { releaseNativeStartupInstance } from './engine-startup-instance.mjs';
 import { releaseNativeWindowClass } from './engine-window-class.mjs';
 import { releaseNativeStartupMenu } from './engine-startup-menu.mjs';
 import { releaseNativeWindowOwner } from './engine-startup-window.mjs';
+import { releaseNativeConfigurationEvent } from './engine-configuration-event.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -918,6 +919,7 @@ export class NativeEngineProcess {
     await releaseNativeWindowOwner(this);
     await releaseNativeStartupMenu(this);
     await releaseNativeWindowClass(this);
+    await releaseNativeConfigurationEvent(this);
     await releaseNativeStartupInstance(this);
     const image = NATIVE_ENGINE_IMAGES[this.profile],
       [, destroy, defaultsGlobal] = image.ownerBootstrap,
