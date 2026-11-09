@@ -28,6 +28,7 @@ import {
 } from './engine-system-information.mjs';
 import { NativeExecutableResources } from './engine-executable-resources.mjs';
 import { initializeSDKJavaScript, releaseSDKJavaScript } from './engine-sdk-javascript.mjs';
+import { installNativeDesktopAPIs } from './engine-desktop.mjs';
 
 export const NATIVE_ENGINE_IMAGES = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
@@ -876,6 +877,7 @@ export class NativeEngineProcess {
       ['GDI32.dll', 'EnumFontFamiliesW'],
     ])
       this.registerWindows(dll, name, windows.definitions.get(name));
+    installNativeDesktopAPIs(this, text);
     // WinMain passes the default startup/setup filenames and normal run mode.
     // The original constructor reads startup.xml and owns both Settings blocks.
     await p.callAsync(initialize, [0, 0, 1]);

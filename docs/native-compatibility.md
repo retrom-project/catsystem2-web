@@ -55,6 +55,14 @@ the performance counter together during calibration, then uses the normal
 frame clock. Tests check the recorded vendor, family, feature words and
 calculated speed, and confirm normal counter behavior after fresh restore.
 
+After preferences and the DirectX gate, World startup executes the original
+desktop probe (SDK `4A2750`, game `5C5B10`). The
+[screen metrics](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)
+come from the virtual screen; the original code acquires a GDI desktop DC,
+reads its 32-bit color depth and releases it. The Engine owner retains the
+two dimensions as WORDs. The input device and startup use the same metrics.
+Tests verify the original calls and packed dimensions after a fresh restore.
+
 The Unicode startup error path uses the game's original language tree. The
 game selects its UI catalogue from the saved Settings and parses the mounted
 UTF-8 file in the original code. The browser caches the end of that immutable

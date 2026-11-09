@@ -33,6 +33,7 @@ import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
 import { NativeEngineProcess } from './engine-process.mjs';
 import { checkNativeDirectXStartup } from './engine-system-information.mjs';
+import { initializeNativeDesktop } from './engine-desktop.mjs';
 import { readNativeStartupPreferences } from './engine-preferences.mjs';
 import { loadNativeGameStartupLanguage } from './engine-language.mjs';
 import { installNativeMatrices } from './matrix.mjs';
@@ -492,6 +493,8 @@ export class NativeWorld {
         configuration: this.configuration,
         bootstrapOwner: this.bootstrapOwner && {
           ...this.bootstrapOwner,
+          displaySize: () => this.graphics.view.virtualSize(),
+          touchPoints: () => this.host.nativeTouchPoints?.(),
           mountFiles: async (engine) => {
             // The native game defaults open through the same mounted file
             // adapter as gameplay. These factories do not await the World.
@@ -809,7 +812,10 @@ export class NativeWorld {
       }
     }
     if (this.profile === 'nekopara-vol3-engine-2.6.1.76') await this.steamService.initialize();
-    if (this.bootstrapOwner) await checkNativeDirectXStartup(this.nativeEngine);
+    if (this.bootstrapOwner) {
+      await checkNativeDirectXStartup(this.nativeEngine);
+      await initializeNativeDesktop(this.nativeEngine);
+    }
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();
     this.refreshTitle();

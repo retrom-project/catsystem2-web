@@ -19,6 +19,7 @@ import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
+import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -32,11 +33,13 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
     async () => {
       const bytes = new Uint8Array(await readFile(fixture)),
         clock = new NativeSystemClock({ now: () => 1234.5 }),
+        display = [1391, 703],
+        desktopFields = layout.wide ? 0x13d40 : 0x10788,
         open = () =>
           NativeEngineProcess.open({
             profile,
             bytes,
-            bootstrapOwner: {},
+            bootstrapOwner: { displaySize: () => display },
             configuration: new NativeConfiguration({ profile, uiLanguage: 0x411 }),
             readFile: async () => null,
             heapSize: 128 * 1024 * 1024,
@@ -106,9 +109,26 @@ for (const [profile, layout] of Object.entries(NATIVE_SYSTEM_INFORMATION)) {
         );
         assert.equal(first.kernel.comDepth, 1, 'DxDiag released its nested apartment');
         await checkNativeDirectXStartup(first);
+        first.process.store(first.refs.owner + 44, 1);
+        const desktop = (engine) => {
+          const { process: p, refs } = engine,
+            packed = p.load(refs.owner + desktopFields);
+          assert.equal(p.load(refs.owner + 44), 0);
+          assert.equal(engine.textWindows.objects.size, 0, 'the desktop DC was released');
+          return [packed & 0xffff, packed >>> 16];
+        };
+        await initializeNativeDesktop(first);
+        assert.deepEqual(desktop(first), display);
+        for (const [name, count] of [
+          ['user32.dll!GetSystemMetrics', 2],
+          ['user32.dll!GetDesktopWindow', 2],
+          ['gdi32.dll!GetDeviceCaps', 1],
+        ])
+          assert.equal(first.kernel.calls.get(name), count, name);
         fresh = await open();
         fresh.restore(first.snapshot());
         assert.deepEqual(read(fresh), info);
+        assert.deepEqual(desktop(fresh), [1391, 703]);
         const p = fresh.process,
           probe = p.allocate(64, true),
           query = fresh.kernel.resolve({ dll: 'KERNEL32.dll', name: 'GlobalMemoryStatusEx' }),

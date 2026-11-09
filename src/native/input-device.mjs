@@ -2,6 +2,8 @@
 // A browser window supplies the Win32 boundaries of the original kcInput
 // constructor. The returned pointer is its real object, with original key and
 // gesture code, rather than a task prefix or an opaque JS handle.
+import { nativeSystemMetric } from './engine-desktop.mjs';
+
 const layouts = {
   'nekopara-vol3-engine-2.6.1.76': {
     construct: 0x70f560,
@@ -184,16 +186,13 @@ export class NativeInputDevice {
         return this.handles.get(key);
       });
     }
-    add('USER32.dll', 'GetSystemMetrics', 1, ([index]) => {
-      if (index === 94) {
-        const n =
-          this.world.host.nativeTouchPoints?.() ?? globalThis.navigator?.maxTouchPoints ?? 0;
-        return n ? (n > 1 ? 0x43 : 3) : 0;
-      }
-      if (index === 0 || index === 78) return this.size()[0];
-      if (index === 1 || index === 79) return this.size()[1];
-      throw new Error(`Input GetSystemMetrics(${index}) has no browser boundary`);
-    });
+    add('USER32.dll', 'GetSystemMetrics', 1, ([index]) =>
+      nativeSystemMetric(
+        index,
+        () => this.size(),
+        () => this.world.host.nativeTouchPoints?.(),
+      ),
+    );
     const pad = () =>
       this.world.host.nativeGamepad?.() ??
       Array.from(globalThis.navigator?.getGamepads?.() ?? []).find((pad) => pad?.connected);
