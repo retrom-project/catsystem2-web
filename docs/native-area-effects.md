@@ -55,7 +55,10 @@ With selector zero, `C9` queries the target kind and sends its mapped packet
 to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
 `C4`, updates its parameters through `C9`, and draws through the original
 GraphManager callback. Stop or destruction removes that callback. Hydro's
-receiver leaves this message unhandled; the wrapper still completes.
+receiver leaves both `C4` and `C9` initialization messages unhandled. Base
+reports kind 25 and marks a delete request pending. The original logic
+stub keeps the task alive. Its inherited draw still updates the clock,
+and owner destruction calls the original Hydro destructor.
 
 UnderWater (kind 17) is an original task without a rendered surface. Its
 receiver leaves query outputs unwritten and ignores the KCS delete message.
@@ -85,10 +88,10 @@ view and manager retain their ownership.
 
 Weather (kind 22), WipeCircle (kind 23) and TileRev (kind 24) each use their
 original constructor and destructor with the same handled, unwritten
-receiver as UnderWater. The `C4` kind query leaves its output unchanged, so the wrapper
-never sends the initializer. These tasks create no graphics resources. Their
-original draw advances the clock, and owner teardown or explicit host
-removal releases the task.
+receiver as UnderWater. The `C4` kind query leaves its output unchanged,
+so the wrapper never sends the initializer. These tasks create no graphics
+resources. Their original draw advances the clock, and owner teardown or
+explicit host removal releases the task.
 
 `C7` translates the VM address, copies exactly 64 bytes to the original stack,
 and sends that copy with zero `w` and flags. The original wrappers fault on a
@@ -102,7 +105,7 @@ packet without changing the active effect or applying a matrix to the scene.
 wrappers and the adapter with an independent observing transport. Each profile
 runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
 and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 892 receiver checks
+receiver writes, output canaries and unwritten replies. Its 909 receiver checks
 per profile execute the original Wipe2, Wipe1/Fade, Raster, Hydro, Wipe3,
 WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe, Weather, WipeCircle and
 TileRev paths.
@@ -119,8 +122,9 @@ stack copy and has no visual effect. Source ownership stays with the KCS resourc
 list or bitmap owner. Frozen executables and raw reports stay outside version control.
 
 The wrapper checks cover the routing envelope for every `C4` kind. Native
-initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak
-and Wipe2 through WipeAlpha3. Other `C4` receiver types still require verification.
+initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak,
+Wipe1, Fade, Wipe2, Wipe3 and WipeAlpha3. Kind 28 still needs direct receiver
+and pixel verification.
 
 The Wipe browser cases run authored KCS against both mounted engines, verify
 unchanged nonempty GPU pixels and restore the pending task with its owned

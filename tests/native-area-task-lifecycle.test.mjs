@@ -28,6 +28,9 @@ const areaProgram = (kind, name) => {
       [43, 0xc8, 4],
       [38, 72],
       target,
+      [43, 0x4a, 4],
+      [38, 80],
+      target,
       [43, 0x43, 4],
       target,
       [43, 0x4a, 4],
@@ -46,13 +49,15 @@ for (const [kind, name, size, tables] of [
   [22, 'Weather', 0xd4, [0x8cddb4, 0x993094]],
   [23, 'WipeCircle', 0xb8, [0x8cddd8, 0x9930b8]],
   [24, 'TileRev', 0xd0, [0x8cddfc, 0x9930dc]],
+  [25, 'Hydro', 0xb4, [0x8cde20, 0x993100]],
 ]) {
   for (const [index, [profile, variable]] of profiles.entries()) {
     test(
-      `${profile} original ${name} retains unwritten query and removal messages across restore`,
+      `${profile} original ${name} preserves its original query and removal lifecycle across restore`,
       { skip: !process.env[variable] },
       async () => {
-        const program = areaProgram(kind, name),
+        const pending = kind === 25,
+          program = areaProgram(kind, name),
           executable = new Uint8Array(await readFile(process.env[variable])),
           make = () => {
             const game = memoryGame({ 'engine.exe': executable, 'main.kcs': program }),
@@ -92,7 +97,9 @@ for (const [kind, name, size, tables] of [
           assert.equal(p.load(pointer + 64), kind);
           assert.equal(vm.load(72), caller);
           assert.equal(vm.load(76), caller);
-          assert.equal(Boolean(record.destroyRequested), false);
+          assert.equal(vm.load(80), pending ? kind : caller);
+          assert.equal(Boolean(record.destroyRequested), pending);
+          assert.equal(p.load(pointer + 84), Number(pending));
           assert.equal(world.nativeEngine.features.has('renderer'), false);
 
           const context = {};
@@ -116,9 +123,24 @@ for (const [kind, name, size, tables] of [
           assert.deepEqual(rp.read(pointer, size), saved);
           assert.deepEqual(await call(fresh, 0x4a, nativeID), { control: 1, value: caller });
           assert.deepEqual(await call(fresh, 0x43, nativeID), { control: 2 });
-          await fresh.tick();
+          const table = tables[index],
+            ecx = rp.uc.X86_REG_ECX;
+          let drawVisits = 0;
+          const detach = rp.beforeInstruction(
+            rp.load(table + 12),
+            'observe original area draw',
+            () => {
+              if (rp.cpu.reg_read_i32(ecx) >>> 0 === pointer) drawVisits++;
+            },
+          );
+          try {
+            await fresh.tick();
+          } finally {
+            detach();
+          }
+          assert.equal(drawVisits, 1);
           assert.equal(restored.lastFrame, 0);
-          assert.equal(rp.load(pointer + 84), 0);
+          assert.equal(rp.load(pointer + 84), Number(pending));
           assert.equal(rp.load(pointer + 96), 0);
           assert.equal(rp.load(pointer + 100), fresh.frame);
           assert.equal(fresh.resolveTaskID(nativeID, fresh.main.id), id);
@@ -130,8 +152,11 @@ for (const [kind, name, size, tables] of [
           assert.equal(fresh.objects.objects.get(base).destroyRequested, true);
           await fresh.tick();
           assert.deepEqual(await call(fresh, 0x4a, baseID), { control: 1, value: 0xffffffff });
-          assert.equal(await fresh.objects.destroy(id), true);
-          await fresh.tick();
+          if (pending) await fresh.objects.release(fresh.main.id);
+          else {
+            assert.equal(await fresh.objects.destroy(id), true);
+            await fresh.tick();
+          }
           assert.equal(fresh.objects.objects.has(id), false);
           assert.equal(rp.allocations.has(pointer), false);
           assert.equal(p.allocations.has(pointer), true);

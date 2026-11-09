@@ -977,8 +977,15 @@ try {
     p.free(vertices);
     activeEffect = await engine.call(factory, [25, name, out + 4], parent);
     nativeID = p.load(out + 4);
-    equal(p.load(activeEffect), sdk ? 0x993100 : 0x8cde20, 'original Hydro vtable');
-    const hydro = p.read(activeEffect, 180);
+    const hydroTable = p.load(activeEffect),
+      hydro = p.read(activeEffect, 0xb4),
+      hydroFields = new DataView(hydro.buffer);
+    equal(hydroTable, sdk ? 0x993100 : 0x8cde20, 'original Hydro vtable');
+    equal(p.load(hydroTable), sdk ? 0x4ca520 : 0x5efbf0, 'original Hydro deleting destructor');
+    equal(p.load(hydroTable + 8), sdk ? 0x937bc0 : 0x5d8d50, 'original Hydro logic stub');
+    equal(p.load(hydroTable + 12), sdk ? 0x4b9340 : 0x626480, 'original Hydro Base draw');
+    equal(p.load(hydroTable + 28), sdk ? 0x4ca550 : 0x5efc20, 'original Hydro delegates to Base');
+    equal(await callWipe(0x4a), { control: 1, value: 25 }, 'Base writes the Hydro kind');
     equal(await callWipe(0xc4, 0xffffffff), { control: 2 }, 'Hydro ignores original C4 payload');
     equal(await callWipe(0xc9, 0, 0xffffffff), { control: 2 }, 'Hydro ignores original C9 payload');
     equal(
@@ -986,8 +993,25 @@ try {
       { control: 1, value: host },
       'Hydro status leaves result unwritten',
     );
-    equal(p.read(activeEffect, 180), hydro, 'original Hydro receiver preserves its task data');
-    await engine.call(p.load(p.load(activeEffect)), [1], activeEffect);
+    equal(p.read(activeEffect, 0xb4), hydro, 'original Hydro receiver preserves its task data');
+    p.write(out, scratchFill);
+    equal(await engine.call(p.load(hydroTable + 8), [201, out + 4], activeEffect), 1);
+    equal(p.read(out, 12), scratchFill, 'original Hydro logic leaves result unwritten');
+    equal(p.read(activeEffect, 0xb4), hydro);
+    hydroFields.setUint32(100, 201, true);
+    equal(await engine.call(p.load(hydroTable + 12), [201], activeEffect), 1);
+    equal(p.read(activeEffect, 0xb4), hydro, 'original Hydro draw only advances the clock');
+    equal(await callWipe(0x43), { control: 2 });
+    hydroFields.setUint32(84, 1, true);
+    equal(p.read(activeEffect, 0xb4), hydro, 'Base marks Hydro for destruction');
+    p.write(out, scratchFill);
+    equal(await engine.call(p.load(hydroTable + 8), [202, out + 4], activeEffect), 1);
+    equal(p.read(out, 12), scratchFill);
+    equal(p.read(activeEffect, 0xb4), hydro, 'the original Hydro logic stub keeps it alive');
+    hydroFields.setUint32(100, 202, true);
+    equal(await engine.call(p.load(hydroTable + 12), [202], activeEffect), 0);
+    equal(p.read(activeEffect, 0xb4), hydro, 'pending Hydro draw still writes its clock');
+    await engine.call(p.load(hydroTable), [1], activeEffect);
     equal(p.allocations.has(activeEffect), false, 'original Hydro destruction frees task');
 
     for (const [kind, label, size, tables, destructors] of [
@@ -1365,7 +1389,7 @@ try {
         wrapperBoundary:
           'Original eight GCALL wrappers compared with adapter. Observer supplies routing and target replies.',
         receiverBoundary:
-          'Original factories, UnderWater/Weather/WipeCircle/TileRev/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle, TileRev and Wipe execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
+          'Original factories, UnderWater/Weather/WipeCircle/TileRev/Raster/Hydro/RainDrop/GlassBreak/Wipe/Wipe1/Fade/Wipe2/Wipe3/WipeAlpha3 receivers, frames and destructors. UnderWater, Weather, WipeCircle, TileRev, Wipe and Hydro execute original task wrappers 43/4A as well. RainDrop and GlassBreak use the original graph manager and callbacks with authored display caps and an empty mounted file provider. Observe RainDrop final line submission, Raster graph registration and bitmap uploads at their view boundaries.',
       },
       null,
       2,
