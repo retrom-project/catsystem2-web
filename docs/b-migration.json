@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 119, "oracle": 136, "differential": 45 },
+    "counts": { "js": 122, "oracle": 136, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -41,6 +41,8 @@
         "tests/media-boundary.test.mjs",
         "tests/motion-contracts.test.mjs",
         "tests/native-abi-behavior.test.mjs",
+        "tests/native-abi-comparison.test.mjs",
+        "tests/native-abi-extraction.test.mjs",
         "tests/native-abi.test.mjs",
         "tests/native-arguments.test.mjs",
         "tests/native-audio-pcm.test.mjs",
@@ -54,6 +56,7 @@
         "tests/native-config-memory.test.mjs",
         "tests/native-config.test.mjs",
         "tests/native-content-tables-js.test.mjs",
+        "tests/native-corpus-survey.test.mjs",
         "tests/native-cpu-budget.test.mjs",
         "tests/native-cursor.test.mjs",
         "tests/native-d3d9-adapter.test.mjs",

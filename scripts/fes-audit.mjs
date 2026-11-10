@@ -96,7 +96,7 @@ export function document() {
   return lines.join('\n');
 }
 
-function commandBody(source) {
+export function commandBody(source) {
   while (/^if\s*\(/.test(source)) source = condition(source)[1];
   return source;
 }
