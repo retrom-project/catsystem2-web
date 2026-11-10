@@ -411,8 +411,6 @@ export async function nativeMissionTable(id, args, machine, services) {
     const row = record(),
       selector = argument(2) >>> 0;
     if (!row || selector > 11 || !mapped(3)) return value(0);
-    if (selector === 9 && !row.characters.length)
-      throw new RangeError('Native mission character query dereferences an empty set sentinel');
     const { fields, progress } = row,
       words = [
         fields.TYPE,

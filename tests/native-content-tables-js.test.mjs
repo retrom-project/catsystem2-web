@@ -107,10 +107,8 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         assert.equal(fresh.main.machine.load(1024), 1);
         await call(fresh, 0x334, [two.mission, 10, 7, 1024]);
         assert.equal(fresh.main.machine.load(1024), 1);
-        await call(fresh, 0x334, [two.mission, 10, 9, 1024]).then(
-          () => assert.fail('empty character set query must fail'),
-          (error) => assert.match(error.message, /empty set sentinel/),
-        );
+        assert.equal((await call(fresh, 0x334, [two.mission, 10, 9, 1024])).value, 1);
+        assert.equal(fresh.main.machine.load(1024), 0);
       } finally {
         await fresh?.close({ flushFiles: false });
         await first.close({ flushFiles: false });

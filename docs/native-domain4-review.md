@@ -101,7 +101,13 @@ decisions into b-migration.json and preserves their unsupported classification.
 ## Mission empty-character query
 
 Mission 334 selector 9 reads an uninitialized std::set sentinel when CHAR is
-empty. Both frozen oracles recorded indeterminate words for this input. The JS
-path raises RangeError and preserves a diagnostic. Valid nonempty character
-sets retain the independently verified first-character result. Neither frozen
-corpus calls 334. Future authored callers must provide a nonempty CHAR set.
+empty. Both frozen oracles return control 1, report success, write the sentinel
+payload and continue through subsequent queries and destruction. Seeding only
+the uninitialized allocation payload with 0 or 0x12345678 changes the output to
+that value in both ABIs. There is no defined empty-set character value.
+
+The JS path writes 0 for this uninitialized word and preserves success and
+continued script execution. Nonempty character sets retain the independently
+verified first-character result. The differential fixture excludes only the
+four uninitialized output bytes and compares all other VM state, controls,
+return values and subsequent operations exactly. Neither frozen corpus calls 334. The normal JS entry regression also runs without private EXEs.
