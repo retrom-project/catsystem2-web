@@ -54,7 +54,7 @@ export async function until(page, label, maxFrames) {
   return result;
 }
 
-export async function clickNativeButton(page, name) {
+export async function hoverNativeButton(page, name) {
   const point = await page.evaluate((key) => {
     const e = window.catSystem2,
       player = e.activeFES(),
@@ -70,6 +70,10 @@ export async function clickNativeButton(page, name) {
   }, name);
   await page.mouse.move(point.x, point.y);
   await step(page, 2);
+}
+
+export async function clickNativeButton(page, name) {
+  await hoverNativeButton(page, name);
   await page.mouse.down();
   await step(page, 2);
   await page.mouse.up();

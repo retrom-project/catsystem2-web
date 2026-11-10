@@ -2,7 +2,7 @@
 // Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from '@playwright/test';
 import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
-import { step, until } from './native-game-input.mjs';
+import { hoverNativeButton, step, until } from './native-game-input.mjs';
 
 test.afterEach(async ({ page }, info) => {
   if (info.status !== info.expectedStatus && !page.isClosed())
@@ -32,7 +32,15 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
   expect(await page.evaluate(() => window.catSystem2.world.configuration.keys.enableJoypad)).toBe(
     1,
   );
+  // Native title has no default button. A physical hover establishes focus;
+  // unlike ScenePlayer, a direction from no focus cannot select the first row.
+  await hoverNativeButton(page, 'btn1[0]');
+  const focused = () => page.evaluate(() => window.catSystem2.activeFES().focused?.o?.key);
+  expect(await focused()).toBe('btn1[0]');
   await pad(page, 13);
+  expect(await focused()).toBe('btn1[1]');
+  await pad(page, 12);
+  expect(await focused()).toBe('btn1[0]');
   await pad(page, 0);
   await until(page, 'meswnd#WAIT', 900);
   await nativeWait(page, () => {
