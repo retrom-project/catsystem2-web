@@ -62,6 +62,22 @@ export class NativeAreaEffectCommands {
     }
     if (!typed.length) return 0;
     const memory = await world.getNativeFeature('bitmap-memory');
+    if (schema === bitmapPackets.get(277)) {
+      const source = typed.find(([at]) => at === 8)?.[1],
+        destination = packet.getUint32(20, true);
+      if (source && destination) {
+        const bitmap = world.graphics.images.get(source),
+          record = memory.refs.data.get(bitmap.dataHandle);
+        if (!record || memory.isOwned?.(bitmap.dataHandle)) {
+          const target = refs.has(destination)
+            ? world.graphics.images.get(destination)
+            : (await world.getNativeFeature('graphics-platform')).logicalBitmap(
+                p.load(destination),
+              );
+          await prepareWipeSource(bitmap, target, packet);
+        }
+      }
+    }
     for (const [at, value] of typed) packet.setUint32(at, await memory.wrapper(value), true);
     for (const [value, identity] of borrowed)
       if (sources.bitmapWrapperIdentity(value) !== identity)
@@ -170,6 +186,37 @@ export class NativeAreaEffectCommands {
   }
   close() {
     this.process.free(this.vtable);
+  }
+}
+
+// Wipe3 exposes this source mutation to scripts. Apply the command to the JS
+// authority before the original receiver consumes its independent projection.
+async function prepareWipeSource(source, destination, packet) {
+  const input = await source.pixels(),
+    output = await destination.pixels(),
+    sx = packet.getInt32(12, true),
+    sy = packet.getInt32(16, true),
+    dx = packet.getInt32(24, true),
+    dy = packet.getInt32(28, true);
+  let changed = false;
+  for (let y = 0; y < source.height; y++)
+    for (let x = 0; x < source.width; x++) {
+      const at = ((source.height - 1 - sy - y) * source.width + sx + x) * 4,
+        target = ((destination.height - 1 - dy - y) * destination.width + dx + x) * 4;
+      if (
+        at < 0 ||
+        at + 3 >= input.length ||
+        target < 0 ||
+        target + 3 >= output.length ||
+        input[at + 3]
+      )
+        continue;
+      for (let channel = 0; channel < 3; channel++) input[at + channel] = output[target + channel];
+      changed = true;
+    }
+  if (changed) {
+    source.state.source = null;
+    await source.changed();
   }
 }
 

@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_BITMAP_FACTORY_CONTRACTS } from '../src/native/bitmap-factory.mjs';
+import { NATIVE_BITMAP_FACTORY_CONTRACTS } from '../oracle/bitmap-factory.mjs';
 import { bitmapFactoryFixture } from '../tests/fixtures/bitmap-factory-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';
 import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';

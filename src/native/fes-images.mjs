@@ -204,6 +204,8 @@ export class NativeFESImages {
     const runtime = await this.runtime();
     if (object.nativeType === 25 && verb === 'refex') {
       const owners = await this.world.getNativeFeature('image-owners');
+      const handle = args.length ? instance.value(args[0]) : 0;
+      if (handle) await owners.materialize(handle);
       context = {
         ...context,
         evaluate: (text, tokenIndex) => {

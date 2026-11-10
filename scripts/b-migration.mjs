@@ -3,6 +3,7 @@
 // run here. No engine, DLL, resource, task or browser is opened.
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { nativeTestGroups } from './test-native.mjs';
+import { NATIVE_IMAGE_OWNER_JS_IDS } from '../src/native/image-owner.mjs';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -100,6 +101,15 @@ function domain(file) {
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
   if (
+    [
+      'oracle/bitmap-memory.mjs',
+      'oracle/bitmap-projection.mjs',
+      'oracle/image-owner.mjs',
+      'oracle/image-owner-projection.mjs',
+    ].includes(file)
+  )
+    return 6;
+  if (
     file.startsWith('src/emote/') ||
     name.startsWith('emote') ||
     (file.startsWith('src/ppi/') &&
@@ -129,8 +139,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'bitmap-factory ' +
-    'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
+    'draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'input-commands registry image-file image-composite render-sources ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
@@ -335,6 +344,7 @@ function resolveFeatures(names, features, modules, visited = new Set()) {
 
 function classify(file, id, callback, features, modules) {
   const name = basename(file);
+  const ownerTransition = name === 'image-owner' && !NATIVE_IMAGE_OWNER_JS_IDS.includes(id);
   let names = callback ? featureNames(callback.node) : [];
   // Follow a callback's direct function delegation before following factories.
   // Scanning every function in its installer would, for example, attach the
@@ -352,6 +362,14 @@ function classify(file, id, callback, features, modules) {
   let implementation;
   if (name === 'storage' || name === 'heap-data') {
     implementation = 'pure-js';
+  } else if (name === 'image-owner') {
+    implementation = ownerTransition ? 'original-handler' : 'pure-js';
+    if (ownerTransition) {
+      names.push('image-owner-projection');
+      reasons.push(
+        'JS 持有逻辑句柄与位图状态。文件解码和剩余像素命令仍经显式过渡边界，分别随阶段5.3/5.2删除。',
+      );
+    }
   } else if (originalWrappers.has(name)) {
     implementation = 'original-handler';
   } else if (reviewedRegions.has(name)) {
@@ -381,14 +399,21 @@ function classify(file, id, callback, features, modules) {
     names = unique([...names, 'random-memory']);
     reasons.push('本体为 JS，随机流可能由 random-memory 绑定到 EXE 数据页，PE 状态依赖单列。');
   }
-  if (implementation === 'original-handler' && !modules.get(file).executionSites.length) {
+  if (
+    implementation === 'original-handler' &&
+    !modules.get(file).executionSites.length &&
+    !ownerTransition
+  ) {
     implementation = 'unknown';
     reasons.push('已审查的原处理器模块已无执行站点，需更新本脚本的路由分类。');
   }
   return {
     implementation,
     names,
-    dependencies: resolveFeatures(names, features, modules),
+    dependencies: unique([
+      ...resolveFeatures(names, features, modules),
+      ...(ownerTransition ? ['oracle/image-owner.mjs', 'oracle/image-owner-projection.mjs'] : []),
+    ]),
     reasons,
   };
 }
@@ -718,6 +743,82 @@ const nonNativeGroups = [
     },
   },
   {
+    name: 'js-bitmap-to-exe-consumers',
+    domain: 6,
+    entry:
+      'Script-owned JS bitmaps produce independent renderer/FES input copies; Wipe3 source preparation is an explicit JS command',
+    modules: [],
+    files: ['oracle/bitmap-memory.mjs', 'oracle/bitmap-projection.mjs'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeImages bitmap-data handles',
+      fields: [
+        'pixels/stride/bpp',
+        'canvas/offset/base/clip',
+        'alpha/mask/blend metadata',
+        'attribute records',
+        'independent bitmap/wrapper references',
+      ],
+      consumers: [
+        {
+          domain: 6,
+          modules: ['graphics-process', 'retained-draw', 'texture-memory', 'area-effect-commands'],
+        },
+        { domain: 7, modules: ['fes-images'] },
+      ],
+      lifetime:
+        'Projection references follow JS aliases and retained consumers. Revision changes refresh the source. Wipe3 mutates JS source RGB before projection; there is no global owned-state back-read.',
+      removePhase: 7,
+      operations: ['pointer', 'wrapper', 'beforeCall', 'prepareWipeSource'],
+    },
+  },
+  {
+    name: 'exe-owned-bitmap-derived-views',
+    domain: 6,
+    entry:
+      'Renderer targets and FES decoded images remain owned by their unmigrated consumer; borrow exposes a derived view',
+    modules: ['graphics-process', 'fes-images'],
+    files: ['oracle/bitmap-projection.mjs'],
+    projection: {
+      direction: 'PE-to-JS-view',
+      authority: 'Original domain 6 renderer targets / domain 7 FES decoded images',
+      fields: ['read-only logical RGBA and metadata', 'consumer-owned pointer identity'],
+      consumers: [
+        { domain: 6, modules: ['retained-draw', 'graphics-process'] },
+        { domain: 7, modules: ['fes-images'] },
+      ],
+      lifetime:
+        'The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.',
+      removePhase: 7,
+      operations: ['borrow', 'pixels', 'adopt'],
+    },
+  },
+  {
+    name: 'js-image-owner-to-exe-consumers',
+    domain: 6,
+    entry:
+      'JS image-owner handles and metadata project independent 64-byte collections for retained Draw and IMAGEEX',
+    modules: [],
+    files: ['oracle/image-owner.mjs', 'oracle/image-owner-projection.mjs'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeImageOwners logical records and NativeImages bitmap-data',
+      fields: [
+        'bitmap pixels/metadata/attributes',
+        'collection geometry/format/flags',
+        'independent wrapper and retained owner references',
+      ],
+      consumers: [
+        { domain: 6, modules: ['retained-draw'] },
+        { domain: 7, modules: ['fes-images'] },
+      ],
+      lifetime:
+        'JS task ownership uses handles. PE projection lists are isolated from the Script prefix. External retained references can outlive JS release.',
+      removePhase: 7,
+      operations: ['prepare', 'sync', 'releaseModel'],
+    },
+  },
+  {
     name: 'js-scene-to-exe-display-log',
     domain: 5,
     entry:
@@ -806,6 +907,28 @@ const nonNativeGroups = [
       'Particles → nativeThread/atlas/scriptBounds/projectGeometry; PPINativeRuntime/EmoteNativeAdapter → PE32Process',
     modules: ['particles', 'particle-projection', 'particle-bounds', 'particle-textures'],
     directories: ['src/ppi/', 'src/emote/'],
+  },
+  {
+    name: 'sdk-javascript-image-text-owners',
+    domain: 8,
+    entry:
+      'Original SDK V8 CsImage/CsText callbacks create their own PE image/writer resources and bypass main GCALL handlers',
+    modules: ['sdk-javascript-task', 'engine-sdk-javascript'],
+    ownership: {
+      authority: 'Original SDK JavaScript native objects',
+      fields: [
+        'native object +352 image/writer pointer',
+        'CsImage +396 Draw reference',
+        'CsText +368 configuration, +584 source and reveal flags',
+      ],
+      consumers: [
+        { domain: 6, modules: ['graphics-process', 'retained-draw'] },
+        { domain: 8, modules: ['sdk-javascript-task'] },
+      ],
+      lifetime:
+        'Create/load/append/draw and destruction stay with the V8 native object; KCS typed bitmap handles have an independent JS lifetime.',
+      removePhase: 8,
+    },
   },
   {
     name: 'sdk-javascript-and-media',

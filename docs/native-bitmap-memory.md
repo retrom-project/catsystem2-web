@@ -1,22 +1,21 @@
 # Persistent bitmaps and native operations
 
-[Bitmap memory](../src/native/bitmap-memory.mjs) gives `NativeImages` stable
-original-engine pointers. `pointer(handle)` returns the bitmap base;
-`wrapper(handle)` returns a persistent original image wrapper (536 bytes in the
-game, 276 in the SDK), whose first word is understood by the original
-`5AEBE0`/SDK `4326E0` getter. Its constructor/destructor preserve its independent
-image reference and optional motion object. The bitmap base occupies 92 bytes;
-decoded classes can be larger. HG3 decoding, for example, returns an original
-4,476-byte derived object. Adoption preserves that object's identity, virtual
-destructor, metadata and attribute map.
+[NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
+attributes and aliasing in JS. Canvas presentation is a derived cache. A
+checkpoint saves the shared JS pixel backing once and preserves the bitmap
+handles which reference it.
 
-Materialized guest bitmap storage is authoritative. Metadata access projects
-the original fields; RGBA and Canvas objects are derived caches. Handles sharing
-a backing bitmap share its raw pointer and RGBA cache, including views reached
-through different presentation handles. Writable Canvas operations mark their
-cache dirty; simply presenting a Canvas does not commit it. This prevents a
-read-only query from changing revisions or damaging low-alpha pixels through a
-Canvas premultiplication round trip.
+[The injected bitmap projection](../oracle/bitmap-projection.mjs) maintains
+independent inputs for remaining renderer and FES consumers. JS changes refresh
+those inputs by revision. Explicit decoder/capture results transfer into JS at
+an operation boundary. Renderer targets and FES-decoded objects retain their
+consumer authority and expose separately registered derived views. Wipe3 source
+RGB preparation executes as a JS command before its input copy is consumed.
+
+The original layout and operations below remain oracle evidence. `pointer`
+materializes a 92-byte bitmap and `wrapper` a 536-byte game or 276-byte SDK
+wrapper. The original derived HG3 object can occupy 4,476 bytes. Its own
+consumer controls its virtual destructor and storage lifetime.
 
 Host projections support BGRA32, BGR24 and A4R4G4B4 rows, reversing physical rows
 into logical image rows. Four-bit presentation channels use their normalized
@@ -33,11 +32,9 @@ passing such a mirror through the native wrapper API promotes it to a strong
 logical bitmap owner. The presentation layer must retire borrowed mirrors before
 their native owner is destroyed and retain its last drawing bounds separately.
 
-A physical bitmap's checkpoint stores its pointer and metadata in the handle
-record, and its actual bytes once in the shared process. It does not store a
-second authoritative RGBA image. Restore rebuilds projection accessors and alias
-caches around the original restored addresses. CPU resizing uses the original
-helper, preserving the bitmap identity and in-place attribute-payload updates.
+Script bitmap restore reconstructs JS state and aliases. Consumer-owned raw
+views use their separately recorded PE checkpoint identity. Pending CPU
+operations use explicit result import until their phase 5.2 migration.
 
 [The operation adapter](../src/native/bitmap-operations.mjs) executes these full
 original wrappers:

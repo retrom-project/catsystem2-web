@@ -1,10 +1,15 @@
 # Native image owners
 
-[The image-owner adapter](../src/native/image-owner.mjs) executes all 28 original
-main wrappers in `2C6..2E1`. Their 64-byte reference-counted image collection is
-distinct from a raw bitmap, a decoded image wrapper and a 20-byte file-data
-buffer. These resources share one original-engine process and their original
-ownership relationships.
+[The image-owner model](../src/native/image-owner.mjs) owns logical handles,
+bitmap state, metadata queries/setters and automatic task cleanup in JS.
+2C7/2C8/2CA/2CB/2CD/2CE/2CF/2D0/2D1/2D2/2DD use that model directly.
+File decoding and remaining pixel commands temporarily cross
+[the explicit projection](../oracle/image-owner-projection.mjs), with result
+import at each operation. They migrate in phases 5.3 and 5.2 respectively.
+
+The independent 64-byte PE collection serves retained Draw and IMAGEEX. It
+contains its own bitmap/wrapper references and keeps the renderer's original
+retained lifetime. The JS handles checkpoint owns script pixels and metadata.
 
 | IDs                   | Operation                                                      | Result control        |
 | --------------------- | -------------------------------------------------------------- | --------------------- |
@@ -26,27 +31,29 @@ unchanged, including float-bit drawing parameters. `2D4` truncates its index to
 wrapper's original early returns, preserved outputs and unwritten result words;
 the adapters do not normalize these different branches into a generic failure.
 
-Each Script has the original circular owner list at `+156`. Loading and creating
-append to it; releasing removes from the caller's list and decrements the
-collection reference count. Reload releases all owned references before clearing
-the original list. Script destruction also frees its head and container. Draw
-entries independently retain an image owner through the original retained-image
-setter. Their descriptor uses **field 3**; field 0 remains an ordinary bitmap.
-Releasing the Script reference leaves the Draw reference alive.
+Each Script owns its JS handles. Reload and destruction release its logical
+references. PE projection lists occupy isolated adapter contexts. Draw entries
+independently retain those projections using descriptor field 3. Releasing the
+Script handle preserves the consumer's remaining reference.
 
 The loader executes original category resolution, extension/selector processing,
 image decoding, ANM resource loading and composition. Comma selection generates
-names such as `base_1` and `base_02` before the extension. Both original ANM
-records and decoded bitmap metadata stay in guest RAM. Checkpoint handles retain
-only pointer/owner identity; restoring never reloads the file or builds another
-authoritative image collection.
+names such as `base_1` and `base_02` before the extension. Original ANM records currently remain part of the domain 6 consumer projection.
+Decoded script pixels and metadata are imported into JS; checkpoints retain
+that JS state once alongside the separate consumer checkpoint.
 
 The Script's `+116` view is the original outer `kcView`, shared with its Top.
-Production loading waits for `graphics-platform.ensureRenderer()`. Browser
+The temporary original loader waits for `graphics-platform.ensureRenderer()`. Browser
 presentation, hardware texture upload and task routing use their shared platform
 services. No private renderer or independent texture parser is created here.
 
 ## Verification and boundaries
+
+`tests/differential/native-bitmap-foundation.test.mjs` compares normal JS
+owner creation, metadata, cached alpha flags, null outputs and release with both
+original handlers. Full VM bytes, canaries and bitmap pixels match exactly.
+Separate pure-JS tests cover fresh World restore and task cleanup. Original
+layout proofs below remain in the oracle fixture.
 
 `scripts/verify-native-image-owners.mjs` executes every wrapper in both frozen
 images: **754 complete wrapper calls and 5,596 comparisons per profile**,

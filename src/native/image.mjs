@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Native bitmap fields and CPU operations: 68BE00, 68C760, 68D450, 68D9E0.
-import { nativeReply } from '../kcs.mjs';
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
+import { NativeBitmapFactories } from './bitmap-factory.mjs';
+import { ImageStore } from '../formats/hg3.mjs';
 const f = Math.fround;
 const size = (width, height, empty = false) => {
   if (
@@ -57,7 +58,11 @@ export class NativeBitmap {
     return this.state.height;
   }
   async pixels() {
-    if (this.dataHandle && this.registry.nativeMemory?.refs.data.has(this.dataHandle))
+    if (
+      this.dataHandle &&
+      this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
+      !this.registry.nativeMemory.isOwned?.(this.dataHandle)
+    )
       return this.registry.nativeMemory.pixels(this.dataHandle);
     if (!this.state.rgba) {
       const { source, width, height } = this.state;
@@ -71,6 +76,15 @@ export class NativeBitmap {
     }
     return this.state.rgba;
   }
+  async hasAlpha() {
+    if (this.state.bpp <= 3) return false;
+    if (!this.state.alphaHint) {
+      const rgba = await this.pixels();
+      this.state.alphaHint = rgba.some((word, index) => index % 4 === 3 && word !== 255) ? 2 : 1;
+      await this.changed();
+    }
+    return this.state.alphaHint === 2;
+  }
   changed() {
     this.state.revision = (this.state.revision || 0) + 1;
     this.cachedFrame = null;
@@ -78,7 +92,11 @@ export class NativeBitmap {
     return this.registry?.nativeMemory?.changed(this.dataHandle);
   }
   async frame() {
-    if (this.dataHandle && this.registry.nativeMemory?.refs.data.has(this.dataHandle))
+    if (
+      this.dataHandle &&
+      this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
+      !this.registry.nativeMemory.isOwned?.(this.dataHandle)
+    )
       await this.pixels();
     if (!this.cachedFrame || this.cachedFrame.revision !== this.state.revision)
       this.cachedFrame = {
@@ -90,7 +108,11 @@ export class NativeBitmap {
     return this.cachedFrame;
   }
   async context() {
-    if (this.dataHandle && this.registry.nativeMemory?.refs.data.has(this.dataHandle))
+    if (
+      this.dataHandle &&
+      this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
+      !this.registry.nativeMemory.isOwned?.(this.dataHandle)
+    )
       await this.pixels();
     if (!this.canvas || this.canvasRevision !== this.state.revision) {
       this.canvas = new OffscreenCanvas(this.width, this.height);
@@ -289,7 +311,11 @@ export class NativeBitmap {
   }
   async resize(width, height) {
     size(width, height);
-    if (this.dataHandle && this.registry.nativeMemory?.refs.data.has(this.dataHandle)) {
+    if (
+      this.dataHandle &&
+      this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
+      !this.registry.nativeMemory.isOwned?.(this.dataHandle)
+    ) {
       this.commitCanvas();
       await this.registry.nativeMemory.resize(this.dataHandle, width, height);
       this.cachedFrame = null;
@@ -431,7 +457,8 @@ export class NativeImages {
   constructor(world) {
     this.world = world;
     this.handles = world.runtime.handles;
-    this.images = world.images;
+    this.images =
+      typeof world.images?.load === 'function' ? world.images : new ImageStore(world.game);
     this.handles.registerType('bitmap-data', {
       snapshot: (state) => {
         // A bitmap's backing resource precedes its wrapper in handle order.
@@ -565,7 +592,16 @@ export class NativeImages {
     return handle;
   }
   async load(file, id = 0, owner = null) {
-    if (this.world.game.resolveCategory && !this.world.game.resolveCategory(file, 'image'))
+    const game = this.world.game,
+      resolved = game.resolveCategory
+        ? game.resolveCategory(file, 'image')
+        : this.images instanceof ImageStore
+          ? this.images.resolve(file)
+          : file;
+    if (
+      !resolved ||
+      (this.images instanceof ImageStore && typeof game.has === 'function' && !game.has(resolved))
+    )
       return 0;
     const image = await this.images.load(file),
       frame = image.frame(id);
@@ -622,52 +658,15 @@ export class NativeImages {
   async releaseOwner(owner) {
     for (const [handle, resource] of this.handles.records)
       if (resource.type === 'bitmap' && resource.value.owner === owner) await this.release(handle);
-    await this.world.nativeEngine?.features.get('bitmap-factories')?.disposeContext(owner);
+    await this.world.nativeEngine?.features.get('bitmap-factories')?.disposeContext?.(owner);
   }
 }
 
 export const NATIVE_IMAGE_IDS = Object.freeze([0x6f, 0x70, 0x72, 0x75, 0x76, 0x77, 0x79, 0x7a]);
 export async function nativeImage(id, args, machine, task, world) {
   if (!NATIVE_IMAGE_IDS.includes(id)) return undefined;
-  if (world.getNativeFeature && id !== 0x7a)
-    return (await world.getNativeFeature('bitmap-factories')).apply(id, args, machine, task);
-  const images = world.graphics.images,
-    done = () => nativeReply(2),
-    value = (v) => nativeReply(1, v);
-  switch (id) {
-    case 0x6f:
-      return value(
-        await images.formattedLoad(world.runtime.services.format(args[0], machine), task.id),
-      );
-    case 0x70:
-      return value(images.create(args[0], args[1], task.id));
-    case 0x72:
-      if (args[0]) await images.release(args[0]);
-      return done();
-    case 0x75:
-      if (args[0]) await images.get(args[0]).fill(args[1], args[2], args[3], args[4], args[5]);
-      else {
-        if (!world.graphics.fill) throw new Error('Native screen fill is unavailable');
-        await world.graphics.fill(...args.slice(1));
-      }
-      return done();
-    case 0x76: {
-      if (!args[0]) return value(0);
-      const bitmap = images.get(args[0]).clone();
-      bitmap.owner = task.id;
-      return value(images.add(bitmap));
-    }
-    case 0x77: {
-      const bitmap = args[0] ? images.get(args[0]) : null;
-      machine.store(args[1], bitmap?.width || 0);
-      machine.store(args[2], bitmap?.height || 0);
-      return done();
-    }
-    case 0x79:
-      if (args[0]) await images.get(args[0]).tone(args[1], args[2], args[3]);
-      return done();
-    case 0x7a:
-      if (!world.getNativeFeature) return undefined;
-      return (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task);
-  }
+  if (id === 0x7a && world.getNativeFeature)
+    return (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task);
+  if (id === 0x7a) return undefined;
+  return (world.bitmapFactories ?? new NativeBitmapFactories(world)).apply(id, args, machine, task);
 }

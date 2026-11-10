@@ -944,3 +944,24 @@ JS data authority currently crosses five remaining consumer boundaries.
 The generator records these projections in `nonNativeEntries`, including their
 JS authority, consumer fields, lifetime and removal phase. Gallery, save-slot,
 KCDB, mission/question/selection tables and the shared tile model own JS state.
+
+## Image ownership transition
+
+Script bitmaps and image-owner metadata use JS handles and pixel storage.
+The inventory separately registers their remaining consumers.
+
+| Authority                        | Representation and consumer                                                           | Removal phase                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------- |
+| JS bitmap-data                   | Independent bitmap/wrapper inputs for renderer, retained Draw, texture upload and FES | 6 per renderer consumer, final FES consumer 7 |
+| Domain 6 renderer / domain 7 FES | Derived JS views of consumer-owned targets and decoded images                         | 6/7 with the owning consumer                  |
+| JS image-owner records           | Independent 64-byte collections retained by Draw and IMAGEEX                          | 6/7 with the owning consumer                  |
+
+Wipe3 source RGB preparation is an explicit JS command before projection.
+Script bitmap checkpoints store the JS backing once; retained PE references
+keep their consumer lifetime. File decoding and remaining image-owner pixel
+commands cross the recorded temporary boundary until phases 5.3 and 5.2.
+
+The SDK V8 `CsImage` and text callbacks create independent PE resources through
+internal functions. Their image/writer pointer at native object +352 and their
+Draw/configuration/source fields remain owned by the domain 8 SDK JavaScript
+object. The inventory records this separate lifetime and phase 8 removal.

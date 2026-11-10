@@ -203,12 +203,15 @@ for (const [profile, variable] of [
           renderer = await world.getNativeFeature('renderer'),
           tm = await world.getNativeFeature('task-memory'),
           script = await tm.pointer(task.id),
-          p = owners.process;
+          p = world.nativeEngine.process;
         assert.ok(h);
         assert.equal(renderer.initialized, true);
         assert.equal(p.load(script + 116), platform.refs.view);
         assert.equal(p.load(pointer + 4), platform.refs.view);
-        assert.equal(p.load(script + 156), owners.refs.contexts.get(task.id).list);
+        assert.notEqual(
+          p.load(script + 156),
+          world.nativeEngine.features.get('image-owner-projection').refs.contexts.get(task.id).list,
+        );
         const child = await world.objects.create({
             kind: 12,
             parent: task.id,
@@ -234,7 +237,7 @@ for (const [profile, variable] of [
         await fresh.objects.objects
           .get(fresh.main.id)
           .implementation.loadScript('missing.kcs', { nativeLoad: true });
-        assert.equal(ro.process.allocations.has(pointer), false);
+        assert.equal(fresh.nativeEngine.process.allocations.has(pointer), false);
         assert.throws(() => ro.pointer(h), /released/);
         assert.equal(owners.pointer(h), pointer);
       } finally {

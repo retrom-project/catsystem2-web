@@ -161,7 +161,7 @@ export function createNativeScriptTask(world, record) {
     async loadScript(name, { initialExecute = false, context = {}, nativeLoad = false } = {}) {
       const previousContext = this.task?.context ?? record.context;
       await world.graphics.images.releaseOwner(record.id);
-      await world.nativeEngine?.features.get('image-owners')?.releaseOwner(record.id);
+      await world.imageOwners.releaseOwner(record.id);
       world.runtime.services.motion?.releaseOwner(record.id);
       if (this.task) {
         record.scriptMessages = this.task.messages;

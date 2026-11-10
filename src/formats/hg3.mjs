@@ -135,10 +135,10 @@ export class ImageStore {
     this.budget = budget;
     this.memory = 0;
   }
-  async load(name) {
-    const file = this.game.resolveCategory
+  resolve(name) {
+    return this.game.resolveCategory
       ? this.game.resolveCategory(name, 'image')
-      : this.game.resolve(name, [
+      : this.game.resolve?.(name, [
           'hg3',
           'hg2',
           'png',
@@ -149,6 +149,9 @@ export class ImageStore {
           'webp',
           'psd',
         ]) || name;
+  }
+  async load(name) {
+    const file = this.resolve(name);
     if (file === null) throw new Error(`Missing image resource: ${name}`);
     const key = file.toLowerCase();
     if (this.images.has(key)) {

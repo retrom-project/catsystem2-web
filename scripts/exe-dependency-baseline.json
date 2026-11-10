@@ -1,8 +1,18 @@
 {
   "version": 1,
   "files": {
+    "oracle/bitmap-memory.mjs": {
+      "addresses": 16,
+      "calls": 2,
+      "references": 0
+    },
     "oracle/data-buffer-projection.mjs": {
       "addresses": 21,
+      "calls": 2,
+      "references": 0
+    },
+    "oracle/image-owner.mjs": {
+      "addresses": 62,
       "calls": 2,
       "references": 0
     },
@@ -19,16 +29,6 @@
     "src/native/area-effect.mjs": {
       "addresses": 60,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/bitmap-factory.mjs": {
-      "addresses": 18,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/bitmap-memory.mjs": {
-      "addresses": 16,
-      "calls": 2,
       "references": 0
     },
     "src/native/bitmap-operations.mjs": {
@@ -288,11 +288,6 @@
     },
     "src/native/image-file.mjs": {
       "addresses": 2,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/image-owner.mjs": {
-      "addresses": 62,
       "calls": 2,
       "references": 0
     },

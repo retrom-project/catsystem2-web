@@ -59,6 +59,7 @@ export class NativeImageCommands {
         while (words.length < count) words.push(machine.nativeArgument(words.length));
       };
     need(id === 0x73 || id === 0x74 ? 6 : id === 0x219 ? 2 : 1);
+    const destination = words[0];
     const active =
       id === 0x73
         ? Boolean(words[5])
@@ -127,6 +128,7 @@ export class NativeImageCommands {
             );
       if (control !== spec.control)
         throw new Error('Original image command returned an unexpected control');
+      if (destination && !warmup) bitmaps.captureOperation?.(destination);
       return nativeReply(control, control === 1 ? p.load(out) : undefined);
     } finally {
       try {

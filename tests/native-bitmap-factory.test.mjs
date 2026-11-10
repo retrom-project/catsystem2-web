@@ -134,18 +134,18 @@ test(
       assert.ok(loaded);
       const memory = await world.getNativeFeature('bitmap-memory'),
         wrapper = await memory.wrapper(h),
-        factory = await world.getNativeFeature('bitmap-factories'),
-        context = factory.refs.contexts.get(task.id);
+        data = world.graphics.images.get(h).dataHandle;
+      assert.ok(world.runtime.handles.get(data, 'bitmap-data').rgba);
       fresh = make();
       await fresh.restore(structuredClone(world.snapshot()));
       const fm = fresh.main.machine,
         restored = await fresh.getNativeFeature('bitmap-memory');
       assert.equal(await restored.wrapper(h), wrapper);
-      assert.equal(
-        (await fresh.getNativeFeature('bitmap-factories')).refs.contexts.get(task.id).list,
-        context.list,
+      assert.deepEqual(
+        await fresh.graphics.images.get(h).pixels(),
+        await world.graphics.images.get(h).pixels(),
       );
-      assert.equal(fresh.nativeEngine.process.load(context.list + 4), 3);
+      assert.equal(fresh.runtime.handles.get(data, 'bitmap-data').nativeBitmapPointer, undefined);
       await fresh.runtime.native('main', 0x72, [h], fm, fresh.main);
       assert.equal(fresh.nativeEngine.process.allocations.has(wrapper), false);
       assert.deepEqual(
@@ -155,7 +155,12 @@ test(
       await fresh.objects.objects
         .get(fresh.main.id)
         .implementation.loadScript('missing.kcs', { nativeLoad: true });
-      assert.equal(fresh.nativeEngine.process.allocations.has(context.list), false);
+      assert.equal(
+        [...fresh.runtime.handles.records.values()].some(
+          (record) => record.type === 'bitmap' && record.value.owner === task.id,
+        ),
+        false,
+      );
       assert.equal(world.nativeEngine.process.allocations.has(wrapper), true);
     } finally {
       await fresh?.close({ flushFiles: false });

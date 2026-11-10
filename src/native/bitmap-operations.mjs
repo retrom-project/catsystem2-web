@@ -147,6 +147,7 @@ export class NativeBitmapOperations {
             });
       if (control !== spec.control)
         throw new Error('Original bitmap wrapper returned an unexpected control');
+      if (input && !rawIdentity) bitmaps.captureOperation?.(input);
       return nativeReply(control, control === 1 ? p.load(out) : undefined);
     } finally {
       this.inputChecks.delete(argv);

@@ -117,14 +117,17 @@ for (const [profile, variable] of [
             renderer = await world.getNativeFeature('renderer'),
             tm = await world.getNativeFeature('task-memory'),
             script = await tm.pointer(task.id),
-            p = images.process;
+            p = world.nativeEngine.process;
           const initial = {
             loaded: h !== 0,
             ready: renderer.initialized,
             view:
               p.load(pointer + 4) === platform.refs.view &&
               p.load(script + 116) === platform.refs.view,
-            list: p.load(script + 156) === images.refs.contexts.get(task.id).list,
+            list:
+              p.load(script + 156) !==
+              world.nativeEngine.features.get('image-owner-projection').refs.contexts.get(task.id)
+                .list,
             device: renderer.d3d.device === p.load(renderer.core + 308),
           };
           m.writeString('probe.hg2', 1024);
@@ -142,7 +145,9 @@ for (const [profile, variable] of [
               copies:
                 loadedWrapper !== copiedWrapper &&
                 loadedPixels.every((v, i) => v === copiedPixels[i]),
-              list: p.load(p.load(script + 152) + 4) === 2,
+              list: [loadedBitmap, copiedBitmap].every(
+                (handle) => world.graphics.images.get(handle).owner === task.id,
+              ),
             };
           const bitmapHandle = world.graphics.images.create(2, 1, task.id),
             bitmaps = await world.getNativeFeature('bitmap-memory'),
@@ -208,15 +213,15 @@ for (const [profile, variable] of [
             .get(fresh.main.id)
             .implementation.loadScript('missing.kcs', { nativeLoad: true });
           factory.released =
-            !restored.process.allocations.has(loadedWrapper) &&
-            !restored.process.allocations.has(copiedWrapper);
+            !fresh.nativeEngine.process.allocations.has(loadedWrapper) &&
+            !fresh.nativeEngine.process.allocations.has(copiedWrapper);
           return {
             initial,
             independent,
             bitmap: { readOnly, writable, restored: bitmapRestored },
             factory,
             restored: restoredState,
-            released: !restored.process.allocations.has(pointer),
+            released: !fresh.nativeEngine.process.allocations.has(pointer),
             originalAlive: images.pointer(h) === pointer,
           };
         } finally {
