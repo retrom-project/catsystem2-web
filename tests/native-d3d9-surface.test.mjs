@@ -82,7 +82,7 @@ test('CreateTexture memory pressure returns HRESULT and permits the next resourc
       p.free(scratch);
       p.store(out, canary);
       assert.equal(com(p, d.device, 23, 4, 4, 1, 0, 21, 0, out, 0), 0x8007000e);
-      assert.equal(p.load(out), canary);
+      assert.equal(p.load(out), 0);
       assert.equal(d.objects.size, objects);
       assert.equal(com(p, d.device, 23, 1024, 1024, 1, 0, 21, 0, out, 0), 0x8007000e);
       assert.equal(d.objects.size, objects);

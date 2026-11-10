@@ -452,9 +452,12 @@ export class EmoteD3D9 {
               p.free(pointer);
             }
             if (pixels) p.free(pixels);
-            // The guest checks HRESULT, as it does a null HeapAlloc result.
-            // A resource limit must not escape across COM as a JS exception.
-            if (error.message === 'PE32 heap exhausted') return OUT_OF_MEMORY;
+            // The original driver also inspects the output on failure.
+            // Return a null interface along with the resource HRESULT.
+            if (error.message === 'PE32 heap exhausted') {
+              p.store(output, 0);
+              return OUT_OF_MEMORY;
+            }
             throw error;
           }
         },

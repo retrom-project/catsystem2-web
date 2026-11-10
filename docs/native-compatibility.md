@@ -1001,8 +1001,8 @@ D5 constructor/parser/receiver is called to render a JS-owned script resource.
 The transitional EXE host shares a fixed guest heap between UI texture caches,
 consumer projections and driver scratch. A failed D3D `CreateTexture` allocation
 returns `E_OUTOFMEMORY` to its original caller, including when pixels fit but
-their COM interface does not. Partial resources are released; unrelated faults
-still propagate. This follows the
+their COM interface does not. Partial resources are released and the output
+interface is cleared; unrelated faults still propagate. This follows the
 [D3D9 resource failure contract](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-createtexture).
 Successful script progress alone does not establish that every M2 model loaded:
 the original driver can also recover from a null `HeapAlloc` result. Guest texture

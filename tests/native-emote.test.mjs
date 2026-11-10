@@ -73,6 +73,41 @@ test('D3D BGRA surface transfers preserve full rows, subrectangles and XRGB alph
   }
 });
 test(
+  'the original E-mote DLL rejects a failed texture with a stale interface output',
+  { skip: !process.env.CATSYSTEM2_EMOTE_DLL },
+  async () => {
+    const bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), golden.driverSHA256);
+    const device = await NativeEmoteDevice.open(bytes, { width: 256, height: 256 }),
+      p = device.process,
+      create = device.d3d.contracts('Device9')[23][2],
+      table = p.load(device.d3d.device);
+    let calls = 0;
+    const failure = p.trap('authored texture allocation failure', 9, ([pointer, ...args]) => {
+      calls++;
+      p.store(args[6], 0x12345678);
+      const allocate = p.allocate;
+      p.allocate = () => {
+        throw new Error('PE32 heap exhausted');
+      };
+      try {
+        return create(device.d3d.objects.get(pointer), args);
+      } finally {
+        p.allocate = allocate;
+      }
+    });
+    p.store(table + 23 * 4, failure);
+    try {
+      await assert.rejects(device.createPlayer(emotePSBFixture()), {
+        message: 'E-mote driver rejected its model',
+      });
+      assert.equal(calls, 1);
+    } finally {
+      device.close();
+    }
+  },
+);
+test(
   'the original E-mote DLL matches Wine DrawUP bytes, variable timing and a fresh process checkpoint',
   { skip: !process.env.CATSYSTEM2_EMOTE_DLL },
   async () => {
