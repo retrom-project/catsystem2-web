@@ -101,8 +101,9 @@ This uses warmed, alternating empty-World runs and reports microseconds per
 tick. It excludes production GPU/EXE work and browser IPC, so its relative
 percentage on an empty World must not be presented as a game slowdown.
 
-Private game acceptance keeps its functional frame bounds and a 60-minute
-outer wall limit. Route keeps the 20-minute outer / 18-minute walking budget.
+Private game acceptance keeps its functional frame bounds and a 90-minute
+outer wall limit. Route has a 32-minute outer / 28-minute walking budget.
+These allow scheduling and resource-recovery headroom during concurrent gates.
 Those wall limits bound diagnostic runs; they do not imply the current software
 GPU can finish the complete UI flow or all fourteen chapters in that time.
 Compare reader/message/frame progress with the accepted stage checkpoint before

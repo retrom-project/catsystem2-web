@@ -8,7 +8,7 @@ import { step, until } from './native-game-input.mjs';
 test('main route reaches every chapter, decodes both movies and returns to the native title', async ({
   page,
 }, info) => {
-  test.setTimeout(20 * 60_000);
+  test.setTimeout(32 * 60_000);
   const started = Date.now(),
     reportedScenes = new Set();
   const errors = [];
@@ -59,7 +59,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
   const movies = new Set(),
     unsupported = new Set(),
     warnings = new Set(),
-    deadline = started + 18 * 60_000;
+    deadline = started + 28 * 60_000;
   const observe = () =>
     page.evaluate(() => {
       const e = window.catSystem2;

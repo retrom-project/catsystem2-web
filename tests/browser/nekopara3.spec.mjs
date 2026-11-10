@@ -14,7 +14,9 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
   // This exercises the original World, including software-GPU E-mote and CSS
   // saves. Frame bounds below remain functional limits; the old three-minute
   // wall budget belonged to the retired ScenePlayer implementation.
-  test.setTimeout(60 * 60_000);
+  // Concurrent stage gates and guest resource recovery need wall-clock
+  // headroom. The functional frame and input bounds below still apply.
+  test.setTimeout(90 * 60_000);
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.addInitScript(() => {
