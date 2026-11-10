@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Full original main188 wrapper versus the shared original-parser adapter.
+// Full frozen x86 wrappers versus the independent JavaScript scanner.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -47,6 +47,28 @@ const engine = await NativeEngineProcess.open({ profile, bytes }),
     getNativeFeature: async () => runtime,
   },
   sources = [
+    ...[
+      '\\p',
+      '\\w',
+      '\\f',
+      '\\c',
+      '\\i',
+      '\\id1',
+      '\\id1;',
+      '\\id1:2',
+      '\\crX',
+      '\\cr;X',
+      '\\frX',
+      '\\fr;X',
+      '\\cd;X',
+      '\\cs;X',
+      '\\c;X',
+      '\\fn;X',
+      '\\fl;X',
+      '[猫/ねこ] X',
+      '\\$65;B',
+      '\\zctx;A\\z;B',
+    ],
     '',
     'Authored plain text.',
     '猫と日本語。',
@@ -130,7 +152,7 @@ try {
         sha256,
         passed,
         scope:
-          'Original full main188 constructor, formatting boundary, rich-text parsing/layout, extraction, strlen and destructor versus the shared-process adapter. Text parser/defaults and Windows text services execute through the reviewed native runtime. Authored plain/CP932/UTF-8/invalid bytes, control/escape/ruby spellings, empty/long source, aliases, mapped zero, unmapped destination and full canaries. Pixel/font fidelity is not asserted by this text-output test.',
+          'Original full main188 constructor, formatting boundary, rich-text parsing/layout, extraction, strlen and destructor versus the independent JS scanner; the candidate never creates a parser or calls Windows text services. Authored plain/CP932/UTF-8/invalid bytes, control/escape/ruby spellings, empty/long source, aliases, mapped zero, unmapped destination and full canaries. Pixel/font fidelity is not asserted by this text-output test.',
       },
       null,
       2,

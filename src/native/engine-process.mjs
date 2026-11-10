@@ -2,6 +2,7 @@
 // Original EXE backend, reached only through an explicitly injected host.
 import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-buffer-projection.mjs';
 import { NativeBitmapProjection } from '../../oracle/bitmap-projection.mjs';
+import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs';
 import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
@@ -98,6 +99,9 @@ export class NativeEngineProcess {
   }
   createBitmapProjection(world) {
     return new NativeBitmapProjection(this, world);
+  }
+  createDisplayLogProjection(world) {
+    return new NativeDisplayLogProjection(this, world);
   }
   createImageOwnerProjection(world) {
     return new NativeImageOwnerProjection(this, world);

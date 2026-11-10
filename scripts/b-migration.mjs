@@ -94,12 +94,13 @@ const domains = {
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
-  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
+  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
+  if (file === 'oracle/text-log-projection.mjs') return 7;
   if (
     [
       'oracle/hg3-delta.mjs',
@@ -144,10 +145,10 @@ const originalWrappers = new Set(
     'input-commands registry render-sources ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
-    'text-legacy text-log version-query sdk-javascript-task emote'
+    'text-legacy version-query sdk-javascript-task emote'
   ).split(' '),
 );
-const reviewedRegions = new Map([['text-plain', ['text']]]);
+const reviewedRegions = new Map();
 const messageModules = new Set(
   'task task-command fes graphics draw-task mesh image input input-control text-task movie sound particles script-task'.split(
     ' ',
@@ -876,25 +877,20 @@ const nonNativeGroups = [
     },
   },
   {
-    name: 'js-scene-to-exe-display-log',
-    domain: 5,
-    entry:
-      'NativeDisplayLogs.withHistory materializes independent seen/path bytes for the original log renderer',
-    modules: ['text-log'],
+    name: 'js-log-to-exe-fes-consumer',
+    domain: 7,
+    entry: 'D7 LOGSTRING/LOGSTRING8 read an independent display-log table projection',
+    modules: ['fes-log'],
+    files: ['oracle/text-log-projection.mjs'],
     projection: {
       direction: 'JS-to-PE',
-      authority: 'NativeSceneHistory',
-      fields: [
-        'encoded seen history',
-        'encoded path history',
-        'numbered strings',
-        'checkpoint extra bytes',
-      ],
-      consumers: [{ domain: 5, modules: ['text-log'] }],
+      authority: 'NativeDisplayLogs JS rows, blocks and strings',
+      fields: ['CSS wire tables', 'derived row second strings', 'consumer object identity'],
+      consumers: [{ domain: 7, modules: ['fes-log'] }],
       lifetime:
-        'Temporary PE history and scene owners are constructed, imported and destroyed around the log call; JS history remains authoritative',
-      removePhase: 5,
-      operations: ['withHistory'],
+        'Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.',
+      removePhase: 7,
+      operations: ['prepare', 'sync'],
     },
   },
   {

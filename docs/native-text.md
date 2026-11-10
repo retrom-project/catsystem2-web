@@ -86,28 +86,32 @@ Complete browser font and first-dialogue pixel acceptance remains separate.
 
 ## Display logs
 
-The `display-logs` feature executes the mounted engine's display-log manager
-and main wrappers `2B8..2BC`, `311`, `36C` and `3D1`; game additionally has `40A`.
-Appending entries, line wrapping, block pruning, names, scene locations and
-path indices remain native records. `311` limits blocks rather than flat lines.
-`2BC` returns a speaker name; the source scene is a different field.
+The JS `NativeDisplayLogs` service implements main `2B8..2BC`, `311`, `36C`,
+`3D1`, `352/353` and game `40A`. JS owns all four tables, captured configuration,
+block/row bases and limits. `311` prunes blocks and their rows; `2BC` returns
+the formatted speaker name. World checkpoints preserve both row strings.
 
-When static display logs are enabled, the system script saves and reloads
-CSS entry `0x30` with `352` and `353`. They run the original log serializer and
-loader against the same live manager. The payload includes the scene names,
-28-byte blocks, tagged text rows and voice names. The browser verifies the
-section ranges and string terminators before passing an imported record to
-the original loader, which does not check its supplied length. The test
-compares the complete entry against both original wrappers, reopens a CSS
-file in a fresh World and checks the restored lines.
+CSS wire bytes are four offset/count sections: raw CP932 scene names,
+28-byte blocks, tagged first-string rows and speaker names. The header also
+stores cumulative block/row bases. The second row string is intentionally
+absent from this wire format. Every section and terminator is validated before
+loading; invalid input preserves the previous JS state. Differential tests
+compare complete payloads with both frozen original managers.
 
-History rebuild imports the existing `NativeSceneData.history` into a temporary
-original history descriptor, runs the original CST reader and parser, then
-releases the temporary descriptor. It does not copy a host message array into
-an invented history format. The game `40A` wrapper reads an available CSTL file
-but leaves its requested-language bindings empty. The reviewed original
-therefore falls back to the source CST. Tests observe those empty maps and
-retain this behavior; the explicit language-binding scene API is separate.
+History rebuild reads `NativeSceneData.history.path`, decodes CST in JS and
+expands the caller's current string bank. `40A` preserves the original unbound
+CSTL-language fallback to source CST. No PE scene/history projection is used.
+Log wrapping counts CP932 bytes, including the original ruby and literal
+backslash-n behavior. Its three apparent kinsoku helpers modify unused
+candidate scratch, not the copied segment boundaries; disassembly and byte
+fixtures preserve that observable behavior. A first prefix-only line is valid;
+a stable no-progress loop has no successful original result and is bounded by
+an explicit range error instead of an unbounded allocation loop.
+
+Remaining D7 LOGSTRING consumers receive an independent, read-only table
+projection. The game LOGSTRING8 `remake` command mutates the JS first/second
+row strings before projecting them. It registers only its requested languages;
+this differs from the unbound `40A` reader. The projection is removed in phase 7.
 
 LOGSTRING uses a 44-byte common base rather than the image-plane KX2 layout.
 Its original driver creates one STRING child per slot; LOGSTRING8 creates two
@@ -206,3 +210,14 @@ Primary public references are the official [STRING object](https://cs2.suki.jp/m
 [user-font command](https://cs2.suki.jp/manual/fes/reference/co/userfont.html).
 Executable observations, original memory dumps and screenshots remain ignored
 under `.local/`; no original executable instructions or assets are distributed.
+
+## JavaScript text data boundary
+
+`188/419` use the independent `text-scanner.mjs`, preserving CP932/UTF8 units,
+ruby grouping, escape consumption, integer wrap, mapped address zero, aliases
+and output terminators. The frozen complete wrappers remain the oracle in
+`verify-native-text-plain.mjs`; candidate extraction does not load the EXE or
+font services. STRING/NVSTRING task checkpoints retain raw source events in
+order (main, secondary, mark, section), configuration packets and clocks.
+The remaining writer layout/raster state migrates in phase 5.5. Invalid-size
+initialization still clears the existing writer before validating the packet.

@@ -19,8 +19,35 @@ export class NativeFESLog {
   }
   async command(instance, object, verb, args, context) {
     if (verb === 'setlog' && args.length) {
-      const logs = await this.world.getNativeFeature('display-logs');
-      args = [String(logs.pointer(instance.value(args[0]))), ...args.slice(1)];
+      const logs = this.world.displayLogs;
+      object.nativeLogHandle = instance.value(args[0]);
+      args = [String(await logs.materialize(object.nativeLogHandle)), ...args.slice(1)];
+    }
+    if (verb === 'remake' && object.nativeType === 38) {
+      const group = instance.objects.filter((o) => o.baseName === object.baseName),
+        index = group.length === 1 ? 0 : (context?.index ?? object.index ?? 0);
+      if (index === -1 && object !== group.find((o) => !o.deleted)) return;
+      const targets = index === -1 ? group : group.filter((o) => o === object);
+      const language = (i) =>
+        args[i] === undefined ? null : (instance.player.strings[instance.value(args[i])] ?? null);
+      const main = language(0),
+        secondary = language(1),
+        runtime = await this.runtime();
+      for (const target of targets) {
+        if (target.nativeLogHandle)
+          await this.world.displayLogs.remake(
+            this.world.displayLogs.get(target.nativeLogHandle),
+            main,
+            secondary,
+          );
+        const pointer = await runtime.create(instance, target),
+          p = runtime.process,
+          slots = p.load(pointer + 360);
+        if (slots)
+          for (let i = 0; i < p.load(pointer + 52); i++)
+            p.store(slots + i * 144 + 132, Number(secondary !== null));
+      }
+      return 0;
     }
     const runtime = await this.runtime(),
       result = await runtime.command(instance, object, verb, args, context);

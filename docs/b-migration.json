@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 115, "oracle": 133, "differential": 35 },
+    "counts": { "js": 115, "oracle": 133, "differential": 37 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -301,6 +301,8 @@
         "tests/differential/native-save-persistence.test.mjs",
         "tests/differential/native-scalar.test.mjs",
         "tests/differential/native-sdk-standard.test.mjs",
+        "tests/differential/native-text-log-js.test.mjs",
+        "tests/differential/native-text-plain-js.test.mjs",
         "tests/differential/native-tile-game-choices.test.mjs",
         "tests/differential/native-tile-game-commands.test.mjs",
         "tests/differential/native-tile-game-hands.test.mjs",
@@ -1454,6 +1456,15 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
+        "kind": "exe-layout",
+        "file": "oracle/text-log-projection.mjs",
+        "line": 14,
+        "expression": "layouts[engine.profile]",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
         "kind": "va",
         "file": "src/native/area-effect-commands.mjs",
         "line": 157,
@@ -1699,7 +1710,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 107,
+        "line": 111,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1708,16 +1719,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 245,
-        "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/engine-process.mjs",
-        "line": 261,
+        "line": 249,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1727,6 +1729,15 @@
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
         "line": 265,
+        "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
+        "domain": 8,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "exe-layout",
+        "file": "src/native/engine-process.mjs",
+        "line": 269,
         "expression": "NATIVE_ENGINE_IMAGES[options.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1735,7 +1746,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 325,
+        "line": 329,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1744,7 +1755,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 339,
+        "line": 343,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1753,7 +1764,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 516,
+        "line": 520,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2311,7 +2322,7 @@
       {
         "kind": "va",
         "file": "src/native/fes-log.mjs",
-        "line": 84,
+        "line": 111,
         "expression": "LOG_ABI[runtime.sdk ? 'sdk' : type === 38 ? 'utf8' : 'game']",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2320,7 +2331,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-log.mjs",
-        "line": 90,
+        "line": 117,
         "expression": "runtime.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2329,7 +2340,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-log.mjs",
-        "line": 96,
+        "line": 123,
         "expression": "runtime.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2904,24 +2915,6 @@
       },
       {
         "kind": "exe-layout",
-        "file": "src/native/text-log.mjs",
-        "line": 69,
-        "expression": "NATIVE_DISPLAY_LOG_ABI[engine.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/text-plain.mjs",
-        "line": 42,
-        "expression": "bindings[world.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
         "file": "src/native/text.mjs",
         "line": 144,
         "expression": "NATIVE_TEXT_CORES[engine.profile]",
@@ -3086,7 +3079,7 @@
       {
         "kind": "identity",
         "file": "src/native/engine-process.mjs",
-        "line": 427,
+        "line": 431,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -3119,17 +3112,17 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 202, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 201, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 202,
+    "remainingExeVASelectionSites": 201,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1425,
-      "original-handler": 268,
-      "exe-region": 5,
+      "pure-js": 1449,
+      "original-handler": 247,
+      "exe-region": 2,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
@@ -3147,13 +3140,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 521,
-    "runtimeFiles": 358,
-    "fileDomains": { "3": 32, "4": 48, "5": 34, "6": 44, "7": 23, "8": 148, "9": 29 },
+    "runtimeFiles": 360,
+    "fileDomains": { "3": 32, "4": 48, "5": 35, "6": 44, "7": 24, "8": 148, "9": 29 },
     "fileNeedsReview": 125,
-    "exeDependencyFiles": 103,
-    "exeDependencies": { "addresses": 1535, "calls": 147, "references": 6 },
+    "exeDependencyFiles": 102,
+    "exeDependencies": { "addresses": 1504, "calls": 140, "references": 6 },
     "nonNativeGroups": 24,
-    "executionSites": 499
+    "executionSites": 490
   },
   "profiles": [
     {
@@ -10205,19 +10198,13 @@
           "hexID": "0x188",
           "semanticName": "text.extractPlainCP932",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/text-plain.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-plain.mjs:81",
-          "features": ["text"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/text-task.mjs",
-            "src/native/text.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-plain.mjs:25",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -14069,7 +14056,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14088,7 +14075,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14107,7 +14094,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14126,7 +14113,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14145,7 +14132,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14164,7 +14151,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14183,7 +14170,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14202,7 +14189,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14221,7 +14208,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14240,7 +14227,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -14259,7 +14246,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -15650,7 +15637,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -15665,19 +15652,13 @@
           "hexID": "0x2b8",
           "semanticName": "displayLog.create",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -15688,19 +15669,13 @@
           "hexID": "0x2b9",
           "semanticName": "displayLog.release",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -15711,19 +15686,13 @@
           "hexID": "0x2ba",
           "semanticName": "displayLog.append",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -15734,19 +15703,13 @@
           "hexID": "0x2bb",
           "semanticName": "displayLog.rebuild",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -15757,19 +15720,13 @@
           "hexID": "0x2bc",
           "semanticName": "displayLog.speakerName",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -17300,19 +17257,13 @@
           "hexID": "0x311",
           "semanticName": "displayLog.setBlockLimit",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -18452,19 +18403,13 @@
           "hexID": "0x352",
           "semanticName": "displayLog.save",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -18475,19 +18420,13 @@
           "hexID": "0x353",
           "semanticName": "displayLog.load",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -18909,19 +18848,13 @@
           "hexID": "0x36c",
           "semanticName": "displayLog.clear",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -19098,7 +19031,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -20722,19 +20655,13 @@
           "hexID": "0x3d1",
           "semanticName": "displayLog.appendPath",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -23990,9 +23917,15 @@
         },
         {
           "name": "display-logs",
-          "registration": "src/native/text-log.mjs:267",
+          "registration": "src/native/text-log.mjs:530",
           "modules": [],
-          "dependencies": ["engine-files", "fes-objects"]
+          "dependencies": []
+        },
+        {
+          "name": "display-log-projection",
+          "registration": "src/native/text-log.mjs:534",
+          "modules": [],
+          "dependencies": []
         },
         {
           "name": "controls",
@@ -24026,7 +23959,7 @@
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:541",
+          "registration": "src/native/text-task.mjs:570",
           "modules": ["src/native/text.mjs"],
           "dependencies": ["data-buffers", "engine-files"]
         },
@@ -31068,19 +31001,13 @@
           "hexID": "0x188",
           "semanticName": "text.extractPlainCP932",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/text-plain.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-plain.mjs:81",
-          "features": ["text"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/text-task.mjs",
-            "src/native/text.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-plain.mjs:25",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -34920,7 +34847,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -34939,7 +34866,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -34958,7 +34885,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -34977,7 +34904,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -34996,7 +34923,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35015,7 +34942,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35034,7 +34961,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35053,7 +34980,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35072,7 +34999,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35091,7 +35018,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -35110,7 +35037,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -36504,7 +36431,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -36519,19 +36446,13 @@
           "hexID": "0x2b8",
           "semanticName": "displayLog.create",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -36542,19 +36463,13 @@
           "hexID": "0x2b9",
           "semanticName": "displayLog.release",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -36565,19 +36480,13 @@
           "hexID": "0x2ba",
           "semanticName": "displayLog.append",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -36588,19 +36497,13 @@
           "hexID": "0x2bb",
           "semanticName": "displayLog.rebuild",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -36611,19 +36514,13 @@
           "hexID": "0x2bc",
           "semanticName": "displayLog.speakerName",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -38160,19 +38057,13 @@
           "hexID": "0x311",
           "semanticName": "displayLog.setBlockLimit",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -39310,19 +39201,13 @@
           "hexID": "0x352",
           "semanticName": "displayLog.save",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -39333,19 +39218,13 @@
           "hexID": "0x353",
           "semanticName": "displayLog.load",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -39766,19 +39645,13 @@
           "hexID": "0x36c",
           "semanticName": "displayLog.clear",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -39958,7 +39831,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:557",
+          "registration": "src/native/text-task.mjs:586",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -41546,19 +41419,13 @@
           "hexID": "0x3d1",
           "semanticName": "displayLog.appendPath",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -42623,19 +42490,13 @@
           "hexID": "0x40a",
           "semanticName": "displayLog.rebuildLanguage",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:273",
-          "features": ["display-logs"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-objects.mjs",
-            "src/native/text-log.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-log.mjs:539",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -42884,19 +42745,13 @@
           "hexID": "0x419",
           "semanticName": "text.extractPlainUTF8",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/text-plain.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-plain.mjs:81",
-          "features": ["text"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/text-task.mjs",
-            "src/native/text.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/text-plain.mjs:25",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -45628,9 +45483,15 @@
         },
         {
           "name": "display-logs",
-          "registration": "src/native/text-log.mjs:267",
+          "registration": "src/native/text-log.mjs:530",
           "modules": [],
-          "dependencies": ["engine-files", "fes-objects"]
+          "dependencies": []
+        },
+        {
+          "name": "display-log-projection",
+          "registration": "src/native/text-log.mjs:534",
+          "modules": [],
+          "dependencies": []
         },
         {
           "name": "controls",
@@ -45664,7 +45525,7 @@
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:541",
+          "registration": "src/native/text-task.mjs:570",
           "modules": ["src/native/text.mjs"],
           "dependencies": ["data-buffers", "engine-files"]
         },
@@ -48152,7 +48013,7 @@
     },
     {
       "file": "src/native/engine-process.mjs",
-      "sourceSha256": "e38718f0c2907afcb61f138e4e268a65619f35fd329ff9bb89f74c434b307f47",
+      "sourceSha256": "6166f9f3c4da91d4090156220e22a4f789e8f3deb45f41faebbe654ec9fc4911",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 46, "calls": 8, "references": 2 },
@@ -48168,91 +48029,91 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 152,
+          "line": 156,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 154,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 161,
+          "line": 165,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 163,
+          "line": 167,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 173,
+          "line": 177,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 192,
+          "line": 196,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 224,
+          "line": 228,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 248,
+          "line": 252,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 326,
+          "line": 330,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 338,
+          "line": 342,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 374,
+          "line": 378,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 405,
+          "line": 409,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 517,
+          "line": 521,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -49355,7 +49216,7 @@
     },
     {
       "file": "src/native/fes-log.mjs",
-      "sourceSha256": "4ea060789c1e3c91bf8406bd9c32ffc9e27c5447a3490397b420d290f7d91bcb",
+      "sourceSha256": "2fe1615bd2e4efbb351838aa9082ae219c8eab741416c643fef9a1e699bbbc9c",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 33, "calls": 0, "references": 0 },
@@ -49363,14 +49224,14 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 108,
+          "line": 135,
           "method": "call",
           "target": "abi.vram",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 116,
+          "line": 143,
           "method": "call",
           "target": "abi.configureChildren",
           "review": "needs-review",
@@ -49383,13 +49244,6 @@
           "line": 14,
           "method": "getNativeFeature",
           "feature": "fes-objects",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 22,
-          "method": "getNativeFeature",
-          "feature": "display-logs",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -53548,110 +53402,19 @@
     },
     {
       "file": "src/native/text-log.mjs",
-      "sourceSha256": "429f9fea3c2077600e0a232441cf8024959f6ff6b3c5b77963e935a39725dd1a",
+      "sourceSha256": "1cc4288381f29e8704641660aabdaf39e397bb771e626e08ec13600725edbef4",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 20, "calls": 9, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callFromHost",
-        "getNativeFeature",
-        "in-image-literals",
-        "profile-memory-layout"
-      ],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["getNativeFeature"],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 92,
-          "method": "call",
-          "target": "this.abi.historyCtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 94,
-          "method": "call",
-          "target": "this.abi.historyImport",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 103,
-          "method": "call",
-          "target": "this.abi.historyDtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 131,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 132,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 206,
-          "method": "call",
-          "target": "p.load(this.abi.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 234,
-          "method": "call",
-          "target": "this.abi.lineCount",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 237,
-          "method": "call",
-          "target": "this.abi.line",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 255,
-          "method": "call",
-          "target": "p.load(this.abi.main + 0x2b9 * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 8, "callFromHost": 1 },
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 162,
+          "line": 517,
           "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 268,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 269,
-          "method": "getNativeFeature",
-          "feature": "fes-objects",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 274,
-          "method": "getNativeFeature",
-          "feature": "display-logs",
+          "feature": "display-log-projection",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -53660,64 +53423,33 @@
     },
     {
       "file": "src/native/text-plain.mjs",
-      "sourceSha256": "8b656cae2f0cc128e8461d854b47ca96856aaa70ff627919f68c4a082ba32ba4",
+      "sourceSha256": "80e0b2fe5366470a28419ceba5074265d57c9ac8afa38981dcb833de1ee40078",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 15, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "in-image-literals"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 60,
-          "method": "call",
-          "target": "layout.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 63,
-          "method": "call",
-          "target": "layout.set",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 64,
-          "method": "call",
-          "target": "layout.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 65,
-          "method": "call",
-          "target": "layout.extract",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 71,
-          "method": "call",
-          "target": "layout.destroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 5 },
-      "indirectSites": [
-        {
-          "line": 36,
-          "method": "getNativeFeature",
-          "feature": "text",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-scanner.mjs",
+      "sourceSha256": "c11bc8620f3ea614bdb37ce82f0023e1a4261f9ebd1d35c6cca0f9ca2771a02d",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/text-task.mjs",
-      "sourceSha256": "0c87ea5f228e9dd22bbb71798190817e21b03871f2eeb19d26e11ea4342c76ea",
+      "sourceSha256": "1547448ec11bb71efb51255d94ecca8139f1efe18994f3f49263fe315bee0a4c",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53725,7 +53457,7 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 470,
+          "line": 495,
           "method": "call",
           "target": "bindings.secondary",
           "review": "needs-review",
@@ -53735,42 +53467,42 @@
       "executionSiteCounts": { "call": 1 },
       "indirectSites": [
         {
-          "line": 30,
+          "line": 31,
           "method": "getNativeFeature",
           "feature": "text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 542,
+          "line": 571,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 543,
+          "line": 572,
           "method": "getNativeFeature",
           "feature": "engine-files",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 570,
+          "line": 599,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 612,
+          "line": 641,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 615,
+          "line": 644,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -56138,6 +55870,61 @@
       "executionSiteCounts": { "beforeInstruction": 1 },
       "indirectSites": [],
       "review": "needs-review"
+    },
+    {
+      "file": "oracle/text-log-projection.mjs",
+      "sourceSha256": "86ee740786539c167086c38adfc7e6adaf5b90cbf71e9fa7610f711b994a2c31",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 4, "calls": 2, "references": 0 },
+      "dependencyTypes": [
+        "call",
+        "callAsync",
+        "callFromHost",
+        "in-image-literals",
+        "profile-memory-layout"
+      ],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [
+        {
+          "line": 25,
+          "method": "callAsync",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 27,
+          "method": "callFromHost",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 28,
+          "method": "call",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 36,
+          "method": "call",
+          "target": "p.load(this.layout.main + id * 4)",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 65,
+          "method": "call",
+          "target": "this.layout.load",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "executionSiteCounts": { "callAsync": 1, "callFromHost": 1, "call": 3 },
+      "indirectSites": [],
+      "review": "needs-review"
     }
   ],
   "nonNativeEntries": [
@@ -56286,7 +56073,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 152,
+          "line": 156,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56294,7 +56081,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 154,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56302,7 +56089,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 161,
+          "line": 165,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
@@ -56310,7 +56097,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 163,
+          "line": 167,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
@@ -56318,7 +56105,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 173,
+          "line": 177,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
@@ -56326,7 +56113,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 192,
+          "line": 196,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
@@ -56334,7 +56121,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 224,
+          "line": 228,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
@@ -56342,7 +56129,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 248,
+          "line": 252,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
@@ -56350,7 +56137,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 326,
+          "line": 330,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56358,7 +56145,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 338,
+          "line": 342,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -56366,7 +56153,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 374,
+          "line": 378,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -56374,7 +56161,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 405,
+          "line": 409,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -56382,7 +56169,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 517,
+          "line": 521,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -57785,7 +57572,7 @@
         },
         {
           "file": "src/native/fes-log.mjs",
-          "line": 108,
+          "line": 135,
           "method": "call",
           "target": "abi.vram",
           "review": "needs-review",
@@ -57793,7 +57580,7 @@
         },
         {
           "file": "src/native/fes-log.mjs",
-          "line": 116,
+          "line": 143,
           "method": "call",
           "target": "abi.configureChildren",
           "review": "needs-review",
@@ -58000,80 +57787,8 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 92,
-          "method": "call",
-          "target": "this.abi.historyCtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 94,
-          "method": "call",
-          "target": "this.abi.historyImport",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 103,
-          "method": "call",
-          "target": "this.abi.historyDtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 131,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 132,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 206,
-          "method": "call",
-          "target": "p.load(this.abi.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 234,
-          "method": "call",
-          "target": "this.abi.lineCount",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 237,
-          "method": "call",
-          "target": "this.abi.line",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 255,
-          "method": "call",
-          "target": "p.load(this.abi.main + 0x2b9 * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/text-task.mjs",
-          "line": 470,
+          "line": 495,
           "method": "call",
           "target": "bindings.secondary",
           "review": "needs-review",
@@ -59764,94 +59479,73 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "js-scene-to-exe-display-log",
-      "domain": 5,
+      "name": "js-log-to-exe-fes-consumer",
+      "domain": 7,
       "projection": {
         "direction": "JS-to-PE",
-        "authority": "NativeSceneHistory",
-        "fields": [
-          "encoded seen history",
-          "encoded path history",
-          "numbered strings",
-          "checkpoint extra bytes"
-        ],
-        "consumers": [{ "domain": 5, "modules": ["text-log"] }],
-        "lifetime": "Temporary PE history and scene owners are constructed, imported and destroyed around the log call; JS history remains authoritative",
-        "removePhase": 5,
-        "operations": ["withHistory"]
+        "authority": "NativeDisplayLogs JS rows, blocks and strings",
+        "fields": ["CSS wire tables", "derived row second strings", "consumer object identity"],
+        "consumers": [{ "domain": 7, "modules": ["fes-log"] }],
+        "lifetime": "Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.",
+        "removePhase": 7,
+        "operations": ["prepare", "sync"]
       },
-      "entry": "NativeDisplayLogs.withHistory materializes independent seen/path bytes for the original log renderer",
-      "modules": ["src/native/text-log.mjs"],
+      "entry": "D7 LOGSTRING/LOGSTRING8 read an independent display-log table projection",
+      "modules": ["src/native/fes-log.mjs", "oracle/text-log-projection.mjs"],
       "executionSites": [
         {
-          "file": "src/native/text-log.mjs",
-          "line": 92,
+          "file": "src/native/fes-log.mjs",
+          "line": 135,
           "method": "call",
-          "target": "this.abi.historyCtor",
+          "target": "abi.vram",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 94,
+          "file": "src/native/fes-log.mjs",
+          "line": 143,
           "method": "call",
-          "target": "this.abi.historyImport",
+          "target": "abi.configureChildren",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 103,
-          "method": "call",
-          "target": "this.abi.historyDtor",
+          "file": "oracle/text-log-projection.mjs",
+          "line": 25,
+          "method": "callAsync",
+          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 131,
+          "file": "oracle/text-log-projection.mjs",
+          "line": 27,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 132,
+          "file": "oracle/text-log-projection.mjs",
+          "line": 28,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 206,
+          "file": "oracle/text-log-projection.mjs",
+          "line": 36,
           "method": "call",
-          "target": "p.load(this.abi.main + id * 4)",
+          "target": "p.load(this.layout.main + id * 4)",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/text-log.mjs",
-          "line": 234,
+          "file": "oracle/text-log-projection.mjs",
+          "line": 65,
           "method": "call",
-          "target": "this.abi.lineCount",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 237,
-          "method": "call",
-          "target": "this.abi.line",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-log.mjs",
-          "line": 255,
-          "method": "call",
-          "target": "p.load(this.abi.main + 0x2b9 * 4)",
+          "target": "this.layout.load",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -61182,7 +60876,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 152,
+          "line": 156,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61190,7 +60884,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 154,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61198,7 +60892,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 326,
+          "line": 330,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61206,7 +60900,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 338,
+          "line": 342,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -61842,46 +61536,6 @@
           "line": 106,
           "method": "call",
           "target": "this.spec.address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-plain.mjs",
-          "line": 60,
-          "method": "call",
-          "target": "layout.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-plain.mjs",
-          "line": 63,
-          "method": "call",
-          "target": "layout.set",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-plain.mjs",
-          "line": 64,
-          "method": "call",
-          "target": "layout.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-plain.mjs",
-          "line": 65,
-          "method": "call",
-          "target": "layout.extract",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-plain.mjs",
-          "line": 71,
-          "method": "call",
-          "target": "layout.destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

@@ -26,6 +26,11 @@
       "calls": 0,
       "references": 0
     },
+    "oracle/text-log-projection.mjs": {
+      "addresses": 4,
+      "calls": 2,
+      "references": 0
+    },
     "oracle/transitional-exe.mjs": {
       "addresses": 2,
       "calls": 0,
@@ -429,16 +434,6 @@
     "src/native/text-legacy.mjs": {
       "addresses": 8,
       "calls": 3,
-      "references": 0
-    },
-    "src/native/text-log.mjs": {
-      "addresses": 20,
-      "calls": 9,
-      "references": 0
-    },
-    "src/native/text-plain.mjs": {
-      "addresses": 15,
-      "calls": 0,
       "references": 0
     },
     "src/native/text.mjs": {

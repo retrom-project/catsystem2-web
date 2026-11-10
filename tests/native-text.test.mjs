@@ -26,7 +26,8 @@ import { FESPlayer } from '../src/fes/player.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';
 import { encodeHG2 } from '../src/formats/hg2.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { memoryGame, u32, translation } from './helpers.mjs';
+import { KCSMachine, readKCS } from '../src/kcs.mjs';
+import { memoryGame, u32, translation, kcsProgram } from './helpers.mjs';
 
 const glyphs = {
   measure: (_font, text) => ({
@@ -408,7 +409,7 @@ for (const [profile, variable] of [
             children = first.player.root.objects.filter(
               (o) => o.nativeControlledByLog === log.handle,
             ),
-            machine = { memory: new Uint8Array(8192), shared: new Uint8Array(), blocks: [], fp: 0 },
+            machine = new KCSMachine(await readKCS(kcsProgram([[59]])), {}, new Uint8Array(8192)),
             task = { id: first.owner, context: {} },
             logs = await first.getNativeFeature('display-logs'),
             handle = (await logs.apply(0x2b8, [], machine, task)).value;
@@ -524,7 +525,7 @@ for (const [profile, variable] of [
             const localized = (await logs.lines(handle)).map((b) =>
               new TextDecoder('shift_jis').decode(b),
             );
-            assert(mappings.length > 0);
+            assert.equal(mappings.length, 0, 'JS rebuild does not call the EXE CST reader');
             assert(mappings.every((row) => row[0] === 0 && row[1] === 0 && row[2] === 2));
             assert.deepEqual(
               localized,
@@ -535,7 +536,7 @@ for (const [profile, variable] of [
           await logs.apply(0x36c, [handle], machine, task);
           assert.equal((await logs.lines(handle)).length, 0);
           await logs.apply(0x2b9, [handle], machine, task);
-          assert.throws(() => logs.pointer(handle), /Invalid or released/);
+          assert.throws(() => logs.get(handle), /Invalid or released/);
         } finally {
           await second?.close();
           await first.close();
@@ -764,7 +765,17 @@ async function fixture(profile, bytes, source) {
       game,
       images,
       objects: new NativeObjects(),
-      runtime: { handles: new NativeHandles(), register() {} },
+      runtime: {
+        handles: new NativeHandles(),
+        register() {},
+        services: {
+          formatBytes: (address, m) => {
+            const bytes = [];
+            for (let i = 0; m.load(address + i, 1); i++) bytes.push(m.load(address + i, 1));
+            return Uint8Array.from(bytes);
+          },
+        },
+      },
       base: () => ({
         message: ([, id]) => {
           if (id === 3) return 1;

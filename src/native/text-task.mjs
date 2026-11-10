@@ -2,6 +2,7 @@
 // String tasks 48 / 63: game 634D00 / 6359F0; SDK 50BE90.
 // Task messages here use the World's canonical game numbering. SDK wrappers
 // translate their independently recovered message numbers at the boundary.
+import { installNativeEngineFiles } from './engine-files.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
@@ -50,6 +51,7 @@ export class NativeTextTask {
       writer: null,
       config: null,
       source: '',
+      sourceEvents: [],
       output: 0,
       vram: [0, 0],
       active: false,
@@ -185,7 +187,11 @@ export class NativeTextTask {
       if (!writer) {
         writer = await runtime.create(this.mode);
         this.text.writer = writer.pointer;
-      } else if (operation === 1) await writer.clear();
+      } else if (operation === 1) {
+        await writer.clear();
+        this.text.sourceEvents = [];
+        this.text.source = '';
+      }
       if (memory.load(l) !== bindings.configSize + 16) return 0;
       this.text.config = memory.bytes(l, bindings.configSize + 16).slice();
       const config = this.text.config.subarray(4, 4 + bindings.configSize),
@@ -197,9 +203,11 @@ export class NativeTextTask {
       this.text.output = view.getUint32(12 + bindings.configSize, true);
       await writer.configure(config);
       if (operation === 1) {
+        this.text.sourceEvents = [];
         this.text.elapsed = this.text.pageLimit = 0;
         this.text.active = false;
         this.text.source = '';
+        this.text.sourceEvents = [];
         this.makeGraph({
           type: 1,
           width: view.getUint32(8, true),
@@ -224,7 +232,9 @@ export class NativeTextTask {
     switch (operation) {
       case 3: {
         if (!memory) throw new Error('Native text append requires sender memory');
-        const text = await writer.appendEncoded(this.readBytes(memory, l));
+        const bytes = this.readBytes(memory, l).slice();
+        this.text.sourceEvents.push({ kind: 'append', bytes });
+        const text = await writer.appendEncoded(bytes);
         if (this.mode === 'utf8') this.text.source += text;
         return 0;
       }
@@ -233,6 +243,7 @@ export class NativeTextTask {
         this.text.elapsed = this.text.pageLimit = 0;
         this.text.active = false;
         this.text.source = '';
+        this.text.sourceEvents = [];
         await this.output();
         return 0;
       case 6:
@@ -243,6 +254,7 @@ export class NativeTextTask {
         }
         return 0;
       case 7:
+        this.text.sourceEvents.push({ kind: 'mark' });
         await writer.mark();
         if (this.mode === 'utf8') this.text.source += '\uffff';
         return 0;
@@ -428,7 +440,11 @@ export class NativeNVTextTask extends NativeTextTask {
       if (!writer) {
         writer = await runtime.create('nv');
         this.text.writer = writer.pointer;
-      } else if (operation === 1) await writer.clear();
+      } else if (operation === 1) {
+        await writer.clear();
+        this.text.sourceEvents = [];
+        this.text.source = '';
+      }
       if (memory.load(l) !== bindings.packetSize) return 0;
       this.text.config = memory.bytes(l, bindings.packetSize).slice();
       const view = new DataView(this.text.config.buffer),
@@ -437,6 +453,7 @@ export class NativeNVTextTask extends NativeTextTask {
       this.text.output = view.getUint32(at + 8, true);
       await writer.configure(this.text.config.subarray(4, at));
       if (operation === 1) {
+        this.text.sourceEvents = [];
         this.text.elapsed = this.text.pageLimit = 0;
         this.text.active = false;
         this.makeGraph({
@@ -462,16 +479,25 @@ export class NativeNVTextTask extends NativeTextTask {
     if (!writer) return 0;
     switch (operation) {
       case 3:
-        await writer.appendEncoded(this.readBytes(memory, l));
+        {
+          const bytes = this.readBytes(memory, l).slice();
+          this.text.sourceEvents.push({ kind: 'append', bytes });
+          await writer.appendEncoded(bytes);
+        }
         this.text.done = false;
         return 0;
       case 4:
-        await writer.input(Uint8Array.from([...this.readBytes(memory, l), 0]), (at) =>
+        this.text.sourceEvents.push({
+          kind: 'secondary',
+          bytes: this.readBytes(memory, l).slice(),
+        });
+        await writer.input(Uint8Array.from([...this.text.sourceEvents.at(-1).bytes, 0]), (at) =>
           runtime.call(bindings.secondary, [at], writer.pointer),
         );
         this.text.done = false;
         return 0;
       case 5:
+        this.text.sourceEvents = [];
         await writer.clear();
         await writer.erase();
         await this.output();
@@ -486,6 +512,7 @@ export class NativeNVTextTask extends NativeTextTask {
         }
         return 0;
       case 8:
+        this.text.sourceEvents.push({ kind: 'mark' });
         await writer.mark();
         return 0;
       case 9:
@@ -510,6 +537,7 @@ export class NativeNVTextTask extends NativeTextTask {
         await writer.speed(l);
         return 0;
       case 14:
+        this.text.sourceEvents.push({ kind: 'section' });
         await writer.section();
         this.text.sectionPending = true;
         return 0;
@@ -530,6 +558,7 @@ export class NativeNVTextTask extends NativeTextTask {
 }
 
 export function installNativeText(world, { glyphs } = {}) {
+  installNativeEngineFiles(world);
   installNativeLegacyText(world);
   installNativeDisplayLogs(world);
   installNativeControls(world);

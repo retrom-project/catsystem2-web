@@ -88,16 +88,25 @@ for (const [profile, fixture] of [
           assert.equal(await guest(0xee, [0x1234]), 1);
           nativeFile = p.load(out);
           assert.ok(nativeFile);
-          assert.equal(await guest(0x352, [nativeFile, tag, logs.pointer(handle)]), 1);
+          assert.equal(await guest(0x352, [nativeFile, tag, await logs.materialize(handle)]), 1);
           assert.equal(p.load(out), 1);
           const structure = p.load(nativeFile);
           assert.deepEqual(p.read(p.load(structure), p.load(structure + 8)), file.payload());
           const target = (await invoke(original, 0x2b8)).value;
           try {
-            assert.equal(await guest(0x353, [nativeFile, tag + 1, logs.pointer(target)]), 1);
+            assert.equal(
+              await guest(0x353, [nativeFile, tag + 1, await logs.materialize(target)]),
+              1,
+            );
             assert.equal(p.load(out), 0);
-            assert.equal(await guest(0x353, [nativeFile, tag, logs.pointer(target)]), 1);
+            assert.equal(await guest(0x353, [nativeFile, tag, await logs.materialize(target)]), 1);
             assert.equal(p.load(out), 1);
+            assert.deepEqual(
+              await logs.lines(target),
+              [],
+              'consumer loads cannot mutate JS authority',
+            );
+            await invoke(original, 0x353, [fileHandle, tag, target]);
             assert.deepEqual(await logs.lines(target), lines);
           } finally {
             await invoke(original, 0x2b9, [target]);
