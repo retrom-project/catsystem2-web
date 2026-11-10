@@ -539,6 +539,10 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
                   ? 4
                   : null
                 : domain(implementationFile);
+      const reviewedUnsupported =
+        implementation === 'unsupported' &&
+        entry.migrationReview?.phase === 4 &&
+        entry.migrationReview?.decision === 'retain-unsupported';
       entries.push({
         table,
         id: entry.id,
@@ -553,8 +557,9 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         features: names,
         dependencies,
         docs: documentation(unique([implementationFile, ...dependencies]), docs),
-        review: reasons.length ? 'needs-review' : 'traced',
-        reviewReasons: reasons,
+        review: reasons.length && !reviewedUnsupported ? 'needs-review' : 'traced',
+        reviewReasons: reviewedUnsupported ? [] : reasons,
+        ...(reviewedUnsupported ? { migrationReview: entry.migrationReview } : {}),
       });
     }
     if (entries.filter((entry) => entry.table === table).length !== declaration.count)

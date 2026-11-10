@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 112, "oracle": 133, "differential": 25 },
+    "counts": { "js": 113, "oracle": 133, "differential": 25 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -57,6 +57,7 @@
         "tests/native-dictionary.test.mjs",
         "tests/native-differential.test.mjs",
         "tests/native-divided-model.test.mjs",
+        "tests/native-domain4-review.test.mjs",
         "tests/native-draw.test.mjs",
         "tests/native-engine-message.test.mjs",
         "tests/native-entry.test.mjs",
@@ -3467,7 +3468,7 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 591,
+    "nativeNeedsReview": 521,
     "runtimeFiles": 350,
     "fileDomains": { "3": 32, "4": 48, "5": 32, "6": 39, "7": 23, "8": 147, "9": 29 },
     "fileNeedsReview": 124,
@@ -3990,8 +3991,8 @@
           "table": "main",
           "id": 29,
           "hexID": "0x1d",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "file.open",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/storage.mjs",
           "domain": 4,
@@ -4000,8 +4001,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -4045,8 +4046,8 @@
           "table": "main",
           "id": 32,
           "hexID": "0x20",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "file.close",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/storage.mjs",
           "domain": 4,
@@ -4055,8 +4056,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7404,8 +7405,8 @@
           "table": "main",
           "id": 219,
           "hexID": "0xdb",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.initializeTaskContext",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7414,15 +7415,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 220,
           "hexID": "0xdc",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.load",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7431,15 +7432,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 221,
           "hexID": "0xdd",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.typeOrCount",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7448,15 +7449,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 222,
           "hexID": "0xde",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.text",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7465,8 +7466,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7506,8 +7507,8 @@
           "table": "main",
           "id": 225,
           "hexID": "0xe1",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.clearSeen",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7516,15 +7517,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 226,
           "hexID": "0xe2",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.clearPath",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7533,8 +7534,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7574,8 +7575,8 @@
           "table": "main",
           "id": 229,
           "hexID": "0xe5",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.setHistoryString",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7584,15 +7585,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 230,
           "hexID": "0xe6",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.getHistoryString",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7601,15 +7602,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 231,
           "hexID": "0xe7",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.captureHistoryStrings",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7618,15 +7619,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 232,
           "hexID": "0xe8",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.expandHistoryStrings",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7635,15 +7636,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 233,
           "hexID": "0xe9",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.expandTaskHistoryStrings",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7652,15 +7653,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 234,
           "hexID": "0xea",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.copyTaskHistory",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7669,15 +7670,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 235,
           "hexID": "0xeb",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "taskScene.currentFilename",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7686,8 +7687,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7744,8 +7745,8 @@
           "table": "main",
           "id": 239,
           "hexID": "0xef",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.saveTaskHistory",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7754,15 +7755,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 240,
           "hexID": "0xf0",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "variables.saveRange",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7771,8 +7772,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7797,8 +7798,8 @@
           "table": "main",
           "id": 242,
           "hexID": "0xf2",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.saveNested",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7807,15 +7808,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 243,
           "hexID": "0xf3",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "strings.save",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7824,8 +7825,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7848,8 +7849,8 @@
           "table": "main",
           "id": 245,
           "hexID": "0xf5",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.write",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7858,8 +7859,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7882,8 +7883,8 @@
           "table": "main",
           "id": 247,
           "hexID": "0xf7",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.read",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7892,15 +7893,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 248,
           "hexID": "0xf8",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.tag",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7909,15 +7910,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 249,
           "hexID": "0xf9",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.restoreTaskHistory",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -7926,15 +7927,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 250,
           "hexID": "0xfa",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "variables.restoreRange",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7943,8 +7944,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7969,8 +7970,8 @@
           "table": "main",
           "id": 252,
           "hexID": "0xfc",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.readNested",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7979,15 +7980,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 253,
           "hexID": "0xfd",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "strings.restore",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -7996,15 +7997,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 254,
           "hexID": "0xfe",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.readBytes",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -8013,15 +8014,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 255,
           "hexID": "0xff",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.modifiedTime",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -8030,8 +8031,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -8487,8 +8488,8 @@
           "table": "main",
           "id": 276,
           "hexID": "0x114",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "strings.set",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/string-bank.mjs",
           "domain": 4,
@@ -8497,15 +8498,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 277,
           "hexID": "0x115",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "strings.get",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/string-bank.mjs",
           "domain": 4,
@@ -8514,15 +8515,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 278,
           "hexID": "0x116",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "strings.expand",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/string-bank.mjs",
           "domain": 4,
@@ -8531,8 +8532,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -9311,8 +9312,8 @@
           "table": "main",
           "id": 322,
           "hexID": "0x142",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.exists",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9321,15 +9322,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 323,
           "hexID": "0x143",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.create",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9338,15 +9339,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 324,
           "hexID": "0x144",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.close",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9355,15 +9356,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 325,
           "hexID": "0x145",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.load",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9372,15 +9373,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 326,
           "hexID": "0x146",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.typeOrCount",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9389,15 +9390,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 327,
           "hexID": "0x147",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.text",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9406,8 +9407,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -9447,8 +9448,8 @@
           "table": "main",
           "id": 330,
           "hexID": "0x14a",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.clearSeen",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9457,15 +9458,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 331,
           "hexID": "0x14b",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.clearPath",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9474,8 +9475,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -9515,8 +9516,8 @@
           "table": "main",
           "id": 334,
           "hexID": "0x14e",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.setHistoryString",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9525,15 +9526,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 335,
           "hexID": "0x14f",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.getHistoryString",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9542,15 +9543,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 336,
           "hexID": "0x150",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.captureHistoryStrings",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9559,15 +9560,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 337,
           "hexID": "0x151",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.expandHistoryStrings",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9576,15 +9577,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 338,
           "hexID": "0x152",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.currentFilename",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -9593,8 +9594,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -10409,8 +10410,8 @@
           "table": "main",
           "id": 385,
           "hexID": "0x181",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.saveHistory",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -10419,15 +10420,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 386,
           "hexID": "0x182",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.restoreHistory",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -10436,8 +10437,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -11013,8 +11014,8 @@
           "table": "main",
           "id": 419,
           "hexID": "0x1a3",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.create",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11023,15 +11024,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 420,
           "hexID": "0x1a4",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.release",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11040,15 +11041,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 421,
           "hexID": "0x1a5",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.clear",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11057,15 +11058,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 422,
           "hexID": "0x1a6",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.register",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11074,15 +11075,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 423,
           "hexID": "0x1a7",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.contains",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11091,15 +11092,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 424,
           "hexID": "0x1a8",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.save",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11108,15 +11109,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 425,
           "hexID": "0x1a9",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.load",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11125,8 +11126,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -11734,8 +11735,8 @@
           "table": "main",
           "id": 458,
           "hexID": "0x1ca",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.loadList",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11744,15 +11745,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 459,
           "hexID": "0x1cb",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "cg.registerGroup",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/gallery.mjs",
           "domain": 4,
@@ -11761,8 +11762,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14348,8 +14349,8 @@
           "table": "main",
           "id": 608,
           "hexID": "0x260",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.blockCount",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -14358,15 +14359,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 609,
           "hexID": "0x261",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "variables.backup",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/bank.mjs",
           "domain": 4,
@@ -14375,15 +14376,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 610,
           "hexID": "0x262",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "variables.restore",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/bank.mjs",
           "domain": 4,
@@ -14392,8 +14393,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -21555,8 +21556,8 @@
           "table": "main",
           "id": 978,
           "hexID": "0x3d2",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.setPathExtra",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21565,15 +21566,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 979,
           "hexID": "0x3d3",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.pathExtra",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21582,15 +21583,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 980,
           "hexID": "0x3d4",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.messageCount",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21599,15 +21600,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 981,
           "hexID": "0x3d5",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.copyExtra",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21616,15 +21617,15 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
           "id": 982,
           "hexID": "0x3d6",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.lastPathIndex",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21633,8 +21634,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -21786,8 +21787,8 @@
           "table": "main",
           "id": 990,
           "hexID": "0x3de",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "globalFile.removeFile",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/persistence.mjs",
           "domain": 4,
@@ -21796,8 +21797,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -21837,8 +21838,8 @@
           "table": "main",
           "id": 993,
           "hexID": "0x3e1",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "scene.copyPath",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/scene-data.mjs",
           "domain": 4,
@@ -21847,8 +21848,8 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -30052,8 +30053,20 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["正常 World 无注册处理器，实际 fallback 链全部返回 undefined。"]
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 4,
+            "decision": "retain-unsupported",
+            "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "reachability": {
+              "reviewedScripts": { "game": 103, "sdk": 186 },
+              "observedCallSites": 0,
+              "dynamicNativeOperands": 0,
+              "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
+            },
+            "evidence": "docs/native-domain4-review.md"
+          }
         },
         {
           "table": "main",
@@ -30069,8 +30082,20 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["正常 World 无注册处理器，实际 fallback 链全部返回 undefined。"]
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 4,
+            "decision": "retain-unsupported",
+            "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "reachability": {
+              "reviewedScripts": { "game": 103, "sdk": 186 },
+              "observedCallSites": 0,
+              "dynamicNativeOperands": 0,
+              "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
+            },
+            "evidence": "docs/native-domain4-review.md"
+          }
         },
         {
           "table": "main",
@@ -30086,8 +30111,20 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["正常 World 无注册处理器，实际 fallback 链全部返回 undefined。"]
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 4,
+            "decision": "retain-unsupported",
+            "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "reachability": {
+              "reviewedScripts": { "game": 103, "sdk": 186 },
+              "observedCallSites": 0,
+              "dynamicNativeOperands": 0,
+              "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
+            },
+            "evidence": "docs/native-domain4-review.md"
+          }
         },
         {
           "table": "main",
@@ -30103,8 +30140,20 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["正常 World 无注册处理器，实际 fallback 链全部返回 undefined。"]
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 4,
+            "decision": "retain-unsupported",
+            "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "reachability": {
+              "reviewedScripts": { "game": 103, "sdk": 186 },
+              "observedCallSites": 0,
+              "dynamicNativeOperands": 0,
+              "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
+            },
+            "evidence": "docs/native-domain4-review.md"
+          }
         },
         {
           "table": "main",
@@ -30120,8 +30169,20 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["正常 World 无注册处理器，实际 fallback 链全部返回 undefined。"]
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 4,
+            "decision": "retain-unsupported",
+            "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "reachability": {
+              "reviewedScripts": { "game": 103, "sdk": 186 },
+              "observedCallSites": 0,
+              "dynamicNativeOperands": 0,
+              "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
+            },
+            "evidence": "docs/native-domain4-review.md"
+          }
         },
         {
           "table": "main",
@@ -47685,7 +47746,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "b7eb75ec944ea0c21fcc0af361a0ee215e443176e09945e990bda6e31dd554a1",
+      "sourceSha256": "084b180ca1f83fcf619b840c0909faae49301182634b205871fb067d1058e9b3",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -47698,7 +47759,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "61f8c476a075c0cb1a4c5ce842445ade25e2f46456a870343fad6d27b5502bf8",
+      "sourceSha256": "e2ff6e0ff350f1bce93a4460c7ad19ab126031ed2a31a50c4c6a1ea4d1366d13",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

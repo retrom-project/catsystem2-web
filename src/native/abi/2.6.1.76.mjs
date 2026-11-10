@@ -5073,7 +5073,7 @@ export default {
             result: 'void',
             controlCodes: [2],
             review: 'declared',
-            resultWritten: false,
+            resultWritten: null,
           },
         },
         {
@@ -5092,7 +5092,7 @@ export default {
             result: 'void',
             controlCodes: [2],
             review: 'declared',
-            resultWritten: false,
+            resultWritten: null,
           },
         },
         {
@@ -5111,7 +5111,7 @@ export default {
             result: 'void',
             controlCodes: [2],
             review: 'declared',
-            resultWritten: false,
+            resultWritten: null,
           },
         },
         {
@@ -6271,6 +6271,19 @@ export default {
             review: 'declared',
             resultWritten: null,
           },
+          migrationReview: {
+            phase: 4,
+            decision: 'retain-unsupported',
+            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
+            reachability: {
+              reviewedScripts: { game: 103, sdk: 186 },
+              observedCallSites: 0,
+              dynamicNativeOperands: 0,
+              scope:
+                'Only the two frozen script corpora; authored or future KCS can still call this ID',
+            },
+            evidence: 'docs/native-domain4-review.md',
+          },
         },
         {
           id: 290,
@@ -6289,6 +6302,19 @@ export default {
             controlCodes: [2],
             review: 'declared',
             resultWritten: false,
+          },
+          migrationReview: {
+            phase: 4,
+            decision: 'retain-unsupported',
+            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
+            reachability: {
+              reviewedScripts: { game: 103, sdk: 186 },
+              observedCallSites: 0,
+              dynamicNativeOperands: 0,
+              scope:
+                'Only the two frozen script corpora; authored or future KCS can still call this ID',
+            },
+            evidence: 'docs/native-domain4-review.md',
           },
         },
         {
@@ -6309,6 +6335,19 @@ export default {
             review: 'declared',
             resultWritten: false,
           },
+          migrationReview: {
+            phase: 4,
+            decision: 'retain-unsupported',
+            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
+            reachability: {
+              reviewedScripts: { game: 103, sdk: 186 },
+              observedCallSites: 0,
+              dynamicNativeOperands: 0,
+              scope:
+                'Only the two frozen script corpora; authored or future KCS can still call this ID',
+            },
+            evidence: 'docs/native-domain4-review.md',
+          },
         },
         {
           id: 292,
@@ -6328,6 +6367,19 @@ export default {
             review: 'declared',
             resultWritten: null,
           },
+          migrationReview: {
+            phase: 4,
+            decision: 'retain-unsupported',
+            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
+            reachability: {
+              reviewedScripts: { game: 103, sdk: 186 },
+              observedCallSites: 0,
+              dynamicNativeOperands: 0,
+              scope:
+                'Only the two frozen script corpora; authored or future KCS can still call this ID',
+            },
+            evidence: 'docs/native-domain4-review.md',
+          },
         },
         {
           id: 293,
@@ -6346,6 +6398,19 @@ export default {
             controlCodes: [1, 2],
             review: 'declared',
             resultWritten: null,
+          },
+          migrationReview: {
+            phase: 4,
+            decision: 'retain-unsupported',
+            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
+            reachability: {
+              reviewedScripts: { game: 103, sdk: 186 },
+              observedCallSites: 0,
+              dynamicNativeOperands: 0,
+              scope:
+                'Only the two frozen script corpora; authored or future KCS can still call this ID',
+            },
+            evidence: 'docs/native-domain4-review.md',
           },
         },
         {
@@ -7297,7 +7362,7 @@ export default {
             result: 'void',
             controlCodes: [2],
             review: 'declared',
-            resultWritten: false,
+            resultWritten: null,
           },
         },
         {

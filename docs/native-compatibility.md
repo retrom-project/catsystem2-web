@@ -27,9 +27,14 @@ version. Unknown-only, missing and multiple matching candidates report the
 observed filenames and versions. A utility executable with an unrelated version
 can coexist with the selected engine. An explicit profile must also be registered.
 
-The 277 unresolved semantic names, including 160 slots with an implementation
-route, retain their explicit review state. The data extraction preserves every
+Unresolved semantic names retain their explicit review state. The data extraction preserves every
 existing declaration and does not infer a contract from another ABI's slot.
+
+The domain-4 SDK review recovers 65 names and signatures from its own native
+pointer table and wrapper bodies. Five game name-pair entries retain explicit
+unsupported diagnostics and scoped corpus reachability decisions. Domain 4
+currently has 653 pure-JS slots and five reviewed unsupported slots. Details are
+recorded in the [domain-4 review](native-domain4-review.md).
 
 ## B migration inventory
 
