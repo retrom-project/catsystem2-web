@@ -19,7 +19,10 @@ export async function progressAcceptance(page, info, name, run) {
       body: JSON.stringify(budget.last, null, 2),
       contentType: 'application/json',
     });
-    if (!(error instanceof FrameBudgetReached)) throw error;
+    if (!(error instanceof FrameBudgetReached)) {
+      await page.context().close();
+      throw error;
+    }
     expect(budget.last.unsupported).toEqual([]);
     expect(errors).toEqual([]);
     info.annotations.push({ type: 'progress-gate', description: JSON.stringify(budget.point) });
@@ -102,6 +105,20 @@ export async function frameClock(page) {
 export const state = (page) =>
   page.evaluate(() => {
     const e = window.catSystem2,
+      scenes = [...(e?.world?.runtime.handles.records ?? [])]
+        .filter(([, record]) => record.type === 'scene-data')
+        .map(([handle, { value }]) => ({
+          handle,
+          scene: value.reader.filename,
+          block: value.reader.block,
+          line: value.reader.line,
+        })),
+      text = [...(e?.world?.objects.objects.values() ?? [])]
+        .filter((record) => record.implementation.text)
+        .map((record) => {
+          const text = record.implementation.text;
+          return { id: record.id, source: text.source, elapsed: text.elapsed, active: text.active };
+        }),
       tasks = [...(e?.world?.runtime.scheduler.tasks.values() ?? [])].map((task) => {
         const reader = e.world.runtime.sceneData(task)?.reader;
         return {
@@ -120,8 +137,9 @@ export const state = (page) =>
       unsupported: e?.status().unsupported,
       error: document.getElementById('error').textContent,
       messages: window.routeTrace?.messages.size,
-      position: { stack: e?.status().stack, tasks },
+      position: { stack: e?.status().stack, tasks, scenes, text },
       recentNative: window.nativeRecentCalls,
+      heap: window.nativePerformance?.snapshot(),
     };
   });
 

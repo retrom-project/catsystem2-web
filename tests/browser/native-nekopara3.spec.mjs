@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Uses the prepared, frozen game mounted on the private development server.
-import { test, expect } from '@playwright/test';
+import { test, expect } from './native-performance.mjs';
 import { readFile } from 'node:fs/promises';
 import {
   frameClock,
@@ -10,6 +10,7 @@ import {
   clickNativeButton,
   pixels,
   startupWindow,
+  progressAcceptance,
 } from './native-game-input.mjs';
 
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
@@ -321,9 +322,11 @@ test('cold native language, title and opening dialogue continue through the orig
 
 test('original scene particle changes the rendered frame and continues after a fresh World', async ({
   page,
-}) => {
-  // Native E-mote is CPU intensive under headless Chromium's software GPU.
-  test.setTimeout(60 * 60_000);
+}, info) => {
+  await progressAcceptance(page, info, 'particle', () => runParticle(page));
+});
+
+async function runParticle(page) {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await startGame(page);
@@ -363,4 +366,4 @@ test('original scene particle changes the rendered frame and continues after a f
   expect(continued.counter).toBeGreaterThan(visible.counter);
   expect((await state(page)).unsupported).toEqual([]);
   expect(errors).toEqual([]);
-});
+}

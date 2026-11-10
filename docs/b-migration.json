@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 119, "oracle": 133, "differential": 45 },
+    "counts": { "js": 118, "oracle": 135, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -133,7 +133,6 @@
         "tests/oracle-fixtures.test.mjs",
         "tests/particles.test.mjs",
         "tests/ppi-contracts.test.mjs",
-        "tests/progress-budget.test.mjs",
         "tests/psd.test.mjs",
         "tests/raster.test.mjs",
         "tests/scene-contracts.test.mjs",
@@ -143,6 +142,7 @@
       ],
       "oracle": [
         "tests/execution.test.mjs",
+        "tests/frame-profile-counters.test.mjs",
         "tests/hg2.test.mjs",
         "tests/native-area-task-lifecycle.test.mjs",
         "tests/native-bank-world.test.mjs",
@@ -274,6 +274,7 @@
         "tests/ppi-floating-point.test.mjs",
         "tests/ppi-native.test.mjs",
         "tests/ppi-particle-order.test.mjs",
+        "tests/progress-budget.test.mjs",
         "tests/transitional-template.test.mjs"
       ],
       "differential": [

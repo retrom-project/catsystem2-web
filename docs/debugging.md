@@ -107,7 +107,8 @@ frame 883 and requires at least 54 messages. The accepted floors remain game
 1636 and route 583/54. Frame counts determine the amount of guest work.
 
 The earlier of 300 frames or three minutes without a changed script position
-or FES stack fails the run. Each pending frame batch also has the remaining
+or FES stack fails the run. Explicit scene-data handles and JS writer reveal
+state participate in progress even while the KCS task PC waits. Each pending frame batch also has the remaining
 wall deadline. The diagnostic includes stack, CST position and the last 16
 native calls. A moving script resets the no-progress deadline. This is separate
 from the performance target of fifteen minutes per case.
@@ -117,3 +118,30 @@ The full UI, chapter, movie and message assertions remain in the tests.
 `CATSYSTEM2_FULL_ACCEPTANCE=1` runs those complete paths. Once a case completes,
 the orchestrator removes its progress budget. Progress points are updated only
 after review of a stage gate.
+
+### Opt-in tick profiles
+
+Set `CATSYSTEM2_TICK_PROFILE` to an ignored directory to sample fixed logo,
+title, early/late dialogue and model-change frame batches in the three NEKOPARA
+cases. Each capture contains a CDP CPU profile and read-only host summaries.
+`CATSYSTEM2_FRAME_METRICS=1` additionally records the full tick/step/render clock.
+
+```sh
+CATSYSTEM2_TICK_PROFILE=.local/perf/route CATSYSTEM2_FRAME_METRICS=1 npm run test:route -- --grep 'main route reaches'
+```
+
+Call counters are installed only for sampled batches and restored afterwards.
+They include emulator entries/time, JS-to-WASM calls, memory mapping changes,
+invalidation requests and read/write bytes. Read/write totals include all host
+transfers, so they are upper bounds on projection copies. Instruction/TB counts
+and actual invalidated TB counts are unavailable from these host observations.
+
+Live guest bytes sum the existing allocation map. Samples include title,
+frames577/1061 and periodic frames, plus collection sizes and the ten slowest
+ticks. The sample array is bounded to forty entries. Raw profiles stay outside
+Git. Measurements use the existing JavaScript boundaries and allocation map.
+
+The particle regression also uses a frame budget while its full path remains
+under review. Its minimum frame1114 crosses the old capacity failure at1113,
+with a further300 frames available for the original assertions. A progress-only
+result has the same explicit annotation as game and route.

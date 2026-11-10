@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Private route acceptance. Observe the current NativeWorld, never ScenePlayer.
-import { test, expect } from '@playwright/test';
+import { test, expect } from './native-performance.mjs';
 import { writeFile } from 'node:fs/promises';
 import { launch, button, noError } from './game-helpers.mjs';
 import { step, until, progressAcceptance } from './native-game-input.mjs';

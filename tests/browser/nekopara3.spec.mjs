@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Current NativeWorld UI acceptance using the mounted frozen game.
-import { test, expect } from '@playwright/test';
+import { test, expect } from './native-performance.mjs';
 import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
 import { hoverNativeButton, step, until, progressAcceptance } from './native-game-input.mjs';
 
