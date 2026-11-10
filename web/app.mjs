@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { GameFiles } from '../src/files.mjs';
 import { CatSystem2 } from './transitional-entry.mjs';
-import {
-  CHECKPOINT_LIMIT,
-  serializeCheckpoint,
-  deserializeCheckpoint,
-} from '../src/checkpoint.mjs';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 const $ = (id) => document.getElementById(id),
   canvas = $('screen'),
   actions = [];
@@ -146,7 +142,9 @@ $('export').onclick = () =>
   enqueue(async () => {
     const data = await engine.snapshot(),
       url = URL.createObjectURL(
-        new Blob([await serializeCheckpoint(data)], { type: 'application/octet-stream' }),
+        new Blob([await serializeCheckpoint(data, engine.checkpointLimit)], {
+          type: 'application/octet-stream',
+        }),
       );
     const a = document.createElement('a');
     a.href = url;
@@ -158,9 +156,11 @@ $('import').onclick = () => $('save-file').click();
 $('save-file').onchange = () =>
   enqueue(async () => {
     const file = $('save-file').files[0];
-    if (!file || file.size > CHECKPOINT_LIMIT)
+    if (!file || file.size > engine.checkpointLimit)
       throw new Error('Save file exceeds checkpoint limit');
-    await engine.restore(await deserializeCheckpoint(new Uint8Array(await file.arrayBuffer())));
+    await engine.restore(
+      await deserializeCheckpoint(new Uint8Array(await file.arrayBuffer()), engine.checkpointLimit),
+    );
   }).catch(() => {});
 const point = (event) => {
   const r = canvas.getBoundingClientRect();

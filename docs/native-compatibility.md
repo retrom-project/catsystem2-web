@@ -1022,3 +1022,10 @@ phases 6 and 9. Earlier 256/320 MiB runs exhausted it. Live allocation bytes,
 allocation counts and released capacity must be measured separately from the
 configured reserve to detect persistent JS-side growth. The migration board
 registers this exception under `temporary-x86-heap-capacity`.
+
+The same policy gives native E-mote checkpoints a temporary 768 MiB total
+allowance. JS-owned checkpoint state is counted separately against 256 MiB,
+excluding only the injected backend object. Export and import obtain their
+limit from the active host. PE region restoration validates decoded length
+against the actual mapped region. These allowances are deleted in phase 10
+with the original backend.

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 119, "oracle": 135, "differential": 45 },
+    "counts": { "js": 119, "oracle": 136, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -276,6 +276,7 @@
         "tests/ppi-native.test.mjs",
         "tests/ppi-particle-order.test.mjs",
         "tests/progress-budget.test.mjs",
+        "tests/transitional-checkpoint.test.mjs",
         "tests/transitional-template.test.mjs"
       ],
       "differential": [
@@ -2903,7 +2904,7 @@
       {
         "kind": "exe-layout",
         "file": "web/transitional-entry.mjs",
-        "line": 26,
+        "line": 32,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -45771,7 +45772,7 @@
     },
     {
       "file": "src/checkpoint.mjs",
-      "sourceSha256": "f425c03d9d552ca70244ee2a0af1b44a76a48e7ff5afbb38a4cd88c1348cd27d",
+      "sourceSha256": "64ba92eb034d42f56f33636d04ca844ccbaeddff84458680f45cea5420f03b09",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46049,7 +46050,7 @@
     },
     {
       "file": "src/engine.mjs",
-      "sourceSha256": "d5a80c18ab00ba4991e78537700d7e697221270152ce40bf1f83ac6da5ba949e",
+      "sourceSha256": "e8a8e9410e3f0ac95ba963f8b64d8748451898221ea587e00c46d1d5dd0ba2e4",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55165,7 +55166,7 @@
     },
     {
       "file": "src/ppi/pe32.mjs",
-      "sourceSha256": "dab2785777287b58443664851c80661ae903d63bb3a111f0397cdb192d0b7943",
+      "sourceSha256": "45fba836086964e6873851a4c8d23368378cd5b090c256034afdfe7a006274ea",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55456,7 +55457,7 @@
     },
     {
       "file": "web/app.mjs",
-      "sourceSha256": "4618062cd8d1bdb5137a1dc06aee33a0a0155c7c597ce0b66e7b29d0c7e5ce03",
+      "sourceSha256": "094683f9508305eeb029f4ed69249680f03f9ac88a3260d2906c1012fdcd079e",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55469,7 +55470,7 @@
     },
     {
       "file": "web/transitional-entry.mjs",
-      "sourceSha256": "4296fc92bec407a6d490a6ad5151c509331b3ff48786ef2453b5750733e7e1dd",
+      "sourceSha256": "2935086ff1bef69c612d9f41be2c8ef94a7b76f1c8c5dc031d94825ae1d4c9a7",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 4 },
@@ -55495,7 +55496,7 @@
     },
     {
       "file": "oracle/transitional-heap.mjs",
-      "sourceSha256": "6191fa8e0d619385eae3d4fe4220d2aa1b3938c61ecd980e1e7e9e95bb8b7631",
+      "sourceSha256": "0b8921b7747c8e4fdd00f50bb2e02c34e67ba2e2e65cdf9dfd9bc52f43504c44",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56003,6 +56004,7 @@
       "configuration": {
         "defaultBytes": 268435456,
         "nativeEmoteBytes": 536870912,
+        "nativeEmoteCheckpointBytes": 805306368,
         "removeInPhase": 10,
         "consumersRemovedInPhases": [6, 9]
       },

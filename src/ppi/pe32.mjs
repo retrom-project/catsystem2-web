@@ -1074,7 +1074,7 @@ export class PE32Process {
       throw new Error('PE32 invalid snapshot heap');
     if (this.heap > state.heap) this.write(state.heap, new Uint8Array(this.heap - state.heap));
     for (const region of state.regions) {
-      this.write(region.address, decodeMemory(region.bytes));
+      this.write(region.address, decodeMemory(region.bytes, region.size));
       this.regions.find((current) => current.address === region.address).permissions =
         region.permissions;
     }
@@ -1132,11 +1132,11 @@ function encodeMemory(bytes) {
   }
   return { length: bytes.length, blocks };
 }
-function decodeMemory(state) {
+function decodeMemory(state, limit) {
   if (
     !Number.isSafeInteger(state.length) ||
     state.length < 0 ||
-    state.length > 256 * 1024 * 1024 ||
+    state.length > limit ||
     !Array.isArray(state.blocks)
   )
     throw new Error('Invalid PE32 snapshot memory');

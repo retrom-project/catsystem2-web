@@ -9,9 +9,15 @@ import {
 } from '../src/native/engine-process.mjs';
 import { invokeRegion, syncViewGeometry } from '../oracle/transitional-exe.mjs';
 import { parsePE32 } from '../src/ppi/pe32.mjs';
-import { transitionalHeapSize } from '../oracle/transitional-heap.mjs';
+import {
+  transitionalHeapSize,
+  transitionalCheckpointBytes,
+  transitionalCheckpointLimit,
+} from '../oracle/transitional-heap.mjs';
 
 export const transitionalExe = Object.freeze({
+  checkpointBytes: transitionalCheckpointBytes,
+  checkpointLimit: transitionalCheckpointLimit,
   async open(options) {
     const engine = await NativeEngineProcess.open({
       ...options,

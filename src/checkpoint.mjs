@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 export const CHECKPOINT_LIMIT = 256 * 1024 * 1024;
-const PORTABLE_LIMIT = CHECKPOINT_LIMIT * 2;
 const MAGIC = new TextEncoder().encode('CS2WEB\0');
 
 // Count binary state as bytes, not JSON's decimal properties for typed arrays.
 // This also preserves Map/Set, shared buffers and cyclic object references,
 // which IndexedDB's structured clone supports.
-export function checkpointBytes(value, limit = CHECKPOINT_LIMIT) {
-  const seen = new WeakSet(),
+export function checkpointBytes(value, limit = CHECKPOINT_LIMIT, excludedObject = null) {
+  const seen = new WeakSet(excludedObject ? [excludedObject] : []),
     encoder = new TextEncoder();
   let size = 0;
   const add = (n) => {
@@ -121,8 +120,8 @@ async function transform(bytes, stream, limit) {
 // IndexedDB uses structured clone. Export files must retain the same resource
 // graph, including shared buffers, bigint loop points, Maps and cyclic links.
 // An explicit graph encoding avoids lossy JSON.stringify(typedArray) output.
-export async function serializeCheckpoint(value) {
-  checkpointBytes(value);
+export async function serializeCheckpoint(value, limit = CHECKPOINT_LIMIT) {
+  checkpointBytes(value, limit);
   const ids = new WeakMap(),
     nodes = [];
   const encode = async (value) => {
@@ -179,19 +178,18 @@ export async function serializeCheckpoint(value) {
   };
   const root = await encode(value),
     plain = new TextEncoder().encode(JSON.stringify({ root, nodes }));
-  if (plain.length > PORTABLE_LIMIT)
-    throw new Error('Checkpoint graph encoding exceeds file limit');
-  const packed = await transform(plain, new CompressionStream('gzip'), CHECKPOINT_LIMIT),
+  if (plain.length > limit * 2) throw new Error('Checkpoint graph encoding exceeds file limit');
+  const packed = await transform(plain, new CompressionStream('gzip'), limit - MAGIC.length),
     file = new Uint8Array(MAGIC.length + packed.length);
   file.set(MAGIC);
   file.set(packed, MAGIC.length);
   return file;
 }
 
-export async function deserializeCheckpoint(file) {
+export async function deserializeCheckpoint(file, limit = CHECKPOINT_LIMIT) {
   if (
     !(file instanceof Uint8Array) ||
-    file.length > CHECKPOINT_LIMIT ||
+    file.length > limit ||
     file.length <= MAGIC.length ||
     MAGIC.some((byte, i) => file[i] !== byte)
   )
@@ -199,7 +197,7 @@ export async function deserializeCheckpoint(file) {
   const plain = await transform(
       file.subarray(MAGIC.length),
       new DecompressionStream('gzip'),
-      PORTABLE_LIMIT,
+      limit * 2,
     ),
     data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)),
     memo = new Map();
@@ -296,6 +294,6 @@ export async function deserializeCheckpoint(file) {
     return result;
   };
   const value = decode(data.root);
-  checkpointBytes(value);
+  checkpointBytes(value, limit);
   return value;
 }

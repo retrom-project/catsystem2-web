@@ -3,6 +3,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
+test('portable checkpoint budgets apply to encode, compressed files and decoded state', async () => {
+  const state = { bytes: new Uint8Array(400) };
+  await assert.rejects(serializeCheckpoint(state, 128), /Checkpoint exceeds/);
+  const file = await serializeCheckpoint(state, 1024);
+  assert.ok(file.length <= 1024);
+  assert.equal((await deserializeCheckpoint(file, 1024)).bytes.length, 400);
+  await assert.rejects(deserializeCheckpoint(file, 128), /checkpoint|Checkpoint/);
+});
+
 test('portable checkpoints retain binary aliases, cyclic containers and 64-bit audio positions', async () => {
   const buffer = new ArrayBuffer(24),
     bytes = new Uint8Array(buffer),

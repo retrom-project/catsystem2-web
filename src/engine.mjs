@@ -18,7 +18,7 @@ import { Transition } from './render/transition.mjs';
 import { selectNativeProfile } from './native/profile.mjs';
 import { MotionLibrary } from './motion/library.mjs';
 import { ParticleRandom } from './ppi/random.mjs';
-import { checkpointBytes } from './checkpoint.mjs';
+import { CHECKPOINT_LIMIT, checkpointBytes } from './checkpoint.mjs';
 import { NativeWorld } from './native/world.mjs';
 import { NativeConfiguration } from './native/config.mjs';
 import { NativeFileStorage } from './native/storage.mjs';
@@ -638,6 +638,16 @@ export class CatSystem2 {
     };
     await this.video.play();
   }
+  get checkpointLimit() {
+    return this.nativeProfile && this.transitionalExe?.checkpointLimit
+      ? this.transitionalExe.checkpointLimit(this.nativeProfile)
+      : CHECKPOINT_LIMIT;
+  }
+  checkpointSize(state) {
+    return this.transitionalExe?.checkpointBytes
+      ? this.transitionalExe.checkpointBytes(state, this.nativeProfile)
+      : checkpointBytes(state);
+  }
   async snapshot(includeUI = true) {
     if (this.world) {
       await this.world.resourceCache.settle();
@@ -649,7 +659,7 @@ export class CatSystem2 {
         audio: this.audio.snapshot(),
         emote: this.emote.snapshot(),
       };
-      checkpointBytes(state);
+      this.checkpointSize(state);
       return state;
     }
     if (!this.story) throw new Error('A story must be running to create a checkpoint');
@@ -692,7 +702,7 @@ export class CatSystem2 {
         !saved.world
       )
         throw new Error('Checkpoint does not match the current game or format');
-      checkpointBytes(saved);
+      this.checkpointSize(saved);
       const previous = this.world,
         previousAudio = this.audio,
         audio = new AudioMixer(this.game, this.audio.context, { deferPlayback: true }),

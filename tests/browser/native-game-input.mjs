@@ -20,6 +20,7 @@ export async function progressAcceptance(page, info, name, run) {
       contentType: 'application/json',
     });
     if (!(error instanceof FrameBudgetReached)) {
+      console.log('acceptance failure state', JSON.stringify(budget.last));
       await page.context().close();
       throw error;
     }
