@@ -915,3 +915,11 @@ text layout, complete native window/menu interaction, browser sound output,
 system-script initialization and all game modes still require their own evidence.
 The overall implementation remains in progress while any necessary contract or
 acceptance item remains unresolved; see [completion requirements](completion.md).
+
+## Phase 4 container ownership
+
+Image-data buffers, record queues, record stacks and history cursors use JS
+state. Script175 reader/history views are one-way PE projections, written by JS
+without original constructors, parsers or history imports/exports. The registry
+in `b-migration.json` lists projected fields, consumers and removal phases.
+Original handler tables for stacks and cursors remain in oracle-only modules.

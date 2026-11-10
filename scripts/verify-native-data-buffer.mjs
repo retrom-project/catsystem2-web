@@ -5,7 +5,7 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_DATA_BUFFER_LAYOUTS } from '../src/native/data-buffer.mjs';
+import { NATIVE_DATA_BUFFER_LAYOUTS } from '../oracle/data-buffer.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   dataBufferCases,

@@ -19,7 +19,13 @@ import { nativeMotion } from './motion.mjs';
 import { NativeSceneData, nativeSceneData } from './scene-data.mjs';
 import { nativeCharacterNames, nativeCharacterNamesCodec } from './character-names.mjs';
 import { nativeDictionary, nativeDictionaryCodec } from './dictionary.mjs';
-import { NATIVE_DATA_BUFFER_IDS, nativeDataBuffer, nativeDataBufferCodec } from './data-buffer.mjs';
+import {
+  NativeDataBuffers,
+  NATIVE_DATA_BUFFER_IDS,
+  nativeDataBuffer,
+  nativeDataBufferCodec,
+} from './data-buffer.mjs';
+import { nativeRecordQueueCodec } from './record-queue.mjs';
 import { nativeRecordStack, nativeRecordStackCodec } from './record-stack.mjs';
 import { nativeResourceCache } from './resource-cache.mjs';
 import { NATIVE_HEAP_DATA_IDS, nativeHeapData } from './heap-data.mjs';
@@ -70,6 +76,12 @@ export class NativeRuntime {
           ? (address, machine) => encodeCP932(services.format(address, machine))
           : formatNativeAt),
     };
+    this.imageDataBuffers = new NativeDataBuffers({
+      handles: this.handles,
+      read,
+      diagnostic: services.diagnostic,
+    });
+    this.services.imageDataBuffers = () => this.imageDataBuffers;
     this.scheduler = new KCSScheduler({
       shared,
       budget,
@@ -118,6 +130,7 @@ export class NativeRuntime {
     handles.registerType('dictionary', nativeDictionaryCodec);
     handles.registerType('image-data', nativeDataBufferCodec);
     handles.registerType('record-stack', nativeRecordStackCodec);
+    handles.registerType('record-queue', nativeRecordQueueCodec);
     handles.registerType('history-cursor', nativeHistoryCursorCodec);
     handles.registerType('gallery-table', nativeGalleryTableCodec);
     handles.registerType('global-file', {
@@ -315,6 +328,7 @@ export class NativeRuntime {
     return {
       profile: this.profile,
       handles: this.handles.snapshot(),
+      imageDataBuffers: this.imageDataBuffers.snapshot(),
       scheduler: this.scheduler.snapshot(),
     };
   }
@@ -322,11 +336,14 @@ export class NativeRuntime {
     if (state.profile !== this.profile)
       throw new Error('Native checkpoint ABI profile does not match');
     const previous = { records: this.handles.records, next: this.handles.next };
-    this.handles.restore(state.handles);
+    const previousBuffers = this.imageDataBuffers.snapshot();
     try {
+      this.imageDataBuffers.restore(state.imageDataBuffers);
+      this.handles.restore(state.handles);
       await this.scheduler.restore(state.scheduler);
     } catch (error) {
       Object.assign(this.handles, previous);
+      this.imageDataBuffers.restore(previousBuffers);
       throw error;
     }
   }

@@ -60,7 +60,7 @@ import { NativeScriptReplacementsBridge } from './script-replacements-bridge.mjs
 import { NativeRandomMemory } from './random-memory.mjs';
 import { NativeFESSoundConfiguration } from './fes-sound-config.mjs';
 import { installNativeM2 } from './emote.mjs';
-import { NativeDataBuffers } from './data-buffer.mjs';
+import { createNativeDataProjection } from './data-buffer-projection.mjs';
 import { NativeInputDevice } from './input-device.mjs';
 import { NativeResourceCache } from './resource-cache.mjs';
 import { installNativeMovies } from './movie.mjs';
@@ -316,14 +316,13 @@ export class NativeWorld {
       library: motionLibrary,
     });
     this.runtime.services.world = this;
-    this.registerNativeFeature(
-      'data-buffers',
-      (engine) =>
-        new NativeDataBuffers(engine, {
-          handles: this.runtime.handles,
-          read: this.runtime.read,
-          diagnostic: (detail) => this.host.nativeDiagnostic?.(detail),
-        }),
+    this.registerNativeFeature('data-buffers', (engine) =>
+      createNativeDataProjection(engine, {
+        source: this.runtime.imageDataBuffers,
+        handles: this.runtime.handles,
+        read: this.runtime.read,
+        diagnostic: (detail) => this.host.nativeDiagnostic?.(detail),
+      }),
     );
     this.runtime.services.dataBuffers = async () =>
       (await this.getNativeFeature('data-buffers')).attachServices({
@@ -375,6 +374,15 @@ export class NativeWorld {
     this.objects.register(12, (record) => this.script(record));
     this.objects.register(34, (record) => this.fes(record));
     installNativeGraphics(this);
+    this.runtime.services.importImageFrame = (frame, owner) => {
+      const images = this.graphics.images,
+        handle = images.create(frame.width, frame.height, owner),
+        bitmap = images.get(handle);
+      for (const name of ['canvasWidth', 'canvasHeight', 'offsetX', 'offsetY', 'baseX', 'baseY'])
+        bitmap.state[name] = frame[name] ?? 0;
+      bitmap.state.rgba = new Uint8ClampedArray(frame.rgba);
+      return handle;
+    };
     this.runtime.services.importNativeBitmap = (pointer, owner, options) =>
       this.graphics.images.importNative(pointer, owner, options);
     this.runtime.services.view = this.graphics.view;

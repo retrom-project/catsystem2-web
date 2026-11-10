@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
-import { NativeDataBuffers } from '../../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeImageOwners, nativeImageOwnerCodec } from '../../src/native/image-owner.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';

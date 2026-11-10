@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';

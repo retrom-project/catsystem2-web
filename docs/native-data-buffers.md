@@ -1,9 +1,16 @@
 # Native image-data resources
 
-`NativeDataBuffers` owns raw image files in the shared original-engine process.
-These resources differ from decoded bitmaps. KCS opaque handles use the
-`image-data` type and store a guest pointer, owner and source name; they do not
-store another copy of the bytes or reference counts.
+`NativeRuntime.imageDataBuffers` owns image-data bytes, descriptors and sharing
+in JS memory. The six GCALLs load through the JS resource layer, parse image
+metadata and decode HG/JPEG through the existing JS image readers. A fresh
+runtime restores the buffer store once and reconnects its opaque handles.
+
+The explicitly injected EXE backend supplies `oracle/data-buffer-projection.mjs`
+for remaining image, FES and font consumers. It creates independent read-only
+PE snapshots. JS-to-font transfer consumes a JS reference explicitly, while
+external consumers manage their projection references. PE references and bytes
+never become the script buffer's authority. The projection registry in
+`b-migration.json` records fields, consumer domains and removal phases.
 
 | Main ID | Contract                                                            | Control                     |
 | ------- | ------------------------------------------------------------------- | --------------------------- |
@@ -19,49 +26,24 @@ the mounted engine. The host supplies resource I/O, KCS formatting, Windows
 services and the bitmap import boundary. This avoids replacing format-specific
 metadata with inferred fields. An unsupported host boundary remains an error.
 
-## Ownership
+## JS ownership and original ABI evidence
 
-The 20-byte descriptor contains five DWORDs:
+Image-data handles retain a descriptor identity in the JS buffer store. Alias
+handles share its bytes and reference count. Releasing the last reference removes
+the descriptor and its owned payload. File loading preserves the original
+size/read sequence and short-read failure. Snapshot restoration preserves alias
+identity, with independent bytes in a newly constructed World.
 
-| Offset | Meaning                                                       |
-| ------ | ------------------------------------------------------------- |
-| 0      | Data pointer                                                  |
-| 4      | Size                                                          |
-| 8      | Capacity                                                      |
-| 12     | Descriptor reference count                                    |
-| 16     | Borrowed-data flag; any nonzero value suppresses data release |
+The original ABI uses a 20-byte descriptor and an independent payload reference
+word. `oracle/data-buffer.mjs` and the original verification scripts retain that
+layout for differential evidence. The transition projection retains one PE
+reference while JS owns a source, and lends separate references to consumers.
+Fonts consume the supplied script reference. FES retains its canonical source
+before assigning a font, so replacement of the font preserves the source cache.
 
-Owned data has a separate hidden reference count in the DWORD immediately
-before the data pointer. A new allocation initializes both counts to one.
-Releasing the descriptor decrements its count using signed 32-bit comparison.
-At zero or below it releases owned data, clears the first three words and
-frees the descriptor. The data heap helper separately decrements or frees its
-hidden allocation. Borrowed descriptors free only their descriptor.
-
-The hidden allocation belongs to the original engine's Windows heap. Host
-allocation and release use that same heap registry so an original destructor
-can release a host-created buffer through `6A4B00` / SDK `575E10`, and the host
-can finish releasing a buffer after an original decrement. Merely allocating
-the same bytes in the process without heap membership would leak when the
-original `HeapFree` runs. Both profile tests exercise these mixed release paths,
-including zero-byte buffers.
-
-The recovered allocation helper discards old data and rounds the new size up
-to eight bytes. It preserves the descriptor count and does not copy old bytes.
-New data bytes and alignment padding are not promised to be zero.
-
-The modern text image-font setter consumes the supplied reference without
-retaining it. FES explicitly retains its image source before sending that
-message, leaving the FES object and font with separate references. KCS 0x26C
-does not add this retention. The shared resource service preserves that rule;
-using a handle after another owner has destroyed its resource is diagnosed.
-
-0x16D does not add its raw resource to the caller's automatic bitmap list.
-0x16C does add the decoded bitmap. Browser bitmap import takes that decoded
-wrapper's one reference on success; a failed import releases it in the caller.
-The import receives `{rowOrder: 'bottom-up'}`. Authored asymmetric images prove
-this decoder output direction in both builds; the text writer's upload buffer
-has a different origin and must not establish this decoder contract.
+0x16D returns a raw source handle. 0x16C returns a task-owned JS bitmap whose
+pixels use the existing top-down RGBA representation. The independent oracle
+lane converts the original bottom-up BGR(A) bitmap before comparing pixels.
 
 ## Output behavior and checkpoints
 
@@ -75,12 +57,17 @@ and parsing failures preserve whatever fields the original parser did not
 write. Unlike the other queries, its original wrapper does not guard a null
 translated destination before calling a format parser.
 
-The process snapshot owns descriptor, data and bitmap memory once. Resource
-feature snapshots contain only their live descriptor identities. Opaque handle
-restore points back into that same process image, preserving sharing rather
-than allocating one block per handle.
+The runtime snapshot owns the JS buffer memory once. Opaque handles retain
+identities into that store. EXE projection snapshots keep their PE allocation
+identities separately and rebuild from the canonical JS bytes after restoration.
 
 ## Evidence
+
+`tests/native-data-containers.test.mjs` exercises both ABI dispatchers with EXE
+loading forbidden. `tests/differential/native-data-containers.test.mjs` compares
+stateful operations against complete original GCALLs in both private EXEs,
+including controls, VM canaries, typed handle lifetimes, metadata and pixels.
+Missing private fixtures produce an explicit per-ABI skip.
 
 `scripts/verify-native-data-buffer.mjs` executes the original loaders, release
 wrappers, heap helpers and descriptor allocation helpers: **303 comparisons

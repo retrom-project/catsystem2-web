@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
 import { authoredHG3, authoredHG3Frames } from '../tests/fixtures/hg3.mjs';
 import { nodeGame } from './node-files.mjs';

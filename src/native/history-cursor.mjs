@@ -4,14 +4,6 @@ import { NativeSceneData, NativeSceneReader } from './scene-data.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 
 export const NATIVE_HISTORY_CURSOR_IDS = Object.freeze([0x17b, 0x17c, 0x17d, 0x17e, 0x17f, 0x180]);
-export const NATIVE_HISTORY_CURSOR_HANDLERS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze([
-    0x64f390, 0x64f100, 0x64f590, 0x64f250, 0x64f160, 0x64f1d0,
-  ]),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze([
-    0x51aa30, 0x51a860, 0x51abf0, 0x51a9b0, 0x51a8c0, 0x51a930,
-  ]),
-});
 const word = (value) => nativeReply(1, value >>> 0);
 const done = () => nativeReply(2);
 const mapped = (machine, address) => {

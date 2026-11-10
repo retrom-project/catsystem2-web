@@ -11,7 +11,7 @@ import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeEngineMessages } from '../src/native/engine-message.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { installNativeBitmapMemory } from '../src/native/bitmap-memory.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';

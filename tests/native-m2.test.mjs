@@ -7,7 +7,7 @@ import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { installNativeM2 } from '../src/native/emote.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { installNativeBitmapMemory } from '../src/native/bitmap-memory.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';

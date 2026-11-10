@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NativeRecordQueues } from '../src/native/record-queue.mjs';
+import { NativeRecordQueues } from '../oracle/record-queue.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine } from '../src/kcs.mjs';

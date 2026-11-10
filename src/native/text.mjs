@@ -2,7 +2,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
-import { NativeDataBuffers } from './data-buffer.mjs';
+import { createNativeDataProjection } from './data-buffer-projection.mjs';
 import { NativeFESTextLayout } from './fes-text-layout.mjs';
 
 export const NATIVE_TEXT_CORES = Object.freeze({
@@ -144,7 +144,7 @@ export class NativeTextRuntime {
     if (!NATIVE_TEXT_CORES[engine.profile])
       throw new Error('Native text requires a recovered engine image');
     Object.assign(this, { engine, process: engine.process });
-    this.buffers = engine.features.get('data-buffers') || new NativeDataBuffers(engine);
+    this.buffers = engine.features.get('data-buffers') || createNativeDataProjection(engine);
     this.windows =
       engine.textWindows ??
       new NativeTextWindows(engine.process, { ...options, kernel: engine.kernel });
@@ -287,6 +287,7 @@ export class NativeTextRuntime {
       // calling its image-font or category resource routines. They never
       // construct or dispatch a graphics task.
       p.store(task + 684, writer.pointer);
+      if (operation === 9 && l) this.buffers.transferPointer(l);
       await this.call(handler, [0, message, w >>> 0, l >>> 0, 0, result], task);
       return p.load(result);
     } finally {

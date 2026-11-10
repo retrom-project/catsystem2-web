@@ -9,7 +9,7 @@ import {
   NATIVE_CONFIGURATION_QUERY_LAYOUTS,
   NativeConfigurationQueries,
 } from '../src/native/configuration-query.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { readNativeStartupSoundConfiguration } from '../src/native/engine-startup-sound.mjs';

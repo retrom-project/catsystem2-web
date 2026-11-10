@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
 import { authoredHG3, authoredHG3Frames } from './fixtures/hg3.mjs';
 import { hg3 } from './helpers.mjs';

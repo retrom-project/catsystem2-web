@@ -3,7 +3,7 @@ import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeBitmapMemory } from '../../src/native/bitmap-memory.mjs';
 import { NativeImages } from '../../src/native/image.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
-import { NativeDataBuffers } from '../../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';
 import { NativeBitmapOperations } from '../../src/native/bitmap-operations.mjs';
 import { KCSMachine } from '../../src/kcs/vm.mjs';

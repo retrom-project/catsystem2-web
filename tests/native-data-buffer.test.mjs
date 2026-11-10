@@ -6,7 +6,7 @@ import {
   nativeDataBuffer,
   NativeDataBuffers,
   NATIVE_DATA_BUFFER_LAYOUTS,
-} from '../src/native/data-buffer.mjs';
+} from '../oracle/data-buffer.mjs';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import {
   dataBufferFixture,

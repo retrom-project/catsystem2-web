@@ -831,6 +831,7 @@ export default {
     },
     sceneMemory: {
       readerBytes: 304,
+      translations: null,
     },
     screenCapture: {
       recording: 132,

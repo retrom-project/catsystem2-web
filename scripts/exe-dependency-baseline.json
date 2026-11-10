@@ -1,6 +1,11 @@
 {
   "version": 1,
   "files": {
+    "oracle/data-buffer-projection.mjs": {
+      "addresses": 21,
+      "calls": 2,
+      "references": 0
+    },
     "oracle/transitional-exe.mjs": {
       "addresses": 2,
       "calls": 0,
@@ -48,11 +53,6 @@
     },
     "src/native/control-task.mjs": {
       "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/data-buffer.mjs": {
-      "addresses": 21,
       "calls": 2,
       "references": 0
     },
@@ -296,11 +296,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/history-cursor.mjs": {
-      "addresses": 12,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/image-commands.mjs": {
       "addresses": 16,
       "calls": 2,
@@ -406,16 +401,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/record-queue.mjs": {
-      "addresses": 0,
-      "calls": 1,
-      "references": 0
-    },
-    "src/native/record-stack.mjs": {
-      "addresses": 12,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/registry.mjs": {
       "addresses": 8,
       "calls": 2,
@@ -443,11 +428,6 @@
     },
     "src/native/scene-checkpoint.mjs": {
       "addresses": 8,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/scene-memory.mjs": {
-      "addresses": 15,
       "calls": 2,
       "references": 0
     },

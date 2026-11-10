@@ -1,5 +1,9 @@
 # Native scene-history windows
 
+`NativeHistoryCursor` is the runtime implementation. Its original address table
+is retained in `oracle/history-cursor-handlers.mjs`. Bounded operation-sequence
+differentials run through both ABI dispatchers and independent original wrappers.
+
 Main `0x17B..0x180` browse the existing scene-data resource's path history.
 They retain that resource's identity and allocate independent CST readers for
 the window slots. They do not copy the authoritative history or use the display

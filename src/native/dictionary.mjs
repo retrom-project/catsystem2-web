@@ -180,3 +180,5 @@ export function nativeDictionary(id, args, machine, services = {}) {
   }
   return nativeReply(2);
 }
+
+export { compare as compareNativeBytes };

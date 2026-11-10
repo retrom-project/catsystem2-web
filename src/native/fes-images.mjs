@@ -102,7 +102,7 @@ export function installNativeFESImageCaches(runtime) {
       if (!file) return 0;
       const pointer = await source(file);
       if (!pointer) return 0;
-      runtime.buffers.retainPointer(pointer);
+      runtime.buffers.lendPointer(pointer);
       p.store(out, pointer);
       return 1;
     },

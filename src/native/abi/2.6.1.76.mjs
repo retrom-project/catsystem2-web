@@ -558,6 +558,7 @@ export default {
     },
     sceneMemory: {
       readerBytes: 324,
+      translations: { owner: 304, prefixes: 308, lookup: 316 },
     },
     screenCapture: {
       recording: 164,

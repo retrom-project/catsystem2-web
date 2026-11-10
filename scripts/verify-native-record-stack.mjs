@@ -4,7 +4,7 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_RECORD_STACK_HANDLERS } from '../src/native/record-stack.mjs';
+import { NATIVE_RECORD_STACK_HANDLERS } from '../oracle/record-stack-handlers.mjs';
 import {
   recordStackSpecifications,
   recordStackOperations,

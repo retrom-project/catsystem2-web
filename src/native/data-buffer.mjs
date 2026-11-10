@@ -1,39 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 // Raw kcBuffer ownership, distinct from a decoded bitmap and its wrapper.
+import { Binary } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
+import { NativeBufferMemory } from './buffer-memory.mjs';
+import { nativeImageMetadata } from './image-buffer-info.mjs';
+import { openImage } from '../formats/hg3.mjs';
 
-export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    load: 0x64b540,
-    release: 0x64b8d0,
-    heapAllocate: 0x6a49d0,
-    heapRelease: 0x6a4b00,
-    allocate: 0x628cf0,
-    clear: 0x629da0,
-    image: 0x675690,
-    imageRelease: 0x690050,
-    imageTo32: 0x68b4f0,
-    frameInfo: 0x68f780,
-    containerInfo: 0x68f810,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    load: 0x518150,
-    release: 0x518490,
-    heapAllocate: 0x575ce0,
-    heapRelease: 0x575e10,
-    allocate: 0x500320,
-    image: 0x54c870,
-    imageRelease: 0x5668f0,
-    imageTo32: 0x562050,
-    frameInfo: 0x566150,
-    containerInfo: 0x5661e0,
-  }),
-});
 export const NATIVE_DATA_BUFFER_IDS = Object.freeze([0x16c, 0x16d, 0x16e, 0x170, 0x177, 0x1af]);
 export const nativeDataBufferCodec = Object.freeze({
-  // Guest bytes and reference counts belong to the one engine-process image.
-  // The handle contains identity only; restoring it never allocates a copy.
+  // Canonical bytes and sharing are owned once by the runtime buffer store.
   snapshot: (value) => ({ ...value }),
   restore: (value) => ({ ...value }),
 });
@@ -45,30 +20,11 @@ function length(value) {
 }
 
 export class NativeDataBuffers {
-  constructor(engine, { handles, read, diagnostic } = {}) {
-    if (!NATIVE_DATA_BUFFER_LAYOUTS[engine.profile])
-      throw new Error(`Native data buffers are unavailable in ${engine.profile}`);
-    Object.assign(this, { engine, process: engine.process, handles, read, diagnostic });
-    this.layout = NATIVE_DATA_BUFFER_LAYOUTS[engine.profile];
+  constructor({ handles, read, diagnostic, memory = new NativeBufferMemory() } = {}) {
+    this.process = memory;
     this.pointers = new Set();
-    if (engine.module) this.detachHG3Delta = installNativeHG3Delta(engine);
+    this.released = new Set();
     this.attachServices({ handles, read, diagnostic });
-    const p = this.process;
-    engine.registerWindows('USER32.dll', 'SetRectEmpty', {
-      count: 1,
-      fn: ([out]) => {
-        p.zero(out, 16);
-        return 1;
-      },
-    });
-    engine.registerWindows('USER32.dll', 'IsRectEmpty', {
-      count: 1,
-      fn: ([at]) =>
-        Number(
-          (p.load(at) | 0) >= (p.load(at + 8) | 0) || (p.load(at + 4) | 0) >= (p.load(at + 12) | 0),
-        ),
-    });
-    engine.registerFeature('data-buffers', this);
   }
   attachServices({ handles, read, diagnostic } = {}) {
     if (handles && this.handles && handles !== this.handles)
@@ -79,12 +35,6 @@ export class NativeDataBuffers {
     if (handles && !handles.codecs.has('image-data'))
       handles.registerType('image-data', nativeDataBufferCodec);
     return this;
-  }
-  call(address, args = [], pointer, messageContext) {
-    const options = { messageContext };
-    return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, options)
-      : this.engine.call(address, args, pointer, options);
   }
   owns(pointer) {
     return this.pointers.has(pointer) && this.process.allocations.get(pointer) === 20;
@@ -103,13 +53,8 @@ export class NativeDataBuffers {
     return size ? this.process.read(address, size) : new Uint8Array();
   }
   allocateData(size) {
-    const p = this.process,
-      heap = p.load(this.engine.image.heap),
-      allocation = this.engine.kernel.heapAllocate(heap, 0, length(size) + 4);
-    if (!allocation) throw new Error('Native data buffer heap allocation failed');
-    // 6A49D0 / 575CE0 return one DWORD after their heap allocation. The
-    // reference count here is independent of kcBuffer.refs at block +12.
-    p.store(allocation, 1);
+    const allocation = this.process.allocate(length(size) + 4);
+    this.process.store(allocation, 1);
     return allocation + 4;
   }
   releaseData(address) {
@@ -118,9 +63,7 @@ export class NativeDataBuffers {
       allocation = address - 4,
       references = p.load(allocation) | 0;
     if (references <= 1) {
-      const heap = p.load(this.engine.image.heap);
-      if (!this.engine.kernel.heapRelease(heap, allocation))
-        throw new Error('Native data buffer freed unknown heap storage');
+      if (!p.free(allocation)) throw new Error('Native data buffer freed unknown storage');
     } else p.store(allocation, references - 1);
   }
   createPointer(bytes) {
@@ -186,21 +129,28 @@ export class NativeDataBuffers {
     for (const offset of [0, 4, 8]) p.store(pointer + offset, 0);
     if (!p.free(pointer)) throw new Error('Native data buffer freed an unknown descriptor');
     this.pointers.delete(pointer);
+    for (const record of this.handles?.records.values() ?? [])
+      if (record.type === 'image-data' && record.value.pointer === pointer)
+        record.value.released = true;
+    for (const listener of this.released) listener(pointer);
   }
   handle(pointer, { owner = null, source = null } = {}) {
     if (!pointer) return 0;
     this.require(pointer);
     if (!this.handles) throw new Error('Native data-buffer handle service is unavailable');
-    return this.handles.add('image-data', { pointer, owner, source });
+    return this.handles.add('image-data', { pointer, owner, source, released: false });
   }
   pointer(handle) {
     if (!this.handles) throw new Error('Native data-buffer handle service is unavailable');
-    return this.require(this.handles.get(handle, 'image-data').pointer);
+    const record = this.handles.get(handle, 'image-data');
+    if (record.released) throw new Error('Invalid or released native data-buffer handle');
+    return this.require(record.pointer);
   }
   alias(handle, { owner = null } = {}) {
     const record = this.handles.get(handle, 'image-data');
-    this.retainPointer(record.pointer);
-    return this.handle(record.pointer, { owner, source: record.source });
+    const pointer = this.pointer(handle);
+    this.retainPointer(pointer);
+    return this.handle(pointer, { owner, source: record.source });
   }
   release(handle) {
     if (!handle) return;
@@ -242,44 +192,23 @@ export class NativeDataBuffers {
     { nullOutput = false } = {},
   ) {
     this.require(pointer);
-    const p = this.process,
-      output = nullOutput ? 0 : p.allocate(36, true);
-    try {
-      if (initial) {
-        if (initial.length !== 36) throw new RangeError('Native image metadata requires 36 bytes');
-        p.write(output, initial);
-      }
-      const success = await this.call(
-        container ? this.layout.containerInfo : this.layout.frameInfo,
-        container ? [pointer, output] : [pointer, output, selector >>> 0],
-      );
-      return { success: Boolean(success), bytes: output ? p.read(output, 36) : null };
-    } finally {
-      if (output) p.free(output);
-    }
+    const bytes = initial ? Uint8Array.from(initial) : new Uint8Array(36),
+      result = nativeImageMetadata(this.data(pointer), selector, container, bytes);
+    if (nullOutput && result.written)
+      throw new Error('Native image metadata dereferences a NULL destination');
+    return { success: result.success, bytes: nullOutput ? null : bytes };
   }
-  async decodePointer(pointer, selector = 0) {
+  async decode(pointer, selector = 0) {
     this.require(pointer);
-    // Returns an original refcounted bitmap wrapper, not another kcBuffer.
-    // Its consumer must release it through releaseBitmapPointer().
-    return this.call(
-      this.layout.image,
-      [pointer, selector >>> 0],
-      undefined,
-      nativeHG3DecodeContext(),
-    );
-  }
-  async decodeBitmapPointer(pointer, selector = 0) {
-    const wrapper = await this.decodePointer(pointer, selector);
-    if (!wrapper) return 0;
-    try {
-      const bitmap = this.process.load(wrapper);
-      if (this.process.load(bitmap + 24) === 3) await this.call(this.layout.imageTo32, [], bitmap);
-      return wrapper;
-    } catch (error) {
-      await this.releaseBitmapPointer(wrapper);
-      throw error;
-    }
+    const bytes = this.data(pointer);
+    if (!bytes.length) return null;
+    const format = new Binary(bytes, 'Native image data'),
+      jpeg = bytes[0] === 255 && bytes[1] === 216;
+    if (!format.magic('HG-2') && !format.magic('HG-3') && !jpeg) return null;
+    const image = await openImage(bytes),
+      frame = image.frame(jpeg ? 0 : selector >>> 0);
+    if (!frame) return null;
+    return image.decode(frame);
   }
   async fileMetadata(name, initial = null, options = {}) {
     if (typeof this.read !== 'function')
@@ -296,18 +225,13 @@ export class NativeDataBuffers {
       this.releasePointer(pointer);
     }
   }
-  releaseBitmapPointer(pointer) {
-    if (pointer) return this.call(this.layout.imageRelease, [], pointer);
-  }
   snapshot() {
-    return { pointers: [...this.pointers].filter((pointer) => this.owns(pointer)) };
+    return { pointers: [...this.pointers], memory: this.process.snapshot() };
   }
   restore(state) {
+    this.process.restore(state.memory);
     this.pointers = new Set(state.pointers);
     for (const pointer of this.pointers) this.require(pointer);
-  }
-  close() {
-    this.detachHG3Delta?.();
   }
 }
 
@@ -323,8 +247,8 @@ export async function nativeDataBuffer(id, args, machine, services = {}) {
   ]).get(id);
   if (args.length !== count)
     throw new Error(`Native data buffer 0x${id.toString(16)} expects ${count} arguments`);
-  if (!services.dataBuffers) return undefined;
-  const buffers = await services.dataBuffers();
+  if (!services.imageDataBuffers) return undefined;
+  const buffers = await services.imageDataBuffers();
   if (id === 0x16d || id === 0x177) {
     if (typeof services.format !== 'function') return undefined;
     const name = services.format(args[0], machine);
@@ -344,19 +268,11 @@ export async function nativeDataBuffer(id, args, machine, services = {}) {
   }
   if (id === 0x16c) {
     if (!args[0]) return nativeReply(1, 0);
-    if (typeof services.importNativeBitmap !== 'function') return undefined;
-    const pointer = await buffers.decodeBitmapPointer(buffers.pointer(args[0]), args[1]);
-    if (!pointer) return nativeReply(1, 0);
-    try {
-      return nativeReply(
-        1,
-        await services.importNativeBitmap(pointer, services.owner, { rowOrder: 'bottom-up' }),
-      );
-    } catch (error) {
-      await buffers.releaseBitmapPointer(pointer);
-      throw error;
-    }
+    if (typeof services.importImageFrame !== 'function') return undefined;
+    const frame = await buffers.decode(buffers.pointer(args[0]), args[1]);
+    return nativeReply(1, frame ? await services.importImageFrame(frame, services.owner) : 0);
   }
+
   if (id === 0x170 || id === 0x1af) {
     const address = args[id === 0x170 ? 2 : 1];
     // 8772A0 returns NULL for unmapped VM pointers, but VM address zero itself

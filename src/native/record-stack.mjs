@@ -3,14 +3,6 @@
 import { nativeReply } from '../kcs/vm.mjs';
 
 export const NATIVE_RECORD_STACK_IDS = Object.freeze([0x35f, 0x360, 0x361, 0x362, 0x363, 0x364]);
-export const NATIVE_RECORD_STACK_HANDLERS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze([
-    0x645020, 0x645070, 0x645130, 0x6450d0, 0x6450a0, 0x644f90,
-  ]),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze([
-    0x52a2c0, 0x52a310, 0x52a3d0, 0x52a370, 0x52a340, 0x52a230,
-  ]),
-});
 const bytesFor = (size, capacity) => {
   const bytes = Math.imul(size, capacity) >>> 0;
   if (bytes > 0x10000000)

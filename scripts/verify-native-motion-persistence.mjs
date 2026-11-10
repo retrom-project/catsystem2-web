@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { nativeMotionPersistence } from '../src/native/motion-persistence.mjs';

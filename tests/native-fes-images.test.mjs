@@ -13,7 +13,7 @@ import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { CGRegistry } from '../src/gallery.mjs';
 import { hg3, memoryGame, kcsProgram } from './helpers.mjs';

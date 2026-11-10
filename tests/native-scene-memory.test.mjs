@@ -5,7 +5,6 @@ import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeSceneHistory } from '../src/native/scene-data.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -29,7 +28,7 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
   test(
-    `${profile} Script175 exposes distinct original reader/history objects backed by live scene data`,
+    `${profile} Script175 exposes read-only reader/history projections of JS scene data`,
     { skip: !process.env[variable] },
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable])),
@@ -115,23 +114,23 @@ for (const [profile, variable] of [
           }
           assert.equal(m.string(256), 'T');
         }
-        const replacement = new NativeSceneHistory();
-        replacement.markSeen('native change', 7);
-        replacement.appendPath('native change', 9);
-        const a = replacement.encode('seen', true),
-          b = replacement.encode('path', true),
-          ap = p.allocate(a.length, true),
-          bp = p.allocate(b.length, true);
-        p.write(ap, a);
-        p.write(bp, b);
-        await world.nativeEngine.call(
-          profile.startsWith('sdk-') ? 0x5dc610 : 0x72d680,
-          [ap, a.length, bp, b.length],
-          history,
-        );
-        assert.equal(data.history.seenValue('native change'), 7);
-        assert.equal(data.history.pathAt(0).scene, 'native change');
-        [pair, args, out, ap, bp].forEach((at) => p.free(at));
+        data.history.setString(0, 2, 3, Uint8Array.of(65, 66, 0));
+        data.history.path[0].extra = Uint8Array.of(7, 8, 9);
+        await world.sendEngine(task.id, task.id, 175, 128, 132);
+        const counts = p.allocate(8, true),
+          exportHistory = profile.startsWith('sdk-') ? 0x5dc410 : 0x72d480;
+        await world.nativeEngine.call(exportHistory, [0, counts, 0, counts + 4, 1], history);
+        const a = p.allocate(p.load(counts), true),
+          b = p.allocate(p.load(counts + 4), true);
+        await world.nativeEngine.call(exportHistory, [a, counts, b, counts + 4, 1], history);
+        assert.deepEqual(p.read(a, p.load(counts)), data.history.encode('seen', true));
+        assert.deepEqual(p.read(b, p.load(counts + 4)), data.history.encode('path', true));
+        // A foreign byte change cannot become canonical scene state.
+        p.store(reader + 32, 17);
+        assert.equal(data.reader.block, 0);
+        await world.sendEngine(task.id, task.id, 175, 128, 132);
+        assert.equal(p.load(reader + 32), 0);
+        [pair, args, out, counts, a, b].forEach((at) => p.free(at));
         const snapshot = structuredClone(world.snapshot());
         fresh = make();
         fresh.nativeEngine = await NativeEngineProcess.open({
@@ -144,7 +143,7 @@ for (const [profile, variable] of [
         const ft = fresh.main;
         await fresh.sendEngine(ft.id, ft.id, 175, 128, 132);
         assert.deepEqual([ft.machine.load(128), ft.machine.load(132)], [reader, history]);
-        assert.equal(fresh.runtime.sceneData(ft).history.pathAt(0).scene, 'native change');
+        assert.equal(fresh.runtime.sceneData(ft).history.pathAt(0).scene, 'authored');
         const handle = ft.context.sceneData;
         await fresh.objects.release(ft.id);
         assert.equal(fresh.nativeEngine.refs.scenes.has(handle), false);

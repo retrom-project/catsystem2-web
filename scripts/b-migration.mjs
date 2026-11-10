@@ -92,8 +92,8 @@ const domains = {
 };
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
-  4: 'bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game',
-  5: 'bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
+  4: 'buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game',
+  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
@@ -131,7 +131,7 @@ const originalWrappers = new Set(
     'database content-databases section-table nametable bitmap-factory ' +
     'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'configuration-query input-commands registry image-file image-composite render-sources ' +
-    'record-queue tile-game script-xml task-dump tile-plane-command ' +
+    'tile-game script-xml task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
     'text-legacy text-log version-query storage sdk-javascript-task emote'
   ).split(' '),
@@ -140,7 +140,6 @@ const reviewedRegions = new Map([
   ['text-plain', ['text']],
   ['gallery-tables', ['data-buffers', 'engine-files']],
   ['scene-checkpoint', ['scene-checkpoints', 'engine-files']],
-  ['data-buffer', ['data-buffers']],
 ]);
 const messageModules = new Set(
   'task task-command fes graphics draw-task mesh image input input-control text-task movie sound particles script-task'.split(
@@ -354,11 +353,7 @@ function classify(file, id, callback, features, modules) {
   names = unique(names);
   const reasons = [];
   let implementation;
-  if (
-    (name === 'storage' && id !== 0x237) ||
-    name === 'heap-data' ||
-    (name === 'data-buffer' && [0x16d, 0x16e].includes(id))
-  ) {
+  if ((name === 'storage' && id !== 0x237) || name === 'heap-data') {
     implementation = 'pure-js';
     if (name !== 'storage') {
       names = unique([...names, 'data-buffers']);
@@ -712,6 +707,49 @@ const nonNativeGroups = [
     ],
   },
   {
+    name: 'js-image-data-to-exe-consumers',
+    domain: 5,
+    entry:
+      'JS image-data bytes → independent PE descriptor snapshots for original image/font consumers; GCALL load/metadata/decode use JS',
+    modules: ['data-buffer-projection'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeRuntime.imageDataBuffers',
+      fields: ['immutable source bytes', 'size', 'capacity'],
+      consumers: [
+        { domain: 5, modules: ['image', 'text'] },
+        { domain: 7, modules: ['fes-images', 'fes-objects'] },
+      ],
+      lifetime:
+        'PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly',
+      removePhase: 7,
+      operations: ['projectPointer', 'lendPointer', 'transferPointer'],
+    },
+  },
+  {
+    name: 'js-scene-to-exe-reader-history',
+    domain: 8,
+    entry:
+      'Script175 exposes write-only PE projections of the JS reader and history; no EXE constructor/parser/import/export and no afterCall back-read',
+    modules: ['scene-memory'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeSceneData/NativeSceneReader/NativeSceneHistory',
+      fields: [
+        'body and section offsets',
+        'file value/name',
+        'block/line',
+        'language strings and CSTL rows',
+        'seen/path records',
+        'numbered strings',
+        'checkpoint extra bytes',
+      ],
+      consumers: [{ domain: 8, modules: ['script-task', 'task-memory'] }],
+      removePhase: 8,
+      operations: ['pointers', 'beforeCall'],
+    },
+  },
+  {
     name: 'js-view-to-exe-renderer-projection',
     domain: 6,
     entry:
@@ -1004,6 +1042,7 @@ async function build() {
     return {
       name: group.name,
       domain: group.domain,
+      ...(group.projection ? { projection: group.projection } : {}),
       entry: group.entry,
       modules: selected.map(({ file }) => file),
       executionSites: selected.flatMap(({ file, executionSites }) =>

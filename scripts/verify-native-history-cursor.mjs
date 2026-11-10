@@ -7,14 +7,13 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
-import {
-  NATIVE_HISTORY_CURSOR_HANDLERS,
-  nativeHistoryCursor,
-} from '../src/native/history-cursor.mjs';
+import { nativeHistoryCursor } from '../src/native/history-cursor.mjs';
 import {
   historyCursorFixture,
   historyCursorScenarios,
 } from '../tests/fixtures/history-cursor-fixture.mjs';
+
+import { NATIVE_HISTORY_CURSOR_HANDLERS } from '../oracle/history-cursor-handlers.mjs';
 
 const [filename, output] = process.argv.slice(2);
 if (!output)

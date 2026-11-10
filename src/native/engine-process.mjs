@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original EXE backend, reached only through an explicitly injected host.
+import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-buffer-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
 import { loadUnicorn } from '../ppi/backend.mjs';
@@ -90,6 +91,10 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
   }),
 });
 export class NativeEngineProcess {
+  createDataBufferProjection(options) {
+    return new NativeBufferProjection(this, options);
+  }
+
   static async open({ game, profile, bytes, name, ...options }) {
     const image = NATIVE_ENGINE_IMAGES[profile];
     if (!image) throw new Error(`No reviewed native engine region profile ${profile}`);

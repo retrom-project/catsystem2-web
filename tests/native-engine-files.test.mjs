@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeEngineFiles, NATIVE_MEMORY_FILE_LAYOUTS } from '../src/native/engine-files.mjs';
-import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { memoryGame, kif, kcsProgram } from './helpers.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
