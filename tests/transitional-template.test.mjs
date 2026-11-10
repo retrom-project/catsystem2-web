@@ -18,7 +18,7 @@ test('only the explicit mixed host selects the temporary M2 heap capacity', asyn
       const engine = await transitionalExe.open({ profile: abi.profile });
       assert.equal(
         engine.options.heapSize,
-        abi.plugins.emoteDriver === 'native' ? 512 * 1024 * 1024 : 256 * 1024 * 1024,
+        abi.plugins.emoteDriver === 'native' ? 384 * 1024 * 1024 : 256 * 1024 * 1024,
       );
       assert.equal(engine.transitionalExe, transitionalExe);
       const overridden = await transitionalExe.open({ profile: abi.profile, heapSize: 65536 });

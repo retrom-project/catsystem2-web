@@ -6,7 +6,7 @@ import { CHECKPOINT_LIMIT, checkpointBytes } from '../src/checkpoint.mjs';
 // x86 backend in phase 10. JS-owned media allocations have separate ownership.
 export const TRANSITIONAL_HEAP_POLICY = Object.freeze({
   defaultBytes: 256 * 1024 * 1024,
-  nativeEmoteBytes: 512 * 1024 * 1024,
+  nativeEmoteBytes: 384 * 1024 * 1024,
   nativeEmoteCheckpointBytes: 768 * 1024 * 1024,
   removeInPhase: 10,
   consumersRemovedInPhases: Object.freeze([6, 9]),

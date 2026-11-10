@@ -1011,7 +1011,7 @@ storage and model allocation peaks remain consumers owned by domains 6 and 9.
 ## Temporary x86 heap capacity
 
 The explicit mixed entry selects `oracle/transitional-heap.mjs` by the ABI's
-`emoteDriver` capability. Native M2 uses 512 MiB. Other hosts retain 256 MiB and
+`emoteDriver` capability. Native M2 uses 384 MiB. Other hosts retain 256 MiB and
 an explicit host `heapSize` still takes precedence. This capacity belongs to the
 original x86 transition and is deleted with that backend in phase 10.
 

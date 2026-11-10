@@ -55496,7 +55496,7 @@
     },
     {
       "file": "oracle/transitional-heap.mjs",
-      "sourceSha256": "0b8921b7747c8e4fdd00f50bb2e02c34e67ba2e2e65cdf9dfd9bc52f43504c44",
+      "sourceSha256": "bdb860d02d681b55d0d71dd3551334d83e53fcfcfd270d560c9582b4b26251d0",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56003,7 +56003,7 @@
       "domain": 9,
       "configuration": {
         "defaultBytes": 268435456,
-        "nativeEmoteBytes": 536870912,
+        "nativeEmoteBytes": 402653184,
         "nativeEmoteCheckpointBytes": 805306368,
         "removeInPhase": 10,
         "consumersRemovedInPhases": [6, 9]
