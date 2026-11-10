@@ -968,6 +968,9 @@ object. The inventory records this separate lifetime and phase 8 removal.
 
 ## Completed image and text boundary
 
+The [phase 5 summary](b-phase5-summary.md) records commits, acceptance timings,
+consumer projections and remaining transition limits.
+
 Domain 5 has 223 independently traced JS main slots across the two ABIs.
 Original-handler, exe-region, unknown and native needs-review counts are zero.
 The 30 starting unknown implementation slots have per-entry decisions in
