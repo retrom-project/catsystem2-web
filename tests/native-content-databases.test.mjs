@@ -193,7 +193,7 @@ for (const [profile, variable] of [
             mission: await serialized(first, 0x337, one.mission),
           },
           feature = await first.getNativeFeature('content-databases'),
-          pointers = [one.question, one.mission].map((h) => feature.pointer(h));
+          pointers = [one.mission].map((h) => feature.pointer(h));
         const save = (await call(first, 0xee, [17])).value;
         for (const [entry, exportID, handle] of [
           [10, 0x2ff, one.question],
@@ -212,7 +212,7 @@ for (const [profile, variable] of [
         await restored.restore(structuredClone(first.snapshot()));
         const restoredFeature = await restored.getNativeFeature('content-databases');
         assert.deepEqual(
-          [one.question, one.mission].map((h) => restoredFeature.pointer(h)),
+          [one.mission].map((h) => restoredFeature.pointer(h)),
           pointers,
         );
         assert.deepEqual(await serialized(restored, 0x2ff, one.question), state.question);

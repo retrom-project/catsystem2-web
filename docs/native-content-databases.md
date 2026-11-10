@@ -5,8 +5,8 @@ exposing **85 interfaces**. Slots `311..316` are unrelated log, math, view,
 movie and configuration functions; they are not operations on the 620-byte
 object at the start of the range.
 
-Selection and general KCDB operations now own JS data. Question and mission
-operations retain their original paths until the following phase 4.3 commits.
+Question, selection and general KCDB operations now own JS data. Mission
+operations retain their original path until the following phase 4.3 commit.
 Names whose business meaning remains unassigned retain their native ID. The
 installers are composed in [content-databases.mjs](../src/native/content-databases.mjs).
 
@@ -132,3 +132,21 @@ the actual native table, including nulls, duplicate names, missing fields,
 consumed flags, out-of-range queries and VM canaries. The full original facade
 is preserved in `oracle/content-databases.mjs`. Pure JS World tests cover fresh
 restore and independent release. Authored compiled fixtures import no EXE loader.
+
+## Phase 4.3 question migration
+
+The question tree, active pool, configurations, member flags, extra genre lists
+and five progress words per row are JS-owned. Resource keys preserve the original
+CP932-aware uppercase basename and tree insertion order. Configuration options
+use byte-space tokens, including literal quote bytes. Loading a configuration
+and rebuilding its pool remain separate operations. Missing genre filters select
+all rows. The observed `307` query reports a nonempty partner set, and `308`
+returns the selected question ID while copying its database key.
+
+Record ordering preserves the recovered insertion/partition/heap behavior,
+including observable ties beyond 32 rows. Selection consumes the same canonical
+integer MT stream as main `21`. The differential harness compares both complete
+RNG states after each operation. Both ABI sequences exercise all 37 operations,
+repeat draws, counters, raw output padding, import, genre ranges, nulls, empty
+pools and 45-row ordering. Pure JS fresh restore retains independent counters.
+The implementation lives in [question-table.mjs](../src/native/question-table.mjs).

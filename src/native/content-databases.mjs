@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-// Question and mission oracle paths during their staged migration.
-// Selection and compiled-table handles already own JS models.
+// Mission oracle paths during the staged content-data migration.
+// Question, selection and compiled-table handles own JS models.
+import { NativeQuestionTable, installNativeQuestionTables } from './question-table.mjs';
 import { NativeSelectionTable, installNativeSelectionTables } from './selection-table.mjs';
 import { NativeCompiledTable, installNativeCompiledTables } from './compiled-table.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
@@ -8,47 +9,9 @@ import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_CONTENT_DATABASE_FAMILIES = Object.freeze({
-  question: { bytes: 620, create: 0x2e6, release: 0x2e7, destroy: [0x796b00, 0x62f020] },
   mission: { bytes: 20, create: 0x31b, release: 0x31c, destroy: [0x79a110, 0x632ae0] },
 });
 const rows = [
-  [742, 'question', 0, 1, 6549248, 5374720],
-  [743, 'question', 1, 2, 6549360, 5374784],
-  [744, 'question', 2, 1, 6550896, 5376320],
-  [745, 'question', 1, 1, 6550016, 5375440],
-  [746, 'question', 3, 1, 6550400, 5375824],
-  [747, 'question', 2, 1, 6550336, 5375760],
-  [748, 'question', 4, 1, 6549440, 5374864],
-  [749, 'question', 2, 2, 6550800, 5376224],
-  [750, 'question', 2, 1, 6551136, 5376560],
-  [751, 'question', 2, 1, 6554016, 5379360],
-  [752, 'question', 1, 1, 6549744, 5375168],
-  [753, 'question', 1, 1, 6550064, 5375488],
-  [754, 'question', 2, 1, 6549536, 5374960],
-  [755, 'question', 1, 1, 6550528, 5375952],
-  [756, 'question', 1, 1, 6550480, 5375904],
-  [757, 'question', 2, 2, 6550576, 5376000],
-  [758, 'question', 3, 1, 6550656, 5376080],
-  [759, 'question', 2, 1, 6550112, 5375536],
-  [760, 'question', 1, 1, 6549632, 5375056],
-  [761, 'question', 1, 1, 6549872, 5375296],
-  [762, 'question', 1, 1, 6549920, 5375344],
-  [763, 'question', 5, 2, 6550224, 5375648],
-  [764, 'question', 1, 2, 6549136, 5374656],
-  [765, 'question', 1, 1, 6549968, 5375392],
-  [766, 'question', 2, 2, 6550752, 5376176],
-  [767, 'question', 2, 1, 6553952, 5379296],
-  [768, 'question', 2, 1, 6551072, 5376496],
-  [769, 'question', 1, 2, 6549200, 5379248],
-  [770, 'question', 1, 2, 6549200, 5379248],
-  [771, 'question', 2, 1, 6550160, 5375584],
-  [772, 'question', 2, 1, 6549680, 5375104],
-  [773, 'question', 1, 2, 6553920, 5379216],
-  [774, 'question', 2, 2, 6549408, 5374832],
-  [775, 'question', 1, 1, 6550848, 5376272],
-  [776, 'question', 3, 1, 6549792, 5375216],
-  [777, 'question', 3, 2, 6554096, 5379440],
-  [778, 'question', 1, 2, 6549168, 5374688],
   [795, 'mission', 1, 1, 6553056, 5378432],
   [796, 'mission', 1, 2, 6552048, 5377424],
   [797, 'mission', 2, 2, 6553856, 5379152],
@@ -100,10 +63,11 @@ export const nativeContentDatabaseCodec = Object.freeze({
     value.state
       ? {
           family: value.family,
-          data: (value.family === 'selection'
-            ? new NativeSelectionTable()
-            : new NativeCompiledTable()
-          ).restore(value.state),
+          data: new {
+            question: NativeQuestionTable,
+            selection: NativeSelectionTable,
+            compiledTable: NativeCompiledTable,
+          }[value.family]().restore(value.state),
         }
       : { ...value },
 });
@@ -234,6 +198,7 @@ export function installNativeContentDatabases(world) {
     await world.getNativeFeature('engine-files');
     return new NativeContentDatabases(engine, world);
   });
+  installNativeQuestionTables(world);
   installNativeSelectionTables(world);
   installNativeCompiledTables(world);
   for (const id of NATIVE_CONTENT_DATABASE_IDS)

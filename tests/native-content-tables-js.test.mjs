@@ -20,8 +20,17 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         await call(first, 0x33d, [h, 1]);
         first.main.machine.writeString('questions', 64);
         const table = (await call(first, 0x317, [64])).value;
+        const question = (await call(first, 0x2e6)).value;
+        first.main.machine.writeString('questions', 64);
+        await call(first, 0x2e8, [question, 64]);
+        await call(first, 0x2fc, [question]);
         fresh = await dataWorld(profile, {}, { initialize: false });
         await fresh.restore(structuredClone(first.snapshot()));
+        await call(fresh, 0x2ed, [question, 0]);
+        assert.equal((await call(fresh, 0x303, [question, 0])).value, 1);
+        assert.equal((await call(first, 0x303, [question, 0])).value, 0);
+        assert.equal((await call(fresh, 0x2ea, [question, 0, 768])).value, 1);
+        assert.equal(fresh.main.machine.string(768), 'Another question?');
         fresh.main.machine.writeString('ID', 64);
         assert.equal((await call(fresh, 0x319, [table, 64, 0])).value, 11);
         await call(fresh, 0x33f, [h, 0]);
