@@ -9,10 +9,14 @@ import {
 } from '../src/native/engine-process.mjs';
 import { invokeRegion, syncViewGeometry } from '../oracle/transitional-exe.mjs';
 import { parsePE32 } from '../src/ppi/pe32.mjs';
+import { transitionalHeapSize } from '../oracle/transitional-heap.mjs';
 
 export const transitionalExe = Object.freeze({
   async open(options) {
-    const engine = await NativeEngineProcess.open(options);
+    const engine = await NativeEngineProcess.open({
+      ...options,
+      heapSize: options.heapSize ?? transitionalHeapSize(options.profile),
+    });
     engine.transitionalExe = transitionalExe;
     return engine;
   },

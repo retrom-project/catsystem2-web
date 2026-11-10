@@ -3,6 +3,7 @@
     "web/app.mjs",
     "web/transitional-entry.mjs",
     "oracle/transitional-exe.mjs",
+    "oracle/transitional-heap.mjs",
     "oracle/data-buffer-projection.mjs",
     "oracle/bitmap-memory.mjs",
     "oracle/bitmap-projection.mjs",

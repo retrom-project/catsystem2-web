@@ -1007,3 +1007,18 @@ interface is cleared; unrelated faults still propagate. This follows the
 Successful script progress alone does not establish that every M2 model loaded:
 the original driver can also recover from a null `HeapAlloc` result. Guest texture
 storage and model allocation peaks remain consumers owned by domains 6 and 9.
+
+## Temporary x86 heap capacity
+
+The explicit mixed entry selects `oracle/transitional-heap.mjs` by the ABI's
+`emoteDriver` capability. Native M2 uses 512 MiB. Other hosts retain 256 MiB and
+an explicit host `heapSize` still takes precedence. This capacity belongs to the
+original x86 transition and is deleted with that backend in phase 10.
+
+The phase 5 NEKOPARA route frame577, game frame1061 and particle frame1113
+failures share guest-heap exhaustion in original M2 native `0x38a`. Original
+D3D textures and model data occupy that heap. Their consumers are removed in
+phases 6 and 9. Earlier 256/320 MiB runs exhausted it. Live allocation bytes,
+allocation counts and released capacity must be measured separately from the
+configured reserve to detect persistent JS-side growth. The migration board
+registers this exception under `temporary-x86-heap-capacity`.

@@ -3,6 +3,7 @@
 // run here. No engine, DLL, resource, task or browser is opened.
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { nativeTestGroups } from './test-native.mjs';
+import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
 import { NATIVE_IMAGE_OWNER_JS_IDS } from '../src/native/image-owner.mjs';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
@@ -603,6 +604,16 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 }
 
 const nonNativeGroups = [
+  {
+    name: 'temporary-x86-heap-capacity',
+    domain: 9,
+    entry: 'Explicit transitionalExe.open selects capacity from the ABI emoteDriver capability',
+    modules: ['transitional-heap'],
+    configuration: TRANSITIONAL_HEAP_POLICY,
+    review: 'counted',
+    reason:
+      'Original M2 native 0x38a retains D3D textures and model data in the guest heap. Temporary x86-only capacity, deleted in phase 10. Texture/model consumers are removed in phases 6 and 9. Live heap measurements remain separate from JS ownership checks.',
+  },
   {
     name: 'process-bootstrap',
     domain: 8,
@@ -1295,13 +1306,15 @@ async function build() {
       name: group.name,
       domain: group.domain,
       ...(group.projection ? { projection: group.projection } : {}),
+      ...(group.configuration ? { configuration: group.configuration } : {}),
       entry: group.entry,
       modules: selected.map(({ file }) => file),
       executionSites: selected.flatMap(({ file, executionSites }) =>
         executionSites.map((site) => ({ file, ...site })),
       ),
-      review: 'needs-review',
+      review: group.review ?? 'needs-review',
       reason:
+        group.reason ??
         '生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。',
     };
   });

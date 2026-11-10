@@ -2901,7 +2901,7 @@
       {
         "kind": "exe-layout",
         "file": "web/transitional-entry.mjs",
-        "line": 22,
+        "line": 26,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -3008,12 +3008,12 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 491,
-    "runtimeFiles": 370,
-    "fileDomains": { "3": 32, "4": 48, "5": 42, "6": 44, "7": 27, "8": 148, "9": 29 },
+    "runtimeFiles": 371,
+    "fileDomains": { "3": 32, "4": 48, "5": 42, "6": 44, "7": 27, "8": 149, "9": 29 },
     "fileNeedsReview": 125,
     "exeDependencyFiles": 100,
     "exeDependencies": { "addresses": 1399, "calls": 136, "references": 6 },
-    "nonNativeGroups": 25,
+    "nonNativeGroups": 26,
     "executionSites": 454
   },
   "profiles": [
@@ -55467,7 +55467,7 @@
     },
     {
       "file": "web/transitional-entry.mjs",
-      "sourceSha256": "c228f582bd447849935b8349600ad31d01949b954f174f3bd280799bf8208362",
+      "sourceSha256": "4296fc92bec407a6d490a6ad5151c509331b3ff48786ef2453b5750733e7e1dd",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 4 },
@@ -55486,6 +55486,19 @@
       "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
       "dependencyTypes": ["in-image-literals", "profile-memory-layout"],
       "docs": ["docs/native-view-geometry.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "oracle/transitional-heap.mjs",
+      "sourceSha256": "6191fa8e0d619385eae3d4fe4220d2aa1b3938c61ecd980e1e7e9e95bb8b7631",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -55982,6 +55995,21 @@
     }
   ],
   "nonNativeEntries": [
+    {
+      "name": "temporary-x86-heap-capacity",
+      "domain": 9,
+      "configuration": {
+        "defaultBytes": 268435456,
+        "nativeEmoteBytes": 536870912,
+        "removeInPhase": 10,
+        "consumersRemovedInPhases": [6, 9]
+      },
+      "entry": "Explicit transitionalExe.open selects capacity from the ABI emoteDriver capability",
+      "modules": ["oracle/transitional-heap.mjs"],
+      "executionSites": [],
+      "review": "counted",
+      "reason": "Original M2 native 0x38a retains D3D textures and model data in the guest heap. Temporary x86-only capacity, deleted in phase 10. Texture/model consumers are removed in phases 6 and 9. Live heap measurements remain separate from JS ownership checks."
+    },
     {
       "name": "process-bootstrap",
       "domain": 8,

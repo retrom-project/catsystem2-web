@@ -6,6 +6,29 @@ import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
 import { invokeNative } from '../oracle/scalar-invoke.mjs';
 import { invokeRegion } from '../oracle/transitional-exe.mjs';
+import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
+import { transitionalExe } from '../web/transitional-entry.mjs';
+import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+
+test('only the explicit mixed host selects the temporary M2 heap capacity', async () => {
+  const open = NativeEngineProcess.open;
+  NativeEngineProcess.open = async (options) => ({ options });
+  try {
+    for (const abi of Object.values(NATIVE_ABIS)) {
+      const engine = await transitionalExe.open({ profile: abi.profile });
+      assert.equal(
+        engine.options.heapSize,
+        abi.plugins.emoteDriver === 'native' ? 512 * 1024 * 1024 : 256 * 1024 * 1024,
+      );
+      assert.equal(engine.transitionalExe, transitionalExe);
+      const overridden = await transitionalExe.open({ profile: abi.profile, heapSize: 65536 });
+      assert.equal(overridden.options.heapSize, 65536);
+    }
+    assert.equal(TRANSITIONAL_HEAP_POLICY.removeInPhase, 10);
+  } finally {
+    NativeEngineProcess.open = open;
+  }
+});
 
 test('scalar template dispatches semantic operations through the explicitly injected capability', async () => {
   for (const abi of Object.values(NATIVE_ABIS)) {
