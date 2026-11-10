@@ -227,7 +227,7 @@ export class JSTextWriter {
   shape(parser, record) {
     const selector = this.fontImages.get(record[1]),
       image = selector === undefined ? null : this.decodedFonts?.find((f) => f.id === selector);
-    if (selector !== undefined && !image) {
+    if (selector !== undefined && (!image || image.bpp !== 4)) {
       const space = record.slice();
       space[1] =
         nativeABI(this.runtime.profile).text.freeTypeCharacterEncoding === 'cp932'
@@ -356,6 +356,7 @@ export class JSTextWriter {
           await image.decode(frame);
           this.decodedFonts.push({
             id: frame.id,
+            bpp: frame.bpp / 8,
             width: frame.width,
             height: frame.height,
             canvasWidth: frame.canvasWidth,

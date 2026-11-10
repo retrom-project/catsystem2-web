@@ -71,7 +71,9 @@ wipe alpha are compared as stateful sequences. NV retains separate parser
 configuration per section, pending CR state and a shared writer clock.
 
 Raw image-font bytes and decoded selector pixels belong to JS. Font cells use
-the original square resampling and integer compositor. Task-8 image fonts own
+the original square resampling and integer compositor. The glyph-image path
+accepts 32-bit images; other pixel formats or a mapped cell without an image
+produce the original blank-cell fallback, while reveal still completes. Task-8 image fonts own
 a deep copy of the supplied bitmap. Character maps and all pending state are
 included in checkpoints. Main26C supplies canonical JS bytes directly; an
 initialized receiver consumes the source reference after accepting them, while

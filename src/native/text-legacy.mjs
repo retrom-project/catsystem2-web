@@ -256,11 +256,13 @@ export class NativeLegacyTextTask {
         }),
       };
       const rect = this.glyphMap.get(r[0]),
-        shape = rasterTextGlyph(parser, row, {
-          image: rect ? this.imageFont : null,
-          sourceRect: rect ? { x: rect[0], y: rect[1], width: rect[2], height: rect[3] } : null,
-          padding: 2,
-        });
+        image = rect && this.imageFont?.bpp === 4 ? this.imageFont : null;
+      if (rect && !image) row[1] = 0x8140;
+      const shape = rasterTextGlyph(parser, row, {
+        image,
+        sourceRect: rect ? { x: rect[0], y: rect[1], width: rect[2], height: rect[3] } : null,
+        padding: 2,
+      });
       compositeTextGlyph(pixels, shape, r[2], r[3]);
       r[9] = 1;
     }
