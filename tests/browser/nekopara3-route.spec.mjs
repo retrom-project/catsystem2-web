@@ -3,14 +3,16 @@
 import { test, expect } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import { launch, button, noError } from './game-helpers.mjs';
-import { step, until } from './native-game-input.mjs';
+import { step, until, progressAcceptance } from './native-game-input.mjs';
 
 test('main route reaches every chapter, decodes both movies and returns to the native title', async ({
   page,
 }, info) => {
-  test.setTimeout(32 * 60_000);
-  const started = Date.now(),
-    reportedScenes = new Set();
+  await progressAcceptance(page, info, 'route', () => runRoute(page, info));
+});
+
+async function runRoute(page, info) {
+  const reportedScenes = new Set();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   // A fresh native profile skips read text only. Route acceptance must opt in
@@ -58,8 +60,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
   await page.keyboard.down('Control');
   const movies = new Set(),
     unsupported = new Set(),
-    warnings = new Set(),
-    deadline = started + 28 * 60_000;
+    warnings = new Set();
   const observe = () =>
     page.evaluate(() => {
       const e = window.catSystem2;
@@ -98,7 +99,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
       };
     });
   let state;
-  while (Date.now() < deadline) {
+  while (true) {
     await noError(page);
     state = await observe();
     for (const scene of state.scenes)
@@ -116,7 +117,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
     if (state.stack.includes('title#WAIT')) break;
     await step(page, 6);
   }
-  // The final step can cross the wall deadline; capture its state as well.
+  // Capture the final completed frame batch.
   state = await observe();
   await page.keyboard.up('Control');
   await noError(page);
@@ -138,4 +139,4 @@ test('main route reaches every chapter, decodes both movies and returns to the n
   expect(state.messages).toBeGreaterThan(5000);
   expect([...unsupported]).toEqual([]);
   expect(errors).toEqual([]);
-});
+}

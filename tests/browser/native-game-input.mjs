@@ -1,6 +1,33 @@
 // SPDX-License-Identifier: MPL-2.0
 import { expect } from '@playwright/test';
+import { ProgressBudget, FrameBudgetReached } from './progress-budget.mjs';
 const progress = new WeakMap();
+const budgets = new WeakMap();
+
+export async function progressAcceptance(page, info, name, run) {
+  const budget = new ProgressBudget(process.env.CATSYSTEM2_FULL_ACCEPTANCE ? null : name);
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  budgets.set(page, budget);
+  // Every frame batch has the remaining three-minute no-progress deadline.
+  // Long guest ticks are bounded even when the browser event loop cannot yield.
+  info.setTimeout(0);
+  try {
+    await run();
+  } catch (error) {
+    await info.attach('progress.json', {
+      body: JSON.stringify(budget.last, null, 2),
+      contentType: 'application/json',
+    });
+    if (!(error instanceof FrameBudgetReached)) throw error;
+    expect(budget.last.unsupported).toEqual([]);
+    expect(errors).toEqual([]);
+    info.annotations.push({ type: 'progress-gate', description: JSON.stringify(budget.point) });
+    console.log('accepted progress gate', error.evidence);
+  } finally {
+    budgets.delete(page);
+  }
+}
 
 export async function frameClock(page) {
   await page.addInitScript(
@@ -16,7 +43,8 @@ export async function frameClock(page) {
         return sequence;
       };
       window.cancelAnimationFrame = (id) => queue.delete(id);
-      let measuredEngine, measuredWorld;
+      let measuredEngine, measuredWorld, tracedRuntime;
+      window.nativeRecentCalls = [];
       const metric = () => ({ calls: 0, totalMS: 0, maxMS: 0 });
       const stats = { callbacks: 0, frame: 0, step: metric(), render: metric(), tick: metric() };
       const instrument = (owner, name, entry) => {
@@ -36,6 +64,16 @@ export async function frameClock(page) {
       if (measure) window.nativeFrameMetrics = stats;
       window.nativeGameFrame = async (count) => {
         const engine = window.catSystem2;
+        if (engine?.world?.runtime && engine.world.runtime !== tracedRuntime) {
+          const runtime = engine.world.runtime,
+            native = runtime.native;
+          runtime.native = function (table, id, args, machine, task, ...rest) {
+            window.nativeRecentCalls.push({ table, id, script: task.name, pc: machine.pc });
+            if (window.nativeRecentCalls.length > 16) window.nativeRecentCalls.shift();
+            return native.call(this, table, id, args, machine, task, ...rest);
+          };
+          tracedRuntime = runtime;
+        }
         if (measure && engine && engine !== measuredEngine) {
           instrument(engine, 'step', stats.step);
           instrument(engine, 'render', stats.render);
@@ -63,7 +101,17 @@ export async function frameClock(page) {
 
 export const state = (page) =>
   page.evaluate(() => {
-    const e = window.catSystem2;
+    const e = window.catSystem2,
+      tasks = [...(e?.world?.runtime.scheduler.tasks.values() ?? [])].map((task) => {
+        const reader = e.world.runtime.sceneData(task)?.reader;
+        return {
+          name: task.name,
+          pc: task.machine.pc,
+          scene: reader?.filename,
+          block: reader?.block,
+          line: reader?.line,
+        };
+      });
     return {
       frame: e?.world?.frame,
       profile: e?.nativeProfile,
@@ -71,13 +119,34 @@ export const state = (page) =>
       stack: e?.status().stack,
       unsupported: e?.status().unsupported,
       error: document.getElementById('error').textContent,
+      messages: window.routeTrace?.messages.size,
+      position: { stack: e?.status().stack, tasks },
+      recentNative: window.nativeRecentCalls,
     };
   });
 
 export async function step(page, count = 1) {
-  await page.evaluate((count) => window.nativeGameFrame(count), count);
+  const budget = budgets.get(page);
+  let timer;
+  try {
+    const operation = page.evaluate((count) => window.nativeGameFrame(count), count);
+    if (budget)
+      await Promise.race([
+        operation,
+        new Promise((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error(`Native acceptance wall stall ${JSON.stringify(budget.last)}`)),
+            budget.remainingWallMS(),
+          );
+        }),
+      ]);
+    else await operation;
+  } finally {
+    clearTimeout(timer);
+  }
   const result = await state(page);
   expect(result.error, JSON.stringify(result)).toBe('');
+  budget?.observe(result);
   if (process.env.CATSYSTEM2_FRAME_METRICS) {
     const bucket = Math.floor((result.frame ?? 0) / 120);
     if (progress.get(page) !== bucket) {

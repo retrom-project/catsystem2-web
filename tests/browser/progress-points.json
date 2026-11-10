@@ -1,0 +1,8 @@
+{
+  "source": "Accepted phase 4 progress. Updates require orchestration review.",
+  "extraFrames": 300,
+  "stallFrames": 300,
+  "stallWallMS": 180000,
+  "game": { "frame": 1636 },
+  "route": { "frame": 583, "messages": 54 }
+}

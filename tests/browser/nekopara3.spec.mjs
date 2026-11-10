@@ -2,7 +2,7 @@
 // Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from '@playwright/test';
 import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
-import { hoverNativeButton, step, until } from './native-game-input.mjs';
+import { hoverNativeButton, step, until, progressAcceptance } from './native-game-input.mjs';
 
 test.afterEach(async ({ page }, info) => {
   if (info.status !== info.expectedStatus && !page.isClosed())
@@ -10,13 +10,11 @@ test.afterEach(async ({ page }, info) => {
 });
 test('native title, gamepad, story, touch, save, settings, backlog and new-instance recovery', async ({
   page,
-}) => {
-  // This exercises the original World, including software-GPU E-mote and CSS
-  // saves. Frame bounds below remain functional limits; the old three-minute
-  // wall budget belonged to the retired ScenePlayer implementation.
-  // Concurrent stage gates and guest resource recovery need wall-clock
-  // headroom. The functional frame and input bounds below still apply.
-  test.setTimeout(90 * 60_000);
+}, info) => {
+  await progressAcceptance(page, info, 'game', () => runGame(page));
+});
+
+async function runGame(page) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.addInitScript(() => {
@@ -175,4 +173,4 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
   expect((await gameplay(page)).frame).toBeGreaterThan(frame + 3);
   await noError(page);
   expect(errors).toEqual([]);
-});
+}

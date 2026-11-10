@@ -101,14 +101,19 @@ This uses warmed, alternating empty-World runs and reports microseconds per
 tick. It excludes production GPU/EXE work and browser IPC, so its relative
 percentage on an empty World must not be presented as a game slowdown.
 
-Private game acceptance keeps its functional frame bounds and a 90-minute
-outer wall limit. Route has a 32-minute outer / 28-minute walking budget.
-These allow scheduling and resource-recovery headroom during concurrent gates.
-Those wall limits bound diagnostic runs; they do not imply the current software
-GPU can finish the complete UI flow or all fourteen chapters in that time.
-Compare reader/message/frame progress with the accepted stage checkpoint before
-calling a wall timeout a deadlock. Route records a fresh final state after its
-last frame batch, plus the actual last reader position and active text tasks.
-Changing wall budgets does not relax chapter/movie/message/input assertions.
-Further budget increases should follow measured progress on the relevant host;
-repeated long retries do not establish functional failure at one stale sample.
+Private game and route gates use the reviewed progress points in
+`tests/browser/progress-points.json`. Game stops at frame 1936. Route stops at
+frame 883 and requires at least 54 messages. The accepted floors remain game
+1636 and route 583/54. Frame counts determine the amount of guest work.
+
+The earlier of 300 frames or three minutes without a changed script position
+or FES stack fails the run. Each pending frame batch also has the remaining
+wall deadline. The diagnostic includes stack, CST position and the last 16
+native calls. A moving script resets the no-progress deadline. This is separate
+from the performance target of fifteen minutes per case.
+
+A progress gate is explicitly annotated in Playwright and attaches its evidence.
+The full UI, chapter, movie and message assertions remain in the tests.
+`CATSYSTEM2_FULL_ACCEPTANCE=1` runs those complete paths. Once a case completes,
+the orchestrator removes its progress budget. Progress points are updated only
+after review of a stage gate.
