@@ -115,6 +115,23 @@ export const gameplay = (page) =>
       writer = world.objects.objects.get(body?.nativeTaskID)?.implementation;
     return {
       frame: world.frame,
+      frameMetrics: window.nativeFrameMetrics,
+      touchButtons: [...e.nativeFES.values()]
+        .filter((player) => player.stack.some((label) => label.startsWith('touch#')))
+        .map((player) => {
+          const object = player.root?.byKey.get('btn'),
+            region = object && world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+          return {
+            stack: player.stack.slice(),
+            key: object?.key,
+            type: object?.nativeType,
+            enable: object?.enable,
+            shown: object ? player.root.placement(object).shown : null,
+            inputTask: object?.nativeInputTaskID,
+            bounds: region?.bounds,
+            inputEnabled: region?.enabled,
+          };
+        }),
       source: e.identity,
       text: writer?.text?.source ?? '',
       scene: data?.reader.filename,

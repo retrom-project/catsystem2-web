@@ -1,28 +1,64 @@
 // SPDX-License-Identifier: MPL-2.0
 import { expect } from '@playwright/test';
+const progress = new WeakMap();
 
 export async function frameClock(page) {
-  await page.addInitScript(() => {
-    const queue = new Map();
-    let sequence = 0,
-      time;
-    // Drive the app's own RAF loop. Native task ticks, input, audio and
-    // rendering all still run in their production order.
-    window.requestAnimationFrame = (callback) => {
-      time ??= performance.now();
-      queue.set(++sequence, callback);
-      return sequence;
-    };
-    window.cancelAnimationFrame = (id) => queue.delete(id);
-    window.nativeGameFrame = async (count) => {
-      const entry = queue.entries().next().value;
-      if (!entry) throw new Error('The game is not scheduling browser frames');
-      const [id, callback] = entry;
-      queue.delete(id);
-      time += (count * 1000) / 60;
-      await callback(time);
-    };
-  });
+  await page.addInitScript(
+    ({ measure }) => {
+      const queue = new Map();
+      let sequence = 0,
+        time;
+      // Drive the app's own RAF loop. Native task ticks, input, audio and
+      // rendering all still run in their production order.
+      window.requestAnimationFrame = (callback) => {
+        time ??= performance.now();
+        queue.set(++sequence, callback);
+        return sequence;
+      };
+      window.cancelAnimationFrame = (id) => queue.delete(id);
+      let measuredEngine, measuredWorld;
+      const metric = () => ({ calls: 0, totalMS: 0, maxMS: 0 });
+      const stats = { callbacks: 0, frame: 0, step: metric(), render: metric(), tick: metric() };
+      const instrument = (owner, name, entry) => {
+        const original = owner[name];
+        owner[name] = async function (...args) {
+          const started = performance.now();
+          try {
+            return await original.apply(this, args);
+          } finally {
+            const elapsed = performance.now() - started;
+            entry.calls++;
+            entry.totalMS += elapsed;
+            entry.maxMS = Math.max(entry.maxMS, elapsed);
+          }
+        };
+      };
+      if (measure) window.nativeFrameMetrics = stats;
+      window.nativeGameFrame = async (count) => {
+        const engine = window.catSystem2;
+        if (measure && engine && engine !== measuredEngine) {
+          instrument(engine, 'step', stats.step);
+          instrument(engine, 'render', stats.render);
+          measuredEngine = engine;
+        }
+        if (measure && engine?.world && engine.world !== measuredWorld) {
+          instrument(engine.world, 'tick', stats.tick);
+          measuredWorld = engine.world;
+        }
+        const entry = queue.entries().next().value;
+        if (!entry) throw new Error('The game is not scheduling browser frames');
+        const [id, callback] = entry;
+        queue.delete(id);
+        time += (count * 1000) / 60;
+        await callback(time);
+        if (measure) {
+          stats.callbacks++;
+          stats.frame = window.catSystem2?.world?.frame ?? 0;
+        }
+      };
+    },
+    { measure: Boolean(process.env.CATSYSTEM2_FRAME_METRICS) },
+  );
 }
 
 export const state = (page) =>
@@ -42,6 +78,17 @@ export async function step(page, count = 1) {
   await page.evaluate((count) => window.nativeGameFrame(count), count);
   const result = await state(page);
   expect(result.error, JSON.stringify(result)).toBe('');
+  if (process.env.CATSYSTEM2_FRAME_METRICS) {
+    const bucket = Math.floor((result.frame ?? 0) / 120);
+    if (progress.get(page) !== bucket) {
+      progress.set(page, bucket);
+      console.log(
+        'native frame progress',
+        await page.evaluate(() => window.nativeFrameMetrics),
+        result.stack,
+      );
+    }
+  }
   return result;
 }
 

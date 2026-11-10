@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 113, "oracle": 133, "differential": 25 },
+    "counts": { "js": 114, "oracle": 133, "differential": 25 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -27,6 +27,7 @@
         "tests/calculation-boundary.test.mjs",
         "tests/check-no-exe-addresses.test.mjs",
         "tests/checkpoint-portable.test.mjs",
+        "tests/data-boundary.test.mjs",
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-contracts.test.mjs",
@@ -3474,7 +3475,7 @@
     "fileNeedsReview": 124,
     "exeDependencyFiles": 107,
     "exeDependencies": { "addresses": 1672, "calls": 157, "references": 6 },
-    "nonNativeGroups": 16,
+    "nonNativeGroups": 17,
     "executionSites": 499
   },
   "profiles": [
@@ -60155,6 +60156,102 @@
           "line": 319,
           "method": "call",
           "target": "this.layout.imageRelease",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "review": "needs-review",
+      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+    },
+    {
+      "name": "js-scene-to-exe-display-log",
+      "domain": 5,
+      "projection": {
+        "direction": "JS-to-PE",
+        "authority": "NativeSceneHistory",
+        "fields": [
+          "encoded seen history",
+          "encoded path history",
+          "numbered strings",
+          "checkpoint extra bytes"
+        ],
+        "consumers": [{ "domain": 5, "modules": ["text-log"] }],
+        "lifetime": "Temporary PE history and scene owners are constructed, imported and destroyed around the log call; JS history remains authoritative",
+        "removePhase": 5,
+        "operations": ["withHistory"]
+      },
+      "entry": "NativeDisplayLogs.withHistory materializes independent seen/path bytes for the original log renderer",
+      "modules": ["src/native/text-log.mjs"],
+      "executionSites": [
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 92,
+          "method": "call",
+          "target": "this.abi.historyCtor",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 94,
+          "method": "call",
+          "target": "this.abi.historyImport",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 103,
+          "method": "call",
+          "target": "this.abi.historyDtor",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 131,
+          "method": "callFromHost",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 132,
+          "method": "call",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 206,
+          "method": "call",
+          "target": "p.load(this.abi.main + id * 4)",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 234,
+          "method": "call",
+          "target": "this.abi.lineCount",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 237,
+          "method": "call",
+          "target": "this.abi.line",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/text-log.mjs",
+          "line": 255,
+          "method": "call",
+          "target": "p.load(this.abi.main + 0x2b9 * 4)",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }

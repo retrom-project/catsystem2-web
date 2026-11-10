@@ -37,12 +37,18 @@ export function validateCalculationInventory(board) {
     if (entry.review === 'needs-review' && !entry.reviewReasons.length)
       throw Error('Calculation review reason is missing');
 }
-export function validateCalculationSource(source, file) {
+export function validateCalculationSource(source, file, label = 'Calculation') {
   const forbidden = new Set([
     'ensureNativeEngine',
     'getNativeFeature',
     'call',
     'callFromHost',
+    'callAsync',
+    'runThread',
+    'emu_start',
+    'beforeInstruction',
+    'sendNativeEngine',
+    'sendEngine',
     'patch',
     'invokeRegion',
     'invokeNative',
@@ -63,14 +69,14 @@ export function validateCalculationSource(source, file) {
                           node.source.value,
                         )
                       )
-                        context.report({ node, message: 'Calculation imports EXE capability' });
+                        context.report({ node, message: label + ' imports EXE capability' });
                     },
                     MemberExpression(node) {
                       const name = node.computed ? node.property.value : node.property.name;
                       if (forbidden.has(name))
                         context.report({
                           node,
-                          message: 'Calculation references EXE capability ' + name,
+                          message: label + ' references EXE capability ' + name,
                         });
                     },
                   };

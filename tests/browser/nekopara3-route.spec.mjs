@@ -82,6 +82,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
         unsupported: e.status().unsupported,
         warnings: [...e.audio.warnings],
         frame: e.world.frame,
+        frameMetrics: window.nativeFrameMetrics,
       };
     });
     for (const scene of state.scenes)

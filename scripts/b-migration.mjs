@@ -718,6 +718,28 @@ const nonNativeGroups = [
     },
   },
   {
+    name: 'js-scene-to-exe-display-log',
+    domain: 5,
+    entry:
+      'NativeDisplayLogs.withHistory materializes independent seen/path bytes for the original log renderer',
+    modules: ['text-log'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeSceneHistory',
+      fields: [
+        'encoded seen history',
+        'encoded path history',
+        'numbered strings',
+        'checkpoint extra bytes',
+      ],
+      consumers: [{ domain: 5, modules: ['text-log'] }],
+      lifetime:
+        'Temporary PE history and scene owners are constructed, imported and destroyed around the log call; JS history remains authoritative',
+      removePhase: 5,
+      operations: ['withHistory'],
+    },
+  },
+  {
     name: 'js-raw-data-to-task-message',
     domain: 8,
     entry:

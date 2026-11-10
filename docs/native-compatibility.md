@@ -923,3 +923,24 @@ state. Script175 reader/history views are one-way PE projections, written by JS
 without original constructors, parsers or history imports/exports. The registry
 in `b-migration.json` lists projected fields, consumers and removal phases.
 Original handler tables for stacks and cursors remain in oracle-only modules.
+
+## Completed data boundary
+
+`npm run check` also runs `scripts/check-data-boundary.mjs`. It checks all
+inventory-owned domain-4 files, rejects EXE capabilities and address/call/import
+counts, requires reviewed unsupported decisions, and rejects remaining
+profile/VA selectors. The scene-memory adapter writes the registered projection.
+
+JS data authority currently crosses five remaining consumer boundaries.
+
+| JS authority              | Projection fields                                                    | Consumer domain         | Removal phase                              |
+| ------------------------- | -------------------------------------------------------------------- | ----------------------- | ------------------------------------------ |
+| image-data buffers        | source bytes, size, capacity and independent PE descriptor ownership | image/text 5 and FES 7  | 5 per image/text consumer, final adapter 7 |
+| scene history             | encoded seen/path, numbered strings, extra checkpoint data           | display-log 5           | 5                                          |
+| raw buffers               | Script23B message 445 scalar copied by value                         | task-memory 8           | 8                                          |
+| configuration query words | query24D two-word Settings tail                                      | config-memory 8         | 8                                          |
+| scene reader/history      | body/offsets, file/block/line/languages and seen/path data           | Script175/task-memory 8 | 8                                          |
+
+The generator records these projections in `nonNativeEntries`, including their
+JS authority, consumer fields, lifetime and removal phase. Gallery, save-slot,
+KCDB, mission/question/selection tables and the shared tile model own JS state.
