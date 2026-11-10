@@ -1,133 +1,169 @@
 // SPDX-License-Identifier: MPL-2.0
-// The compiled KCDB parser and indexed flag map execute in the shared engine.
-// Handles contain identity only; title/index strings and flags stay in PE RAM.
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { installNativeEngineFiles } from './engine-files.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
+import { NativeCompiledTable } from './compiled-table.mjs';
+import { compareNativeBytes } from './dictionary.mjs';
+import {
+  nativeDataArgument,
+  nativeDataFormat,
+  nativeDataKey,
+  nativeDataPair,
+  nativeDataString,
+} from './data-text.mjs';
 
 export const NATIVE_DATABASE_IDS = Object.freeze([0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e]);
-export const NATIVE_DATABASE_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    handlers: [0x647540, 0x647480, 0x647420, 0x6474b0, 0x6474e0, 0x647510, 0x647460],
-    construct: 0x82a4c0,
-    destroy: 0x82a5a0,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    handlers: [0x52a7c0, 0x52a700, 0x52a6a0, 0x52a730, 0x52a760, 0x52a790, 0x52a6e0],
-    construct: 0x874310,
-    destroy: 0x8743f0,
-  }),
-});
-export const nativeDatabaseCodec = Object.freeze({
-  snapshot: (value) => ({ ...value }),
-  restore: (value) => ({ ...value }),
-});
-const COUNTS = [4, 1, 3, 2, 2, 1, 1];
-
-export class NativeDatabases {
-  constructor(engine, world) {
-    this.engine = engine;
-    this.world = world;
-    this.process = engine.process;
-    this.layout = NATIVE_DATABASE_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error('Native databases require a reviewed engine profile');
-    engine.refs.databases ??= { pointers: new Set() };
-    engine.registerFeature('databases', this);
+const kana = 'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽぁぃぅぇぉゃゅょっ',
+  plain = 'かきくけこさしすせそたちつてとはひふへほはひふへほあいうえおやゆよつ',
+  replacements = new Map(
+    Array.from(kana, (character, i) => {
+      const from = encodeCP932(character),
+        to = encodeCP932(plain[i]);
+      return [(from[0] << 8) | from[1], to];
+    }),
+  );
+export function normalizeDatabaseIndex(value) {
+  const bytes = nativeDataString(value).slice();
+  for (let at = 0; at < bytes.length; at++)
+    if (nativeDataPair(bytes, at)) {
+      const replacement = replacements.get((bytes[at] << 8) | bytes[at + 1]);
+      if (replacement) bytes.set(replacement, at);
+      at++;
+    }
+  // The original long-vowel branch has an impossible signed-byte comparison.
+  return bytes;
+}
+export class NativeDatabase {
+  constructor() {
+    this.records = new Map();
+    this.modified = 0;
   }
-  get refs() {
-    return this.engine.refs.databases;
-  }
-  pointer(handle) {
-    if (!handle) return 0;
-    const pointer = this.world.runtime.handles.get(handle, 'database').pointer;
-    if (!this.refs.pointers.has(pointer) || this.process.allocations.get(pointer) !== 80)
-      throw new Error('Native database has no live 80-byte owner');
-    return pointer;
-  }
-  call(address, args, pointer, options) {
-    return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, options)
-      : this.engine.call(address, args, pointer, options);
-  }
-  async apply(id, args, machine, task) {
-    const index = NATIVE_DATABASE_IDS.indexOf(id);
-    if (index < 0) return undefined;
-    const words = Array.from(args);
-    if (!words.length) words.push(machine.nativeArgument(0));
-    // Null owners return before the original wrappers consume further arguments.
-    const needed = id === 0x365 || words[0] !== 0 ? COUNTS[index] : 1;
-    while (words.length < needed) words.push(machine.nativeArgument(words.length));
-    if (id !== 0x365) words[0] = this.pointer(words[0]);
-    const world = this.world,
-      taskMemory =
-        world.objects.machine(task.id) === machine
-          ? await world.getNativeFeature('task-memory')
-          : null;
-    if (taskMemory) taskMemory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, taskMemory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.store(out, 0xcccccccc);
-      const control = await this.call(
-        this.layout.handlers[index],
-        [bridge.pointer, 0, argv, out],
-        undefined,
-        { task: task.id },
-      );
-      if (id === 0x365) {
-        const pointer = p.load(out);
-        if (!pointer) return nativeReply(control, 0);
-        if (p.allocations.get(pointer) !== 80)
-          throw new Error('Original database constructor returned no owner');
-        this.refs.pointers.add(pointer);
-        return nativeReply(control, world.runtime.handles.add('database', { pointer }));
+  async load(bytes) {
+    const table = new NativeCompiledTable();
+    if (!(await table.load(bytes))) return;
+    if (!table.columns.some((column) => column.name === 'ID')) return;
+    let scratch = null;
+    for (let index = 0; index < table.rows.length; index++) {
+      for (const name of [
+        'TITLE_S',
+        'TITLE',
+        ...Array.from({ length: 24 }, (_, i) => `IND${i + 1}`),
+        'INDEX',
+      ]) {
+        const field = table.field(index, name);
+        if (field) scratch = field;
       }
-      if (id === 0x366 && args[0]) {
-        this.refs.pointers.delete(words[0]);
-        world.runtime.handles.release(args[0], 'database');
-      }
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-      }
+      if (!scratch) throw new Error('Native database index reads an uninitialized field buffer');
+      const name = normalizeDatabaseIndex(scratch),
+        key = nativeDataKey(name);
+      if (name.length > 255) throw new RangeError('Native database index exceeds its export field');
+      if (!this.records.has(key)) this.records.set(key, { name, flags: new Uint32Array(3) });
+    }
+  }
+  set(name, bit) {
+    const row = this.records.get(nativeDataKey(normalizeDatabaseIndex(name)));
+    if (!row) return;
+    const mask = 1 << (bit & 31);
+    if (!row.flags[0]) {
+      row.flags[2] = 1;
+      this.modified = 1;
+    }
+    if (!(row.flags[0] & mask)) {
+      row.flags[0] |= mask;
+      row.flags[1] |= mask;
+      this.modified = 1;
+    }
+  }
+  export() {
+    const rows = [...this.records.values()].sort((a, b) => compareNativeBytes(a.name, b.name)),
+      bytes = new Uint8Array(4 + rows.length * 268),
+      view = new DataView(bytes.buffer);
+    view.setUint32(0, rows.length, true);
+    rows.forEach((row, i) => {
+      const at = 4 + i * 268;
+      bytes.set(row.name, at);
+      row.flags.forEach((word, j) => view.setUint32(at + 256 + j * 4, word, true));
+    });
+    return bytes;
+  }
+  import(memory, pointer) {
+    const count = memory.load(pointer);
+    for (let i = 0; i < count; i++) {
+      const at = pointer + 4 + i * 268,
+        raw = memory.read(at, 256),
+        name = normalizeDatabaseIndex(raw),
+        row = this.records.get(nativeDataKey(name));
+      memory.write(at, Uint8Array.from([...name, 0]));
+      if (row)
+        for (let word = 0; word < 3; word++) row.flags[word] = memory.load(at + 256 + word * 4);
     }
   }
   snapshot() {
-    return {};
-  }
-  restore() {
-    if (!(this.refs.pointers instanceof Set)) throw new Error('Invalid native database registry');
-  }
-  async close() {
-    if (this.closed) return;
-    const p = this.process;
-    try {
-      for (const pointer of this.refs.pointers) {
-        await this.call(this.layout.destroy, [], pointer);
-        if (!p.free(pointer)) throw new Error('Native database released an unknown owner');
-        this.refs.pointers.delete(pointer);
-      }
-    } finally {
-      this.closed = true;
-    }
+    return { records: structuredClone([...this.records]), modified: this.modified };
   }
 }
-
+export const nativeDatabaseCodec = Object.freeze({
+  snapshot: (database) => database.snapshot(),
+  restore: (state) => {
+    const database = new NativeDatabase();
+    database.records = new Map(structuredClone(state.records));
+    database.modified = state.modified;
+    return database;
+  },
+});
+export async function nativeDatabase(id, args, machine, services) {
+  const handle = nativeDataArgument(args, machine, 0),
+    { handles } = services;
+  if (id === 0x365) {
+    const filename = nativeDataFormat(args, machine, services, 0);
+    if (filename === null) return nativeReply(1, 0);
+    for (const index of [1, 2, 3])
+      if (nativeDataFormat(args, machine, services, index) === null) return nativeReply(1, 0);
+    const database = new NativeDatabase(),
+      name = new TextDecoder('shift_jis').decode(filename),
+      first = await services.read(name, 'database');
+    if (first?.length) {
+      const bytes = await services.read(name, 'database');
+      try {
+        await database.load(bytes);
+      } catch (error) {
+        services.diagnostic?.({ native: id, resource: name, error: error.message });
+      }
+    }
+    return nativeReply(1, handles.add('database', database));
+  }
+  if (id === 0x366) {
+    if (handle) handles.release(handle, 'database');
+    return nativeReply(2);
+  }
+  if (!handle)
+    return nativeReply(
+      id === 0x367 || id === 0x36e ? 2 : 1,
+      id === 0x368 || id === 0x369 ? 0xcccccccc : id === 0x36d ? 0 : undefined,
+    );
+  const database = handles.get(handle, 'database');
+  if (id === 0x367) {
+    const name = nativeDataFormat(args, machine, services, 2);
+    if (name !== null) database.set(name, nativeDataArgument(args, machine, 1));
+    return nativeReply(2);
+  }
+  if (id === 0x36d) return nativeReply(1, database.modified);
+  if (id === 0x36e) {
+    database.modified = 0;
+    return nativeReply(2);
+  }
+  const pointer = nativeDataArgument(args, machine, 1);
+  if (id === 0x368) {
+    const bytes = database.export();
+    if (pointer) (await services.dataBuffers()).process.write(pointer, bytes);
+    return nativeReply(1, bytes.length);
+  }
+  if (!pointer) return nativeReply(1, 0);
+  database.import((await services.dataBuffers()).process, pointer);
+  return nativeReply(1, 1);
+}
 export function installNativeDatabases(world) {
-  installNativeEngineFiles(world);
-  world.registerNativeFeature('databases', async (engine) => {
-    await world.getNativeFeature('engine-files');
-    return new NativeDatabases(engine, world);
-  });
   for (const id of NATIVE_DATABASE_IDS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('databases')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine) =>
+      nativeDatabase(id, args, machine, world.runtime.services),
     );
 }

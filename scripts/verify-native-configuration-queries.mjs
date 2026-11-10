@@ -10,7 +10,7 @@ import {
   NativeConfigurationQueries,
   NATIVE_CONFIGURATION_QUERY_CONTRACTS,
   NATIVE_CONFIGURATION_QUERY_LAYOUTS,
-} from '../src/native/configuration-query.mjs';
+} from '../oracle/configuration-query.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {

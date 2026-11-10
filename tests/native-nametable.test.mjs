@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
+import { dataWorld } from './fixtures/data-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { nameTableFixture, nameTableFiles } from './fixtures/name-table-fixture.mjs';
-import { NativeWorld } from '../web/transitional-entry.mjs';
-import { NativeConfiguration } from '../src/native/config.mjs';
-import { MotionLibrary } from '../src/motion/library.mjs';
-import { ParticleRandom } from '../src/ppi/random.mjs';
-import { memoryGame, kcsProgram } from './helpers.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -106,74 +102,34 @@ for (const [profile, variable] of [
   );
 }
 
-test(
-  'SDK World name-table registration, live VM bytes and restored aliases use the original parser',
-  { skip: !process.env.CATSYSTEM2_SDK_EXE },
-  async () => {
-    const bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
-      files = Object.fromEntries(nameTableFiles()),
-      profile = 'sdk-4.01-engine-2.6.1.74',
-      make = () => {
-        const game = memoryGame({
-            ...files,
-            'engine.exe': bytes,
-            'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
-          }),
-          random = new ParticleRandom(),
-          configuration = new NativeConfiguration({ profile });
-        game.resolveCategory = (name, category) =>
-          game.has(name) ? name : `@cat/${category}/${name}`;
-        game.readCategory = (name, category) => game.read(game.resolveCategory(name, category));
-        Object.assign(configuration.screen, {
-          width: 640,
-          height: 480,
-          currentWidth: 640,
-          currentHeight: 480,
-          virtualWidth: 640,
-          virtualHeight: 480,
-        });
-        return new NativeWorld({
-          game,
-          images: {},
-          host: {},
-          profile,
-          configuration,
-          random,
-          motionLibrary: new MotionLibrary(game, { profile, random }),
-          storage: { read: async () => null, write: async () => true },
-        });
-      },
-      world = make();
-    let fresh;
-    try {
-      await world.initialize('main.kcs');
-      const m = world.main.machine;
-      m.writeString('names.tsv', 256);
-      const h = (await world.runtime.native('main', 0x279, [256], m, world.main)).value,
-        feature = await world.getNativeFeature('name-tables'),
-        pointer = feature.pointer(h);
-      assert.ok(h);
-      m.writeString('猫', 512);
-      assert.equal((await world.runtime.native('main', 0x27b, [h, 512], m, world.main)).value, 0);
-      fresh = make();
-      await fresh.restore(structuredClone(world.snapshot()));
-      const fm = fresh.main.machine;
-      fm.bytes(1024, 32).fill(0xa5);
-      assert.equal(
-        (await fresh.runtime.native('main', 0x27d, [h, 0, 1024], fm, fresh.main)).value,
-        1,
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(
+    profile + ' JS name-table snapshots retain raw fields and independent ownership',
+    async () => {
+      const world = await dataWorld(
+        profile,
+        Object.fromEntries(
+          [...nameTableFiles()].map(([name, bytes]) => [name.replace(/^@cat\/fes\//, ''), bytes]),
+        ),
       );
-      assert.equal(fm.string(1024), '猫');
-      assert.equal(fm.load(1027, 1), 0xa5);
-      await fresh.runtime.native('main', 0x27a, [h], fm, fresh.main);
-      assert.equal(
-        (await fresh.getNativeFeature('name-tables')).process.allocations.has(pointer),
-        false,
-      );
-      assert.equal(feature.pointer(h), pointer);
-    } finally {
-      await fresh?.close({ flushFiles: false });
-      await world.close({ flushFiles: false });
-    }
-  },
-);
+      let fresh;
+      const call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main);
+      try {
+        world.main.machine.writeString('names.tsv', 256);
+        const h = (await call(world, 0x279, [256])).value;
+        fresh = await dataWorld(profile, {}, { initialize: false });
+        await fresh.restore(structuredClone(world.snapshot()));
+        const m = fresh.main.machine;
+        m.bytes(1024, 32).fill(0xa5);
+        assert.equal((await call(fresh, 0x27d, [h, 0, 1024])).value, 1);
+        assert.equal(m.string(1024), '猫');
+        assert.equal(m.load(1027, 1), 0xa5);
+        await call(fresh, 0x27a, [h]);
+        await assert.rejects(() => call(fresh, 0x27c, [h, 0]), /released/);
+        assert.equal((await call(world, 0x27c, [h, 0])).value, 7);
+      } finally {
+        await fresh?.close({ flushFiles: false });
+        await world.close({ flushFiles: false });
+      }
+    },
+  );

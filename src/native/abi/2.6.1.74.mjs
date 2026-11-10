@@ -203,6 +203,7 @@ export default {
     requiredRenderer: false,
   },
   capabilities: {
+    nameTableAliases: false,
     embeddedJavaScript: true,
     steam: false,
     windowReturnTitle: false,

@@ -1,10 +1,9 @@
 # Name tables and filename rules
 
-[The name-table adapter](../src/native/nametable.mjs) executes all eight original
-main wrappers `0x279..280`. A typed `nametable` handle identifies one original
-four-byte owner. Its record vector, strings and alias lists live in the shared
-engine process. The former JavaScript row model has been removed; restoring a
-World restores original pointers and memory, without reopening its source file.
+The JS model owns raw-byte rows, rule fields and aliases. Typed `nametable`
+handles and parsed data are included in World snapshots, independently of
+source resources. The ABI capability `nameTableAliases` enables game aliases.
+The implementation lives in [nametable.mjs](../src/native/nametable.mjs).
 
 | ID  | Operation                                     | Arguments                                    | Control               |
 | --- | --------------------------------------------- | -------------------------------------------- | --------------------- |
@@ -17,40 +16,19 @@ World restores original pointers and memory, without reopening its source file.
 | 27F | Match a filename prefix against a row pattern | table, signed row, VM source                 | 1, match              |
 | 280 | Apply the row's filename replacement template | table, signed row, VM source, VM destination | 1                     |
 
-The original TSV parser controls quoting, line breaks, accepted numeric rows,
-field widths and byte encodings. Primary names and rule fields retain their
-original bytes. The game engine also reads aliases from the fifth column onward;
-SDK 2.6.1.74 searches primary names only. Duplicate game aliases return the first
-matching row. These differences must not be flattened into one common alias map.
-An existing nonempty header-only file produces a valid table with no rows;
-missing and zero-length files return zero.
+The byte parser retains TSV quoting, numeric IDs, CP932 and invalid bytes.
+Game aliases start at column five and return the first matching row. SDK searches
+primary names. Empty/missing files return zero. A nonempty header-only file owns
+an empty table. Filename matching truncates to the pattern length, splits stem
+and extension, and preserves case-sensitive `?` and early-return `*` behavior.
+Replacement retains `%f/%n/%s/%c/%r`, unknown-percent handling, live source/output
+aliasing and the signed-byte comma scan recovered from the original helper.
+Nulls and misses preserve each operation's early return and output canaries.
 
-`27F` first copies the input into its 256-byte local buffer and inserts a NUL at
-the pattern's byte length. Its original comparator then separately compares the
-stem and extension, case sensitively, with `?` and early-return `*` rules. It is
-not a general operating-system wildcard search. `280` executes the original
-`%f`, `%n`, `%s`, `%c` and `%r` substitution helper, unknown-percent handling and
-comma-tail scan. That helper includes signed-byte and position-dependent behavior;
-ordinary string formatting is not an equivalent replacement.
+Both ABI operation sequences compare the JS registration against the actual EXE
+table, with later queries and complete VM observations. Pure World tests cover
+fresh restore and independent release. The detailed older verifier remains an
+oracle-only tool using `oracle/nametable.mjs`.
 
-Null tables retain each wrapper's own early return. Query misses preserve caller
-buffers where the original does. VM address zero remains valid. Missing argument
-words, including release handles, are read from the adjacent mapped GCALL area.
-Invalid pointers, invalid match/replacement row indexes and local-buffer overflow
-remain original undefined/error boundaries; they do not become fabricated misses.
-
-`scripts/verify-native-name-tables.mjs` executes **1,307 complete wrappers and
-7,842 comparisons per profile**, **15,684 comparisons total**. It compares the
-full VM memory, shared and extension regions, control/result words and every live
-original allocation. Authored inputs cover quotes, line breaks, duplicate aliases,
-empty/missing/header-only files, CP932, raw UTF-8 and invalid byte sequences,
-match/replacement directives, source/output aliasing, four destination domains,
-query misses and adjacent GCALL arguments. No parser, matcher or substitution
-helper is replaced. Mounted-file and ordinary CRT/OS services are the explicit
-host boundaries.
-
-Four optional original-engine tests check parser/query behavior, profile alias
-differences, filename substitution, resource release and independent fresh-process
-restoration. A full SDK World test checks runtime registration, live VM bytes,
-output canaries and restored table lifetime. These tests do not establish final
-text-rendering pixels.
+Run `node --test tests/native-nametable.test.mjs` and, with private images,
+`node --test tests/differential/native-data-tables.test.mjs`.

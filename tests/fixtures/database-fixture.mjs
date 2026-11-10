@@ -5,7 +5,7 @@ import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeDatabases, nativeDatabaseCodec } from '../../src/native/database.mjs';
+import { NativeDatabases, nativeDatabaseCodec } from '../../oracle/database.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { KCSMachine, readKCS } from '../../src/kcs.mjs';
 import { kcsProgram } from '../helpers.mjs';

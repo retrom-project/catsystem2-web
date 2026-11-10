@@ -41,11 +41,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/configuration-query.mjs": {
-      "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/content-databases.mjs": {
       "addresses": 178,
       "calls": 2,
@@ -53,11 +48,6 @@
     },
     "src/native/control-task.mjs": {
       "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/database.mjs": {
-      "addresses": 18,
       "calls": 2,
       "references": 0
     },
@@ -356,11 +346,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/nametable.mjs": {
-      "addresses": 16,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/particle-bounds.mjs": {
       "addresses": 10,
       "calls": 0,
@@ -456,11 +441,6 @@
       "calls": 1,
       "references": 0
     },
-    "src/native/script-xml.mjs": {
-      "addresses": 0,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/sdk-javascript-banks.mjs": {
       "addresses": 9,
       "calls": 1,
@@ -469,11 +449,6 @@
     "src/native/sdk-javascript-task.mjs": {
       "addresses": 6,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/section-table.mjs": {
-      "addresses": 10,
-      "calls": 2,
       "references": 0
     },
     "src/native/sound.mjs": {

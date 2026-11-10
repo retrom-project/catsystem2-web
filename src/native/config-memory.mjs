@@ -132,6 +132,9 @@ export class NativeConfigurationMemory {
       c = this.configuration,
       l = this.layout;
     for (const [offset, bytes] of this.arrays()) p.write(this.owner + offset, bytes);
+    c.queryWords.forEach((word, i) =>
+      p.store(this.owner + this.abi.layouts.configurationQuery.query24D + i * 4, word),
+    );
     // Transfer adjacent canonical fields together. Bytes in the gaps are
     // owned by the original engine and must never be included in a write.
     for (const { offset, fields, bytes, view } of this.scalarRuns) {

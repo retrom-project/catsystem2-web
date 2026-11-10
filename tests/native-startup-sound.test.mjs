@@ -8,7 +8,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import {
   NATIVE_CONFIGURATION_QUERY_LAYOUTS,
   NativeConfigurationQueries,
-} from '../src/native/configuration-query.mjs';
+} from '../oracle/configuration-query.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';

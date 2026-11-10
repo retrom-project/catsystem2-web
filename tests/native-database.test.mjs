@@ -167,11 +167,10 @@ for (const [profile, variable] of [
       let fresh, restored;
       try {
         await first.initialize('main.kcs');
-        const db = await load(first),
-          feature = await first.getNativeFeature('databases');
+        const db = await load(first);
         first.main.machine.writeString('alpha', 1280);
         await call(first, 0x367, [db, 5, 1280]);
-        const expected = databaseState(first.nativeEngine.process, feature.pointer(db)),
+        const expected = first.runtime.handles.get(db, 'database').snapshot(),
           size = (await call(first, 0x368, [db, 0])).value,
           payload = (await call(first, 0x341, [size])).value,
           css = (await call(first, 0xee, [0x10203])).value;
@@ -182,10 +181,11 @@ for (const [profile, variable] of [
         assert.equal((await call(first, 0xf5, [css, 1536])).value, 1);
         fresh = await make();
         await fresh.initialize('main.kcs');
-        const peer = await load(fresh),
-          peerFeature = await fresh.getNativeFeature('databases');
+        const peer = await load(fresh);
         assert.deepEqual(
-          databaseState(fresh.nativeEngine.process, peerFeature.pointer(peer)).rows[0].flags,
+          Array.from(
+            fresh.runtime.handles.get(peer, 'database').records.values().next().value.flags,
+          ),
           [0, 0, 0],
         );
         fresh.main.machine.writeString('database-flags.dat', 1536);
@@ -194,21 +194,18 @@ for (const [profile, variable] of [
         assert.equal(fresh.main.machine.load(1792), size);
         await call(fresh, 0x369, [peer, imported]);
         await call(fresh, 0x342, [imported]);
-        const state = databaseState(fresh.nativeEngine.process, peerFeature.pointer(peer));
-        assert.deepEqual(state.rows, expected.rows);
-        assert.equal(state.dirty, 0);
-        const pointer = peerFeature.pointer(peer);
+        const state = fresh.runtime.handles.get(peer, 'database').snapshot();
+        assert.deepEqual(state.records, expected.records);
+        assert.equal(state.modified, 0);
         restored = await make();
         await restored.restore(structuredClone(fresh.snapshot()));
-        const restoredFeature = await restored.getNativeFeature('databases');
-        assert.equal(restoredFeature.pointer(peer), pointer);
-        assert.deepEqual(databaseState(restored.nativeEngine.process, pointer), state);
+        assert.deepEqual(restored.runtime.handles.get(peer, 'database').snapshot(), state);
         restored.main.machine.writeString('zeta', 1280);
         await call(restored, 0x367, [peer, 7, 1280]);
         assert.equal((await call(restored, 0x36d, [peer])).value, 1);
         assert.equal((await call(fresh, 0x36d, [peer])).value, 0);
         await call(restored, 0x366, [peer]);
-        assert.equal(restored.nativeEngine.process.allocations.has(pointer), false);
+        assert.throws(() => restored.runtime.handles.get(peer, 'database'), /released/);
       } finally {
         await restored?.close({ flushFiles: false });
         await fresh?.close({ flushFiles: false });

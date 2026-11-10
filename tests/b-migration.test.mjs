@@ -31,8 +31,8 @@ test('B inventory reproduces the actual overrides, separate tables and complete 
       profile.entries.find((entry) => entry.table === table && entry.id === id);
     assert.equal(entry('main', 0x32).implementation, 'pure-js');
     assert.equal(entry('generic', 1).implementation, 'pure-js');
-    assert.equal(entry('main', 0x24e).module, 'src/native/script-xml.mjs');
-    assert.equal(entry('main', 0x24e).implementation, 'original-handler');
+    assert.equal(entry('main', 0x24e).module, 'src/native/xml.mjs');
+    assert.equal(entry('main', 0x24e).implementation, 'pure-js');
     assert.equal(entry('main', 0x1d).implementation, 'pure-js');
     assert.equal(entry('main', 0x237).implementation, 'original-handler');
     assert.equal(entry('main', 0x7a).module, 'src/native/bitmap-operations.mjs');

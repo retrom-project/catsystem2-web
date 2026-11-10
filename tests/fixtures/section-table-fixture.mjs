@@ -3,7 +3,7 @@ import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeSectionTables, nativeSectionTableCodec } from '../../src/native/section-table.mjs';
+import { NativeSectionTables, nativeSectionTableCodec } from '../../oracle/section-table.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { KCSMachine, readKCS } from '../../src/kcs.mjs';
 import { kcsProgram } from '../helpers.mjs';

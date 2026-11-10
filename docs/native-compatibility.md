@@ -384,15 +384,13 @@ tables contain 44 slots for version 1 and 51 for version 2; their declarations
 come from the SDK particle headers and [PPI contracts](../src/ppi/contracts.mjs).
 See [particle compatibility](ppi-compatibility.md) for their implementation status.
 
-Main `24E..251` runs the original Script XML file open, parse, query and
-release wrappers on both engines. The original file reader resolves mounted
-resources and owns the temporary stream. The document and its node vector
-live in the same process as the VM; the browser handle retains their pointer
-across a fresh World without reading the file again. String queries write
-the original Shift_JIS or UTF-8 bytes and one NUL. Missing nodes leave the
-string destination intact and use the caller's integer default. Null handles
-skip formatting and preserve those same fallbacks. The authored World test
-covers both profiles, raw output bytes, invalid input and independent release.
+Main `24E..251` uses JS-owned Script XML trees and existing resource reads.
+Snapshot/restore preserves raw text and independent document lifetime. ABI XML
+encoding selects Shift_JIS or UTF-8 output. Missing nodes preserve the string
+destination and integer default. Both ABI operation sequences compare the JS
+entry with the actual native table. The preserved wrapper is in
+`oracle/script-xml.mjs`. The runtime registration lives in
+[script-xml.mjs](../src/native/script-xml.mjs).
 
 The paired `36B` integer-unpacking interface executes both original wrappers
 and VM translators. Signed halves, aliased/overlapping destinations, all VM

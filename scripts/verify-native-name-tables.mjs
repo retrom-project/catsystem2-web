@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_NAME_TABLE_CONTRACTS } from '../src/native/nametable.mjs';
+import { NATIVE_NAME_TABLE_CONTRACTS } from '../oracle/nametable.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { nameTableFixture, nameTableFiles } from '../tests/fixtures/name-table-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';

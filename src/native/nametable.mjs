@@ -1,143 +1,171 @@
 // SPDX-License-Identifier: MPL-2.0
-// One original four-byte name-table owner, including its filename rules.
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { installNativeEngineFiles } from './engine-files.mjs';
+import { parseNativeInteger } from './standard.mjs';
+import {
+  nativeDataArgument,
+  nativeDataCString,
+  nativeDataFormat,
+  nativeDataKey,
+  nativeDataMapped,
+  nativeDataTSV,
+} from './data-text.mjs';
 
-export const NATIVE_NAME_TABLE_CONTRACTS = Object.freeze(
-  [
-    [0x279, 1, 1, 0x64e3c0, 0x519910],
-    [0x27a, 1, 2, 0x64e4f0, 0x519a10],
-    [0x27b, 2, 1, 0x64e730, 0x519c50],
-    [0x27c, 2, 1, 0x64e6c0, 0x519be0],
-    [0x27d, 3, 1, 0x64e6f0, 0x519c10],
-    [0x27e, 4, 1, 0x64e670, 0x519b90],
-    [0x27f, 3, 1, 0x64e520, 0x519a40],
-    [0x280, 4, 1, 0x64e5f0, 0x519b10],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
-);
-export const NATIVE_NAME_TABLE_IDS = Object.freeze(NATIVE_NAME_TABLE_CONTRACTS.map(({ id }) => id));
-const byID = new Map(NATIVE_NAME_TABLE_CONTRACTS.map((spec) => [spec.id, spec]));
-export const nativeNameTableCodec = Object.freeze({
-  snapshot: (value) => ({ ...value }),
-  restore: (value) => ({ ...value }),
-});
-
-export class NativeNameTables {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.profileIndex =
-      engine.profile === 'nekopara-vol3-engine-2.6.1.76'
-        ? 0
-        : engine.profile === 'sdk-4.01-engine-2.6.1.74'
-          ? 1
-          : -1;
-    if (this.profileIndex < 0) throw new Error('Native name tables require a reviewed engine');
-    engine.refs.nameTables ??= new Set();
-    engine.registerFeature('name-tables', this);
+export const NATIVE_NAME_TABLE_IDS = Object.freeze(Array.from({ length: 8 }, (_, i) => 0x279 + i));
+function wildcard(source, pattern) {
+  if (pattern.length === 1 && pattern[0] === 42) return true;
+  let at = 0;
+  while (at < source.length && at < pattern.length) {
+    if (pattern[at] === 42) return true;
+    if (pattern[at] !== 63 && pattern[at] !== source[at]) return false;
+    at++;
   }
-  get pointers() {
-    return this.engine.refs.nameTables;
+  return at === source.length && at === pattern.length;
+}
+function extension(bytes) {
+  for (let i = bytes.length - 1; i >= 0; i--) {
+    if (bytes[i] === 92 || bytes[i] === 47) break;
+    if (bytes[i] === 46) return i + 1;
   }
-  pointer(handle) {
-    if (!handle) return 0;
-    const pointer = this.world.runtime.handles.get(handle, 'nametable').pointer;
-    if (!this.pointers.has(pointer) || this.process.allocations.get(pointer) !== 4)
-      throw new Error('Native name table is absent or released');
-    return pointer;
-  }
-  call(address, args, task) {
-    return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, undefined, { task })
-      : this.engine.call(address, args, undefined, { task });
-  }
-  async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (!words.length) words.push(machine.nativeArgument(0));
-    const count = id !== 0x279 && !words[0] ? 1 : spec.words;
-    while (words.length < count) words.push(machine.nativeArgument(words.length));
-    const handle = words[0];
-    if (id !== 0x279) words[0] = this.pointer(words[0]);
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.store(out, 0xcccccccc);
-      const control = await this.call(
-        spec.handlers[this.profileIndex],
-        [bridge.pointer, 0, argv, out],
-        task.id,
-      );
-      if (control !== spec.control)
-        throw new Error('Native name-table control disagrees with its original wrapper');
-      if (id === 0x279) {
-        const pointer = p.load(out);
-        if (!pointer) return nativeReply(1, 0);
-        if (p.allocations.get(pointer) !== 4)
-          throw new Error('Name-table constructor returned no four-byte owner');
-        this.pointers.add(pointer);
-        return nativeReply(1, this.world.runtime.handles.add('nametable', { pointer }));
-      }
-      if (id === 0x27a && handle) {
-        this.pointers.delete(words[0]);
-        this.world.runtime.handles.release(handle, 'nametable');
-      }
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-      }
+  return bytes.length;
+}
+function matches(source, pattern) {
+  const prefix = source.subarray(0, pattern.length),
+    first = extension(prefix),
+    second = extension(pattern);
+  return (
+    wildcard(prefix.subarray(0, first), pattern.subarray(0, second)) &&
+    wildcard(prefix.subarray(first), pattern.subarray(second))
+  );
+}
+function replaceFilename(machine, source, destination, pattern, template) {
+  const input = (index) => machine.load((source + index) >>> 0, 1),
+    write = (index, value) => machine.store((destination + index) >>> 0, value, 1),
+    signed = (byte) => (byte << 24) >> 24;
+  let output = 0;
+  for (let at = 0; at < template.length; at++) {
+    if (template[at] !== 37) {
+      write(output++, template[at]);
+      continue;
     }
+    const code = template[at + 1];
+    if (code === 99) {
+      write(output, input(output));
+      output++;
+      at++;
+    } else if (code === 102) {
+      for (const byte of pattern) write(output++, byte);
+      at++;
+    } else if (code === 110) {
+      let from = 0;
+      while (input(from) && input(from) !== 44 && (input(from) < 48 || input(from) > 57)) from++;
+      while (input(from) >= 48 && input(from) <= 57) write(output++, input(from++));
+      at++;
+    } else if (code === 114 || code === 115) {
+      let from = code === 114 ? output : 0;
+      while (input(from)) write(output++, input(from++));
+      at++;
+    } else write(output++, 37);
   }
-  snapshot() {
-    return {};
+  write(output, 0);
+  // The comma scan compares its position with the next signed source byte.
+  let comma = 0;
+  if (signed(input(0)) <= 0) return;
+  while (input(comma) !== 44) {
+    comma++;
+    if (comma >= signed(input(comma))) return;
   }
-  restore() {
-    if (!(this.pointers instanceof Set)) throw new Error('Invalid native name-table registry');
-  }
-  async close() {
-    if (this.closed) return;
-    const p = this.process,
-      argv = p.allocate(4),
-      out = p.allocate(4);
-    try {
-      for (const pointer of this.pointers) {
-        p.store(argv, pointer);
-        await this.call(byID.get(0x27a).handlers[this.profileIndex], [0, 0, argv, out]);
-        this.pointers.delete(pointer);
-      }
-      for (const [handle, record] of this.world.runtime.handles.records)
-        if (record.type === 'nametable') this.world.runtime.handles.release(handle, 'nametable');
-    } finally {
-      p.free(out);
-      p.free(argv);
-      this.closed = true;
+  let append = 0;
+  while (machine.load((destination + append) >>> 0, 1)) append++;
+  while (input(comma)) write(append++, input(comma++));
+  write(append, 0);
+}
+export class NativeNameTable {
+  constructor(bytes = null, aliases = false) {
+    this.rows = [];
+    for (const fields of bytes ? nativeDataTSV(bytes) : []) {
+      const id = fields[0],
+        name = fields[1];
+      if (!id?.length || id[0] < 48 || id[0] > 57 || !name) continue;
+      if (fields.slice(1, 4).some((field) => field.length > 255))
+        throw new RangeError('Native name-table field exceeds its 256-byte buffer');
+      this.rows.push({
+        id: parseNativeInteger(nativeDataKey(id)) ?? 0,
+        name: name.slice(),
+        names: [name, ...(aliases ? fields.slice(4) : [])].map(nativeDataKey),
+        fields: [fields[2]?.slice() ?? new Uint8Array(), fields[3]?.slice() ?? new Uint8Array()],
+      });
     }
   }
 }
+export const nativeNameTableCodec = Object.freeze({
+  snapshot: (table) => structuredClone(table.rows),
+  restore: (state) => {
+    const table = new NativeNameTable();
+    table.rows = structuredClone(state);
+    return table;
+  },
+});
+export async function nativeNameTable(id, args, machine, services) {
+  const handle = nativeDataArgument(args, machine, 0),
+    { handles } = services;
+  if (id === 0x279) {
+    const name = nativeDataFormat(args, machine, services, 0);
+    if (name === null) return nativeReply(1, 0);
+    const filename = new TextDecoder('shift_jis').decode(name),
+      first = await services.read(filename, 'fes');
+    if (!first?.length) return nativeReply(1, 0);
+    const bytes = await services.read(filename, 'fes');
+    return nativeReply(
+      1,
+      handles.add('nametable', new NativeNameTable(bytes, services.nameTableAliases)),
+    );
+  }
+  if (id === 0x27a) {
+    if (handle) handles.release(handle, 'nametable');
+    return nativeReply(2);
+  }
+  if (!handle) return nativeReply(1, id === 0x27b || id === 0x27c ? -1 : 0);
+  const table = handles.get(handle, 'nametable');
+  if (id === 0x27b) {
+    const name = nativeDataFormat(args, machine, services, 1);
+    return nativeReply(
+      1,
+      name === null ? -1 : table.rows.findIndex((row) => row.names.includes(nativeDataKey(name))),
+    );
+  }
+  const index = nativeDataArgument(args, machine, 1) | 0,
+    row = table.rows[index];
+  if (id === 0x27c) return nativeReply(1, row?.id ?? -1);
+  if (id === 0x27d) {
+    if (!row) return nativeReply(1, 0);
+    machine.writeStringBytes(row.name, nativeDataArgument(args, machine, 2));
+    return nativeReply(1, 1);
+  }
+  if (id === 0x27e) {
+    const field = row?.fields[nativeDataArgument(args, machine, 2) | 0],
+      destination = nativeDataArgument(args, machine, 3);
+    if (!field) return nativeReply(1, 0);
+    if (nativeDataMapped(machine, destination)) machine.writeStringBytes(field, destination);
+    return nativeReply(1, 1);
+  }
+  if (!row) throw new Error('Native filename rules dereference an invalid name-table row');
+  const source = nativeDataArgument(args, machine, 2);
+  if (id === 0x27f)
+    return nativeReply(1, Number(matches(nativeDataCString(machine, source, 256), row.fields[0])));
+  replaceFilename(
+    machine,
+    source,
+    nativeDataArgument(args, machine, 3),
+    row.fields[0],
+    row.fields[1],
+  );
+  return nativeReply(1, 1);
+}
 export function installNativeNameTables(world) {
-  installNativeEngineFiles(world);
-  world.registerNativeFeature('name-tables', async (engine) => {
-    await world.getNativeFeature('engine-files');
-    await world.getNativeFeature('data-buffers');
-    return new NativeNameTables(engine, world);
-  });
+  world.runtime.services.nameTableAliases = nativeABI(world.profile).capabilities.nameTableAliases;
   for (const id of NATIVE_NAME_TABLE_IDS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('name-tables')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine) =>
+      nativeNameTable(id, args, machine, world.runtime.services),
     );
 }

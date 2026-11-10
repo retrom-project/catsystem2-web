@@ -7,7 +7,7 @@ import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_DATABASE_IDS, NATIVE_DATABASE_LAYOUTS } from '../src/native/database.mjs';
+import { NATIVE_DATABASE_IDS, NATIVE_DATABASE_LAYOUTS } from '../oracle/database.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';

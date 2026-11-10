@@ -7,7 +7,11 @@ import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { dataWorld } from './data-world.mjs';
 
-export async function observeDataSequence(profile, steps, { engine, files = {}, setup } = {}) {
+export async function observeDataSequence(
+  profile,
+  steps,
+  { engine, files = {}, setup, rawRanges = [] } = {},
+) {
   const world = await dataWorld(profile, files),
     m = world.main.machine,
     values = new Map(),
@@ -55,6 +59,9 @@ export async function observeDataSequence(profile, steps, { engine, files = {}, 
   try {
     for (const step of steps) {
       for (const [address, bytes] of step.write ?? []) m.bytes(address, bytes.length).set(bytes);
+      const raw = engine ? engine.process : world.runtime.imageDataBuffers.process;
+      for (const [name, offset, bytes] of step.writeRaw ?? [])
+        raw.write(values.get(name) + offset, Uint8Array.from(bytes));
       const args = step.args.map((word) => (typeof word === 'string' ? values.get(word) : word));
       assert.ok(
         args.every((word) => Number.isInteger(word)),
@@ -106,10 +113,13 @@ export async function observeDataSequence(profile, steps, { engine, files = {}, 
         control: reply.control,
         ...(Object.hasOwn(reply, 'value') ? { value } : {}),
         ...(bitmap ? { bitmap } : {}),
-        memory: [...m.memory],
-        shared: [...m.shared],
-        blocks: m.blockIDs.map((_, i) => [...m.blockBytes(i)]),
+        memory: m.memory.slice(),
+        shared: m.shared.slice(),
+        blocks: m.blockIDs.map((_, i) => m.blockBytes(i).slice()),
         handles: [...live],
+        raw: rawRanges.map(({ name, offset = 0, size }) => [
+          ...raw.read(values.get(name) + offset, size),
+        ]),
         task: { pc: m.pc, sp: m.sp, waiting: structuredClone(m.waiting), frame: world.frame },
       });
     }

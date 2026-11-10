@@ -3,15 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { sectionFixture, sectionFiles } from './fixtures/section-table-fixture.mjs';
-import { NativeWorld } from '../web/transitional-entry.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
-import { NativeRandomMemory } from '../src/native/random-memory.mjs';
-import { NativeConfiguration } from '../src/native/config.mjs';
-import { installNativeSectionTables } from '../src/native/section-table.mjs';
-import { ParticleRandom } from '../src/ppi/random.mjs';
-import { MotionLibrary } from '../src/motion/library.mjs';
-import { memoryGame, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
@@ -96,72 +88,28 @@ for (const [profile, variable] of [
     },
   );
   test(
-    profile +
-      ' a fresh World keeps section-table identity and its imported bytes independently of the source file',
-    { skip: !process.env[variable] },
+    profile + ' JS section tables restore imported bytes independently of source files',
     async () => {
-      const bytes = new Uint8Array(await readFile(process.env[variable])),
-        files = sectionFiles();
-      async function make() {
-        const game = memoryGame({
-            'main.kcs': kcsProgram([[37, 2048], [43, 0x47, 4], [59]]),
-            ...Object.fromEntries(files),
-          }),
-          configuration = new NativeConfiguration({ profile }),
-          random = new ParticleRandom(),
-          world = new NativeWorld({
-            game,
-            profile,
-            configuration,
-            random,
-            images: {},
-            host: {},
-            storage: { read: async (name) => files.get(name) ?? null, write: async () => true },
-            motionLibrary: new MotionLibrary(game, { profile, random }),
-          });
-        if (!world.nativeFeatureFactories.has('section-tables')) installNativeSectionTables(world);
-        const engine = await NativeEngineProcess.open({
-          bytes,
-          profile,
-          configuration,
-          readFile: async (name) => files.get(name) ?? null,
-        });
-        new NativeGlobalStringsBridge(engine, world.globalStrings);
-        new NativeRandomMemory(engine, random);
-        world.nativeEngine = engine;
-        world.nativeEngineLoading = Promise.resolve(engine);
-        return world;
-      }
-      const first = await make(),
-        call = (world, id, args) =>
-          world.runtime.native(
-            'main',
-            id,
-            args,
-            world.main.machine,
-            world.main,
-            world.runtime.scheduler,
-          );
+      const first = await dataWorld(profile, Object.fromEntries(sectionFiles()));
       let fresh;
+      const call = (world, id, args) =>
+        world.runtime.native('main', id, args, world.main.machine, world.main);
       try {
-        await first.initialize('main.kcs');
         first.main.machine.writeString('basic.txt', 256);
-        const h = (await call(first, 0x2ab, [256])).value,
-          feature = await first.getNativeFeature('section-tables'),
-          pointer = feature.pointer(h),
-          snapshot = structuredClone(first.snapshot());
-        files.set('basic.txt', encodeCP932('#first\nkey changed\n'));
-        fresh = await make();
-        await fresh.restore(snapshot);
-        const restored = await fresh.getNativeFeature('section-tables');
-        assert.equal(restored.pointer(h), pointer);
+        const h = (await call(first, 0x2ab, [256])).value;
+        fresh = await dataWorld(
+          profile,
+          { 'basic.txt': encodeCP932('#first\nkey changed\n') },
+          { initialize: false },
+        );
+        await fresh.restore(structuredClone(first.snapshot()));
         fresh.main.machine.writeString('#first', 512);
         fresh.main.machine.writeString('key', 768);
         assert.equal((await call(fresh, 0x2ad, [h, 512, 768, 2, 1024])).value, 1);
         assert.equal(fresh.main.machine.string(1024), 'third value');
         await call(fresh, 0x2ac, [h]);
-        assert.equal(fresh.nativeEngine.process.allocations.has(pointer), false);
-        assert.equal(first.nativeEngine.process.allocations.has(pointer), true);
+        await assert.rejects(() => call(fresh, 0x2ad, [h, 512, 768, 0, 1024]), /released/);
+        assert.ok(first.runtime.handles.get(h, 'section-table'));
       } finally {
         await fresh?.close({ flushFiles: false });
         await first.close({ flushFiles: false });

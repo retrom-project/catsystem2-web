@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
+import { dataWorld } from './fixtures/data-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeConfigurationQueries } from '../src/native/configuration-query.mjs';
-import { NativeWorld } from '../web/transitional-entry.mjs';
-import { MotionLibrary } from '../src/motion/library.mjs';
-import { ParticleRandom } from '../src/ppi/random.mjs';
+import { NativeConfigurationQueries } from '../oracle/configuration-query.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   configurationQueryState,
   configurationQueryMachine,
 } from './fixtures/configuration-query-fixture.mjs';
-import { memoryGame, kcsProgram } from './helpers.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -71,9 +68,7 @@ for (const [profile, variable] of [
         state.soundConfiguration.parts[1].children[1].int = 'renamed';
         assert.equal((await call(0x2a2, [512, 768])).value, 7);
         m.bytes(0, 12).fill(0xa5);
-        [0xdeadbeef, 0x80000000].forEach((v, i) =>
-          p.store(engine.refs.owner + feature.layout.query24D + i * 4, v),
-        );
+        state.configuration.queryWords.set([0xdeadbeef, 0x80000000]);
         assert.deepEqual(await call(0x24d, [0, 4]), { control: 2 });
         assert.deepEqual([m.load(0), m.load(4), m.load(8)], [0xdeadbeef, 0x80000000, 0xa5a5a5a5]);
         const count = feature.refs.allocations.size;
@@ -116,74 +111,36 @@ for (const [profile, variable] of [
     },
   );
 
-test(
-  'SDK World Settings queries preserve shared state, raw tail words and native identities in a fresh World',
-  { skip: !process.env.CATSYSTEM2_SDK_EXE },
-  async () => {
-    const profile = 'sdk-4.01-engine-2.6.1.74',
-      bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
-      make = () => {
-        const state = configurationQueryState(profile, 1),
-          game = memoryGame({
-            'engine.exe': bytes,
-            'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
-          }),
-          random = new ParticleRandom();
-        game.nativeResources = state.game.nativeResources;
-        return new NativeWorld({
-          ...state,
-          game,
-          profile,
-          random,
-          images: {},
-          host: {},
-          motionLibrary: new MotionLibrary(game, { profile, random }),
-          storage: { read: async () => null, write: async () => true },
-        });
-      },
-      world = make();
-    let fresh;
-    try {
-      await world.initialize('main.kcs');
-      const m = world.main.machine,
-        text = (text, at) => {
-          m.writeString(text, at);
-          return at;
-        },
-        call = (id, args) => world.runtime.native('main', id, args, m, world.main);
-      assert.equal(
-        (await call(0x2a2, [text('long_sound_filename_1', 512), text('sound', 768)])).value,
-        127,
-      );
-      const feature = await world.getNativeFeature('configuration-queries'),
-        p = world.nativeEngine.process,
-        root = p.load(world.nativeEngine.refs.owner + feature.layout.soundParts);
-      p.store(world.nativeEngine.refs.owner + feature.layout.query24D, 0x12345678);
-      p.store(world.nativeEngine.refs.owner + feature.layout.query24D + 4, 0x80000000);
-      fresh = make();
-      await fresh.restore(structuredClone(world.snapshot()));
-      const fm = fresh.main.machine,
-        restored = await fresh.getNativeFeature('configuration-queries');
-      assert.equal(
-        fresh.nativeEngine.process.load(fresh.nativeEngine.refs.owner + restored.layout.soundParts),
-        root,
-      );
-      assert.equal(
-        (await fresh.runtime.native('main', 0x2a2, [512, 768], fm, fresh.main)).value,
-        127,
-      );
-      fm.bytes(0, 12).fill(0xa5);
-      await fresh.runtime.native('main', 0x24d, [0, 4], fm, fresh.main);
-      assert.deepEqual([fm.load(0), fm.load(4), fm.load(8)], [0x12345678, 0x80000000, 0xa5a5a5a5]);
-      fresh.soundConfiguration.parts[1].children[1].int = 'other';
-      assert.equal(
-        (await fresh.runtime.native('main', 0x2a2, [512, 768], fm, fresh.main)).value,
-        7,
-      );
-      assert.equal((await call(0x2a2, [512, 768])).value, 127);
-    } finally {
-      await fresh?.close({ flushFiles: false });
-      await world.close({ flushFiles: false });
-    }
-  },
-);
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(
+    profile + ' JS Settings queries share live state and preserve raw words across restore',
+    async () => {
+      const world = await dataWorld(profile);
+      let fresh;
+      const call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main);
+      try {
+        const state = configurationQueryState(profile, 1);
+        world.configuration.restore(state.configuration.snapshot());
+        world.soundConfiguration.restore(state.soundConfiguration.snapshot());
+        world.game.nativeResources = state.game.nativeResources;
+        world.main.machine.writeString('long_sound_filename_1', 512);
+        world.main.machine.writeString('sound', 768);
+        assert.equal((await call(world, 0x2a2, [512, 768])).value, 127);
+        world.configuration.queryWords.set([0x12345678, 0x80000000]);
+        fresh = await dataWorld(profile, {}, { initialize: false });
+        fresh.game.nativeResources = structuredClone(state.game.nativeResources);
+        await fresh.restore(structuredClone(world.snapshot()));
+        const m = fresh.main.machine;
+        assert.equal((await call(fresh, 0x2a2, [512, 768])).value, 127);
+        m.bytes(0, 12).fill(0xa5);
+        await call(fresh, 0x24d, [0, 4]);
+        assert.deepEqual([m.load(0), m.load(4), m.load(8)], [0x12345678, 0x80000000, 0xa5a5a5a5]);
+        fresh.soundConfiguration.parts[1].children[1].int = 'other';
+        assert.equal((await call(fresh, 0x2a2, [512, 768])).value, 7);
+        assert.equal((await call(world, 0x2a2, [512, 768])).value, 127);
+      } finally {
+        await fresh?.close({ flushFiles: false });
+        await world.close({ flushFiles: false });
+      }
+    },
+  );

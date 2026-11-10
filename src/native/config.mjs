@@ -107,6 +107,7 @@ export class NativeConfiguration {
     this.variableRanges.local.set([0, 512]);
     this.variableRanges.global.set([512, 512]);
     this.blocks = layout.sizes.map((size) => new Uint8Array(size));
+    this.queryWords = new Uint32Array(2);
     this.autoPresets = new Uint32Array(64);
     this.autoPresets.set(presetDefaults);
     this.windowAlphaPercent = 1;
@@ -298,6 +299,7 @@ export class NativeConfiguration {
       soundGroups: structuredClone(this.soundGroups),
       fields: this.fields.snapshot(),
       autoPresets: this.autoPresets.slice(),
+      queryWords: this.queryWords.slice(),
       blocks: this.blocks.map((b) => b.slice()),
     };
   }
@@ -306,7 +308,8 @@ export class NativeConfiguration {
     if (
       state.profile !== this.profile ||
       state.blocks.length !== 4 ||
-      state.autoPresets.length !== 64
+      state.autoPresets.length !== 64 ||
+      state.queryWords.length !== 2
     )
       throw new Error('Native configuration checkpoint profile/layout mismatch');
     state.blocks.forEach((bytes, i) => {
@@ -325,6 +328,7 @@ export class NativeConfiguration {
     this.soundGroups = structuredClone(state.soundGroups);
     this.fields.restore(state.fields);
     this.autoPresets.set(state.autoPresets);
+    this.queryWords.set(state.queryWords);
     state.blocks.forEach((bytes, i) => this.blocks[i].set(bytes));
   }
 

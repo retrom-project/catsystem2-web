@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
-// Startup metadata and the standalone VM's XML model. NativeWorld runs
-// the original Script XML wrappers through script-xml.mjs.
+// JS XML state shared by startup parsing and the Script XML native family.
 import { XMLNode } from '../xml.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeDataFormat, nativeDataKey } from './data-text.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 import { parseNativeInteger } from './standard.mjs';
 
 export function parseNativeXML(bytes, encoding) {
@@ -59,13 +60,13 @@ export function parseNativeXML(bytes, encoding) {
   return roots[0] || new XMLNode('');
 }
 
-export function findNativeXML(root, path) {
+export function findNativeXML(root, path, key = (name) => name) {
   const parts = path.split('/').filter(Boolean);
   const children = root.name === 'document' ? root.children : [root];
   const find = (nodes, at) => {
     if (at >= parts.length) return null;
     for (const node of nodes) {
-      if (node.name !== parts[at]) continue;
+      if (key(node.name) !== parts[at]) continue;
       if (at === parts.length - 1) return node;
       const result = find(node.children, at + 1);
       if (result) return result;
@@ -84,7 +85,9 @@ export function nativeXML(id, args, machine, services) {
   const handles = services.handles;
   if (id === 0x24e) {
     if (!services.read) return undefined;
-    const file = services.format(args[0], machine);
+    const formatted = nativeDataFormat(args, machine, services, 0);
+    if (formatted === null) return nativeReply(1, 0);
+    const file = new TextDecoder('shift_jis').decode(formatted);
     const finish = (bytes) => {
       if (bytes === null) return nativeReply(1, 0);
       try {
@@ -102,7 +105,15 @@ export function nativeXML(id, args, machine, services) {
     return nativeReply(2);
   }
   if (!args[0]) return id === 0x250 ? nativeReply(1, args[1]) : nativeReply(2);
-  const node = findNativeXML(handles.get(args[0], 'xml'), services.format(args[2], machine));
+  const formatted = nativeDataFormat(args, machine, services, 2);
+  if (formatted === null) throw new Error('Native XML query reads an unmapped path');
+  const key = (name) =>
+      nativeDataKey(
+        services.xmlEncoding?.toLowerCase() === 'utf-8'
+          ? new TextEncoder().encode(name)
+          : encodeCP932(name),
+      ),
+    node = findNativeXML(handles.get(args[0], 'xml'), nativeDataKey(formatted), key);
   if (id === 0x250) return nativeReply(1, node ? (parseNativeInteger(node.text) ?? 0) : args[1]);
   if (node) {
     if (services.xmlEncoding?.toLowerCase() === 'utf-8')

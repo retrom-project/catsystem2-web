@@ -1,233 +1,132 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original Settings queries use the same configuration and archive declarations
-// as the host. Their guest records are projections, not another settings model.
-import { nativeABI, NATIVE_ABIS } from './abi/index.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { syncNativeStartupSoundConfiguration } from './engine-startup-sound.mjs';
+import {
+  nativeDataArgument,
+  nativeDataFormat,
+  nativeDataPair,
+  nativeDataString,
+} from './data-text.mjs';
 
-export const NATIVE_CONFIGURATION_QUERY_CONTRACTS = Object.freeze(
-  [
-    [0x24d, 2, 2, 0x650480, 0x51bac0],
-    [0x25d, 1, 1, 0x647990, 0x514cc0],
-    [0x25e, 1, 1, 0x647950, 0x514c80],
-    [0x25f, 1, 1, 0x647910, 0x514c40],
-    [0x2a2, 2, 1, 0x650130, 0x51b780],
-    [0x34c, 1, 1, 0x647b00, 0x514e10],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
-);
-export const NATIVE_CONFIGURATION_QUERY_LAYOUTS = Object.freeze(
-  Object.fromEntries(
-    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts.configurationQuery]),
-  ),
-);
-const byID = new Map(NATIVE_CONFIGURATION_QUERY_CONTRACTS.map((spec) => [spec.id, spec]));
-const defaults = ['volume', 'play', 'sysplay', 'voicevol', 'mute', 'skipvol'];
-const current = ['volume', 'play', 'sysplay', 'voicevol', 'skipvol', 'mute'];
-
-export class NativeConfigurationQueries {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.layout = NATIVE_CONFIGURATION_QUERY_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error('Configuration queries require a reviewed engine');
-    this.sdk = engine.profile.startsWith('sdk-');
-    engine.refs.configurationQueries ??= {
-      allocations: new Set(),
-      vectors: new Map(),
-      strings: new Map(),
-    };
-    engine.registerFeature('configuration-queries', this);
+export const NATIVE_CONFIGURATION_QUERY_IDS = Object.freeze([
+  0x24d, 0x25d, 0x25e, 0x25f, 0x2a2, 0x34c,
+]);
+const fold = (byte) => (byte >= 65 && byte <= 90 ? byte + 32 : byte);
+function equal(a, b) {
+  return a.length === b.length && a.every((byte, i) => fold(byte) === fold(b[i]));
+}
+function lower(bytes) {
+  const result = bytes.slice();
+  for (let at = 0; at < result.length; at++) {
+    if (nativeDataPair(result, at)) at++;
+    else result[at] = fold(result[at]);
   }
-  get refs() {
-    return this.engine.refs.configurationQueries;
+  return result;
+}
+const separator = (bytes) => Math.max(bytes.lastIndexOf(47), bytes.lastIndexOf(92));
+function withoutExtension(bytes) {
+  const dot = bytes.lastIndexOf(46);
+  return dot > separator(bytes) ? bytes.subarray(0, dot) : bytes;
+}
+function directoryIndex(voice, path) {
+  const directory = withoutExtension(path);
+  for (let i = 0; i < 48; i++)
+    if (equal(directory, nativeDataString(voice.subarray(104 + i * 116, 136 + i * 116)))) return i;
+  return -1;
+}
+function legacyIndex(voice, filename) {
+  const slash = separator(filename);
+  if (slash > 0) {
+    const index = directoryIndex(voice, filename.subarray(0, slash));
+    if (index >= 0) return index;
   }
-  encode(value) {
-    if (value instanceof Uint8Array) return value;
-    return nativeABI(this.engine.profile).xmlEncoding === 'Shift_JIS'
-      ? encodeCP932(String(value))
-      : new TextEncoder().encode(String(value));
+  const name = lower(filename);
+  for (let i = 0; i < 48; i++) {
+    const head = nativeDataString(voice.subarray(60 + i * 116, 100 + i * 116));
+    if (head.length && head.length <= name.length && head.every((byte, at) => name[at] === byte))
+      return i;
   }
-  allocate(size) {
-    const pointer = this.process.allocate(size, true);
-    this.refs.allocations.add(pointer);
-    return pointer;
-  }
-  free(pointer) {
-    if (!this.refs.allocations.delete(pointer) || !this.process.free(pointer))
-      throw new Error('Configuration mirror released an unknown allocation');
-  }
-  string(at, value, seen) {
-    const bytes = this.encode(value),
-      p = this.process;
-    seen.add(at);
-    let buffer = this.refs.strings.get(at);
-    if (buffer && (bytes.length < 16 || bytes.length > buffer.capacity)) {
-      this.free(buffer.pointer);
-      this.refs.strings.delete(at);
-      buffer = null;
-    }
-    if (bytes.length >= 16 && !buffer) {
-      buffer = { pointer: this.allocate(bytes.length + 1), capacity: bytes.length };
-      this.refs.strings.set(at, buffer);
-    }
-    const address = buffer ? buffer.pointer : at;
-    p.write(address, bytes);
-    p.write(address + bytes.length, [0]);
-    if (buffer) p.store(at, address);
-    p.store(at + 16, bytes.length);
-    p.store(at + 20, buffer?.capacity ?? 15);
-  }
-  vector(at, nodes, vectors, strings) {
-    const p = this.process;
-    vectors.add(at);
-    let allocation = this.refs.vectors.get(at);
-    if (allocation && nodes.length > allocation.capacity) {
-      this.free(allocation.pointer);
-      this.refs.vectors.delete(at);
-      allocation = null;
-    }
-    if (nodes.length && !allocation) {
-      allocation = { pointer: this.allocate(nodes.length * 196), capacity: nodes.length };
-      this.refs.vectors.set(at, allocation);
-    }
-    const base = allocation?.pointer ?? 0;
-    p.store(at, base);
-    p.store(at + 4, base + nodes.length * 196);
-    p.store(at + 8, base + (allocation?.capacity ?? 0) * 196);
-    nodes.forEach((node, index) => this.record(base + index * 196, node, vectors, strings));
-  }
-  record(at, node, vectors, strings) {
-    const p = this.process;
-    for (const [field, offset] of [
-      ['key', 0],
-      ['name', 24],
-      ['type', 52],
-      ['head', 76],
-      ['int', 104],
-    ])
-      this.string(at + offset, node?.[field] ?? '', strings);
-    p.store(at + 48, node?.id ?? -1);
-    p.store(at + 100, node?.group ?? -1);
-    p.store(at + 128, node?.mastervol ?? -1);
-    p.store(at + 156, node?.sameid ?? 0);
-    defaults.forEach((field, i) => p.store(at + 132 + i * 4, node?.defaults[field] ?? -1));
-    current.forEach((field, i) => p.store(at + 160 + i * 4, node?.current[field] ?? -1));
-    this.vector(at + 184, node?.children ?? [], vectors, strings);
-  }
-  beforeCall() {
-    if (this.closed) return;
-    const p = this.process,
-      owner = this.engine.refs.owner,
-      l = this.layout,
-      entries = this.world.game.nativeResources?.entries ?? [];
-    if (entries.length > 128) throw new Error('Native archive declarations exceed 128 records');
-    for (let i = 0; i < 128; i++) {
-      const row = entries[i],
-        at = owner + l.archive + i * 332;
-      for (const [field, offset, capacity] of [
-        ['archive', 0, 32],
-        ['extension', 32, 8],
-        ['directory', 40, 260],
-        ['name', 300, 32],
-      ]) {
-        const bytes = this.encode(row?.[field] ?? '');
-        if (bytes.length >= capacity) throw new Error(`Native archive ${field} exceeds its record`);
-        p.write(at + offset, bytes);
-        p.write(at + offset + bytes.length, [0]);
-      }
-    }
-    const sound = this.world.soundConfiguration;
-    if (this.engine.refs.startupSoundConfiguration) {
-      syncNativeStartupSoundConfiguration(this.engine, sound);
-      return;
-    }
-    const vectors = new Set(),
-      strings = new Set();
-    p.store(owner + l.soundLoaded, Number(sound.loaded));
-    if (sound.master) this.record(owner + l.soundMaster, sound.master, vectors, strings);
-    this.vector(owner + l.soundParts, sound.parts, vectors, strings);
-    for (const [key, value] of this.refs.strings)
-      if (!strings.has(key)) {
-        this.free(value.pointer);
-        this.refs.strings.delete(key);
-      }
-    for (const [key, value] of this.refs.vectors)
-      if (!vectors.has(key)) {
-        this.free(value.pointer);
-        this.refs.vectors.delete(key);
-      }
-  }
-  async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.store(out, 0xcccccccc);
-      const parameters = [bridge.pointer, 0, argv, out],
-        options = { task: task.id },
-        address = spec.handlers[Number(this.sdk)],
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(address, parameters, undefined, options)
-          : await this.engine.call(address, parameters, undefined, options);
-      if (control !== spec.control)
-        throw new Error('Original configuration query changed its control');
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-      }
-    }
-  }
-  snapshot() {
-    return {};
-  }
-  restore() {
+  return -1;
+}
+function soundArchive(nodes, filename, encode) {
+  for (const node of nodes) {
+    const head = nativeDataString(encode(node.head));
     if (
-      !(this.refs.allocations instanceof Set) ||
-      !(this.refs.vectors instanceof Map) ||
-      !(this.refs.strings instanceof Map)
+      head.length &&
+      head.length <= filename.length &&
+      head.every((byte, i) => filename[i] === byte)
     )
-      throw new Error('Invalid configuration query mirror references');
+      return encode(node.int);
+    const result = soundArchive(node.children ?? [], filename, encode);
+    if (result !== null) return result;
   }
-  close() {
-    if (this.closed) return;
-    this.closed = true;
-    if (this.engine.refs.nativeOwner) {
-      for (const address of this.refs.vectors.keys()) this.process.zero(address, 12);
-      for (const address of this.refs.strings.keys()) {
-        this.process.zero(address, 24);
-        this.process.store(address + 20, 15);
-      }
-    }
-    for (const pointer of this.refs.allocations) this.free(pointer);
-    this.refs.vectors.clear();
-    this.refs.strings.clear();
+  return null;
+}
+export function nativeConfigurationQuery(id, args, machine, services) {
+  const configuration = services.configuration,
+    value = (word) => nativeReply(1, word),
+    arg = (index) => nativeDataArgument(args, machine, index);
+  if (id === 0x24d) {
+    const first = arg(0),
+      second = arg(1);
+    machine.store(first, configuration.queryWords[0]);
+    machine.store(second, configuration.queryWords[1]);
+    return nativeReply(2);
   }
+  const filename = nativeDataFormat(args, machine, services, 0);
+  if (filename === null)
+    throw new Error('Native configuration query reads an unmapped format string');
+  const voice = configuration.blocks[0],
+    words = new DataView(voice.buffer, voice.byteOffset, voice.byteLength),
+    word = (index) => words.getUint32(index * 4, true),
+    index = legacyIndex(voice, filename);
+  if (id === 0x34c) return value(index);
+  if (id === 0x25e || id === 0x25f)
+    return value(index < 0 ? 0 : word((id === 0x25e ? 5 : 14) + 29 * index));
+  if (id === 0x25d) {
+    if (word(1402)) return value(0);
+    const slash = separator(filename),
+      directory = slash > 0 ? directoryIndex(voice, filename.subarray(0, slash)) : -1,
+      row = directory >= 0 ? directory : legacyIndex(voice, filename.subarray(slash + 1)),
+      groupID = row < 0 ? -1 : word(25 + row * 29) | 0,
+      group =
+        groupID === -1
+          ? null
+          : configuration.soundGroups.find((group) => (group.id | 0) === groupID);
+    if (!group) return value(100);
+    const type = encodeCP932(group.type),
+      kind = ['bgm', 'se', 'voice', 'sysvoice'].findIndex((name) => equal(type, encodeCP932(name))),
+      bank = kind === 3 ? 2 : kind;
+    return value(bank < 0 ? 100 : word(1403 + bank) ? 0 : word(bank));
+  }
+  const category = nativeDataFormat(args, machine, services, 1);
+  if (category === null) throw new Error('Native archive query reads an unmapped category format');
+  const abi = nativeABI(services.world.profile),
+    encode = (text) =>
+      text instanceof Uint8Array
+        ? text
+        : abi.xmlEncoding === 'Shift_JIS'
+          ? encodeCP932(String(text))
+          : new TextEncoder().encode(String(text)),
+    resources = services.world.game.nativeResources?.entries ?? [],
+    sound = services.world.soundConfiguration;
+  let archive = category;
+  if (equal(category, encodeCP932('sound'))) {
+    archive = sound.loaded
+      ? soundArchive(sound.parts, lower(filename), encode)
+      : index < 0
+        ? null
+        : nativeDataString(voice.subarray(104 + index * 116, 136 + index * 116));
+    if (archive === null) return value(-1);
+  }
+  for (let i = 0; i < 128; i++)
+    if (equal(archive, nativeDataString(encode(resources[i]?.name ?? '')))) return value(i);
+  return value(-1);
 }
 export function installNativeConfigurationQueries(world) {
-  world.registerNativeFeature(
-    'configuration-queries',
-    (engine) => new NativeConfigurationQueries(engine, world),
-  );
-  for (const { id } of NATIVE_CONFIGURATION_QUERY_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('configuration-queries')).apply(id, args, machine, task),
+  for (const id of NATIVE_CONFIGURATION_QUERY_IDS)
+    world.runtime.register('main', id, (args, machine) =>
+      nativeConfigurationQuery(id, args, machine, world.runtime.services),
     );
 }

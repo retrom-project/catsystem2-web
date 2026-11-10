@@ -236,6 +236,7 @@ export default {
     requiredRenderer: true,
   },
   capabilities: {
+    nameTableAliases: true,
     embeddedJavaScript: false,
     steam: true,
     windowReturnTitle: true,

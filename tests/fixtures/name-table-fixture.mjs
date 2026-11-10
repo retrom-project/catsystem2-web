@@ -2,7 +2,7 @@
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeNameTables, nativeNameTableCodec } from '../../src/native/nametable.mjs';
+import { NativeNameTables, nativeNameTableCodec } from '../../oracle/nametable.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { KCSMachine } from '../../src/kcs/vm.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';

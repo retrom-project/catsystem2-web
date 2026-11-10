@@ -1,18 +1,8 @@
 # Compiled database resources and flags
 
-The seven main natives `365/366/367/368/369/36D/36E` operate on the engine's
-compiled `KCDB` resources. [The adapter](../src/native/database.mjs) executes
-the complete original wrappers, parser, ordered index map, string helpers and
-destructor from each fixed engine. The mounted `database` resource category and
-shared file service are the explicit resource boundary.
-
-A resource contains a zlib-compressed column schema and fixed-width records.
-The reviewed fields are `ID`, `TITLE_S`, `TITLE`, `IND1` through `IND24`, and
-`INDEX`. Index names pass through the original byte normalizer and ordered map.
-These are compiled tables; a TSV reader or a numeric flag array would lose their
-lookup and ownership behavior. The three formatted constructor options remain
-conservatively named A/B/C because their full presentation meaning has not been
-established independently.
+The seven operations own compiled KCDB records and flag state in JS. Resources
+use the existing `database` category. The implementation lives in
+[database.mjs](../src/native/database.mjs), using the shared JS compiled-table parser.
 
 | ID  | Arguments including owner | Control | Behavior                                                             |
 | --- | ------------------------: | ------: | -------------------------------------------------------------------- |
@@ -24,55 +14,25 @@ established independently.
 | 36D |                         1 |       1 | Return owner modification word                                       |
 | 36E |                         1 |       2 | Clear only the owner modification word                               |
 
-## State and serialization
+KCDB contains a zlib-compressed schema and fixed-width rows. Index fields retain
+raw bytes and the recovered kana normalization. A duplicate index keeps the first
+record. Setting a new bit updates current/new masks and the first-use word, then
+marks the owner modified. Bit indexes wrap modulo 32. Clearing the modification
+word preserves flags. Repeating an existing bit leaves a clean owner unchanged.
 
-Each record retains three flag words. Setting a previously absent bit updates
-both its current and newly set masks. A record whose old mask was zero also
-gets its first-use word. Either transition marks the owner modified. The x86
-bit shift uses the low five bits of the bit index. Repeating an existing bit
-after clearing the owner modification word leaves the owner clean; a missing
-index name changes nothing. `36E` does not clear record flags.
+Export writes a count DWORD followed by byte-sorted 268-byte records, each with
+a 256-byte NUL-terminated name and three flag words. A null destination returns
+the size. Import normalizes input names in place, ignores unknown names and lets
+later duplicates win. It preserves the owner's modification word. During the
+remaining raw-heap migration, export/import use the caller's raw-memory service.
+The records and flags remain JS-owned throughout. Raw pointers are independent
+of KCS VM addresses. A null owner preserves the original result sentinel for
+`368/369`. Empty, missing and invalid resources leave a valid empty owner.
 
-Export is a count DWORD followed by 268-byte records in original index-map order:
-a 256-byte NUL-terminated index name and the three flag DWORDs. The original
-writer clears each output record before copying the name. A null destination
-only queries `4 + count * 268`. Import normalizes source names in place, replaces
-all three flag words for known records, ignores unknown names and lets later
-duplicate input records win. It does not mark the owner modified.
+Both ABI differential sequences cover all seven operations, flag transitions,
+raw import/export canaries, normalization, duplicates and nulls. World tests
+exercise CSS/raw heap roundtrips and independent restored mutation. The old
+wrapper and detailed verifier are preserved under `oracle/database.mjs`.
 
-Both export and import take process pointers, **not KCS virtual addresses**.
-They interoperate with raw heap natives `341..344` and CSS global-file entries.
-Import with a null source returns zero for a live owner; a nonnull source returns
-one. With a null owner, `368/369` return control 1 without writing their result,
-preserving the VM's `CCCCCCCC` result sentinel. Other null-owner operations retain
-their original zero or void behavior. Missing, empty and bad-magic resources
-still leave a valid empty owner after `365`.
-
-An opaque `database` handle stores only the original 80-byte owner pointer. All
-records, strings, flags and heap references stay in the one shared engine
-process. A fresh-World checkpoint restores this same identity and process state.
-Explicit release runs the original wrapper; World cleanup destroys remaining
-owners. No parallel JavaScript database is maintained.
-
-## Evidence
-
-`scripts/verify-native-database.mjs` compares **502 complete wrapper calls and
-3,089 observations per profile**, **6,178 comparisons** total. Both sides execute
-the original compiled-resource parser and helpers. The checks include all seven
-interfaces, complete VM memory and canaries, original allocation/string/map
-state, formatted options, duplicate/empty/long/CP932 fields, raw export/import,
-in-place source normalization, adjacent GCALL argument words and null-result
-sentinels. The fixture tables are authored for these tests and contain no game
-assets.
-
-Four optional engine-backed integration tests cover both profiles. They verify
-flag and modification transitions, real `341/368/343/F5` export to a CSS file,
-fresh-World `F7/344/369` import, checkpoint identity, independent mutation and
-release. The images are supplied locally through the same frozen-image test
-environment variables as the other native families.
-
-Malformed buffers that exceed the original unchecked record-field capacities
-are not claimed as defined behavior. This family supplies the compiled records
-and persistent flags used by database-style displays; complete gallery,
-recollection, FES display and browser presentation acceptance remain separate
-work.
+Run `node --test tests/native-database.test.mjs` and, with private images,
+`node --test tests/differential/native-database.test.mjs`.
