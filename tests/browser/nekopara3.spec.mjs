@@ -65,7 +65,7 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
     await page.click('#next');
     await step(page, 6);
   }
-  expect((await gameplay(page)).models).toBeGreaterThan(0);
+  expect((await gameplay(page)).nativeActors).toBeGreaterThan(0);
   await button(page, 'btn', true);
   await until(page, 'touch#WAIT_TOUCH', 240);
   await clickGame(page, 640, 240);
