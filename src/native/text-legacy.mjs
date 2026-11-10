@@ -99,7 +99,13 @@ export class NativeLegacyTextRuntime {
       return nativeReply(2);
     }
     if (id === 0x86) {
-      await send(114, arg(1), 0, Uint8Array.from([...nativeDataCString(machine, arg(2)), 0]));
+      const units = nativeTextUnits(nativeDataCString(machine, arg(2))),
+        bytes = new Uint8Array((units.length + 1) * 2),
+        view = new DataView(bytes.buffer);
+      units.forEach((code, i) =>
+        view.setUint16(i * 2, code >= 128 && code <= 255 ? code | 0xff00 : code, true),
+      );
+      await send(114, arg(1), 0, bytes);
       return nativeReply(2);
     }
     if (id === 0x89) {

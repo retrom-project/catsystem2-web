@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 115, "oracle": 133, "differential": 44 },
+    "counts": { "js": 116, "oracle": 133, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -134,6 +134,7 @@
         "tests/psd.test.mjs",
         "tests/raster.test.mjs",
         "tests/scene-contracts.test.mjs",
+        "tests/text-font-resource.test.mjs",
         "tests/transitional-serving.test.mjs",
         "tests/zlib-javascript.test.mjs"
       ],
@@ -310,6 +311,7 @@
         "tests/differential/native-text-profiles-js.test.mjs",
         "tests/differential/native-text-raster-js.test.mjs",
         "tests/differential/native-text-sequence-js.test.mjs",
+        "tests/differential/native-text-wrappers-js.test.mjs",
         "tests/differential/native-tile-game-choices.test.mjs",
         "tests/differential/native-tile-game-commands.test.mjs",
         "tests/differential/native-tile-game-hands.test.mjs",
@@ -3002,7 +3004,7 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 495,
+    "nativeNeedsReview": 491,
     "runtimeFiles": 370,
     "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 44, "7": 25, "8": 148, "9": 29 },
     "fileNeedsReview": 125,
@@ -5259,10 +5261,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5276,10 +5278,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5293,10 +5295,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5310,10 +5312,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5327,10 +5329,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5344,10 +5346,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5361,10 +5363,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5378,10 +5380,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5395,10 +5397,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5412,10 +5414,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5429,10 +5431,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5446,10 +5448,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5463,10 +5465,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5480,10 +5482,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5497,10 +5499,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5514,10 +5516,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5531,10 +5533,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -7322,9 +7324,14 @@
           "registration": "src/native/image-persistence.mjs:11",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
+          "docs": ["docs/native-compatibility.md", "docs/native-domain5-review.md"],
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -7492,9 +7499,14 @@
           "registration": "src/native/image-persistence.mjs:11",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
+          "docs": ["docs/native-compatibility.md", "docs/native-domain5-review.md"],
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -10048,10 +10060,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10527,10 +10539,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -11223,10 +11235,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -12966,10 +12978,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -13919,12 +13931,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -13936,12 +13957,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -13953,12 +13983,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -13970,12 +14009,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -13987,12 +14035,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14004,12 +14061,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14021,12 +14087,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14038,12 +14113,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14055,12 +14139,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14072,12 +14165,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14089,12 +14191,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -14122,7 +14233,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14152,7 +14267,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14182,7 +14301,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14212,7 +14335,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15478,12 +15605,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -15642,7 +15778,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15672,7 +15812,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15719,7 +15863,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15749,7 +15897,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15779,7 +15931,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15809,7 +15965,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18758,7 +18918,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18788,7 +18952,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18818,7 +18986,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18870,12 +19042,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -20424,7 +20605,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -20453,7 +20638,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -20482,7 +20671,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -21064,7 +21257,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -23742,7 +23939,7 @@
         },
         {
           "name": "legacy-text",
-          "registration": "src/native/text-legacy.mjs:455",
+          "registration": "src/native/text-legacy.mjs:461",
           "modules": [],
           "dependencies": []
         },
@@ -23796,15 +23993,15 @@
         },
         {
           "name": "fes-text-projection",
-          "registration": "src/native/text-task.mjs:571",
+          "registration": "src/native/text-task.mjs:575",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:574",
+          "registration": "src/native/text-task.mjs:578",
           "modules": ["src/native/text.mjs"],
-          "dependencies": ["data-buffers", "engine-files"]
+          "dependencies": []
         },
         {
           "name": "m2-task",
@@ -26010,10 +26207,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26027,10 +26224,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26044,10 +26241,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26061,10 +26258,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26078,10 +26275,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26095,10 +26292,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26112,10 +26309,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26129,10 +26326,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26146,10 +26343,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26163,10 +26360,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26180,10 +26377,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26197,10 +26394,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26214,10 +26411,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26231,10 +26428,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26248,10 +26445,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26265,10 +26462,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26282,10 +26479,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -28073,9 +28270,14 @@
           "registration": "src/native/image-persistence.mjs:11",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
+          "docs": ["docs/native-compatibility.md", "docs/native-domain5-review.md"],
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -28243,9 +28445,14 @@
           "registration": "src/native/image-persistence.mjs:11",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
+          "docs": ["docs/native-compatibility.md", "docs/native-domain5-review.md"],
+          "review": "traced",
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -30831,10 +31038,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -31310,10 +31517,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -31997,10 +32204,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -33737,10 +33944,10 @@
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:462",
+          "registration": "src/native/text-legacy.mjs:468",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-text.md"],
+          "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -34690,12 +34897,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34707,12 +34923,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34724,12 +34949,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34741,12 +34975,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34758,12 +35001,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34775,12 +35027,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34792,12 +35053,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34809,12 +35079,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34826,12 +35105,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34843,12 +35131,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34860,12 +35157,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -34894,7 +35200,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -34925,7 +35235,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -34956,7 +35270,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -34987,7 +35305,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36252,12 +36574,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -36417,7 +36748,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36448,7 +36783,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36496,7 +36835,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36527,7 +36870,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36558,7 +36905,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36589,7 +36940,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39536,7 +39891,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39567,7 +39926,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39598,7 +39961,11 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39650,12 +40017,21 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:592",
-          "features": ["data-buffers"],
-          "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "registration": "src/native/text-task.mjs:594",
+          "features": [],
+          "dependencies": [],
+          "docs": [
+            "docs/native-compatibility.md",
+            "docs/native-domain5-review.md",
+            "docs/native-text.md"
+          ],
           "review": "traced",
-          "reviewReasons": []
+          "reviewReasons": [],
+          "migrationReview": {
+            "phase": 5,
+            "decision": "js-owned-inputs",
+            "evidence": "docs/native-domain5-review.md"
+          }
         },
         {
           "table": "main",
@@ -45288,7 +45664,7 @@
         },
         {
           "name": "legacy-text",
-          "registration": "src/native/text-legacy.mjs:455",
+          "registration": "src/native/text-legacy.mjs:461",
           "modules": [],
           "dependencies": []
         },
@@ -45342,15 +45718,15 @@
         },
         {
           "name": "fes-text-projection",
-          "registration": "src/native/text-task.mjs:571",
+          "registration": "src/native/text-task.mjs:575",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:574",
+          "registration": "src/native/text-task.mjs:578",
           "modules": ["src/native/text.mjs"],
-          "dependencies": ["data-buffers", "engine-files"]
+          "dependencies": []
         },
         {
           "name": "m2",
@@ -46110,7 +46486,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "9e31f64b83a4b6a59f014c34286856c03531b6c93644c9f90282f19f8ea5adb5",
+      "sourceSha256": "7860407cfce3c5881f5e19b580536c5a4fde182ce678d0e1b72aab02d6f64446",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46123,7 +46499,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "c840d023be2fd98402d12d7b3c290a93ccec2c32dbbbeee9f49fbf73e9aa2cfb",
+      "sourceSha256": "bd7f77183cab312e664506f0d0ef6e5e753095b7aacf58e861d0ab5259940f72",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50230,7 +50606,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-compatibility.md", "docs/native-domain5-review.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -53190,7 +53566,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-text.md"],
+      "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -53211,12 +53587,12 @@
     },
     {
       "file": "src/native/text-legacy.mjs",
-      "sourceSha256": "8c56ce086d5d38ba40bbe0ea28e5239ebf13e1a6867e462316578c6116259744",
+      "sourceSha256": "5453a4821107824cabf65b2709a888af1fd469d9ca2177fd8ac6f9cfc7fdd975",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": ["getNativeFeature", "sendEngine", "sendNativeEngine"],
-      "docs": ["docs/native-text.md"],
+      "docs": ["docs/native-domain5-review.md", "docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [
@@ -53235,21 +53611,21 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 225,
+          "line": 231,
           "method": "getNativeFeature",
           "feature": "text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 459,
+          "line": 465,
           "method": "getNativeFeature",
           "feature": "legacy-text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 463,
+          "line": 469,
           "method": "getNativeFeature",
           "feature": "legacy-text",
           "review": "needs-review",
@@ -53346,12 +53722,16 @@
     },
     {
       "file": "src/native/text-task.mjs",
-      "sourceSha256": "adfd12748ebb92c785389e170a69f079897eb5213a168f501d8ad589e971c343",
+      "sourceSha256": "3f2d70a6c761b0a52842169b948033875599f46b8e953b1096b2a9f876a8016f",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": ["getNativeFeature", "sendNativeEngine"],
-      "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+      "docs": [
+        "docs/native-compatibility.md",
+        "docs/native-domain5-review.md",
+        "docs/native-text.md"
+      ],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [
@@ -53363,49 +53743,28 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 269,
+          "line": 271,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 525,
+          "line": 529,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 575,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 576,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 605,
+          "line": 607,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 647,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 650,
+          "line": 656,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",

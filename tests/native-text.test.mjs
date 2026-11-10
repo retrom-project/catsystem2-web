@@ -12,6 +12,7 @@ import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeEngineMessages } from '../src/native/engine-message.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
+import { NativeDataBuffers as JSDataBuffers } from '../src/native/data-buffer.mjs';
 import { installNativeBitmapMemory } from '../src/native/bitmap-memory.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';
@@ -875,10 +876,14 @@ for (const [profile, variable, types] of [
                 runtime.command(instance, instance.byKey.get('str'), 'userfontobj', ['font']),
                 /userfontobj requires an IMAGE source: font/,
               );
-              const buffers = await first.getNativeFeature('data-buffers'),
-                handle = await buffers.load('glyphs', first.owner),
+              const buffers = new JSDataBuffers({
+                handles: first.runtime.handles,
+                read: (name, category) => first.game.requireCategory(name, category),
+              });
+              first.runtime.imageDataBuffers = buffers;
+              const handle = await buffers.load('glyphs', first.owner),
                 pointer = buffers.pointer(handle),
-                p = first.engine.process;
+                p = buffers.process;
               assert.equal(
                 p.load(p.load(pointer) - 4),
                 1,
@@ -897,9 +902,13 @@ for (const [profile, variable, types] of [
                 2,
               );
               assert.equal(
-                buffers.pointer(handle),
-                pointer,
-                'the main wrapper and font share the original descriptor',
+                buffers.owns(pointer),
+                false,
+                'the initialized writer consumes the source reference',
+              );
+              assert(
+                (await nativeTextTask.writer()).imageFont.length > 0,
+                'the writer owns copied font bytes',
               );
             }
             assert.equal(nativeTextTask.graph.width, 96);

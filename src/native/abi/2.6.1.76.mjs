@@ -5274,6 +5274,11 @@ export default {
         {
           id: 241,
           name: 'image.saveEntry',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle globalFile', 'word entry', 'handle bitmap'],
           result: 'bool',
           family: 'image',
@@ -5464,6 +5469,11 @@ export default {
         {
           id: 251,
           name: 'image.loadEntry',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle globalFile', 'word entry'],
           result: 'handle',
           family: 'image',
@@ -12814,6 +12824,11 @@ export default {
         {
           id: 611,
           name: 'text.defaultConfiguration',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'VMptr record'],
           result: 'void',
           family: 'text',
@@ -12833,6 +12848,11 @@ export default {
         {
           id: 612,
           name: 'text.configure',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'VMptr record'],
           result: 'void',
           family: 'text',
@@ -12852,6 +12872,11 @@ export default {
         {
           id: 613,
           name: 'text.updateConfiguration',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'VMptr record'],
           result: 'void',
           family: 'text',
@@ -12871,6 +12896,11 @@ export default {
         {
           id: 614,
           name: 'text.appendFormatted',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'format* text'],
           result: 'void',
           family: 'text',
@@ -12890,6 +12920,11 @@ export default {
         {
           id: 615,
           name: 'text.clear',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task'],
           result: 'void',
           family: 'text',
@@ -12909,6 +12944,11 @@ export default {
         {
           id: 616,
           name: 'text.remaining',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task'],
           result: 'i32',
           family: 'text',
@@ -12928,6 +12968,11 @@ export default {
         {
           id: 617,
           name: 'text.finish',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task'],
           result: 'void',
           family: 'text',
@@ -12947,6 +12992,11 @@ export default {
         {
           id: 618,
           name: 'text.mark',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task'],
           result: 'void',
           family: 'text',
@@ -12966,6 +13016,11 @@ export default {
         {
           id: 619,
           name: 'text.setPageLimit',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'i32 limit'],
           result: 'void',
           family: 'text',
@@ -12985,6 +13040,11 @@ export default {
         {
           id: 620,
           name: 'text.setImageFont',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'handle nativeImageData'],
           result: 'void',
           family: 'text',
@@ -13004,6 +13064,11 @@ export default {
         {
           id: 621,
           name: 'text.setCharacterImage',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'u16 character', 'i32 selector'],
           result: 'void',
           family: 'text',
@@ -14466,6 +14531,11 @@ export default {
         {
           id: 695,
           name: 'text.setSpeed',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task', 'i32 speed'],
           result: 'void',
           family: 'text',
@@ -18367,6 +18437,11 @@ export default {
         {
           id: 884,
           name: 'text.remainingPage',
+          migrationReview: {
+            phase: 5,
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+          },
           parameters: ['handle task'],
           result: 'i32',
           family: 'text',

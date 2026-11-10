@@ -263,8 +263,10 @@ export class NativeTextTask {
         await this.restart();
         return 0;
       case 9:
-        if (context.resourceBytes) await writer.userFont(context.resourceBytes);
-        else if (!l) await writer.resourceMessage(9, 0, 0);
+        if (context.resourceBytes) {
+          await writer.userFont(context.resourceBytes);
+          context.consumeResource?.();
+        } else if (!l) await writer.resourceMessage(9, 0, 0);
         else if (context.nativePointer)
           await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
         else throw new Error('Native text image font requires a mounted image-data resource');
@@ -519,8 +521,10 @@ export class NativeNVTextTask extends NativeTextTask {
         await this.restart();
         return 0;
       case 10:
-        if (context.resourceBytes) await writer.userFont(context.resourceBytes);
-        else if (!l) await writer.userFont(null);
+        if (context.resourceBytes) {
+          await writer.userFont(context.resourceBytes);
+          context.consumeResource?.();
+        } else if (!l) await writer.userFont(null);
         else if (context.nativePointer)
           await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
         else throw new Error('Native NV image font requires its owned native image-data resource');
@@ -572,8 +576,6 @@ export function installNativeText(world, { glyphs } = {}) {
     engine.createFESTextProjection(world),
   );
   world.registerNativeFeature('text', async (engine) => {
-    await world.getNativeFeature('data-buffers');
-    await world.getNativeFeature('engine-files');
     const runtime = new NativeTextRuntime(engine, { world, glyphs });
     await runtime.ready();
     return runtime;
@@ -644,18 +646,22 @@ export async function nativeText(id, args, machine, task, world) {
       break;
     case 0x26c: {
       if (!args[1]) break;
-      const buffers = await world.getNativeFeature('data-buffers'),
-        block = buffers.pointer(args[1]);
+      const buffers = world.runtime.imageDataBuffers,
+        source = buffers.pointer(args[1]),
+        context = {
+          resourceBytes: buffers.data(source).slice(),
+          consumeResource: () => buffers.releasePointer(source),
+        };
       if (world.sendNativeEngine) {
-        await world.sendNativeEngine(args[0], task.id, 458, 0, block, { nativePointer: true });
+        await world.sendNativeEngine(args[0], task.id, 458, 0, 0, context);
         break;
       }
       const targetID = world.resolveTaskID ? world.resolveTaskID(args[0], task.id) : args[0],
         target = world.graphics.get(targetID);
       if (target)
         await target.message(
-          [world.nativeTaskID ? world.nativeTaskID(task.id) : task.id, 458, 0, block],
-          { nativePointer: true, nativeSenderWorldID: task.id },
+          [world.nativeTaskID ? world.nativeTaskID(task.id) : task.id, 458, 0, 0],
+          context,
         );
       break;
     }

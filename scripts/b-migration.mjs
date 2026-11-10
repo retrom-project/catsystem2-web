@@ -388,7 +388,6 @@ function classify(file, id, callback, features, modules) {
   } else if (name === 'script-message-box') implementation = 'exe-region';
   else if (name === 'image-persistence') {
     implementation = 'pure-js';
-    reasons.push('JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。');
   } else {
     const facts = modules.get(file);
     implementation = facts.executionSites.length ? 'unknown' : 'pure-js';
@@ -584,7 +583,7 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         docs: documentation(unique([implementationFile, ...dependencies]), docs),
         review: reasons.length && !reviewedUnsupported ? 'needs-review' : 'traced',
         reviewReasons: reviewedUnsupported ? [] : reasons,
-        ...(reviewedUnsupported ? { migrationReview: entry.migrationReview } : {}),
+        ...(entry.migrationReview ? { migrationReview: entry.migrationReview } : {}),
       });
     }
     if (entries.filter((entry) => entry.table === table).length !== declaration.count)

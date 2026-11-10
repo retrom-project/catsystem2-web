@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { nativeText } from '../src/native/text-task.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const profiles = [
   [
@@ -52,6 +53,7 @@ for (const [flag, profile, convert, format, wrappers] of profiles) {
       message = profile.startsWith('sdk-') ? message + 5 : message;
       let data = null;
       if ([449, 450, 451].includes(message)) l = 'vm:' + currentArgs[1];
+      if (message === 458) l = 'image-font-resource';
       if (message === 452) {
         data = payload
           ? new TextDecoder('shift_jis').decode(payload.bytes(l, formatted.length))
@@ -120,7 +122,14 @@ for (const [flag, profile, convert, format, wrappers] of profiles) {
             return 0x12345678;
           },
           world = {
-            runtime: { services: { format: () => formatted } },
+            runtime: {
+              services: { formatBytes: () => encodeCP932(formatted) },
+              imageDataBuffers: {
+                pointer: () => currentArgs[1],
+                data: () => Uint8Array.of(1, 2, 3),
+                releasePointer() {},
+              },
+            },
             getNativeFeature: async () => ({ pointer: () => currentArgs[1] }),
             graphics: {
               send,

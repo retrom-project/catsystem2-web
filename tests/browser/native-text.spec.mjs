@@ -162,7 +162,7 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
-  test(`${profile} original text engine consumes Canvas glyphs and reaches the shared GPU after a fresh process restore`, async ({
+  test(`${profile} JS text engine consumes Canvas glyphs and reaches the shared GPU after a fresh process restore`, async ({
     page,
   }) => {
     test.skip(!process.env[variable], 'Requires a separately mounted frozen engine');
@@ -185,7 +185,7 @@ for (const [profile, variable] of [
         open = async () => {
           const engine = await NativeEngineProcess.open({ profile, bytes }),
             runtime = new NativeTextRuntime(engine, {
-              glyphs: new CanvasTextGlyphs({ family: () => 'sans-serif' }),
+              glyphs: new CanvasTextGlyphs(),
             });
           return { engine, runtime };
         },
