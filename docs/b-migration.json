@@ -45867,7 +45867,7 @@
     },
     {
       "file": "src/emote/native-d3d.mjs",
-      "sourceSha256": "08b2fa71db0d1d40c9c611909ee342d257ef4f344a966d397269db3a754899e7",
+      "sourceSha256": "ecdcee02a449d848a0d879d514f763b3aac854d771718fb25ea56b4bea1a476d",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

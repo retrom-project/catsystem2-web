@@ -31,8 +31,8 @@ const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-d3d9-surface-golden.json', import.meta.url)),
 );
 
-async function withDevice(run) {
-  const p = new PE32Process(await loadUnicorn()),
+async function withDevice(run, options = {}) {
+  const p = new PE32Process(await loadUnicorn(), options),
     d = new EmoteD3D9(p, { width: 8, height: 8 }),
     out = p.allocate(304, true);
   const words = (values) => {
@@ -61,6 +61,50 @@ async function withDevice(run) {
     p.close();
   }
 }
+
+test('CreateTexture memory pressure returns HRESULT and permits the next resource call', async () => {
+  await withDevice(
+    ({ p, d, out }) => {
+      const objects = d.objects.size;
+      assert.equal(com(p, d.device, 23, 1, 1, 1, 0, 21, 0, out, 0), 0);
+      assert.equal(com(p, p.load(out), 2), 0);
+      // Keep the interface table warm; exhaust the actual guest arena, then
+      // leave just enough room for pixels but no room for their COM interface.
+      const scratch = p.allocate(64);
+      while (true) {
+        try {
+          p.allocate(16);
+        } catch (error) {
+          assert.equal(error.message, 'PE32 heap exhausted');
+          break;
+        }
+      }
+      p.free(scratch);
+      p.store(out, canary);
+      assert.equal(com(p, d.device, 23, 4, 4, 1, 0, 21, 0, out, 0), 0x8007000e);
+      assert.equal(p.load(out), canary);
+      assert.equal(d.objects.size, objects);
+      assert.equal(com(p, d.device, 23, 1024, 1024, 1, 0, 21, 0, out, 0), 0x8007000e);
+      assert.equal(d.objects.size, objects);
+      assert.equal(com(p, d.device, 23, 1, 1, 1, 0, 21, 0, out, 0), 0);
+      assert.equal(com(p, p.load(out), 2), 0);
+      assert.equal(d.objects.size, objects);
+      const allocate = p.allocate;
+      p.allocate = () => {
+        throw new Error('unrelated memory corruption');
+      };
+      try {
+        assert.throws(
+          () => com(p, d.device, 23, 1, 1, 1, 0, 21, 0, out, 0),
+          /unrelated memory corruption/,
+        );
+      } finally {
+        p.allocate = allocate;
+      }
+    },
+    { heapSize: 0x10000 },
+  );
+});
 
 test('Surface9.GetContainer returns the real texture identity and one reference', async () => {
   const source = await readFile(

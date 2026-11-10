@@ -13,6 +13,7 @@ const INVALID_CALL = 0x8876086c;
 const SURFACE_BUSY = 0x887601ae;
 const NO_INTERFACE = 0x80004002;
 const NULL_POINTER = 0x80004003;
+const OUT_OF_MEMORY = 0x8007000e;
 const interfaceWords = {
   IUnknown: [0, 0, 0xc0, 0x46000000],
   Direct3D9: [0x81bdcbca, 0x426d64d4, 0x01ad8dae, 0x5c27f447],
@@ -426,21 +427,36 @@ export class EmoteD3D9 {
           if (!formats.has(format) || (usage & 1 && ![21, 22].includes(format)) || usage & 2)
             return NOT_AVAILABLE;
           const pitch = (width * formats.get(format) + 3) & ~3;
-          const pointer = this.object('Texture9', {
-            width,
-            height,
-            levels: 1,
-            usage,
-            format,
-            pool,
-            pitch,
-            pixels: p.allocate(pitch * height, true),
-            locked: false,
-            revision: 0,
-            dirtyRectangle: [0, 0, width, height],
-          });
-          p.store(output, pointer);
-          return 0;
+          let pixels = 0,
+            pointer = 0;
+          try {
+            pixels = p.allocate(pitch * height, true);
+            pointer = this.object('Texture9', {
+              width,
+              height,
+              levels: 1,
+              usage,
+              format,
+              pool,
+              pitch,
+              pixels,
+              locked: false,
+              revision: 0,
+              dirtyRectangle: [0, 0, width, height],
+            });
+            p.store(output, pointer);
+            return 0;
+          } catch (error) {
+            if (pointer) {
+              this.objects.delete(pointer);
+              p.free(pointer);
+            }
+            if (pixels) p.free(pixels);
+            // The guest checks HRESULT, as it does a null HeapAlloc result.
+            // A resource limit must not escape across COM as a JS exception.
+            if (error.message === 'PE32 heap exhausted') return OUT_OF_MEMORY;
+            throw error;
+          }
         },
       ];
       methods[28] = [
