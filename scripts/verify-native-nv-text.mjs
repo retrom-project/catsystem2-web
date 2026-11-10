@@ -4,7 +4,8 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeTextRuntime, NativeNVTextWriter } from '../src/native/text.mjs';
+import { NativeTextRuntime, NativeNVTextWriter } from '../oracle/text.mjs';
+import { NativeTextRuntime as JSTextRuntime } from '../src/native/text.mjs';
 import { NativeNVTextTask } from '../src/native/text-task.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
@@ -86,7 +87,11 @@ for (const [profile, , abi] of configs) {
       bytes: new Uint8Array(await fs.readFile(process.argv[index + 1])),
     }),
     p = e.process,
-    r = new NativeTextRuntime(e, { glyphs });
+    r = new NativeTextRuntime(e, { glyphs }),
+    candidate = new JSTextRuntime(
+      { ...e, profile: e.profile, process: e.process, registerFeature() {} },
+      { glyphs },
+    );
   let clock = 0,
     graph = null,
     shown = true,
@@ -196,7 +201,7 @@ for (const [profile, , abi] of configs) {
       };
       installNativeGraphics(world);
       const record = { id: 12, kind: 49, state: 'active', effectiveFrame: 0, pausedFrames: 0 },
-        task = new NativeNVTextTask({ world, runtime: async () => r }, record),
+        task = new NativeNVTextTask({ world, runtime: async () => candidate }, record),
         raw = p.allocate(0x600, true),
         out = p.allocate(4, true),
         packet = p.allocate(r.bindings('nv').packetSize, true),
@@ -332,6 +337,7 @@ for (const [profile, , abi] of configs) {
       }
     }
   } finally {
+    await candidate.close();
     await e.close();
   }
   total += checked;

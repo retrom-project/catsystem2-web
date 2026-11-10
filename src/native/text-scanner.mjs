@@ -17,22 +17,23 @@ export function nativeTextUnits(bytes, utf8 = false) {
 }
 export function scanNativeText(
   input,
-  { utf8 = false, parse = true, ruby = true, config = [], rate = 60 } = {},
+  { utf8 = false, parse = true, ruby = true, config = [], rate = 60, state = null } = {},
 ) {
   const units = input instanceof Uint8Array ? nativeTextUnits(input, utf8) : Array.from(input),
     records = [];
   const get = (i, fallback = 0) => config[i] ?? fallback;
-  let at = 0,
-    group = 0,
-    depth = 0,
-    mainSize = get(11, 24),
-    rubySize = get(16, 12),
-    color = get(6, 0xffffff),
-    defaultColor = color,
-    shadow = get(7),
-    rubyColor = get(8, 0xffffff),
-    wait = 0;
-  const ids = new Map(),
+  let at = state?.at ?? 0,
+    group = state?.group ?? 0,
+    depth = state?.depth ?? 0,
+    mainSize = state?.mainSize ?? get(11, 24),
+    rubySize = state?.rubySize ?? get(16, 12),
+    color = state?.color ?? get(6, 0xffffff),
+    defaultColor = state?.defaultColor ?? color,
+    shadow = state?.shadow ?? get(7),
+    rubyColor = state?.rubyColor ?? get(8, 0xffffff),
+    wait = state?.wait ?? 0;
+  const contexts = state?.contexts?.slice() ?? [],
+    ids = new Map(state?.ids ?? []),
     next = () => (at < units.length ? units[at++] : 0);
   const numeric = () => {
     const start = at;
@@ -59,20 +60,33 @@ export function scanNativeText(
     }
     return result;
   };
-  const emit = (code, mode = 0, x = 0, y = 0, unicode = Number(utf8)) =>
+  const emit = (code, mode = 0, x = 0, y = 0, unicode = Number(utf8)) => {
+    const style = mode >= 0 && mode <= 2;
+    const revealTime =
+      !style || mode === 2 || rate === null ? 0 : Math.floor((Math.imul(wait, rate) >>> 0) / 10);
+    if (
+      style &&
+      mode !== 2 &&
+      rate !== null &&
+      code > 9 &&
+      code !== 65535 &&
+      (!get(33) || (code !== 32 && code !== 0x8140))
+    )
+      wait = (wait + get(code === 0x8142 ? 32 : 31)) >>> 0;
     records.push({
       code: code & 65535,
       mode,
       unicode,
-      x: x | 0,
-      y: y | 0,
-      color: mode === 2 ? rubyColor : color,
-      shadow,
-      size: mode === 2 ? rubySize : mainSize,
-      group: mode === 0 ? -1 : group,
+      x: style ? x | 0 : 0,
+      y: style ? y | 0 : 0,
+      color: !style ? 0 : mode === 2 ? rubyColor : color,
+      shadow: style ? shadow : 0,
+      size: !style ? 0 : mode === 2 ? rubySize : mainSize,
+      group: !style ? 0 : mode === 0 ? -1 : group,
       depth,
-      wait,
+      revealTime,
     });
+  };
   function escape(mode) {
     if (!parse && !ruby) return false;
     const lead = next();
@@ -95,8 +109,10 @@ export function scanNativeText(
     }
     if (c === 'z') {
       const p = parameter();
-      if (p.length) depth++;
-      else if (depth > 0) depth--;
+      if (p.length) {
+        contexts.push(p.slice());
+        depth++;
+      } else if (depth > 0) depth--;
       return true;
     }
     if (c === 'c') {
@@ -196,7 +212,10 @@ export function scanNativeText(
     }
     if (c === 'x' || c === 'y') {
       const n = numeric();
-      if (n && parse) emit(c === 'x' ? 4 : 5, 0, c === 'x' ? n.value : 0, c === 'y' ? n.value : 0);
+      if (n && parse) {
+        if (c === 'x') emit(4, n.value, 0, 0);
+        else emit(5, 0, n.value, 0);
+      }
       return true;
     }
     if (c === 'n') {
@@ -239,7 +258,25 @@ export function scanNativeText(
     }
   }
   scan();
-  return { records, ids, wait };
+  return {
+    records,
+    ids,
+    wait,
+    state: {
+      at,
+      group,
+      depth,
+      mainSize,
+      rubySize,
+      color,
+      defaultColor,
+      shadow,
+      rubyColor,
+      wait,
+      contexts,
+      ids: [...ids],
+    },
+  };
 }
 export function plainNativeText(bytes, utf8 = false) {
   const out = [],

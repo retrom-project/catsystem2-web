@@ -265,7 +265,8 @@ export class NativeTextTask {
       case 9:
         if (context.resourceBytes) await writer.userFont(context.resourceBytes);
         else if (!l) await writer.resourceMessage(9, 0, 0);
-        else if (context.nativePointer) await writer.resourceMessage(9, 0, l);
+        else if (context.nativePointer)
+          await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
         else throw new Error('Native text image font requires a mounted image-data resource');
         return 0;
       case 10:
@@ -289,7 +290,7 @@ export class NativeTextTask {
           const value = memory.bytes(l + i, 1)[0];
           bytes.push(value);
           if (!value) {
-            await writer.input(Uint8Array.from(bytes), (at) => writer.resourceMessage(13, w, at));
+            await writer.category(w, Uint8Array.from(bytes.slice(0, -1)));
             return 0;
           }
         }
@@ -491,9 +492,7 @@ export class NativeNVTextTask extends NativeTextTask {
           kind: 'secondary',
           bytes: this.readBytes(memory, l).slice(),
         });
-        await writer.input(Uint8Array.from([...this.text.sourceEvents.at(-1).bytes, 0]), (at) =>
-          runtime.call(bindings.secondary, [at], writer.pointer),
-        );
+        await writer.appendSecondaryEncoded(this.text.sourceEvents.at(-1).bytes);
         this.text.done = false;
         return 0;
       case 5:
@@ -521,7 +520,9 @@ export class NativeNVTextTask extends NativeTextTask {
         return 0;
       case 10:
         if (context.resourceBytes) await writer.userFont(context.resourceBytes);
-        else if (!l || context.nativePointer) await writer.resourceMessage(9, 0, l);
+        else if (!l) await writer.userFont(null);
+        else if (context.nativePointer)
+          await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
         else throw new Error('Native NV image font requires its owned native image-data resource');
         return 0;
       case 11:
@@ -567,10 +568,15 @@ export function installNativeText(world, { glyphs } = {}) {
   installNativeFESEffects(world);
   installNativeFESPlanes(world);
   installNativeFESArea(world);
+  world.registerNativeFeature('fes-text-projection', (engine) =>
+    engine.createFESTextProjection(world),
+  );
   world.registerNativeFeature('text', async (engine) => {
     await world.getNativeFeature('data-buffers');
     await world.getNativeFeature('engine-files');
-    return new NativeTextRuntime(engine, { glyphs });
+    const runtime = new NativeTextRuntime(engine, { world, glyphs });
+    await runtime.ready();
+    return runtime;
   });
   registerNativeFESObjectType(world, 21, (bridge) => nativeFESTextAdapter(bridge, 21));
   registerNativeFESObjectType(world, 29, (bridge) => nativeFESTextAdapter(bridge, 29));

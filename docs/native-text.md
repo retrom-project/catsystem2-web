@@ -1,223 +1,134 @@
-# Native text execution
+# JavaScript text execution
 
-Text uses the mounted executable for the reviewed parsers, ruby, line breaking,
-character records, image-font routines and glyph compositing. A World owns one
-`NativeEngineProcess`, shared with M2 and configuration. It validates the frozen
-SDK/game image identity before executing a region. It does not enter the EXE
-entry point, WinMain, Steam initialization or PE TLS callbacks.
+The runtime owns text bytes, parsing, placement, reveal clocks, glyph bitmaps,
+logs and checkpoints in JavaScript. It executes no original text constructor,
+parser, glyph compositor, task-8 receiver or FES text driver. Original wrappers
+and engines are retained under `oracle/` for private differential tests.
 
-The browser supplies the Windows GDI boundary through `NativeTextWindows` and
-`CanvasTextGlyphs`: loaded font names, metrics and grayscale glyph masks. This is
-a platform substitution. Matching an original text layout does not establish
-pixel equality between browser font rasterization and Windows GDI.
+The modules separate the recovered contracts:
 
-| Contract                                   | SDK 2.6.1.74                   | Game 2.6.1.76                  |
-| ------------------------------------------ | ------------------------------ | ------------------------------ |
-| Task 8 constructor / handler / logic frame | `4C0310` / `4C0F50` / `4C0E70` | `5E3FF0` / `5E4C70` / `5E4B90` |
-| Task 8 record/config size                  | 40 / 1116 bytes                | 40 / 1116 bytes                |
-| STRING task / first message                | 48 / raw 444                   | 48 / 449                       |
-| STRING8 task / first message               | Absent in this profile         | 63 / 469                       |
-| NVSTRING task / first message              | 49 / raw 463                   | 49 / 489                       |
-| FES STRING constructor / frame driver      | `5EE900` / `532C40`            | `74E540` / `6632C0`            |
-| FES STRING8 constructor / frame driver     | Absent in this profile         | `752EB0` / `663B30`            |
-| FES NVSTRING constructor / frame driver    | `5F0BD0` / `52F8C0`            | `750AB0` / `65FEB0`            |
-| FES LOGSTRING constructor / frame driver   | `5FC1D0` / `52F300`            | `75E0A0` / `65F710`            |
-| FES LOGSTRING8 constructor / frame driver  | Absent in this profile         | `75FCB0` / `65F870`            |
+- [`text-parser.mjs`](../src/native/text-parser.mjs),
+  [`text-scanner.mjs`](../src/native/text-scanner.mjs) and
+  [`text-layout.mjs`](../src/native/text-layout.mjs) own incremental CP932/UTF8
+  source, style stacks, 88-byte character records, line breaks, kinsoku and ruby.
+- [`text-core.mjs`](../src/native/text-core.mjs) owns STRING/STRING8/NV writer
+  state, page markers, speed changes, wipe backing pixels and independent NV
+  main/sub sections. [`text-config.mjs`](../src/native/text-config.mjs) builds
+  the per-ABI packets from canonical configuration.
+- [`legacy-text-state.mjs`](../src/native/legacy-text-state.mjs) and
+  [`text-legacy.mjs`](../src/native/text-legacy.mjs) implement task 8's separate
+  1116-byte configuration, 40-byte cells, wrappers, image fonts and frame logic.
+  Messages 114/115 remain unhandled, as in the reviewed original receiver.
+- [`text-task.mjs`](../src/native/text-task.mjs) implements the canonical task
+  messages and actual World frame clocks. STRING observes `userValue`; NV has
+  no such pause gate. Raw source events retain their ordering across checkpoints.
+- [`fes-text.mjs`](../src/native/fes-text.mjs) and
+  [`fes-text-layout.mjs`](../src/native/fes-text-layout.mjs) own commands,
+  deferred updates, group selection, definitions, cropped SIZE2/POS2 references
+  and cached `isdraw`, `linecnt`, `endpos` and inline-ID queries.
 
-`NativeLegacyTextTask` executes the complete original task-8 constructor,
-handler, logic frame and destructor. It keeps that task's parser and character
-records separate from the later STRING writer. Its main-native family
-`0x7B..0x8B` executes the actual profile's wrapper and KCS pointer/formatting
-helpers. The image-font wrapper marshals a browser bitmap into an original
-native bitmap; the original font setter owns its deep copy. A temporary image
-container here exposes the bitmap getter boundary, not a replacement task.
+## Metrics, fonts and pixels
 
-Main `1A2` executes the original SDK `51F360` and game `652760` wrappers.
-They copy the 96-byte font record and turn two CP932 strings into independent
-counted lists of 16-bit character codes. Message 99 in the SDK and 101 in the
-game install the same 1116-byte layout. The character parser uses both lists
-when wrapping lines; `7B` supplies only the first list.
+The exact comparison policy is in
+[`native-text-layout-policy.json`](../tests/fixtures/native-text-layout-policy.json).
+Integer layout, breaks, ruby anchors and pixels have **zero tolerance**. Only
+bytes 6/7 of each original 88-byte record are normalized: those are unwritten
+padding after a uint16 character code, with no script meaning.
 
-Main `22D` runs the original secondary glyph color wrapper (`51F860` /
-`652C60`). SDK message 119 and game message 121 store the full word at task
-offset 1880. The glyph renderer reads its three low bytes. The two-profile
-task test sends different packed words to equal-number text tasks in two Tops.
+`CanvasTextGlyphs` supplies the GDI host boundary. Font selection resolves a
+mounted game font alias or the packaged Noto Sans JP font; it never selects an
+OS family. The packaged font's provenance, SHA-256 and OFL are under
+[`third_party/fonts/noto-sans-jp`](../third_party/fonts/noto-sans-jp/README.md).
+The oracle uses the same deterministic host metrics/masks, allowing exact
+comparison of parser and raster algorithms without asserting Windows/Canvas
+font pixel equivalence. GDI uses gray64 coverage, the original integer bold
+and shadow rules, and independent source/destination clipping.
 
-`NativeTextTask` and `NativeNVTextTask` port the later task's message/frame
-protocol while executing their original writer engines. NV retains independent
-main/sub-text section parsers. `insert` creates a section; `str` clears sections
-according to the original command. A native remaining query without an
-initialized writer raises a diagnostic rather than returning an invented zero.
-The original NV frame has no task `userValue` pause gate; the ordinary STRING
-frame does. Both use the World's actual two-phase task clock.
+The original FreeType path reads the mounted `font` resource independently of
+GDI. [`font-backend.mjs`](../src/native/font-backend.mjs) uses deterministic JS
+builds of **2.4.8 for SDK** and **2.7.1 for game**, selected by ABI fields. SDK
+converts CP932 before glyph lookup; game passes the 16-bit code directly.
+The reviewed game configuration uses TrueType interpreter 35. Fixed font
+fixtures compare actual glyph advances, boxes and every RGBA byte against
+both original libraries. Missing resources/glyphs preserve the original empty
+result; this backend does not substitute the packaged GDI fallback.
 
-FES object constructors, command handlers and frame drivers run through the
-shared `NativeFESObjectRuntime`. Group counts, explicit indices and whole-group
-selection remain distinct. The native callback resolves each object slot; a
-whole-group command executes the original handler once. Sources and object
-definitions remain attached to the FES interpreter. `SIZE2` uses the original
-frame's cropped size and position, including its selector. An absent authored
-image font leaves the native image-data field null.
-The [`userfontobj` command](https://cs2.suki.jp/manual/fes/reference/co/userfontobj.html)
-requires an IMAGE as its font source. The original setters retain that pointer
-and the next driver reads the IMAGE record's resource field. A declared
-non-IMAGE source is diagnosed at the source lookup before that driver can
-read beyond the smaller object.
+Build the font backends with:
 
-FES string-bank identity follows the original interpreter guard: game offset
-2064, SDK offset 1800. A native shell supplies that identity while the World's
-single string bank owns its contents. `str` and `apend` expand those raw bytes
-once, then call the shared SCRIPT replacement bridge. CP932 STRING and UTF-8
-STRING8 retain their distinct encodings. A bank value containing another
-`$str` expression is not recursively expanded. The replacement bridge reads
-the same configuration rules used by KCS; it does not build a second map.
-Authored tests include Japanese, musical symbols, a literal nested expression,
-and `A` to `AA` replacement to detect an accidental second pass.
+```sh
+python3 scripts/prepare-native-freetype.py --emsdk /path/to/emsdk-3.1.74
+```
 
-The original object handlers scan the full command buffer for their requested
-tail. For example, `layout fontind 1 Font Name.ttf` reads the index separately
-and gives FreeType `Font Name.ttf`. STRING8 places its UTF-8 text in that same
-buffer so the native tail reader and subsequent conversion see the original bytes.
+The builder verifies fixed upstream archives, compiler and wrapper identity.
+Standalone builds verify the fixed generated hashes and package both JS
+modules, FTL notices, source bundles and `vendor/freetype-manifest.json`.
+No WASM or original EXE is involved in these font backends.
 
-Native font resource streams use the shared [resource search](native-resource-search.md)
-and original MemoryFile operations. This permits the executable's own FreeType
-path to read a mounted font file, independently of the browser GDI substitution.
-Complete browser font and first-dialogue pixel acceptance remains separate.
+`GAME/strframe_frame` is the reveal scale (constructor default 5, missing XML
+field 0), represented as `scene.textFrame`; it is not FPS. Speed rebasing,
+unsigned clock wrap, page early exits, the cached end query and incremental
+wipe alpha are compared as stateful sequences. NV retains separate parser
+configuration per section, pending CR state and a shared writer clock.
+
+Raw image-font bytes and decoded selector pixels belong to JS. Font cells use
+the original square resampling and integer compositor. Task-8 image fonts own
+a deep copy of the supplied bitmap. Character maps and all pending state are
+included in checkpoints.
+
+## Remaining EXE consumers
+
+Domain 6 still owns GPU upload/render targets. JS text bitmaps cross the same
+registered bitmap-input projection as other JS images. The upload consumes
+physical rows in ascending address order; the original logical pixel accessor
+reverses Y and is not used for text upload. VRAM addresses remain independent
+of the enclosing Draw origin.
+
+Domain 7 LOGSTRING/LOGSTRING8 still creates text children. Its
+[`fes-text-projection.mjs`](../oracle/fes-text-projection.mjs) constructs only a
+common plane/motion prefix and projects independent config/cached-query words.
+Fourteen explicit semantic adapters route the original LOG caller's text
+reads/writes to JS. Original text bodies and parser pointers are never used.
+LOG owns the common motion/parent prefix; only that prefix is pulled back for
+LOG-controlled children. Parser, source, config, reveal and query state remain
+JS authority. This boundary is removed in phase 7.
+
+SDK JavaScript task consumers keep separate original text objects; their
+state belongs to domain 8 until that subsystem migrates. GDI/DC/DIB platform
+services shared with rendering/startup also remain domain 6/8 services.
+The complete ownership/deletion registry is generated in
+[`b-migration.json`](b-migration.json), with source in `scripts/b-migration.mjs`.
 
 ## Display logs
 
-The JS `NativeDisplayLogs` service implements main `2B8..2BC`, `311`, `36C`,
-`3D1`, `352/353` and game `40A`. JS owns all four tables, captured configuration,
-block/row bases and limits. `311` prunes blocks and their rows; `2BC` returns
-the formatted speaker name. World checkpoints preserve both row strings.
+[`text-log.mjs`](../src/native/text-log.mjs) implements main `2B8..2BC`, `311`,
+`36C`, `3D1`, `352/353` and game `40A`. JS owns scenes, seven-word blocks,
+two-string rows, speakers, captured config, cumulative bases and limits.
 
-CSS wire bytes are four offset/count sections: raw CP932 scene names,
-28-byte blocks, tagged first-string rows and speaker names. The header also
-stores cumulative block/row bases. The second row string is intentionally
-absent from this wire format. Every section and terminator is validated before
-loading; invalid input preserves the previous JS state. Differential tests
-compare complete payloads with both frozen original managers.
+CSS wire bytes contain scene names, 28-byte blocks, tagged first-string rows
+and speaker names. Second row strings are deliberately absent from the wire
+format and preserved by World checkpoints. Validation precedes mutation.
+History rebuild reads JS CST/history/string-bank state; it creates no original
+display-log manager. Wrapping preserves CP932 byte rules and original ruby and
+literal-backslash-n behavior. A stable no-progress input corresponding to an
+unbounded original allocation loop raises a bounded diagnostic.
 
-History rebuild reads `NativeSceneData.history.path`, decodes CST in JS and
-expands the caller's current string bank. `40A` preserves the original unbound
-CSTL-language fallback to source CST. No PE scene/history projection is used.
-Log wrapping counts CP932 bytes, including the original ruby and literal
-backslash-n behavior. Its three apparent kinsoku helpers modify unused
-candidate scratch, not the copied segment boundaries; disassembly and byte
-fixtures preserve that observable behavior. A first prefix-only line is valid;
-a stable no-progress loop has no successful original result and is bounded by
-an explicit range error instead of an unbounded allocation loop.
+D7 LOG consumers receive independent read-only tables through
+[`text-log-projection.mjs`](../oracle/text-log-projection.mjs). LOGSTRING8 remake
+updates JS rows explicitly before projection. The original requested-language
+subset differs from the unbound `40A` history fallback. Ordered definitions
+and parent pointers remain in the D7 common-object path; child text is JS.
 
-Remaining D7 LOGSTRING consumers receive an independent, read-only table
-projection. The game LOGSTRING8 `remake` command mutates the JS first/second
-row strings before projecting them. It registers only its requested languages;
-this differs from the unbound `40A` reader. The projection is removed in phase 7.
+## Verification
 
-LOGSTRING uses a 44-byte common base rather than the image-plane KX2 layout.
-Its original driver creates one STRING child per slot; LOGSTRING8 creates two
-STRING8 children per slot. Native child objects retain their own layout and
-text records. Ordered definition rows run the original header parser, row parser and complete
-type-specific apply handler. The shared PARENT step retains actual native object
-pointers; parent coordinates remain local across repeated frame synchronization.
-Children are destroyed before their referenced parents. Older manual columns
-ignored by these pinned handlers are not treated as aliases.
-LOG paging/color commands still need complete input/output coverage.
+`tests/differential/native-text-{layout,raster,sequence,font,legacy}-js.test.mjs`
+compare both frozen ABIs with explicit private-fixture skips. The public
+fixtures contain authored text/colors/configuration, no game scripts or fonts.
+Coverage includes incremental configuration, kinsoku/ruby, style/escape parsing,
+page/reveal/wipe/speed sequences, NV sections/CR/sub text and actual fixed-font
+FreeType pixels. `tests/native-text.test.mjs` adds 492 authored layout goldens,
+54 bitmap-upload goldens, FES arrays/definitions, log children, task namespaces,
+font references and fresh-process checkpoints.
 
-The shared configuration codec supplies the actual GAME/log defaults and
-fields to the original manager. The two profiles store the name prefixes as
-CP932 even though the game's general startup XML is UTF-8. A zero-filled
-replacement configuration is not a valid native log setup.
-
-## Bitmap upload and task transport
-
-The native GPU upload path consumes the bitmap's physical rows in ascending
-address order: `data + y * stride`. Its separate logical-pixel getter reverses
-Y. Reusing the getter's reversal for a GPU upload inverts text and makes a dirty
-rectangle miss its glyphs. `NativeTextWriter.frame` and
-`NativeGraphicsPlatform.copyBitmap` use the upload order. This boundary does not
-change the standalone image codec's documented coordinate convention.
-
-Original upload clips the requested source window against the bitmap's
-canvas-offset bounds, then transfers cropped pixels at the destination plus
-that canvas offset. Negative destinations advance the source into the retained
-texture page. Empty source intersections return zero. A valid intersection can
-return one even when it affects no allocated destination pixels.
-
-STRING, STRING8 and NVSTRING take their texture address from the original
-`VRAM` field. The enclosing Draw's origin applies to its retained image
-surface. Text still samples its own address when the two origins differ.
-
-The shared `graphics-platform` feature owns one view/renderer/manager set and
-native bitmap transfers. M2 and text consume the same platform records and GPU
-context. Task identifiers read from the PE belong to the current Top namespace.
-They are resolved to internal World IDs before graph lookup; raw message
-senders stay native IDs, while `nativeSenderWorldID` identifies the sender's
-memory. The World routes broadcasts and unwritten output words. Native code
-does not receive a zero value for an unwritten query.
-
-Snapshots retain one process image and feature registry. FES objects, native
-writers, task prefixes and graphics retain references into that same restored
-image. A fresh candidate installs the saved feature boundaries before restoring
-the process and object graph. Destruction during a suspended host callback uses
-`callFromHost` and preserves the outer native continuation.
-
-Image-font data uses the shared `data-buffers` feature. KCS `0x16D` image-data
-handles, main `0x26C`, FES source images and standalone writer image fonts all
-refer to its original 20-byte descriptor. Its data allocation has a separate
-hidden DWORD reference header; descriptor references and heap references are
-distinct. The original setter consumes the supplied reference. FES frame
-drivers explicitly retain their source reference before sending it. The bridge
-does not invent another retain or duplicate the source bytes for a checkpoint.
-
-## Verification and remaining work
-
-- `tests/native-text.test.mjs` includes 492 authored FES layout records and 54
-  original cross-profile bitmap-upload goldens. These run without proprietary
-  executable bytes. The goldens contain only authored colors, dimensions,
-  coordinates and output hashes.
-- With `CATSYSTEM2_ENGINE_EXE` and `CATSYSTEM2_SDK_EXE`, the same suite executes
-  real FES commands, STRING/STRING8/NV sections, array selection, image fonts,
-  cropped `SIZE2`, task-8 constructors, LOGSTRING/LOGSTRING8 child rendering,
-  history/CST rebuilds and fresh-process checkpoints. Separate
-  Top trees deliberately reuse the same native task number.
-- `tests/browser/native-text.spec.mjs`, run with `playwright.text.config.mjs`,
-  executes both original text engines with real Canvas font metrics and masks.
-  Appending new glyphs after a fresh-process restore produces identical pixels;
-  the shared GPU matches the native bitmap alpha composite within one RGB LSB.
-  This covers the browser platform boundary, not Windows GDI pixel equivalence.
-- `scripts/verify-native-text.mjs` compares the thirteen later main wrappers:
-  416 original executions across both profiles.
-- `scripts/verify-native-nv-text.mjs` compares 816 original task message/frame
-  states, native bitmaps and VRAM results across both profiles.
-- `scripts/verify-native-graphics-platform.mjs` executes 108 original GPU-upload
-  functions with asymmetric rows, offsets, clipped destinations and empty
-  windows. Only preallocated texture-page lock/unlock/allocation is supplied by
-  the host. `--write-fixture` regenerates the public goldens only after both
-  original profiles agree.
-
-This is not an acceptance claim for every FES text object or every glyph path.
-LOGSTRING/LOGSTRING8 paging and color edge cases, remaining definition columns,
-remaining object commands and complete UI flows still require coverage. Task-8 messages 114/115 are unhandled by
-the reviewed native receiver and are not invented as new features. GDI outline
-formats and non-identity glyph matrices not supported by the platform adapter
-remain explicit diagnostics. Browser font pixels and actual game screenshots
-need their own visual acceptance in addition to CPU/state tests.
-
-Primary public references are the official [STRING object](https://cs2.suki.jp/manual/fes/code/o_string.html),
-[NVSTRING object](https://cs2.suki.jp/manual/fes/code/o_nvstring.html),
-[LOGSTRING object](https://cs2.suki.jp/manual/fes/code/o_logstring.html),
-[layout command](https://cs2.suki.jp/manual/fes/reference/co/layout.html) and
-[user-font command](https://cs2.suki.jp/manual/fes/reference/co/userfont.html).
-Executable observations, original memory dumps and screenshots remain ignored
-under `.local/`; no original executable instructions or assets are distributed.
-
-## JavaScript text data boundary
-
-`188/419` use the independent `text-scanner.mjs`, preserving CP932/UTF8 units,
-ruby grouping, escape consumption, integer wrap, mapped address zero, aliases
-and output terminators. The frozen complete wrappers remain the oracle in
-`verify-native-text-plain.mjs`; candidate extraction does not load the EXE or
-font services. STRING/NVSTRING task checkpoints retain raw source events in
-order (main, secondary, mark, section), configuration packets and clocks.
-The remaining writer layout/raster state migrates in phase 5.5. Invalid-size
-initialization still clears the existing writer before validating the packet.
+The GDI host boundary is tested independently; unsupported outline/matrix
+formats remain explicit diagnostics. Actual Windows font rasterization and
+visual game screenshot acceptance are separate from CPU/state equality.

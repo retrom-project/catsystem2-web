@@ -9,6 +9,7 @@
     "oracle/image-owner.mjs",
     "oracle/image-owner-projection.mjs",
     "oracle/hg3-delta.mjs",
-    "oracle/text-log-projection.mjs"
+    "oracle/text-log-projection.mjs",
+    "oracle/fes-text-projection.mjs"
   ]
 }

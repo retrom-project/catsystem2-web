@@ -8,6 +8,7 @@ import { checkNativeEntry } from './check-native-entry.mjs';
 import { walk } from './node-files.mjs';
 import { PPI_BACKEND_FILES, PPI_BACKEND_SHA256 } from '../src/ppi/backend-artifact.mjs';
 import { NATIVE_ZLIB_FILES, NATIVE_ZLIB_SHA256 } from '../src/native/zlib-artifact.mjs';
+import { NATIVE_FREETYPE_FILES, NATIVE_FREETYPE_SHA256 } from '../src/native/freetype-artifact.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url)),
   output = join(root, 'dist');
 await checkNativeEntry(root);
@@ -51,6 +52,22 @@ for (const [name, artifact] of Object.entries(zlibManifest.artifacts)) {
     throw new Error(`zlib artifact does not match manifest: ${name}`);
 }
 for (const name of NATIVE_ZLIB_FILES) await cp(join(zlibRoot, name), join(output, 'vendor', name));
+const fontRoot = join(root, '.local/vendor/freetype'),
+  fontManifest = JSON.parse(await readFile(join(fontRoot, 'freetype-manifest.json'), 'utf8'));
+for (const [name, sha256] of Object.entries(NATIVE_FREETYPE_SHA256))
+  if (fontManifest.artifacts[name].sha256 !== sha256)
+    throw new Error('FreeType manifest does not identify the fixed font backend: ' + name);
+for (const [name, artifact] of Object.entries(fontManifest.artifacts)) {
+  if (!NATIVE_FREETYPE_FILES.includes(name)) throw new Error(`Unexpected font artifact ${name}`);
+  const bytes = await readFile(join(fontRoot, name));
+  if (
+    bytes.length !== artifact.bytes ||
+    createHash('sha256').update(bytes).digest('hex') !== artifact.sha256
+  )
+    throw new Error(`FreeType artifact does not match manifest: ${name}`);
+}
+for (const name of NATIVE_FREETYPE_FILES)
+  await cp(join(fontRoot, name), join(output, 'vendor', name));
 await cp(join(root, 'third_party'), join(output, 'third_party'), { recursive: true });
 const files = [];
 for (const entry of (await walk(output)).sort((a, b) => a.path.localeCompare(b.path)))

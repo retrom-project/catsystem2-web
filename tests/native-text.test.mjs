@@ -20,7 +20,7 @@ import { NativeScriptReplacementsBridge } from '../src/native/script-replacement
 import { NativeSceneData } from '../src/native/scene-data.mjs';
 import { NativeGraphics, installNativeGraphics } from '../src/native/graphics.mjs';
 import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
-import { NativeTextWriter } from '../src/native/text.mjs';
+import { NativeTextWriter } from '../oracle/text.mjs';
 import { installNativeText, nativeText } from '../src/native/text-task.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';
@@ -247,17 +247,14 @@ for (const [profile, variable] of [
             await runtime.apply(0x89, [nativeID, 65, 0, 0, 2, 2], machine, task);
             await runtime.apply(0x7c, [nativeID, 128], machine, task);
             await runtime.apply(0x1c8, [nativeID, 0x12340000 | id], machine, task);
-            assert.equal(
-              world.engine.process.load(world.graphics.get(id).pointer + 1876),
-              (0x12340000 | id) >>> 0,
-            );
+            assert.equal(world.graphics.get(id).text.w(469) >>> 0, (0x12340000 | id) >>> 0);
             assert.equal(
               (await runtime.apply(0x187, [nativeID], machine, task)).value,
-              world.engine.process.load(world.graphics.get(id).pointer + 692),
+              world.graphics.get(id).bitmap,
             );
             await runtime.apply(0x85, [nativeID, 0xffffffff], machine, task);
             assert.ok(world.graphics.get(id).characters().length);
-            assert.equal(world.engine.process.load(world.graphics.get(id).pointer + 4), nativeID);
+            assert.equal(world.graphics.get(id).record.nativeID, nativeID);
           }
         } finally {
           world.graphics.images.release(font);
@@ -267,8 +264,7 @@ for (const [profile, variable] of [
           await world.objects.drawTick(frame);
         }
         const machine = { memory: new Uint8Array(16), shared: new Uint8Array(), blocks: [], fp: 0 },
-          p = world.engine.process,
-          color = (id) => p.load(world.graphics.get(id).pointer + 1880),
+          color = (id) => world.graphics.get(id).text.w(470) >>> 0,
           id = world.nativeTaskID(a);
         assert.equal(color(a), 0xff000000);
         assert.equal(color(b), 0xff000000);
@@ -316,9 +312,9 @@ for (const [profile, variable] of [
           legacy = (cmd, top, args) => runtime.apply(cmd, [id, ...args], configVM, { id: top });
         assert.deepEqual(await legacy(0x1a2, topA, [0, 128, 160]), { control: 2 });
         await legacy(0x7b, topB, [0, 128]);
-        const configured = world.graphics.get(a).pointer + 708,
-          lists = new DataView(p.read(configured, 1116).buffer);
-        assert.deepEqual(p.read(configured, 96), data.slice(0, 96));
+        const configured = new Uint8Array(world.graphics.get(a).text.words.buffer, 708, 1116),
+          lists = new DataView(configured.buffer, configured.byteOffset, configured.byteLength);
+        assert.deepEqual(configured.slice(0, 96), data.slice(0, 96));
         assert.equal(lists.getUint32(96, true), 2);
         assert.deepEqual(
           [100, 102, 104].map((offset) => lists.getUint16(offset, true)),
@@ -329,7 +325,7 @@ for (const [profile, variable] of [
           [616, 618, 620].map((offset) => lists.getUint16(offset, true)),
           [0x41, 0x8169, 0],
         );
-        assert.equal(p.load(world.graphics.get(b).pointer + 1320), 0);
+        assert.equal(world.graphics.get(b).text.w(330), 0);
         await legacy(0x7c, topA, [192]);
         await legacy(0x7c, topB, [192]);
         const rows = (id) => {
@@ -550,7 +546,7 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
   test(
-    `${profile} original FES text handlers distinguish a whole array from an explicit element`,
+    `${profile} JS FES text handlers distinguish a whole array from an explicit element`,
     {
       skip: !process.env[variable],
     },
@@ -612,20 +608,12 @@ for (const [profile, variable, types] of [
           world.player.root.runtimeID = world.owner;
           await world.graphics.syncFES(world.objects.objects.get(world.owner), world.player);
           for (let frame = 1; frame <= 2; frame++) await world.tick(frame);
-          const p = world.engine.process,
-            observed = [],
-            address =
-              type === 'STRING8' ? 0x753450 : profile.startsWith('sdk-') ? 0x5eee70 : 0x74ead0,
-            stop = p.beforeInstruction(address, 'authored raw FES append input', () => {
-              const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
-              observed.push(p.stringBytes(p.load(sp + 4)).slice());
-            });
-          try {
-            await world.player.notify('APPEND');
-          } finally {
-            stop();
-          }
-          assert.deepEqual(observed, [configuration.scriptReplacements.apply(expected)]);
+          const p = world.engine.process;
+          await world.player.notify('APPEND');
+          assert.deepEqual(
+            world.text.fes.state(world.player.root.byKey.get('str')).source,
+            configuration.scriptReplacements.apply(expected),
+          );
           for (let frame = 3; frame <= 4; frame++) await world.tick(frame);
           const task = world.graphics.get(world.player.root.byKey.get('str').nativeTaskID),
             writer = await task.writer();
@@ -966,7 +954,7 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
   test(
-    `${profile} original task 8 reveals its own character records and resumes in a fresh process`,
+    `${profile} JS task 8 reveals its own character records and resumes in a fresh process`,
     {
       skip: !process.env[variable],
     },
@@ -1008,12 +996,8 @@ for (const [profile, variable] of [
           const font = await first.graphics.images.load('glyphs', 1, id);
           try {
             await task.message([id, 116, 0, font]);
-            const copiedBitmap = p.load(p.load(task.pointer + 700) + 16),
-              platform = await first.getNativeFeature('graphics-platform');
-            assert.deepEqual(
-              await platform.logicalBitmap(copiedBitmap).pixels(),
-              await first.graphics.images.get(font).pixels(),
-            );
+            assert.deepEqual(task.imageFont.rgba, await first.graphics.images.get(font).pixels());
+            assert.notEqual(task.imageFont.rgba, first.graphics.images.get(font).state.rgba);
           } finally {
             first.graphics.images.release(font);
           }
@@ -1059,13 +1043,9 @@ for (const [profile, variable] of [
           expected,
         );
         assert.equal(await restored.message([id, 108, 0, 0], { nativePointer: true }), 1);
-        assert.equal(
-          second.engine.process.load(restored.pointer + 72),
-          60,
-          'the original common constructor received frameRate',
-        );
+        assert.equal(restored.record.frameRate, 60, 'the logical task retains frameRate');
         await second.objects.release(id);
-        assert.equal(second.engine.refs.tasks.byPointer.has(restored.pointer), false);
+        assert.equal(second.graphics.tasks.has(id), false);
       } finally {
         await second?.close();
         await first.close();
@@ -1078,7 +1058,7 @@ for (const [profile, variable, types] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', ['STRING', 'NVSTRING']],
 ])
   test(
-    `${profile} original text definition apply retains colors, base, references and local parent coordinates`,
+    `${profile} JS text definition apply retains colors, base, references and local parent coordinates`,
     { skip: !process.env[variable] },
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable]));

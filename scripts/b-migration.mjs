@@ -94,13 +94,13 @@ const domains = {
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
-  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
+  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows text-core text-config text-layout text-parser text-profile-data text-raster legacy-text-state font-backend freetype-artifact fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
-  if (file === 'oracle/text-log-projection.mjs') return 7;
+  if (['oracle/text-log-projection.mjs', 'oracle/fes-text-projection.mjs'].includes(file)) return 7;
   if (
     [
       'oracle/hg3-delta.mjs',
@@ -145,12 +145,12 @@ const originalWrappers = new Set(
     'input-commands registry render-sources ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
-    'text-legacy version-query sdk-javascript-task emote'
+    'version-query sdk-javascript-task emote'
   ).split(' '),
 );
 const reviewedRegions = new Map();
 const messageModules = new Set(
-  'task task-command fes graphics draw-task mesh image input input-control text-task movie sound particles script-task'.split(
+  'task task-command fes graphics draw-task mesh image input input-control movie sound particles script-task'.split(
     ' ',
   ),
 );
@@ -726,15 +726,15 @@ const nonNativeGroups = [
     name: 'js-image-data-to-exe-consumers',
     domain: 5,
     entry:
-      'JS image-data bytes → independent PE descriptor snapshots for original image/font consumers; GCALL load/metadata/decode use JS',
+      'JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS',
     modules: ['data-buffer-projection'],
     projection: {
       direction: 'JS-to-PE',
       authority: 'NativeRuntime.imageDataBuffers',
       fields: ['immutable source bytes', 'size', 'capacity'],
       consumers: [
-        { domain: 5, modules: ['image', 'text'] },
         { domain: 7, modules: ['fes-images', 'fes-objects'] },
+        { domain: 8, modules: ['sdk-javascript-task'] },
       ],
       lifetime:
         'PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly',
@@ -891,6 +891,39 @@ const nonNativeGroups = [
         'Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.',
       removePhase: 7,
       operations: ['prepare', 'sync'],
+    },
+  },
+  {
+    name: 'js-text-to-exe-fes-consumers',
+    domain: 7,
+    modules: [],
+    entry:
+      'D7 LOGSTRING children use generic plane prefixes and explicit JS text read/write commands',
+    files: ['oracle/fes-text-projection.mjs'],
+    projection: {
+      direction: 'JS-to-PE and explicit D7-to-JS semantic commands',
+      authority:
+        'JS text parser/configuration/source/cached query state; D7 owns the common plane and motion prefix for LOG children',
+      fields: [
+        'independent FES configuration bytes',
+        'cached remaining/page/line/end words',
+        'generic plane identity',
+      ],
+      consumers: [{ domain: 7, modules: ['fes-log', 'fes-objects'] }],
+      lifetime:
+        'No original text parser, text constructor or text driver runs. Fourteen semantic entries service LOG reads/writes; only LOG-owned common plane fields are read back. The generic plane destructor owns that prefix.',
+      removePhase: 7,
+      operations: [
+        'construct',
+        'bind',
+        'sync',
+        'pull',
+        'read configuration',
+        'replace source',
+        'set view/colors/page',
+        'read inline ID/end',
+        'consume endChanged',
+      ],
     },
   },
   {

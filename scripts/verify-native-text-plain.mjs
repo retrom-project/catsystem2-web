@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeTextRuntime } from '../src/native/text.mjs';
+import { NativeTextRuntime } from '../oracle/text.mjs';
 import { nativePlainText } from '../src/native/text-plain.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';

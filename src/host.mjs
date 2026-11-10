@@ -20,7 +20,7 @@ export class EngineHost {
   }
   nativeTextGlyphs() {
     return new CanvasTextGlyphs({
-      family: (name) => this.engine.renderer.fonts.get(name.toLowerCase()) || name,
+      family: (name) => this.engine.renderer.fonts.get(name.toLowerCase()),
     });
   }
   constructor(engine) {

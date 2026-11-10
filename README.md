@@ -13,6 +13,7 @@ npm ci
 # /path/to/emsdk 使用固定 Emscripten 3.1.74。
 python3 scripts/prepare-ppi-backend.py --emsdk /path/to/emsdk --jobs 2
 python3 scripts/prepare-native-zlib.py --emsdk /path/to/emsdk
+python3 scripts/prepare-native-freetype.py --emsdk /path/to/emsdk-3.1.74
 npm run dev -- --game /path/to/prepared-game --port 4101
 ```
 

@@ -473,7 +473,9 @@ export class NativeFESObjectRuntime {
         ? await adapter.constructorArguments(this, instance, object)
         : { args: [object.nativeParentPointer ?? 0] };
       try {
-        await this.call(adapter.construct, constructor.args, pointer, instance.runtimeID);
+        if (typeof adapter.construct === 'function')
+          await adapter.construct(this, instance, object, pointer, constructor.args);
+        else await this.call(adapter.construct, constructor.args, pointer, instance.runtimeID);
       } finally {
         constructor.release?.();
       }
@@ -755,12 +757,17 @@ export class NativeFESObjectRuntime {
       const record = this.world.objects.objects.get(instance.runtimeID);
       p.store(this.driver + 88, record.pausedFrames ?? 0);
       p.store(this.driver + 100, record.effectiveFrame ?? 0);
-      if (configurationDirty && adapter.configurationChanged)
-        await this.call(adapter.configurationChanged, [], pointer);
+      if (configurationDirty && adapter.configurationChanged) {
+        if (typeof adapter.configurationChanged === 'function')
+          await adapter.configurationChanged(this, instance, object, pointer);
+        else await this.call(adapter.configurationChanged, [], pointer);
+      }
       await adapter.beforeDriver?.(this, instance, object, pointer);
       const args = driverArguments ??
         adapter.driverArguments?.(this, instance, object, pointer) ?? [pointer];
-      await this.call(adapter.driver, args, this.driver);
+      if (typeof adapter.driver === 'function')
+        await adapter.driver(this, instance, object, { configurationDirty });
+      else await this.call(adapter.driver, args, this.driver);
       await adapter.afterDriver?.(this, instance, object, pointer);
     });
   }
@@ -771,7 +778,11 @@ export class NativeFESObjectRuntime {
         ? this.process.load(this.process.load(pointer) + 12)
         : adapter.configurationChanged;
     if (!address) return;
-    return this.withContext({ instance, object, pointer }, () => this.call(address, [], pointer));
+    return this.withContext({ instance, object, pointer }, () =>
+      typeof address === 'function'
+        ? address(this, instance, object, pointer)
+        : this.call(address, [], pointer),
+    );
   }
   async applyDefinition(instance, object, pointer, apply) {
     const p = this.process;
@@ -813,7 +824,8 @@ export class NativeFESObjectRuntime {
               [this.process.load(record + 240)],
               pointer,
             );
-          await this.call(apply, [pointer, record, object.index ?? 0]);
+          if (typeof apply === 'function') await apply(this, instance, object, pointer, record);
+          else await this.call(apply, [pointer, record, object.index ?? 0]);
           object.nativeDefinitionAppliedCount = index + 1;
         });
       } finally {

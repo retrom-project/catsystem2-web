@@ -36,7 +36,7 @@ SOFTWARE.
 
 FelineSystem2 was examined as a reference; no code or assets from it are distributed
 in this project. No native CatSystem2/E-mote/Steam binaries, SDK files, game scripts,
-fonts, images, audio or movies are included. The player reads content supplied by
+game fonts, images, audio or movies are included. The player reads content supplied by
 the user. FFmpeg is an optional, separately installed development tool; converted
 media is private local output and is excluded from the build.
 
@@ -63,3 +63,14 @@ build toolchain are recorded in `vendor/zlib-manifest.json`.
 distributed under this project's MPL-2.0 license. Its adjacent text file records
 the FFmpeg generation command. It contains no game media and is excluded from
 the standalone player build.
+
+The packaged Noto Sans JP font is distributed under the SIL Open Font License
+1.1, with its provenance and license in `third_party/fonts/noto-sans-jp`. It is
+an independently licensed fallback font, not a game asset.
+
+The JS font backends compile FreeType 2.4.8 and 2.7.1, by David Turner, Robert
+Wilhelm and Werner Lemberg, under the FreeType License. The distribution
+retains `vendor/FREETYPE-2.4.8-LICENSE.txt`, `vendor/FREETYPE-LICENSE.txt`, both
+source bundles and `vendor/freetype-manifest.json`. Maintained wrapper and
+reproduction instructions are in `third_party/freetype` and
+`scripts/prepare-native-freetype.py`.

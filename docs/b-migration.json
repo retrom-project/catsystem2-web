@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 115, "oracle": 133, "differential": 37 },
+    "counts": { "js": 115, "oracle": 133, "differential": 44 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -301,8 +301,15 @@
         "tests/differential/native-save-persistence.test.mjs",
         "tests/differential/native-scalar.test.mjs",
         "tests/differential/native-sdk-standard.test.mjs",
+        "tests/differential/native-text-font-js.test.mjs",
+        "tests/differential/native-text-image-font-js.test.mjs",
+        "tests/differential/native-text-layout-js.test.mjs",
+        "tests/differential/native-text-legacy-js.test.mjs",
         "tests/differential/native-text-log-js.test.mjs",
         "tests/differential/native-text-plain-js.test.mjs",
+        "tests/differential/native-text-profiles-js.test.mjs",
+        "tests/differential/native-text-raster-js.test.mjs",
+        "tests/differential/native-text-sequence-js.test.mjs",
         "tests/differential/native-tile-game-choices.test.mjs",
         "tests/differential/native-tile-game-commands.test.mjs",
         "tests/differential/native-tile-game-hands.test.mjs",
@@ -1176,6 +1183,24 @@
     "versionGuards": [
       {
         "kind": "guard",
+        "file": "oracle/fes-text-projection.mjs",
+        "line": 13,
+        "expression": "this.engine.profile === 'sdk-4.01-engine-2.6.1.74'",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "guard",
+        "file": "oracle/fes-text-projection.mjs",
+        "line": 173,
+        "expression": "this.engine.profile === 'sdk-4.01-engine-2.6.1.74'",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "guard",
         "file": "oracle/image-owner.mjs",
         "line": 4,
         "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
@@ -1356,42 +1381,6 @@
       },
       {
         "kind": "guard",
-        "file": "src/native/text.mjs",
-        "line": 200,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/text.mjs",
-        "line": 213,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/text.mjs",
-        "line": 214,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/text.mjs",
-        "line": 265,
-        "expression": "this.engine.profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
         "file": "src/native/tile-plane-command.mjs",
         "line": 25,
         "expression": "engine.profile.startsWith('sdk-')",
@@ -1434,6 +1423,24 @@
         "line": 45,
         "expression": "NATIVE_DATA_BUFFER_LAYOUTS[engine.profile]",
         "domain": 5,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va",
+        "file": "oracle/fes-text-projection.mjs",
+        "line": 15,
+        "expression": "addresses[sdk ? 1 : 0]",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "oracle/fes-text-projection.mjs",
+        "line": 157,
+        "expression": "runtime.sdk",
+        "domain": 7,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1710,7 +1717,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 111,
+        "line": 116,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1719,7 +1726,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 249,
+        "line": 254,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1728,7 +1735,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 265,
+        "line": 270,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1737,7 +1744,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 269,
+        "line": 274,
         "expression": "NATIVE_ENGINE_IMAGES[options.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1746,7 +1753,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 329,
+        "line": 334,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1755,7 +1762,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 343,
+        "line": 348,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1764,7 +1771,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 520,
+        "line": 525,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2376,7 +2383,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 519,
+        "line": 521,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2385,7 +2392,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 534,
+        "line": 536,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2394,7 +2401,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 575,
+        "line": 577,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2403,7 +2410,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 793,
+        "line": 804,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2412,7 +2419,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 800,
+        "line": 811,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2421,7 +2428,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 812,
+        "line": 823,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2430,7 +2437,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 942,
+        "line": 954,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2469,78 +2476,6 @@
         "line": 112,
         "expression": "ABI[runtime.sdk ? 'sdk' : 'game']",
         "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 65,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 68,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 75,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 78,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 85,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 88,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 102,
-        "expression": "bridge.sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-text.mjs",
-        "line": 135,
-        "expression": "runtime.sdk",
-        "domain": 5,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -2906,78 +2841,6 @@
       },
       {
         "kind": "exe-layout",
-        "file": "src/native/text-legacy.mjs",
-        "line": 42,
-        "expression": "ABI[engine.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/text.mjs",
-        "line": 144,
-        "expression": "NATIVE_TEXT_CORES[engine.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/text.mjs",
-        "line": 174,
-        "expression": "NATIVE_TEXT_CORES[this.engine.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/text.mjs",
-        "line": 200,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/text.mjs",
-        "line": 213,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/text.mjs",
-        "line": 214,
-        "expression": "profile.startsWith('sdk-')",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/text.mjs",
-        "line": 270,
-        "expression": "sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/text.mjs",
-        "line": 273,
-        "expression": "sdk",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
         "file": "src/native/texture-memory.mjs",
         "line": 15,
         "expression": "ABI[this.engine.profile]",
@@ -3058,7 +2921,7 @@
       {
         "kind": "identity",
         "file": "src/native/config-fields.mjs",
-        "line": 681,
+        "line": 683,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -3079,7 +2942,7 @@
       {
         "kind": "identity",
         "file": "src/native/engine-process.mjs",
-        "line": 431,
+        "line": 436,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -3112,21 +2975,21 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 201, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 188, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 201,
+    "remainingExeVASelectionSites": 188,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1449,
-      "original-handler": 247,
+      "pure-js": 1517,
+      "original-handler": 205,
       "exe-region": 2,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 465,
+      "unknown": 439,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -3139,14 +3002,14 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 521,
-    "runtimeFiles": 360,
-    "fileDomains": { "3": 32, "4": 48, "5": 35, "6": 44, "7": 24, "8": 148, "9": 29 },
+    "nativeNeedsReview": 495,
+    "runtimeFiles": 370,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 44, "7": 25, "8": 148, "9": 29 },
     "fileNeedsReview": 125,
-    "exeDependencyFiles": 102,
-    "exeDependencies": { "addresses": 1504, "calls": 140, "references": 6 },
-    "nonNativeGroups": 24,
-    "executionSites": 490
+    "exeDependencyFiles": 100,
+    "exeDependencies": { "addresses": 1399, "calls": 136, "references": 6 },
+    "nonNativeGroups": 25,
+    "executionSites": 454
   },
   "profiles": [
     {
@@ -5392,14 +5255,14 @@
           "hexID": "0x7b",
           "semanticName": "legacyText.configure",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5409,14 +5272,14 @@
           "hexID": "0x7c",
           "semanticName": "legacyText.append",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5426,14 +5289,14 @@
           "hexID": "0x7d",
           "semanticName": "legacyText.message104",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5443,14 +5306,14 @@
           "hexID": "0x7e",
           "semanticName": "legacyText.message106",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5460,14 +5323,14 @@
           "hexID": "0x7f",
           "semanticName": "legacyText.message107",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5477,14 +5340,14 @@
           "hexID": "0x80",
           "semanticName": "legacyText.message105",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5494,14 +5357,14 @@
           "hexID": "0x81",
           "semanticName": "legacyText.query108",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5511,14 +5374,14 @@
           "hexID": "0x82",
           "semanticName": "legacyText.message109",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5528,14 +5391,14 @@
           "hexID": "0x83",
           "semanticName": "legacyText.message110",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5545,14 +5408,14 @@
           "hexID": "0x84",
           "semanticName": "legacyText.message112",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5562,14 +5425,14 @@
           "hexID": "0x85",
           "semanticName": "legacyText.message113",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5579,14 +5442,14 @@
           "hexID": "0x86",
           "semanticName": "legacyText.unhandled114",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5596,14 +5459,14 @@
           "hexID": "0x87",
           "semanticName": "legacyText.unhandled115",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5613,14 +5476,14 @@
           "hexID": "0x88",
           "semanticName": "legacyText.imageFont",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5630,14 +5493,14 @@
           "hexID": "0x89",
           "semanticName": "legacyText.glyph",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5647,14 +5510,14 @@
           "hexID": "0x8a",
           "semanticName": "legacyText.message118",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -5664,14 +5527,14 @@
           "hexID": "0x8b",
           "semanticName": "legacyText.message111",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10181,14 +10044,14 @@
           "hexID": "0x187",
           "semanticName": "legacyText.query119",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10660,14 +10523,14 @@
           "hexID": "0x1a2",
           "semanticName": "legacyText.configureLineBreaks",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -11356,14 +11219,14 @@
           "hexID": "0x1c8",
           "semanticName": "legacyText.message120",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -13099,14 +12962,14 @@
           "hexID": "0x22d",
           "semanticName": "legacyText.setSecondaryColor",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14052,18 +13915,16 @@
           "hexID": "0x263",
           "semanticName": "text.defaultConfiguration",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14071,18 +13932,16 @@
           "hexID": "0x264",
           "semanticName": "text.configure",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14090,18 +13949,16 @@
           "hexID": "0x265",
           "semanticName": "text.updateConfiguration",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14109,18 +13966,16 @@
           "hexID": "0x266",
           "semanticName": "text.appendFormatted",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14128,18 +13983,16 @@
           "hexID": "0x267",
           "semanticName": "text.clear",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14147,18 +14000,16 @@
           "hexID": "0x268",
           "semanticName": "text.remaining",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14166,18 +14017,16 @@
           "hexID": "0x269",
           "semanticName": "text.finish",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14185,18 +14034,16 @@
           "hexID": "0x26a",
           "semanticName": "text.mark",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14204,18 +14051,16 @@
           "hexID": "0x26b",
           "semanticName": "text.setPageLimit",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14223,18 +14068,16 @@
           "hexID": "0x26c",
           "semanticName": "text.setImageFont",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14242,18 +14085,16 @@
           "hexID": "0x26d",
           "semanticName": "text.setCharacterImage",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14281,7 +14122,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14311,7 +14152,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14341,7 +14182,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -14371,7 +14212,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15633,18 +15474,16 @@
           "hexID": "0x2b7",
           "semanticName": "text.setSpeed",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -15659,7 +15498,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15676,7 +15515,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15693,7 +15532,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15710,7 +15549,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15727,7 +15566,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15803,7 +15642,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15833,7 +15672,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15880,7 +15719,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15910,7 +15749,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15940,7 +15779,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -15970,7 +15809,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -17264,7 +17103,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18410,7 +18249,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18427,7 +18266,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18855,7 +18694,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18919,7 +18758,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18949,7 +18788,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -18979,7 +18818,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -19027,18 +18866,16 @@
           "hexID": "0x374",
           "semanticName": "text.remainingPage",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -20587,7 +20424,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -20616,7 +20453,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -20645,7 +20482,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -20662,7 +20499,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -21227,7 +21064,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -23893,7 +23730,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:956",
+          "registration": "src/native/fes-objects.mjs:968",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -23904,14 +23741,8 @@
           "dependencies": []
         },
         {
-          "name": "task-memory",
-          "registration": "src/native/task-memory.mjs:989",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "legacy-text",
-          "registration": "src/native/text-legacy.mjs:321",
+          "registration": "src/native/text-legacy.mjs:455",
           "modules": [],
           "dependencies": []
         },
@@ -23924,6 +23755,12 @@
         {
           "name": "display-log-projection",
           "registration": "src/native/text-log.mjs:534",
+          "modules": [],
+          "dependencies": []
+        },
+        {
+          "name": "task-memory",
+          "registration": "src/native/task-memory.mjs:989",
           "modules": [],
           "dependencies": []
         },
@@ -23958,8 +23795,14 @@
           "dependencies": []
         },
         {
+          "name": "fes-text-projection",
+          "registration": "src/native/text-task.mjs:571",
+          "modules": [],
+          "dependencies": []
+        },
+        {
           "name": "text",
-          "registration": "src/native/text-task.mjs:570",
+          "registration": "src/native/text-task.mjs:574",
           "modules": ["src/native/text.mjs"],
           "dependencies": ["data-buffers", "engine-files"]
         },
@@ -26163,14 +26006,14 @@
           "hexID": "0x7b",
           "semanticName": "legacyText.configure",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26180,14 +26023,14 @@
           "hexID": "0x7c",
           "semanticName": "legacyText.append",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26197,14 +26040,14 @@
           "hexID": "0x7d",
           "semanticName": "legacyText.message104",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26214,14 +26057,14 @@
           "hexID": "0x7e",
           "semanticName": "legacyText.message106",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26231,14 +26074,14 @@
           "hexID": "0x7f",
           "semanticName": "legacyText.message107",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26248,14 +26091,14 @@
           "hexID": "0x80",
           "semanticName": "legacyText.message105",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26265,14 +26108,14 @@
           "hexID": "0x81",
           "semanticName": "legacyText.query108",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26282,14 +26125,14 @@
           "hexID": "0x82",
           "semanticName": "legacyText.message109",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26299,14 +26142,14 @@
           "hexID": "0x83",
           "semanticName": "legacyText.message110",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26316,14 +26159,14 @@
           "hexID": "0x84",
           "semanticName": "legacyText.message112",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26333,14 +26176,14 @@
           "hexID": "0x85",
           "semanticName": "legacyText.message113",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26350,14 +26193,14 @@
           "hexID": "0x86",
           "semanticName": "legacyText.unhandled114",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26367,14 +26210,14 @@
           "hexID": "0x87",
           "semanticName": "legacyText.unhandled115",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26384,14 +26227,14 @@
           "hexID": "0x88",
           "semanticName": "legacyText.imageFont",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26401,14 +26244,14 @@
           "hexID": "0x89",
           "semanticName": "legacyText.glyph",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26418,14 +26261,14 @@
           "hexID": "0x8a",
           "semanticName": "legacyText.message118",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -26435,14 +26278,14 @@
           "hexID": "0x8b",
           "semanticName": "legacyText.message111",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -30984,14 +30827,14 @@
           "hexID": "0x187",
           "semanticName": "legacyText.query119",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -31463,14 +31306,14 @@
           "hexID": "0x1a2",
           "semanticName": "legacyText.configureLineBreaks",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32150,14 +31993,14 @@
           "hexID": "0x1c8",
           "semanticName": "legacyText.message120",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -33890,14 +33733,14 @@
           "hexID": "0x22d",
           "semanticName": "legacyText.setSecondaryColor",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/text-legacy.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-legacy.mjs:328",
+          "registration": "src/native/text-legacy.mjs:462",
           "features": ["legacy-text"],
           "dependencies": ["src/native/text-legacy.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -34843,18 +34686,16 @@
           "hexID": "0x263",
           "semanticName": "text.defaultConfiguration",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34862,18 +34703,16 @@
           "hexID": "0x264",
           "semanticName": "text.configure",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34881,18 +34720,16 @@
           "hexID": "0x265",
           "semanticName": "text.updateConfiguration",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34900,18 +34737,16 @@
           "hexID": "0x266",
           "semanticName": "text.appendFormatted",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34919,18 +34754,16 @@
           "hexID": "0x267",
           "semanticName": "text.clear",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34938,18 +34771,16 @@
           "hexID": "0x268",
           "semanticName": "text.remaining",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34957,18 +34788,16 @@
           "hexID": "0x269",
           "semanticName": "text.finish",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34976,18 +34805,16 @@
           "hexID": "0x26a",
           "semanticName": "text.mark",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -34995,18 +34822,16 @@
           "hexID": "0x26b",
           "semanticName": "text.setPageLimit",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -35014,18 +34839,16 @@
           "hexID": "0x26c",
           "semanticName": "text.setImageFont",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -35033,18 +34856,16 @@
           "hexID": "0x26d",
           "semanticName": "text.setCharacterImage",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -35073,7 +34894,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -35104,7 +34925,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -35135,7 +34956,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -35166,7 +34987,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36427,18 +36248,16 @@
           "hexID": "0x2b7",
           "semanticName": "text.setSpeed",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -36453,7 +36272,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36470,7 +36289,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36487,7 +36306,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36504,7 +36323,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36521,7 +36340,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36598,7 +36417,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36629,7 +36448,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36677,7 +36496,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36708,7 +36527,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36739,7 +36558,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -36770,7 +36589,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -38064,7 +37883,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39208,7 +39027,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39225,7 +39044,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39652,7 +39471,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39717,7 +39536,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39748,7 +39567,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39779,7 +39598,7 @@
             "src/native/text.mjs",
             "src/native/world.mjs"
           ],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -39827,18 +39646,16 @@
           "hexID": "0x374",
           "semanticName": "text.remainingPage",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:586",
+          "registration": "src/native/text-task.mjs:592",
           "features": ["data-buffers"],
           "dependencies": ["src/native/data-buffer-projection.mjs", "src/native/world.mjs"],
-          "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
-          ]
+          "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -41426,7 +41243,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -42497,7 +42314,7 @@
           "registration": "src/native/text-log.mjs:539",
           "features": [],
           "dependencies": [],
-          "docs": ["docs/native-compatibility.md"],
+          "docs": ["docs/native-text.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45459,7 +45276,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:956",
+          "registration": "src/native/fes-objects.mjs:968",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -45470,14 +45287,8 @@
           "dependencies": []
         },
         {
-          "name": "task-memory",
-          "registration": "src/native/task-memory.mjs:989",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "legacy-text",
-          "registration": "src/native/text-legacy.mjs:321",
+          "registration": "src/native/text-legacy.mjs:455",
           "modules": [],
           "dependencies": []
         },
@@ -45490,6 +45301,12 @@
         {
           "name": "display-log-projection",
           "registration": "src/native/text-log.mjs:534",
+          "modules": [],
+          "dependencies": []
+        },
+        {
+          "name": "task-memory",
+          "registration": "src/native/task-memory.mjs:989",
           "modules": [],
           "dependencies": []
         },
@@ -45524,8 +45341,14 @@
           "dependencies": []
         },
         {
+          "name": "fes-text-projection",
+          "registration": "src/native/text-task.mjs:571",
+          "modules": [],
+          "dependencies": []
+        },
+        {
           "name": "text",
-          "registration": "src/native/text-task.mjs:570",
+          "registration": "src/native/text-task.mjs:574",
           "modules": ["src/native/text.mjs"],
           "dependencies": ["data-buffers", "engine-files"]
         },
@@ -45845,7 +45668,7 @@
     },
     {
       "file": "src/engine.mjs",
-      "sourceSha256": "d3ffacbb45ef089c9efdfe82669ef64826e1d650fe86732dc9433d0cfccf37bc",
+      "sourceSha256": "d5a80c18ab00ba4991e78537700d7e697221270152ce40bf1f83ac6da5ba949e",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46079,7 +45902,7 @@
     },
     {
       "file": "src/host.mjs",
-      "sourceSha256": "c3e68af2b9654d5d22674d9c51201cfd2cf77e663512742633415d4041cf828e",
+      "sourceSha256": "e6c12f70e6fb756000c8f832e3dbc21c5f5ebba1e19abef81fb4dfc8b523354d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46287,7 +46110,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "fe3c4892b71ea4cc7a7978dec6a794d293bd6992581c11f33e10faee5f46249f",
+      "sourceSha256": "9e31f64b83a4b6a59f014c34286856c03531b6c93644c9f90282f19f8ea5adb5",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46300,7 +46123,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "1aa4e09c7d1af8428f50611165b334138cc56a0da98cee06efc2fd7f75f5643c",
+      "sourceSha256": "c840d023be2fd98402d12d7b3c290a93ccec2c32dbbbeee9f49fbf73e9aa2cfb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46715,7 +46538,7 @@
     },
     {
       "file": "src/native/config-fields.mjs",
-      "sourceSha256": "f5b183770c2f103302d89e8fbf8c206752367f5a3dd43d1749f6407ef91840f7",
+      "sourceSha256": "b45d55d0c7a35c8ad28702fe46d142821aefd7dbc35e1319b133dc2614250225",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48013,7 +47836,7 @@
     },
     {
       "file": "src/native/engine-process.mjs",
-      "sourceSha256": "6166f9f3c4da91d4090156220e22a4f789e8f3deb45f41faebbe654ec9fc4911",
+      "sourceSha256": "b68ae91c71ab2f722211cf912bbc4e114a6e798dcd139dc63a31c09583287a00",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 46, "calls": 8, "references": 2 },
@@ -48029,91 +47852,91 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 156,
+          "line": 161,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 158,
+          "line": 163,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 165,
+          "line": 170,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 167,
+          "line": 172,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 177,
+          "line": 182,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 196,
+          "line": 201,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 228,
+          "line": 233,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 252,
+          "line": 257,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 330,
+          "line": 335,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 342,
+          "line": 347,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 378,
+          "line": 383,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 409,
+          "line": 414,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 521,
+          "line": 526,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -49265,7 +49088,7 @@
     },
     {
       "file": "src/native/fes-objects.mjs",
-      "sourceSha256": "f634ea07e59ca25bd29545cec885e0139450cda63d92359b370f5a5a735bc08a",
+      "sourceSha256": "36166a376fa0b70c16bfb727e663ecbb08c4831ccb8ff146c6eba3d8652807c8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 60, "calls": 3, "references": 0 },
@@ -49315,105 +49138,105 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 476,
+          "line": 478,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 519,
+          "line": 521,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 534,
+          "line": 536,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 574,
+          "line": 576,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 759,
+          "line": 763,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 763,
+          "line": 770,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 774,
+          "line": 784,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 792,
+          "line": 803,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 799,
+          "line": 810,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 811,
+          "line": 822,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 816,
+          "line": 828,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 852,
+          "line": 864,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 893,
+          "line": 905,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 905,
+          "line": 917,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 942,
+          "line": 954,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
@@ -49437,7 +49260,7 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 957,
+          "line": 969,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -49689,7 +49512,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49697,17 +49520,17 @@
     },
     {
       "file": "src/native/fes-text.mjs",
-      "sourceSha256": "76deb780623ff9afe57beecac8ec6a3e01075a6deaed511dfa4dc9e707bac41a",
+      "sourceSha256": "3526eff454d46cad77cb6eef75970343675b7dcf15fac1e88fcc4d7d76592302",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 25, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["getNativeFeature"],
+      "docs": ["docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 19,
+          "line": 38,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
@@ -49774,6 +49597,32 @@
       "file": "src/native/file-time.mjs",
       "sourceSha256": "927c7af2413910618d17c4bc508954b019544f992a60ee41280f0eea8ec3b963",
       "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/font-backend.mjs",
+      "sourceSha256": "d1aa8aa69a600d278a20c87fed7c6bcdef9abd2f9d38284a9566905403d4908d",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/freetype-artifact.mjs",
+      "sourceSha256": "351d4e859f62df8a40a4703ea649dcc5c4a46fe2b56f5bfd18e5b44a4072ced4",
+      "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -50721,6 +50570,19 @@
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/legacy-text-state.mjs",
+      "sourceSha256": "6f75347429451fff33d4bc359669a529345cc1b2c9204a30f48ff107734edd0c",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -53309,89 +53171,85 @@
       "review": "needs-review"
     },
     {
-      "file": "src/native/text-legacy.mjs",
-      "sourceSha256": "4766c7f948e2840f67261a6eae9dd7a28b9ba5359a023de9fcab2a3a60f13b63",
+      "file": "src/native/text-config.mjs",
+      "sourceSha256": "1955d22aeb0dd47af10f281c9e5867c0dd4a4439e6718ee3b21d282201cd7927",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 8, "calls": 3, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callFromHost",
-        "getNativeFeature",
-        "in-image-literals",
-        "profile-memory-layout",
-        "sendNativeEngine"
-      ],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 125,
-          "method": "call",
-          "target": "p.load(this.abi.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 175,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 176,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 2, "callFromHost": 1 },
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-core.mjs",
+      "sourceSha256": "747bf5a55679569901dc611a8d7c3e87ac7c1c9a7c8062dcd964c75e178d1414",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-layout.mjs",
+      "sourceSha256": "ab20a0757266aa0c68f223f42cf676fd88711ee590ae48970ab4401b4e527c56",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-legacy.mjs",
+      "sourceSha256": "8c56ce086d5d38ba40bbe0ea28e5239ebf13e1a6867e462316578c6116259744",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["getNativeFeature", "sendEngine", "sendNativeEngine"],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 35,
-          "method": "getNativeFeature",
-          "feature": "text",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 36,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 37,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 75,
+          "line": 57,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 106,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
+          "line": 66,
+          "method": "sendEngine",
+          "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 325,
+          "line": 225,
+          "method": "getNativeFeature",
+          "feature": "text",
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 459,
           "method": "getNativeFeature",
           "feature": "legacy-text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 329,
+          "line": 463,
           "method": "getNativeFeature",
           "feature": "legacy-text",
           "review": "needs-review",
@@ -53407,7 +53265,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": ["getNativeFeature"],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [
@@ -53420,6 +53278,19 @@
         }
       ],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/text-parser.mjs",
+      "sourceSha256": "6371c2d9acd745d7a8ce60641325dad153395fb0dfca7f667e714d1430dd1b82",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/text-plain.mjs",
@@ -53435,8 +53306,8 @@
       "review": "counted"
     },
     {
-      "file": "src/native/text-scanner.mjs",
-      "sourceSha256": "c11bc8620f3ea614bdb37ce82f0023e1a4261f9ebd1d35c6cca0f9ca2771a02d",
+      "file": "src/native/text-profile-data.mjs",
+      "sourceSha256": "e038b303b331eecc3f6cb837722824db24bb5de8efe9d97c8ecedc2cc2910bac",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53448,23 +53319,41 @@
       "review": "counted"
     },
     {
-      "file": "src/native/text-task.mjs",
-      "sourceSha256": "1547448ec11bb71efb51255d94ecca8139f1efe18994f3f49263fe315bee0a4c",
+      "file": "src/native/text-raster.mjs",
+      "sourceSha256": "e98ea631460a4e293c421fb988e6570d56a22a25db03994046972500a7e9fe83",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "sendNativeEngine"],
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 495,
-          "method": "call",
-          "target": "bindings.secondary",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 1 },
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-scanner.mjs",
+      "sourceSha256": "e7bf818bdee6a8d04b2059248bb035684811a86d7aa1edf8ec95650c543bb7b7",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/text-task.mjs",
+      "sourceSha256": "adfd12748ebb92c785389e170a69f079897eb5213a168f501d8ad589e971c343",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["getNativeFeature", "sendNativeEngine"],
+      "docs": ["docs/native-compatibility.md", "docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
           "line": 31,
@@ -53474,35 +53363,49 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 571,
+          "line": 269,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 572,
+          "line": 525,
+          "method": "getNativeFeature",
+          "feature": "data-buffers",
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 575,
+          "method": "getNativeFeature",
+          "feature": "data-buffers",
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 576,
           "method": "getNativeFeature",
           "feature": "engine-files",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 599,
+          "line": 605,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 641,
+          "line": 647,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 644,
+          "line": 650,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -53526,255 +53429,16 @@
     },
     {
       "file": "src/native/text.mjs",
-      "sourceSha256": "caffd010d9e00d0215d31e9a5049b28dcd50f062c7482c147ca2cbba69d12435",
+      "sourceSha256": "6ef3dc2fe9cc8d9fb3993777eceac49e30ddbb21fb9df6e31878015177ad4c8a",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 94, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "callFromHost", "in-image-literals", "profile-memory-layout"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 162,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 163,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 189,
-          "method": "call",
-          "target": "bindings.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 218,
-          "method": "call",
-          "target": "initializeCache",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 221,
-          "method": "call",
-          "target": "constructor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 237,
-          "method": "call",
-          "target": "p.load(p.load(pointer))",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 251,
-          "method": "call",
-          "target": "bindings.defaultPacket",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 291,
-          "method": "call",
-          "target": "handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 345,
-          "method": "call",
-          "target": "this.bindings.configure",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 363,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 368,
-          "method": "call",
-          "target": "0x5abe00",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 369,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 376,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 384,
-          "method": "call",
-          "target": "0x6a5660",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 386,
-          "method": "call",
-          "target": "0x5abe00",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 387,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 395,
-          "method": "call",
-          "target": "this.bindings.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 398,
-          "method": "call",
-          "target": "this.bindings.clear",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 401,
-          "method": "call",
-          "target": "this.bindings.mark",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 405,
-          "method": "call",
-          "target": "this.bindings.draw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 409,
-          "method": "call",
-          "target": "this.bindings.remaining",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 412,
-          "method": "call",
-          "target": "this.bindings.speed",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 415,
-          "method": "call",
-          "target": "this.bindings.lines",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 418,
-          "method": "call",
-          "target": "this.bindings.shift",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 442,
-          "method": "call",
-          "target": "this.bindings.profile",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 448,
-          "method": "call",
-          "target": "this.bindings.position",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 505,
-          "method": "call",
-          "target": "this.bindings.destroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 537,
-          "method": "call",
-          "target": "this.bindings.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 540,
-          "method": "call",
-          "target": "this.bindings.section",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 544,
-          "method": "call",
-          "target": "this.bindings.secondary",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 548,
-          "method": "call",
-          "target": "this.bindings.remaining",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 551,
-          "method": "call",
-          "target": "this.bindings.redraw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 554,
-          "method": "call",
-          "target": "this.bindings.reflow",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 557,
-          "method": "call",
-          "target": "this.bindings.erase",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 33 },
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/texture-layout.mjs",
@@ -55316,7 +54980,7 @@
     },
     {
       "file": "src/render/native-text.mjs",
-      "sourceSha256": "372d66ef13af78828a760df5544b299bee634ce9abf3043811cfaa239bd248a4",
+      "sourceSha256": "1b10682e694077012e067ef912aa2fca3c4a6317a10ff3bf3120114af4883b76",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55884,7 +55548,7 @@
         "in-image-literals",
         "profile-memory-layout"
       ],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-text.md"],
       "executionSites": [
         {
           "line": 25,
@@ -55923,6 +55587,34 @@
         }
       ],
       "executionSiteCounts": { "callAsync": 1, "callFromHost": 1, "call": 3 },
+      "indirectSites": [],
+      "review": "needs-review"
+    },
+    {
+      "file": "oracle/fes-text-projection.mjs",
+      "sourceSha256": "1edb3581513e308f97cb89cdcf27155eaa15e96dd8ad3c2b2333b92598745baf",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 22, "calls": 1, "references": 0 },
+      "dependencyTypes": ["call", "in-image-literals", "patch", "profile-memory-layout"],
+      "docs": ["docs/native-text.md"],
+      "executionSites": [
+        {
+          "line": 17,
+          "method": "patch",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 157,
+          "method": "call",
+          "target": "runtime.sdk ? 0x5ebea0 : 0x74b940",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "executionSiteCounts": { "patch": 1, "call": 1 },
       "indirectSites": [],
       "review": "needs-review"
     }
@@ -56073,7 +55765,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 156,
+          "line": 161,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56081,7 +55773,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 158,
+          "line": 163,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56089,7 +55781,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 165,
+          "line": 170,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
@@ -56097,7 +55789,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 167,
+          "line": 172,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
@@ -56105,7 +55797,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 177,
+          "line": 182,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
@@ -56113,7 +55805,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 196,
+          "line": 201,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
@@ -56121,7 +55813,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 228,
+          "line": 233,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
@@ -56129,7 +55821,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 252,
+          "line": 257,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
@@ -56137,7 +55829,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 330,
+          "line": 335,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -56145,7 +55837,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 342,
+          "line": 347,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -56153,7 +55845,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 378,
+          "line": 383,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -56161,7 +55853,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 409,
+          "line": 414,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -56169,7 +55861,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 521,
+          "line": 526,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -57628,7 +57320,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 476,
+          "line": 478,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
@@ -57636,7 +57328,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 519,
+          "line": 521,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
@@ -57644,7 +57336,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 534,
+          "line": 536,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
@@ -57652,7 +57344,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 574,
+          "line": 576,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
@@ -57660,7 +57352,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 759,
+          "line": 763,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
@@ -57668,7 +57360,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 763,
+          "line": 770,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
@@ -57676,7 +57368,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 774,
+          "line": 784,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -57684,7 +57376,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 792,
+          "line": 803,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
@@ -57692,7 +57384,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 799,
+          "line": 810,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
@@ -57700,7 +57392,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 811,
+          "line": 822,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
@@ -57708,7 +57400,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 816,
+          "line": 828,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
@@ -57716,7 +57408,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 852,
+          "line": 864,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
@@ -57724,7 +57416,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 893,
+          "line": 905,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -57732,7 +57424,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 905,
+          "line": 917,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
@@ -57740,7 +57432,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 942,
+          "line": 954,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
@@ -57759,310 +57451,6 @@
           "line": 77,
           "method": "call",
           "target": "runtime.sdk ? 0x5e8fb0 : 0x748990",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-legacy.mjs",
-          "line": 125,
-          "method": "call",
-          "target": "p.load(this.abi.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-legacy.mjs",
-          "line": 175,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-legacy.mjs",
-          "line": 176,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text-task.mjs",
-          "line": 495,
-          "method": "call",
-          "target": "bindings.secondary",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 162,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 163,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 189,
-          "method": "call",
-          "target": "bindings.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 218,
-          "method": "call",
-          "target": "initializeCache",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 221,
-          "method": "call",
-          "target": "constructor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 237,
-          "method": "call",
-          "target": "p.load(p.load(pointer))",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 251,
-          "method": "call",
-          "target": "bindings.defaultPacket",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 291,
-          "method": "call",
-          "target": "handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 345,
-          "method": "call",
-          "target": "this.bindings.configure",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 363,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 368,
-          "method": "call",
-          "target": "0x5abe00",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 369,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 376,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 384,
-          "method": "call",
-          "target": "0x6a5660",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 386,
-          "method": "call",
-          "target": "0x5abe00",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 387,
-          "method": "call",
-          "target": "this.bindings.append",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 395,
-          "method": "call",
-          "target": "this.bindings.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 398,
-          "method": "call",
-          "target": "this.bindings.clear",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 401,
-          "method": "call",
-          "target": "this.bindings.mark",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 405,
-          "method": "call",
-          "target": "this.bindings.draw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 409,
-          "method": "call",
-          "target": "this.bindings.remaining",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 412,
-          "method": "call",
-          "target": "this.bindings.speed",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 415,
-          "method": "call",
-          "target": "this.bindings.lines",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 418,
-          "method": "call",
-          "target": "this.bindings.shift",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 442,
-          "method": "call",
-          "target": "this.bindings.profile",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 448,
-          "method": "call",
-          "target": "this.bindings.position",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 505,
-          "method": "call",
-          "target": "this.bindings.destroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 537,
-          "method": "call",
-          "target": "this.bindings.parse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 540,
-          "method": "call",
-          "target": "this.bindings.section",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 544,
-          "method": "call",
-          "target": "this.bindings.secondary",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 548,
-          "method": "call",
-          "target": "this.bindings.remaining",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 551,
-          "method": "call",
-          "target": "this.bindings.redraw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 554,
-          "method": "call",
-          "target": "this.bindings.reflow",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/text.mjs",
-          "line": 557,
-          "method": "call",
-          "target": "this.bindings.erase",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -58394,14 +57782,14 @@
         "authority": "NativeRuntime.imageDataBuffers",
         "fields": ["immutable source bytes", "size", "capacity"],
         "consumers": [
-          { "domain": 5, "modules": ["image", "text"] },
-          { "domain": 7, "modules": ["fes-images", "fes-objects"] }
+          { "domain": 7, "modules": ["fes-images", "fes-objects"] },
+          { "domain": 8, "modules": ["sdk-javascript-task"] }
         ],
         "lifetime": "PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly",
         "removePhase": 7,
         "operations": ["projectPointer", "lendPointer", "transferPointer"]
       },
-      "entry": "JS image-data bytes → independent PE descriptor snapshots for original image/font consumers; GCALL load/metadata/decode use JS",
+      "entry": "JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS",
       "modules": ["src/native/data-buffer-projection.mjs", "oracle/data-buffer-projection.mjs"],
       "executionSites": [
         {
@@ -59546,6 +58934,55 @@
           "line": 65,
           "method": "call",
           "target": "this.layout.load",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "review": "needs-review",
+      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+    },
+    {
+      "name": "js-text-to-exe-fes-consumers",
+      "domain": 7,
+      "projection": {
+        "direction": "JS-to-PE and explicit D7-to-JS semantic commands",
+        "authority": "JS text parser/configuration/source/cached query state; D7 owns the common plane and motion prefix for LOG children",
+        "fields": [
+          "independent FES configuration bytes",
+          "cached remaining/page/line/end words",
+          "generic plane identity"
+        ],
+        "consumers": [{ "domain": 7, "modules": ["fes-log", "fes-objects"] }],
+        "lifetime": "No original text parser, text constructor or text driver runs. Fourteen semantic entries service LOG reads/writes; only LOG-owned common plane fields are read back. The generic plane destructor owns that prefix.",
+        "removePhase": 7,
+        "operations": [
+          "construct",
+          "bind",
+          "sync",
+          "pull",
+          "read configuration",
+          "replace source",
+          "set view/colors/page",
+          "read inline ID/end",
+          "consume endChanged"
+        ]
+      },
+      "entry": "D7 LOGSTRING children use generic plane prefixes and explicit JS text read/write commands",
+      "modules": ["oracle/fes-text-projection.mjs"],
+      "executionSites": [
+        {
+          "file": "oracle/fes-text-projection.mjs",
+          "line": 17,
+          "method": "patch",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/fes-text-projection.mjs",
+          "line": 157,
+          "method": "call",
+          "target": "runtime.sdk ? 0x5ebea0 : 0x74b940",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -60876,7 +60313,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 156,
+          "line": 161,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -60884,7 +60321,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 158,
+          "line": 163,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -60892,7 +60329,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 330,
+          "line": 335,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -60900,7 +60337,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 342,
+          "line": 347,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -61223,6 +60660,14 @@
           "line": 44,
           "method": "beforeInstruction",
           "target": "site",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/fes-text-projection.mjs",
+          "line": 17,
+          "method": "patch",
+          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }

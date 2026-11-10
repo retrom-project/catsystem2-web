@@ -1,12 +1,27 @@
 // SPDX-License-Identifier: MPL-2.0
-// The browser substitutes GDI font measurement and glyph rasterization only.
-// Ruby, tags, profiles, wrapping, kinsoku and reveal remain in the guest engine.
+// Canvas supplies glyph masks; the JS parser owns layout and reveal.
+// The fallback is a pinned OFL font, never a host system font.
+export const FIXED_TEXT_FAMILY = 'CatSystem2 Noto Sans JP';
+let fixedFontLoading;
 export class CanvasTextGlyphs {
-  constructor({ family = (name) => name, canvas = () => new OffscreenCanvas(1, 1) } = {}) {
+  constructor({ family = () => FIXED_TEXT_FAMILY, canvas = () => new OffscreenCanvas(1, 1) } = {}) {
     Object.assign(this, { family, canvasFactory: canvas });
     this.canvas = null;
     this.ctx = null;
     this.cache = new Map();
+  }
+  async ready() {
+    if (typeof FontFace === 'undefined') return;
+    fixedFontLoading ??= (async () => {
+      const bytes = await (
+        await fetch(new URL('../../third_party/fonts/noto-sans-jp/NotoSansJP.ttf', import.meta.url))
+      ).arrayBuffer();
+      const face = new FontFace(FIXED_TEXT_FAMILY, bytes, { weight: '100 900' });
+      await face.load();
+      (globalThis.document?.fonts ?? globalThis.fonts).add(face);
+      return face;
+    })();
+    await fixedFontLoading;
   }
   prepare(font, context) {
     if (!this.ctx) {
@@ -17,7 +32,7 @@ export class CanvasTextGlyphs {
     context ||= this.ctx;
     if (font.escapement || font.orientation)
       throw new Error('Native text GDI rotated font orientation is not recovered');
-    const face = this.family(font.face || 'sans-serif');
+    const face = this.family(font.face || '') || FIXED_TEXT_FAMILY;
     if (typeof face !== 'string' || !face)
       throw new Error(`Native text font family ${font.face} is unavailable`);
     const size = Math.abs(font.height) || 16;

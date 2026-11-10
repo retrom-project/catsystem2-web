@@ -178,6 +178,7 @@ export class NativeConfigurationFields {
     this.window = { drag: 1, ...(abi.configuration.windowActive ? { active: 1 } : {}) };
     this.application = { title: 'CS2', touch: 0 };
     this.scene = {
+      textFrame: 5,
       autoSelect: 0,
       staticLog: 0,
       ...(abi.configuration.sceneAnimation ? { animation: 1 } : {}),
@@ -351,6 +352,7 @@ export class NativeConfigurationFields {
       ['crNext', 'cr_next'],
     ])
       this.log[field] = integer(root, `GAME/log/${path}`, this.log[field]);
+    if (root) this.scene.textFrame = integer(root, 'GAME/strframe_frame', 0);
     this.log.nameFirst = text(root, 'GAME/log/nameformat/first', this.log.nameFirst);
     this.log.nameLast = text(root, 'GAME/log/nameformat/last', this.log.nameLast);
     for (const [field, path, width] of [

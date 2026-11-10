@@ -6,6 +6,8 @@ export default {
   engineVersion: '2.6.1.76',
   xmlEncoding: 'UTF-8',
   text: {
+    freeTypeCharacterEncoding: 'code-unit',
+    freeTypeVersion: '2.7.1',
     settingsCharacterBytes: 2,
     pathBytes: 520,
     recordingPrefix: {
@@ -126,6 +128,7 @@ export default {
         optionTable: 58600,
       },
       scalarFields: [
+        ['scene.textFrame', 51092, 4],
         ['screen.width', 62768, 2],
         ['screen.height', 62770, 2],
         ['screen.fullWidth', 62772, 2],

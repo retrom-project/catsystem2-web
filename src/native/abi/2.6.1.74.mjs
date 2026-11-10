@@ -6,6 +6,8 @@ export default {
   engineVersion: '2.6.1.74',
   xmlEncoding: 'Shift_JIS',
   text: {
+    freeTypeCharacterEncoding: 'cp932',
+    freeTypeVersion: '2.4.8',
     settingsCharacterBytes: 1,
     pathBytes: 260,
     recordingPrefix: {
@@ -99,6 +101,7 @@ export default {
         log: 48960,
       },
       scalarFields: [
+        ['scene.textFrame', 47908, 4],
         ['screen.width', 52320, 2],
         ['screen.height', 52322, 2],
         ['screen.fullWidth', 52324, 2],

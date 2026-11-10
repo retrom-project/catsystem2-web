@@ -3,6 +3,7 @@
 import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-buffer-projection.mjs';
 import { NativeBitmapProjection } from '../../oracle/bitmap-projection.mjs';
 import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs';
+import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
 import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
@@ -94,6 +95,9 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
   }),
 });
 export class NativeEngineProcess {
+  createFESTextProjection(world) {
+    return new NativeFESTextProjection(this, world);
+  }
   createDataBufferProjection(options) {
     return new NativeBufferProjection(this, options);
   }
@@ -108,6 +112,7 @@ export class NativeEngineProcess {
   }
 
   static async open({ game, profile, bytes, name, ...options }) {
+    await options.bootstrapOwner?.glyphs?.ready?.();
     const image = NATIVE_ENGINE_IMAGES[profile];
     if (!image) throw new Error(`No reviewed native engine region profile ${profile}`);
     if (!bytes) {

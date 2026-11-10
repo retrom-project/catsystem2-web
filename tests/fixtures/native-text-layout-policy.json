@@ -1,0 +1,28 @@
+{
+  "integerLayoutTolerance": 0,
+  "pixelTolerance": 0,
+  "recordPadding": {
+    "offsets": [6, 7],
+    "stride": 88,
+    "reason": "Original glyph code is a uint16; the following two struct padding bytes are never initialized or observed by script."
+  },
+  "glyphSources": {
+    "gdi": "Both paths use the same deterministic GDI host metrics/masks. Production Canvas resolves mounted font aliases or the pinned Noto Sans JP font, never OS families. Fixed-width and line-breaking decisions are compared exactly.",
+    "freetype": {
+      "sdk-4.01-engine-2.6.1.74": "2.4.8",
+      "nekopara-vol3-engine-2.6.1.76": "2.7.1"
+    },
+    "font": "third_party/fonts/noto-sans-jp/NotoSansJP.ttf",
+    "fontSHA256": "c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f"
+  },
+  "sequences": [
+    "append/parse/mark/page",
+    "speed and reveal clock rebase",
+    "reconfigure then incremental append",
+    "NV main/sub CR and sections",
+    "clear and restore"
+  ],
+  "undefinedResults": [
+    "Empty NV end-position writes are absent in the original and normalized to [0,0]. No arbitrary PE heap state is copied into JS."
+  ]
+}

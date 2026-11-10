@@ -10,6 +10,7 @@ import { walk, NodeFile } from './node-files.mjs';
 import { sourceIdentity } from '../src/identity.mjs';
 import { PPI_BACKEND_FILES } from '../src/ppi/backend-artifact.mjs';
 import { NATIVE_ZLIB_FILES } from '../src/native/zlib-artifact.mjs';
+import { NATIVE_FREETYPE_FILES } from '../src/native/freetype-artifact.mjs';
 const args = process.argv.slice(2),
   option = (key, fallback) => (args.includes(key) ? args[args.indexOf(key) + 1] : fallback);
 const root = fileURLToPath(new URL('..', import.meta.url)),
@@ -97,7 +98,9 @@ const server = createServer(async (request, response) => {
         ? 'ppi'
         : NATIVE_ZLIB_FILES.includes(name)
           ? 'zlib'
-          : null;
+          : NATIVE_FREETYPE_FILES.includes(name)
+            ? 'freetype'
+            : null;
       if (!vendor) {
         response.writeHead(404);
         response.end();
@@ -124,7 +127,14 @@ const server = createServer(async (request, response) => {
       if (!path.startsWith(gameRoot + sep)) throw new Error('Game path escaped root');
     } else {
       const name = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
-      if (!(name === 'index.html' || /^(src|web)\//.test(name) || transitionalFiles.has(name))) {
+      if (
+        !(
+          name === 'index.html' ||
+          name === 'third_party/fonts/noto-sans-jp/NotoSansJP.ttf' ||
+          /^(src|web)\//.test(name) ||
+          transitionalFiles.has(name)
+        )
+      ) {
         response.writeHead(404);
         response.end();
         return;
