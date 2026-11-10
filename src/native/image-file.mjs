@@ -1,76 +1,95 @@
 // SPDX-License-Identifier: MPL-2.0
-// ANM presence is determined by the original kcView predicate, including its
-// anmtable.csv fallback and real IFile open/destruction. It does not decode images.
+// Immutable animation-file lookup data is shared with remaining consumers.
+import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { installNativeEngineFiles } from './engine-files.mjs';
-
+import { nativeDataFormat, nativeDataKey, nativeDataPair, nativeDataTSV } from './data-text.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 export const NATIVE_IMAGE_FILE_CONTRACTS = Object.freeze([
-  Object.freeze({ id: 0x1ae, words: 1, control: 1, handlers: [0x644570, 0x51cc20] }),
+  Object.freeze({ id: 0x1ae, words: 1, control: 1 }),
 ]);
-
+export function nativeImagePathParts(name) {
+  const slash = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\')),
+    dot = name.lastIndexOf('.');
+  return dot > slash
+    ? { stem: name.slice(0, dot), extension: name.slice(dot) }
+    : { stem: name, extension: '' };
+}
+function lowerKey(value) {
+  const bytes = encodeCP932(value);
+  for (let i = 0; i < bytes.length; i++)
+    if (nativeDataPair(bytes, i)) i++;
+    else if (bytes[i] >= 65 && bytes[i] <= 90) bytes[i] += 32;
+  return nativeDataKey(bytes);
+}
 export class NativeImageFiles {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    engine.registerFeature('image-files', this);
+  constructor(world) {
+    this.world = world;
+    this.loaded = false;
+    this.entries = new Map();
+    this.bytes = null;
   }
-  async apply(id, args, machine, task) {
-    const spec = NATIVE_IMAGE_FILE_CONTRACTS.find((entry) => entry.id === id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      host = memory ? await memory.pointer(task.id) : p.allocate(120, true),
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(12);
-    try {
-      if (!memory) p.store(host + 116, platform.refs.view);
-      if (p.load(host + 116) !== platform.refs.view)
-        throw new Error("ANM presence query requires its caller's initialized kcView");
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.write(out, new Uint8Array(12).fill(0xcc));
-      const parameters = [bridge.pointer, host, argv, out + 4],
-        address = spec.handlers[Number(this.engine.profile.startsWith('sdk-'))],
-        options = { task: task.id },
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(address, parameters, undefined, options)
-          : await this.engine.call(address, parameters, undefined, options);
-      if (control !== 1 || p.load(out) !== 0xcccccccc || p.load(out + 8) !== 0xcccccccc)
-        throw new Error('Original ANM presence query changed its output contract');
-      return nativeReply(control, p.load(out + 4));
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
-        if (!memory) p.free(host);
-      }
+  resolve(name) {
+    return nativeCategoryFilename(this.world.game, name, 'image');
+  }
+  readResolved(name) {
+    return readNativeResource(this.world, name);
+  }
+  async read(name) {
+    const file = this.resolve(name);
+    return file === null ? null : this.readResolved(file);
+  }
+  async initialize() {
+    if (this.loaded) return;
+    this.loaded = true;
+    this.bytes = await this.read('anmtable.csv');
+    this.entries = new Map();
+    if (this.bytes?.length) this.loadTable(this.bytes);
+  }
+  loadTable(bytes) {
+    const entries = new Map();
+    for (const fields of nativeDataTSV(bytes)) {
+      if (fields.length < 2 || !fields[0].length) continue;
+      const key = nativeDataKey(fields[0].subarray(0, 255)),
+        value = new TextDecoder('shift_jis').decode(fields[1].subarray(0, 255));
+      if (!entries.has(key)) entries.set(key, value);
     }
+    this.entries = entries;
+    this.bytes = bytes.slice();
+    this.loaded = true;
+  }
+  async locate(name) {
+    const resolved = this.resolve(name) ?? '',
+      direct = nativeImagePathParts(resolved).stem + '.anm';
+    if ((await this.readResolved(direct)) !== null) return direct;
+    await this.initialize();
+    const base = nativeImagePathParts(resolved.replaceAll('\\', '/').split('/').pop()).stem,
+      key = lowerKey(base);
+    if (!this.entries.has(key)) return null;
+    const mapped = nativeImagePathParts(this.resolve(this.entries.get(key)) ?? '').stem + '.anm';
+    return (await this.readResolved(mapped)) !== null ? mapped : null;
+  }
+  async apply(id, args, machine) {
+    if (id !== 0x1ae) return undefined;
+    const bytes = nativeDataFormat(args, machine, this.world.runtime.services, 0),
+      name = bytes ? new TextDecoder('shift_jis').decode(bytes) : '';
+    return nativeReply(1, Number(Boolean(name && (await this.locate(name)))));
   }
   snapshot() {
-    return {};
+    return { loaded: this.loaded, bytes: this.bytes?.slice() ?? null, entries: [...this.entries] };
   }
-  restore() {}
+  restore(state) {
+    this.loaded = state.loaded;
+    this.bytes = state.bytes?.slice() ?? null;
+    this.entries = new Map(state.entries);
+  }
 }
-
 export function installNativeImageFiles(world) {
-  installNativeEngineFiles(world);
-  world.registerNativeFeature('image-files', async (engine) => {
-    await world.getNativeFeature('engine-files');
-    await world.getNativeFeature('data-buffers');
-    return new NativeImageFiles(engine, world);
+  const files = (world.imageFiles = new NativeImageFiles(world));
+  world.registerNativeFeature('image-files', (engine) => {
+    engine.registerFeature('image-files', files);
+    return files;
   });
-  for (const { id } of NATIVE_IMAGE_FILE_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('image-files')).apply(id, args, machine, task),
-    );
+  world.runtime.register('main', 0x1ae, (args, machine, task) =>
+    files.apply(0x1ae, args, machine, task),
+  );
 }

@@ -2,12 +2,16 @@
 
 [The image-owner model](../src/native/image-owner.mjs) owns logical handles,
 bitmap state, metadata queries/setters and automatic task cleanup in JS.
-All commands except temporary file loading (`2C6`) use that model directly.
-[Pixel commands](../src/native/image-owner-pixels.mjs) transform every logical
-layer/frame in JS and preserve distinct blank, static and ANM collection states.
-The remaining original decoder imports complete layers once at `2C6`; it is
-removed in phase 5.3. [The projection](../oracle/image-owner-projection.mjs)
-serves only remaining consumer representations and that temporary loader.
+All commands, including file and ANM input loading (`2C6`), use that model.
+[The loader](../src/native/image-owner-load.mjs) decodes layer/frame pixels,
+selects unsigned frame IDs and retains raw ANM program bytes in JS. The
+remaining ANM timeline and rasterizer belong to domain 6. Comma grouping
+preserves the original unflushed trailing ANM candidate.
+[Pixel commands](../src/native/image-owner-pixels.mjs) transform each JS layer.
+[The projection](../oracle/image-owner-projection.mjs) builds independent PE
+vectors, bitmap wrappers and frame maps without image native handlers. Those
+frame maps are immutable inputs to the retained consumer; only their current
+frame selection changes. The PE release boundary remains until phases 6/7.
 
 The independent 64-byte PE collection serves retained Draw and IMAGEEX. It
 contains its own bitmap/wrapper references and keeps the renderer's original
@@ -34,20 +38,15 @@ wrapper's original early returns, preserved outputs and unwritten result words;
 the adapters do not normalize these different branches into a generic failure.
 
 Each Script owns its JS handles. Reload and destruction release its logical
-references. PE projection lists occupy isolated adapter contexts. Draw entries
-independently retain those projections using descriptor field 3. Releasing the
-Script handle preserves the consumer's remaining reference.
+references. PE projections retain independent wrappers and program buffers. Draw entries
+retain those projections using descriptor field 3; releasing the Script handle
+preserves the consumer's remaining reference.
 
-The loader executes original category resolution, extension/selector processing,
-image decoding, ANM resource loading and composition. Comma selection generates
-names such as `base_1` and `base_02` before the extension. Original ANM records currently remain part of the domain 6 consumer projection.
-Decoded script pixels and metadata are imported into JS; checkpoints retain
-that JS state once alongside the separate consumer checkpoint.
-
-The Script's `+116` view is the original outer `kcView`, shared with its Top.
-The temporary original loader waits for `graphics-platform.ensureRenderer()`. Browser
-presentation, hardware texture upload and task routing use their shared platform
-services. No private renderer or independent texture parser is created here.
+File paths and pixels are loaded through the shared JS mounted-resource reader.
+HG2 keeps its decoded pixel depth in both ABIs; game HG3 expands RGB24 to RGBA32,
+while SDK HG3 keeps RGB24. Main `6F` expands RGB24 to RGBA32 as its wrapper requires.
+Cache entries are immutable values and checkpoints retain JS inputs alongside
+each remaining consumer's independent state.
 
 ## Verification and boundaries
 

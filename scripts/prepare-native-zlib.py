@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
-"""Build the engine's pinned zlib 1.2.3 standard-library boundary for WASM."""
+"""Build the engine's pinned zlib 1.2.3 standard-library boundary as deterministic JavaScript."""
 import argparse
 import gzip
 import hashlib
@@ -55,7 +55,7 @@ def main():
     files = 'adler32 crc32 inflate inftrees inffast zutil deflate trees'.split()
     wrapper = ROOT / 'third_party/zlib/native-inflate.c'
     target = output / 'native_zlib.mjs'
-    run(['emcc', '-O3', '-Wno-deprecated-non-prototype', '-I', source, wrapper, *[source / (name + '.c') for name in files], '-sMODULARIZE=1', '-sEXPORT_ES6=1', '-sSINGLE_FILE=1', '-sENVIRONMENT=web,node', '-sALLOW_MEMORY_GROWTH=1', '-sSTACK_SIZE=1048576', '-sDYNAMIC_EXECUTION=0', '-sEXPORTED_FUNCTIONS=["_malloc","_free","_cs2_inflate","_cs2_deflate"]', '-ffile-prefix-map=' + str(source) + '=zlib-1.2.3', '-o', target])
+    run(['emcc', '-O3', '-Wno-deprecated-non-prototype', '-I', source, wrapper, *[source / (name + '.c') for name in files], '-sWASM=0', '-sMODULARIZE=1', '-sEXPORT_ES6=1', '-sSINGLE_FILE=1', '-sENVIRONMENT=web,node', '-sALLOW_MEMORY_GROWTH=1', '-sSTACK_SIZE=1048576', '-sDYNAMIC_EXECUTION=0', '-sEXPORTED_FUNCTIONS=["_malloc","_free","_cs2_inflate","_cs2_deflate"]', '-ffile-prefix-map=' + str(source) + '=zlib-1.2.3', '-o', target])
     shutil.copyfile(source / 'README', output / 'ZLIB-LICENSE.txt')
     with (output / 'zlib-1.2.3-source.tar.gz').open('wb') as raw:
         with gzip.GzipFile(fileobj=raw, mode='wb', mtime=0, filename='') as compressed:

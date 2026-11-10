@@ -7,6 +7,7 @@
     "oracle/bitmap-memory.mjs",
     "oracle/bitmap-projection.mjs",
     "oracle/image-owner.mjs",
-    "oracle/image-owner-projection.mjs"
+    "oracle/image-owner-projection.mjs",
+    "oracle/hg3-delta.mjs"
   ]
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Raw kcBuffer ownership, distinct from a decoded bitmap and its wrapper.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { installNativeHG3Delta, nativeHG3DecodeContext } from '../src/native/hg3-delta.mjs';
+import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({

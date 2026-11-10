@@ -43,6 +43,7 @@ const fields = {
   baseY: 52,
   mask: 76,
   blendType: 84,
+  imageMode: 88,
 };
 const signed = new Set(['offsetX', 'offsetY', 'baseX', 'baseY']);
 export class NativeBitmapMemory {

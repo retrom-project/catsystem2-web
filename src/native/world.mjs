@@ -861,6 +861,7 @@ export class NativeWorld {
   }
 
   async initialize(name) {
+    await this.imageFiles.initialize();
     if (this.bootstrapOwner) {
       const engine = await this.ensureNativeEngine();
       engine.features
@@ -1019,6 +1020,7 @@ export class NativeWorld {
       random: this.random.snapshot(),
       inputBindings: this.inputBindings?.snapshot() ?? null,
       resourceCache: this.resourceCache.snapshot(),
+      imageFiles: this.imageFiles.snapshot(),
       movies,
     };
   }
@@ -1036,6 +1038,7 @@ export class NativeWorld {
     this.soundConfiguration.restore(state.soundConfiguration);
     this.random.restore(state.random);
     this.resourceCache.restore(state.resourceCache);
+    this.imageFiles.restore(state.imageFiles);
     if (state.inputBindings) {
       this.inputBindings ??= new NativeInputBindings(this.input, this.configuration);
       this.inputBindings.restore(state.inputBindings);

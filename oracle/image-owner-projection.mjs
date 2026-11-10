@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Independent PE owners are retained by the remaining Draw/FES consumers.
-// File decoding and pixel commands use this boundary until phases 5.2/5.3.
-import { NativeImageOwners as OriginalImageOwners } from './image-owner.mjs';
+// JS owns all encoded inputs, layer pixels and metadata. Only consumers execute here.
+import { imageOwnerReleaseAddress } from './image-owner.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { floatBits } from '../src/kcs.mjs';
-import { NativeBitmap } from '../src/native/image.mjs';
 
 const fields = {
   width: 4,
@@ -18,12 +18,14 @@ const fields = {
   baseY: 52,
   mask: 76,
   blendType: 84,
+  imageMode: 88,
 };
-const signed = new Set(['offsetX', 'offsetY', 'baseX', 'baseY']);
-export class NativeImageOwnerProjection extends OriginalImageOwners {
+export class NativeImageOwnerProjection {
   constructor(engine, world) {
-    super(engine, world, { feature: 'image-owner-projection' });
-    this.refs.models ??= new Map();
+    Object.assign(this, { engine, world, process: engine.process });
+    engine.refs.imageOwners ??= { pointers: new Set(), models: new Map() };
+    this.releaseAddress = imageOwnerReleaseAddress(engine);
+    engine.registerFeature('image-owner-projection', this);
     this.internal = 0;
     this.consumed = new Set();
     const retained = engine.features.get('retained-draw'),
@@ -39,22 +41,8 @@ export class NativeImageOwnerProjection extends OriginalImageOwners {
       },
     );
   }
-  async context(task) {
-    const p = this.process,
-      platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    let context = this.refs.contexts.get(task.id);
-    if (!context) {
-      const pointer = p.allocate(160, true),
-        list = p.allocate(8);
-      await this.call(this.listConstruct, [], list, task.id);
-      p.store(pointer + 156, list);
-      context = { pointer, list, owned: true };
-      this.refs.contexts.set(task.id, context);
-    }
-    p.store(context.pointer + 4, this.world.nativeTaskID?.(task.id) ?? task.id);
-    p.store(context.pointer + 116, platform.refs.view);
-    return context.pointer;
+  get refs() {
+    return this.engine.refs.imageOwners;
   }
   pointer(handle) {
     if (!handle) return 0;
@@ -64,148 +52,132 @@ export class NativeImageOwnerProjection extends OriginalImageOwners {
       throw new Error('Image owner must be projected before the EXE consumer uses it');
     return record.pointer;
   }
-  capture(pointer, record) {
-    const p = this.process,
-      images = this.world.graphics.images,
-      wrapper = p.load(pointer + 12),
-      bitmap = wrapper && p.load(wrapper);
-    record.info = Array.from({ length: 11 }, (_, index) => p.load(pointer + 20 + index * 4));
-    if (!bitmap) return;
-    const platform = this.engine.features.get('graphics-platform'),
-      state = platform.logicalBitmap(bitmap).state;
-    for (const [name, offset] of Object.entries(fields))
-      state[name] = signed.has(name) ? p.load(bitmap + offset) | 0 : p.load(bitmap + offset);
-    state.clip = Array.from({ length: 4 }, (_, index) => p.load(bitmap + 56 + index * 4) | 0);
-    state.attributes = this.engine.features.get('bitmap-memory').attributes({ pointer: bitmap });
-    if (record.bitmap) {
-      const image = images.get(record.bitmap);
-      image.state = { ...state, source: null, revision: (image.state.revision + 1) >>> 0 };
-      image.cachedFrame = null;
-      image.canvas = null;
-    } else record.bitmap = images.add(new NativeBitmap(images, state));
-  }
-  importBitmap(pointer) {
-    const p = this.process,
-      images = this.world.graphics.images,
-      state = this.engine.features.get('graphics-platform').logicalBitmap(pointer).state;
-    for (const [key, offset] of Object.entries(fields))
-      state[key] = signed.has(key) ? p.load(pointer + offset) | 0 : p.load(pointer + offset);
-    state.clip = Array.from({ length: 4 }, (_, i) => p.load(pointer + 56 + i * 4) | 0);
-    state.attributes = this.engine.features.get('bitmap-memory').attributes({ pointer });
-    state.rgba = state.rgba.slice();
-    state.source = null;
-    return images.add(new NativeBitmap(images, state));
-  }
-  treeEntries(map) {
-    const p = this.process,
-      head = p.load(map),
-      stack = [],
-      entries = [];
-    let node = p.load(head + 4);
-    while (stack.length || !p.read(node + 13, 1)[0]) {
-      while (!p.read(node + 13, 1)[0]) {
-        stack.push(node);
-        node = p.load(node);
-      }
-      node = stack.pop();
-      entries.push(node);
-      node = p.load(node + 8);
-    }
-    return entries;
-  }
-  captureLayers(pointer, model) {
-    const p = this.process,
-      vector = p.load(pointer + 16),
-      primary = p.load(p.load(pointer + 12)),
-      sources = new Map([[primary, model.bitmap]]);
-    const importWrapper = (wrapper) => {
-      if (!wrapper) return 0;
-      const bitmap = p.load(wrapper);
-      if (!sources.has(bitmap)) sources.set(bitmap, this.importBitmap(bitmap));
-      return sources.get(bitmap);
-    };
-    if (!vector) {
-      model.layers = null;
-      return [...sources].map(([pointer, handle]) => ({ pointer, handle }));
-    }
-    model.layers = [];
-    for (let at = p.load(vector); at !== p.load(vector + 4); at += 20) {
-      const key = p.load(at),
-        wrapper = p.load(at + 4),
-        retained = p.load(at + 16),
-        program = p.load(at + 8),
-        length = p.load(at + 12);
-      const layer = {
-        key,
-        bitmap: importWrapper(wrapper),
-        program: program ? p.read(program, length).slice() : null,
-      };
-      if (retained) {
-        const frames = this.treeEntries(p.load(retained + 60)).map((node) => {
-          if (!this.sdk && p.load(node + 24))
-            throw new Error('Image prefetch worker returned with an undecoded frame');
-          return { key: p.load(node + 16), bitmap: importWrapper(p.load(node + 20)) };
-        });
-        const state = this.world.graphics.images.get(importWrapper(p.load(retained + 8))).state;
-        layer.animation = {
-          frames,
-          selected: p.load(retained + 76),
-          bounds: {
-            offsetX: p.load(retained + 164) | 0,
-            offsetY: p.load(retained + 168) | 0,
-            width: p.load(retained + 172),
-            height: p.load(retained + 176),
-            canvasWidth: p.load(retained + 180),
-            canvasHeight: p.load(retained + 184),
-            baseX: state.baseX,
-            baseY: state.baseY,
-          },
-        };
-      }
-      model.layers.push(layer);
-    }
-    return [...sources].map(([pointer, handle]) => ({ pointer, handle }));
-  }
-  async originalCreate(id, args, machine, task) {
-    this.internal++;
+  async privateWrapper(handle, projected) {
+    if (!handle) return 0;
+    const memory = this.engine.features.get('bitmap-memory'),
+      p = this.process;
+    const previous = memory.preparingCall;
+    memory.preparingCall ||= this.preparingCall;
+    let pointer;
     try {
-      const reply = await super.apply(id, args, machine, task);
-      if (!reply.value) return 0;
-      const raw = this.world.runtime.handles.release(reply.value, 'image-owner');
-      return raw.pointer;
+      pointer = await memory.pointer(handle);
     } finally {
-      this.internal--;
+      memory.preparingCall = previous;
     }
+    const wrapper = p.allocate(memory.layout.wrapperBytes, true);
+    await this.call(memory.layout.wrapperConstruct, [], wrapper);
+    p.store(wrapper, pointer);
+    p.store(pointer + 80, p.load(pointer + 80) + 1);
+    projected.sources.push({ pointer, handle });
+    return wrapper;
   }
-  async load(args, machine, task) {
-    const pointer = await this.originalCreate(0x2c6, args, machine, task);
-    if (!pointer) return 0;
-    const record = { owner: task.id, bitmap: 0, info: [] };
-    try {
-      this.capture(pointer, record);
-      const handle = this.world.runtime.handles.add('image-owner', record);
-      const sources = this.captureLayers(pointer, record);
-      this.refs.models.set(handle, { pointer, owner: task.id, sources });
-      return handle;
-    } catch (error) {
-      await this.releasePointer(pointer, task.id);
-      if (record.bitmap) await this.world.graphics.images.release(record.bitmap);
-      throw error;
+  async retainedSource(layer, projected) {
+    const p = this.process,
+      retained = this.engine.features.get('retained-draw');
+    const pointer = p.allocate(nativeABI(this.engine.profile).graphics.retainedBytes, true);
+    await this.call(retained.abi.construct, [layer.key, 0, 0], pointer);
+    const sdk = nativeABI(this.engine.profile).graphics.preserveRGB24,
+      nodeBytes = sdk ? 24 : 28;
+    const map = p.allocate(8, true),
+      head = p.allocate(nodeBytes, true);
+    p.store(map, head);
+    p.store(map + 4, layer.animation.frames.length);
+    p.write(head + 12, Uint8Array.of(1, 1));
+    const frames = [];
+    for (const frame of layer.animation.frames) {
+      const node = p.allocate(nodeBytes, true),
+        wrapper = await this.privateWrapper(frame.bitmap, projected);
+      p.write(node + 12, Uint8Array.of(1, 0));
+      p.store(node + 16, frame.key);
+      p.store(node + 20, wrapper);
+      frames.push({ node, key: frame.key, wrapper });
     }
+    const tree = (start, end, parent) => {
+      if (start >= end) return head;
+      const mid = (start + end) >>> 1,
+        n = frames[mid].node;
+      p.store(n + 4, parent);
+      p.store(n, tree(start, mid, n));
+      p.store(n + 8, tree(mid + 1, end, n));
+      return n;
+    };
+    p.store(head, frames[0]?.node ?? head);
+    p.store(head + 4, tree(0, frames.length, head));
+    p.store(head + 8, frames.at(-1)?.node ?? head);
+    p.store(pointer + 60, map);
+    const selected = frames.find((f) => f.key === layer.animation.selected);
+    if (selected?.wrapper) {
+      const memory = this.engine.features.get('bitmap-memory'),
+        ref = selected.wrapper + memory.layout.wrapperBytes - 4;
+      p.store(ref, p.load(ref) + 1);
+      p.store(pointer + 8, selected.wrapper);
+      const source = this.world.graphics.images.get(
+        layer.animation.frames.find((f) => f.key === selected.key).bitmap,
+      ).state;
+      [source.offsetX, source.offsetY, source.width, source.height].forEach((v, i) =>
+        p.store(pointer + 12 + i * 4, v),
+      );
+      p.store(pointer + 128, floatBits(source.baseX));
+      p.store(pointer + 132, floatBits(source.baseY));
+    }
+    p.store(pointer + 76, layer.animation.selected);
+    p.store(pointer + 136, 1);
+    const b = layer.animation.bounds;
+    [
+      b.offsetX,
+      b.offsetY,
+      b.offsetX + b.width,
+      b.offsetY + b.height,
+      b.canvasWidth,
+      b.canvasHeight,
+    ].forEach((v, i) => p.store(pointer + 164 + i * 4, v));
+    return pointer;
+  }
+  async construct(model) {
+    const p = this.process,
+      platform = this.engine.features.get('graphics-platform');
+    await platform.ensureRenderer();
+    const pointer = p.allocate(64, true),
+      projected = { pointer, owner: model.owner, sources: [] };
+    this.refs.pointers.add(pointer);
+    p.store(pointer, 1);
+    p.store(pointer + 4, platform.refs.view);
+    if (model.layers) {
+      const vector = p.allocate(12, true),
+        begin = model.layers.length ? p.allocate(model.layers.length * 20, true) : 0;
+      p.store(pointer + 16, vector);
+      [begin, begin + model.layers.length * 20, begin + model.layers.length * 20].forEach((v, i) =>
+        p.store(vector + i * 4, v),
+      );
+      for (let i = 0; i < model.layers.length; i++) {
+        const l = model.layers[i],
+          at = begin + i * 20;
+        p.store(at, l.key);
+        if (l.bitmap) p.store(at + 4, await this.privateWrapper(l.bitmap, projected));
+        if (l.animation) p.store(at + 16, await this.retainedSource(l, projected));
+        if (l.program?.length) {
+          const data = this.engine.features.get('data-buffers').allocateData(l.program.length);
+          p.write(data, l.program);
+          p.store(at + 8, data);
+          p.store(at + 12, l.program.length);
+        }
+      }
+      await this.rebuildRenderer(projected, model);
+    } else p.store(pointer + 12, await this.privateWrapper(model.bitmap, projected));
+    projected.rebuild = model.rebuild ?? 0;
+    return projected;
   }
   async prepare(handle) {
     if (!handle) return 0;
     const model = this.world.imageOwners.get(handle);
-    if (!this.refs.models.has(handle)) {
-      const machine = this.world.objects.machine(model.owner) ?? this.world.main.machine,
-        pointer = await this.originalCreate(0x2dd, model.info.slice(0, 2), machine, {
-          id: model.owner,
-        });
-      if (!pointer) throw new Error('Image owner projection allocation failed');
-      this.refs.models.set(handle, { pointer, owner: model.owner });
+    this.internal++;
+    try {
+      if (!this.refs.models.has(handle)) this.refs.models.set(handle, await this.construct(model));
+      await this.sync(handle);
+      return this.pointer(handle);
+    } finally {
+      this.internal--;
     }
-    await this.sync(handle);
-    return this.pointer(handle);
   }
   signature(model) {
     const state = model.bitmap && this.world.graphics.images.get(model.bitmap).state;
@@ -395,28 +367,19 @@ export class NativeImageOwnerProjection extends OriginalImageOwners {
     }
     this.consumed.clear();
   }
+  snapshot() {
+    return {};
+  }
+  restore() {
+    if (!(this.refs.models instanceof Map)) throw new Error('Invalid projected owner registry');
+  }
   async close() {
     this.detachRenderer?.();
-    await super.close();
+    for (const handle of [...this.refs.models.keys()]) await this.releaseModel(handle);
   }
   async releasePointer(pointer, owner) {
-    const p = this.process,
-      context = this.refs.contexts.get(owner);
-    if (context) {
-      const head = p.load(context.list);
-      for (let at = p.load(head); at !== head; at = p.load(at)) {
-        if (p.load(at + 8) !== pointer) continue;
-        const next = p.load(at),
-          previous = p.load(at + 4);
-        p.store(previous, next);
-        p.store(next + 4, previous);
-        p.store(context.list + 4, p.load(context.list + 4) - 1);
-        p.free(at);
-        break;
-      }
-    }
     await this.call(this.releaseAddress, [], pointer, owner);
-    if (!p.allocations.has(pointer)) this.refs.pointers.delete(pointer);
+    if (!this.process.allocations.has(pointer)) this.refs.pointers.delete(pointer);
   }
   async releaseModel(handle) {
     const record = this.refs.models.get(handle);
@@ -432,7 +395,10 @@ export class NativeImageOwnerProjection extends OriginalImageOwners {
   call(address, args = [], pointer, task, messageContext) {
     if (this.preparingCall && !this.process.asyncEnabled)
       return this.process.callAsync(address, args, pointer);
-    return super.call(address, args, pointer, task, messageContext);
+    const options = { task, messageContext };
+    return this.process.asyncEnabled
+      ? this.engine.callFromHost(address, args, pointer, options)
+      : this.engine.call(address, args, pointer, options);
   }
   async beforeCall() {
     if (this.internal) return;
@@ -443,19 +409,7 @@ export class NativeImageOwnerProjection extends OriginalImageOwners {
       this.preparingCall = false;
     }
   }
-  async releaseOwner(owner, { dispose = false } = {}) {
-    const context = this.refs.contexts.get(owner);
-    if (!context) return;
-    const p = this.process,
-      head = p.load(context.list);
-    for (let at = p.load(head); at !== head; at = p.load(at))
-      if (p.load(at + 8)) await this.call(this.releaseAddress, [], p.load(at + 8), owner);
-    await this.call(this.listClear, [], context.list, owner);
-    if (dispose) {
-      p.free(head);
-      p.free(context.list);
-      p.free(context.pointer);
-      this.refs.contexts.delete(owner);
-    }
+  async releaseOwner(owner) {
+    for (const [h, r] of [...this.refs.models]) if (r.owner === owner) await this.releaseModel(h);
   }
 }

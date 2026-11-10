@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 export const NATIVE_ZLIB_SHA256 =
-  '831ac884f68c7a7e331a1a32afd0b30b6d0941e39f97a8e64174942e11d2b386';
+  '3506335cd55c6909ccaae3cdff8fd92ff3c36a0dfe67ed7b4e3af90d13dd3ebc';
 export const NATIVE_ZLIB_FILES = [
   'native_zlib.mjs',
   'ZLIB-LICENSE.txt',

@@ -5,6 +5,7 @@ import { nativeDataArgument } from './data-text.mjs';
 import { parseNativeResourceSelection } from './resource-selection.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
+import { nativeImagePathParts } from './image-file.mjs';
 import { nativeABI } from './abi/index.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
@@ -20,9 +21,7 @@ export class NativeImageComposites {
   }
   async load(name) {
     const images = this.world.graphics.images,
-      at = name.lastIndexOf('.'),
-      extension = at < 0 ? '' : name.slice(at),
-      stem = at < 0 ? name : name.slice(0, at);
+      { stem, extension } = nativeImagePathParts(name);
     const selection = parseNativeResourceSelection(encodeCP932(stem));
     if (!selection) return 0;
     if (!selection.selectors.length) return images.load(name, 0);
@@ -32,9 +31,8 @@ export class NativeImageComposites {
       let state = images.assets.get(file.toLowerCase() + ':0');
       if (!state) {
         const resolved = images.images.resolve?.(file) ?? file;
-        if (this.world.game.has && !this.world.game.has(resolved)) continue;
         try {
-          const bytes = await this.world.game.read(resolved),
+          const bytes = await this.world.imageFiles.readResolved(resolved),
             out = new Uint8Array(36);
           if (!bytes || !nativeImageMetadata(bytes, 0, false, out).success) continue;
           const view = new DataView(out.buffer),

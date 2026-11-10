@@ -112,7 +112,7 @@ for (const [profile, variable] of [
           m.writeString('probe.hg2', 256);
           const h = (await world.runtime.native('main', 0x2c6, [256], m, task)).value,
             images = await world.getNativeFeature('image-owners'),
-            pointer = images.pointer(h),
+            pointer = await images.materialize(h),
             platform = await world.getNativeFeature('graphics-platform'),
             renderer = await world.getNativeFeature('renderer'),
             tm = await world.getNativeFeature('task-memory'),
@@ -125,9 +125,8 @@ for (const [profile, variable] of [
               p.load(pointer + 4) === platform.refs.view &&
               p.load(script + 116) === platform.refs.view,
             list:
-              p.load(script + 156) !==
-              world.nativeEngine.features.get('image-owner-projection').refs.contexts.get(task.id)
-                .list,
+              p.load(script + 156) !== p.load(pointer + 16) &&
+              world.imageOwners.get(h).layers.length === 1,
             device: renderer.d3d.device === p.load(renderer.core + 308),
           };
           m.writeString('probe.hg2', 1024);
@@ -183,7 +182,7 @@ for (const [profile, variable] of [
           const childHandle = (
               await world.runtime.native('main', 0x2c6, [256], ci.machine, ci.task)
             ).value,
-            childPointer = images.pointer(childHandle);
+            childPointer = await images.materialize(childHandle);
           await world.objects.release(child);
           const independent = images.pointer(h) === pointer && !p.allocations.has(childPointer);
           fresh = make();

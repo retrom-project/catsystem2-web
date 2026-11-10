@@ -3,7 +3,9 @@
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { NativeBitmapFactories } from './bitmap-factory.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { ImageStore } from '../formats/hg3.mjs';
+import { nativeImagePathParts } from './image-file.mjs';
+import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
+import { ImageStore, HG3 } from '../formats/hg3.mjs';
 const f = Math.fround;
 const size = (width, height, empty = false) => {
   if (
@@ -469,7 +471,15 @@ export class NativeImages {
     this.images =
       typeof world.images?.load === 'function' && !(world.images instanceof ImageStore)
         ? world.images
-        : new ImageStore(world.game);
+        : new ImageStore({
+            ...world.game,
+            resolveCategory: (file) => nativeCategoryFilename(world.game, file, 'image'),
+            require: async (file) => {
+              const bytes = await readNativeResource(world, file);
+              if (bytes === null) throw new Error('Missing image resource: ' + file);
+              return bytes;
+            },
+          });
     this.handles.registerType('bitmap-data', {
       snapshot: (state) => {
         // A bitmap's backing resource precedes its wrapper in handle order.
@@ -626,11 +636,7 @@ export class NativeImages {
           : this.images instanceof ImageStore
             ? this.images.resolve(file)
             : file;
-      if (
-        !resolved ||
-        (this.images instanceof ImageStore && typeof game.has === 'function' && !game.has(resolved))
-      )
-        return 0;
+      if (!resolved) return 0;
       let image, frame;
       try {
         image = await this.images.load(file);
@@ -641,22 +647,7 @@ export class NativeImages {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
         return 0;
       }
-      state = {
-        width: frame.width,
-        height: frame.height,
-        canvasWidth: frame.canvasWidth,
-        canvasHeight: frame.canvasHeight,
-        offsetX: frame.offsetX,
-        offsetY: frame.offsetY,
-        baseX: frame.baseX,
-        baseY: frame.baseY,
-        alphaHint: frame.alpha === undefined ? (frame.alphaHint ?? 0) : Number(frame.alpha) + 1,
-        bpp: nativeABI(this.world.profile).graphics.preserveRGB24 && frame.bpp === 24 ? 3 : 4,
-        clip: [0, 0, frame.width, frame.height],
-        attributes: frame.attributes ?? [],
-        source: null,
-        rgba: new Uint8ClampedArray(frame.rgba),
-      };
+      state = this.decodedState(image, frame);
       this.assets.set(key, structuredClone(state));
       while (this.assets.size > 32) this.assets.delete(this.assets.keys().next().value);
     }
@@ -664,11 +655,43 @@ export class NativeImages {
     this.world.imageLoaded?.({ file, frameID: id, owner, native: 'image' });
     return this.add(bitmap);
   }
+  decodedState(image, frame) {
+    return {
+      width: frame.width,
+      height: frame.height,
+      canvasWidth: frame.canvasWidth,
+      canvasHeight: frame.canvasHeight,
+      offsetX: frame.offsetX,
+      offsetY: frame.offsetY,
+      baseX: frame.baseX,
+      baseY: frame.baseY,
+      alphaHint: frame.alpha === undefined ? (frame.alphaHint ?? 0) : Number(frame.alpha) + 1,
+      bpp:
+        frame.bpp === 24 &&
+        (!(image instanceof HG3) || nativeABI(this.world.profile).graphics.preserveRGB24)
+          ? 3
+          : 4,
+      clip: [0, 0, frame.width, frame.height],
+      attributes: frame.attributes ?? [],
+      blendType: frame.blendType ?? 0,
+      imageMode: frame.imageMode ?? 0,
+      source: null,
+      rgba: new Uint8ClampedArray(frame.rgba),
+    };
+  }
+  addDecoded(image, frame) {
+    return this.add(new NativeBitmap(this, this.decodedState(image, frame)));
+  }
   async formattedLoad(text, owner) {
     let handle = 0;
     for (const token of text.split(' ').filter(Boolean)) {
-      const match = /^(.*?)(?::(-?\d+))?$/.exec(token),
-        next = await this.load(match[1], Number(match[2] || 0), owner);
+      const { stem, extension } = nativeImagePathParts(token),
+        match = /^(.*):([+-]?\d+)$/.exec(stem),
+        next = await this.load(
+          match ? match[1] + extension : token,
+          match ? Number(match[2]) >>> 0 : 0,
+          owner,
+        );
       if (!handle) handle = next;
       else if (next) {
         const destination = this.get(handle),

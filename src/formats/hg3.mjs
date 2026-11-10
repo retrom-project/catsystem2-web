@@ -40,10 +40,18 @@ export class HG3 {
           canvasWidth: b.u32(p + 20),
           canvasHeight: b.u32(p + 24),
           alphaHint: b.u32(p + 28) ? 2 : 1,
+          blendType: sections.has('cptype') ? b.u32(sections.get('cptype').at) : 0,
+          imageMode: sections.has('imgmode')
+            ? b.u32(sections.get('imgmode').at)
+            : Number(sections.has('img_jpg') || sections.has('img_jpa')),
           attributes: [...sections]
-            .filter(([name, tag]) => /^ats\d{4}$/.test(name) && tag.size >= 20)
+            .filter(
+              ([name, tag]) =>
+                /^ats[+-]?(?:0[xX][0-9a-fA-F]*|\d+)(?!\.)/.test(name) && tag.size >= 20,
+            )
             .map(([name, tag]) => ({
-              id: Number(name.slice(3)) & 65535,
+              id:
+                Number.parseInt(name.slice(3), /^[-+]?0[xX]/.test(name.slice(3)) ? 16 : 10) & 65535,
               rect: Array.from({ length: 4 }, (_, i) => b.i32(tag.at + i * 4)),
               color: b.u32(tag.at + 16),
             })),
@@ -67,13 +75,14 @@ export class HG3 {
     if (frame.rgba) return frame;
     const b = this.binary,
       { width, height, sections } = frame;
-    if (sections.has('img_jpg')) {
-      const jpg = sections.get('img_jpg');
+    if (sections.has('img_wbp') || sections.has('img_jpg')) {
+      const webp = sections.has('img_wbp'),
+        jpg = sections.get(webp ? 'img_wbp' : 'img_jpg');
       if (typeof createImageBitmap === 'undefined')
         throw new Error('JPEG decoding needs a browser image decoder');
       const image = await createImageBitmap(
-        new Blob([b.range(jpg.at, jpg.size)], { type: 'image/jpeg' }),
-        { premultiplyAlpha: 'none' },
+        new Blob([b.range(jpg.at, jpg.size)], { type: webp ? 'image/webp' : 'image/jpeg' }),
+        { premultiplyAlpha: 'none', colorSpaceConversion: 'none', imageOrientation: 'none' },
       );
       const canvas = new OffscreenCanvas(width, height),
         context = canvas.getContext('2d');

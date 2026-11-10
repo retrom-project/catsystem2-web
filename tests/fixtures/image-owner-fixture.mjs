@@ -2,7 +2,7 @@
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeImageOwners, nativeImageOwnerCodec } from '../../oracle/image-owner.mjs';
+import { NativeImageOwners, nativeImageOwnerCodec } from '../../oracle/image-owner-original.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';

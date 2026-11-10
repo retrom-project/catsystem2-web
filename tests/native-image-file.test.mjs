@@ -101,7 +101,7 @@ for (const [profile, variable] of [
   );
 
 test(
-  'SDK World loads anmtable.csv through its original view and restores the same independently owned map',
+  'SDK World freezes JS anmtable input and keeps the D6 consumer map independent across restore',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const profile = 'sdk-4.01-engine-2.6.1.74',
@@ -181,6 +181,12 @@ test(
       } finally {
         fp.free(input);
       }
+      assert.equal(
+        (await query(fresh, 'second.hg3')).value,
+        0,
+        'D6 map mutations do not change script authority',
+      );
+      fresh.imageFiles.loadTable(source);
       assert.equal((await query(fresh, 'second.hg3')).value, 1);
       assert.equal(
         (await query(world, 'second.hg3')).value,

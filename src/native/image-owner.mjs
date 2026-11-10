@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Logical image owners keep their bitmap state and automatic task lifetime in JS.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
+import { loadImageOwner } from './image-owner-load.mjs';
 import { imageOwnerPixels } from './image-owner-pixels.mjs';
 import { bitmapExpand } from './bitmap-pixels.mjs';
 import { nativeDataArgument, nativeDataMapped } from './data-text.mjs';
@@ -38,9 +39,7 @@ export const NATIVE_IMAGE_OWNER_CONTRACTS = Object.freeze(
   rows.map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
 export const NATIVE_IMAGE_OWNER_IDS = Object.freeze(rows.map(([id]) => id));
-export const NATIVE_IMAGE_OWNER_JS_IDS = Object.freeze([
-  ...rows.map(([id]) => id).filter((id) => id !== 0x2c6),
-]);
+export const NATIVE_IMAGE_OWNER_JS_IDS = Object.freeze([...rows.map(([id]) => id)]);
 export const nativeImageOwnerCodec = Object.freeze({
   snapshot: (value) => structuredClone(value),
   restore: (value) => structuredClone(value),
@@ -97,7 +96,9 @@ export class NativeImageOwners {
     }
     if (id === 0x2c6) {
       if (!nativeDataMapped(machine, first)) return value(0);
-      return value(await (await this.projection()).load(args, machine, task));
+      return value(
+        await loadImageOwner(this, this.world.runtime.services.format(first, machine), task),
+      );
     }
     if (id === 0x2d5 && (!first || !argument(1))) return value(1);
     if (![0x2c7, 0x2c8, 0x2ca, 0x2cb, 0x2cd, 0x2ce, 0x2cf, 0x2d0, 0x2d1, 0x2d2].includes(id))

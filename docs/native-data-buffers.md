@@ -114,3 +114,10 @@ address. `verify-native-dictionary-memory.mjs` adds **3,024 comparisons per
 build**, executing both original families against the browser dispatcher with
 separate address spaces, full padding/canaries and null paths. A public test
 exports through an allocated native pointer and imports after fresh restoration.
+
+The pinned zlib 1.2.3 artifact is generated as JavaScript (`-sWASM=0`) by
+`scripts/prepare-native-zlib.py` with Emscripten 3.1.74. Its manifest/hash are
+validated by the build. Inflate/deflate run in Node and browsers without
+WebAssembly; the no-WebAssembly test and frozen x86 fixtures verify the same
+bytes. Remaining original domain 6–9 decoder consumers use the explicitly
+shipped `oracle/hg3-delta.mjs` accelerator until their domains migrate.

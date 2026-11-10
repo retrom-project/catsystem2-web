@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { readNativeResource } from './resource-file.mjs';
 import { nativeABI } from './abi/index.mjs';
 // The reviewed engine readers share one category/path boundary. Native parsers
 // still consume the original bytes; providers may supply a live temporary view.
@@ -147,57 +148,13 @@ export class NativeEngineFiles {
       throw error;
     }
   }
-  async read(path, mode = 3) {
-    const kernel = this.engine.kernel;
-    for (const provider of kernel.fileProviders.values()) {
-      const result = await provider.read?.(path);
-      if (result !== undefined) return this.validateBytes(result);
-    }
-    const game = this.world.game,
-      match = /^@cat\/([^/]+)\/(.*)$/.exec(path),
-      resolved = match
-        ? game.nativeResources
-          ? game.nativeResources.resolve(match[2], match[1])
-          : game.resolveCategory
-            ? game.resolveCategory(match[2], match[1])
-            : match[2]
-        : path;
-    if (resolved === null && game.nativeCandidates) return null;
-    const cached =
-      this.world.resourceCache && resolved !== null
-        ? await this.world.resourceCache.peek(resolved)
-        : null;
-    if (cached !== null) return this.validateBytes(cached);
-    if (game.nativeCandidates) {
-      for (const candidate of game.nativeCandidates(resolved, mode)) {
-        if (candidate.kind === 'loose' && kernel.readFile) {
-          const bytes = await kernel.readFile(candidate.path);
-          if (bytes !== null) return this.validateBytes(bytes);
-        }
-        if (candidate.hit) {
-          const { file, offset, size } = candidate.hit;
-          return this.validateBytes(await file.read(offset, size));
-        }
-      }
-      return null;
-    }
-    if (mode !== 3)
-      throw new Error(
-        `Native mounted file search mode ${mode} requires a native resource mount provider`,
-      );
-    let bytes = kernel.readFile ? await kernel.readFile(path) : null;
-    if (bytes === null) {
-      if (match) {
-        if (game.readCategory) bytes = await game.readCategory(match[2], match[1]);
-        else {
-          const resolved = game.resolveCategory
-            ? game.resolveCategory(match[2], match[1])
-            : match[2];
-          bytes = resolved === null ? null : await game.read(resolved);
-        }
-      } else bytes = await this.world.game.read(path);
-    }
-    return this.validateBytes(bytes);
+  read(path, mode = 3) {
+    const files = this.world.imageFiles;
+    // D6's original view constructs a private lookup map from the same frozen
+    // JS-owned table; scripts never observe mutations of that consumer map.
+    if (files?.loaded && path === files.resolve('anmtable.csv'))
+      return Promise.resolve(files.bytes?.slice() ?? null);
+    return readNativeResource(this.world, path, mode, this.engine.kernel);
   }
   validateBytes(bytes) {
     if (bytes !== null && !(bytes instanceof Uint8Array))

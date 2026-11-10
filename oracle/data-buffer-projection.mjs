@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Read-only JS buffer projections and the unmigrated domain-5 image codec.
 import { NativeDataBuffers as JSDataBuffers } from '../src/native/data-buffer.mjs';
-import { installNativeHG3Delta, nativeHG3DecodeContext } from '../src/native/hg3-delta.mjs';
+import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({

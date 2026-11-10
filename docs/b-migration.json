@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 114, "oracle": 133, "differential": 33 },
+    "counts": { "js": 115, "oracle": 133, "differential": 35 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -134,7 +134,8 @@
         "tests/psd.test.mjs",
         "tests/raster.test.mjs",
         "tests/scene-contracts.test.mjs",
-        "tests/transitional-serving.test.mjs"
+        "tests/transitional-serving.test.mjs",
+        "tests/zlib-javascript.test.mjs"
       ],
       "oracle": [
         "tests/execution.test.mjs",
@@ -287,6 +288,8 @@
         "tests/differential/native-geometry.test.mjs",
         "tests/differential/native-history-cursor.test.mjs",
         "tests/differential/native-image-composite-js.test.mjs",
+        "tests/differential/native-image-files-js.test.mjs",
+        "tests/differential/native-image-owner-load.test.mjs",
         "tests/differential/native-image-owner-pixels.test.mjs",
         "tests/differential/native-image-owner-projection.test.mjs",
         "tests/differential/native-math.test.mjs",
@@ -1167,41 +1170,13 @@
     ]
   },
   "remainingProfileSelections": {
-    "profileIndexSites": [
-      {
-        "kind": "index",
-        "file": "oracle/image-owner.mjs",
-        "line": 58,
-        "expression": "this.profileIndex",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "index",
-        "file": "oracle/image-owner.mjs",
-        "line": 190,
-        "expression": "this.profileIndex",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      }
-    ],
+    "profileIndexSites": [],
     "versionGuards": [
       {
         "kind": "guard",
         "file": "oracle/image-owner.mjs",
-        "line": 55,
+        "line": 4,
         "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "oracle/image-owner.mjs",
-        "line": 56,
-        "expression": "engine.profile !== 'nekopara-vol3-engine-2.6.1.76'",
         "domain": 6,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
@@ -1245,7 +1220,7 @@
       {
         "kind": "guard",
         "file": "src/native/engine-files.mjs",
-        "line": 34,
+        "line": 35,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1257,15 +1232,6 @@
         "line": 16,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/image-file.mjs",
-        "line": 41,
-        "expression": "this.engine.profile.startsWith('sdk-')",
-        "domain": 5,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1445,7 +1411,7 @@
       {
         "kind": "exe-layout",
         "file": "oracle/bitmap-memory.mjs",
-        "line": 51,
+        "line": 52,
         "expression": "layouts[engine.profile]",
         "domain": 6,
         "review": "deferred-domain-migration",
@@ -1470,10 +1436,10 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "va-condition",
-        "file": "oracle/image-owner.mjs",
-        "line": 59,
-        "expression": "this.sdk",
+        "kind": "exe-layout",
+        "file": "oracle/hg3-delta.mjs",
+        "line": 35,
+        "expression": "sites[engine.profile]",
         "domain": 6,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
@@ -1481,26 +1447,8 @@
       {
         "kind": "va-condition",
         "file": "oracle/image-owner.mjs",
-        "line": 60,
-        "expression": "this.sdk",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "oracle/image-owner.mjs",
-        "line": 61,
-        "expression": "this.sdk",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va",
-        "file": "oracle/image-owner.mjs",
-        "line": 190,
-        "expression": "spec.handlers[this.profileIndex]",
+        "line": 4,
+        "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
         "domain": 6,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
@@ -1661,7 +1609,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/engine-files.mjs",
-        "line": 65,
+        "line": 66,
         "expression": "sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1670,7 +1618,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/engine-files.mjs",
-        "line": 72,
+        "line": 73,
         "expression": "sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1679,7 +1627,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/engine-files.mjs",
-        "line": 78,
+        "line": 79,
         "expression": "!sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1688,7 +1636,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-files.mjs",
-        "line": 92,
+        "line": 93,
         "expression": "NATIVE_MEMORY_FILE_LAYOUTS[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2622,24 +2570,6 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "exe-layout",
-        "file": "src/native/hg3-delta.mjs",
-        "line": 35,
-        "expression": "sites[engine.profile]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va",
-        "file": "src/native/image-file.mjs",
-        "line": 41,
-        "expression": "spec.handlers[Number(this.engine.profile.startsWith('sdk-'))]",
-        "domain": 5,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "va-condition",
         "file": "src/native/input-browser.mjs",
         "line": 128,
@@ -3189,21 +3119,21 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 2, "exeVASelectionSites": 208, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 202, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
-    "remainingProfileIndexSites": 2,
-    "remainingExeVASelectionSites": 208,
+    "remainingProfileIndexSites": 0,
+    "remainingExeVASelectionSites": 202,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1417,
-      "original-handler": 272,
+      "pure-js": 1425,
+      "original-handler": 268,
       "exe-region": 5,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 469,
+      "unknown": 465,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -3216,14 +3146,14 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 523,
-    "runtimeFiles": 356,
-    "fileDomains": { "3": 32, "4": 48, "5": 34, "6": 43, "7": 23, "8": 147, "9": 29 },
-    "fileNeedsReview": 127,
+    "nativeNeedsReview": 521,
+    "runtimeFiles": 358,
+    "fileDomains": { "3": 32, "4": 48, "5": 34, "6": 44, "7": 23, "8": 148, "9": 29 },
+    "fileNeedsReview": 125,
     "exeDependencyFiles": 103,
-    "exeDependencies": { "addresses": 1597, "calls": 149, "references": 6 },
-    "nonNativeGroups": 22,
-    "executionSites": 507
+    "exeDependencies": { "addresses": 1535, "calls": 147, "references": 6 },
+    "nonNativeGroups": 24,
+    "executionSites": 499
   },
   "profiles": [
     {
@@ -7529,7 +7459,7 @@
           "hexID": "0xf1",
           "semanticName": "image.saveEntry",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/image-persistence.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
@@ -7538,9 +7468,7 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": [
-            "JS 编解码经 NativeImages 的原位 bitmap 包装器访问像素，是否创建/导入 PE owner 取决于输入句柄。"
-          ]
+          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
         },
         {
           "table": "main",
@@ -7701,7 +7629,7 @@
           "hexID": "0xfb",
           "semanticName": "image.loadEntry",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/image-persistence.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
@@ -7710,9 +7638,7 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": [
-            "JS 编解码经 NativeImages 的原位 bitmap 包装器访问像素，是否创建/导入 PE owner 取决于输入句柄。"
-          ]
+          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
         },
         {
           "table": "main",
@@ -10968,18 +10894,13 @@
           "hexID": "0x1ae",
           "semanticName": "image.hasAnimationFile",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/image-file.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-file.mjs:73",
-          "features": ["image-files"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/image-file.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/image-file.mjs:92",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -11523,7 +11444,7 @@
           "module": "src/native/image-composite.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-composite.mjs:165",
+          "registration": "src/native/image-composite.mjs:163",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-composite.md"],
@@ -16102,33 +16023,16 @@
           "hexID": "0x2c6",
           "semanticName": "imageOwner.load",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
-          "features": ["image-owner-projection"],
-          "dependencies": [
-            "oracle/image-owner-projection.mjs",
-            "oracle/image-owner.mjs",
-            "src/native/bitmap-memory.mjs",
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-images.mjs",
-            "src/native/graphics-process.mjs",
-            "src/native/graphics.mjs",
-            "src/native/image-owner.mjs",
-            "src/native/renderer.mjs",
-            "src/native/retained-draw.mjs",
-            "src/native/text-task.mjs",
-            "src/native/text.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md", "docs/native-image-owners.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS持有逻辑句柄、所有层位图和像素操作。文件/ANM装载仍通过显式输入导入边界，阶段5.3删除。"
-          ]
+          "registration": "src/native/image-owner.mjs:292",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-image-owners.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -16140,7 +16044,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16157,7 +16061,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16174,7 +16078,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16191,7 +16095,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16208,7 +16112,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16225,7 +16129,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16242,7 +16146,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16259,7 +16163,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16276,7 +16180,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16293,7 +16197,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16310,7 +16214,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16327,7 +16231,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16344,7 +16248,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16361,7 +16265,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16378,7 +16282,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16395,7 +16299,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16412,7 +16316,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16429,7 +16333,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16446,7 +16350,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16463,7 +16367,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16480,7 +16384,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16497,7 +16401,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16514,7 +16418,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16531,7 +16435,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16548,7 +16452,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16565,7 +16469,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16582,7 +16486,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -23870,7 +23774,7 @@
         },
         {
           "name": "engine-files",
-          "registration": "src/native/engine-files.mjs:215",
+          "registration": "src/native/engine-files.mjs:172",
           "modules": [],
           "dependencies": []
         },
@@ -23960,13 +23864,13 @@
         },
         {
           "name": "image-owners",
-          "registration": "src/native/image-owner.mjs:277",
+          "registration": "src/native/image-owner.mjs:278",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "image-owner-projection",
-          "registration": "src/native/image-owner.mjs:281",
+          "registration": "src/native/image-owner.mjs:282",
           "modules": [],
           "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
@@ -24002,7 +23906,7 @@
         },
         {
           "name": "bitmap-factories",
-          "registration": "src/native/bitmap-factory.mjs:79",
+          "registration": "src/native/bitmap-factory.mjs:83",
           "modules": [],
           "dependencies": []
         },
@@ -24032,13 +23936,13 @@
         },
         {
           "name": "image-files",
-          "registration": "src/native/image-file.mjs:67",
+          "registration": "src/native/image-file.mjs:88",
           "modules": [],
-          "dependencies": ["data-buffers", "engine-files"]
+          "dependencies": []
         },
         {
           "name": "image-composites",
-          "registration": "src/native/image-composite.mjs:161",
+          "registration": "src/native/image-composite.mjs:159",
           "modules": [],
           "dependencies": []
         },
@@ -28386,7 +28290,7 @@
           "hexID": "0xf1",
           "semanticName": "image.saveEntry",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/image-persistence.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
@@ -28395,9 +28299,7 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": [
-            "JS 编解码经 NativeImages 的原位 bitmap 包装器访问像素，是否创建/导入 PE owner 取决于输入句柄。"
-          ]
+          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
         },
         {
           "table": "main",
@@ -28558,7 +28460,7 @@
           "hexID": "0xfb",
           "semanticName": "image.loadEntry",
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/image-persistence.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
@@ -28567,9 +28469,7 @@
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": [
-            "JS 编解码经 NativeImages 的原位 bitmap 包装器访问像素，是否创建/导入 PE owner 取决于输入句柄。"
-          ]
+          "reviewReasons": ["JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。"]
         },
         {
           "table": "main",
@@ -31857,18 +31757,13 @@
           "hexID": "0x1ae",
           "semanticName": "image.hasAnimationFile",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/image-file.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-file.mjs:73",
-          "features": ["image-files"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/image-file.mjs",
-            "src/native/world.mjs"
-          ],
+          "registration": "src/native/image-file.mjs:92",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -32403,7 +32298,7 @@
           "module": "src/native/image-composite.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-composite.mjs:165",
+          "registration": "src/native/image-composite.mjs:163",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-composite.md"],
@@ -36988,34 +36883,16 @@
           "hexID": "0x2c6",
           "semanticName": "imageOwner.load",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
-          "features": ["image-owner-projection"],
-          "dependencies": [
-            "oracle/image-owner-projection.mjs",
-            "oracle/image-owner.mjs",
-            "src/native/bitmap-memory.mjs",
-            "src/native/data-buffer-projection.mjs",
-            "src/native/emote.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/fes-images.mjs",
-            "src/native/graphics-process.mjs",
-            "src/native/graphics.mjs",
-            "src/native/image-owner.mjs",
-            "src/native/renderer.mjs",
-            "src/native/retained-draw.mjs",
-            "src/native/text-task.mjs",
-            "src/native/text.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md", "docs/native-image-owners.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS持有逻辑句柄、所有层位图和像素操作。文件/ANM装载仍通过显式输入导入边界，阶段5.3删除。"
-          ]
+          "registration": "src/native/image-owner.mjs:292",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-image-owners.md"],
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -37027,7 +36904,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37044,7 +36921,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37061,7 +36938,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37078,7 +36955,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37095,7 +36972,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37112,7 +36989,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37129,7 +37006,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37146,7 +37023,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37163,7 +37040,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37180,7 +37057,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37197,7 +37074,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37214,7 +37091,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37231,7 +37108,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37248,7 +37125,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37265,7 +37142,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37282,7 +37159,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37299,7 +37176,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37316,7 +37193,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37333,7 +37210,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37350,7 +37227,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37367,7 +37244,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37384,7 +37261,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37401,7 +37278,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37418,7 +37295,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37435,7 +37312,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37452,7 +37329,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -37469,7 +37346,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:291",
+          "registration": "src/native/image-owner.mjs:292",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -45541,7 +45418,7 @@
         },
         {
           "name": "engine-files",
-          "registration": "src/native/engine-files.mjs:215",
+          "registration": "src/native/engine-files.mjs:172",
           "modules": [],
           "dependencies": []
         },
@@ -45625,13 +45502,13 @@
         },
         {
           "name": "image-owners",
-          "registration": "src/native/image-owner.mjs:277",
+          "registration": "src/native/image-owner.mjs:278",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "image-owner-projection",
-          "registration": "src/native/image-owner.mjs:281",
+          "registration": "src/native/image-owner.mjs:282",
           "modules": [],
           "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
@@ -45667,7 +45544,7 @@
         },
         {
           "name": "bitmap-factories",
-          "registration": "src/native/bitmap-factory.mjs:79",
+          "registration": "src/native/bitmap-factory.mjs:83",
           "modules": [],
           "dependencies": []
         },
@@ -45697,13 +45574,13 @@
         },
         {
           "name": "image-files",
-          "registration": "src/native/image-file.mjs:67",
+          "registration": "src/native/image-file.mjs:88",
           "modules": [],
-          "dependencies": ["data-buffers", "engine-files"]
+          "dependencies": []
         },
         {
           "name": "image-composites",
-          "registration": "src/native/image-composite.mjs:161",
+          "registration": "src/native/image-composite.mjs:159",
           "modules": [],
           "dependencies": []
         },
@@ -46250,7 +46127,7 @@
     },
     {
       "file": "src/formats/hg3.mjs",
-      "sourceSha256": "89b56f94f256b30c536bcf9b2824c5588b751e9ed226279d4fedb43c13c78a4f",
+      "sourceSha256": "66edd8f1d43a9c4b70698b92a419b29e4c27a28b23ee806cc57ef9512faf903a",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -46784,7 +46661,7 @@
     },
     {
       "file": "src/native/bitmap-factory.mjs",
-      "sourceSha256": "45cc94299eb6dcaeb0ca0b29531c8627d996c2d0b8f1097a02ff704a1b175c2e",
+      "sourceSha256": "446c82747b98661442fcbf19e5cd89172bbaa9df2b24ee2c81c59d4db591f9b1",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48072,7 +47949,7 @@
     },
     {
       "file": "src/native/engine-files.mjs",
-      "sourceSha256": "70f8b7933b07a0dc49b5ab20f18ea4e86d740eb1cea61059b395eec55eb4c97a",
+      "sourceSha256": "28f8ced1aa868ac9e3182e82124b846d88a39161d923b32497f56c86ba3d7a50",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 12, "calls": 8, "references": 0 },
@@ -48087,56 +47964,56 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 64,
+          "line": 65,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 71,
+          "line": 72,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 79,
+          "line": 80,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
           "reason": "直接使用原 EXE image 范围内的目标。"
         },
         {
-          "line": 94,
+          "line": 95,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 118,
+          "line": 119,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 119,
+          "line": 120,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 144,
+          "line": 145,
           "method": "callFromHost",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 145,
+          "line": 146,
           "method": "call",
           "target": "destroy",
           "review": "needs-review",
@@ -48146,7 +48023,7 @@
       "executionSiteCounts": { "patch": 4, "callFromHost": 2, "call": 2 },
       "indirectSites": [
         {
-          "line": 111,
+          "line": 112,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -50483,27 +50360,6 @@
       "review": "counted"
     },
     {
-      "file": "src/native/hg3-delta.mjs",
-      "sourceSha256": "526b3ff3c83dfa93ff541359930decb052dd64ceaa0ede538891e4af03a16a43",
-      "domain": 5,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 44,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
       "file": "src/native/history-cursor.mjs",
       "sourceSha256": "48a23836726a537f73505991979cb65f5e7220484d2be712d52a5f26be06bf5f",
       "domain": 4,
@@ -50557,7 +50413,7 @@
     },
     {
       "file": "src/native/image-composite.mjs",
-      "sourceSha256": "3b8b42d904b8f26901a54b6e42ac3c6dd0defe5d7b76f1c9bb5e7c8a7dcc971d",
+      "sourceSha256": "dae02b32a88490b3e897745360ae40bfd7a7f9f0081d167d46af2d30fda8da6f",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50570,73 +50426,29 @@
     },
     {
       "file": "src/native/image-file.mjs",
-      "sourceSha256": "d1608ad2691d895af9a33ba268896c9a3d4e6a524695e685eafaf3d3f78371a8",
+      "sourceSha256": "c5e4f94c7ddf10b0eedff1b238a4e051eca92dd71b2f8327679c6dc16d31bf1c",
       "domain": 5,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callFromHost",
-        "getNativeFeature",
-        "in-image-literals",
-        "profile-memory-layout"
-      ],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 44,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 45,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
-      "indirectSites": [
-        {
-          "line": 22,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 26,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 68,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 69,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 74,
-          "method": "getNativeFeature",
-          "feature": "image-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/image-owner-load.mjs",
+      "sourceSha256": "45cac787b5203416cbacc8d5c4da5e990a9b74c0d8a7600ca0baf955379cced1",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-image-owners.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/image-owner-pixels.mjs",
@@ -50661,7 +50473,7 @@
     },
     {
       "file": "src/native/image-owner.mjs",
-      "sourceSha256": "98cef10c8c754d4195ca416cba8ffaa30610f0799c54e790c7bf47eed2434661",
+      "sourceSha256": "d06da3f534909b0e54947191a0d178988cf95b314650e0e8283464226ebc1ab8",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50671,35 +50483,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 60,
+          "line": 59,
           "method": "getNativeFeature",
           "feature": "image-owner-projection",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 282,
+          "line": 283,
           "method": "getNativeFeature",
           "feature": "engine-files",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 283,
+          "line": 284,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 284,
+          "line": 285,
           "method": "getNativeFeature",
           "feature": "retained-draw",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 285,
+          "line": 286,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "needs-review",
@@ -50723,7 +50535,7 @@
     },
     {
       "file": "src/native/image.mjs",
-      "sourceSha256": "ebbc606b0a41bf9d6922cabec1a61e5e61dd02ab05fa34a005aba8da29694f98",
+      "sourceSha256": "a6542d4a3fd66917d0504a3c18620ad905e8c51c5cf62cc71c52d1efa5b40038",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50733,14 +50545,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 545,
+          "line": 555,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 595,
+          "line": 605,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
           "review": "needs-review",
@@ -52326,6 +52138,19 @@
       "file": "src/native/resource-cache.mjs",
       "sourceSha256": "a5a29784e5a61478441565f94617dcd46d7b0689881159952f37fecb2cc24e0a",
       "domain": 4,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/resource-file.mjs",
+      "sourceSha256": "f33fa72a3326177f1cb424e7c7ef28ab20dba696fd216820d4db6f0d43ef8787",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -55229,7 +55054,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "af45a6bf606a853b66740a33793d44cac1ea805c57c7bcddf233d1047d5b197b",
+      "sourceSha256": "175cf3a6ffb77a3f68e0dc7e8526cda5bda07266df143dc3ecc68d5855f120b4",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55260,56 +55085,56 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 865,
+          "line": 866,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 887,
+          "line": 888,
           "method": "getNativeFeature",
           "feature": "renderer",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 895,
+          "line": 896,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 918,
+          "line": 919,
           "method": "getNativeFeature",
           "feature": "m2",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 931,
+          "line": 932,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 940,
+          "line": 941,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1054,
+          "line": 1057,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1055,
+          "line": 1058,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -55333,7 +55158,7 @@
     },
     {
       "file": "src/native/zlib-artifact.mjs",
-      "sourceSha256": "ea77c731e6358a24ae9807f8b57cd5822081653e4f44e3071780d58246b25cc3",
+      "sourceSha256": "695d06f46a9aa6835306347f30b1c2718c97c24dec4eda135b24ccbee77ed062",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55910,7 +55735,7 @@
     },
     {
       "file": "oracle/data-buffer-projection.mjs",
-      "sourceSha256": "a81b05f6d3c39bad05e1a8015ec5a0f795092a6dd06955c7dc5fdc28c027b211",
+      "sourceSha256": "6a7da2dff4c635cef202f40d26d4016b1c6c13f2469da7c4457c31e0ba9930f3",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 21, "calls": 2, "references": 0 },
@@ -55966,7 +55791,7 @@
     },
     {
       "file": "oracle/bitmap-memory.mjs",
-      "sourceSha256": "870900ed52dea3bf2f74b9c0262616d66c2db6c73bcbf30907ca1c7066e0adb6",
+      "sourceSha256": "a26edd851a47ab735a9c7bbcb9ff975268ec4d157748e5c670b6275e9bdc9d79",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 14, "calls": 2, "references": 0 },
@@ -55974,77 +55799,77 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 72,
+          "line": 73,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 73,
+          "line": 74,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 318,
+          "line": 319,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 338,
+          "line": 339,
           "method": "call",
           "target": "this.layout.clearAttributes",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 345,
+          "line": 346,
           "method": "call",
           "target": "this.layout.attribute",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 437,
+          "line": 438,
           "method": "call",
           "target": "this.layout.construct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 439,
+          "line": 440,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 458,
+          "line": 459,
           "method": "call",
           "target": "this.layout.release",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 492,
+          "line": 493,
           "method": "call",
           "target": "this.layout.wrapperConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 515,
+          "line": 516,
           "method": "call",
           "target": "this.layout.wrapperRelease",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 516,
+          "line": 517,
           "method": "call",
           "target": "this.layout.release",
           "review": "needs-review",
@@ -56054,7 +55879,7 @@
       "executionSiteCounts": { "callFromHost": 1, "call": 10 },
       "indirectSites": [
         {
-          "line": 313,
+          "line": 314,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -56065,7 +55890,7 @@
     },
     {
       "file": "oracle/bitmap-projection.mjs",
-      "sourceSha256": "68b567b7f159807f2c6943fd72fd3d348854bd06031f3601df7e0c5b2a4f3c1e",
+      "sourceSha256": "6c5dff29db1dafb97db9124d9e876c9574c067ed0efb83665ac74f385623b262",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56073,35 +55898,35 @@
       "docs": ["docs/native-bitmap-memory.md"],
       "executionSites": [
         {
-          "line": 75,
+          "line": 76,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 88,
+          "line": 89,
           "method": "call",
           "target": "this.layout.clearAttributes",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 95,
+          "line": 96,
           "method": "call",
           "target": "this.layout.attribute",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 158,
+          "line": 159,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 159,
+          "line": 160,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -56111,7 +55936,7 @@
       "executionSiteCounts": { "call": 4, "callAsync": 1 },
       "indirectSites": [
         {
-          "line": 71,
+          "line": 72,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -56122,90 +55947,171 @@
     },
     {
       "file": "oracle/image-owner.mjs",
-      "sourceSha256": "433ff7b5e5ac656d80a6a0c88334c9b86274f490a4ecacb5aca6588b3386e502",
+      "sourceSha256": "69f65fd55a0773c2e09b4374edbed20d6a57198e04439061ab175741688a74a0",
       "domain": 6,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 62, "calls": 2, "references": 0 },
+      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
+      "dependencyTypes": ["in-image-literals"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "oracle/image-owner-projection.mjs",
+      "sourceSha256": "8a5510a9776bb70356a7762ae6df6fbadc7660172243e3869de94c836923d671",
+      "domain": 6,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 2, "references": 0 },
       "dependencyTypes": [
+        "beforeInstruction",
         "call",
+        "callAsync",
         "callFromHost",
         "getNativeFeature",
-        "in-image-literals",
-        "profile-memory-layout",
-        "sendNativeEngine"
+        "profile-memory-layout"
       ],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-image-owners.md"],
       "executionSites": [
         {
-          "line": 107,
-          "method": "callFromHost",
-          "target": "address",
+          "line": 33,
+          "method": "beforeInstruction",
+          "target": "retained.abi.rendererDraw",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 108,
+          "line": 68,
           "method": "call",
-          "target": "address",
+          "target": "memory.layout.wrapperConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 130,
+          "line": 78,
           "method": "call",
-          "target": "this.listConstruct",
+          "target": "retained.abi.construct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 189,
+          "line": 245,
           "method": "call",
-          "target": "spec.handlers[this.profileIndex]",
+          "target": "retained.abi.rendererFind",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 234,
+          "line": 247,
+          "method": "call",
+          "target": "retained.abi.rendererLayer",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 270,
+          "method": "call",
+          "target": "memory.layout.configure",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 283,
+          "method": "call",
+          "target": "memory.layout.clearAttributes",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 288,
+          "method": "call",
+          "target": "memory.layout.attribute",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 304,
+          "method": "call",
+          "target": "abi.rendererDestroy",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 317,
+          "method": "call",
+          "target": "abi.rendererConstruct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 330,
+          "method": "call",
+          "target": "layer.bitmap ? abi.rendererBitmap : abi.rendererRetained",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 336,
+          "method": "call",
+          "target": "abi.rendererFind",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 337,
+          "method": "call",
+          "target": "abi.load",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 340,
+          "method": "call",
+          "target": "abi.rendererDraw",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 381,
           "method": "call",
           "target": "this.releaseAddress",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 241,
+          "line": 397,
+          "method": "callAsync",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 400,
+          "method": "callFromHost",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 401,
           "method": "call",
-          "target": "this.listClear",
+          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 5 },
+      "executionSiteCounts": {
+        "beforeInstruction": 1,
+        "call": 15,
+        "callAsync": 1,
+        "callFromHost": 1
+      },
       "indirectSites": [
         {
-          "line": 90,
-          "method": "sendNativeEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 119,
+          "line": 267,
           "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 125,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 173,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
+          "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -56213,164 +56119,24 @@
       "review": "needs-review"
     },
     {
-      "file": "oracle/image-owner-projection.mjs",
-      "sourceSha256": "5c078291762626be557571013af9de4ca52a8e77f61905133b4ea97bd0c9cd50",
+      "file": "oracle/hg3-delta.mjs",
+      "sourceSha256": "526b3ff3c83dfa93ff541359930decb052dd64ceaa0ede538891e4af03a16a43",
       "domain": 6,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": [
-        "beforeInstruction",
-        "call",
-        "callAsync",
-        "getNativeFeature",
-        "profile-memory-layout"
-      ],
-      "docs": ["docs/native-image-owners.md"],
+      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
+      "dependencyTypes": ["beforeInstruction", "in-image-literals"],
+      "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 31,
-          "method": "beforeInstruction",
-          "target": "retained.abi.rendererDraw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 50,
-          "method": "call",
-          "target": "this.listConstruct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 273,
-          "method": "call",
-          "target": "retained.abi.rendererFind",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 275,
-          "method": "call",
-          "target": "retained.abi.rendererLayer",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 298,
-          "method": "call",
-          "target": "memory.layout.configure",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 311,
-          "method": "call",
-          "target": "memory.layout.clearAttributes",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 316,
-          "method": "call",
-          "target": "memory.layout.attribute",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 332,
-          "method": "call",
-          "target": "abi.rendererDestroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 345,
-          "method": "call",
-          "target": "abi.rendererConstruct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 358,
-          "method": "call",
-          "target": "layer.bitmap ? abi.rendererBitmap : abi.rendererRetained",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 364,
-          "method": "call",
-          "target": "abi.rendererFind",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 365,
-          "method": "call",
-          "target": "abi.load",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 368,
-          "method": "call",
-          "target": "abi.rendererDraw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 418,
-          "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 434,
-          "method": "callAsync",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 435,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 452,
-          "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 453,
-          "method": "call",
-          "target": "this.listClear",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1, "call": 16, "callAsync": 1 },
-      "indirectSites": [
-        {
           "line": 44,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
+          "method": "beforeInstruction",
+          "target": "site",
           "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 295,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
+      "executionSiteCounts": { "beforeInstruction": 1 },
+      "indirectSites": [],
       "review": "needs-review"
     }
   ],
@@ -58606,7 +58372,7 @@
       "executionSites": [
         {
           "file": "src/native/engine-files.mjs",
-          "line": 64,
+          "line": 65,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
@@ -58614,7 +58380,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 71,
+          "line": 72,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
@@ -58622,7 +58388,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 79,
+          "line": 80,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
@@ -58630,7 +58396,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 94,
+          "line": 95,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
@@ -58638,7 +58404,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 118,
+          "line": 119,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -58646,7 +58412,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 119,
+          "line": 120,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58654,7 +58420,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 144,
+          "line": 145,
           "method": "callFromHost",
           "target": "destroy",
           "review": "needs-review",
@@ -58662,7 +58428,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 145,
+          "line": 146,
           "method": "call",
           "target": "destroy",
           "review": "needs-review",
@@ -59009,7 +58775,7 @@
       "executionSites": [
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 72,
+          "line": 73,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -59017,7 +58783,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 73,
+          "line": 74,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59025,7 +58791,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 318,
+          "line": 319,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
@@ -59033,7 +58799,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 338,
+          "line": 339,
           "method": "call",
           "target": "this.layout.clearAttributes",
           "review": "needs-review",
@@ -59041,7 +58807,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 345,
+          "line": 346,
           "method": "call",
           "target": "this.layout.attribute",
           "review": "needs-review",
@@ -59049,7 +58815,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 437,
+          "line": 438,
           "method": "call",
           "target": "this.layout.construct",
           "review": "needs-review",
@@ -59057,7 +58823,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 439,
+          "line": 440,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
@@ -59065,7 +58831,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 458,
+          "line": 459,
           "method": "call",
           "target": "this.layout.release",
           "review": "needs-review",
@@ -59073,7 +58839,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 492,
+          "line": 493,
           "method": "call",
           "target": "this.layout.wrapperConstruct",
           "review": "needs-review",
@@ -59081,7 +58847,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 515,
+          "line": 516,
           "method": "call",
           "target": "this.layout.wrapperRelease",
           "review": "needs-review",
@@ -59089,7 +58855,7 @@
         },
         {
           "file": "oracle/bitmap-memory.mjs",
-          "line": 516,
+          "line": 517,
           "method": "call",
           "target": "this.layout.release",
           "review": "needs-review",
@@ -59097,7 +58863,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 75,
+          "line": 76,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
@@ -59105,7 +58871,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 88,
+          "line": 89,
           "method": "call",
           "target": "this.layout.clearAttributes",
           "review": "needs-review",
@@ -59113,7 +58879,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 95,
+          "line": 96,
           "method": "call",
           "target": "this.layout.attribute",
           "review": "needs-review",
@@ -59121,7 +58887,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 158,
+          "line": 159,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -59129,7 +58895,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 159,
+          "line": 160,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59299,7 +59065,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 75,
+          "line": 76,
           "method": "call",
           "target": "this.layout.configure",
           "review": "needs-review",
@@ -59307,7 +59073,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 88,
+          "line": 89,
           "method": "call",
           "target": "this.layout.clearAttributes",
           "review": "needs-review",
@@ -59315,7 +59081,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 95,
+          "line": 96,
           "method": "call",
           "target": "this.layout.attribute",
           "review": "needs-review",
@@ -59323,7 +59089,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 158,
+          "line": 159,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -59331,7 +59097,7 @@
         },
         {
           "file": "oracle/bitmap-projection.mjs",
-          "line": 159,
+          "line": 160,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59566,7 +59332,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 31,
+          "line": 33,
           "method": "beforeInstruction",
           "target": "retained.abi.rendererDraw",
           "review": "needs-review",
@@ -59574,15 +59340,23 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 50,
+          "line": 68,
           "method": "call",
-          "target": "this.listConstruct",
+          "target": "memory.layout.wrapperConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 273,
+          "line": 78,
+          "method": "call",
+          "target": "retained.abi.construct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/image-owner-projection.mjs",
+          "line": 245,
           "method": "call",
           "target": "retained.abi.rendererFind",
           "review": "needs-review",
@@ -59590,7 +59364,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 275,
+          "line": 247,
           "method": "call",
           "target": "retained.abi.rendererLayer",
           "review": "needs-review",
@@ -59598,7 +59372,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 298,
+          "line": 270,
           "method": "call",
           "target": "memory.layout.configure",
           "review": "needs-review",
@@ -59606,7 +59380,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 311,
+          "line": 283,
           "method": "call",
           "target": "memory.layout.clearAttributes",
           "review": "needs-review",
@@ -59614,7 +59388,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 316,
+          "line": 288,
           "method": "call",
           "target": "memory.layout.attribute",
           "review": "needs-review",
@@ -59622,7 +59396,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 332,
+          "line": 304,
           "method": "call",
           "target": "abi.rendererDestroy",
           "review": "needs-review",
@@ -59630,7 +59404,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 345,
+          "line": 317,
           "method": "call",
           "target": "abi.rendererConstruct",
           "review": "needs-review",
@@ -59638,7 +59412,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 358,
+          "line": 330,
           "method": "call",
           "target": "layer.bitmap ? abi.rendererBitmap : abi.rendererRetained",
           "review": "needs-review",
@@ -59646,7 +59420,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 364,
+          "line": 336,
           "method": "call",
           "target": "abi.rendererFind",
           "review": "needs-review",
@@ -59654,7 +59428,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 365,
+          "line": 337,
           "method": "call",
           "target": "abi.load",
           "review": "needs-review",
@@ -59662,7 +59436,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 368,
+          "line": 340,
           "method": "call",
           "target": "abi.rendererDraw",
           "review": "needs-review",
@@ -59670,7 +59444,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 418,
+          "line": 381,
           "method": "call",
           "target": "this.releaseAddress",
           "review": "needs-review",
@@ -59678,7 +59452,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 434,
+          "line": 397,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -59686,25 +59460,132 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 435,
-          "method": "call",
+          "line": 400,
+          "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 452,
+          "line": 401,
           "method": "call",
-          "target": "this.releaseAddress",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "review": "needs-review",
+      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+    },
+    {
+      "name": "js-anm-table-to-exe-view",
+      "domain": 6,
+      "projection": {
+        "direction": "JS-to-PE",
+        "authority": "NativeImageFiles bytes and lookup entries",
+        "fields": ["immutable encoded table bytes"],
+        "consumers": [{ "domain": 6, "modules": ["render-sources", "retained-draw"] }],
+        "lifetime": "The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.",
+        "removePhase": 6,
+        "operations": ["read"]
+      },
+      "entry": "Original D6 view initialization reads the immutable JS-owned anmtable.csv bytes",
+      "modules": ["src/native/engine-files.mjs"],
+      "executionSites": [
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 65,
+          "method": "patch",
+          "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 453,
+          "file": "src/native/engine-files.mjs",
+          "line": 72,
+          "method": "patch",
+          "target": "sdk ? 0x4b0710 : 0x5d3810",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 80,
+          "method": "patch",
+          "target": "0x5d3b30",
+          "review": "traced",
+          "reason": "直接使用原 EXE image 范围内的目标。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 95,
+          "method": "patch",
+          "target": "this.layout.open",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 119,
+          "method": "callFromHost",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 120,
           "method": "call",
-          "target": "this.listClear",
+          "target": "address",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 145,
+          "method": "callFromHost",
+          "target": "destroy",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/engine-files.mjs",
+          "line": 146,
+          "method": "call",
+          "target": "destroy",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "review": "needs-review",
+      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+    },
+    {
+      "name": "js-image-codec-to-exe-consumers",
+      "domain": 6,
+      "projection": {
+        "direction": "JS-to-PE",
+        "authority": "Encoded input bytes for each consumer-owned decoder",
+        "fields": ["expanded bitmap bytes in consumer-owned buffers"],
+        "consumers": [
+          { "domain": 6, "modules": ["render-sources", "retained-draw", "particle-textures"] },
+          { "domain": 7, "modules": ["fes-images"] },
+          { "domain": 8, "modules": ["sdk-javascript-task"] },
+          { "domain": 9, "modules": ["ppi"] }
+        ],
+        "lifetime": "Script-created images decode entirely in JS. Only the remaining original consumers use the HG kernel; no script bitmap is imported implicitly.",
+        "removePhase": 9,
+        "operations": ["installNativeHG3Delta"]
+      },
+      "entry": "Original D6/D7/D8/D9 image decoders retain the bounded HG delta host acceleration until their domains migrate",
+      "modules": ["oracle/hg3-delta.mjs"],
+      "executionSites": [
+        {
+          "file": "oracle/hg3-delta.mjs",
+          "line": 44,
+          "method": "beforeInstruction",
+          "target": "site",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -59727,7 +59608,7 @@
           { "domain": 6, "modules": ["retained-draw"] },
           { "domain": 7, "modules": ["fes-images"] }
         ],
-        "lifetime": "JS task ownership uses handles. PE projection lists are isolated from the Script prefix. External retained references can outlive JS release.",
+        "lifetime": "JS task ownership uses handles. Independent PE vectors, wrappers and frame maps are built from JS values without calling image native handlers. External retained references can outlive JS release.",
         "removePhase": 7,
         "operations": ["prepare", "sync", "rebuildRenderer", "releaseModel"]
       },
@@ -59735,56 +59616,8 @@
       "modules": ["oracle/image-owner.mjs", "oracle/image-owner-projection.mjs"],
       "executionSites": [
         {
-          "file": "oracle/image-owner.mjs",
-          "line": 107,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner.mjs",
-          "line": 108,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner.mjs",
-          "line": 130,
-          "method": "call",
-          "target": "this.listConstruct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner.mjs",
-          "line": 189,
-          "method": "call",
-          "target": "spec.handlers[this.profileIndex]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner.mjs",
-          "line": 234,
-          "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner.mjs",
-          "line": 241,
-          "method": "call",
-          "target": "this.listClear",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 31,
+          "line": 33,
           "method": "beforeInstruction",
           "target": "retained.abi.rendererDraw",
           "review": "needs-review",
@@ -59792,15 +59625,23 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 50,
+          "line": 68,
           "method": "call",
-          "target": "this.listConstruct",
+          "target": "memory.layout.wrapperConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 273,
+          "line": 78,
+          "method": "call",
+          "target": "retained.abi.construct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/image-owner-projection.mjs",
+          "line": 245,
           "method": "call",
           "target": "retained.abi.rendererFind",
           "review": "needs-review",
@@ -59808,7 +59649,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 275,
+          "line": 247,
           "method": "call",
           "target": "retained.abi.rendererLayer",
           "review": "needs-review",
@@ -59816,7 +59657,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 298,
+          "line": 270,
           "method": "call",
           "target": "memory.layout.configure",
           "review": "needs-review",
@@ -59824,7 +59665,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 311,
+          "line": 283,
           "method": "call",
           "target": "memory.layout.clearAttributes",
           "review": "needs-review",
@@ -59832,7 +59673,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 316,
+          "line": 288,
           "method": "call",
           "target": "memory.layout.attribute",
           "review": "needs-review",
@@ -59840,7 +59681,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 332,
+          "line": 304,
           "method": "call",
           "target": "abi.rendererDestroy",
           "review": "needs-review",
@@ -59848,7 +59689,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 345,
+          "line": 317,
           "method": "call",
           "target": "abi.rendererConstruct",
           "review": "needs-review",
@@ -59856,7 +59697,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 358,
+          "line": 330,
           "method": "call",
           "target": "layer.bitmap ? abi.rendererBitmap : abi.rendererRetained",
           "review": "needs-review",
@@ -59864,7 +59705,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 364,
+          "line": 336,
           "method": "call",
           "target": "abi.rendererFind",
           "review": "needs-review",
@@ -59872,7 +59713,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 365,
+          "line": 337,
           "method": "call",
           "target": "abi.load",
           "review": "needs-review",
@@ -59880,7 +59721,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 368,
+          "line": 340,
           "method": "call",
           "target": "abi.rendererDraw",
           "review": "needs-review",
@@ -59888,7 +59729,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 418,
+          "line": 381,
           "method": "call",
           "target": "this.releaseAddress",
           "review": "needs-review",
@@ -59896,7 +59737,7 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 434,
+          "line": 397,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -59904,25 +59745,17 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 435,
-          "method": "call",
+          "line": 400,
+          "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 452,
+          "line": 401,
           "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 453,
-          "method": "call",
-          "target": "this.listClear",
+          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -61309,7 +61142,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 64,
+          "line": 65,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
@@ -61317,7 +61150,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 71,
+          "line": 72,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
@@ -61325,7 +61158,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 79,
+          "line": 80,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
@@ -61333,7 +61166,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 94,
+          "line": 95,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
@@ -61588,14 +61421,6 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/hg3-delta.mjs",
-          "line": 44,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/particle-projection.mjs",
           "line": 69,
           "method": "beforeInstruction",
@@ -61693,9 +61518,17 @@
         },
         {
           "file": "oracle/image-owner-projection.mjs",
-          "line": 31,
+          "line": 33,
           "method": "beforeInstruction",
           "target": "retained.abi.rendererDraw",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/hg3-delta.mjs",
+          "line": 44,
+          "method": "beforeInstruction",
+          "target": "site",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
@@ -61751,30 +61584,6 @@
         {
           "file": "src/native/effect-commands.mjs",
           "line": 114,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/hg3-delta.mjs",
-          "line": 44,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/image-file.mjs",
-          "line": 44,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/image-file.mjs",
-          "line": 45,
           "method": "call",
           "target": "address",
           "review": "needs-review",

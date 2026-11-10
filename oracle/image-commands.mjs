@@ -2,7 +2,7 @@
 // Original image transfers, attributes and filters share one bitmap backing.
 import { nativeReply } from '../src/kcs/vm.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { nativeHG3DecodeContext } from '../src/native/hg3-delta.mjs';
+import { nativeHG3DecodeContext } from './hg3-delta.mjs';
 import { sameNativeBitmap } from '../src/native/bitmap-memory.mjs';
 
 export const NATIVE_IMAGE_COMMAND_CONTRACTS = Object.freeze(

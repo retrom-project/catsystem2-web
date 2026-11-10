@@ -94,7 +94,7 @@ const domains = {
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
-  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels bitmap-pixels image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
+  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
@@ -102,6 +102,7 @@ function domain(file) {
   if (file === 'src/native/xml.mjs') return 4;
   if (
     [
+      'oracle/hg3-delta.mjs',
       'oracle/bitmap-memory.mjs',
       'oracle/bitmap-projection.mjs',
       'oracle/image-owner.mjs',
@@ -140,7 +141,7 @@ function domain(file) {
 const originalWrappers = new Set(
   (
     'draw-commands effect-commands screen-capture ' +
-    'input-commands registry image-file render-sources ' +
+    'input-commands registry render-sources ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
     'text-legacy text-log version-query sdk-javascript-task emote'
@@ -385,10 +386,8 @@ function classify(file, id, callback, features, modules) {
     reasons.push('本体只投递窗口消息，消息泵/WndProc 的后续 EXE 行为另列于非 native 入口。');
   } else if (name === 'script-message-box') implementation = 'exe-region';
   else if (name === 'image-persistence') {
-    implementation = 'unknown';
-    reasons.push(
-      'JS 编解码经 NativeImages 的原位 bitmap 包装器访问像素，是否创建/导入 PE owner 取决于输入句柄。',
-    );
+    implementation = 'pure-js';
+    reasons.push('JS编解码持有脚本像素；D6/D7自有渲染目标的只读视图另登记为消费者投影。');
   } else {
     const facts = modules.get(file);
     implementation = facts.executionSites.length ? 'unknown' : 'pure-js';
@@ -813,6 +812,45 @@ const nonNativeGroups = [
     },
   },
   {
+    name: 'js-anm-table-to-exe-view',
+    domain: 6,
+    entry: 'Original D6 view initialization reads the immutable JS-owned anmtable.csv bytes',
+    modules: ['engine-files'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeImageFiles bytes and lookup entries',
+      fields: ['immutable encoded table bytes'],
+      consumers: [{ domain: 6, modules: ['render-sources', 'retained-draw'] }],
+      lifetime:
+        'The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.',
+      removePhase: 6,
+      operations: ['read'],
+    },
+  },
+  {
+    name: 'js-image-codec-to-exe-consumers',
+    domain: 6,
+    entry:
+      'Original D6/D7/D8/D9 image decoders retain the bounded HG delta host acceleration until their domains migrate',
+    modules: [],
+    files: ['oracle/hg3-delta.mjs'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'Encoded input bytes for each consumer-owned decoder',
+      fields: ['expanded bitmap bytes in consumer-owned buffers'],
+      consumers: [
+        { domain: 6, modules: ['render-sources', 'retained-draw', 'particle-textures'] },
+        { domain: 7, modules: ['fes-images'] },
+        { domain: 8, modules: ['sdk-javascript-task'] },
+        { domain: 9, modules: ['ppi'] },
+      ],
+      lifetime:
+        'Script-created images decode entirely in JS. Only the remaining original consumers use the HG kernel; no script bitmap is imported implicitly.',
+      removePhase: 9,
+      operations: ['installNativeHG3Delta'],
+    },
+  },
+  {
     name: 'js-image-owner-to-exe-consumers',
     domain: 6,
     entry:
@@ -832,7 +870,7 @@ const nonNativeGroups = [
         { domain: 7, modules: ['fes-images'] },
       ],
       lifetime:
-        'JS task ownership uses handles. PE projection lists are isolated from the Script prefix. External retained references can outlive JS release.',
+        'JS task ownership uses handles. Independent PE vectors, wrappers and frame maps are built from JS values without calling image native handlers. External retained references can outlive JS release.',
       removePhase: 7,
       operations: ['prepare', 'sync', 'rebuildRenderer', 'releaseModel'],
     },

@@ -11,9 +11,19 @@
       "calls": 2,
       "references": 0
     },
-    "oracle/image-owner.mjs": {
-      "addresses": 62,
+    "oracle/hg3-delta.mjs": {
+      "addresses": 2,
+      "calls": 0,
+      "references": 0
+    },
+    "oracle/image-owner-projection.mjs": {
+      "addresses": 0,
       "calls": 2,
+      "references": 0
+    },
+    "oracle/image-owner.mjs": {
+      "addresses": 2,
+      "calls": 0,
       "references": 0
     },
     "oracle/transitional-exe.mjs": {
@@ -264,16 +274,6 @@
     "src/native/graphics.mjs": {
       "addresses": 4,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/hg3-delta.mjs": {
-      "addresses": 2,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/image-file.mjs": {
-      "addresses": 2,
-      "calls": 2,
       "references": 0
     },
     "src/native/input-browser.mjs": {

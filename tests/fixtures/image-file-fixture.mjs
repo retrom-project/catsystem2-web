@@ -2,7 +2,7 @@
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
-import { NativeImageFiles } from '../../src/native/image-file.mjs';
+import { NativeImageFiles } from '../../oracle/image-file.mjs';
 import { configurationQueryMachine } from './configuration-query-fixture.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 

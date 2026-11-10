@@ -34,7 +34,7 @@ test(
         oracle.machine.writeString(file, 256);
         const h = (await world.runtime.native('main', 0x2c6, [256], m, world.main)).value,
           oh = (await oracle.images.apply(0x2c6, [256], oracle.machine, world.main)).value;
-        assert.ok(h);
+        assert.ok(h, file);
         const projection = await world.getNativeFeature('image-owner-projection');
         for (const [id, args] of [
           [0x2c9, [50, 100, 200]],

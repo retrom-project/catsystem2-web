@@ -52,7 +52,11 @@ test('B inventory reproduces the actual overrides, separate tables and complete 
     inventory.profiles.reduce((sum, profile) => sum + profile.entries.length, 0),
   );
   assert.equal(inventory.remainingProfileSelections.totals.needsReview, 0);
-  assert.ok(inventory.remainingProfileSelections.profileIndexSites.length > 0);
+  assert.equal(
+    inventory.remainingProfileSelections.profileIndexSites.length,
+    0,
+    'all profileIndex variables have migrated; semantic VA selectors remain separately counted',
+  );
   assert.ok(inventory.remainingProfileSelections.addressSelections.length > 0);
   assert.ok(
     !inventory.remainingProfileSelections.versionGuards.some(
