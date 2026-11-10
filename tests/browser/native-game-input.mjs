@@ -164,7 +164,7 @@ export async function step(page, count = 1) {
   }
   const result = await state(page);
   expect(result.error, JSON.stringify(result)).toBe('');
-  budget?.observe(result);
+  budget?.observe(result, count);
   if (process.env.CATSYSTEM2_FRAME_METRICS) {
     const bucket = Math.floor((result.frame ?? 0) / 120);
     if (progress.get(page) !== bucket) {

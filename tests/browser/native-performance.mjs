@@ -214,7 +214,7 @@ export const test = base.extend({
           JSON.stringify(evidence, null, 2),
         );
       }
-      await session.detach();
+      if (!page.isClosed()) await session.detach();
     }
   },
 });

@@ -113,7 +113,7 @@ World 和 checkpoint 独立，静态资源服务器只读共享。四个慢套�
 game、route 采用仓库内的[已审核进度点](tests/browser/progress-points.json)，分别在
 frame 1936、883 完成进度门禁，route 还须达到 54 条消息。完整 UI/14 章断言保留，
 `CATSYSTEM2_FULL_ACCEPTANCE=1` 可运行完整路径。用例完整通过后由编排方移除该进度预算。
-连续 300 帧或 3 分钟没有脚本/画面栈进展时立即失败，单批帧执行也受剩余墙钟约束。
+连续请求 300 帧或 3 分钟 World 帧未推进时立即失败，单批帧执行也受剩余墙钟约束。
 输出包含调用栈、CST 位置和最近 16 次 native 调用，见[时钟与预算说明](docs/debugging.md#acceptance-clock-and-wall-budgets)。
 这些用例通过实际鼠标进入教程，验证原生标题和选项画面在新 World 中逐像素恢复，
 并确认恢复后的选择可以继续。鉴赏用例从教程完成注册，再打开 CG、播放和停止音乐、

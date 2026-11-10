@@ -106,11 +106,12 @@ Private game and route gates use the reviewed progress points in
 frame 883 and requires at least 54 messages. The accepted floors remain game
 1636 and route 583/54. Frame counts determine the amount of guest work.
 
-The earlier of 300 frames or three minutes without a changed script position
-or FES stack fails the run. Explicit scene-data handles and JS writer reveal
-state participate in progress even while the KCS task PC waits. Each pending frame batch also has the remaining
+The earlier of 300 requested frames or three minutes without a completed World
+frame fails the run. Script waits retain their existing `until()` frame bounds
+and the overall acceptance frame budget. CST and JS writer state are attached
+for diagnosis. A waiting script can continue rendering animated frames. Each pending frame batch also has the remaining
 wall deadline. The diagnostic includes stack, CST position and the last 16
-native calls. A moving script resets the no-progress deadline. This is separate
+native calls. A completed World frame resets the no-progress deadline. This is separate
 from the performance target of fifteen minutes per case.
 
 A progress gate is explicitly annotated in Playwright and attaches its evidence.
