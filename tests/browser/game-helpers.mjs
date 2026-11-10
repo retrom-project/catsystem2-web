@@ -110,11 +110,13 @@ export const gameplay = (page) =>
       runtime = world.runtime,
       script = [...runtime.scheduler.tasks.values()].find((task) => task.name === 'sscript'),
       data = script && runtime.sceneData(script),
-      bank = script && runtime.stringBank(script, false);
+      message = [...world.objects.objects.values()].find((record) => record.name === 'meswnd'),
+      body = message?.implementation.player?.root.byKey.get('str'),
+      writer = world.objects.objects.get(body?.nativeTaskID)?.implementation;
     return {
       frame: world.frame,
       source: e.identity,
-      text: bank?.get(1000) ?? '',
+      text: writer?.text?.source ?? '',
       scene: data?.reader.filename,
       block: data?.reader.block,
       line: data?.reader.line,

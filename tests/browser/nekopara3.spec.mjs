@@ -44,9 +44,12 @@ test('native title, gamepad, story, touch, save, settings, backlog and new-insta
   await pad(page, 0);
   await until(page, 'meswnd#WAIT', 900);
   await nativeWait(page, () => {
-    const e = window.catSystem2,
-      task = [...e.world.runtime.scheduler.tasks.values()].find((t) => t.name === 'sscript');
-    return task && e.world.runtime.stringBank(task, false)?.get(1000);
+    const { world } = window.catSystem2,
+      message = [...world.objects.objects.values()].find((record) => record.name === 'meswnd'),
+      body = message?.implementation.player?.root.byKey.get('str');
+    // Observe the actual native writer. The raw VM bank's get() decodes CP932,
+    // whereas this game supplies UTF-8 dialogue (including its quote glyphs).
+    return world.objects.objects.get(body?.nativeTaskID)?.implementation.text?.source;
   });
   expect((await gameplay(page)).text.length).toBeGreaterThan(0);
   expect(await page.evaluate(() => window.catSystem2.audio.context.state)).toBe('running');
