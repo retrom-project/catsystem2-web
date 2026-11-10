@@ -443,10 +443,11 @@ formatter and VM translator build the original particle packet, including the
 archive namespace; PPI modules use the physical library resolver. The fixed
 filenames in this packet each have a 128-byte destination.
 
-The five [RECT interfaces](native-rectangles.md) `D6..DA` execute the original
-wrappers and VM translators with 40,612 comparisons across both engines.
-Independent platform probes cover 748 USER32 cases; bitmap unions preserve the
-raw image dimensions, signed overflow, VM aliases and fresh live backing.
+The five [RECT interfaces](native-rectangles.md) `D6..DA` execute JavaScript.
+They preserve raw bitmap dimensions, signed overflow and ordered VM writes,
+including aliases. Independent rectangle/view GCALL fixtures cover 67 inputs
+per ABI. The retained original-wrapper regressions and USER32 platform probes
+remain oracle evidence.
 
 The original [ANM existence query](native-image-file.md) `1AE` preserves its
 `anmtable.csv` fallback and real IFile lifecycle. Both engines have 16,789
@@ -479,9 +480,10 @@ Main `1B1` uses both original [tiled SimplePlane](native-tile-plane.md)
 wrappers and receivers. The browser tests compare the rendered child tiles,
 the native model identities and the lifecycle across restoration.
 
-Main `2E3/2E4` use both original [view geometry queries](native-view-geometry.md).
-The wrappers preserve writes to overlapping destinations and all configured
-position modes, with live KCS calls in Chromium before and after restoration.
+Main `8/C/2E3/2E4/313` use JavaScript [view geometry](native-view-geometry.md)
+with JS-owned state and ordered writes to overlapping destinations. A one-way
+projection supplies the remaining EXE renderer; that dependency belongs to
+domain 6 and is removed with its renderer migration.
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file
@@ -489,9 +491,10 @@ or audio service. Unknown declarations and missing services remain explicit
 errors. An observed argument count describes a compiled call site, not the
 complete function prototype.
 
-The game's [Unicode output bridge](native-unicode-output.md) also executes
-0x40F/410 from the original image, retaining its UTF-8 conversion and CRT
-semantics with explicit browser clipboard and diagnostic-window services.
+The game's [Unicode output](native-unicode-output.md) `40F/410` executes
+JavaScript with fixed CP932 conversion and explicit browser clipboard/logging
+services. Independent oracle adapters retain the original formatter, converter
+and CRT while replacing only the reviewed OS transports.
 
 Formatted file output `237` executes the original SDK `51BEE0` and game
 `6508C0` wrappers against the per-game file store. Only the line argument uses
@@ -508,10 +511,12 @@ writes preserve their order even when the VM destinations alias. A KCS
 program covers the actual wrappers, live VM addresses and aliased output in a
 fresh World on both fixed executables.
 
-The [matrix/vector family](native-vector-matrix.md) executes all nine original
-0x15E..166 wrappers and arithmetic helpers. Two-profile evidence includes
-12,196 comparisons across VM regions, overlapping operands and native global
-matrix restoration.
+The [matrix/vector family](native-vector-matrix.md), `CC..CF` and `15E..166`,
+executes JavaScript with explicit f32 intermediate rounding and a World-owned
+current matrix. Independent normal GCALL fixtures cover 92 inputs per ABI,
+including aliases and checkpoint state; original helper regressions remain
+in the oracle group. Extreme FSINCOS history-dependent residue is still an
+explicit review boundary.
 
 The retained image-data/animation wrappers 0x26E..271 execute their original
 packet construction and share the Draw task. Both profiles have 1,100 complete
@@ -542,9 +547,10 @@ comparisons plus separate visible VRAM and restored-GPU coverage.
 The seven [original bitmap factory interfaces](native-bitmap-factories.md) now
 share complete native image wrappers and each Script's automatic list. Their
 two-profile full-heap comparison has 4,898 checks, alongside real World loading,
-cloning, fresh restoration and cleanup. The eighteen
-[scalar math interfaces](native-scalar-math.md) also execute the original x87/SIMD
-thread, with 28,524 comparisons across both builds and preserved rounding state.
+cloning, fresh restoration and cleanup. The twenty
+[scalar math interfaces](native-scalar-math.md) execute JavaScript under the
+normal engine precision/rounding contract, with 230 authored inputs per ABI.
+The full original x87/SIMD rounding-state regressions remain oracle-only.
 
 The four [registry interfaces](native-registry.md) execute the original A/W
 wrapper families with 112,788 comparisons. The browser's private HKCU hive uses
@@ -616,7 +622,7 @@ runtime integration and system-script acceptance are separate from module tests.
 | [fixed-record stacks](../src/native/record-stack.mjs)                                             | All six 0x35F..364 interfaces: capacity growth before rejected pushes, signed count checks, complete-capacity copy, popped-tail preservation and typed handle restore.                                                                                                                                               |
 | [image-data resources](../src/native/data-buffer.mjs)                                             | Shared 20-byte descriptors, separate heap references, borrowed memory, native image decoders and 0x16C/16D/16E/170/177/1AF. [Ownership and differential evidence](native-data-buffers.md).                                                                                                                           |
 | [image persistence](../src/native/image-persistence.mjs)                                          | 0xF1 stores HG2 images in global entries; 0xFB reads the original automatically detected image encoding. Handles share the image subsystem's ownership and checkpoint model.                                                                                                                                         |
-| [matrix bridge](../src/native/matrix.mjs)                                                         | 0xCC..CF call the original matrix helpers and share their process-global current matrix/stack. Both mapped guest matrices and native null-pointer global operations have differential evidence.                                                                                                                      |
+| [matrix operations](../src/native/matrix.mjs)                                                     | 0xCC..CF execute JavaScript, with explicit intermediate rounding and a World-owned current matrix in checkpoints. Mapped VM matrices and unmapped-pointer current-matrix operations have independent oracle evidence.                                                                                                |
 | [text task bridge](../src/native/text-task.mjs)                                                   | 0x263..26D/2B7/374 transport configuration, formatted text, page/speed and image-font messages. Wrapper transport is verified independently of native font rendering; image-data resources share their ownership model with 0x26C. The full text command matrix remains a separate acceptance boundary.              |
 
 The four [compiled content database families](native-content-databases.md)
@@ -815,6 +821,10 @@ Private oracles map the pinned PE image into a freestanding x86 executable and
 call the original recovered functions. Their inputs, binaries, IDA databases and
 raw outputs stay under ignored `.local/` storage. No game assets or decompiler
 bodies are included in public tests or documentation.
+
+The counts below include retained original-wrapper regressions. For migrated
+calculation families these are oracle evidence; current independent JS-versus-x86
+GCALL coverage and its limits are documented above and in each family contract.
 
 | Private differential scope           | Successful comparisons | Limits                                                                                                                                                                                                                                                                          |
 | ------------------------------------ | ---------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
