@@ -1,164 +1,272 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main 1D6..201 is the engine's built-in tile-rules context. Its model is a
-// process global shared by all 32-byte contexts, not a per-script JS copy.
 import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from './catalog.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { NativeTileModel } from './tile-model.mjs';
 
 export const NATIVE_TILE_GAME_IDS = Object.freeze(
   Array.from({ length: 44 }, (_, index) => 0x1d6 + index),
 );
-export const NATIVE_TILE_GAME_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    initialize: 0x5b9480,
-    destroy: 0x5b9680,
-    model: 0xbc3ff0,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    initialize: 0x488870,
-    destroy: 0x488a70,
-    model: 0xcc3360,
-  }),
-});
-const counts = Object.freeze([
-  0, 1, 9, 1, 2, 1, 1, 3, 3, 3, 2, 1, 5, 3, 1, 2, 3, 4, 2, 4, 4, 3, 1, 2, 7, 2, 5, 2, 3, 1, 1, 1, 2,
-  2, 1, 4, 2, 2, 1, 3, 4, 2, 2, 2,
-]);
-const controls = Object.freeze([
-  1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-]);
-export const NATIVE_TILE_GAME_ABI = Object.freeze(
-  NATIVE_TILE_GAME_IDS.map((id, index) =>
-    Object.freeze({ id, argumentWords: counts[index], control: controls[index] }),
-  ),
-);
 export const nativeTileGameCodec = Object.freeze({
-  snapshot: (value) => ({ ...value }),
-  restore: (value) => ({ ...value }),
+  snapshot: (context) => structuredClone(context),
+  restore: (state) => structuredClone(state),
 });
-
+function actionWords(action, extended = true) {
+  const words = [-1, -1, -1, -1],
+    kind = action & 0xffff0000,
+    first = (action >>> 8) & 15;
+  if (kind === 0x10000 || kind === 0x40000) {
+    words[0] = first;
+    words[1] = (action >>> 12) & 15;
+  } else if (kind === 0x20000 || (extended && kind === 0x100000)) {
+    words[0] = first;
+    words[1] = first + 1;
+    words[2] = first + 2;
+    if (kind === 0x100000) words[3] = (action >>> 12) & 15;
+  } else if (kind === 0x80000 || (extended && kind === 0x1000000)) words[0] = first;
+  return words;
+}
 export class NativeTileGame {
-  constructor(engine, world) {
-    this.engine = engine;
+  constructor(world) {
     this.world = world;
-    this.layout = NATIVE_TILE_GAME_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error('Native tile rules require a reviewed engine profile');
-    engine.registerFeature('tile-game', this);
+    this.model = new NativeTileModel();
   }
-  get refs() {
-    return (this.engine.refs.tileGame ??= { initialized: false, contexts: new Set() });
-  }
-  initialize() {
-    if (this.closed) throw new Error('Native tile rules are closed');
-    if (this.refs.initialized) return Promise.resolve();
-    return (this.initializing ??= this.engine.call(this.layout.initialize).then(
-      () => {
-        this.refs.initialized = true;
-        this.initializing = null;
-      },
-      (error) => {
-        this.initializing = null;
-        throw error;
-      },
-    ));
-  }
-  pointer(handle) {
-    if (!handle) return 0;
-    const pointer = this.world.runtime.handles.get(handle, 'tile-game').pointer;
-    if (!this.refs.contexts.has(pointer) || this.engine.process.allocations.get(pointer) !== 32)
-      throw new Error('Native tile-rules handle has no live context');
-    return pointer;
-  }
-  async apply(id, args, machine, task) {
-    const abi = NATIVE_TILE_GAME_ABI[id - 0x1d6];
-    if (!abi || abi.id !== id) return undefined;
-    if (args.length !== abi.argumentWords)
-      throw new Error(
-        `Native tile rules 0x${id.toString(16)} expects ${abi.argumentWords} arguments`,
+  apply(id, args, machine) {
+    if (!NATIVE_TILE_GAME_IDS.includes(id)) return undefined;
+    const declaration = nativeABI(this.world.profile).tables.main.entries[id],
+      count = declaration.signature.argumentWords;
+    if (args.length !== count)
+      throw new Error(`Native tile rules 0x${id.toString(16)} expects ${count} arguments`);
+    const control = declaration.controlCodes[0],
+      result = (value) => nativeReply(control, control === 1 ? value >>> 0 : undefined),
+      handles = this.world.runtime.handles;
+    if (id === 0x1d6)
+      return result(
+        handles.add('tile-game', {
+          eventWords: [],
+          choices: [],
+          results: [],
+          lastEvent: -1,
+          pendingEvent: -1,
+          pendingWords: [],
+        }),
       );
-    await this.initialize();
-    const world = this.world,
-      p = this.engine.process,
-      words = [...args];
-    if (id !== 0x1d6) words[0] = this.pointer(words[0]);
-    const taskMemory =
-      world.objects.machine(task.id) === machine
-        ? await world.getNativeFeature('task-memory')
-        : null;
-    if (taskMemory) taskMemory.vmPointer(task.id);
-    const bridge = new NativeKCSMemory(p, machine, taskMemory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4);
-    try {
-      words.forEach((value, index) => p.store(argv + index * 4, value));
-      p.store(out, 0xcccccccc);
-      const control = await this.engine.call(
-        p.load(NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + id * 4),
-        [bridge.pointer, 0, argv, out],
-        undefined,
-        { task: task.id },
-      );
-      if (control !== abi.control)
-        throw new Error('Native tile-rules control disagrees with its ABI');
-      if (id === 0x1d6) {
-        const pointer = p.load(out);
-        if (!pointer) return nativeReply(control, 0);
-        if (p.allocations.get(pointer) !== 32 || p.load(pointer) !== this.layout.model)
-          throw new Error('Native tile-rules constructor returned no context');
-        this.refs.contexts.add(pointer);
-        return nativeReply(control, world.runtime.handles.add('tile-game', { pointer }));
+    if (!args[0]) return result(id === 0x1eb || id === 0x1fa ? -1 : 0);
+    const context = handles.get(args[0], 'tile-game');
+    if (id === 0x1d7) {
+      handles.release(args[0], 'tile-game');
+      return result();
+    }
+    const store = (address, value) => {
+        try {
+          machine.region(address >>> 0, 4);
+        } catch {
+          return;
+        }
+        machine.store(address >>> 0, value);
+      },
+      load = (address) => {
+        try {
+          return machine.load(address >>> 0);
+        } catch {
+          return 0;
+        }
+      },
+      write = (address, words) => words.forEach((word, index) => store(address + 4 * index, word)),
+      query = (selector, input = []) => this.model.query(selector, input),
+      first = (selector, input) => query(selector, input)?.[0] ?? 0,
+      command = (code, input) => this.model.command(code, input);
+    switch (id) {
+      case 0x1d8: {
+        const [players, rounds, dealer, redA, redB, redC, profiles, scores] = args.slice(1),
+          settings = [0, players, 1, rounds, 2, dealer, 3, redA, redB, redC];
+        if ((players | 0) > 0x100000)
+          throw new RangeError('Native tile player setup exceeds its resource limit');
+        for (let index = 1; index < (players | 0); index++)
+          settings.push(4, index, load(profiles + (index - 1) * 4));
+        for (let index = 0; index < 4; index++) {
+          const score = load(scores + index * 4);
+          if ((score | 0) > 0) settings.push(5, index, score);
+        }
+        context.eventWords = settings;
+        command(10001, settings);
+        command(10002, settings);
+        return result();
       }
-      if (id === 0x1d7 && args[0]) {
-        this.refs.contexts.delete(words[0]);
-        world.runtime.handles.release(args[0], 'tile-game');
+      case 0x1d9: {
+        if (context.pendingEvent !== -1) {
+          context.eventWords = context.pendingWords.slice();
+          context.pendingWords = [];
+          const event = context.pendingEvent;
+          context.pendingEvent = -1;
+          return result(event);
+        }
+        context.eventWords = query(0) ?? [];
+        const event = context.eventWords[0] ?? 0;
+        if (event === 10003) command(10003, context.eventWords);
+        if (event === 20050) context.results = query(15, [first(2)]) ?? [];
+        if (event === 20066) context.choices = query(30, [0]) ?? [];
+        context.lastEvent = event;
+        return result(event);
       }
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(out);
-        p.free(argv);
+      case 0x1da:
+        command(10006, [args[1]]);
+        return result();
+      case 0x1db:
+        return result(first(1));
+      case 0x1dc:
+        return result(first(2));
+      case 0x1dd:
+      case 0x1de:
+      case 0x1df: {
+        const words = query(5 + id - 0x1dd, [args[1]]) ?? [];
+        write(args[2], words);
+        return result(words.length);
       }
+      case 0x1e0:
+        return result(context.eventWords[((args[1] >>> 0) + 1) >>> 0] ?? 0);
+      case 0x1e1:
+        return result(context.eventWords.length - 1);
+      case 0x1e2:
+        [args[1] & 0xff0000, (args[1] >>> 8) & 255, args[1] & 255].forEach((word, index) =>
+          store(args[2 + index], word),
+        );
+        return result();
+      case 0x1e3:
+        command(10004, [args[1], args[2]]);
+        return result();
+      case 0x1e4:
+        return result(first(3, [0]));
+      case 0x1e5: {
+        const response = command(10008, [0, args[1]]);
+        context.choices = query(4, [0]) ?? [];
+        return result(response.words[0] ?? 0);
+      }
+      case 0x1e6: {
+        const action = context.choices[args[1] >>> 0];
+        if (action === undefined) return result(0);
+        write(args[2], actionWords(action));
+        return result(1);
+      }
+      case 0x1e7:
+      case 0x1fe: {
+        const selector = id === 0x1e7 ? 4 : 29;
+        if (id === 0x1e7) query(4, [0, -1]);
+        const action = query(selector, id === 0x1e7 ? [0, args[1]] : [args[1]])?.[args[2] >>> 0];
+        if (action === undefined) return result(0);
+        write(args[3], actionWords(action, id === 0x1e7));
+        return result(1);
+      }
+      case 0x1e8:
+        command(10007, [args[1]]);
+        return result();
+      case 0x1e9:
+        command(10005, [args[2], args[1], args[3]]);
+        return result();
+      case 0x1ea: {
+        const packed = context.results[args[1] >>> 0];
+        if (packed === undefined) return result(0);
+        const low = packed & 0xffff;
+        store(args[2], low >= 256 ? low - 157 : low);
+        store(args[3], packed >>> 16);
+        return result(1);
+      }
+      case 0x1eb:
+        return result(query(11, [(4 - args[1]) >>> 0, args[2]])?.[0] ?? -1);
+      case 0x1ec:
+        return result(first(23));
+      case 0x1ed:
+        return result(first(26, [args[1]]));
+      case 0x1ee: {
+        args.slice(2).forEach((address) => store(address, 0));
+        const words = query(16, [args[1]]);
+        if (words) words.slice(0, 5).forEach((word, index) => store(args[2 + index], word));
+        return result();
+      }
+      case 0x1ef:
+        return result(first(18, [args[1]]));
+      case 0x1f0: {
+        args.slice(1, 4).forEach((address) => store(address, 0));
+        write(args[4], [0, 1, 2, 3]);
+        query(21)
+          ?.slice(0, 3)
+          .forEach((word, index) => store(args[index + 1], word));
+        write(args[4], query(22) ?? []);
+        return result();
+      }
+      case 0x1f1:
+        return result(Number(Boolean(first(14, [args[1]]))));
+      case 0x1f2: {
+        const words = query(17, [args[1]]);
+        if (!words?.length) return result(0);
+        write(
+          args[2],
+          words.map((value) => value * 16),
+        );
+        return result(words.length);
+      }
+      case 0x1f3:
+        return result(first(24));
+      case 0x1f4:
+        return result(first(25));
+      case 0x1f5:
+        context.pendingWords = context.eventWords.slice();
+        context.pendingEvent = context.lastEvent;
+        return result();
+      case 0x1f6: {
+        write(args[1], [0, 0, 0, 0]);
+        const words = query(19);
+        if (!words?.length) return result(0);
+        write(args[1], words);
+        return result(1);
+      }
+      case 0x1f7: {
+        const words = Array.from({ length: first(1) }, (_, index) => load(args[1] + 4 * index));
+        return result(Number(command(10009, words).ok));
+      }
+      case 0x1f8:
+        return result(first(12));
+      case 0x1f9: {
+        const size = Math.max(0, args[2] | 0);
+        if (size > 0x1000000)
+          throw new RangeError('Native tile command exceeds its resource limit');
+        return result(
+          Number(
+            command(
+              args[1],
+              Array.from({ length: size }, (_, index) => load(args[3] + 4 * index)),
+            ).ok,
+          ),
+        );
+      }
+      case 0x1fa:
+        return result(context.choices[args[1] >>> 0] ?? -1);
+      case 0x1fb:
+        return result(Number(command(10014, [0, args[1]]).ok));
+      case 0x1fc:
+        return result(first(28, [0]));
+      case 0x1fd:
+        return result(command(10014, [0, args[1], args[2]]).words[0] ?? 0);
+      case 0x1ff:
+        return result(Number(command(10012, [args[1]]).ok));
+      case 0x200: {
+        const words = query(11);
+        if (!words || words.length < 14) return result(0);
+        write(args[1], words.slice(0, 14));
+        return result(1);
+      }
+      case 0x201:
+        return result(first(4, [args[1]]));
     }
   }
   snapshot() {
-    return {};
+    return this.model.snapshot();
   }
-  restore() {
-    this.initializing = null;
-    if (typeof this.refs.initialized !== 'boolean' || !(this.refs.contexts instanceof Set))
-      throw new Error('Native tile-rules checkpoint registry is invalid');
-  }
-  async close() {
-    if (this.closed) return;
-    const p = this.engine.process;
-    for (const pointer of this.refs.contexts) {
-      // The wrapper's release path only reads argv[0]; no VM is required.
-      const argv = p.allocate(4);
-      try {
-        p.store(argv, pointer);
-        await this.engine.call(
-          p.load(NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 0x1d7 * 4),
-          [0, 0, argv, 0],
-        );
-        this.refs.contexts.delete(pointer);
-      } finally {
-        p.free(argv);
-      }
-    }
-    if (this.refs.initialized) {
-      await this.engine.call(this.layout.destroy);
-      this.refs.initialized = false;
-    }
-    this.closed = true;
+  restore(state) {
+    this.model.restore(state);
   }
 }
 export function installNativeTileGame(world) {
-  world.registerNativeFeature('tile-game', (engine) => new NativeTileGame(engine, world));
+  world.tileGame = new NativeTileGame(world);
   for (const id of NATIVE_TILE_GAME_IDS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('tile-game')).apply(id, args, machine, task),
-    );
+    world.runtime.register('main', id, (args, machine) => world.tileGame.apply(id, args, machine));
 }

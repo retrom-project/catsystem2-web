@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// Full original wrappers versus the typed browser adapter. The original tile
-// model, RNG, vector code, state driver and destructors execute on both sides.
+// The native table oracle and JS model execute independently. Compare native
+// controls/results, complete VM writes, event words and opaque handle ownership.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -9,12 +9,8 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
-import {
-  NativeTileGame,
-  NATIVE_TILE_GAME_ABI,
-  NATIVE_TILE_GAME_LAYOUTS,
-  nativeTileGameCodec,
-} from '../src/native/tile-game.mjs';
+import { NativeTileGame, nativeTileGameCodec } from '../src/native/tile-game.mjs';
+import { NATIVE_TILE_GAME_ABI, NATIVE_TILE_GAME_LAYOUTS } from '../oracle/tile-game.mjs';
 import {
   prepareTileGame,
   tileGameQueryArguments,
@@ -33,10 +29,9 @@ const bytes = new Uint8Array(await fs.readFile(filename)),
   );
 if (!profile) throw new Error('Tile-rules oracle requires a frozen engine');
 const original = await NativeEngineProcess.open({ profile, bytes, now: () => 12345, trace: true }),
-  model = await NativeEngineProcess.open({ profile, bytes, now: () => 12345, trace: true }),
   handles = new NativeHandles(),
-  world = { runtime: { handles }, objects: { machine: () => null } },
-  adapter = new NativeTileGame(model, world),
+  world = { profile, runtime: { handles }, objects: { machine: () => null } },
+  adapter = new NativeTileGame(world),
   layout = NATIVE_TILE_GAME_LAYOUTS[profile],
   program = await readKCS(kcsProgram([[59]])),
   a = new KCSMachine(program, {}, new Uint8Array(1024)),
@@ -85,41 +80,24 @@ async function invoke(id, values, handle = 0) {
   if (create) {
     handle = reply.value;
     contexts.set(handle, result.value);
-    check(result.value, handles.get(handle, 'tile-game').pointer, 'context allocation identity');
-  } else if (result.control === 1) check(reply.value, result.value, `word ${id.toString(16)}`);
+    check(Boolean(handle), Boolean(result.value), 'context allocated');
+  } else if (result.control === 1)
+    check(
+      reply.value,
+      result.value,
+      `word ${id.toString(16)} call ${calls} event ${adapter.model.get('event')} next ${adapter.model.get('next')}`,
+    );
   else check(result.value, 0xcccccccc, 'void output remains unwritten');
   check(a.memory, b.memory, `contiguous VM ${id.toString(16)}`);
   check(a.shared, b.shared, `shared VM ${id.toString(16)}`);
   check(a.blocks, b.blocks, `extended VM ${id.toString(16)}`);
-  check(
-    p.read(layout.model, 0x2700),
-    model.process.read(layout.model, 0x2700),
-    'original global model',
-  );
-  check([...p.allocations], [...model.process.allocations], 'original heap ownership and sizes');
-  for (const address of contexts.values())
-    if (p.allocations.has(address)) {
-      check(p.read(address, 32), model.process.read(address, 32), 'complete context');
-      for (const index of [1, 2, 3, 6]) {
-        const vector = p.load(address + index * 4),
-          begin = p.load(vector),
-          end = p.load(vector + 4);
-        check(p.read(vector, 12), model.process.read(vector, 12), 'vector bounds and capacity');
-        if (end !== begin)
-          check(
-            p.read(begin, end - begin),
-            model.process.read(begin, end - begin),
-            'vector records',
-          );
-      }
-    }
   if (id === 0x1d7) contexts.delete(handle);
   operations.push({ id, values, handle, control: result.control, value: reply.value });
   return create ? handle : reply.value;
 }
 try {
   await original.call(layout.initialize);
-  await adapter.initialize();
+
   const initial = Uint8Array.from({ length: a.memory.length }, (_, i) => (i * 31 + 17) & 255);
   a.memory.set(initial);
   b.memory.set(initial);
@@ -148,8 +126,10 @@ try {
     const options = prepareTileGame(b, players);
     await invoke(0x1d8, options, handle);
     check(await invoke(0x1db, [], peer), players, 'independent contexts share the global model');
-    for (let i = 0; i < 1600; i++) {
+    for (let i = 0; i < (process.env.CATSYSTEM2_EXTENDED ? 1600 : 360); i++) {
       const event = await invoke(0x1d9, [], handle);
+      const size = await invoke(0x1e1, [], handle);
+      for (let j = 0; j < size; j++) await invoke(0x1e0, [j], handle);
       events.set(event, (events.get(event) ?? 0) + 1);
       if (i % 47 === 0) {
         for (const abi of NATIVE_TILE_GAME_ABI) {
@@ -172,12 +152,7 @@ try {
   await invoke(0x1d7, [], peer);
   check(covered.size, 44, 'all family wrappers executed');
   await original.call(layout.destroy);
-  await adapter.close();
-  check(
-    [...p.allocations],
-    [...model.process.allocations],
-    'global and context destruction ownership',
-  );
+
   const report = {
     profile,
     sha256,
@@ -192,10 +167,10 @@ try {
       'opaque browser handles',
     ],
     executed: [
-      'original global constructor/destructor',
+      'independent original native table and JS-owned model',
       'all 44 complete main wrappers',
       'original rule model and event driver',
-      'original vector operations and random generator',
+      'JS-owned vectors, event driver, rules, AI and independent tile MT stream',
     ],
   };
   await fs.writeFile(output, JSON.stringify(report, null, 2) + '\n');
@@ -204,5 +179,4 @@ try {
   );
 } finally {
   await original.close();
-  await model.close();
 }

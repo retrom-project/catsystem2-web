@@ -471,11 +471,6 @@
       "calls": 2,
       "references": 0
     },
-    "src/native/tile-game.mjs": {
-      "addresses": 6,
-      "calls": 4,
-      "references": 0
-    },
     "src/native/tile-plane-command.mjs": {
       "addresses": 2,
       "calls": 2,

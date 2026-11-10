@@ -1007,6 +1007,7 @@ export class NativeWorld {
       runtime: this.runtime.snapshot(),
       graphics: this.graphics.snapshot(),
       calculations: { matrix: this.calculations.matrix.slice() },
+      tileGame: this.tileGame.snapshot(),
       sound: this.sound.snapshot(),
       particles: this.particles.snapshot(),
       objects: this.objects.snapshot(),
@@ -1029,6 +1030,7 @@ export class NativeWorld {
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);
     this.calculations.matrix.set(state.calculations.matrix);
+    this.tileGame.restore(state.tileGame);
     this.configuration.restore(state.configuration);
     this.globalStrings.restore(state.globalStrings);
     this.soundConfiguration.restore(state.soundConfiguration);
