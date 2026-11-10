@@ -172,9 +172,9 @@ for (const [profile, variable] of [
           pointer = (await call(world, 0x341, [size])).value;
         // The question serializer leaves the unused tail of each 64-byte
         // filename untouched. Make the caller's initial bytes explicit.
-        world.nativeEngine.process.write(pointer, new Uint8Array(size).fill(0xa5));
+        world.runtime.imageDataBuffers.process.write(pointer, new Uint8Array(size).fill(0xa5));
         await call(world, id, [handle, pointer]);
-        const bytes = world.nativeEngine.process.read(pointer, size);
+        const bytes = world.runtime.imageDataBuffers.process.read(pointer, size);
         await call(world, 0x342, [pointer]);
         return bytes;
       }
@@ -192,8 +192,9 @@ for (const [profile, variable] of [
             question: await serialized(first, 0x2ff, one.question),
             mission: await serialized(first, 0x337, one.mission),
           },
-          feature = await first.getNativeFeature('content-databases'),
-          pointers = [one.mission].map((h) => feature.pointer(h));
+          savedOwners = Object.values(one).map((h) =>
+            first.runtime.handles.get(h, 'content-database').data.snapshot(),
+          );
         const save = (await call(first, 0xee, [17])).value;
         for (const [entry, exportID, handle] of [
           [10, 0x2ff, one.question],
@@ -201,7 +202,7 @@ for (const [profile, variable] of [
         ]) {
           const size = (await call(first, exportID, [handle, 0])).value,
             data = (await call(first, 0x341, [size])).value;
-          first.nativeEngine.process.write(data, new Uint8Array(size).fill(0xa5));
+          first.runtime.imageDataBuffers.process.write(data, new Uint8Array(size).fill(0xa5));
           await call(first, exportID, [handle, data]);
           assert.equal((await call(first, 0x343, [save, entry, size, data])).value, 1);
           await call(first, 0x342, [data]);
@@ -210,10 +211,11 @@ for (const [profile, variable] of [
         assert.equal((await call(first, 0xf5, [save, 256])).value, 1);
         restored = await make();
         await restored.restore(structuredClone(first.snapshot()));
-        const restoredFeature = await restored.getNativeFeature('content-databases');
         assert.deepEqual(
-          [one.mission].map((h) => restoredFeature.pointer(h)),
-          pointers,
+          Object.values(one).map((h) =>
+            restored.runtime.handles.get(h, 'content-database').data.snapshot(),
+          ),
+          savedOwners,
         );
         assert.deepEqual(await serialized(restored, 0x2ff, one.question), state.question);
         assert.deepEqual(await serialized(restored, 0x337, one.mission), state.mission);

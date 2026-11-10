@@ -41,11 +41,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/content-databases.mjs": {
-      "addresses": 70,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/control-task.mjs": {
       "addresses": 12,
       "calls": 2,

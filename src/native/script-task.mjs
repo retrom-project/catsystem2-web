@@ -591,8 +591,13 @@ export function installNativeScripts(world) {
     world.runtime.register('main', id, async (args, _machine, task) => {
       if (args.length !== count)
         throw new Error(`KCS task message ${message} expects ${count} arguments`);
-      const value =
-        id === 0x23b && args[1] ? (await world.ensureNativeEngine()).process.load(args[1]) : 0;
+      let value = 0;
+      if (id === 0x23b && args[1]) {
+        const memory = world.runtime.imageDataBuffers.process;
+        value = memory.contains(args[1], 4)
+          ? memory.load(args[1])
+          : (await world.ensureNativeEngine()).process.load(args[1]);
+      }
       await world.sendNativeEngine(args[0], task.id, message, 0, value);
       return nativeReply(2);
     });

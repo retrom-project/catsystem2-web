@@ -1,152 +1,86 @@
 # Compiled content database objects
 
-The native range `2E6..340` contains four separate object families, together
-exposing **85 interfaces**. Slots `311..316` are unrelated log, math, view,
-movie and configuration functions; they are not operations on the 620-byte
-object at the start of the range.
+All four families own their state in JS. The shared `content-database` handle
+retains its family and model, including independent World snapshot restoration.
+The installers are composed in [content-databases.mjs](../src/native/content-databases.mjs).
 
-Question, selection and general KCDB operations now own JS data. Mission
-operations retain their original path until the following phase 4.3 commit.
-Names whose business meaning remains unassigned retain their native ID. The
-installers are composed in [content-databases.mjs](../src/native/content-databases.mjs).
+| Family                 | IDs                | State                                                        |
+| ---------------------- | ------------------ | ------------------------------------------------------------ |
+| Question/configuration | 2E6..30A           | Grouped questions, options, pools, member flags and counters |
+| Name selection         | 30B..310, 33D..340 | Registration, nineteen-column tables and consumed work lists |
+| General KCDB           | 317..31A           | Raw schema and fixed-width fields                            |
+| Mission/conditions     | 31B..33C           | Progress, conditions, selection and twenty character records |
 
-| Family                 | Native IDs         | Owner bytes | Resource and persistent state                                                     |
-| ---------------------- | ------------------ | ----------: | --------------------------------------------------------------------------------- |
-| Question/configuration | 2E6..30A           |         620 | Grouped questions, named text configurations, active pools, members and counters  |
-| Name selection         | 30B..310, 33D..340 |          12 | Name-to-value registration, 19-column selection rows and mutable working list     |
-| General KCDB reader    | 317..31A           |          16 | Schema, fixed-width rows and unconverted column bytes                             |
-| Mission/conditions     | 31B..33C           |          20 | Compiled records, completion/availability state and twenty character-stat records |
+These expose 85 operations per ABI. The independent `365..` index/flag model
+is described in [native-databases.md](native-databases.md).
 
-The independent 80-byte index/flag database exposed by `365..` is documented
-[separately](native-databases.md). It is not an interchangeable object type.
+## Resources and observable state
 
-## Resource and object contracts
+Resources use the existing JS `database` category. KCDB contains a compressed
+schema and fixed-width rows. Raw text bytes retain their encodings. The general
+reader zero-initializes numeric fields up to four bytes and returns zero for
+wider fields. Byte reads copy the declared width and return it.
 
-KCDB files use a compressed schema and fixed-width record payload. The question
-loader consumes `G_A/G_B/G_C`, `ID`, `IMG`, `Q` and four answer fields.
-Its text configuration loader retains the original section parser, options,
-member/partner sets, genre ranges and exclusions. Loading a configuration and
-rebuilding the pool are separate operations. Question selection retains the
-original counter ordering and random draw; copying text, incrementing counters
-or resetting member flags are separate native operations.
+Selection tables retain the first registered name and the first duplicate table
+ID. Selecting a table copies its nineteen values into the mutable work list.
+The recovered missing-slot helper appends those slots' indexes. `30F` reports
+the table-ID count. Moves and consumption preserve their high-bit markers.
+The implementation lives in [selection-table.mjs](../src/native/selection-table.mjs).
 
-Selection tables read `TBL` and `P00..P18`. Names are registered before the
-table is loaded. A name's registered value, a table ID, a working-list index and
-the consumed/high-bit markers are distinct values. The original parser and
-mutation helpers determine trimming, duplicate and missing-name behavior.
+Question keys use CP932-aware uppercase basenames. The tree preserves reverse
+insertion traversal. Configuration loading and active-pool rebuilding remain
+separate operations. Byte-space tokens include literal quote bytes. Genre lists,
+member/partner sets, counters, output padding and null behavior follow the
+recovered operations. `307` reports a nonempty partner set, while `308` returns
+the selected question ID and copies its database key. Record sorting preserves
+observable ties through the recovered insertion, partition and heap algorithms.
+Selection consumes the canonical integer MT stream. The implementation lives in
+[question-table.mjs](../src/native/question-table.mjs).
 
-The general reader accepts an arbitrary compiled schema. `319` copies at most
-four bytes into a zero-initialized result word; larger fields produce zero.
-`31A` copies the complete declared field width to its VM destination and returns
-that width. It does not turn a fixed byte field into a newly terminated string.
-The byte-level field semantics preserve CP932, other encodings and invalid byte
-sequences without a text round trip.
+Mission availability retains signed level limits, dependencies, type gates and
+condition codes 0, 1, 2, 3, 10, 11, 20, 21, 30, 40 and 41. Character statistics
+have six words each. Completion, availability, selection, elapsed updates and
+resets remain separate operations. Selection retains place/priority conflicts
+in signed table-ID order. The recovered fourth question-table field overlaps
+the PT word array, including its query result. The implementation lives in
+[mission-table.mjs](../src/native/mission-table.mjs).
 
-Mission records retain level limits, dependency keys, condition parameter
-vectors, character sets, priority, four question-table names and twenty `PTnn`
-fields. Availability, selection, completion and elapsed updates are separate
-operations. The original condition switch covers codes 0, 1, 2, 3, 10, 11, 20,
-21, 30, 40 and 41; unknown codes retain the original behavior. Character
-statistics use twenty six-word records. The adapter does not infer a generic
-JavaScript quest policy from those fields.
+Mission `334` selector 9 requires a nonempty character set. The original empty
+set path reads an uninitialized tree-sentinel word. Private oracle observations
+are retained locally. JS raises an explicit error at this undefined boundary.
 
-## Ownership and saving
+## Raw data, CSS and snapshots
 
-Each opaque `content-database` handle stores the family and original owner
-pointer. All trees, vectors, strings and state remain in the single shared
-engine process. Family checks protect the browser handle boundary; resource
-parsing and native index checks still run in the original code. Missing or
-invalid resources retain each wrapper's own success, empty-owner or failure
-behavior. One family's failure is not used as another family's default.
+Raw heap `341..344`, database flags, question/mission progress and dictionary
+export/import share the canonical JS raw-memory store. Snapshots save that store
+once. The separate PE image/font projections are registered for later consumer
+migration. The raw implementation lives in [heap-data.mjs](../src/native/heap-data.mjs).
 
-Question `2FF/300` and mission `337/338` serialize to **raw PE pointers**;
-they do not translate these pointers as KCS addresses. They interoperate with
-heap natives `341..344` and CSS global-file entries:
+Question export has a 12-byte header and 88-byte records. Each record has a
+64-byte file key, question ID and five progress words. Export preserves caller
+bytes after the key's NUL. Mission export has a 36-byte header, 24-byte progress
+records, twenty indexed 28-byte character records and a final total word.
+Imports preserve existing resource models and update their progress. A failed
+raw CSS output releases its allocation before propagating the write error.
 
-- Question state has a 12-byte header and 88-byte records. Each record retains a
-  64-byte database filename, question ID and five state words. Bytes following
-  the filename's terminator are not written by the original exporter.
-- Mission state has a 36-byte offset/size/count header, 24-byte mission records,
-  28-byte indexed character records and a final total word. The original import
-  helper validates its byte count and updates the existing resource records.
+Pure JS World tests export through `341/343/F5`, open the CSS in a fresh World
+through `F7/344`, and import both progress formats. They reject EXE loading.
+The existing private World cases continue to cover mixed-runtime integration.
 
-A World checkpoint saves the shared process once, then restores the same four
-owner identities and VM arenas. CSS loading creates resources normally and
-imports their serializable progress. These paths share authoritative state;
-a World snapshot does not replace the system script's native save object.
+## Differential evidence
 
-## Shared random state
+Both ABI sequence tests execute normal JS dispatch and the actual EXE native
+table independently. They compare control, result, VM writes and canaries, raw
+serialization and later queries. Question sequences also compare both complete
+MT states, including a 45-row ordering case. Mission sequences cover every
+condition code, selection, completion, statistics, aliases and both progress
+imports. Raw heap/CSS/dictionary sequences compare data across distinct address
+spaces using symbolic pointer normalization.
 
-[Native random memory](../src/native/random-memory.mjs) binds both canonical
-`NativeMT19937` streams directly to the reviewed original globals. JavaScript
-`rand/frand` and original PE draws immediately observe the same words and cursor.
-There is no call-boundary state copy. The integer and real streams remain
-independent. Providers acquire fresh views after WASM growth, survive fresh
-process restoration and detach while preserving state on process close.
+The full original facade remains in `oracle/content-databases.mjs`. The older
+`verify-native-content-databases.mjs` preserves its detailed original-wrapper
+measurements. Authored resources contain no game database assets.
 
-SDK seed/draw functions and globals were recovered independently from its image.
-Both profiles' original seed functions and main `21/22` wrappers are tested
-against interleaved JavaScript draws over four seeds and multiple 624-word
-twists. The original unseeded index 625 selects the native default seed 4357.
-
-## Verification
-
-`scripts/verify-native-content-databases.mjs` executes **2,117 complete wrapper
-calls and 20,734 comparisons per profile**, **41,468 comparisons** total. It
-covers all 85 interfaces and compares complete VM/shared/block memory, every
-live original allocation, raw serialization buffers, and both original RNG
-states and cursors.
-
-The authored resources exercise question/configuration parsing and selection,
-all mission condition codes listed above, valid and out-of-range selectors,
-registration duplicates, empty/missing/bad-magic resources, local/stack/shared/
-extended VM destinations, adjacent GCALL words, completion/statistics changes,
-reset behavior and both serialized formats. Original wrappers, parser,
-conditions, containers and state serializers execute without replacement.
-The mounted resource/filesystem service and reviewed CRT allocator remain
-explicit host boundaries.
-
-Four optional two-profile World tests check all four object types, independent
-release, original question/mission export through `341/343/F5`, fresh CSS
-`F7/344` import and fresh-World pointer identity, state and random continuation.
-Question-output buffers are explicitly prefilled so unwritten filename padding
-is compared as caller-owned bytes rather than a fabricated constant.
-
-This evidence does not enumerate every possible resource, question sequence or
-condition combination. Original unchecked buffer overruns and the wider game's
-gallery, recollection, save UI and presentation acceptance are not claimed by
-these family tests.
-
-## Phase 4.3 table migration
-
-Selection registration, 19-column loading, table selection, consumed markers and
-working-list mutation run in JS. The missing-slot helper appends the slot indexes
-to the working list. `30F` returns the number of table IDs. The compiled reader
-preserves declared field widths and raw byte names. Both models restore from
-snapshots independently of source files. Their implementations live in
-[selection-table.mjs](../src/native/selection-table.mjs) and
-[compiled-table.mjs](../src/native/compiled-table.mjs).
-
-Both ABI differential sequences compare all fourteen migrated operations against
-the actual native table, including nulls, duplicate names, missing fields,
-consumed flags, out-of-range queries and VM canaries. The full original facade
-is preserved in `oracle/content-databases.mjs`. Pure JS World tests cover fresh
-restore and independent release. Authored compiled fixtures import no EXE loader.
-
-## Phase 4.3 question migration
-
-The question tree, active pool, configurations, member flags, extra genre lists
-and five progress words per row are JS-owned. Resource keys preserve the original
-CP932-aware uppercase basename and tree insertion order. Configuration options
-use byte-space tokens, including literal quote bytes. Loading a configuration
-and rebuilding its pool remain separate operations. Missing genre filters select
-all rows. The observed `307` query reports a nonempty partner set, and `308`
-returns the selected question ID while copying its database key.
-
-Record ordering preserves the recovered insertion/partition/heap behavior,
-including observable ties beyond 32 rows. Selection consumes the same canonical
-integer MT stream as main `21`. The differential harness compares both complete
-RNG states after each operation. Both ABI sequences exercise all 37 operations,
-repeat draws, counters, raw output padding, import, genre ranges, nulls, empty
-pools and 45-row ordering. Pure JS fresh restore retains independent counters.
-The implementation lives in [question-table.mjs](../src/native/question-table.mjs).
+Run `node --test tests/native-content-tables-js.test.mjs` for pure JS lifecycle
+and CSS coverage. With private images, run
+`node --test tests/differential/native-{content-tables,question-table,mission-table,raw-data}.test.mjs`.

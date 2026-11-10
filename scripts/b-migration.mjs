@@ -92,7 +92,7 @@ const domains = {
 };
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
-  4: 'question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game',
+  4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game',
   5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
@@ -129,7 +129,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'content-databases bitmap-factory ' +
+    'bitmap-factory ' +
     'image-owner draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
     'input-commands registry image-file image-composite render-sources ' +
     'tile-game task-dump tile-plane-command ' +
@@ -356,12 +356,6 @@ function classify(file, id, callback, features, modules) {
   let implementation;
   if ((name === 'storage' && id !== 0x237) || name === 'heap-data') {
     implementation = 'pure-js';
-    if (name !== 'storage') {
-      names = unique([...names, 'data-buffers']);
-      reasons.push(
-        '本体由 JS 操作原进程堆/描述符，仍依赖 PE heap singleton 与 data-buffers feature 初始化，不能据此删除 EXE 数据状态。',
-      );
-    }
   } else if (
     originalWrappers.has(name) ||
     (name === 'gallery-tables' && ![0x195, 0x19c].includes(id))
@@ -725,6 +719,21 @@ const nonNativeGroups = [
         'PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly',
       removePhase: 7,
       operations: ['projectPointer', 'lendPointer', 'transferPointer'],
+    },
+  },
+  {
+    name: 'js-raw-data-to-task-message',
+    domain: 8,
+    entry:
+      'Script23B reads JS-owned raw data before dispatching message 445; legacy PE input words remain a domain 8 boundary',
+    modules: ['script-task'],
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'NativeRuntime.imageDataBuffers.process',
+      fields: ['message 445 scalar payload'],
+      consumers: [{ domain: 8, modules: ['script-task', 'task-memory'] }],
+      removePhase: 8,
+      operations: ['0x23b'],
     },
   },
   {

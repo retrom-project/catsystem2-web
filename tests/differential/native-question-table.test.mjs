@@ -128,7 +128,6 @@ for (const fixture of await engineFixtureSet())
         raw.write(base, new Uint8Array(4096).fill(0xa5));
         values.set('raw', base + 16);
         if (oracle) new NativeRandomMemory(oracle, world.random);
-        else world.runtime.services.dataBuffers = () => world.runtime.imageDataBuffers;
         return () => raw.free(base);
       }
       try {

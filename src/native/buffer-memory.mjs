@@ -26,6 +26,11 @@ export class NativeBufferMemory {
     this.regions.set(address, bytes);
     return address;
   }
+  contains(address, size = 1) {
+    return [...this.regions].some(
+      ([start, bytes]) => address >= start && address + size <= start + bytes.length,
+    );
+  }
   view(address, size) {
     for (const [start, bytes] of this.regions)
       if (address >= start && address + size <= start + bytes.length)

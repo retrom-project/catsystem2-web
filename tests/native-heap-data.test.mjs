@@ -3,11 +3,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { nativeHeapData } from '../src/native/heap-data.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
-import { dataBufferFixture } from './fixtures/data-buffer-fixture.mjs';
+import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
+import { NativeHandles } from '../src/native/handles.mjs';
 
-const profile = 'nekopara-vol3-engine-2.6.1.76';
 function fixture() {
-  const state = dataBufferFixture(profile),
+  const handles = new NativeHandles(),
+    buffers = new NativeDataBuffers({ handles, read: async () => null }),
+    state = { handles, buffers, process: buffers.process },
     output = new Map();
   state.handles.registerType('global-file', {
     snapshot: (file) => file.snapshot(),
@@ -17,7 +19,7 @@ function fixture() {
       return file;
     },
   });
-  const services = { handles: state.handles, dataBuffers: () => state.buffers },
+  const services = { handles: state.handles, imageDataBuffers: () => state.buffers },
     machine = { store: (at, value) => output.set(at, value) };
   return { ...state, output, call: (id, words) => nativeHeapData(id, words, machine, services) };
 }
@@ -72,7 +74,7 @@ test('raw pointers and file handles retain identity in a fresh process image', a
 
 test('null raw heap paths do not instantiate a CPU and zero-byte records allocate a header', async () => {
   const missing = {
-    dataBuffers() {
+    imageDataBuffers() {
       throw new Error('unexpected CPU');
     },
   };
@@ -97,4 +99,24 @@ test('null raw heap paths do not instantiate a CPU and zero-byte records allocat
   await f.call(0x342, [zero]);
   await f.call(0x342, [read]);
   await assert.rejects(f.call(0x341, []), /expects 1/);
+});
+
+test('raw CSS copy releases its allocation when the VM size write fails', async () => {
+  const f = fixture(),
+    file = f.handles.add('global-file', new NativeGlobalFile());
+  f.handles.get(file, 'global-file').write(1, Uint8Array.of(1, 2, 3));
+  await assert.rejects(
+    nativeHeapData(
+      0x344,
+      [file, 1, 0],
+      {
+        store() {
+          throw new Error('authored VM failure');
+        },
+      },
+      { handles: f.handles, imageDataBuffers: () => f.buffers },
+    ),
+    /authored VM failure/,
+  );
+  assert.equal(f.process.allocations.size, 0);
 });

@@ -611,7 +611,7 @@ runtime integration and system-script acceptance are separate from module tests.
 | [character names](../src/native/character-names.mjs)                                              | 0x252..255 parse name/group RGB assignments, comments, whitespace, partial headers, duplicate keys and direct/name-based lookups. Existing empty files create valid tables; missing queries preserve caller buffers.                                                                                                 |
 | [dictionary](../src/native/dictionary.mjs)                                                        | Both 0x375..37D and 0x37E..386 expose ordered CP932 string-to-word maps, aligned raw export/import and indexed keys. Import merges without replacing existing keys and preserves caller padding bytes.                                                                                                               |
 | [ordered maps](../src/native/ordered-map.mjs)                                                     | 0x2A3..2A8 share the same dictionary object and codec with 0x203/375/37E, including cross-family construction and destruction, default lookup, removal and reverse lookup. [Contracts and two-profile evidence](native-ordered-map.md).                                                                              |
-| [compiled databases](../src/native/database.mjs)                                                  | Seven interfaces execute the original KCDB parser, index-name map, per-record flags, modification state and raw PE export/import. [Contracts and CSS/fresh-World evidence](native-databases.md).                                                                                                                     |
+| [compiled databases](../src/native/database.mjs)                                                  | Seven JS interfaces own KCDB records, byte-normalized indexes, flag state and raw data export/import. [Contracts and CSS/fresh-World evidence](native-databases.md).                                                                                                                                                 |
 | [scene checkpoints](../src/native/scene-checkpoint.mjs)                                           | 0x3DF/3E0/3E2 use the original XML selector and shared variable/string banks for chained compressed path checkpoints. Signed position comparison and early-scene fallback retain their original rules. [Contracts and evidence](native-scene-checkpoints.md).                                                        |
 | [task bridge](../src/native/task.mjs)                                                             | Task construction, destruction, messages, cross-task memory and kind/child/parent/existence queries. Root kind/parent queries retain the original unwritten/null boundaries as explicit diagnostics.                                                                                                                 |
 | [engine messages](../src/native/engine-message.mjs)                                               | Base/Top routing, native task namespaces, untouched output words, shared data, original registration maps and recursive dumps. See [protocol and lifecycle contracts](native-engine-messages.md).                                                                                                                    |
@@ -624,13 +624,10 @@ runtime integration and system-script acceptance are separate from module tests.
 | [text task bridge](../src/native/text-task.mjs)                                                   | 0x263..26D/2B7/374 transport configuration, formatted text, page/speed and image-font messages. Wrapper transport is verified independently of native font rendering; image-data resources share their ownership model with 0x26C. The full text command matrix remains a separate acceptance boundary.              |
 
 The four [compiled content database families](native-content-databases.md)
-cover 85 interfaces in 0x2E6..340, excluding the unrelated 0x311..316 slots.
-Question/configuration pools, name selection, general KCDB columns and mission
-conditions retain separate owners in the shared original-engine process. Their
-complete wrappers have 20,734 comparisons per profile, including original
-serializers and all reviewed condition-switch codes. Both canonical random
-streams are bound directly to original globals, so native selection and browser
-KCS/MOT/PTCL callers share live state through checkpoints and WASM growth.
+now own JS question/configuration, selection, general KCDB and mission models.
+All 85 interfaces have independent two-ABI operation-sequence differential tests.
+Raw data, CSS records, dictionary serialization and World snapshots share one
+canonical JS byte store.
 
 [Argument decoding](native-arguments.md) covers 0x21B/21C with 8,596 comparisons
 and 2,149 operations per profile. Expression-array decoding uses the current

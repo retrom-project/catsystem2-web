@@ -46,7 +46,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   services = {
     handles: runtime.handles,
     formatBytes: formatNativeAt,
-    dataBuffers: () => ({ process: p }),
+    imageDataBuffers: () => ({ process: p }),
   },
   state = (m) => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) => b.slice())];
 let passed = 0,

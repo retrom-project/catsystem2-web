@@ -88,12 +88,10 @@ and import ownership. No proprietary files or decompiler bodies are distributed.
 
 ## Raw heap and CTS records
 
-Main `0x341..0x344` use the same native engine heap, independently of the
-20-byte image-data descriptor. `0x341(size)` returns an actual guest-process
-address with a reference count of one immediately before it. Even size zero
-allocates that four-byte header. `0x342(pointer)` releases this reference using
-signed comparison and accepts null. These addresses are not opaque handles or
-KCS virtual-memory offsets.
+Main `0x341..0x344` use the canonical JS raw-memory store, shared with image-data
+source bytes and independent of the PE projections. Raw pointers retain their
+own reference header and survive fresh World restore. CSS writes copy their
+bytes. Database, question, mission and dictionary imports use this same store.
 
 `0x343(file, entry, size, pointer)` copies raw native bytes into a CTS record.
 `0x344(file, entry, sizeOutput)` allocates an independent native buffer and

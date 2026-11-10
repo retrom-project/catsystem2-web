@@ -5,7 +5,11 @@ import { MotionLibrary } from '../../src/motion/library.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from '../helpers.mjs';
 
-export async function dataWorld(profile, files = {}, { initialize = true } = {}) {
+export async function dataWorld(
+  profile,
+  files = {},
+  { initialize = true, storage = { read: async () => null, write: async () => true } } = {},
+) {
   const game = memoryGame({
       'case.kcs': kcsProgram([[37, 240], [43, 0x47, 4], [59]]),
       ...files,
@@ -19,7 +23,7 @@ export async function dataWorld(profile, files = {}, { initialize = true } = {})
       images: {},
       configuration: new NativeConfiguration({ profile }),
       motionLibrary: new MotionLibrary(game, { profile, random }),
-      storage: { read: async () => null, write: async () => true },
+      storage,
     });
   world.ensureNativeEngine = () => {
     throw new Error('JS data native attempted to load the EXE');

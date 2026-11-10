@@ -6,7 +6,6 @@ import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeDictionary, nativeDictionary } from '../src/native/dictionary.mjs';
 import { nativeHeapData } from '../src/native/heap-data.mjs';
-import { dataBufferFixture } from './fixtures/data-buffer-fixture.mjs';
 
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 const machine = () =>
@@ -90,11 +89,11 @@ test('both dictionary families serialize into raw native heap memory and import 
   for (const shift of [0, -9]) {
     const runtime = new NativeRuntime({ profile, read: async () => null }),
       m = machine(),
-      heap = dataBufferFixture(profile),
+      heap = runtime.imageDataBuffers,
       services = {
         handles: runtime.handles,
         format: (at) => m.string(at),
-        dataBuffers: () => heap.buffers,
+        imageDataBuffers: () => heap,
       },
       invoke = (id, args = []) => nativeDictionary(id + shift, args, m, services),
       handle = invoke(0x37e).value;
@@ -104,16 +103,14 @@ test('both dictionary families serialize into raw native heap memory and import 
     invoke(0x380, [handle, 128, 29]);
     const size = invoke(0x383, [handle]).value,
       pointer = (await nativeHeapData(0x341, [size], m, services)).value;
-    heap.process.zero(pointer, size);
     heap.process.write(pointer, new Uint8Array(size).fill(0xa5));
     assert.throws(() => m.region(pointer, 1), /KCS memory/);
     assert.deepEqual(await invoke(0x384, [handle, pointer]), { control: 2 });
-    const saved = { runtime: runtime.snapshot(), heap: heap.process.snapshot() },
+    const saved = runtime.snapshot(),
       fresh = new NativeRuntime({ profile, read: async () => null }),
-      after = dataBufferFixture(profile);
-    await fresh.restore(saved.runtime);
-    after.process.restore(saved.heap);
-    const next = { ...services, handles: fresh.handles, dataBuffers: () => after.buffers },
+      after = fresh.imageDataBuffers;
+    await fresh.restore(saved);
+    const next = { ...services, handles: fresh.handles, imageDataBuffers: () => after },
       restored = nativeDictionary(0x37e + shift, [], m, next).value;
     nativeDictionary(0x380 + shift, [restored, 64, 99], m, next);
     await nativeDictionary(0x385 + shift, [restored, pointer], m, next);

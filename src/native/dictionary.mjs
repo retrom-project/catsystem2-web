@@ -147,8 +147,8 @@ export function nativeDictionary(id, args, machine, services = {}) {
   else if (id === 0x383) return nativeReply(1, dictionary?.size ?? 0);
   else if (id === 0x384) {
     if (dictionary && args[1]) {
-      if (!services.dataBuffers) return undefined;
-      return Promise.resolve(services.dataBuffers()).then(({ process }) => {
+      if (!services.imageDataBuffers) return undefined;
+      return Promise.resolve(services.imageDataBuffers()).then(({ process }) => {
         const bytes = process.read(args[1], dictionary.size);
         dictionary.write(bytes);
         process.write(args[1], bytes);
@@ -157,8 +157,8 @@ export function nativeDictionary(id, args, machine, services = {}) {
     }
   } else if (id === 0x385) {
     if (dictionary && args[1]) {
-      if (!services.dataBuffers) return undefined;
-      return Promise.resolve(services.dataBuffers()).then(({ process }) => {
+      if (!services.imageDataBuffers) return undefined;
+      return Promise.resolve(services.imageDataBuffers()).then(({ process }) => {
         dictionary.importFrom(
           { load: (at, size = 4) => (size === 1 ? process.read(at, 1)[0] : process.load(at)) },
           args[1],

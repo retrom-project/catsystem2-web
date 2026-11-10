@@ -77,6 +77,10 @@ export async function observeDataSequence(
         if (value) live.set(step.create, step.type);
         value = value ? { handle: step.create, type: step.type } : 0;
       }
+      if (step.pointer) {
+        values.set(step.pointer, reply.value);
+        value = reply.value ? { pointer: step.pointer } : 0;
+      }
       if (step.release) live.delete(step.release);
       let bitmap;
       if (step.bitmap && reply.value) {
@@ -119,7 +123,7 @@ export async function observeDataSequence(
         blocks: m.blockIDs.map((_, i) => m.blockBytes(i).slice()),
         handles: [...live],
         ...(random ? { random: world.random.snapshot() } : {}),
-        raw: rawRanges.map(({ name, offset = 0, size }) => [
+        raw: (step.rawRanges ?? rawRanges).map(({ name, offset = 0, size }) => [
           ...raw.read(values.get(name) + offset, size),
         ]),
         task: { pc: m.pc, sp: m.sp, waiting: structuredClone(m.waiting), frame: world.frame },

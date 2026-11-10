@@ -86,7 +86,7 @@ Parents and siblings keep their context. Copies preserve CP932 bytes, including
 byte sequences that cannot round-trip through a Unicode encoder.
 
 Main `0x23A/23B/23C` send game messages 442/445/444, respectively; SDK uses
-437/440/439. `0x23B` dereferences its nullable raw PE pointer before sending the
+437/440/439. `0x23B` reads a nullable raw data word before sending the
 word. All three return control 2. The pinned Script/Base receivers leave these
 messages unhandled; Top handles them without writing an output word. The
 wrappers execute the real routing protocol rather than substituting a no-op.
@@ -182,3 +182,7 @@ The debug probes exclude 34 out-of-allocation frame/width reads per build. The
 lifecycle probes exclude eight uninitialized source-position queries per build.
 These exclusions are recorded in the reports and are not successful comparisons.
 Private reports, raw function evidence and binaries remain in ignored `.local/`.
+
+The phase 4 raw-data path reads owned JS allocations directly for `23B`.
+Explicit legacy PE input pointers retain their domain 8 reader until that domain
+migrates. The scalar task-message projection is registered in `b-migration.json`.

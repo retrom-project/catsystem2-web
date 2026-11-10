@@ -28,7 +28,6 @@ for (const fixture of await engineFixtureSet())
             at = memory.allocate(2048);
           memory.write(at, new Uint8Array(2048).fill(0xa5));
           values.set('raw', at + 16);
-          if (!engine) world.runtime.services.dataBuffers = () => world.runtime.imageDataBuffers;
           return () => memory.free(at);
         },
         steps = [

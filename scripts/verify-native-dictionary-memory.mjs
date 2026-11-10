@@ -38,7 +38,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   },
   services = {
     handles: runtime.handles,
-    dataBuffers: () => ({ process: p }),
+    imageDataBuffers: () => ({ process: p }),
     format: (at) => p.string(memory + at),
   };
 let passed = 0;

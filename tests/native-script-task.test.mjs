@@ -212,6 +212,18 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
           assert.deepEqual(result, { control: 2 });
           assert.deepEqual(trace.at(-1), [[target, task.id, message, 0, 0], NATIVE_UNWRITTEN_WORD]);
         }
+      const pointer = (await world.runtime.native('main', 0x341, [4], task.machine, task)).value;
+      world.runtime.imageDataBuffers.process.store(pointer, 0xdeadbeef);
+      await world.runtime.native(
+        'main',
+        0x23b,
+        [world.nativeTaskID(task.id), pointer],
+        task.machine,
+        task,
+      );
+      assert.equal(trace.at(-1)[0][4], 0xdeadbeef);
+      assert.ok(!world.nativeEngine);
+      await world.runtime.native('main', 0x342, [pointer], task.machine, task);
       assert.equal(task.machine.pc, before);
     } finally {
       await world.close({ flushFiles: false });

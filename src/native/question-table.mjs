@@ -375,10 +375,10 @@ export async function nativeQuestionTable(id, args, machine, services) {
   else if (id === 0x2fd) return value(table.draw(services.random));
   else if (id === 0x2ff) {
     const pointer = argument(1),
-      memory = pointer ? (await services.dataBuffers()).process : null;
+      memory = pointer ? (await services.imageDataBuffers()).process : null;
     return value(table.export(memory, pointer));
   } else if (id === 0x300)
-    return value(Number(table.import((await services.dataBuffers()).process, argument(1))));
+    return value(Number(table.import((await services.imageDataBuffers()).process, argument(1))));
   else if (id === 0x305) table.members.fill(0);
   else if (id === 0x306) {
     const member = argument(1) >>> 0;

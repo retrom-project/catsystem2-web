@@ -154,11 +154,11 @@ export async function nativeDatabase(id, args, machine, services) {
   const pointer = nativeDataArgument(args, machine, 1);
   if (id === 0x368) {
     const bytes = database.export();
-    if (pointer) (await services.dataBuffers()).process.write(pointer, bytes);
+    if (pointer) (await services.imageDataBuffers()).process.write(pointer, bytes);
     return nativeReply(1, bytes.length);
   }
   if (!pointer) return nativeReply(1, 0);
-  database.import((await services.dataBuffers()).process, pointer);
+  database.import((await services.imageDataBuffers()).process, pointer);
   return nativeReply(1, 1);
 }
 export function installNativeDatabases(world) {

@@ -27,7 +27,7 @@ const engine = await NativeEngineProcess.open({ bytes, profile }),
   sizeOut = p.allocate(4, true),
   frees = [],
   free = p.free.bind(p),
-  services = { handles, dataBuffers: () => buffers },
+  services = { handles, imageDataBuffers: () => buffers },
   modelWords = new Map(),
   machine = { store: (at, word) => modelWords.set(at, word) };
 let passed = 0;
