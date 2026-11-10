@@ -6,15 +6,18 @@ import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeFESObjectRuntime } from '../../src/native/fes-objects.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeStringBank } from '../../src/native/string-bank.mjs';
+import { NativeSaveSlots as OracleSaveSlots } from '../../oracle/save-slots.mjs';
 import { NativeSaveSlots } from '../../src/native/save-slots.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 
 export async function saveSlotFixture(
   bytes,
   profile,
-  { directory = 'authored', files = new SaveSlotFiles() } = {},
+  { directory = 'authored', files = new SaveSlotFiles(), oracle = true } = {},
 ) {
-  const engine = await NativeEngineProcess.open({ bytes, profile, ...files.options() }),
+  const engine = oracle
+      ? await NativeEngineProcess.open({ bytes, profile, ...files.options() })
+      : null,
     handles = new NativeHandles(),
     strings = new NativeStringBank(),
     stringBank = handles.add('string-bank', strings),
@@ -22,7 +25,8 @@ export async function saveSlotFixture(
     record = { id: 1, kind: 34, context: { contextName: directory, stringBank } },
     world = {
       profile,
-      runtime: { handles },
+      storage: files,
+      runtime: { handles, services: { localOffsetMinutes: () => 0 } },
       objects: { objects: new Map([[record.id, record]]) },
       graphics: {},
       getNativeFeature: async (name) => {
@@ -43,8 +47,8 @@ export async function saveSlotFixture(
       argumentBytes: (text) => encodeCP932(text),
       setGlobal: (index, value) => globals.set(index >>> 0, value >>> 0),
     };
-  new NativeDataBuffers(engine, { handles });
-  const runtime = new NativeFESObjectRuntime(engine, world);
-  const slots = new NativeSaveSlots(world);
+  if (engine) new NativeDataBuffers(engine, { handles });
+  const runtime = engine ? new NativeFESObjectRuntime(engine, world) : null;
+  const slots = oracle ? new OracleSaveSlots(world) : new NativeSaveSlots(world);
   return { engine, files, handles, strings, globals, record, world, instance, runtime, slots };
 }

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 112, "oracle": 133, "differential": 18 },
+    "counts": { "js": 112, "oracle": 133, "differential": 21 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -276,6 +276,8 @@
         "tests/differential/native-data-containers.test.mjs",
         "tests/differential/native-data-tables.test.mjs",
         "tests/differential/native-database.test.mjs",
+        "tests/differential/native-formatted-file-output.test.mjs",
+        "tests/differential/native-gallery-tables.test.mjs",
         "tests/differential/native-geometry.test.mjs",
         "tests/differential/native-history-cursor.test.mjs",
         "tests/differential/native-math.test.mjs",
@@ -283,6 +285,7 @@
         "tests/differential/native-question-table.test.mjs",
         "tests/differential/native-random.test.mjs",
         "tests/differential/native-raw-data.test.mjs",
+        "tests/differential/native-save-persistence.test.mjs",
         "tests/differential/native-scalar.test.mjs",
         "tests/differential/native-sdk-standard.test.mjs",
         "tests/differential/native-unicode-output.test.mjs",
@@ -2768,15 +2771,6 @@
       },
       {
         "kind": "exe-layout",
-        "file": "src/native/gallery-tables.mjs",
-        "line": 141,
-        "expression": "NATIVE_GALLERY_TABLE_LAYOUTS[heap.engine.profile]",
-        "domain": 4,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
         "file": "src/native/graphics-process.mjs",
         "line": 59,
         "expression": "ABI[engine.profile]",
@@ -3096,24 +3090,6 @@
         "line": 70,
         "expression": "ABI[this.sdk ? 'sdk' : 'game']",
         "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/save-slots.mjs",
-        "line": 39,
-        "expression": "NATIVE_FES_SAVE_HANDLERS[world.profile]",
-        "domain": 4,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/scene-checkpoint.mjs",
-        "line": 153,
-        "expression": "NATIVE_SCENE_CHECKPOINT_LAYOUTS[engine.profile]",
-        "domain": 4,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -3487,17 +3463,17 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 13, "exeVASelectionSites": 231, "needsReview": 0 }
+    "totals": { "profileIndexSites": 13, "exeVASelectionSites": 228, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 13,
-    "remainingExeVASelectionSites": 231,
+    "remainingExeVASelectionSites": 228,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1174,
-      "original-handler": 505,
-      "exe-region": 15,
+      "pure-js": 1206,
+      "original-handler": 483,
+      "exe-region": 5,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
@@ -3517,11 +3493,11 @@
     "nativeNeedsReview": 591,
     "runtimeFiles": 345,
     "fileDomains": { "3": 32, "4": 43, "5": 32, "6": 39, "7": 23, "8": 147, "9": 29 },
-    "fileNeedsReview": 129,
-    "exeDependencyFiles": 112,
-    "exeDependencies": { "addresses": 1748, "calls": 165, "references": 6 },
+    "fileNeedsReview": 125,
+    "exeDependencyFiles": 108,
+    "exeDependencies": { "addresses": 1678, "calls": 161, "references": 6 },
     "nonNativeGroups": 16,
-    "executionSites": 513
+    "executionSites": 503
   },
   "profiles": [
     {
@@ -4043,7 +4019,7 @@
           "module": "src/native/storage.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeFiles",
-          "registration": "src/native/storage.mjs:261",
+          "registration": "src/native/storage.mjs:253",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -4098,7 +4074,7 @@
           "module": "src/native/storage.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeFiles",
-          "registration": "src/native/storage.mjs:261",
+          "registration": "src/native/storage.mjs:253",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -10816,19 +10792,14 @@
           "hexID": "0x195",
           "semanticName": "galleryVariants.open",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10838,19 +10809,14 @@
           "hexID": "0x196",
           "semanticName": "galleryVariants.close",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10860,19 +10826,14 @@
           "hexID": "0x197",
           "semanticName": "galleryVariants.groupCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10882,19 +10843,14 @@
           "hexID": "0x198",
           "semanticName": "galleryVariants.fileCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10904,19 +10860,14 @@
           "hexID": "0x199",
           "semanticName": "galleryVariants.firstChoiceCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10926,19 +10877,14 @@
           "hexID": "0x19a",
           "semanticName": "galleryVariants.secondChoiceCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10948,19 +10894,14 @@
           "hexID": "0x19b",
           "semanticName": "galleryVariants.reference",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10970,19 +10911,14 @@
           "hexID": "0x19c",
           "semanticName": "galleryNames.open",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -10992,19 +10928,14 @@
           "hexID": "0x19d",
           "semanticName": "galleryNames.close",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -11014,19 +10945,14 @@
           "hexID": "0x19e",
           "semanticName": "galleryNames.count",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -11034,21 +10960,16 @@
           "table": "main",
           "id": 415,
           "hexID": "0x19f",
-          "semanticName": "galleryNames.name",
+          "semanticName": "galleryNames.contains",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -11056,21 +10977,16 @@
           "table": "main",
           "id": 416,
           "hexID": "0x1a0",
-          "semanticName": "galleryNames.contains",
+          "semanticName": "galleryNames.name",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -13725,13 +13641,13 @@
           "hexID": "0x237",
           "semanticName": "file.writeFormattedLine",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/storage.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/data-text.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/storage.mjs:277",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "registration": "src/native/storage.mjs:266",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -21912,13 +21828,13 @@
           "hexID": "0x3df",
           "semanticName": "scene.appendCheckpoint",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -21929,13 +21845,13 @@
           "hexID": "0x3e0",
           "semanticName": "scene.restoreCheckpoint",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -21963,13 +21879,13 @@
           "hexID": "0x3e2",
           "semanticName": "scene.pruneCheckpoints",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -24782,12 +24698,6 @@
           "dependencies": []
         },
         {
-          "name": "scene-checkpoints",
-          "registration": "src/native/scene-checkpoint.mjs:236",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "task-dump",
           "registration": "src/native/task-dump.mjs:130",
           "modules": [],
@@ -25470,7 +25380,7 @@
           "module": "src/native/storage.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeFiles",
-          "registration": "src/native/storage.mjs:261",
+          "registration": "src/native/storage.mjs:253",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -25521,7 +25431,7 @@
           "module": "src/native/storage.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeFiles",
-          "registration": "src/native/storage.mjs:261",
+          "registration": "src/native/storage.mjs:253",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -32176,19 +32086,14 @@
           "hexID": "0x195",
           "semanticName": "galleryVariants.open",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32198,19 +32103,14 @@
           "hexID": "0x196",
           "semanticName": "galleryVariants.close",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32220,19 +32120,14 @@
           "hexID": "0x197",
           "semanticName": "galleryVariants.groupCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32242,19 +32137,14 @@
           "hexID": "0x198",
           "semanticName": "galleryVariants.fileCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32264,19 +32154,14 @@
           "hexID": "0x199",
           "semanticName": "galleryVariants.firstChoiceCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32286,19 +32171,14 @@
           "hexID": "0x19a",
           "semanticName": "galleryVariants.secondChoiceCount",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32308,19 +32188,14 @@
           "hexID": "0x19b",
           "semanticName": "galleryVariants.reference",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32330,19 +32205,14 @@
           "hexID": "0x19c",
           "semanticName": "galleryNames.open",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32352,19 +32222,14 @@
           "hexID": "0x19d",
           "semanticName": "galleryNames.close",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32374,19 +32239,14 @@
           "hexID": "0x19e",
           "semanticName": "galleryNames.count",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32394,21 +32254,16 @@
           "table": "main",
           "id": 415,
           "hexID": "0x19f",
-          "semanticName": "galleryNames.name",
+          "semanticName": "galleryNames.contains",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -32416,21 +32271,16 @@
           "table": "main",
           "id": 416,
           "hexID": "0x1a0",
-          "semanticName": "galleryNames.contains",
+          "semanticName": "galleryNames.name",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/gallery-tables.mjs",
           "domain": 4,
           "route": "NativeRuntime/fallback/nativeGalleryTable",
-          "registration": "src/native/gallery-tables.mjs:133",
-          "features": ["data-buffers", "engine-files", "task-memory"],
-          "dependencies": [
-            "src/native/data-buffer-projection.mjs",
-            "src/native/engine-files.mjs",
-            "src/native/task-memory.mjs",
-            "src/native/world.mjs"
-          ],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/gallery-tables.mjs:85",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -35073,13 +34923,13 @@
           "hexID": "0x237",
           "semanticName": "file.writeFormattedLine",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/storage.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/data-text.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/storage.mjs:277",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "registration": "src/native/storage.mjs:266",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -43261,13 +43111,13 @@
           "hexID": "0x3df",
           "semanticName": "scene.appendCheckpoint",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -43278,13 +43128,13 @@
           "hexID": "0x3e0",
           "semanticName": "scene.restoreCheckpoint",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -43312,13 +43162,13 @@
           "hexID": "0x3e2",
           "semanticName": "scene.pruneCheckpoints",
           "catalogStatus": "recovered",
-          "implementation": "exe-region",
+          "implementation": "pure-js",
           "module": "src/native/scene-checkpoint.mjs",
           "domain": 4,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/scene-checkpoint.mjs:239",
-          "features": ["engine-files", "scene-checkpoints"],
-          "dependencies": ["src/native/engine-files.mjs", "src/native/scene-checkpoint.mjs"],
+          "registration": "src/native/scene-checkpoint.mjs:217",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "traced",
           "reviewReasons": []
@@ -46945,12 +46795,6 @@
           "dependencies": []
         },
         {
-          "name": "scene-checkpoints",
-          "registration": "src/native/scene-checkpoint.mjs:236",
-          "modules": [],
-          "dependencies": []
-        },
-        {
           "name": "task-dump",
           "registration": "src/native/task-dump.mjs:130",
           "modules": [],
@@ -47876,7 +47720,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "116930b2b5dc699f828f59f5953e078f029fe4bcc59926ed1188b094df24ded3",
+      "sourceSha256": "b7eb75ec944ea0c21fcc0af361a0ee215e443176e09945e990bda6e31dd554a1",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -47889,7 +47733,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "7b507e5756ded069ff84072bcb89936b7ba6a2666f782f0bf9b5a8908b70a29d",
+      "sourceSha256": "61f8c476a075c0cb1a4c5ce842445ade25e2f46456a870343fad6d27b5502bf8",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51574,74 +51418,16 @@
     },
     {
       "file": "src/native/gallery-tables.mjs",
-      "sourceSha256": "3021c4fc0ca6e0713cacad3eadaa8820e5095efe60b2c35ff03bb104bc57d0e4",
+      "sourceSha256": "8519185a6f8be6470ef7c13de9932d479e094d93705ebca0abac6ce49311a256",
       "domain": 4,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 38, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 65,
-          "method": "call",
-          "target": "layout.category",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 66,
-          "method": "call",
-          "target": "layout.file",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 72,
-          "method": "call",
-          "target": "layout.file",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 74,
-          "method": "call",
-          "target": "variants ? layout.variantCtor : layout.nameCtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 75,
-          "method": "call",
-          "target": "variants ? layout.variantParse : layout.nameParse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 121,
-          "method": "call",
-          "target": "layout.handlers[id - 0x195]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 6 },
-      "indirectSites": [
-        {
-          "line": 105,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 143,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md", "docs/native-gallery-tables.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/gallery.mjs",
@@ -54405,31 +54191,16 @@
     },
     {
       "file": "src/native/save-slots.mjs",
-      "sourceSha256": "9765cd39ce4e4929f784bed7da8a314f18ed1674fbf8a5d09e21ddae7e06a793",
+      "sourceSha256": "da3b442ae1b493c6c0d0c898a1747b72254784a645e6b61449207858767e03b1",
       "domain": 4,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 22, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md", "docs/native-save-slots.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 53,
-          "method": "getNativeFeature",
-          "feature": "fes-objects",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 54,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/scalar-math.mjs",
@@ -54446,46 +54217,16 @@
     },
     {
       "file": "src/native/scene-checkpoint.mjs",
-      "sourceSha256": "a11c186d1d320d583f050b626ef6fdaa7be63c98f5f5ac72fdf0841bdae9948e",
+      "sourceSha256": "aea0ccd5820dba4ba773f21396288ea1378f46faf95c010d506696817ec7fc23",
       "domain": 4,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 8, "calls": 2, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "in-image-literals"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 166,
-          "method": "call",
-          "target": "this.layout.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 177,
-          "method": "call",
-          "target": "this.layout.destroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 2 },
-      "indirectSites": [
-        {
-          "line": 158,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 240,
-          "method": "getNativeFeature",
-          "feature": "scene-checkpoints",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/scene-data.mjs",
@@ -55205,52 +54946,16 @@
     },
     {
       "file": "src/native/storage.mjs",
-      "sourceSha256": "3018020c1720fe781ae53cda11b893a3a88959c85a0ad164e799dfc29e8c5df0",
+      "sourceSha256": "12055d4830c1cc1cdf0745871b4af6e329384baffc787b5a0b0d7549a1716dd4",
       "domain": 4,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callFromHost",
-        "ensureNativeEngine",
-        "getNativeFeature",
-        "in-image-literals"
-      ],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 295,
-          "method": "callFromHost",
-          "target": "handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 296,
-          "method": "call",
-          "target": "handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
-      "indirectSites": [
-        {
-          "line": 278,
-          "method": "ensureNativeEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 282,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/string-bank.mjs",
@@ -60034,7 +59739,6 @@
         "src/native/global-strings-bridge.mjs",
         "src/native/kcs-memory.mjs",
         "src/native/random-memory.mjs",
-        "src/native/save-slots.mjs",
         "src/native/scene-memory.mjs",
         "src/native/script-replacements-bridge.mjs",
         "src/native/task-memory.mjs"
@@ -62196,54 +61900,6 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 65,
-          "method": "call",
-          "target": "layout.category",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 66,
-          "method": "call",
-          "target": "layout.file",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 72,
-          "method": "call",
-          "target": "layout.file",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 74,
-          "method": "call",
-          "target": "variants ? layout.variantCtor : layout.nameCtor",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 75,
-          "method": "call",
-          "target": "variants ? layout.variantParse : layout.nameParse",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/gallery-tables.mjs",
-          "line": 121,
-          "method": "call",
-          "target": "layout.handlers[id - 0x195]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/hg3-delta.mjs",
           "line": 44,
           "method": "beforeInstruction",
@@ -62500,22 +62156,6 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/scene-checkpoint.mjs",
-          "line": 166,
-          "method": "call",
-          "target": "this.layout.construct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/scene-checkpoint.mjs",
-          "line": 177,
-          "method": "call",
-          "target": "this.layout.destroy",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/screen-capture.mjs",
           "line": 44,
           "method": "callFromHost",
@@ -62584,22 +62224,6 @@
           "line": 74,
           "method": "call",
           "target": "this.layout.handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/storage.mjs",
-          "line": 295,
-          "method": "callFromHost",
-          "target": "handler",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/storage.mjs",
-          "line": 296,
-          "method": "call",
-          "target": "handler",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

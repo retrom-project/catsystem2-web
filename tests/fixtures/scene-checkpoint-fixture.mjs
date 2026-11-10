@@ -2,7 +2,7 @@
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeSceneCheckpoints } from '../../src/native/scene-checkpoint.mjs';
+import { NativeSceneCheckpoints } from '../../oracle/scene-checkpoint.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { NativeSceneHistory } from '../../src/native/scene-data.mjs';
 import { NativeVariableBank } from '../../src/native/bank.mjs';

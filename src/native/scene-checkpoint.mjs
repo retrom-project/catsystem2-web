@@ -1,28 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 // Main3DF/3E0/3E2 store, restore and branch scene-local checkpoint chains.
-// The original selector constructor parses localstr XML and flag ranges.
+// Selectors read the current JS configuration and resource XML.
 import { Binary } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { parseNativeXML, findNativeXML } from './xml.mjs';
+import { parseNativeInteger } from './standard.mjs';
 import { NativeStringBank } from './string-bank.mjs';
 import { serializeStringBank, importStringBank } from './persistence.mjs';
 import { nativeDeflate, nativeInflate } from './zlib.mjs';
-import { installNativeEngineFiles } from './engine-files.mjs';
 
-export const NATIVE_SCENE_CHECKPOINT_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    construct: 0x5b0ba0,
-    destroy: 0x5b0f00,
-    write: 0x5b0f50,
-    read: 0x5b1150,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    construct: 0x492a60,
-    destroy: 0x492dc0,
-    write: 0x492e10,
-    read: 0x493010,
-  }),
-});
 const empty = new Uint8Array();
 function bounded(size) {
   if (!Number.isSafeInteger(size) || size < 0 || size > 0x10000000)
@@ -149,35 +136,34 @@ export function pruneSceneCheckpoints(history, index, position) {
 }
 
 export class NativeSceneCheckpoints {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, layout: NATIVE_SCENE_CHECKPOINT_LAYOUTS[engine.profile] });
-    if (!this.layout) throw new Error('Native scene checkpoints require a reviewed profile');
-    engine.registerFeature('scene-checkpoints', this);
+  constructor(world) {
+    this.world = world;
   }
   async selection(filename) {
-    await this.world.getNativeFeature('engine-files');
-    const p = this.engine.process,
-      pointer = p.allocate(32, true),
-      name = filename === null ? null : encodeCP932(`@cat/config/${filename}\0`),
-      source = name ? p.allocate(name.length, true) : 0;
-    if (name) p.write(source, name);
-    let ready = false;
-    try {
-      await this.engine.call(this.layout.construct, [source, 0, 0], pointer);
-      ready = true;
-      const vector = (offset) => {
-        const begin = p.load(pointer + offset),
-          end = p.load(pointer + offset + 4);
-        if (end < begin || (end - begin) % 4)
-          throw new Error('Original scene checkpoint selector returned an invalid vector');
-        return Array.from({ length: bounded(end - begin) / 4 }, (_, i) => p.load(begin + 4 * i));
-      };
-      return { strings: vector(8), variables: vector(20) };
-    } finally {
-      if (ready) await this.engine.call(this.layout.destroy, [], pointer);
-      if (source) p.free(source);
-      p.free(pointer);
+    const { world } = this,
+      variables = [],
+      strings = [],
+      ranges = world.configuration.variableRanges.local;
+    for (let range = 0; range < 8; range++) {
+      const first = ranges[range * 2] | 0,
+        end = (first + ranges[range * 2 + 1]) | 0;
+      bounded(Math.max(0, end - first) * 4);
+      for (let index = first; index < end; index++) variables.push(index >>> 0);
     }
+    if (filename !== null) {
+      const bytes = await world.runtime.read(filename, 'config');
+      if (bytes) {
+        try {
+          const root = parseNativeXML(bytes, nativeABI(world.profile).xmlEncoding),
+            text = findNativeXML(root, 'localstr')?.text ?? '';
+          for (const token of text.split(',').filter(Boolean))
+            strings.push((parseNativeInteger(token) ?? 0) >>> 0);
+        } catch (error) {
+          world.runtime.services.diagnostic?.({ resource: filename, error: error.message });
+        }
+      }
+    }
+    return { strings, variables };
   }
   async apply(id, args, machine, task) {
     if (args.length !== (id === 0x3e0 ? 4 : 3))
@@ -224,19 +210,11 @@ export class NativeSceneCheckpoints {
     );
     return nativeReply(1, Number(ok));
   }
-  snapshot() {
-    return {};
-  }
-  restore() {}
 }
 export function installNativeSceneCheckpoints(world) {
-  installNativeEngineFiles(world);
-  world.registerNativeFeature(
-    'scene-checkpoints',
-    (engine) => new NativeSceneCheckpoints(engine, world),
-  );
+  const checkpoints = new NativeSceneCheckpoints(world);
   for (const id of [0x3df, 0x3e0, 0x3e2])
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('scene-checkpoints')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine, task) =>
+      checkpoints.apply(id, args, machine, task),
     );
 }

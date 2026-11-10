@@ -15,7 +15,7 @@ import {
   NATIVE_GALLERY_TABLE_LAYOUTS,
   nativeGalleryTable,
   nativeGalleryTableCodec,
-} from '../src/native/gallery-tables.mjs';
+} from '../oracle/gallery-tables.mjs';
 import {
   galleryTableFiles,
   galleryTableOperations,

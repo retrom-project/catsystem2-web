@@ -1,18 +1,6 @@
 # Native save slots
 
-`NativeSaveSlots` executes the original FES save handlers from the reviewed SDK
-2.6.1.74 and game 2.6.1.76 images in the World's shared engine process. The
-system KCS prepares a global-file container and binds it to an interpreter with
-main `0x1C3`; FES exposes this value as `_SAVEOBJ_`. It is a typed global-file
-handle at the browser boundary, not a task identity or an emulator checkpoint.
-
-`datasave slot object` writes the explicitly supplied container. A missing
-second argument or a zero object is an original no-op. The adapter projects the
-authoritative container into a temporary native descriptor for the original
-writer; it does not duplicate persistent save state. The file contains the
-original CSS signature, tag, compressed ordered entries and payload. All save
-commands use the interpreter's inherited context directory and the same virtual
-file storage as KCS and SAVEPANEL.
+The eleven FES save commands use JS-owned global-file containers and the existing per-game IndexedDB file storage. System KCS binds the typed container through `1C3` and FES exposes `_SAVEOBJ_`. `datasave` serializes that container directly, with its CSS tag and ordered entries. Missing or zero object arguments preserve the files. There is no remaining global-file projection for these commands. [Implementation](../src/native/save-slots.mjs).
 
 With an empty context, both native handlers form a drive-rooted filename
 such as `\save0001.dat`. The Win32 boundary resolves it at the mounted
@@ -34,10 +22,7 @@ per-game store as relative paths.
 | `saveget_str`   | Copy a found entry into the live numbered string bank. Missing files/entries preserve the previous value.                              |
 | `saveget_date`  | Read local calendar fields from a CSS file's last-write time. Missing files preserve output variables; `-1` destinations are skipped.  |
 
-The original string-annotation handler stores `strlen + 4` bytes. The terminator
-is initialized; its final three stack bytes are not initialized by the string
-producer. Execution preserves this original behavior. Byte comparisons must
-exclude those three values while retaining the original stored length.
+The string annotation retains the original `strlen + 4` stored size. JS initializes the three originally unwritten tail bytes to zero. Differential comparisons exclude only these undefined values and preserve the terminator, declared size and every defined entry byte. The original empty-payload writer also reads eight bytes beyond its 16-byte allocation. Its reader ignores this tail when the declared payload size is zero, so comparisons retain that header and file size while excluding the undefined tail. Nonempty CSS files compare exactly after accounting for the annotation tail.
 
 The reviewed common command tables contain no `dataload` handler. System KCS
 loads the CSS container with `0xF7`, then restores its variable, string, history,
@@ -50,19 +35,6 @@ helper execution, adapter differential checks and full system-client tests are
 separate evidence levels; none alone establishes complete save-screen or
 whole-title acceptance.
 
-`scripts/verify-native-save-slots.mjs` executes all eleven original handlers in
-each pinned image: **827 complete calls and 4,136 comparisons per profile**.
-The comparisons cover full file bytes/metadata, global/string writes, file
-operation sequencing, missing parameters, unsigned version bounds, equal dates,
-range edges, duplicate explicit sort entries and failed exchange/copy/delete
-steps. The three uninitialized annotation-tail bytes described above are the
-only excluded CSS payload values. Parameter tokenization, authored numeric
-expressions and bank access are explicit host boundaries; the CSS, filesystem
-helpers and sort routines execute their original instructions.
+`scripts/verify-native-save-slots.mjs` compares the JS implementation against independently executed original handlers, CSS and filesystem helpers. The default bounded sequences cover all eleven commands and exchange/copy/delete failure steps in both ABIs. `CATSYSTEM2_EXTENDED=1` enables the larger sample. File metadata, complete ordered entries, global/string writes and file-operation sequencing are compared after every operation. Tokenization, numeric evaluation and bank access are explicit fixture boundaries.
 
-`tests/native-save-slots.test.mjs` separately exercises both complete command
-families and two fresh-World system clients. Each client prepares native
-variable/string entries, binds the global-file handle with `0x1C3`, executes
-`datasave 7 _SAVEOBJ_` through FES, and restores the resulting context-relative
-CSS with `0xF7`/`0xFA`/`0xFD` in a new World. This checks actual Runtime/FES/file
-integration without a legacy story object or a browser save-store snapshot.
+The existing system-client tests bind a container through `1C3`, execute FES `datasave` and restore variable/string entries through `F7`/`FA`/`FD` in a new World. Public browser acceptance additionally writes CSS and a World checkpoint to IndexedDB, reloads the document, reopens storage and restores both CSS banks and a scene-local checkpoint through normal dispatch. Node cannot cover document replacement or browser transactions. [Differential](../tests/differential/native-save-persistence.test.mjs), [browser acceptance](../tests/browser/public.spec.mjs).

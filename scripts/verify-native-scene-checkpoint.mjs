@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { appendSceneCheckpoint, restoreSceneCheckpoint } from '../src/native/scene-checkpoint.mjs';
+import { NativeSceneCheckpoints } from '../src/native/scene-checkpoint.mjs';
 import { sceneCheckpointFixture } from '../tests/fixtures/scene-checkpoint-fixture.mjs';
 import { nativeInflate } from '../src/native/zlib.mjs';
 import { Binary } from '../src/binary.mjs';
@@ -23,6 +23,18 @@ const bytes = new Uint8Array(await readFile(filename)),
 if (!profile) throw new Error('Scene checkpoint oracle requires a frozen image');
 const fixture = await sceneCheckpointFixture(bytes, profile),
   { engine, machine, history, variables, strings, feature, files } = fixture;
+const world = {
+    profile,
+    configuration: fixture.configuration,
+    runtime: {
+      read: async (name) => files.get(name) ?? null,
+      services: { format: (address, m) => m.string(address) },
+      handles: { get: () => ({ history }) },
+      variableBank: () => variables,
+      stringBank: () => strings,
+    },
+  },
+  js = new NativeSceneCheckpoints(world);
 let passed = 0,
   operations = 0;
 const paddingSamples = new Set();
@@ -93,7 +105,12 @@ try {
   put(64, 'localstr.xml');
   for (const text of ['4,9', '9,4,9', '-1,0x4, 9,abc,,4.5', '', '400,401']) {
     files.set('localstr.xml', xml(text));
-    const selection = await feature.selection('localstr.xml');
+    const selection = await js.selection('localstr.xml');
+    compare(
+      selection,
+      await feature.selection('localstr.xml'),
+      'JS selection versus original selector',
+    );
     compare(
       selection.variables,
       [2, 3, 4, 17, 18, 63, 64],
@@ -118,7 +135,11 @@ try {
           { control: 2 },
           'complete append wrapper control',
         );
-        await appendSceneCheckpoint(history, position, variables, strings, selection);
+        compare(
+          await js.apply(0x3df, [1, position, 64], machine, {}),
+          { control: 2 },
+          'JS append entry',
+        );
         operations++;
         await match();
       }
@@ -135,27 +156,28 @@ try {
           expected = await fixture.original(0x3e0, [1024, 1028, 64]),
           native = machine.memory.slice();
         machine.memory.set(before);
-        const ok = await restoreSceneCheckpoint(
-          history,
-          start,
-          position,
-          variables,
-          strings,
-          selection,
-          (index, pos) => {
-            machine.store(1024, index);
-            machine.store(1028, pos);
-          },
-        );
         compare(
+          await js.apply(0x3e0, [1, 1024, 1028, 64], machine, {}),
           expected,
-          { control: 1, value: Number(ok) },
-          `complete restore wrapper return ${JSON.stringify({ text, start, position })}`,
+          'JS restore entry',
         );
         compare(machine.memory, native, 'all VM bytes and output words');
         operations++;
         await match();
       }
+  }
+  for (const [index, position] of [
+    [1, 20],
+    [0, 20],
+    [0, 0],
+  ]) {
+    const before = machine.memory.slice();
+    const expected = await fixture.original(0x3e2, [index, position]);
+    const native = machine.memory.slice();
+    machine.memory.set(before);
+    compare(await js.apply(0x3e2, [1, index, position], machine, {}), expected, 'JS prune entry');
+    compare(machine.memory, native, 'prune VM');
+    await match();
   }
   await writeFile(
     output,

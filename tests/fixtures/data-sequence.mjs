@@ -10,9 +10,9 @@ import { dataWorld } from './data-world.mjs';
 export async function observeDataSequence(
   profile,
   steps,
-  { engine, files = {}, setup, random = false, rawRanges = [] } = {},
+  { engine, files = {}, setup, random = false, storage, observe, rawRanges = [] } = {},
 ) {
-  const world = await dataWorld(profile, files),
+  const world = await dataWorld(profile, files, { storage }),
     m = world.main.machine,
     values = new Map(),
     live = new Map(),
@@ -122,6 +122,7 @@ export async function observeDataSequence(
         shared: m.shared.slice(),
         blocks: m.blockIDs.map((_, i) => m.blockBytes(i).slice()),
         handles: [...live],
+        ...(observe ? { external: await observe(world, engine, values) } : {}),
         ...(random ? { random: world.random.snapshot() } : {}),
         raw: (step.rawRanges ?? rawRanges).map(({ name, offset = 0, size }) => [
           ...raw.read(values.get(name) + offset, size),

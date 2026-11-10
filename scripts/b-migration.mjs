@@ -134,14 +134,10 @@ const originalWrappers = new Set(
     'input-commands registry image-file image-composite render-sources ' +
     'tile-game task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
-    'text-legacy text-log version-query storage sdk-javascript-task emote'
+    'text-legacy text-log version-query sdk-javascript-task emote'
   ).split(' '),
 );
-const reviewedRegions = new Map([
-  ['text-plain', ['text']],
-  ['gallery-tables', ['data-buffers', 'engine-files']],
-  ['scene-checkpoint', ['scene-checkpoints', 'engine-files']],
-]);
+const reviewedRegions = new Map([['text-plain', ['text']]]);
 const messageModules = new Set(
   'task task-command fes graphics draw-task mesh image input input-control text-task movie sound particles script-task'.split(
     ' ',
@@ -354,14 +350,10 @@ function classify(file, id, callback, features, modules) {
   names = unique(names);
   const reasons = [];
   let implementation;
-  if ((name === 'storage' && id !== 0x237) || name === 'heap-data') {
+  if (name === 'storage' || name === 'heap-data') {
     implementation = 'pure-js';
-  } else if (
-    originalWrappers.has(name) ||
-    (name === 'gallery-tables' && ![0x195, 0x19c].includes(id))
-  ) {
+  } else if (originalWrappers.has(name)) {
     implementation = 'original-handler';
-    if (name === 'gallery-tables') names = unique([...names, 'data-buffers', 'task-memory']);
   } else if (reviewedRegions.has(name)) {
     implementation = 'exe-region';
     names = unique([...names, ...reviewedRegions.get(name)]);
@@ -683,7 +675,6 @@ const nonNativeGroups = [
       'global-strings-bridge',
       'script-replacements-bridge',
       'random-memory',
-      'save-slots',
       'engine-files',
     ],
   },

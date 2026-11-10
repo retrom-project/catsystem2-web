@@ -246,11 +246,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/gallery-tables.mjs": {
-      "addresses": 38,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/global-strings-bridge.mjs": {
       "addresses": 2,
       "calls": 1,
@@ -401,16 +396,6 @@
       "calls": 2,
       "references": 0
     },
-    "src/native/save-slots.mjs": {
-      "addresses": 22,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/scene-checkpoint.mjs": {
-      "addresses": 8,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/screen-capture.mjs": {
       "addresses": 14,
       "calls": 2,
@@ -449,11 +434,6 @@
     "src/native/sound.mjs": {
       "addresses": 1,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/storage.mjs": {
-      "addresses": 2,
-      "calls": 2,
       "references": 0
     },
     "src/native/task-dump.mjs": {

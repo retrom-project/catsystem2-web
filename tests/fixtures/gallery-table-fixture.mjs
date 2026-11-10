@@ -79,7 +79,7 @@ export function galleryTableOperations(name, variants) {
   } else {
     for (const row of [0, 1, 2, 3, 0x7fffffff, 0x80000000, 0xffffffff])
       for (const column of [0, 1, 2, 3, 4, 0xffffffff])
-        operations.push([0x1a0, row, column], [0x19f, row, column, 256]);
+        operations.push([0x19f, row, column], [0x1a0, row, column, 256]);
     operations.push([0x19d]);
   }
   return operations;

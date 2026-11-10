@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
-import { NATIVE_FES_SAVE_HANDLERS } from '../src/native/save-slots.mjs';
+import { NATIVE_FES_SAVE_HANDLERS } from '../oracle/save-slots.mjs';
 import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { saveSlotFixture } from '../tests/fixtures/save-slots-fixture.mjs';
@@ -22,7 +22,7 @@ const bytes = new Uint8Array(await readFile(filename)),
     (name) => NATIVE_ENGINE_IMAGES[name].sha256 === sha256,
   );
 if (!profile) throw new Error('Save-slots oracle requires a frozen engine image');
-const fixture = await saveSlotFixture(bytes, profile),
+const fixture = await saveSlotFixture(bytes, profile, { oracle: false }),
   originalFiles = new SaveSlotFiles(),
   original = await NativeEngineProcess.open({ bytes, profile, ...originalFiles.options() }),
   p = original.process,
@@ -83,6 +83,10 @@ async function normalized(storage) {
     // are unwritten by the string producer. They have no defined common value.
     if (data.length >= 16 && new DataView(data.buffer).getUint32(0, true) === 0x535343) {
       const css = await NativeGlobalFile.fromFile(data);
+      if (!css.used) data = { header: data.slice(0, 16), size: data.length };
+      // With an empty payload the original allocates only its 16-byte header,
+      // then reads eight unwritten bytes beyond that allocation into the file.
+      // The CSS reader ignores this tail when the declared payload size is zero.
       if (css.records.some((record) => record.id === 77))
         data = {
           tag: css.tag,
@@ -171,7 +175,7 @@ async function seed(slot, tag, count) {
   return handle;
 }
 try {
-  for (let trial = 0; trial < 16; trial++) {
+  for (let trial = 0; trial < (process.env.CATSYSTEM2_EXTENDED ? 16 : 2); trial++) {
     setDirectory(trial & 1 ? 'authored/sub' : 'authored');
     fixture.files.time = originalFiles.time =
       Date.UTC(2024, trial % 12, trial + 1, 3, 4, 5) + trial;
@@ -303,5 +307,5 @@ try {
 } finally {
   p.free(interpreter);
   await original.close();
-  await fixture.engine.close();
+  await fixture.engine?.close();
 }

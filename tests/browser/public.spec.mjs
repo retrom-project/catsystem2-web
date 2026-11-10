@@ -1717,3 +1717,150 @@ for (const native of [true, false])
       );
     await expect(page.locator('#error')).toBeHidden();
   });
+
+// Node cannot exercise IndexedDB transactions or replace a browser document.
+test('JS save slots and scene checkpoints survive an IndexedDB-backed browser reload', async ({
+  page,
+}) => {
+  const program = [...kcsProgram([[37, 240], [43, 0x47, 4], [59]])];
+  await page.goto('/');
+  const namespace = 'phase4-' + Date.now();
+  const open = () =>
+    page.evaluate(
+      async ({ program, namespace }) => {
+        const { NativeWorld } = await import('/src/native/world.mjs'),
+          { NativeConfiguration } = await import('/src/native/config.mjs'),
+          { MotionLibrary } = await import('/src/motion/library.mjs'),
+          { ParticleRandom } = await import('/src/ppi/random.mjs'),
+          { NativeFileStorage } = await import('/src/native/storage.mjs'),
+          { SaveStore } = await import('/src/saves.mjs');
+        const profile = 'nekopara-vol3-engine-2.6.1.76',
+          random = new ParticleRandom(),
+          configuration = new NativeConfiguration({ profile }),
+          resources = new Map([
+            ['main.kcs', Uint8Array.from(program)],
+            [
+              'localstr.xml',
+              new TextEncoder().encode(
+                '<?xml version="1.0" encoding="UTF-8"?><document><localstr>4</localstr></document>',
+              ),
+            ],
+          ]),
+          game = { read: async (name) => resources.get(name) ?? null, lookup: () => null },
+          storage = new NativeFileStorage(game, namespace),
+          checkpoints = new SaveStore(namespace + ':checkpoint');
+        await storage.open();
+        await checkpoints.open();
+        configuration.variableRanges.local.fill(0);
+        configuration.variableRanges.local.set([2, 1]);
+        const world = new NativeWorld({
+          profile,
+          game,
+          random,
+          configuration,
+          storage,
+          host: {},
+          images: {},
+          motionLibrary: new MotionLibrary(game, { profile, random }),
+        });
+        world.ensureNativeEngine = () => {
+          throw Error('JS persistence attempted an EXE load');
+        };
+        window.phase4 = { world, storage, checkpoints };
+      },
+      { program, namespace },
+    );
+  await open();
+  await page.evaluate(async () => {
+    const { world, storage, checkpoints } = window.phase4,
+      call = (id, args = []) =>
+        world.runtime.native(
+          'main',
+          id,
+          args,
+          world.main.machine,
+          world.main,
+          world.runtime.scheduler,
+        );
+    await world.initialize('main.kcs');
+    await call(0xd1, [64]);
+    const bank = world.runtime.variableBank(world.main),
+      strings = world.runtime.stringBank(world.main);
+    bank.set(2, 12345);
+    strings.set(4, 'checkpoint text');
+    const scene = (await call(0x143)).value;
+    world.runtime.handles.get(scene, 'scene-data').history.appendPath('first', 9);
+    world.main.machine.writeString('localstr.xml', 64);
+    await call(0x3df, [scene, 17, 64]);
+    const file = (await call(0xee, [123])).value;
+    await call(0xf0, [file, 1, world.nativeTaskID(world.main.id), 0, 64]);
+    await call(0xf3, [file, 2]);
+    const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+      record = world.objects.objects.get(id);
+    record.context.contextName = 'authored';
+    const instance = {
+      runtimeID: id,
+      argumentBytes: (text) => new TextEncoder().encode(text),
+      value: Number,
+      setGlobal: (i, v) => bank.set(i, v),
+    };
+    await world.saveSlots.command(instance, 'datasave', `datasave 7 ${file}`);
+    await world.saveSlots.command(instance, 'saveexist', 'saveexist 7 10 123');
+    if (bank.get(10) !== 1 || !(await storage.readSaved('authored/save0007.dat')))
+      throw Error('CSS file missing');
+    await world.objects.release(id);
+    await checkpoints.put(0, { world: world.snapshot(), scene }, {});
+    await world.close({ flushFiles: false });
+    storage.close();
+    checkpoints.close();
+  });
+  await page.reload();
+  await open();
+  const result = await page.evaluate(async () => {
+    const { world, storage, checkpoints } = window.phase4,
+      saved = checkpoints.get(0).data;
+    try {
+      await world.restore(saved.world);
+      const call = (id, args = []) =>
+          world.runtime.native(
+            'main',
+            id,
+            args,
+            world.main.machine,
+            world.main,
+            world.runtime.scheduler,
+          ),
+        bank = world.runtime.variableBank(world.main),
+        strings = world.runtime.stringBank(world.main);
+      bank.set(2, 0);
+      strings.set(4, 'changed');
+      world.main.context.contextName = 'authored';
+      world.main.machine.writeString('save0007.dat', 128);
+      const loaded = (await call(0xf7, [128])).value;
+      await call(0xfa, [loaded, 1, world.nativeTaskID(world.main.id), 0]);
+      await call(0xfd, [loaded, 2]);
+      const css = [bank.get(2), strings.get(4)];
+      bank.set(2, 88);
+      strings.set(4, 'changed again');
+      world.main.machine.store(1024, 0);
+      world.main.machine.store(1028, 17);
+      const restored = await call(0x3e0, [saved.scene, 1024, 1028, 64]);
+      return {
+        css,
+        restored,
+        checkpoint: [bank.get(2), strings.get(4)],
+        exe: Boolean(world.nativeEngine),
+      };
+    } finally {
+      await world.close({ flushFiles: false });
+      storage.close();
+      checkpoints.close();
+    }
+  });
+  expect(result).toEqual({
+    css: [12345, 'checkpoint text'],
+    restored: { control: 1, value: 1 },
+    checkpoint: [12345, 'checkpoint text'],
+    exe: false,
+  });
+});
