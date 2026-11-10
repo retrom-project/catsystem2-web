@@ -39,6 +39,14 @@ export class HG3 {
           offsetY: b.i32(p + 16),
           canvasWidth: b.u32(p + 20),
           canvasHeight: b.u32(p + 24),
+          alphaHint: b.u32(p + 28) ? 2 : 1,
+          attributes: [...sections]
+            .filter(([name, tag]) => /^ats\d{4}$/.test(name) && tag.size >= 20)
+            .map(([name, tag]) => ({
+              id: Number(name.slice(3)) & 65535,
+              rect: Array.from({ length: 4 }, (_, i) => b.i32(tag.at + i * 4)),
+              color: b.u32(tag.at + 16),
+            })),
           baseX: b.i32(p + 32),
           baseY: b.i32(p + 36),
           sections,

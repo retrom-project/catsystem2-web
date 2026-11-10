@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { bitmapFactoryFixture } from './bitmap-factory-fixture.mjs';
-import { NativeImageComposites } from '../../src/native/image-composite.mjs';
+import { NativeImageComposites } from '../../oracle/image-composite.mjs';
 import { authoredHG3 } from './hg3.mjs';
 
 export const IMAGE_COMPOSITE_LAYOUTS = Object.freeze({

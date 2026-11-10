@@ -2,11 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import {
-  imageCompositeFixture,
-  imageCompositeFiles,
-  IMAGE_COMPOSITE_LAYOUTS,
-} from './fixtures/image-composite-fixture.mjs';
+import { imageCompositeFixture, imageCompositeFiles } from './fixtures/image-composite-fixture.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -158,7 +154,6 @@ test(
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const profile = 'sdk-4.01-engine-2.6.1.74',
-      layout = IMAGE_COMPOSITE_LAYOUTS[profile],
       executable = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
       make = () => {
         const authored = imageCompositeFiles(),
@@ -197,12 +192,11 @@ test(
     let fresh;
     try {
       await world.initialize('main.kcs');
-      const platform = await world.getNativeFeature('graphics-platform'),
-        p = world.nativeEngine.process;
-      p.store(platform.refs.view + layout.cacheEnabled, 1);
-      const h = (await query(world)).value,
-        memory = await world.getNativeFeature('bitmap-memory'),
+
+      const h = (await query(world)).value;
+      const memory = await world.getNativeFeature('bitmap-memory'),
         wrapper = await memory.wrapper(h),
+        p = world.nativeEngine.process,
         bitmap = await memory.pointer(h),
         expected = (await world.graphics.images.get(h).pixels()).slice();
       assert.ok(h);
@@ -216,7 +210,7 @@ test(
       );
       assert.deepEqual(await world.graphics.images.get(second).pixels(), expected);
       const factories = await world.getNativeFeature('bitmap-factories');
-      assert.equal(factories.refs.contexts.has(world.main.id), false);
+      assert.equal(factories, world.bitmapFactories);
       const restored = make();
       fresh = restored.world;
       await fresh.restore(structuredClone(world.snapshot()));

@@ -108,9 +108,15 @@ for (const [profile, variable] of [
             m.writeString('warm', 64);
             m.writeString('%s[G64].hg3', 128);
             const warmed = await call(0x2a9, [128]);
-            if (warmed.control !== 2 || !reads.includes('warm.hg3') || !decoded || !released)
+            if (
+              warmed.control !== 2 ||
+              !reads.includes('warm.hg3') ||
+              decoded ||
+              released ||
+              !world.graphics.images.assets.has('warm.hg3:0')
+            )
               throw new Error(
-                `Original image warm-up did not decode and release its bitmap: ${reads}, ${decoded}, ${released}`,
+                `JS image warm-up failed or reached an original image handler: ${reads}, ${decoded}, ${released}`,
               );
             const beforeMissing = decoded;
             m.writeString('absent.hg3', 128);

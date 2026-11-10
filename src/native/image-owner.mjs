@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Logical image owners keep their bitmap state and automatic task lifetime in JS.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
+import { imageOwnerPixels } from './image-owner-pixels.mjs';
+import { bitmapExpand } from './bitmap-pixels.mjs';
 import { nativeDataArgument, nativeDataMapped } from './data-text.mjs';
 const rows = [
   [0x2c6, 1, 1],
@@ -37,7 +39,7 @@ export const NATIVE_IMAGE_OWNER_CONTRACTS = Object.freeze(
 );
 export const NATIVE_IMAGE_OWNER_IDS = Object.freeze(rows.map(([id]) => id));
 export const NATIVE_IMAGE_OWNER_JS_IDS = Object.freeze([
-  0x2c7, 0x2c8, 0x2ca, 0x2cb, 0x2cd, 0x2ce, 0x2cf, 0x2d0, 0x2d1, 0x2d2, 0x2dd,
+  ...rows.map(([id]) => id).filter((id) => id !== 0x2c6),
 ]);
 export const nativeImageOwnerCodec = Object.freeze({
   snapshot: (value) => structuredClone(value),
@@ -52,7 +54,7 @@ export class NativeImageOwners {
     return this.world.runtime.handles.get(handle, 'image-owner');
   }
   add(bitmap, owner, info) {
-    return this.world.runtime.handles.add('image-owner', { bitmap, owner, info });
+    return this.world.runtime.handles.add('image-owner', { bitmap, owner, info, layers: null });
   }
   async projection() {
     return this.world.getNativeFeature('image-owner-projection');
@@ -68,7 +70,14 @@ export class NativeImageOwners {
     const record = this.get(handle);
     await this.world.nativeEngine?.features.get('image-owner-projection')?.releaseModel(handle);
     this.world.runtime.handles.release(handle, 'image-owner');
-    if (record.bitmap) await this.world.graphics.images.release(record.bitmap);
+    const handles = new Set([
+      record.bitmap,
+      ...(record.layers ?? []).flatMap((layer) => [
+        layer.bitmap,
+        ...(layer.animation?.frames ?? []).map((f) => f.bitmap),
+      ]),
+    ]);
+    for (const handle of handles) if (handle) await this.world.graphics.images.release(handle);
   }
   async releaseOwner(owner) {
     for (const [handle, record] of [...this.world.runtime.handles.records])
@@ -91,8 +100,8 @@ export class NativeImageOwners {
       return value(await (await this.projection()).load(args, machine, task));
     }
     if (id === 0x2d5 && (!first || !argument(1))) return value(1);
-    if (!NATIVE_IMAGE_OWNER_JS_IDS.includes(id))
-      return (await this.projection()).applyModel(id, args, machine, task);
+    if (![0x2c7, 0x2c8, 0x2ca, 0x2cb, 0x2cd, 0x2ce, 0x2cf, 0x2d0, 0x2d1, 0x2d2].includes(id))
+      return imageOwnerPixels(this, id, argument, machine, task);
     if (id === 0x2c7) {
       if (first) await this.release(first);
       return done();
@@ -150,6 +159,107 @@ export class NativeImageOwners {
       }
       return done();
     }
+  }
+  expand(bitmap, x, y) {
+    return bitmapExpand(bitmap, x, x, y, y);
+  }
+  async rebuild(record) {
+    const images = this.world.graphics.images;
+    for (const layer of record.layers)
+      if (layer.animation) {
+        const frame = layer.animation.frames.find(
+          (f) => f.key === layer.animation.selected && f.bitmap,
+        );
+        if (frame) {
+          const state = images.get(frame.bitmap).state;
+          layer.animation.bounds.baseX = state.baseX;
+          layer.animation.bounds.baseY = state.baseY;
+        }
+      }
+    const sources = record.layers.map((layer) =>
+      layer.bitmap ? images.get(layer.bitmap) : layer.animation,
+    );
+    if (!sources.length) return;
+    const states = sources.map((s) => s.state ?? s.bounds),
+      left = Math.min(...states.map((s) => s.offsetX)),
+      bottom = Math.min(...states.map((s) => s.offsetY)),
+      right = Math.max(...states.map((s) => s.offsetX + s.width)),
+      top = Math.max(...states.map((s) => s.offsetY + s.height));
+    const metadata = {
+      width: right - left,
+      height: top - bottom,
+      canvasWidth: Math.max(...states.map((s) => s.canvasWidth || s.width)),
+      canvasHeight: Math.max(...states.map((s) => s.canvasHeight || s.height)),
+      offsetX: left,
+      offsetY: bottom,
+      baseX: states[0].baseX,
+      baseY: states[0].baseY,
+    };
+    const old = record.bitmap;
+    if (record.layers.length === 1 && record.layers[0].bitmap)
+      record.bitmap = record.layers[0].bitmap;
+    else {
+      record.bitmap = images.create(metadata.width, metadata.height);
+      const output = images.get(record.bitmap);
+      Object.assign(output.state, metadata);
+      for (const layer of record.layers) {
+        const input =
+          layer.bitmap ||
+          layer.animation?.frames.find((f) => f.key === layer.animation.selected)?.bitmap;
+        if (!input) continue;
+        const image = images.get(input),
+          s = image.state;
+        const f = Math.fround;
+        const position = layer.bitmap
+          ? [f((s.baseX - left) >>> 0), f((s.baseY - bottom) >>> 0)]
+          : [f(f(s.baseX) - f(left >>> 0)), f(f(s.baseY) - f(bottom >>> 0))];
+        const rawX = Math.trunc(f(position[0] - f(s.baseX))) + s.offsetX,
+          rawY = Math.trunc(f(position[1] - f(s.baseY))) + s.offsetY;
+        const sx = Math.max(0, -rawX),
+          sy = Math.max(0, -rawY),
+          dx = Math.max(0, rawX),
+          dy = Math.max(0, rawY),
+          width = Math.min(image.width - sx, output.width - dx),
+          height = Math.min(image.height - sy, output.height - dy);
+        if (width > 0 && height > 0)
+          await output.blit(image, {
+            dx,
+            dy: output.height - dy - height,
+            sx,
+            sy: image.height - sy - height,
+            width,
+            height,
+            copy: s.bpp === 3,
+          });
+        if (!layer.bitmap) continue;
+        const attrs = new Map(output.state.attributes.map((v) => [v.id, v]));
+        for (const attr of s.attributes ?? []) attrs.set(attr.id, structuredClone(attr));
+        output.state.attributes = [...attrs.values()].sort((a, b) => a.id - b.id);
+      }
+    }
+    const state = images.get(record.bitmap).state;
+    record.info = [
+      metadata.width,
+      metadata.height,
+      metadata.canvasWidth,
+      metadata.canvasHeight,
+      left,
+      bottom,
+      metadata.baseX,
+      metadata.baseY,
+      state.bpp,
+      1,
+      record.info[10],
+    ];
+    if (
+      old &&
+      old !== record.bitmap &&
+      !record.layers.some(
+        (l) => l.bitmap === old || l.animation?.frames.some((f) => f.bitmap === old),
+      )
+    )
+      await images.release(old);
+    record.rebuild = (record.rebuild ?? 0) + 1;
   }
   async close() {
     for (const [handle, record] of [...this.world.runtime.handles.records])

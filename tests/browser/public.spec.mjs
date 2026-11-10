@@ -875,6 +875,7 @@ test('native cursor raw pixels, hotspot, visibility, movement and fresh GPU rest
         canvas.width = 6;
         canvas.height = 4;
         const world = {
+            profile: 'nekopara-vol3-engine-2.6.1.76',
             game: { width: 6, height: 4 },
             host: {},
             input: { x: 3, y: 2 },

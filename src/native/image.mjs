@@ -2,6 +2,7 @@
 // Native bitmap fields and CPU operations: 68BE00, 68C760, 68D450, 68D9E0.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { NativeBitmapFactories } from './bitmap-factory.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { ImageStore } from '../formats/hg3.mjs';
 const f = Math.fround;
 const size = (width, height, empty = false) => {
@@ -310,32 +311,37 @@ export class NativeBitmap {
     return true;
   }
   async resize(width, height) {
-    size(width, height);
     if (
-      this.dataHandle &&
-      this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
-      !this.registry.nativeMemory.isOwned?.(this.dataHandle)
-    ) {
-      this.commitCanvas();
-      await this.registry.nativeMemory.resize(this.dataHandle, width, height);
-      this.cachedFrame = null;
-      this.canvas = null;
+      this.state.bpp !== 4 &&
+      !(
+        this.state.bpp === 3 &&
+        nativeABI(this.registry.world.profile ?? this.registry.world.nativeEngine.profile).graphics
+          .resizeRGB24
+      )
+    )
       return;
-    }
+    size(width, height);
     const old = this.state,
-      ratioX = f(f(width) / f(old.canvasWidth)),
-      ratioY = f(f(height) / f(old.canvasHeight));
+      ratioX = f(f(width) / f(old.canvasWidth || old.width)),
+      ratioY = f(f(height) / f(old.canvasHeight || old.height));
     const round = (value, ratio) => Math.trunc(f(f(f(value) * ratio) + 0.5));
     const nextWidth = round(old.width, ratioX),
       nextHeight = round(old.height, ratioY);
     size(nextWidth, nextHeight);
-    const pixels = resampleBitmap(
-      await this.pixels(),
-      old.width,
-      old.height,
-      nextWidth,
-      nextHeight,
-    );
+    const logical = await this.pixels(),
+      physical = new Uint8ClampedArray(logical.length);
+    for (let y = 0; y < old.height; y++)
+      physical.set(
+        logical.subarray(y * old.width * 4, (y + 1) * old.width * 4),
+        (old.height - 1 - y) * old.width * 4,
+      );
+    const sampled = resampleBitmap(physical, old.width, old.height, nextWidth, nextHeight),
+      pixels = new Uint8ClampedArray(sampled.length);
+    for (let y = 0; y < nextHeight; y++)
+      pixels.set(
+        sampled.subarray(y * nextWidth * 4, (y + 1) * nextWidth * 4),
+        (nextHeight - 1 - y) * nextWidth * 4,
+      );
     this.state = {
       ...old,
       width: nextWidth,
@@ -391,14 +397,16 @@ export function blendBitmapPixel(destination, at, source, src, opacity = 255) {
   }
 }
 
-export function resampleBitmap(source, width, height, nextWidth, nextHeight) {
+export function resampleBitmap(source, width, height, nextWidth, nextHeight, region = null) {
   size(width, height);
   size(nextWidth, nextHeight);
-  if (width === nextWidth && height === nextHeight) return new Uint8ClampedArray(source);
+  if (!region && width === nextWidth && height === nextHeight) return new Uint8ClampedArray(source);
+  const regionWidth = region?.width ?? width,
+    regionHeight = region?.height ?? height;
   const output = new Uint8ClampedArray(nextWidth * nextHeight * 4);
-  if (width > 4 * nextWidth || height > 4 * nextHeight) {
-    const rx = f(f(width) / f(nextWidth)),
-      ry = f(f(height) / f(nextHeight)),
+  if (regionWidth > 4 * nextWidth || regionHeight > 4 * nextHeight) {
+    const rx = f(f(regionWidth) / f(nextWidth)),
+      ry = f(f(regionHeight) / f(nextHeight)),
       nx = Math.max(1, Math.trunc(rx)),
       ny = Math.max(1, Math.trunc(ry));
     for (let y = 0; y < nextHeight; y++)
@@ -418,12 +426,12 @@ export function resampleBitmap(source, width, height, nextWidth, nextHeight) {
       }
     return output;
   }
-  const stepX = Math.trunc((width << 15) / nextWidth),
-    stepY = Math.trunc((height << 15) / nextHeight);
+  const stepX = Math.trunc((regionWidth << 15) / nextWidth),
+    stepY = Math.trunc((regionHeight << 15) / nextHeight);
   for (let y = 0; y < nextHeight; y++)
     for (let x = 0; x < nextWidth; x++) {
-      const fx = Math.imul(x, stepX),
-        fy = Math.imul(y, stepY),
+      const fx = Math.imul(x, stepX) + (region?.x ?? 0),
+        fy = Math.imul(y, stepY) + (region?.y ?? 0),
         sx = fx >> 15,
         sy = fy >> 15;
       if (sx >= width || sy >= height) continue;
@@ -456,9 +464,12 @@ export function resampleBitmap(source, width, height, nextWidth, nextHeight) {
 export class NativeImages {
   constructor(world) {
     this.world = world;
+    this.assets = new Map();
     this.handles = world.runtime.handles;
     this.images =
-      typeof world.images?.load === 'function' ? world.images : new ImageStore(world.game);
+      typeof world.images?.load === 'function' && !(world.images instanceof ImageStore)
+        ? world.images
+        : new ImageStore(world.game);
     this.handles.registerType('bitmap-data', {
       snapshot: (state) => {
         // A bitmap's backing resource precedes its wrapper in handle order.
@@ -591,37 +602,65 @@ export class NativeImages {
     }
     return handle;
   }
+  snapshotAssets() {
+    return [...this.assets].map(([key, state]) => [
+      key,
+      { ...state, rgba: encodeSparseBytes(state.rgba) },
+    ]);
+  }
+  restoreAssets(assets) {
+    this.assets = new Map(
+      assets.map(([key, state]) => [
+        key,
+        { ...state, rgba: new Uint8ClampedArray(decodeSparseBytes(state.rgba).buffer) },
+      ]),
+    );
+  }
   async load(file, id = 0, owner = null) {
-    const game = this.world.game,
-      resolved = game.resolveCategory
-        ? game.resolveCategory(file, 'image')
-        : this.images instanceof ImageStore
-          ? this.images.resolve(file)
-          : file;
-    if (
-      !resolved ||
-      (this.images instanceof ImageStore && typeof game.has === 'function' && !game.has(resolved))
-    )
-      return 0;
-    const image = await this.images.load(file),
-      frame = image.frame(id);
-    if (!frame) return 0;
-    const bitmap = new NativeBitmap(this, {
-      width: frame.width,
-      height: frame.height,
-      canvasWidth: frame.canvasWidth,
-      canvasHeight: frame.canvasHeight,
-      offsetX: frame.offsetX,
-      offsetY: frame.offsetY,
-      baseX: frame.baseX,
-      baseY: frame.baseY,
-      bpp: 4,
-      clip: [0, 0, frame.width, frame.height],
-      attributes: [],
-      source: { file, id },
-      rgba: null,
-      owner,
-    });
+    const key = file.toLowerCase() + ':' + id;
+    let state = this.assets.get(key);
+    if (!state) {
+      const game = this.world.game,
+        resolved = game.resolveCategory
+          ? game.resolveCategory(file, 'image')
+          : this.images instanceof ImageStore
+            ? this.images.resolve(file)
+            : file;
+      if (
+        !resolved ||
+        (this.images instanceof ImageStore && typeof game.has === 'function' && !game.has(resolved))
+      )
+        return 0;
+      let image, frame;
+      try {
+        image = await this.images.load(file);
+        frame = image.frame(id);
+        if (!frame) return 0;
+        await image.decode(frame);
+      } catch (error) {
+        this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
+        return 0;
+      }
+      state = {
+        width: frame.width,
+        height: frame.height,
+        canvasWidth: frame.canvasWidth,
+        canvasHeight: frame.canvasHeight,
+        offsetX: frame.offsetX,
+        offsetY: frame.offsetY,
+        baseX: frame.baseX,
+        baseY: frame.baseY,
+        alphaHint: frame.alpha === undefined ? (frame.alphaHint ?? 0) : Number(frame.alpha) + 1,
+        bpp: nativeABI(this.world.profile).graphics.preserveRGB24 && frame.bpp === 24 ? 3 : 4,
+        clip: [0, 0, frame.width, frame.height],
+        attributes: frame.attributes ?? [],
+        source: null,
+        rgba: new Uint8ClampedArray(frame.rgba),
+      };
+      this.assets.set(key, structuredClone(state));
+      while (this.assets.size > 32) this.assets.delete(this.assets.keys().next().value);
+    }
+    const bitmap = new NativeBitmap(this, state, { owner });
     this.world.imageLoaded?.({ file, frameID: id, owner, native: 'image' });
     return this.add(bitmap);
   }
@@ -665,8 +704,8 @@ export class NativeImages {
 export const NATIVE_IMAGE_IDS = Object.freeze([0x6f, 0x70, 0x72, 0x75, 0x76, 0x77, 0x79, 0x7a]);
 export async function nativeImage(id, args, machine, task, world) {
   if (!NATIVE_IMAGE_IDS.includes(id)) return undefined;
-  if (id === 0x7a && world.getNativeFeature)
-    return (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task);
+  if (id === 0x7a && world.bitmapOperations)
+    return world.bitmapOperations.apply(id, args, machine, task);
   if (id === 0x7a) return undefined;
   return (world.bitmapFactories ?? new NativeBitmapFactories(world)).apply(id, args, machine, task);
 }

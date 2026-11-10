@@ -355,6 +355,7 @@ export class NativeGraphics {
   }
   snapshot() {
     return structuredClone({
+      bitmapAssets: this.images.snapshotAssets(),
       vramHandle: this.vramHandle,
       d3dContext: snapshotD3DContext(this.d3dContext),
       view: this.view.snapshot(),
@@ -368,8 +369,9 @@ export class NativeGraphics {
     });
   }
   restore(state) {
-    const { d3dContext, view, texturePages, cursor, nativeRenderOrder, ...values } =
+    const { bitmapAssets, d3dContext, view, texturePages, cursor, nativeRenderOrder, ...values } =
       structuredClone(state);
+    this.images.restoreAssets(bitmapAssets);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);

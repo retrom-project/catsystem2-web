@@ -15,7 +15,6 @@ const layouts = {
     release: 0x68cf20,
     attribute: 0x68b5c0,
     clearAttributes: 0x68b870,
-    resize: 0x68d450,
     wrapperBytes: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.bitmapMemory.wrapperBytes,
     wrapperConstruct: 0x68e9f0,
     wrapperRelease: 0x690050,
@@ -26,7 +25,6 @@ const layouts = {
     release: 0x563a90,
     attribute: 0x562120,
     clearAttributes: 0x5623d0,
-    resize: 0x563fc0,
     wrapperBytes: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.bitmapMemory.wrapperBytes,
     wrapperConstruct: 0x565560,
     wrapperRelease: 0x5668f0,
@@ -296,19 +294,6 @@ export class NativeBitmapMemory {
     this.touch(cache.record, dataHandle);
     return undefined;
   }
-  async resize(dataHandle, width, height) {
-    const record = this.refs.data.get(dataHandle);
-    if (!record) throw new Error('Native bitmap resize requires materialized storage');
-    this.pending.add(dataHandle);
-    this.internal++;
-    try {
-      await this.call(this.layout.resize, [width, height], this.require(record));
-      this.states.get(dataHandle).dirty = true;
-    } finally {
-      this.internal--;
-      this.pending.delete(dataHandle);
-    }
-  }
   async flush(dataHandle) {
     const cache = this.states.get(dataHandle);
     if (!cache) return;
@@ -320,7 +305,8 @@ export class NativeBitmapMemory {
     this.internal++;
     try {
       if (state) {
-        if (state.bpp !== 4) throw new Error('Native bitmap host replacement requires RGBA32');
+        if (![2, 3, 4].includes(state.bpp))
+          throw new Error('Native bitmap replacement has no packed format');
         const data = p.load(pointer + 12),
           same = p.load(pointer + 4) === state.width && p.load(pointer + 8) === state.height;
         if (!same) {
@@ -328,7 +314,13 @@ export class NativeBitmapMemory {
           if (data) buffers.releaseData(data);
           p.store(pointer + 12, 0);
           p.store(pointer + 16, 0);
-          if (!(await this.call(this.layout.configure, [state.width, state.height, 4], pointer)))
+          if (
+            !(await this.call(
+              this.layout.configure,
+              [state.width, state.height, state.bpp],
+              pointer,
+            ))
+          )
             throw new Error('Original bitmap reconfiguration failed');
         }
         this.writePixels(record, state.rgba);

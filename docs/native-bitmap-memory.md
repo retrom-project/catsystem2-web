@@ -33,11 +33,11 @@ logical bitmap owner. The presentation layer must retire borrowed mirrors before
 their native owner is destroyed and retain its last drawing bounds separately.
 
 Script bitmap restore reconstructs JS state and aliases. Consumer-owned raw
-views use their separately recorded PE checkpoint identity. Pending CPU
-operations use explicit result import until their phase 5.2 migration.
+views use their separately recorded PE checkpoint identity. All script CPU operations now execute in JS. Explicit decoder/capture imports
+remain separate value transfers.
 
-[The operation adapter](../src/native/bitmap-operations.mjs) executes these full
-original wrappers:
+[The JS operation dispatcher](../src/native/bitmap-operations.mjs) implements
+these contracts, with arithmetic in [bitmap-pixels](../src/native/bitmap-pixels.mjs):
 
 | IDs             | Operation                                                       | Control |
 | --------------- | --------------------------------------------------------------- | ------- |
@@ -62,12 +62,11 @@ unwritten for a null owner, preserving the GCALL `CCCCCCCC` sentinel. `16F` with
 no source does not dereference the destination. VM address zero is valid, and
 missing argument words read the adjacent mapped GCALL area.
 
-Both resize slots share an original handler. The resize, rotation and alpha operations
-accept logical bitmap handles and original render-source wrappers. A logical
-handle resolves through the bitmap bridge. A render-source wrapper keeps its
-original pointer and ownership. The adapter checks that allocation identity
-again at native handler entry, so a queued operation fails if its borrowed
-wrapper has been released. See [Native render-source arrays](native-render-sources.md).
+Resize, rotation and alpha also accept validated domain 6 render-source
+wrappers. Their consumer-owned storage is exposed as a temporary derived view;
+the same JS operation writes it back at that explicit boundary. Unknown or
+released wrapper identities are rejected before mutation. No original native
+handler is used. See [render-source arrays](native-render-sources.md).
 
 `16A` and `16B` translate and zero both VM outputs even when the owner is null.
 For a live bitmap, each zero canvas dimension independently falls back to its
@@ -90,7 +89,7 @@ product by 100 and saturates at 255. Null input, other pixel depths and
 100 percent leave the image unchanged. RGB, row padding and cached alpha
 hints keep their previous values.
 
-`verify-native-bitmap-operations.mjs` compares **1,420 complete calls and 9,071
+The oracle-only `verify-native-bitmap-operations.mjs` previously compared **1,420 complete calls and 9,071
 checks for the game**, **1,346 calls and 8,553 checks for the SDK**, **17,624
 comparisons total**. It covers nineteen game slots and eighteen SDK slots
 (including the identical resize handlers), two-, three- and four-byte native
@@ -116,3 +115,13 @@ stability. Chromium tests in `playwright.image.config.mjs` cover both full
 profiles with real devices, Canvas read/write behavior and fresh GPU restoration.
 This evidence does not substitute for every final renderer, input-mask or
 pixel-format path.
+
+The phase 5.2 differential files compare independent JS dispatch with each
+original ABI table. Pixels, metadata, attributes and VM bytes use exact equality.
+Packed multiplication divides all four channels by 255; decompiled alpha
+pseudocode was contradicted by both actual instructions and differential values.
+Gray/sepia separately truncate three float32 lookup tables (white becomes 254).
+Resize interpolates physical bottom-up rows. RGBA4444 resize is a no-op; RGB24
+resize works in the game and is a no-op in the SDK, declared in ABI data.
+The alpha scaler preserves its unsigned-overflow lookup behavior and cached hint.
+No floating pixel tolerance was required by the covered algorithms.

@@ -1,63 +1,42 @@
-# Native image transfers and filters
+# Image transfers and filters
 
-Main `73`, `74`, `78`, `1BE`, `218`, `219` and `21A` execute their complete
-original wrappers with persistent bitmap identities. They cover blended
-transfer, clipped copy/resizing, composition lists, opaque-bound computation,
-rectangle attributes, attribute copying and the original blur filter.
+[Image commands](../src/native/image-commands.mjs) and
+[bitmap arithmetic](../src/native/bitmap-pixels.mjs) execute in JS. Main `73`,
+`74`, `78`, `1BE`, `218`, `219`, `21A` and `2A9` preserve their result/control
+words and mapped VM output order. Ordinary bitmap state stays in `NativeImages`.
+Only screen upload crosses the registered domain 6 device boundary.
 
-Main `2A9` formats an image name, resolves it through the original image
-category and runs the view's original image loader. The wrapper immediately
-releases a successful result and returns control 2 without exposing a handle.
-The large HG3 row path shares the bounded bulk decoder used by the other
-native image calls.
+`73` blends using source extents. `74` intersects canvas-coordinate rectangles
+with each image's physical offset bounds before copy/resampling. These are
+separate operations: negative destination clipping, bottom-up interpolation,
+neighbor samples outside a cropped extent, and source/destination aliases matter.
+`16F` uses the clipped blend variant. A null destination uploads the source to
+the actual renderer through an independent bitmap input projection.
 
-Source and destination aliases retain one guest bitmap. `78` translates each
-opaque image handle in its VM list to a real native wrapper without writing a
-temporary guest pointer back to KCS. The rectangle is copied independently so
-read-only overlapping inputs keep their original values. Attribute outputs use
-the actual VM data, stack, shared memory or extended allocation, including
-aliased destinations and the original low-16-bit attribute key.
+`78` reads its handle list and rectangle without modifying VM bytes, clears the
+region to opaque black, and retains the original zero-opacity behavior for RGBA
+layers. `1BE` computes bounds in a local rectangle: its success result does not
+write the rectangle back. `218` uses the low 16 bits of its attribute key and
+writes five words. `219` merges attributes; later entries replace matching IDs,
+while self-copy retains the same data and succeeds.
 
-Main `219` and the image-owner counterpart `2D5` share the original attribute
-copy helper. Copying a populated bitmap to itself can erase the node being
-traversed and hang, depending on the guest heap layout. Both browser wrappers
-recognize shared bitmap backing, preserve the original successful return and
-keep the attributes and their native nodes intact. Distinct bitmap backings
-still run the original copy. The raw differential compares distinct copies
-and an empty self-copy; the public tests check that populated self-copies
-never release their own attribute storage.
+`21A` preserves the integer triangular blur, alpha-aware RGB neighborhood
+means, explicit canvas limits, format-specific expansion order and anchor
+adjustments. Integer pixels are compared exactly, without a ±1 allowance.
+The 24-bit horizontal helper writes only one B result per output pixel into
+consecutive bytes; other scratch bytes are uninitialized in the original.
+Instruction evidence confirms this behavior. JS initializes those unspecified
+bytes to zero. Defined comparisons explicitly supply the same allocator bytes;
+other allocator patterns remain oracle evidence, not an exactness claim about
+arbitrary native heap history.
 
-The two transfer interfaces preserve their distinct treatment of destination
-dimensions and clipping. `73` with destination zero uploads to the caller's
-actual native view and configured VRAM texture pages. A visible VRAM plane
-draws those pages through the shared renderer. An unallocated texture region
-retains the original missing-texture behavior.
+`2A9` formats and loads an image/selector using the JS factory, releases the
+script handle and retains immutable cached assets. It returns control 2, including
+missing-file paths, and does not initialize the EXE or modify the screen.
 
-Some original results are surprising but intentional to preserve: `78` leaves
-the composition packet's opacity multiplier at zero, so ordinary RGBA sources
-retain its opaque black clear. `1BE` computes bounds in a local rectangle and
-returns success without copying that rectangle back to KCS; a fully transparent
-bitmap can still report success. The blur helper uses explicit canvas bounds,
-including the zero canvas bounds of a newly created blank bitmap.
-
-The original 24-bit horizontal blur writes one byte per output pixel into its
-uninitialized temporary buffer; its vertical pass also consumes the unwritten
-bytes. These outputs depend on previous heap contents. The differential probe
-supplies two explicit allocator byte patterns for filter calls and compares all
-bytes under each supplied allocation contract. Production executes the original
-filter with its actual guest heap; it does not replace unwritten bytes with an
-invented deterministic pixel value.
-
-`scripts/verify-native-image-commands.mjs` compares both frozen images with
-unaccelerated original reference calls. Cases cover BPP2/3/4, raw row bytes,
-source/destination/self aliases, metadata, attributes, clipping, four VM domains,
-output canaries, guarded invalid handles and adjacent argument-frame reads.
-The view upload is an explicit transport boundary in that probe and checks the
-actual view receiver. Public World tests additionally cover fresh restoration,
-source mutation, final release and failed child Script reload.
-
-The two-profile Chromium test first confirms the warm-up opens and decodes a
-mounted HG3, destroys the temporary bitmap and leaves the visible plane intact.
-It then uploads to an authored texture page on a visible native VRAM plane and
-checks the changed pixels, replacement upload, fresh restored GPU output and
-independence of the original World.
+The independent tests are `native-bitmap-transfers`, `native-bitmap-packed`,
+`native-bitmap-pixels` and `native-image-composite-js` under `tests/differential/`.
+They exercise both ABI tables, all VM output bytes, format branches and complete
+logical pixels/metadata. The old full-wrapper verifier and fixtures explicitly
+import oracle-only modules; they remain layout and original-dispatch evidence.
+GPU upload and fresh restoration are also checked by the image browser group.

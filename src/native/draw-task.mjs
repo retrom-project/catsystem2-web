@@ -82,6 +82,12 @@ export class NativeDrawTask {
       case 282: {
         if (!this.state.renderer) return 0;
         const fields = Array.from({ length: 15 }, (_, i) => load(l + i * 4));
+        if (context.imageOwnerHandle !== undefined) {
+          fields[3] = await this.world.imageOwners.materialize(context.imageOwnerHandle);
+          const retained = await this.world.getNativeFeature('retained-draw');
+          await retained.bind(this, key, fields);
+          return 0;
+        }
         if (context.nativePointer) {
           const retained = await this.world.getNativeFeature('retained-draw');
           await retained.bind(this, key, fields);

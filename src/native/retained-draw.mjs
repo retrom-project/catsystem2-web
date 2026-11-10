@@ -75,11 +75,15 @@ export class NativeRetainedDraw {
     if (nativeABI(engine.profile).capabilities.engineWorkers) installNativeEngineWorkers(engine);
     engine.registerFeature('retained-draw', this);
   }
-  call(address, args, pointer, task, rasterBudget) {
-    const options = { task, rasterBudget };
-    return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, options)
-      : this.engine.call(address, args, pointer, options);
+  async call(address, args, pointer, task, rasterBudget) {
+    const options = { task, rasterBudget },
+      projection = this.engine.features.get('image-owner-projection');
+    if (this.process.asyncEnabled) await projection?.beforeCall();
+    const result = this.process.asyncEnabled
+      ? await this.engine.callFromHost(address, args, pointer, options)
+      : await this.engine.call(address, args, pointer, options);
+    if (address === this.abi.rendererDraw) projection?.captureRendered();
+    return result;
   }
   key(draw, key) {
     return `${draw.record.id}:${key >>> 0}`;

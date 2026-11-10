@@ -2,7 +2,7 @@
   "version": 1,
   "files": {
     "oracle/bitmap-memory.mjs": {
-      "addresses": 16,
+      "addresses": 14,
       "calls": 2,
       "references": 0
     },
@@ -29,11 +29,6 @@
     "src/native/area-effect.mjs": {
       "addresses": 60,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/bitmap-operations.mjs": {
-      "addresses": 37,
-      "calls": 2,
       "references": 0
     },
     "src/native/catalog.mjs": {
@@ -274,16 +269,6 @@
     "src/native/hg3-delta.mjs": {
       "addresses": 2,
       "calls": 0,
-      "references": 0
-    },
-    "src/native/image-commands.mjs": {
-      "addresses": 16,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/image-composite.mjs": {
-      "addresses": 2,
-      "calls": 2,
       "references": 0
     },
     "src/native/image-file.mjs": {

@@ -2,10 +2,12 @@
 
 [The image-owner model](../src/native/image-owner.mjs) owns logical handles,
 bitmap state, metadata queries/setters and automatic task cleanup in JS.
-2C7/2C8/2CA/2CB/2CD/2CE/2CF/2D0/2D1/2D2/2DD use that model directly.
-File decoding and remaining pixel commands temporarily cross
-[the explicit projection](../oracle/image-owner-projection.mjs), with result
-import at each operation. They migrate in phases 5.3 and 5.2 respectively.
+All commands except temporary file loading (`2C6`) use that model directly.
+[Pixel commands](../src/native/image-owner-pixels.mjs) transform every logical
+layer/frame in JS and preserve distinct blank, static and ANM collection states.
+The remaining original decoder imports complete layers once at `2C6`; it is
+removed in phase 5.3. [The projection](../oracle/image-owner-projection.mjs)
+serves only remaining consumer representations and that temporary loader.
 
 The independent 64-byte PE collection serves retained Draw and IMAGEEX. It
 contains its own bitmap/wrapper references and keeps the renderer's original
@@ -55,7 +57,7 @@ original handlers. Full VM bytes, canaries and bitmap pixels match exactly.
 Separate pure-JS tests cover fresh World restore and task cleanup. Original
 layout proofs below remain in the oracle fixture.
 
-`scripts/verify-native-image-owners.mjs` executes every wrapper in both frozen
+The oracle-only `scripts/verify-native-image-owners.mjs` previously executed every wrapper in both frozen
 images: **754 complete wrapper calls and 5,596 comparisons per profile**,
 **11,192 comparisons total**. It compares result/control words, complete mapped KCS data/stack/shared
 and extended blocks, original image/bitmap/tree/list allocations and all bytes
@@ -82,6 +84,24 @@ retained-renderer pixels require their separate acceptance tests. Original opera
 invalid dimensions or absent layer containers remain invalid; a constructor
 returning a handle does not make every subsequent original operation defined.
 
-The no-ANM multi-selector fallback includes an original narrow-base argument to
-`wsprintfW`. That branch is retained as original code and is not silently
-rewritten into a different filename convention.
+`2DE/2DF` read argument 0 and write argument 5, as independently checked with
+different source/destination colors. The argument labels in the original
+wrapper catalog are corrected to match that direction. Draw packet words are
+built in JS; the D6 receiver materializes its logical owner only at consumption.
+
+Single static output aliases its layer. Layer colors/alpha mark a compound
+output dirty without eager recomposition. Rotation/mirror/resize rebuild it;
+ANM cached container extents remain distinct from transformed frame extents.
+Blur preserves its separate output-expansion sequence. Program bytes and all
+frame pixels belong to JS; the remaining D6 ANM VM owns its timeline.
+
+D6 rendering can update the compound derived output. Capture is tied to an
+observed actual compositor draw and completes at async D6 call boundaries.
+Clearing the dirty flag during bounds refresh is insufficient and does not
+trigger capture. This registered PE-to-JS output projection is removed in phase 6.
+The ordinary JS input layers are never refreshed from that output.
+
+New independent pixel, packet and reconstruction differentials are in
+`native-image-owner-pixels.test.mjs` and `native-image-owner-projection.test.mjs`.
+The latter also checks complete static/ANM output pixels, immutable input
+ownership, projection dimensions and fresh World restoration.

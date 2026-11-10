@@ -5,7 +5,7 @@ import { NativeImages } from '../../src/native/image.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';
-import { NativeBitmapOperations } from '../../src/native/bitmap-operations.mjs';
+import { NativeBitmapOperations } from '../../oracle/bitmap-operations.mjs';
 import { KCSMachine } from '../../src/kcs/vm.mjs';
 import { Binary } from '../../src/binary.mjs';
 export async function bitmapMemoryFixture(bytes, profile, { uploadBoundary = false } = {}) {

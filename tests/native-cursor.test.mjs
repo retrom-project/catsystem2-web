@@ -22,6 +22,7 @@ function fixture(backend = 'direct3d') {
       large: { width: 40, height: 2 },
     },
     world = {
+      profile: 'nekopara-vol3-engine-2.6.1.76',
       game: { width: 100, height: 100, resolveCategory: (name) => (frames[name] ? name : null) },
       input: { x: 20, y: 30 },
       runtime: { handles: new NativeHandles() },
@@ -29,7 +30,22 @@ function fixture(backend = 'direct3d') {
       images: {
         load: async (name) => {
           calls.push(name);
-          return { frame: () => frames[name] };
+          return {
+            frame: () =>
+              frames[name] && {
+                canvasWidth: frames[name].width,
+                canvasHeight: frames[name].height,
+                offsetX: 0,
+                offsetY: 0,
+                baseX: 0,
+                baseY: 0,
+                bpp: 32,
+                ...frames[name],
+              },
+            decode: async (frame) => {
+              frame.rgba = new Uint8ClampedArray(frame.width * frame.height * 4);
+            },
+          };
         },
       },
     },

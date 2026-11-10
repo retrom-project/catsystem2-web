@@ -94,7 +94,7 @@ const domains = {
 const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
-  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
+  5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels bitmap-pixels image-affine image-persistence hg3-delta text text-log text-legacy text-plain text-task text-windows fes-text fes-text-layout zlib zlib-artifact deflate',
   6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
@@ -139,8 +139,8 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'draw-commands effect-commands screen-capture bitmap-operations image-commands ' +
-    'input-commands registry image-file image-composite render-sources ' +
+    'draw-commands effect-commands screen-capture ' +
+    'input-commands registry image-file render-sources ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
     'text-legacy text-log version-query sdk-javascript-task emote'
@@ -367,7 +367,7 @@ function classify(file, id, callback, features, modules) {
     if (ownerTransition) {
       names.push('image-owner-projection');
       reasons.push(
-        'JS 持有逻辑句柄与位图状态。文件解码和剩余像素命令仍经显式过渡边界，分别随阶段5.3/5.2删除。',
+        'JS持有逻辑句柄、所有层位图和像素操作。文件/ANM装载仍通过显式输入导入边界，阶段5.3删除。',
       );
     }
   } else if (originalWrappers.has(name)) {
@@ -794,6 +794,25 @@ const nonNativeGroups = [
     },
   },
   {
+    name: 'exe-owner-renderer-to-js-derived-output',
+    domain: 6,
+    entry:
+      'D6 nested collection rasterizers update derived output after actual rendererDraw execution',
+    modules: ['retained-draw'],
+    files: ['oracle/image-owner-projection.mjs'],
+    projection: {
+      direction: 'PE-to-JS',
+      authority:
+        'Domain 6 renderer output; JS layers, frame pixels and program bytes remain authoritative inputs',
+      fields: ['multi-layer output RGBA after an observed compositor draw'],
+      consumers: [{ domain: 5, modules: ['image-owner'] }],
+      lifetime:
+        'Observed rendererDraw identity selects outputs. Bounds refresh and clearing owner dirty do not trigger capture. Async host calls finish capture at the D6 call boundary.',
+      removePhase: 6,
+      operations: ['captureRendered'],
+    },
+  },
+  {
     name: 'js-image-owner-to-exe-consumers',
     domain: 6,
     entry:
@@ -815,7 +834,7 @@ const nonNativeGroups = [
       lifetime:
         'JS task ownership uses handles. PE projection lists are isolated from the Script prefix. External retained references can outlive JS release.',
       removePhase: 7,
-      operations: ['prepare', 'sync', 'releaseModel'],
+      operations: ['prepare', 'sync', 'rebuildRenderer', 'releaseModel'],
     },
   },
   {

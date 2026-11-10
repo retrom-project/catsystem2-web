@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_IMAGE_COMMAND_CONTRACTS } from '../src/native/image-commands.mjs';
+import { NATIVE_IMAGE_COMMAND_CONTRACTS } from '../oracle/image-commands.mjs';
 import { imageCommandsFixture } from '../tests/fixtures/image-commands-fixture.mjs';
 import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';
 

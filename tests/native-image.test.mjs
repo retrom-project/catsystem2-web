@@ -68,6 +68,7 @@ function environment() {
     },
   ];
   const world = {
+    profile: 'nekopara-vol3-engine-2.6.1.76',
     game: {
       resolveCategory: (file, category) =>
         category === 'image' && file === 'authored' ? 'image.int/authored.hg3' : null,

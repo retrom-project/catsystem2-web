@@ -59,6 +59,37 @@ export class NativeRenderSources {
       p = this.engine.process;
     if (identity && p.allocations.get(p.load(pointer)) >= 92) return identity;
   }
+  async withBitmapOperation(pointer, operation, name) {
+    const engine = this.engine,
+      identity = this.bitmapWrapperIdentity(pointer);
+    if (!identity) throw new Error('Unknown or released bitmap ' + name + ' input ' + pointer);
+    const execute = async () => {
+      const images = this.world.graphics.images,
+        memory = await this.world.getNativeFeature('bitmap-memory');
+      if (identity !== this.bitmapWrapperIdentity(pointer))
+        throw new Error('Native bitmap ' + name + ' wrapper was released before execution');
+      const handle = images.create(0, 0),
+        preparing = memory.preparingCall;
+      memory.preparingCall = true;
+      try {
+        memory.borrow(handle, engine.process.load(pointer));
+        return await operation(images.get(handle));
+      } finally {
+        try {
+          await images.release(handle);
+        } finally {
+          memory.preparingCall = preparing;
+        }
+      }
+    };
+    if (engine.process.asyncEnabled) return execute();
+    engine.pendingCalls++;
+    const result = engine.queue.then(execute).finally(() => {
+      engine.pendingCalls--;
+    });
+    engine.queue = result.catch(() => {});
+    return result;
+  }
   async apply(id, args, machine, task) {
     const spec = NATIVE_RENDER_SOURCE_CONTRACTS.find((entry) => entry.id === id);
     if (!spec) return undefined;

@@ -1,183 +1,133 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original bitmap base operations share persistent wrappers and guest pixels.
-import { nativeReply } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
+// Script bitmap commands operate on the one logical pixel and metadata model.
+import { nativeABI } from './abi/index.mjs';
+import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
+import { nativeDataArgument } from './data-text.mjs';
+import { bitmapColor, bitmapTransform, bitmapSample, bitmapTransfer } from './bitmap-pixels.mjs';
 export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
   [
-    [0x7a, 3, 2, 0x64c8b0, 0x519270],
-    [0x16a, 3, 2, 0x64bfa0, 0x518b40],
-    [0x16b, 3, 2, 0x64bf50, 0x518af0],
-    [0x16f, 10, 2, 0x64b200, 0x517e10],
-    [0x171, 2, 2, 0x64b940, 0x518500],
-    [0x172, 3, 1, 0x64ca70, 0x519460],
-    [0x173, 3, 1, 0x64bad0, 0x518690],
-    [0x174, 3, 1, 0x64c9c0, 0x5193b0],
-    [0x175, 3, 1, 0x64c980, 0x519370],
-    [0x176, 3, 1, 0x64c910, 0x519300],
-    [0x178, 2, 2, 0x64a9e0, 0x517630],
-    [0x179, 1, 1, 0x64c080, 0x518be0],
-    [0x17a, 2, 2, 0x64ca40, 0x519430],
-    [0x1d4, 2, 2, 0x64c770, 0x5192a0],
-    [0x22e, 2, 2, 0x64b9c0, 0x518580],
-    [0x234, 2, 2, 0x64c950, 0x519340],
-    [0x281, 2, 2, 0x64c8e0, 0x5192d0],
-    [0x2c1, 3, 2, 0x64c8b0, 0x519270],
-    [0x402, 3, 1, 0x64bff0, null],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
+    [0x7a, 3, 2],
+    [0x16a, 3, 2],
+    [0x16b, 3, 2],
+    [0x16f, 10, 2],
+    [0x171, 2, 2],
+    [0x172, 3, 1],
+    [0x173, 3, 1],
+    [0x174, 3, 1],
+    [0x175, 3, 1],
+    [0x176, 3, 1],
+    [0x178, 2, 2],
+    [0x179, 1, 1],
+    [0x17a, 2, 2],
+    [0x1d4, 2, 2],
+    [0x22e, 2, 2],
+    [0x234, 2, 2],
+    [0x281, 2, 2],
+    [0x2c1, 3, 2],
+    [0x402, 3, 1],
+  ].map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
-const byID = new Map(NATIVE_BITMAP_OPERATION_CONTRACTS.map((s) => [s.id, s])),
-  rawBitmapOperations = new Map([
-    [0x7a, 'resize'],
-    [0x1d4, 'rotation'],
-    [0x281, 'alpha'],
-    [0x2c1, 'resize'],
-  ]);
-
-function checkRotationFootprint(p, wrapper, angle) {
-  if (angle !== 90 && angle !== 180 && angle !== 270) return;
-  const bitmap = p.load(wrapper),
-    width = p.load(bitmap + 4),
-    height = p.load(bitmap + 8),
-    rowBytes = (angle === 180 ? width : height) * p.load(bitmap + 24);
-  // The original helper uses a four-byte pitch for an unaligned row.
-  if (width && height && rowBytes > 4 && rowBytes % 4)
-    throw new RangeError(
-      `Original bitmap rotation cannot fit a ${rowBytes}-byte row in a four-byte stride`,
-    );
-}
-
+const byID = new Map(NATIVE_BITMAP_OPERATION_CONTRACTS.map((s) => [s.id, s]));
+const rawIDs = new Set([0x7a, 0x1d4, 0x281, 0x2c1]);
 export class NativeBitmapOperations {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.profileIndex =
-      engine.profile === 'nekopara-vol3-engine-2.6.1.76'
-        ? 0
-        : engine.profile === 'sdk-4.01-engine-2.6.1.74'
-          ? 1
-          : -1;
-    if (this.profileIndex < 0) throw new Error('Bitmap operations require a reviewed engine');
-    this.inputChecks = new Map();
-    const p = this.process,
-      addresses = new Set(
-        [...rawBitmapOperations.keys()].map((id) => byID.get(id).handlers[this.profileIndex]),
-      );
-    // The allocation can be released while a call is queued.
-    this.detachInputs = Array.from(addresses, (address) =>
-      p.beforeInstruction(address, 'check original bitmap input', () => {
-        if (!this.inputChecks.size) return;
-        const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0,
-          argv = p.load(sp + 12),
-          request = this.inputChecks.get(argv);
-        if (!request) return;
-        const pointer = p.load(argv),
-          live = request.rawIdentity
-            ? engine.features.get('render-sources')?.bitmapWrapperIdentity(pointer) ===
-              request.rawIdentity
-            : request.wrapper?.pointer === pointer &&
-              engine.features.get('bitmap-memory')?.refs.wrappers.get(request.input) ===
-                request.wrapper &&
-              p.allocations.has(pointer);
-        if (!live)
-          throw new Error(
-            `Native bitmap ${request.operation} wrapper was released before execution`,
-          );
-        if (request.operation === 'rotation') checkRotationFootprint(p, pointer, p.load(argv + 4));
-      }),
-    );
-    engine.registerFeature('bitmap-operations', this);
+  constructor(world) {
+    this.world = world;
   }
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
-    if (!spec?.handlers[this.profileIndex]) return undefined;
-    const words = Array.from(args);
-    while (!words.length) words.push(machine.nativeArgument(0));
-    let count = spec.words;
+    if (!spec || (id === 0x402 && !nativeABI(this.world.profile).capabilities.bitmapColorQuery))
+      return undefined;
+    const a = (i) => nativeDataArgument(args, machine, i),
+      first = a(0) >>> 0;
+    if (first && rawIDs.has(id) && !this.world.runtime.handles.records.has(first))
+      return (await this.world.getNativeFeature('render-sources')).withBitmapOperation(
+        first,
+        (bitmap) => this.operation(id, a, machine, task, bitmap),
+        id === 0x1d4 ? 'rotation' : id === 0x281 ? 'alpha' : 'resize',
+      );
+    return this.operation(
+      id,
+      a,
+      machine,
+      task,
+      first ? this.world.graphics.images.get(first) : null,
+    );
+  }
+  async operation(id, a, machine, task, bitmap) {
+    const done = () => nativeReply(2),
+      value = (v) => nativeReply(1, v),
+      s = bitmap?.state;
     if (id === 0x16f) {
-      while (words.length < 6) words.push(machine.nativeArgument(words.length));
-      if (!words[5]) count = 6;
-    } else if (!words[0] && id !== 0x16a && id !== 0x16b) count = 1;
-    while (words.length < count) words.push(machine.nativeArgument(words.length));
-    const operation = rawBitmapOperations.get(id),
-      input = words[0] >>> 0;
-    let rawIdentity;
-    if (operation && input && !this.world.runtime.handles.records.has(input)) {
-      rawIdentity = this.engine.features.get('render-sources')?.bitmapWrapperIdentity(input);
-      if (!rawIdentity) throw new Error(`Unknown or released bitmap ${operation} input ${input}`);
-    }
-    const bitmaps = rawIdentity ? null : await this.world.getNativeFeature('bitmap-memory');
-    if (bitmaps && (id !== 0x16f || words[5])) {
-      words[0] = await bitmaps.wrapper(words[0]);
-      if (id === 0x16f) words[5] = await bitmaps.wrapper(words[5]);
-    }
-    let platform;
-    if (id === 0x16f && !words[0] && words[5]) {
-      platform = await this.world.getNativeFeature('graphics-platform');
-      await platform.ensureRenderer();
-    }
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(4),
-      host = platform ? (memory ? await memory.pointer(task.id) : p.allocate(120, true)) : 0;
-    try {
-      words.forEach((v, i) => p.store(argv + i * 4, v));
-      if (rawIdentity || (id === 0x1d4 && input))
-        this.inputChecks.set(argv, {
-          operation,
-          rawIdentity,
-          input,
-          wrapper: bitmaps?.refs.wrappers.get(input),
-        });
-      p.store(out, 0xcccccccc);
-      if (platform) p.store(host + 116, platform.refs.view);
-      const params = [bridge.pointer, host, argv, out],
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(spec.handlers[this.profileIndex], params, undefined, {
-              task: task.id,
-            })
-          : await this.engine.call(spec.handlers[this.profileIndex], params, undefined, {
-              task: task.id,
-            });
-      if (control !== spec.control)
-        throw new Error('Original bitmap wrapper returned an unexpected control');
-      if (input && !rawIdentity) bitmaps.captureOperation?.(input);
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      this.inputChecks.delete(argv);
-      try {
-        bridge.close();
-      } finally {
-        if (host && !memory) p.free(host);
-        p.free(out);
-        p.free(argv);
+      const source = a(5) ? this.world.graphics.images.get(a(5)) : null;
+      if (source) {
+        const words = Array.from({ length: 10 }, (_, i) => a(i));
+        words.operation = 'clipped-blend';
+        await bitmapTransfer(this.world, bitmap, source, words, false, task);
       }
+      return done();
     }
+    if (id === 0x16a || id === 0x16b || id === 0x173) {
+      if (id === 0x173 && !bitmap) return value(0);
+      const keys =
+        id === 0x16a
+          ? ['canvasWidth', 'canvasHeight']
+          : id === 0x16b
+            ? ['offsetX', 'offsetY']
+            : ['baseX', 'baseY'];
+      keys.forEach((key, i) =>
+        machine.store(
+          a(i + 1),
+          s ? (id === 0x16a ? s[key] || s[i ? 'height' : 'width'] : s[key]) : 0,
+        ),
+      );
+      return id === 0x173 ? value(1) : done();
+    }
+    if (!bitmap)
+      return byID.get(id).control === 1 ? value(id === 0x179 ? NATIVE_RESULT_SENTINEL : 0) : done();
+    bitmap.commitCanvas();
+    if (id === 0x172 || id === 0x402)
+      return value(await bitmapSample(bitmap, a(1), a(2), id === 0x402));
+    if (id === 0x179) return value(Number(await bitmap.hasAlpha()));
+    if ([0x174, 0x175, 0x176].includes(id)) {
+      const keys =
+        id === 0x174
+          ? ['canvasWidth', 'canvasHeight']
+          : id === 0x175
+            ? ['offsetX', 'offsetY']
+            : ['baseX', 'baseY'];
+      keys.forEach((key, i) => {
+        s[key] = a(i + 1) | 0;
+      });
+      await bitmap.changed();
+      return value(1);
+    } else if (id === 0x17a || id === 0x234) {
+      s[id === 0x17a ? 'alphaHint' : 'mask'] = id === 0x17a ? Number(a(1) !== 0) + 1 : a(1);
+      await bitmap.changed();
+    } else if (id === 0x7a || id === 0x2c1) await bitmap.resize(a(1) >>> 0, a(2) >>> 0);
+    else if (id === 0x1d4 || id === 0x22e)
+      await bitmapTransform(bitmap, id === 0x1d4 ? 'rotate' : 'mirror', a(1) | 0);
+    else
+      await bitmapColor(
+        bitmap,
+        id === 0x171 ? 'multiply' : id === 0x281 ? 'alpha' : 'filter',
+        a(1),
+      );
+    return done();
   }
   snapshot() {
     return {};
   }
   restore() {}
-  close() {
-    for (const detach of this.detachInputs) detach();
-  }
 }
 export function installNativeBitmapOperations(world) {
-  world.registerNativeFeature(
-    'bitmap-operations',
-    (engine) => new NativeBitmapOperations(engine, world),
-  );
-  const profileIndex = Number(world.profile.startsWith('sdk-'));
-  for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS.filter(
-    (spec) => spec.id !== 0x7a && spec.handlers[profileIndex],
-  ))
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('bitmap-operations')).apply(id, args, machine, task),
-    );
+  const operations = (world.bitmapOperations = new NativeBitmapOperations(world));
+  world.registerNativeFeature('bitmap-operations', (engine) => {
+    engine.registerFeature('bitmap-operations', operations);
+    return operations;
+  });
+  for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS)
+    if (id !== 0x7a && (id !== 0x402 || nativeABI(world.profile).capabilities.bitmapColorQuery))
+      world.runtime.register('main', id, (args, machine, task) =>
+        operations.apply(id, args, machine, task),
+      );
 }

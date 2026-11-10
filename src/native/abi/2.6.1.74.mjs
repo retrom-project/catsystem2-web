@@ -203,6 +203,7 @@ export default {
     requiredRenderer: false,
   },
   capabilities: {
+    bitmapColorQuery: false,
     nameTableAliases: false,
     embeddedJavaScript: true,
     steam: false,
@@ -324,6 +325,9 @@ export default {
     },
   },
   graphics: {
+    resizeRGB24: false,
+    compositeWideBase: false,
+    preserveRGB24: true,
     renderSources: {
       stride: 72,
       bytes: 276,
@@ -15517,12 +15521,12 @@ export default {
           id: 734,
           name: 'imageOwner.blendRect',
           parameters: [
-            'handle destination',
+            'handle readSource',
             'i32 x',
             'i32 y',
             'i32 width',
             'i32 height',
-            'handle source',
+            'handle writeDestination',
             'i32 sourceX',
             'i32 sourceY',
             'i32 sourceWidth',
@@ -15537,12 +15541,12 @@ export default {
           signature: {
             argumentWords: 10,
             parameters: [
-              'handle destination',
+              'handle readSource',
               'i32 x',
               'i32 y',
               'i32 width',
               'i32 height',
-              'handle source',
+              'handle writeDestination',
               'i32 sourceX',
               'i32 sourceY',
               'i32 sourceWidth',
@@ -15558,12 +15562,12 @@ export default {
           id: 735,
           name: 'imageOwner.copyRect',
           parameters: [
-            'handle destination',
+            'handle readSource',
             'i32 x',
             'i32 y',
             'i32 width',
             'i32 height',
-            'handle source',
+            'handle writeDestination',
             'i32 sourceX',
             'i32 sourceY',
             'i32 sourceWidth',
@@ -15578,12 +15582,12 @@ export default {
           signature: {
             argumentWords: 10,
             parameters: [
-              'handle destination',
+              'handle readSource',
               'i32 x',
               'i32 y',
               'i32 width',
               'i32 height',
-              'handle source',
+              'handle writeDestination',
               'i32 sourceX',
               'i32 sourceY',
               'i32 sourceWidth',
