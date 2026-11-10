@@ -17,7 +17,7 @@ test('progress gates retain reviewed floors and stop at the fixed extra frame bu
     /Progress regressed at messages/,
   );
   assert.equal(new ProgressBudget('game').limit, 1936);
-  assert.equal(new ProgressBudget('particle').limit, 1414);
+  assert.equal(new ProgressBudget('particle').limit, undefined);
 });
 
 test('a blocked browser frame closes its context after the wall stall deadline', async (t) => {

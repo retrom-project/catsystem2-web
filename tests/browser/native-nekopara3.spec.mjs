@@ -10,7 +10,6 @@ import {
   clickNativeButton,
   pixels,
   startupWindow,
-  progressAcceptance,
 } from './native-game-input.mjs';
 
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
@@ -322,8 +321,9 @@ test('cold native language, title and opening dialogue continue through the orig
 
 test('original scene particle changes the rendered frame and continues after a fresh World', async ({
   page,
-}, info) => {
-  await progressAcceptance(page, info, 'particle', () => runParticle(page));
+}) => {
+  test.setTimeout(60 * 60_000);
+  await runParticle(page);
 });
 
 async function runParticle(page) {

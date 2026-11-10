@@ -1,5 +1,5 @@
 {
-  "source": "Accepted phase 4 progress. Updates require orchestration review. Particle minimum crosses the phase 5 failure at frame1113.",
+  "source": "Accepted phase 4 progress. Updates require orchestration review.",
   "extraFrames": 300,
   "stallFrames": 300,
   "stallWallMS": 180000,
@@ -9,8 +9,5 @@
   "route": {
     "frame": 583,
     "messages": 54
-  },
-  "particle": {
-    "frame": 1114
   }
 }

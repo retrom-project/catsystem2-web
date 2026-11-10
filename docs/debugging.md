@@ -142,10 +142,9 @@ frames577/1061 and periodic frames, plus collection sizes and the ten slowest
 ticks. The sample array is bounded to forty entries. Raw profiles stay outside
 Git. Measurements use the existing JavaScript boundaries and allocation map.
 
-The particle regression also uses a frame budget while its full path remains
-under review. Its minimum frame1114 crosses the old capacity failure at1113,
-with a further300 frames available for the original assertions. A progress-only
-result has the same explicit annotation as game and route.
+The native particle case completed its full visible-particle, fresh-World restore
+and continuation assertions with the transitional capacity policy. It uses the
+original full-case timeout and its own functional frame bounds.
 
 ### Diagnostic log retention
 
