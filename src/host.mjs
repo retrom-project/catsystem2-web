@@ -5,6 +5,7 @@ import { pointToRoot } from './emote/draw-list.mjs';
 import { BrowserNativeMovie } from './native/movie-browser.mjs';
 import { BrowserNativeWindow } from './native/window-browser.mjs';
 import { BrowserNativeClipboard } from './native/clipboard-browser.mjs';
+const NATIVE_LOG_LIMIT = 1024;
 export class EngineHost {
   nativeMovie(_name, _owner, world) {
     return new BrowserNativeMovie({
@@ -151,8 +152,9 @@ export class EngineHost {
     this.engine.onImageLoaded?.(request);
   }
   nativeLog(text) {
-    this.engine.nativeLog ??= [];
-    this.engine.nativeLog.push(text);
+    const records = (this.engine.nativeLog ??= []);
+    records.push(text);
+    if (records.length > NATIVE_LOG_LIMIT) records.splice(0, records.length - NATIVE_LOG_LIMIT);
   }
   nativeDiagnostic(detail) {
     this.engine.nativeDiagnostics ??= [];

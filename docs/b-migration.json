@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 118, "oracle": 135, "differential": 45 },
+    "counts": { "js": 119, "oracle": 135, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -35,6 +35,7 @@
         "tests/font.test.mjs",
         "tests/formats.test.mjs",
         "tests/gallery-contracts.test.mjs",
+        "tests/host-log.test.mjs",
         "tests/kcs-contracts.test.mjs",
         "tests/kcs-debug.test.mjs",
         "tests/media-boundary.test.mjs",
@@ -46282,7 +46283,7 @@
     },
     {
       "file": "src/host.mjs",
-      "sourceSha256": "e6c12f70e6fb756000c8f832e3dbc21c5f5ebba1e19abef81fb4dfc8b523354d",
+      "sourceSha256": "43456dfa9ad629ab446d97d12cb4ff1b68644b03003d220887c7c61f97578d23",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

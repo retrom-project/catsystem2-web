@@ -146,3 +146,16 @@ The particle regression also uses a frame budget while its full path remains
 under review. Its minimum frame1114 crosses the old capacity failure at1113,
 with a further300 frames available for the original assertions. A progress-only
 result has the same explicit annotation as game and route.
+
+### Diagnostic log retention
+
+`EngineHost.nativeLog()` retains the latest 1024 entries. The host accepts script,
+plugin and Windows debug output through the same bounded array. Observers read
+the entries in arrival order. Raw profiling evidence uses the ignored report
+directory for a complete capture of the measured windows.
+
+The performance batch observed 1536 retained entries by route frame 883. An authored
+100000-tick logging measurement with three distinct strings per tick retained
+20.87 MB before the bound and 0.096 MB afterwards. Median logging cost was
+0.000091 ms/tick before and 0.000290 ms/tick afterwards. GC ran outside the timed
+loops. These values describe the host logging operation.
