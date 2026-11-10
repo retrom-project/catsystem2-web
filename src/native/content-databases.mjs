@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original question/configuration, selection, KCDB and mission-table families.
-// Every persistent field stays in the World's shared original-engine process.
+// Question and mission oracle paths during their staged migration.
+// Selection and compiled-table handles already own JS models.
+import { NativeSelectionTable, installNativeSelectionTables } from './selection-table.mjs';
+import { NativeCompiledTable, installNativeCompiledTables } from './compiled-table.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_CONTENT_DATABASE_FAMILIES = Object.freeze({
   question: { bytes: 620, create: 0x2e6, release: 0x2e7, destroy: [0x796b00, 0x62f020] },
-  selection: { bytes: 12, create: 0x30b, release: 0x30c, destroy: [0x799010, 0x6315d0] },
-  compiledTable: { bytes: 16, create: 0x317, release: 0x318, destroy: [0x79c7e0, 0x635190] },
   mission: { bytes: 20, create: 0x31b, release: 0x31c, destroy: [0x79a110, 0x632ae0] },
 });
 const rows = [
@@ -49,16 +49,6 @@ const rows = [
   [776, 'question', 3, 1, 6549792, 5375216],
   [777, 'question', 3, 2, 6554096, 5379440],
   [778, 'question', 1, 2, 6549168, 5374688],
-  [779, 'selection', 0, 1, 6551376, 5376800],
-  [780, 'selection', 1, 2, 6551488, 5376864],
-  [781, 'selection', 3, 2, 6551808, 5377184],
-  [782, 'selection', 2, 1, 6551632, 5377008],
-  [783, 'selection', 1, 1, 6551536, 5376912],
-  [784, 'selection', 2, 1, 6551584, 5376960],
-  [791, 'compiledTable', 1, 1, 6568096, 5414096],
-  [792, 'compiledTable', 1, 2, 6567840, 5413840],
-  [793, 'compiledTable', 3, 1, 6567888, 5413888],
-  [794, 'compiledTable', 4, 1, 6568000, 5414000],
   [795, 'mission', 1, 1, 6553056, 5378432],
   [796, 'mission', 1, 2, 6552048, 5377424],
   [797, 'mission', 2, 2, 6553856, 5379152],
@@ -93,10 +83,6 @@ const rows = [
   [826, 'mission', 2, 1, 6552096, 5377472],
   [827, 'mission', 1, 2, 6552912, 5378288],
   [828, 'mission', 1, 2, 6553568, 5378864],
-  [829, 'selection', 2, 2, 6551776, 5377152],
-  [830, 'selection', 3, 2, 6551344, 5376768],
-  [831, 'selection', 2, 2, 6551280, 5376704],
-  [832, 'selection', 2, 2, 6551312, 5376736],
 ];
 export const NATIVE_CONTENT_DATABASE_CONTRACTS = Object.freeze(
   rows.map(([id, family, words, control, game, sdk]) =>
@@ -108,8 +94,18 @@ export const NATIVE_CONTENT_DATABASE_IDS = Object.freeze(
 );
 const byID = new Map(NATIVE_CONTENT_DATABASE_CONTRACTS.map((x) => [x.id, x]));
 export const nativeContentDatabaseCodec = Object.freeze({
-  snapshot: (value) => ({ ...value }),
-  restore: (value) => ({ ...value }),
+  snapshot: (value) =>
+    value.data ? { family: value.family, state: value.data.snapshot() } : { ...value },
+  restore: (value) =>
+    value.state
+      ? {
+          family: value.family,
+          data: (value.family === 'selection'
+            ? new NativeSelectionTable()
+            : new NativeCompiledTable()
+          ).restore(value.state),
+        }
+      : { ...value },
 });
 export class NativeContentDatabases {
   constructor(engine, world) {
@@ -238,6 +234,8 @@ export function installNativeContentDatabases(world) {
     await world.getNativeFeature('engine-files');
     return new NativeContentDatabases(engine, world);
   });
+  installNativeSelectionTables(world);
+  installNativeCompiledTables(world);
   for (const id of NATIVE_CONTENT_DATABASE_IDS)
     world.runtime.register('main', id, async (args, machine, task) =>
       (await world.getNativeFeature('content-databases')).apply(id, args, machine, task),

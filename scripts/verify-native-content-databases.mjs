@@ -10,7 +10,7 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import {
   NATIVE_CONTENT_DATABASE_CONTRACTS as SPECS,
   NATIVE_CONTENT_DATABASE_FAMILIES as FAMILIES,
-} from '../src/native/content-databases.mjs';
+} from '../oracle/content-databases.mjs';
 import { NATIVE_RANDOM_LAYOUTS } from '../src/native/random-memory.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';

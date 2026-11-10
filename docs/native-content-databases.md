@@ -5,12 +5,10 @@ exposing **85 interfaces**. Slots `311..316` are unrelated log, math, view,
 movie and configuration functions; they are not operations on the 620-byte
 object at the start of the range.
 
-[The implementation](../src/native/content-databases.mjs) executes each profile's
-complete original wrappers and data helpers. Names such as “question” and
-“mission” are project descriptions inferred from the `Q/A1..A4`, `GENRE_*`,
-`CLIENT/REWARD/COND` and related resource fields. Catalog operations whose
-business meaning is not independently established retain their native ID in
-the descriptive name.
+Selection and general KCDB operations now own JS data. Question and mission
+operations retain their original paths until the following phase 4.3 commits.
+Names whose business meaning remains unassigned retain their native ID. The
+installers are composed in [content-databases.mjs](../src/native/content-databases.mjs).
 
 | Family                 | Native IDs         | Owner bytes | Resource and persistent state                                                     |
 | ---------------------- | ------------------ | ----------: | --------------------------------------------------------------------------------- |
@@ -118,3 +116,19 @@ This evidence does not enumerate every possible resource, question sequence or
 condition combination. Original unchecked buffer overruns and the wider game's
 gallery, recollection, save UI and presentation acceptance are not claimed by
 these family tests.
+
+## Phase 4.3 table migration
+
+Selection registration, 19-column loading, table selection, consumed markers and
+working-list mutation run in JS. The missing-slot helper appends the slot indexes
+to the working list. `30F` returns the number of table IDs. The compiled reader
+preserves declared field widths and raw byte names. Both models restore from
+snapshots independently of source files. Their implementations live in
+[selection-table.mjs](../src/native/selection-table.mjs) and
+[compiled-table.mjs](../src/native/compiled-table.mjs).
+
+Both ABI differential sequences compare all fourteen migrated operations against
+the actual native table, including nulls, duplicate names, missing fields,
+consumed flags, out-of-range queries and VM canaries. The full original facade
+is preserved in `oracle/content-databases.mjs`. Pure JS World tests cover fresh
+restore and independent release. Authored compiled fixtures import no EXE loader.
