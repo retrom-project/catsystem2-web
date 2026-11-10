@@ -100,6 +100,8 @@ const ownedModules = {
 function domain(file) {
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
+  if (['src/native/data-buffer-projection.mjs', 'oracle/data-buffer-projection.mjs'].includes(file))
+    return 7;
   if (['oracle/text-log-projection.mjs', 'oracle/fes-text-projection.mjs'].includes(file)) return 7;
   if (
     [
@@ -723,7 +725,7 @@ const nonNativeGroups = [
   },
   {
     name: 'js-image-data-to-exe-consumers',
-    domain: 5,
+    domain: 7,
     entry:
       'JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS',
     modules: ['data-buffer-projection'],
@@ -733,11 +735,11 @@ const nonNativeGroups = [
       fields: ['immutable source bytes', 'size', 'capacity'],
       consumers: [
         { domain: 7, modules: ['fes-images', 'fes-objects'] },
-        { domain: 8, modules: ['sdk-javascript-task'] },
+        { domain: 8, modules: ['sdk-javascript-task', 'engine-files'] },
       ],
       lifetime:
-        'PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly',
-      removePhase: 7,
+        'No script image/text decoder needs this descriptor. Remaining D7 images and D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.',
+      removePhase: 8,
       operations: ['projectPointer', 'lendPointer', 'transferPointer'],
     },
   },

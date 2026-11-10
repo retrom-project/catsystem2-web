@@ -965,3 +965,35 @@ The SDK V8 `CsImage` and text callbacks create independent PE resources through
 internal functions. Their image/writer pointer at native object +352 and their
 Draw/configuration/source fields remain owned by the domain 8 SDK JavaScript
 object. The inventory records this separate lifetime and phase 8 removal.
+
+## Completed image and text boundary
+
+Domain 5 has 223 independently traced JS main slots across the two ABIs.
+Original-handler, exe-region, unknown and native needs-review counts are zero.
+The 30 starting unknown implementation slots have per-entry decisions in
+[the domain review](native-domain5-review.md). They required receiver/path
+recovery, rather than invented meanings for an unsupported ID.
+
+`npm run check` runs `check-media-boundary.mjs`. It rejects executable addresses,
+call/patch capabilities, unresolved D5 classifications, D5 profile/VA selectors
+and missing consumer ownership/deletion records. A negative regression also
+prevents a JS text factory from constructing EXE buffer/file projections.
+Image/text source bytes, bitmap pixels, text layout/reveal and checkpoints are
+JS authority. Registered consumer copies are maintained separately.
+
+| Authority                             | Remaining representation / consumer                                               | Remove                  |
+| ------------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
+| JS bitmap pixels/metadata             | Independent PE bitmap/wrapper for D6 uploads, effects and retained Draw; D7 IMAGE | 6 per renderer, final 7 |
+| D6 render targets / D7 decoded images | Explicit derived JS views or output ownership transfer                            | 6/7 with consumer       |
+| JS image-owner layers/program bytes   | Independent PE collections and D6 ANM compositor output                           | 6/7; output capture 6   |
+| JS image-file table bytes             | Immutable input to D6's private view map                                          | 6                       |
+| JS encoded resource bytes             | Independent PE buffer descriptors for D7 IMAGE and D8 MemoryFile/SDK JavaScript   | 7 per image, final 8    |
+| JS display-log rows                   | D7 LOG read-only tables                                                           | 7                       |
+| JS text config/source/query state     | D7 generic plane prefix and explicit LOG semantic read/write adapters             | 7                       |
+| Consumer-owned decoded output         | Bounded HG delta acceleration used only by original D6/7/8/9 consumers            | Last consumer 9         |
+
+Script image/font decoders no longer consume the PE buffer descriptor. The
+projection implementation is assigned to D7 with its remaining D8 file-host
+lifetime recorded; its presence cannot make a D5 implementation appear complete.
+SDK V8 image/text objects retain separate original state under D8. No original
+D5 constructor/parser/receiver is called to render a JS-owned script resource.

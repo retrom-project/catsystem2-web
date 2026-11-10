@@ -73,7 +73,10 @@ configuration per section, pending CR state and a shared writer clock.
 Raw image-font bytes and decoded selector pixels belong to JS. Font cells use
 the original square resampling and integer compositor. Task-8 image fonts own
 a deep copy of the supplied bitmap. Character maps and all pending state are
-included in checkpoints.
+included in checkpoints. Main26C supplies canonical JS bytes directly; an
+initialized receiver consumes the source reference after accepting them, while
+an absent/uninitialized receiver leaves it untouched. Text feature construction
+does not instantiate an EXE buffer or file reader.
 
 ## Remaining EXE consumers
 

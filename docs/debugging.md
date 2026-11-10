@@ -86,3 +86,28 @@ quiet/signaling 分类。浮点写回范围以外的字节精确比较，重叠�
 [native 契约](native-compatibility.md)、[FES/CST](fes-cst-compatibility.md)、
 [PPI/PTCL](ppi-compatibility.md) 和 [完成标准](completion.md) 分别记录各层验收边界。
 标题、主线、资源遍历、声明覆盖率和一次截图均不能代替通用模拟器验收。
+
+## Acceptance clock and wall budgets
+
+`CATSYSTEM2_FRAME_METRICS=1` instruments the real World tick, Engine step and
+render around the test-controlled RAF. It adds observations, without replacing
+production scheduling or skipping script work. Measure the wrapper separately:
+
+```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome node scripts/benchmark-native-frame-clock.mjs
+```
+
+This uses warmed, alternating empty-World runs and reports microseconds per
+tick. It excludes production GPU/EXE work and browser IPC, so its relative
+percentage on an empty World must not be presented as a game slowdown.
+
+Private game acceptance keeps its functional frame bounds and a 60-minute
+outer wall limit. Route keeps the 20-minute outer / 18-minute walking budget.
+Those wall limits bound diagnostic runs; they do not imply the current software
+GPU can finish the complete UI flow or all fourteen chapters in that time.
+Compare reader/message/frame progress with the accepted stage checkpoint before
+calling a wall timeout a deadlock. Route records a fresh final state after its
+last frame batch, plus the actual last reader position and active text tasks.
+Changing wall budgets does not relax chapter/movie/message/input assertions.
+Further budget increases should follow measured progress on the relevant host;
+repeated long retries do not establish functional failure at one stale sample.

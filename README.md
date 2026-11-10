@@ -133,7 +133,7 @@ node scripts/capture-native-calculations.mjs --check
 
 正常入口运行 `NativeWorld`：KCS VM 持续执行游戏自己的 main、sscript 和辅助脚本，
 保留任务图、消息队列、变量域和原生控制返回。FES/CST 通过这些任务驱动。
-当前原 EXE 处理器、格式解析、字体/图像操作和插件共用一个可保存的 PE 进程；
+数据与容器、脚本图像/编解码及文本排版/显示均由 JS 持有；尚未迁移的渲染、FES、平台与插件仍共用可保存的 PE 进程。JS 数据通过已登记的独立消费副本接入这些领域；
 迁移目标与边界见[架构与嵌入接口](docs/architecture.md)。浏览器 GPU/音频/文件等服务
 有各自的明确契约和测试。
 

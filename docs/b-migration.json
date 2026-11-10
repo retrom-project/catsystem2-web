@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 116, "oracle": 133, "differential": 45 },
+    "counts": { "js": 118, "oracle": 133, "differential": 45 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -31,11 +31,13 @@
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-contracts.test.mjs",
+        "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
         "tests/formats.test.mjs",
         "tests/gallery-contracts.test.mjs",
         "tests/kcs-contracts.test.mjs",
         "tests/kcs-debug.test.mjs",
+        "tests/media-boundary.test.mjs",
         "tests/motion-contracts.test.mjs",
         "tests/native-abi-behavior.test.mjs",
         "tests/native-abi.test.mjs",
@@ -1415,7 +1417,7 @@
         "file": "oracle/data-buffer-projection.mjs",
         "line": 42,
         "expression": "NATIVE_DATA_BUFFER_LAYOUTS[engine.profile]",
-        "domain": 5,
+        "domain": 7,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1424,7 +1426,7 @@
         "file": "oracle/data-buffer-projection.mjs",
         "line": 45,
         "expression": "NATIVE_DATA_BUFFER_LAYOUTS[engine.profile]",
-        "domain": 5,
+        "domain": 7,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -3006,7 +3008,7 @@
     },
     "nativeNeedsReview": 491,
     "runtimeFiles": 370,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 44, "7": 25, "8": 148, "9": 29 },
+    "fileDomains": { "3": 32, "4": 48, "5": 42, "6": 44, "7": 27, "8": 148, "9": 29 },
     "fileNeedsReview": 125,
     "exeDependencyFiles": 100,
     "exeDependencies": { "addresses": 1399, "calls": 136, "references": 6 },
@@ -47097,7 +47099,7 @@
     {
       "file": "src/native/data-buffer-projection.mjs",
       "sourceSha256": "dc8d5131f89a4dc8c2aa155f00f5fcb35f53225e49dff46beeace1bd4d01457b",
-      "domain": 5,
+      "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -55490,8 +55492,8 @@
     },
     {
       "file": "oracle/data-buffer-projection.mjs",
-      "sourceSha256": "6a7da2dff4c635cef202f40d26d4016b1c6c13f2469da7c4457c31e0ba9930f3",
-      "domain": 5,
+      "sourceSha256": "92b71be6fab8a963ead3e98c0361d80fd91782f3b7b5892bc869c3de8facd775",
+      "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 21, "calls": 2, "references": 0 },
       "dependencyTypes": ["call", "callFromHost", "in-image-literals"],
@@ -58135,17 +58137,17 @@
     },
     {
       "name": "js-image-data-to-exe-consumers",
-      "domain": 5,
+      "domain": 7,
       "projection": {
         "direction": "JS-to-PE",
         "authority": "NativeRuntime.imageDataBuffers",
         "fields": ["immutable source bytes", "size", "capacity"],
         "consumers": [
           { "domain": 7, "modules": ["fes-images", "fes-objects"] },
-          { "domain": 8, "modules": ["sdk-javascript-task"] }
+          { "domain": 8, "modules": ["sdk-javascript-task", "engine-files"] }
         ],
-        "lifetime": "PE projection references belong to external consumers; semantic transfer consumes the JS reference explicitly",
-        "removePhase": 7,
+        "lifetime": "No script image/text decoder needs this descriptor. Remaining D7 images and D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.",
+        "removePhase": 8,
         "operations": ["projectPointer", "lendPointer", "transferPointer"]
       },
       "entry": "JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS",

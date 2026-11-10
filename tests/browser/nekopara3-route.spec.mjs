@@ -26,7 +26,7 @@ test('main route reaches every chapter, decodes both movies and returns to the n
   // line count as one message, including when Ctrl advances several per frame.
   await page.evaluate(async () => {
     const { NativeSceneData, NativeSceneReader } = await import('/src/native/scene-data.mjs'),
-      trace = { scenes: new Set(), messages: new Set(), readers: new WeakMap() },
+      trace = { scenes: new Set(), messages: new Set(), readers: new WeakMap(), lastMessage: null },
       load = NativeSceneData.prototype.load,
       text = NativeSceneReader.prototype.text;
     window.routeTrace = trace;
@@ -46,8 +46,10 @@ test('main route reaches every chapter, decodes both movies and returns to the n
       const result = text.call(this, block, line, ...args);
       const b = (block | 0) < 0 ? this.block : block | 0,
         l = (line | 0) < 0 ? this.line : line | 0;
-      if (result && this.type(b, l) === 0x20)
+      if (result && this.type(b, l) === 0x20) {
         trace.messages.add(`${trace.readers.get(this)}:${b}:${l}`);
+        trace.lastMessage = { scene: trace.readers.get(this), block: b, line: l };
+      }
       return result;
     };
   });
@@ -58,10 +60,8 @@ test('main route reaches every chapter, decodes both movies and returns to the n
     unsupported = new Set(),
     warnings = new Set(),
     deadline = started + 18 * 60_000;
-  let state;
-  while (Date.now() < deadline) {
-    await noError(page);
-    state = await page.evaluate(() => {
+  const observe = () =>
+    page.evaluate(() => {
       const e = window.catSystem2;
       return {
         stack: e.status().stack,
@@ -83,8 +83,24 @@ test('main route reaches every chapter, decodes both movies and returns to the n
         warnings: [...e.audio.warnings],
         frame: e.world.frame,
         frameMetrics: window.nativeFrameMetrics,
+        reader: window.routeTrace.lastMessage,
+        textTasks: [...e.world.objects.objects.values()]
+          .filter((r) => [8, 48, 49, 63].includes(r.kind))
+          .map((r) => ({
+            id: r.id,
+            name: r.name,
+            kind: r.kind,
+            userValue: r.userValue,
+            active: r.implementation.text?.active,
+            elapsed: r.implementation.text?.elapsed,
+            pageLimit: r.implementation.text?.pageLimit,
+          })),
       };
     });
+  let state;
+  while (Date.now() < deadline) {
+    await noError(page);
+    state = await observe();
     for (const scene of state.scenes)
       if (!reportedScenes.has(scene)) {
         reportedScenes.add(scene);
@@ -100,6 +116,8 @@ test('main route reaches every chapter, decodes both movies and returns to the n
     if (state.stack.includes('title#WAIT')) break;
     await step(page, 6);
   }
+  // The final step can cross the wall deadline; capture its state as well.
+  state = await observe();
   await page.keyboard.up('Control');
   await noError(page);
   const evidence = {

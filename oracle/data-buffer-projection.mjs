@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Read-only JS buffer projections and the unmigrated domain-5 image codec.
+// JS buffer inputs for the remaining D7 images and D8 MemoryFile/SDK consumers.
 import { NativeDataBuffers as JSDataBuffers } from '../src/native/data-buffer.mjs';
 import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
