@@ -95,9 +95,16 @@ export class EmoteD3D9 {
       monitor = 1,
       onPresent,
       textureMemoryBudget = 64 * 1024 * 1024,
+      surfaces = null,
+      pixelMemory = null,
     } = {},
   ) {
     Object.assign(this, { process, width, height, onDraw, onDrawRaw, recordCommands });
+    this.surfaces = surfaces;
+    this.pixelMemory = pixelMemory ?? {
+      allocate: (size) => process.allocate(size, true),
+      free: (pointer) => process.free(pointer),
+    };
     this.monitor = monitor;
     this.onPresent = onPresent;
     this.textureMemoryBudget = textureMemoryBudget;
@@ -138,6 +145,37 @@ export class EmoteD3D9 {
     this.renderTargets = new Map([[0, this.backbuffer]]);
     this.depthStencil = this.backDepth;
     this.scene = false;
+  }
+  allocatePixels(record) {
+    const surfaceID = this.surfaces?.create(record) ?? 0;
+    try {
+      const pixels = this.pixelMemory.allocate(record.pitch * record.height);
+      if (!pixels) throw new Error('Surface projection allocation failed');
+      return { pixels, surfaceID };
+    } catch (error) {
+      if (surfaceID) this.surfaces.release(surfaceID);
+      throw error;
+    }
+  }
+  releasePixels(record) {
+    if (record.pixels) this.pixelMemory.free(record.pixels);
+    if (record.surfaceID) this.surfaces.release(record.surfaceID);
+  }
+  surfaceBytes(record) {
+    return record.surfaceID
+      ? this.surfaces.get(record.surfaceID).bytes
+      : this.process.read(record.pixels, record.pitch * record.height);
+  }
+  writeSurfaceBytes(record, offset, bytes) {
+    if (record.surfaceID) this.surfaceBytes(record).set(bytes, offset);
+    else this.process.write(record.pixels + offset, bytes);
+  }
+  projectPixels(record) {
+    if (record.surfaceID) this.process.write(record.pixels, this.surfaceBytes(record));
+  }
+  commitPixels(record) {
+    if (record.surfaceID)
+      this.surfaceBytes(record).set(this.process.read(record.pixels, record.pitch * record.height));
   }
   get maximumTextureSize() {
     return this.gpu ? Math.min(4096, this.gpu.gl.getParameter(this.gpu.gl.MAX_TEXTURE_SIZE)) : 4096;
@@ -239,7 +277,7 @@ export class EmoteD3D9 {
     this.scissor = [0, 0, this.width, this.height];
     const backbuffer = this.objects.get(this.backbuffer),
       depth = this.objects.get(this.backDepth);
-    if (backbuffer.pixels) this.process.free(backbuffer.pixels);
+    if (backbuffer.pixels) this.releasePixels(backbuffer);
     for (const pointer of [this.backbuffer, this.backDepth]) {
       const target = this.gpuTargets.get(pointer),
         depthTarget = this.gpuDepth.get(pointer);
@@ -253,7 +291,12 @@ export class EmoteD3D9 {
       height: this.height,
       format: words[2],
       pitch: this.width * 4,
-      pixels: this.process.allocate(this.width * this.height * 4, true),
+      ...this.allocatePixels({
+        width: this.width,
+        height: this.height,
+        pitch: this.width * 4,
+        format: words[2],
+      }),
       lockable: Boolean(words[11] & 1),
       locked: false,
       revision: 0,
@@ -427,10 +470,10 @@ export class EmoteD3D9 {
           if (!formats.has(format) || (usage & 1 && ![21, 22].includes(format)) || usage & 2)
             return NOT_AVAILABLE;
           const pitch = (width * formats.get(format) + 3) & ~3;
-          let pixels = 0,
+          let allocation,
             pointer = 0;
           try {
-            pixels = p.allocate(pitch * height, true);
+            allocation = this.allocatePixels({ width, height, pitch, format });
             pointer = this.object('Texture9', {
               width,
               height,
@@ -439,7 +482,7 @@ export class EmoteD3D9 {
               format,
               pool,
               pitch,
-              pixels,
+              ...allocation,
               locked: false,
               revision: 0,
               dirtyRectangle: [0, 0, width, height],
@@ -451,7 +494,7 @@ export class EmoteD3D9 {
               this.objects.delete(pointer);
               p.free(pointer);
             }
-            if (pixels) p.free(pixels);
+            if (allocation) this.releasePixels(allocation);
             // The original driver also inspects the output on failure.
             // Return a null interface along with the resource HRESULT.
             if (error.message === 'PE32 heap exhausted') {
@@ -921,6 +964,8 @@ export class EmoteD3D9 {
             if (x > right || y > bottom || right > texture.width || bottom > texture.height)
               return INVALID_CALL;
           }
+          this.syncSurface(texture.pointer, texture);
+          this.projectPixels(texture);
           p.store(output, texture.pitch);
           p.store(output + 4, texture.pixels + y * texture.pitch + x * formats.get(texture.format));
           if (!(flags & (0x10 | 0x8000))) this.addDirtyRectangle(texture, rectangle);
@@ -933,7 +978,10 @@ export class EmoteD3D9 {
         1,
         (texture, [level]) => {
           if (level || !texture.locked) return INVALID_CALL;
-          if (!(texture.locked.flags & 16)) texture.revision++;
+          if (!(texture.locked.flags & 16)) {
+            this.commitPixels(texture);
+            texture.revision++;
+          }
           texture.locked = false;
           return 0;
         },
@@ -1021,7 +1069,7 @@ export class EmoteD3D9 {
       this.gpu.destroyDepthStencil(depth);
       this.gpuDepth.delete(object.pointer);
     }
-    if (object.pixels) this.process.free(object.pixels);
+    if (object.pixels) this.releasePixels(object);
     const frame = this.frames.get(object.pointer)?.frame;
     if (frame) this.gpu?.releaseTextureFrame(frame);
     this.frames.delete(object.pointer);
@@ -1050,7 +1098,7 @@ export class EmoteD3D9 {
       pointer = this.object('Surface9', {
         ...data,
         pitch,
-        pixels: this.process.allocate(pitch * data.height, true),
+        ...this.allocatePixels({ ...data, pitch }),
         revision: 0,
       });
     this.process.store(output, pointer);
@@ -1114,6 +1162,7 @@ export class EmoteD3D9 {
       area = surfaceBounds(p, surface, rectangle);
     if (!area) return INVALID_CALL;
     this.syncSurface(pointer, surface);
+    this.projectPixels(surface);
     p.store(output, surface.pitch);
     p.store(
       output + 4,
@@ -1128,6 +1177,7 @@ export class EmoteD3D9 {
     const { flags, area } = surface.locked;
     surface.locked = false;
     if (!(flags & 16)) {
+      this.commitPixels(surface);
       surface.revision++;
       if (surface.usage & 1)
         this.command({
@@ -1163,21 +1213,18 @@ export class EmoteD3D9 {
       at[1] + height > b.height
     )
       return INVALID_CALL;
-    const sourceAddress = a.pixels + area[1] * a.pitch + area[0] * size,
-      destinationAddress = b.pixels + at[1] * b.pitch + at[0] * size,
-      length = height * width * size;
-    if (
-      a.pitch === width * size &&
-      b.pitch === width * size &&
-      !(destinationAddress > sourceAddress && destinationAddress < sourceAddress + length)
-    )
-      p.write(destinationAddress, p.read(sourceAddress, length));
-    else
-      for (let y = 0; y < height; y++)
-        p.write(
-          destinationAddress + y * b.pitch,
-          p.read(sourceAddress + y * a.pitch, width * size),
-        );
+    const sourceOffset = area[1] * a.pitch + area[0] * size,
+      destinationOffset = at[1] * b.pitch + at[0] * size,
+      input = a.surfaceID ? this.surfaceBytes(a) : null;
+    // Match the original forward row order for overlapping copies.
+    for (let y = 0; y < height; y++)
+      this.writeSurfaceBytes(
+        b,
+        destinationOffset + y * b.pitch,
+        input
+          ? input.slice(sourceOffset + y * a.pitch, sourceOffset + y * a.pitch + width * size)
+          : p.read(a.pixels + sourceOffset + y * a.pitch, width * size),
+      );
     b.revision++;
     this.command({
       type: 'upload',
@@ -1203,10 +1250,10 @@ export class EmoteD3D9 {
     )
       return INVALID_CALL;
     this.syncSurface(source, a);
-    const p = this.process,
-      size = a.width * formats.get(a.format);
+    const size = a.width * formats.get(a.format),
+      input = this.surfaceBytes(a);
     for (let y = 0; y < a.height; y++)
-      p.write(b.pixels + y * b.pitch, p.read(a.pixels + y * a.pitch, size));
+      this.writeSurfaceBytes(b, y * b.pitch, input.subarray(y * a.pitch, y * a.pitch + size));
     b.revision++;
     return 0;
   }
@@ -1249,7 +1296,7 @@ export class EmoteD3D9 {
     this.syncSurface(source, a);
     if (dx || dy || dr !== b.width || db !== b.height) this.syncSurface(destination, b);
     // Read once so overlapping, unscaled rectangles see the original source.
-    const bytes = p.read(a.pixels, a.pitch * a.height),
+    const bytes = this.surfaceBytes(a).slice(),
       pixels = new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4),
       stride = a.pitch / 4,
       result = new Uint32Array(width * height),
@@ -1271,11 +1318,15 @@ export class EmoteD3D9 {
       }
     }
     const output = new Uint8Array(result.buffer),
-      offset = b.pixels + dy * b.pitch + dx * 4;
-    if (width * 4 === b.pitch) p.write(offset, output);
+      offset = dy * b.pitch + dx * 4;
+    if (width * 4 === b.pitch) this.writeSurfaceBytes(b, offset, output);
     else
       for (let y = 0; y < height; y++)
-        p.write(offset + y * b.pitch, output.subarray(y * width * 4, (y + 1) * width * 4));
+        this.writeSurfaceBytes(
+          b,
+          offset + y * b.pitch,
+          output.subarray(y * width * 4, (y + 1) * width * 4),
+        );
     b.revision++;
     b.dirty = false;
     if (b.usage & 1)
@@ -1384,7 +1435,7 @@ export class EmoteD3D9 {
         bytes[b + 2] = rgba[a];
         bytes[b + 3] = texture.format === 22 ? 255 : rgba[a + 3];
       }
-    this.process.write(texture.pixels, bytes);
+    this.writeSurfaceBytes(texture, 0, bytes);
     texture.revision++;
   }
   command(command) {
@@ -1540,7 +1591,7 @@ export class EmoteD3D9 {
     const cached = this.frames.get(pointer);
     if (cached?.revision === texture.revision) return cached.frame;
     if (cached) this.gpu?.releaseTextureFrame(cached.frame);
-    const source = this.process.read(texture.pixels, texture.pitch * texture.height),
+    const source = this.surfaceBytes(texture),
       view = new DataView(source.buffer, source.byteOffset, source.byteLength),
       rgba = new Uint8Array(texture.width * texture.height * 4),
       size = formats.get(texture.format);
@@ -1610,10 +1661,7 @@ export class EmoteD3D9 {
     for (const target of this.gpuTargets.values()) this.gpu.destroyRenderTarget(target);
     for (const depth of this.gpuDepth.values()) this.gpu.destroyDepthStencil(depth);
     for (const { frame } of this.frames.values()) this.gpu?.releaseTextureFrame(frame);
-    const pixels = new Set(
-      [...this.objects.values()].map((object) => object.pixels).filter(Boolean),
-    );
-    for (const pointer of pixels) this.process.free(pointer);
+    for (const record of this.objects.values()) if (record.pixels) this.releasePixels(record);
     for (const pointer of this.objects.keys()) this.process.free(pointer);
     for (const pointer of this.tables.values()) this.process.free(pointer);
     this.gpuTargets.clear();
@@ -1624,7 +1672,15 @@ export class EmoteD3D9 {
     this.closed = true;
   }
   snapshot() {
+    for (const record of this.objects.values()) {
+      if (record.locked) throw new Error('Cannot checkpoint a locked DLL surface projection');
+      if (record.pixels && record.dirty) this.syncSurface(record.pointer, record);
+    }
     return structuredClone({
+      surfaces:
+        this.surfaces?.snapshot(
+          [...this.objects.values()].map((o) => o.surfaceID).filter(Boolean),
+        ) ?? null,
       width: this.width,
       height: this.height,
       displayMode: this.displayMode,
@@ -1684,6 +1740,12 @@ export class EmoteD3D9 {
     this.backbuffer = state.backbuffer;
     this.backDepth = state.backDepth;
     this.tables = new Map(state.tables);
+    if (state.surfaces) {
+      if (!this.surfaces) throw new Error('Stage surface checkpoint requires its renderer owner');
+      for (const record of this.objects.values())
+        if (record.surfaceID) this.surfaces.release(record.surfaceID);
+      this.surfaces.restore(state.surfaces);
+    }
     this.objects = new Map(structuredClone(state.objects));
     Object.assign(this.context, restoreD3DContext(state.context));
     this.transforms = new Map(structuredClone(state.transforms));

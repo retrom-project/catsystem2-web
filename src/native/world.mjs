@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { StageRenderer } from '../render/stage.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
@@ -138,6 +139,7 @@ export class NativeWorld {
       bootstrapOwner,
       transitionalExe,
     });
+    this.stageRenderer = new StageRenderer();
     this.clock = new NativeSystemClock({
       now: host.nativeTimeGetTime ? () => host.nativeTimeGetTime() : null,
     });

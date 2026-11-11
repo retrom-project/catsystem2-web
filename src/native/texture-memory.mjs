@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// TextureManager owns allocations and the D3D textures own their only pixels.
-// Browser sampling frames are derived from those same live texture records.
+// The transitional manager holds texture identities. Packed pixels belong to
+// StageRenderer.surfaces, and browser sampling frames derive from those bytes.
 import { NULL_NATIVE_TEXTURE } from './texture-layout.mjs';
 
 const ABI = {

@@ -8,7 +8,6 @@ import { EmoteRuntime } from './emote/runtime.mjs';
 import { EmoteGL } from './render/emote-gl.mjs';
 import { CanvasRenderer } from './render/canvas.mjs';
 import { CanvasTextGlyphs } from './render/native-text.mjs';
-import { StageRenderer } from './render/stage.mjs';
 import { AudioMixer } from './audio.mjs';
 import { SaveStore } from './saves.mjs';
 import { parseXML, XMLNode } from './xml.mjs';
@@ -180,7 +179,7 @@ export class CatSystem2 {
       sceneLanguages: this.languages.map((language) => language.code),
       steam: this.steam,
     });
-    world.stageRenderer = new StageRenderer(this.renderer, this.emote);
+    world.stageRenderer.attach(this.renderer, this.emote);
     world.inputBindings = new NativeInputBindings(world.input, world.configuration);
     return world;
   }

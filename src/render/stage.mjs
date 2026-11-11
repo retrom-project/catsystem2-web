@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Stage placement and pixel effects adapted from CatSystemKit StageLayout (OWCramer).
+import { StageSurfaces } from './surfaces.mjs';
 import { ParticlesGL, createD3DContext } from './particles-gl.mjs';
 function boxBlur(pixels, width, height, radius, horizontal) {
   const count = horizontal ? width : height,
@@ -26,18 +27,24 @@ export class StageRenderer {
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
-    this.gpu.close();
+    this.gpu?.close();
     this.effects = new WeakMap();
-    this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
+    if (this.plane) this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
+    this.surfaces.records.clear();
   }
   constructor(renderer, emote) {
+    this.surfaces = new StageSurfaces();
+    this.d3dContext = createD3DContext();
+    this.effects = new WeakMap();
+    if (renderer) this.attach(renderer, emote);
+  }
+  attach(renderer, emote) {
+    if (this.renderer) throw new Error('Stage renderer already has a presentation target');
     this.renderer = renderer;
     this.emote = emote;
-    this.effects = new WeakMap();
     this.plane = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.mask = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height);
-    this.d3dContext = createD3DContext();
   }
   effect(frame, picture) {
     if (!picture.mode?.length && !picture.tone?.length && !picture.blur?.length)

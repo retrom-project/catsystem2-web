@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// The original view owns its view3D, graph manager, D3D core and GDI bitmap.
-// The browser owns one COM device and the Windows services those objects use.
+// The transitional view projects records consumed by remaining EXE features.
+// StageRenderer owns texture/surface bytes, exposed through bounded DLL locks.
 import { nativeABI } from './abi/index.mjs';
 import { EmoteD3D9 } from '../emote/native-d3d.mjs';
 import { NativeGraphicsPlatform } from './graphics-process.mjs';
@@ -53,6 +53,12 @@ export class NativeRenderer {
       height: view.clientHeight,
       context: world.graphics.d3dContext,
       recordCommands: false,
+      surfaces: stage.surfaces,
+      // D7/D9 consumers lock a PE projection. Pixel authority stays in JS.
+      pixelMemory: {
+        allocate: (size) => engine.kernel.virtualAllocate(0, size, 0x3000, 4),
+        free: (pointer) => engine.kernel.virtualFree(pointer, 0, 0x8000),
+      },
       onPresent: stage && ((request) => stage.presentNative(request)),
     });
     const gpu = world.getNativeGPU?.();

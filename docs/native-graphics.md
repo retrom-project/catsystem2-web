@@ -1,5 +1,19 @@
 # Native graphics and VRAM pages
 
+## Renderer-owned surfaces
+
+`StageRenderer.surfaces` owns packed texture and surface bytes in JS, including
+headless Worlds. The transitional D3D device lends a PE virtual-memory projection
+at LockRect and commits writable locks at UnlockRect. Copy, stretch and readback
+operate on the renderer bytes. Guest heap capacity no longer owns these pixels.
+The resource HRESULT and COM identity contracts remain observable at the DLL
+boundary. Renderer checkpoints save sparse surface bytes and reject open locks.
+
+The migration board registers this boundary as `renderer-surfaces-to-dll-locks`.
+Original Draw/graph consumers are replaced during phase 6. FES consumers remain
+until phase 7 and original E-mote/PPI consumers until phase 9. GPU targets and
+sampling frames are derived from the same JS resource records.
+
 ## Original model draw traversal
 
 Task routing and graph lookup have different identity domains. A task number

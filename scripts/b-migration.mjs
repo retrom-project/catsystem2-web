@@ -605,6 +605,33 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 
 const nonNativeGroups = [
   {
+    name: 'renderer-surfaces-to-dll-locks',
+    domain: 9,
+    entry: 'StageRenderer.surfaces → D3D LockRect/UnlockRect → DLL draw submission',
+    modules: ['native-d3d', 'renderer', 'texture-memory'],
+    projection: {
+      direction: 'JS-to-PE on lock; explicit PE-to-JS commit on writable unlock',
+      authority: 'StageRenderer.surfaces packed bytes; GPU targets are derived render resources',
+      fields: ['surface identity', 'pitch', 'format', 'lock bytes', 'D3D resource handles'],
+      consumers: [
+        { domain: 6, modules: ['texture-memory', 'graphics-render'], removePhase: 6 },
+        { domain: 7, modules: ['fes-images'], removePhase: 7 },
+        { domain: 9, modules: ['emote', 'native-d3d'], removePhase: 9 },
+      ],
+      lifetime:
+        'Guest virtual regions contain temporary DLL-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.',
+      removePhase: 9,
+      operations: [
+        'LockRect',
+        'UnlockRect',
+        'UpdateSurface',
+        'StretchRect',
+        'readback',
+        'snapshot',
+      ],
+    },
+  },
+  {
     name: 'temporary-x86-heap-capacity',
     domain: 9,
     entry: 'Explicit transitionalExe.open selects capacity from the ABI emoteDriver capability',
