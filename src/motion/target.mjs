@@ -4,33 +4,33 @@
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from './abi.mjs';
 
 export class MotionTarget {
-  constructor(library, { readState, writeState, speed = 1 }) {
+  constructor(library, { readState, writeState, speed = 1, initialState }) {
     if (!library || typeof readState !== 'function' || typeof writeState !== 'function')
       throw new TypeError('MOT target requires a library and KX2 state adapter');
     this.library = library;
     this.readState = readState;
     this.writeState = writeState;
-    this.manager = library.manager(readState(), speed);
+    this.manager = library.manager(initialState ?? readState(), speed);
     this.lastFrame = -1;
     this.lastHandle = 0;
   }
   state() {
     return this.readState();
   }
-  async add(file, options = {}) {
+  async add(file, options = {}, { refreshBase = true } = {}) {
     const script = await this.library.load(file);
     // Native object vtable[1] refreshes the base when there is no active motion.
     if (!this.manager.busy()) {
       this.manager.clear();
-      this.manager.base.set(this.readState());
+      if (refreshBase) this.manager.base.set(this.readState());
       this.lastFrame = -1;
       this.lastHandle = 0;
     }
     return this.manager.add(script, options);
   }
-  update(frame) {
+  update(frame, options) {
     if (!this.manager.busy()) return false;
-    const afterHandle = this.lastFrame === frame ? this.lastHandle : 0;
+    const afterHandle = !options?.force && this.lastFrame === frame ? this.lastHandle : 0;
     if (afterHandle && ![...this.manager.records.keys()].some((handle) => handle > afterHandle))
       return false;
     this.writeState(this.manager.update(frame, false, afterHandle));
