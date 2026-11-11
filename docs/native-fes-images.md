@@ -336,3 +336,35 @@ world-owned command-source address already maintained for FES string identity.
 This is supported by the original handler instructions; the new common oracle
 does not expose the internal register packet and is not claimed as a dynamic
 blend comparison. The existing sound path keeps its verified behavior.
+
+## JavaScript window composition model
+
+`fes-window-image.mjs` implements IMGWND's CPU nine-piece composition as an
+independent resource model. The default FES driver above remains counted until
+its separate integration/removal. Call `composeFESWindow(images,width,height,
+loadFrame,owner)` only when the image/size resource is dirty; normal rendering
+must not reload or recompose it. `loadFrame(id)` returns an owned bitmap or0.
+The compositor releases every temporary frame and returns one independently
+owned output; I/O errors release the partial output as well.
+
+IDs0..3 are physical corners,4/5 vertical edges,6/7 horizontal edges and8 the
+center. Edges and center tile with their **own** decoded dimensions, including
+their inset and clipped last piece; they do not stretch or derive one common
+border from corner0. Composition preserves order0..8, source bpp/alpha behavior
+and independently clipped native rectangles. Physical row coordinates convert
+to the bitmap registry's logical RGBA coordinates after clipping. Missing frames
+are skipped without substituting frame0.
+
+The public authored fixture contains complete original pixel output from both
+registered engines for a13×11 window: unequal tile dimensions, asymmetric
+per-pixel colors, half/zero alpha, clipped final repeats and missing5/7. The
+JavaScript test uses the real JS cache/decoder/bitmap operations with EXE loading
+set to throw, then restores the owned output into a fresh World without
+reconstructing tiles. Original instruction transcripts and the reused original
+World harness/captures remain in ignored phase7 evidence.
+
+Zero-extent tiles and repeated-axis tiles larger than the target throw and
+release ownership explicitly. Those inputs make the original unsigned tiling
+bounds underflow or fail to progress; they are not covered by the normal-window
+pixel equivalence claim. Full FES initialization timing, resource dirty flags,
+Draw/input ownership and default new-World restoration remain integration work.
