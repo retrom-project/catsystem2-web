@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 136, "oracle": 142, "differential": 67 },
+    "counts": { "js": 137, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -120,6 +120,7 @@
         "tests/native-scene-data.test.mjs",
         "tests/native-scene-history.test.mjs",
         "tests/native-script-replacement.test.mjs",
+        "tests/native-signature-records.test.mjs",
         "tests/native-sound-config.test.mjs",
         "tests/native-sound-math.test.mjs",
         "tests/native-sound-values.test.mjs",
@@ -2714,8 +2715,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 420,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 158, "9": 55 },
+    "runtimeFiles": 421,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 159, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 78,
     "exeDependencies": { "addresses": 893, "calls": 99, "references": 6 },
@@ -49372,6 +49373,19 @@
     {
       "file": "src/native/abi/messages.mjs",
       "sourceSha256": "4292f84896a0521f1a22777b66b68187be7038c613e4456ed8be2754dfa0ccb0",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/abi/signature.mjs",
+      "sourceSha256": "a140fdde2f83c1c528776582107ba72ef95a7ca5e66115e55fb48b6b95de1602",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
