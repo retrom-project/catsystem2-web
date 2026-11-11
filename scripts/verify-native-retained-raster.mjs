@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
+import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';

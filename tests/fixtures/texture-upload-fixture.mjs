@@ -1,9 +1,12 @@
+import { installGraphicsOracle } from './graphics-oracle-world.mjs';
 // SPDX-License-Identifier: MPL-2.0
 import { createTextureMemoryWorld } from './texture-clear-fixture.mjs';
 
 export async function exerciseTextureUpload(profile, files, stageRendererFactory) {
   const make = () => {
-      const world = createTextureMemoryWorld(profile, files, stageRendererFactory);
+      const world = installGraphicsOracle(
+        createTextureMemoryWorld(profile, files, stageRendererFactory),
+      );
       world.configuration.fields.texture.areas[0].set([0, 0, 2, 2]);
       return world;
     },

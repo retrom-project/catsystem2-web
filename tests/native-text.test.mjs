@@ -19,8 +19,10 @@ import { NativeVariableBank } from '../src/native/bank.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
 import { NativeScriptReplacementsBridge } from '../src/native/script-replacements-bridge.mjs';
 import { NativeSceneData } from '../src/native/scene-data.mjs';
+import { StageRenderer } from '../src/render/stage.mjs';
 import { NativeGraphics, installNativeGraphics } from '../src/native/graphics.mjs';
-import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
+import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
+import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeTextWriter } from '../oracle/text.mjs';
 import { installNativeText, nativeText } from '../src/native/text-task.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
@@ -801,9 +803,11 @@ async function fixture(profile, bytes, source) {
         read: (name, category) => game.requireCategory(name, category),
       }),
   );
+  world.stageRenderer = new StageRenderer();
   installNativeBitmapMemory(world);
   installNativeGraphics(world);
   installNativeText(world, { glyphs });
+  installGraphicsOracle(world);
   world.objects.register(34, () => ({
     imageCache: new Map(),
     message: () => 0,

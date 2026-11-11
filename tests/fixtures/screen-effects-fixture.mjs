@@ -9,6 +9,7 @@ import { NativeScreenEffects as OracleEffects } from '../../oracle/screen-effect
 import { NativeEffectCommands as OracleCommands } from '../../oracle/effect-commands-original.mjs';
 import { NATIVE_SCREEN_EFFECT_KINDS } from '../../src/native/screen-effect.mjs';
 import { floatBits } from '../../src/kcs.mjs';
+import { installGraphicsOracle } from './graphics-oracle-world.mjs';
 export async function screenOracleWorld(fixture, resources = {}) {
   const profile = fixture.profile,
     files = {
@@ -41,6 +42,7 @@ export async function screenOracleWorld(fixture, resources = {}) {
     motionLibrary: new MotionLibrary(game, { profile, random }),
     storage: { read: async () => null, write: async () => true },
   });
+  installGraphicsOracle(world);
   world.stageRenderer.gpu = new ScreenVectorGPU(65, 49);
   world.registerNativeFeature('screen-effects', (engine) => OracleEffects.open(engine, world));
   for (const kind of NATIVE_SCREEN_EFFECT_KINDS)

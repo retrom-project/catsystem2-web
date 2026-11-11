@@ -1,3 +1,4 @@
+import { routeGraphicsOracle } from '../fixtures/oracle-browser-routes.mjs';
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -55,6 +56,7 @@ for (const [profile, variable] of [
         });
       },
     );
+    await routeGraphicsOracle(page);
     await page.goto('/');
     const result = await page.evaluate(
       async ({ profile, names }) => {

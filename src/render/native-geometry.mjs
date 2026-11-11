@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Graph transforms/projection: native 682610, 682830, 67DBD0, 67DDD0.
 import { identity, multiply, scaling, transform, rotation } from '../motion/matrix.mjs';
+import { multiplyNativeMatrix, transformNativeVector } from '../ppi/native-projection-math.mjs';
+import { roundX87Single } from '../ppi/x87.mjs';
 import { MOTION_ABI, motionVector } from '../motion/abi.mjs';
 const f = Math.fround;
 
@@ -20,7 +22,7 @@ export function rectangleTriangles({ x = 0, y = 0, z = 0, width, height, colors 
 export function transformNativeTriangles(
   triangles,
   bytes,
-  { colorOverride = false, useEuler = false } = {},
+  { colorOverride = false, useEuler = false, scalarPrecision = false } = {},
 ) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
     base = motionVector(bytes, MOTION_ABI.base),
@@ -35,11 +37,16 @@ export function transformNativeTriangles(
       matrix = multiply(matrix, rotation(['x', 'y', 'z'][i], angle));
     });
   }
-  const combined = multiply(scaling(...scale), matrix),
+  const combined = scalarPrecision
+      ? multiplyNativeMatrix(scaling(...scale), matrix, roundX87Single)
+      : multiply(scaling(...scale), matrix),
     color = view.getUint32(MOTION_ABI.color, true);
   return triangles.map((triangle) =>
     triangle.map((vertex) => {
-      const p = transform([f(vertex.x - base[0]), f(vertex.y - base[1]), vertex.z, 1], combined);
+      const input = [f(vertex.x - base[0]), f(vertex.y - base[1]), vertex.z, 1],
+        p = scalarPrecision
+          ? transformNativeVector(input, combined, roundX87Single)
+          : transform(input, combined);
       return {
         ...vertex,
         x: f(p[0] + pos[0]),
@@ -119,6 +126,7 @@ export function nativeGraphGeometry(
     );
   const working = transformNativeTriangles(withUV, graph.kx2, {
     colorOverride: state.colorOverride,
+    scalarPrecision: true,
     useEuler: graph.matrixExplicit === false,
   });
   return working.map((triangle, index) => {

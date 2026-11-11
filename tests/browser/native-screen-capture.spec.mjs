@@ -7,7 +7,7 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
-  test(`${profile} screenshots and recorded BMP frames use the actual ordinary native backbuffer and restore independently`, async ({
+  test(`${profile} screenshots and recorded BMP frames use the JS compositor and restore independently`, async ({
     page,
   }) => {
     test.skip(
@@ -305,9 +305,9 @@ for (const [profile, variable] of [
             throw new Error('Captured bitmap leaked after final release');
           if (!p.allocations.has(pointer))
             throw new Error('Fresh bitmap release changed the old owner');
-          p.store(platform.refs.view + 52, 0);
+          world.graphics.view.configure({ active: false });
           const gated = (await call(0x71, [])).value;
-          p.store(platform.refs.view + 52, 1);
+          world.graphics.view.configure({ active: true });
           output = {
             size: [bitmap.width, bitmap.height],
             counter,

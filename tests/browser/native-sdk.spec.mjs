@@ -62,7 +62,7 @@ async function startSDK(page) {
     applicationHook: true,
     displayOwner: true,
     graphicsOwner: true,
-    graphicsWorker: true,
+    graphicsWorker: false,
     graphicsTasks: true,
     soundBankCount: 32,
     soundWorker: true,
@@ -133,7 +133,13 @@ async function freshAtSameFrame(page) {
     nativeWindow = await startupWindow(page);
   expect(image.colors).toBeGreaterThan(32);
   await restoreFresh(page);
-  expect(await state(page)).toEqual(before);
+  // Host call history and heap instrumentation are observations, not checkpoint state.
+  const restored = await state(page);
+  for (const observation of ['recentNative', 'heap']) {
+    delete before[observation];
+    delete restored[observation];
+  }
+  expect(restored).toEqual(before);
   expect(await pixels(page)).toEqual(image);
   expect(await startupWindow(page)).toEqual(nativeWindow);
   return image;

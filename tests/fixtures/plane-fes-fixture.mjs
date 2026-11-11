@@ -38,9 +38,8 @@ export async function exercisePlaneFlow(make, assert) {
       parent = instance.byKey.get('parent'),
       child = instance.byKey.get('child'),
       engine = world.nativeEngine,
-      p = engine.process,
-      platform = await world.getNativeFeature('graphics-platform'),
-      sdk = world.profile.startsWith('sdk-');
+      p = engine.process;
+    await world.getNativeFeature('graphics-platform');
     assert.equal(parent.nativeTaskID, undefined);
     assert.equal(child.nativeTaskID, undefined);
     assert.equal(p.load(child.nativeObjectPointer + 12), parent.nativeObjectPointer);
@@ -51,44 +50,19 @@ export async function exercisePlaneFlow(make, assert) {
         return [0, 4].map((at) => bitsFloat(packet.load(at)));
       },
       attachment = (current, id) => current.graphics.attachment(current.nativeTaskID(id)),
-      query = async (address, id, count) => {
-        const output = p.allocate(16, true);
-        try {
-          assert.equal(
-            await engine.call(
-              address,
-              [world.nativeTaskID(id), output, output + 12],
-              platform.refs.view,
-            ),
-            1,
-          );
-          return Array.from({ length: count }, (_, i) => p.load(output + i * 4));
-        } finally {
-          p.free(output);
-        }
-      };
+      graph = (id) => world.graphics.get(id).graph;
     assert.deepEqual(await size(parent.nativeTaskID), [10, 8]);
-    assert.equal((await query(sdk ? 0x54d380 : 0x6762f0, parent.nativeTaskID, 1))[0], 0x80403020);
+    assert.equal(graph(parent.nativeTaskID).colors[0], 0x80403020);
     assert.deepEqual(await size(child.nativeTaskID), [12, 7]);
     assert.deepEqual(attachment(world, child.nativeTaskID).pos, [9, 11, 13]);
     assert.deepEqual(attachment(world, child.nativeTaskID).base, [2, 3, 60]);
-    const scale = p.allocate(16, true);
-    try {
-      assert.equal(
-        await engine.call(
-          sdk ? 0x54d810 : 0x676730,
-          [world.nativeTaskID(child.nativeTaskID), scale, 0],
-          platform.refs.view,
-        ),
-        1,
-      );
-      assert.deepEqual(
-        [0, 4, 8].map((at) => bitsFloat(p.load(scale + at))),
-        [2, 3, 1],
-      );
-    } finally {
-      p.free(scale);
-    }
+    const childGraph = graph(child.nativeTaskID);
+    assert.deepEqual(
+      Array.from({ length: 3 }, (_, i) =>
+        new DataView(childGraph.kx2.buffer).getFloat32(100 + i * 4, true),
+      ),
+      [2, 3, 1],
+    );
     const texture = new NativeGraphicsPacket();
     await send(world, child.nativeTaskID, 62, 1, 0, texture);
     assert.deepEqual(

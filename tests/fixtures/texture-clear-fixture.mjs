@@ -1,3 +1,4 @@
+import { installGraphicsOracle } from './graphics-oracle-world.mjs';
 // SPDX-License-Identifier: MPL-2.0
 import { NativeWorld } from '../../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
@@ -61,7 +62,8 @@ export function createTextureMemoryWorld(profile, files, stageRendererFactory) {
 // The virtual VRAM is 3072x6656 (over 64 MiB as RGBA), but only three
 // 64x64 pages exist. Exercise the original clear through both KCS and host.
 export async function exerciseTextureClear(profile, files, stageRendererFactory) {
-  const make = () => createTextureMemoryWorld(profile, files, stageRendererFactory),
+  const make = () =>
+      installGraphicsOracle(createTextureMemoryWorld(profile, files, stageRendererFactory)),
     world = make(),
     checks = {},
     indices = [0, 1, 48 * 104 - 1],

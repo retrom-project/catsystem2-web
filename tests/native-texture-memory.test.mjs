@@ -5,8 +5,9 @@ import { readFile } from 'node:fs/promises';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { NativeTexturePageView } from '../src/native/texture-memory.mjs';
+import { NativeTexturePageView } from '../oracle/texture-memory-original.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
 import { exerciseTextureClear } from './fixtures/texture-clear-fixture.mjs';
 import { exerciseTextureUpload } from './fixtures/texture-upload-fixture.mjs';
@@ -69,16 +70,18 @@ test(
         texture.bpp = 32;
         for (const area of texture.areas) area.fill(0xffffffff);
         texture.areas[0].set([0, 0, 2, 2]);
-        return new NativeWorld({
-          game,
-          profile,
-          configuration,
-          images: {},
-          host: {},
-          random: new ParticleRandom(),
-          motionLibrary: new MotionLibrary(game, { profile }),
-          storage: { read: async () => null, write: async () => true },
-        });
+        return installGraphicsOracle(
+          new NativeWorld({
+            game,
+            profile,
+            configuration,
+            images: {},
+            host: {},
+            random: new ParticleRandom(),
+            motionLibrary: new MotionLibrary(game, { profile }),
+            storage: { read: async () => null, write: async () => true },
+          }),
+        );
       },
       world = make();
     let fresh;

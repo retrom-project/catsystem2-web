@@ -146,7 +146,7 @@ test('native colored rectangle wrappers preserve ARGB alpha, dimensions and 3-ax
   await nativeGraphics(0x54, [h, ...[10, 20, 30].map(floatBits), 0], machine, task, scene);
   assert.deepEqual(motionVector(object.graph.kx2, MOTION_ABI.pos), [10, 20, 30]);
   await nativeGraphics(0x58, [h, floatBits(6000)], machine, task, scene);
-  assert.equal(scene.graphics.stage.planes[h].priority, 6000);
+  assert.equal(scene.graphics.stage.planes[scene.graphics.get(h).stageKey].priority, 6000);
   await nativeGraphics(0x57, [h, 0, 4, 8, 0], machine, task, scene);
   assert.deepEqual(
     [0, 4, 8].map((at) => machine.load(at)),

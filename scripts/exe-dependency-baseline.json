@@ -11,9 +11,19 @@
       "calls": 2,
       "references": 0
     },
+    "oracle/fes-screen-effect-projection.mjs": {
+      "addresses": 6,
+      "calls": 0,
+      "references": 0
+    },
     "oracle/fes-text-projection.mjs": {
       "addresses": 22,
       "calls": 1,
+      "references": 0
+    },
+    "oracle/graphics-consumer-projection.mjs": {
+      "addresses": 24,
+      "calls": 3,
       "references": 0
     },
     "oracle/hg3-delta.mjs": {
@@ -31,9 +41,19 @@
       "calls": 0,
       "references": 0
     },
+    "oracle/plane-movie-projection.mjs": {
+      "addresses": 10,
+      "calls": 0,
+      "references": 0
+    },
     "oracle/raster-kernel-projection.mjs": {
       "addresses": 34,
       "calls": 0,
+      "references": 0
+    },
+    "oracle/renderer-consumer-projection.mjs": {
+      "addresses": 12,
+      "calls": 2,
       "references": 0
     },
     "oracle/text-log-projection.mjs": {
@@ -142,8 +162,8 @@
       "references": 0
     },
     "src/native/engine-startup-application.mjs": {
-      "addresses": 32,
-      "calls": 7,
+      "addresses": 26,
+      "calls": 5,
       "references": 0
     },
     "src/native/engine-startup-block.mjs": {
@@ -246,26 +266,6 @@
       "calls": 1,
       "references": 0
     },
-    "src/native/graphics-process.mjs": {
-      "addresses": 24,
-      "calls": 7,
-      "references": 0
-    },
-    "src/native/graphics-render.mjs": {
-      "addresses": 18,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/graphics-task.mjs": {
-      "addresses": 0,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/graphics.mjs": {
-      "addresses": 4,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/input-browser.mjs": {
       "addresses": 4,
       "calls": 0,
@@ -321,16 +321,6 @@
       "calls": 2,
       "references": 0
     },
-    "src/native/renderer.mjs": {
-      "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/screen-capture.mjs": {
-      "addresses": 14,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/script-message-box.mjs": {
       "addresses": 6,
       "calls": 2,
@@ -364,11 +354,6 @@
     "src/native/task-memory.mjs": {
       "addresses": 6,
       "calls": 1,
-      "references": 0
-    },
-    "src/native/texture-memory.mjs": {
-      "addresses": 4,
-      "calls": 2,
       "references": 0
     },
     "src/native/tile-plane-command.mjs": {

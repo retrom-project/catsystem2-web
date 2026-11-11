@@ -569,3 +569,36 @@ test('Windows language messages retain range gates, repeated option reloads and 
     await current.close();
   }
 });
+
+test('checkpoint, next tick and close wait for the complete frame settlement', async () => {
+  const scene = world({ 'main.kcs': kcs([[59]]) }),
+    entered = Promise.withResolvers(),
+    pending = Promise.withResolvers();
+  await scene.initialize('main.kcs');
+  const flush = scene.flushConfiguration;
+  scene.flushConfiguration = async () => {
+    entered.resolve();
+    await pending.promise;
+  };
+  const ticking = scene.tick();
+  try {
+    await entered.promise;
+    assert.equal(scene.running, false);
+    assert.throws(() => scene.snapshot(), /settled frame/);
+    await assert.rejects(() => scene.tick(), /serialized/);
+    await assert.rejects(() => scene.close(), /settled frame/);
+    pending.resolve();
+    await ticking;
+    assert.equal(scene.snapshot().frame, scene.frame);
+    scene.stageRenderer.rendering = true;
+    assert.throws(() => scene.snapshot(), /render/);
+    scene.stageRenderer.rendering = false;
+    assert.equal(scene.snapshot().frame, scene.frame);
+  } finally {
+    pending.resolve();
+    await ticking;
+    scene.stageRenderer.rendering = false;
+    scene.flushConfiguration = flush;
+    await scene.close({ flushFiles: false });
+  }
+});

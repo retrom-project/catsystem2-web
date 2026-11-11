@@ -135,7 +135,7 @@ export class NativeWindow {
       return true;
     }
     if (command === 40030) {
-      if (world.nativeEngine) await (await world.getNativeFeature('screen-capture')).menuBitmap();
+      await world.screenCapture.menuBitmap();
       return true;
     }
     if (command === 40096 && nativeABI(world.profile).capabilities.windowReturnTitle) {

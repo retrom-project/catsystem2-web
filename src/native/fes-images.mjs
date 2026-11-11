@@ -404,9 +404,10 @@ export function nativeFESImageAdapter(runtime, type) {
 
 export function installNativeFESImages(world) {
   world.registerNativeFeature('raster-kernels', (engine) => engine.createRasterProjection());
-  world.registerNativeFeature('fes-draw-projection', (engine) =>
-    engine.createDrawSourceProjection(world),
-  );
+  world.registerNativeFeature('fes-draw-projection', async (engine) => {
+    await world.getNativeFeature('graphics-platform');
+    return engine.createDrawSourceProjection(world);
+  });
   world.registerNativeFeature('retained-draw', (engine) => {
     engine.registerFeature('retained-draw', world.retainedDraw);
     return world.retainedDraw;

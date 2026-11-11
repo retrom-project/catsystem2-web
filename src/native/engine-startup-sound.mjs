@@ -148,7 +148,7 @@ export async function readNativeStartupSoundConfiguration(
     // The mounted XML and the user's same-named preferences are different files.
     kernel.readFile = (name) => (game.readLoose ? game.readLoose(name) : game.read(name));
     const loaded = startupWindow
-      ? await initializeNativeApplicationServices(engine, { graphics: true, finishSoundRead })
+      ? await initializeNativeApplicationServices(engine, { finishSoundRead })
       : await engine.call(layout.load, [], refs.owner);
     Object.assign(sound, {
       filename: file,

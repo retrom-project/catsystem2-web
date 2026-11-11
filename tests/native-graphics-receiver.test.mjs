@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { conditionalNativeGraphicsBoundary } from '../src/native/graphics-task.mjs';
+import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -92,6 +93,7 @@ test(
     });
     let fresh;
     try {
+      installGraphicsOracle(world);
       await world.initialize('main.kcs');
       const id = await world.objects.create({
           kind: 2,
@@ -163,6 +165,7 @@ test(
         motionLibrary: new MotionLibrary(game, { profile }),
         storage: { read: async () => null, write: async () => true },
       });
+      installGraphicsOracle(fresh);
       await fresh.ensureNativeEngine();
       fresh.nativeEngine.process.trap('authored earlier transient trap', 0, () => 0);
       await fresh.restore(saved);

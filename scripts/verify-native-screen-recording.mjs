@@ -5,10 +5,11 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 import {
-  NativeScreenCapture,
+  NativeScreenCapture as OriginalScreenCapture,
   NATIVE_SCREEN_CAPTURE_LAYOUTS,
   NATIVE_SCREEN_CAPTURE_CONTRACTS,
-} from '../src/native/screen-capture.mjs';
+} from '../oracle/screen-capture-original.mjs';
+import { NativeScreenCapture } from '../src/native/screen-capture.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { KCSMachine, readKCS, formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
@@ -31,6 +32,7 @@ const sdk = profile.startsWith('sdk-'),
   out = p.allocate(12, true),
   platform = { refs: { view }, ensureRenderer: async () => platform.refs },
   world = {
+    profile,
     runtime: { services: { formatBytes: formatNativeAt } },
     objects: { machine: () => null },
     getNativeFeature: async (name) => {
@@ -38,7 +40,8 @@ const sdk = profile.startsWith('sdk-'),
       return platform;
     },
   },
-  feature = new NativeScreenCapture(engine, world),
+  original = new OriginalScreenCapture(engine, world),
+  feature = new NativeScreenCapture(world),
   layout = NATIVE_SCREEN_CAPTURE_LAYOUTS[profile],
   m = new KCSMachine(await readKCS(kcsProgram([[59]])), {}, new Uint8Array(1024)),
   words = [0, 1, 2, 0xffffffff, 0x80000000, 0x7fffffff, 0x12345678],
@@ -86,6 +89,16 @@ try {
             await feature.apply(0x1b9, [flag, address, counter], m, { id: 17 }),
             { control: 2 },
             'complete original recording setter',
+          );
+          compare(
+            feature.snapshot(),
+            { recording: flag >>> 0, counter: counter >>> 0, prefix: utf16 },
+            'JS recording fields',
+          );
+          compare(
+            await original.apply(0x1b9, [flag, address, counter], m, { id: 17 }),
+            { control: 2 },
+            'existing oracle setter',
           );
           compare(
             p.read(view, 288),

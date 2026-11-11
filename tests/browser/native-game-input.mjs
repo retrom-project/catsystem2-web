@@ -231,7 +231,7 @@ export async function pixels(page) {
 export function startupWindow(page) {
   return page.evaluate(() => {
     const { world } = window.catSystem2,
-      { process: p, kernel, refs, features } = world.nativeEngine,
+      { process: p, kernel, refs } = world.nativeEngine,
       handle = world.window.handle,
       view = kernel.windowViews.windows.get(handle),
       owner = view?.userData,
@@ -243,12 +243,7 @@ export function startupWindow(page) {
       workerID = backend && kernel.threadHandles.handles.get(p.load(backend + 12))?.id,
       worker = kernel.threadHandles.threads.get(workerID),
       graphics = refs.applicationGraphics,
-      renderView = p.load(startup + 20),
-      renderWorker = kernel.threadHandles.threads.get(
-        kernel.threadHandles.handles.get(graphics?.handle)?.id,
-      ),
-      top = world.objects.objects.get(world.root),
-      bindings = features.get('task-memory')?.refs.entries;
+      top = world.objects.objects.get(world.root);
     return {
       handle,
       client: view?.client.slice(2),
@@ -257,19 +252,13 @@ export function startupWindow(page) {
       acceleratorCount: owner && kernel.accelerators.tables.get(p.load(owner + 12))?.rows.length,
       applicationHook: refs.applicationWindowHook === handle,
       displayOwner: p.allocations.get(p.load(startup + 8)) === 36,
-      graphicsOwner: Boolean(
-        graphics &&
-          p.load(startup + 4) === graphics.task &&
-          renderView &&
-          p.load(graphics.top + 104) === renderView &&
-          features.get('renderer')?.view === renderView,
-      ),
-      graphicsWorker: renderWorker?.wait?.kind === 'sleep' && kernel.timerPeriods.has(1),
+      graphicsOwner: world.graphics.texturePages?.stage === world.stageRenderer,
+      graphicsWorker: Boolean(graphics || p.load(startup + 4)),
       graphicsTasks: Boolean(
         top &&
-          bindings?.get(top.id)?.pointer === graphics?.top &&
-          bindings?.get(top.implementation.input)?.pointer === graphics?.input &&
-          bindings?.get(top.implementation.sound)?.pointer === graphics?.sound,
+          world.objects.objects.get(top.implementation.input)?.kind === 11 &&
+          world.objects.objects.get(top.implementation.sound)?.kind === 13 &&
+          world.frame === world.runtime.scheduler.frame,
       ),
       soundBankCount: backend
         ? Array.from({ length: sdk ? 32 : 64 }, (_, index) =>

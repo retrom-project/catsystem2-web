@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-import { nativeABI } from './abi/index.mjs';
 import { NATIVE_STARTUP_BLOCKS, runNativeStackSpan } from './engine-startup-block.mjs';
 import {
   isNativeWindowCommandMessage,
@@ -18,11 +17,7 @@ const layouts = {
     destroyDisplay: 0x635ea0,
     soundRead: 0x442e22,
     soundReady: 0x442e77,
-    graphicsReady: 0x442fac,
     servicesReturn: 0x44381b,
-    graphicsBytes: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.startupApplication.graphicsBytes,
-    findTask: 0x4b9690,
-    destroyGraphics: 0x4b7f10,
     destroySound: 0x4a8f90,
     soundGlobal: 0xc945cc,
   },
@@ -37,21 +32,13 @@ const layouts = {
     destroyDisplay: 0x79d380,
     soundRead: 0x531b47,
     soundReady: 0x531bab,
-    graphicsReady: 0x531ce7,
     servicesReturn: 0x5325b8,
-    graphicsBytes: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.startupApplication
-      .graphicsBytes,
-    findTask: 0x5dd450,
-    destroyGraphics: 0x5dba30,
     destroySound: 0x5cbee0,
     soundGlobal: 0xb8faa4,
   },
 };
 const IME_SLOT = 40;
 const IME_BYTES = 24;
-const GRAPHICS_SLOT = 4;
-const GRAPHICS_DEVICE_SLOT = 16;
-const GRAPHICS_VIEW_SLOT = 20;
 const DISPLAY_SLOT = 8;
 const DISPLAY_BYTES = 36;
 const SOUND_SLOT = 12;
@@ -118,22 +105,18 @@ export async function initializeNativeApplicationWindow(engine) {
   }
 }
 
-export async function initializeNativeApplicationServices(
-  engine,
-  { graphics = false, finishSoundRead } = {},
-) {
+export async function initializeNativeApplicationServices(engine, { finishSoundRead } = {}) {
   const { process: p, profile, kernel, refs } = engine,
     { cpu, uc } = p,
     block = NATIVE_STARTUP_BLOCKS[profile],
     handle = refs.applicationWindowHook,
     window = kernel.windowViews.windows.get(handle),
-    { soundRead, soundReady, graphicsReady, servicesReturn, soundGlobal } = layouts[profile];
+    { soundRead, soundReady, servicesReturn, soundGlobal } = layouts[profile];
   if (
     !window ||
     !p.load(block + DISPLAY_SLOT) ||
     p.load(block + SOUND_SLOT) ||
     p.load(soundGlobal) ||
-    p.load(block + GRAPHICS_SLOT) ||
     engine.startingApplicationServices
   )
     throw new Error('Original services require the initialized application window');
@@ -154,13 +137,9 @@ export async function initializeNativeApplicationServices(
     detach.push(
       p.beforeInstruction(soundReady, 'original application sound owner is ready', () => {
         finishSoundRead?.();
-        if (!graphics) finish();
+        finish();
       }),
     );
-    if (graphics)
-      detach.push(
-        p.beforeInstruction(graphicsReady, 'original application graphics ready', finish),
-      );
     await engine.call(window.procedure, [handle, NATIVE_APPLICATION_SERVICES_MESSAGE, 0, 0]);
     const owner = p.load(block + SOUND_SLOT);
     if (
@@ -172,90 +151,11 @@ export async function initializeNativeApplicationServices(
       p.load(owner + 4) !== handle
     )
       throw new Error('Original application callback did not establish its sound owner');
-    if (graphics) await bindNativeApplicationGraphics(engine);
     return loaded;
   } finally {
     delete engine.startingApplicationServices;
     for (const unhook of detach.reverse()) unhook();
   }
-}
-
-async function bindNativeApplicationGraphics(engine) {
-  const { process: p, profile, kernel, refs } = engine,
-    block = NATIVE_STARTUP_BLOCKS[profile],
-    { graphicsBytes, findTask } = layouts[profile],
-    task = p.load(block + GRAPHICS_SLOT),
-    device = p.load(block + GRAPHICS_DEVICE_SLOT),
-    view = p.load(block + GRAPHICS_VIEW_SLOT),
-    thread = task && p.load(task + 12),
-    handle = thread && p.load(thread),
-    worker = kernel.threadHandles.threads.get(kernel.threadHandles.handles.get(handle)?.id),
-    top = device && p.load(device + 8);
-  if (
-    p.allocations.get(task) !== graphicsBytes ||
-    p.allocations.get(device) !== 0x28 ||
-    p.load(task + 20) !== device ||
-    !p.allocations.has(view) ||
-    p.load(device + 4) !== view ||
-    !p.allocations.has(top) ||
-    p.load(top + 104) !== view ||
-    !worker?.context
-  )
-    throw new Error('Original application callback did not establish its graphics owners');
-  const out = p.allocate(4, true),
-    children = [];
-  try {
-    for (const [offset, kind] of [
-      [120, 11],
-      [124, 13],
-    ]) {
-      const id = p.load(top + offset);
-      if (!(await engine.call(findTask, [id, out], top)))
-        throw new Error('Original BASE TASK has no device task');
-      const pointer = p.load(out);
-      if (
-        !p.allocations.has(pointer) ||
-        p.load(pointer + 12) !== top ||
-        p.load(pointer + 64) !== kind
-      )
-        throw new Error('Original BASE TASK device ownership differs');
-      children.push(pointer);
-    }
-  } finally {
-    p.free(out);
-  }
-  const renderer = engine.features.get('renderer');
-  if (!renderer) throw new Error('Original application graphics require a renderer');
-  renderer.adoptApplicationView(view);
-  refs.applicationGraphics = { task, top, handle, input: children[0], sound: children[1] };
-}
-
-export async function releaseNativeApplicationGraphics(engine) {
-  if (!engine.refs.nativeOwner) return;
-  const { process: p, profile, kernel, refs } = engine,
-    block = NATIVE_STARTUP_BLOCKS[profile],
-    task = p.load(block + GRAPHICS_SLOT);
-  if (!task) return;
-  const { destroyGraphics, graphicsBytes } = layouts[profile],
-    device = p.load(task + 20),
-    view = device && p.load(device + 4),
-    top = device && p.load(device + 8),
-    { input, sound, handle } = refs.applicationGraphics ?? {},
-    destroy = () => engine.call(destroyGraphics, [], task);
-  if (p.allocations.get(task) !== graphicsBytes)
-    throw new Error('Original startup graphics task is invalid');
-  if (kernel.clock) await kernel.clock.whileWaiting(destroy);
-  else await destroy();
-  if (
-    p.load(task + 12) ||
-    kernel.threadHandles.handles.has(handle) ||
-    [device, view, top, input, sound].some((pointer) => p.allocations.has(pointer)) ||
-    !p.free(task)
-  )
-    throw new Error('Original startup graphics task could not be released');
-  for (const offset of [GRAPHICS_SLOT, GRAPHICS_DEVICE_SLOT, GRAPHICS_VIEW_SLOT])
-    p.store(block + offset, 0);
-  delete refs.applicationGraphics;
 }
 
 export async function releaseNativeApplicationWindow(engine) {

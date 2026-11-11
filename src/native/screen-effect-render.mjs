@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
-// JS owns callback phases, captures and submission. Legacy models enter only
-// through the temporary graph traversal until phase6.6 replaces those models.
-import { floatBits } from '../kcs.mjs';
+// JS owns callback phases, captures, model ordering and submission.
+import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
+import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
-const compare = (a, b) =>
-  a.priority - b.priority || (a.order ?? 0) - (b.order ?? 0) || Number(a.n) - Number(b.n);
 export function screenQuad(
   width,
   height,
@@ -45,7 +43,7 @@ export class NativeScreenEffectRenderer {
     return this.world.stageRenderer;
   }
   get gpu() {
-    return this.world.getNativeGPU();
+    return this.world.getNativeGPU?.() ?? this.stage?.gpu;
   }
   size() {
     const view = this.world.graphics.view;
@@ -56,25 +54,26 @@ export class NativeScreenEffectRenderer {
     const items = [
       ...Object.entries(this.world.graphics.stage.planes)
         .filter(([, p]) => p.nativeGraph)
-        .map(([n, p]) => ({ n, p, priority: p.priority })),
+        .map(([n, p]) => ({ n, p, priority: p.priority, order: p.nativeGraph.renderOrder })),
       ...(this.world.particles?.drawItems() ?? []),
+      ...this.world.graphics.drawItems().filter(nativeItem),
     ].sort(compare);
     return {
       items,
       draw: async (item, gpu) => {
-        if (item.drawGPU) await item.drawGPU(gpu, { fromHost: true });
-        else await this.world.graphics.get(Number(item.n)).drawGPU(gpu, { fromHost: true });
+        if (item.drawGPU)
+          await item.drawGPU(gpu, {
+            fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
+          });
+        else
+          await this.world.graphics.get(item.p?.nativeTaskWorldID ?? Number(item.n)).drawGPU(gpu, {
+            fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
+          });
       },
     };
   }
   paused() {
-    const world = this.world,
-      platform = world.nativeEngine?.features.get('graphics-platform');
-    // The existing view remains a movie/FES consumer until the graph removal.
-    return Boolean(
-      world.graphics.view.paused ||
-        (platform?.refs.view && world.nativeEngine.process.load(platform.refs.view + 12)),
-    );
+    return this.world.graphics.view.paused;
   }
   prepare(count) {
     count |= 0;
@@ -106,43 +105,27 @@ export class NativeScreenEffectRenderer {
     this.prepared = false;
   }
   async drawRange(minimum, maximum) {
-    const engine = this.world.nativeEngine,
-      platform = engine?.features.get('graphics-platform'),
-      device = engine?.features.get('renderer')?.d3d;
-    if (platform?.refs.view3D) {
-      const p = engine.process,
-        output = p.allocate(4, true);
-      platform.graphRendering.frameProvider = () => this.currentFrame();
-      platform.sync();
-      try {
-        const target = this.gpu.target,
-          depth = target.stageSurface
-            ? this.stage.surfaceDepth(target.stageSurface)
-            : this.stage.screenDepth();
-        return await device.withStageTarget(
-          target,
-          () => platform.graphRendering.draw([output, floatBits(minimum), floatBits(maximum)]),
-          depth,
-        );
-      } finally {
-        platform.pull();
-        p.free(output);
-      }
+    const frame = this.currentFrame(),
+      gpu = this.gpu,
+      previous = gpu.frameOpaqueTarget;
+    // The primary native backbuffer is X8R8G8B8. Capture targets retain alpha.
+    gpu.frameOpaqueTarget = gpu.target === gpu.primaryTarget;
+    try {
+      for (const item of frame.items)
+        if (minimum <= item.priority && item.priority < maximum) await frame.draw(item, gpu);
+    } finally {
+      gpu.frameOpaqueTarget = previous;
     }
-    const frame = this.currentFrame();
-    for (const item of frame.items)
-      if (minimum <= item.priority && item.priority < maximum) await frame.draw(item, this.gpu);
   }
-  async prepareModels() {
-    const platform = this.world.nativeEngine?.features.get('graphics-platform');
-    // Until phase6.6, original graph models initialize the device. Complete
-    // that boundary before choosing targets, clearing or copying captures.
-    if (platform && !platform.refs.view3D) await platform.ensureRenderer();
-  }
+  async prepareModels() {}
   clear(color, depthOnly = false) {
     const enabled = this.world.graphics.d3dContext.depthStencilEnabled;
     if (!depthOnly || enabled)
-      this.gpu.clear({ flags: (depthOnly ? 0 : 1) | (enabled ? 2 : 0), color });
+      this.gpu.clear({
+        flags: (depthOnly ? 0 : 1) | (enabled ? 2 : 0),
+        color,
+        opaqueTarget: this.gpu.target === this.gpu.primaryTarget,
+      });
   }
   async captureInto(id, minimum, maximum, color = 0) {
     this.busy++;
@@ -222,7 +205,7 @@ export class NativeScreenEffectRenderer {
   async render(items, draw, present) {
     if (this.frame || this.busy) throw new Error('Screen-effect rendering cannot be reentered');
     if (!this.world.graphics.view.active || this.paused()) return true;
-    this.frame = { items: items.filter(nativeItem), draw };
+    this.frame = { items: items.filter(nativeItem).sort(compare), draw };
     this.busy++;
     try {
       await this.prepareModels();
@@ -255,6 +238,11 @@ export class NativeScreenEffectRenderer {
     if (this.busy || this.frame)
       throw new Error('Cannot checkpoint an unsettled screen capture or render');
     return {
+      backbuffer: this.gpu && {
+        width: this.gpu.primaryTarget.width,
+        height: this.gpu.primaryTarget.height,
+        pixels: encodeSparseBytes(this.gpu.pixels(this.gpu.primaryTarget)),
+      },
       captures: [...this.captures],
       prepared: this.prepared,
       surfaces: this.stage.snapshotSurfaces(this.captures),
@@ -270,6 +258,12 @@ export class NativeScreenEffectRenderer {
     this.prepared = state.prepared;
     this.stage.restoreSurfaces(state.surfaces);
     this.stage.depthFormat = state.depthFormat;
+    if (state.backbuffer && this.gpu)
+      this.gpu.uploadRenderTarget(this.gpu.primaryTarget, {
+        width: state.backbuffer.width,
+        height: state.backbuffer.height,
+        rgba: decodeSparseBytes(state.backbuffer.pixels),
+      });
     if (this.stage.frameDepth) this.gpu.destroyDepthStencil(this.stage.frameDepth);
     this.stage.frameDepth = null;
     this.stage.savedFrameDepth = null;

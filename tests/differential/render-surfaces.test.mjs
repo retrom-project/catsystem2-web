@@ -45,6 +45,30 @@ test('renderer surface ownership preserves the DLL lock/copy/restore contract', 
       assert.equal(com(process, pointer, 2), 0);
       assert.equal(renderer.surfaces.records.size, 0);
       assert.throws(() => device.frame(pointer), /invalid texture/);
+      assert.equal(com(process, device.device, 23, 2, 2, 1, 1, 21, 0, out, 0), 0);
+      const texture = device.objects.get(process.load(out)),
+        target = { width: 2, height: 2 },
+        rgba = Uint8Array.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+      device.gpu = {
+        pixels(value) {
+          assert.equal(value, target);
+          return rgba;
+        },
+      };
+      device.gpuTargets.set(texture.pointer, target);
+      texture.dirty = true;
+      try {
+        // Snapshot and LockRect read back the owning texture ID. Public COM
+        // operations must continue rejecting that ID as a Surface9 argument.
+        device.syncSurface(texture.pointer, texture);
+        assert.deepEqual(device.frame(texture.pointer).rgba, rgba);
+        assert.equal(texture.dirty, false);
+        assert.equal(device.surfaceData(texture.pointer), null);
+      } finally {
+        device.gpu = null;
+        device.gpuTargets.clear();
+      }
+      com(process, texture.pointer, 2);
       return frame;
     } finally {
       device.close();

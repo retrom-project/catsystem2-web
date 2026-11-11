@@ -1,3 +1,4 @@
+import { installGraphicsOracle } from './graphics-oracle-world.mjs';
 // SPDX-License-Identifier: MPL-2.0
 import { createTextureMemoryWorld } from './texture-clear-fixture.mjs';
 import { floatBits, bitsFloat } from '../../src/kcs.mjs';
@@ -21,7 +22,9 @@ const colors = (pixels, color) => {
 
 export async function exerciseGraphRendering(profile, files, stageRendererFactory) {
   const make = () => {
-      const world = createTextureMemoryWorld(profile, files, stageRendererFactory);
+      const world = installGraphicsOracle(
+        createTextureMemoryWorld(profile, files, stageRendererFactory),
+      );
       world.configuration.fields.texture.areas[0].set([0, 0, 2, 2]);
       return world;
     },
@@ -417,7 +420,7 @@ export async function exercisePlaneFileModel(profile, assets, makeStage) {
     name = '@cat/kx2/mesh07.kx2';
   files.set(name, mesh);
   const make = () => {
-      const world = createTextureMemoryWorld(profile, files, makeStage);
+      const world = installGraphicsOracle(createTextureMemoryWorld(profile, files, makeStage));
       const texture = world.configuration.fields.texture;
       texture.grid.set([1, 1]);
       for (const area of texture.areas) area.fill(0xffffffff);

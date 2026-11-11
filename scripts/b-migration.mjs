@@ -96,10 +96,13 @@ const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
   5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows text-core text-config text-layout text-parser text-profile-data text-raster legacy-text-state font-backend freetype-artifact fes-text fes-text-layout zlib zlib-artifact deflate',
-  6: 'area-effect area-effect-geometry area-effect-pixels area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
+  6: 'area-effect area-effect-geometry area-effect-pixels area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command plane-models raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
 };
 function domain(file) {
   if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
+  if (file === 'oracle/graphics-consumer-projection.mjs') return 7;
+  if (file === 'oracle/renderer-consumer-projection.mjs') return 9;
+  if (file === 'oracle/plane-movie-projection.mjs') return 8;
   if (file === 'oracle/area-geometry-projection.mjs') return 6;
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
@@ -148,7 +151,6 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'screen-capture ' +
     'input-commands registry ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command ' +
@@ -620,21 +622,56 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 
 const nonNativeGroups = [
   {
-    name: 'area-model-callback-data-bridge',
-    domain: 6,
-    entry: 'JS area effects → existing Plane vertex callback data slot → JS geometry',
-    files: ['oracle/area-geometry-projection.mjs'],
-    modules: ['area-effect', 'graphics'],
+    name: 'js-graphics-to-remaining-consumers',
+    domain: 7,
+    entry: 'Explicit FES/text/M2 calls borrow JS graph state and submit to StageRenderer',
+    files: ['oracle/graphics-consumer-projection.mjs', 'oracle/renderer-consumer-projection.mjs'],
+    modules: [],
     projection: {
       direction:
-        'Existing model triangle input and callback arguments into JS, returned XYZW into its borrowed vertex packet',
-      authority: 'JS area task parameters, clocks, geometry, RNG and lifecycle',
-      fields: ['raw color triangles', 'borrowed XYZW packet', 'model callback identity'],
-      consumers: [{ domain: 6, modules: ['graphics-render', 'graphics-task'] }],
+        'JS view/matrix/draw state into PE consumer records; explicit bitmap copies import at consumer boundaries',
+      authority: 'StageRenderer surfaces, JS Plane models, texture pages and frame scheduling',
+      fields: [
+        'view and device identity',
+        'manager matrix/shift',
+        'draw/blend cache',
+        'configured sampler words',
+        'borrowed bitmap metadata/bytes',
+        'consumer graph identity',
+      ],
+      consumers: [
+        { domain: 7, modules: ['fes-objects', 'fes-images', 'text'], removePhase: 7 },
+        { domain: 8, modules: ['sdk-javascript-task', 'directshow'], removePhase: 8 },
+        { domain: 9, modules: ['emote'], removePhase: 9 },
+      ],
       lifetime:
-        'Temporary callback data bridge until Plane/GraphManager traversal is removed in 6.6. No executable instruction hooks or EXE function calls are added by the bridge.',
-      removePhase: 6,
-      operations: ['model', 'callback', 'snapshot', 'restore'],
+        'No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.',
+      removePhase: 9,
+      operations: ['sync', 'pull', 'bitmap', 'initialize', 'snapshot', 'restore', 'close'],
+    },
+  },
+  {
+    name: 'plane-movie-decoded-texture-projection',
+    domain: 8,
+    entry: 'Plane movie messages 43/44 → original D8 decoder → JS geometry and texture submission',
+    modules: [],
+    files: ['oracle/plane-movie-projection.mjs'],
+    projection: {
+      direction:
+        'PE decoder-owned D3D texture/COM identity into a borrowed StageRenderer texture source',
+      authority:
+        'JS Plane geometry, transforms, visibility, sort order and rendering; decoder owns media/COM state',
+      fields: [
+        'movie object identity',
+        'VMR allocator or Texture Renderer texture',
+        'decoded width/height',
+        'GPU frame revision',
+      ],
+      consumers: [{ domain: 8, modules: ['directshow', 'vmr9', 'texture-movie-renderer'] }],
+      lifetime:
+        'Accepted D8 exception. No original Plane draw or GraphManager traversal runs. Release closes only the original media source; current checkpoints restore its registered identity.',
+      removePhase: 8,
+      operations: ['load', 'frame', 'release', 'snapshot', 'restore', 'close'],
     },
   },
   {
@@ -672,7 +709,6 @@ const nonNativeGroups = [
         'JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers',
       fields: ['consumer bitmap rows', 'consumer allocation bounds'],
       consumers: [
-        { domain: 6, modules: ['texture-memory'], removePhase: 6 },
         { domain: 7, modules: ['fes-images'] },
         { domain: 9, modules: ['emote'] },
       ],
@@ -716,7 +752,6 @@ const nonNativeGroups = [
       authority: 'StageRenderer.surfaces packed bytes; GPU targets are derived render resources',
       fields: ['surface identity', 'pitch', 'format', 'lock bytes', 'D3D resource handles'],
       consumers: [
-        { domain: 6, modules: ['texture-memory', 'graphics-render'], removePhase: 6 },
         { domain: 7, modules: ['fes-images'], removePhase: 7 },
         { domain: 9, modules: ['emote', 'native-d3d'], removePhase: 9 },
       ],
@@ -788,26 +823,6 @@ const nonNativeGroups = [
       'windows-messages',
       'windows-thread-handles',
       'engine-message',
-    ],
-  },
-  {
-    name: 'graphics-thread-and-application-tasks',
-    domain: 6,
-    entry:
-      'NativeGraphicsPlatform/NativeRenderer/NativePlane/NativeEngineWorkers → original task factory, receiver, vtable and worker',
-    modules: [
-      'graphics',
-      'graphics-process',
-      'graphics-render',
-      'graphics-task',
-      'renderer',
-      'engine-workers',
-      'retained-draw',
-      'screen-effect',
-      'screen-effect-render',
-      'area-effect',
-      'raster-kernel',
-      'texture-memory',
     ],
   },
   {
@@ -1117,14 +1132,6 @@ const nonNativeGroups = [
       removePhase: 8,
       operations: ['pointers', 'beforeCall'],
     },
-  },
-  {
-    name: 'js-view-to-exe-renderer-projection',
-    domain: 6,
-    entry:
-      'JS NativeGraphics/NativeView → injected syncViewGeometry → original renderer RAM; one-way only; remove in phase 6',
-    modules: ['graphics', 'graphics-process'],
-    files: ['oracle/transitional-exe.mjs'],
   },
   {
     name: 'ppi-and-dll-host',

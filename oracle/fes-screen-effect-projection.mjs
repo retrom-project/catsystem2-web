@@ -2,10 +2,49 @@
 // D7 owns the remaining view capture producer. Project its shared target
 // descriptors and canonical D3D pixels at the existing FES transport boundary.
 // Both reviewed ABIs have this same data layout. Removed with FES in phase7.
+import { bitsFloat } from '../src/kcs.mjs';
+import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+const captures = {
+  'nekopara-vol3-engine-2.6.1.76': [0x675ce0, 0x6760a0, 0x676050],
+  'sdk-4.01-engine-2.6.1.74': [0x54cdf0, 0x54d140, 0x54d0f0],
+};
 export class NativeFESScreenEffectProjection {
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
     this.bindings = [];
+    const operations = [
+      {
+        name: 'FES prepare JS screen targets',
+        count: 1,
+        run: ([count]) => Number(this.rendering.prepare(count)),
+      },
+      {
+        name: 'FES capture JS priority range',
+        count: 3,
+        run: ([index, minimum, maximum]) => this.capture(index, minimum, maximum),
+      },
+      {
+        name: 'FES prepare and capture JS priority range',
+        count: 2,
+        run: async ([minimum, maximum]) => {
+          if (!this.rendering.prepare(2)) return 0;
+          return this.capture(0, minimum, maximum);
+        },
+      },
+    ];
+    this.boundaries = operations.map((operation, i) => ({
+      ...operation,
+      ...conditionalNativeGraphicsBoundary(
+        engine,
+        captures[engine.profile][i],
+        operation.name,
+        operation.count,
+        () =>
+          this.process.cpu.reg_read_i32(this.process.uc.X86_REG_ECX) >>> 0 ===
+          engine.features.get('graphics-platform').refs.view,
+        operation.run,
+      ),
+    }));
     this.importMask = async (pointer) =>
       (await world.getNativeFeature('fes-draw-projection')).bitmap(pointer);
     this.push = () => this.pushCaptures();
@@ -16,6 +55,11 @@ export class NativeFESScreenEffectProjection {
       releaseProducerCaptures: this.release,
     });
     engine.registerFeature('fes-screen-effect-projection', this);
+  }
+  async capture(index, minimum, maximum) {
+    const result = await this.rendering.capture(index, bitsFloat(minimum), bitsFloat(maximum));
+    this.pushCaptures();
+    return Number(result);
   }
   get rendering() {
     return this.world.screenEffects.rendering;
@@ -203,12 +247,21 @@ export class NativeFESScreenEffectProjection {
     }
   }
   snapshot() {
-    return { bindings: structuredClone(this.bindings) };
+    return {
+      bindings: structuredClone(this.bindings),
+      boundaries: this.boundaries.map((entry) => entry.trap),
+    };
   }
   restore(state) {
     this.bindings = structuredClone(state.bindings);
+    state.boundaries.forEach((trap, i) => (this.boundaries[i].trap = trap));
+  }
+  recoverTrap(trap) {
+    const operation = this.boundaries.find((entry) => entry.name === trap.name);
+    return operation ? { args: operation.count, real: false, handler: operation.run } : null;
   }
   close() {
+    for (const boundary of this.boundaries) boundary.detach();
     const effects = this.world.screenEffects;
     if (effects.importMask === this.importMask) effects.importMask = null;
     if (effects.projectCaptures === this.push) effects.projectCaptures = null;

@@ -1,46 +1,26 @@
-# Native screenshots and frame recording
+# Screenshots and frame recording
 
-Main `71` creates a Script-owned bitmap through the original view screenshot
-helper (`6758E0` / `54CA70`). It renders the original capture range and keeps the
-actual returned bitmap in native memory. The host transfers its ownership into
-the canonical image list, with no second authoritative pixel array. Explicit
-release and failed Script reload release the original allocation.
+Main `71` reads the completed JS backbuffer into a Script-owned bitmap. It keeps
+the original vertical mirror caused by the old top-down copy/bottom-up bitmap
+accessor. Original helper addresses are used only by the explicit oracle.
 
-Main `1B9` sets the raw recording flag, filename prefix and starting counter.
-Main `235` and `236` read those fields from the actual native view. The game
-uses a 32-WCHAR prefix; SDK uses 64 ANSI bytes. No Boolean conversion is applied
-to the flag. The original outer frame renderer captures and encodes a BMP after
-Present, increments its DWORD counter and uses the signed counter in the
-zero-padded filename. All of this state survives a fresh World.
+Main `1B9` sets the raw recording flag, filename prefix and DWORD counter.
+Main `235` and `236` query this JS state. Prefix bounds/encoding follow the ABI.
+No Boolean conversion changes the raw flag. After a successful present, JS
+encodes a bottom-up 32-bit BMP and writes it through persistent storage. The
+filename preserves the original prefix-directory/prefix-stem convention and
+signed zero-padded counter, including DWORD wrap. Recording retains displayed
+orientation independently of the screenshot bitmap contract.
 
-Both original capture paths are supported. Direct3D uses the shared original
-render targets and readback. The GDI window path selects the view's real DIB,
-fills it and copies the presented browser canvas through the shared DC/bitmap
-services. Cursor overlays retain their window-level composition boundary.
+Window command 40030 uses the completed JS frame, retains the author-mode gate,
+and chooses the first free `cap%04d.bmp`. Cursor overlays retain their separate
+window composition boundary. Capture/recording have explicit completion guards;
+checkpoints save their state only between settled frames. Current checkpoints
+are written and restored using the same unreleased contract.
 
-The original `71` helper copies top-down D3D pixels into a bitmap whose ordinary
-pixel accessor reads bottom-up rows. Its logical result is therefore vertically
-mirrored. This behavior is retained, including with raster acceleration disabled.
-The original recording branch explicitly flips rows before encoding, and its
-decoded BMP matches the displayed picture. D3D readback orientation is independently
-checked by the authored Wine PPI and M2 pixel fixtures; it is not changed to hide
-this bitmap contract.
-
-Window command 40030 uses the same original capture routine that the desktop
-render worker calls. The browser supplies its result directly to the original
-menu handler, which retains the author-mode gate, finds the first available
-`cap%04d.bmp`, flips the rows and writes through the game's persistent virtual
-directory. A Chromium test checks the disabled case, existing files and the
-entire decoded BMP against an asymmetric displayed frame for both engines.
-
-`scripts/verify-native-screen-recording.mjs` executes the complete original
-recording setter and getters, comparing whole view buffers and unchanged VM
-regions. Game passes 7,942 comparisons across 2,646 calls; SDK passes 9,265 across
-3,087 calls, including its longer ANSI prefix. Cases cover formatted Japanese
-names, maximum fields, data/shared/extended sources and all DWORD limits.
-
-`tests/browser/native-screen-capture.spec.mjs` runs both full engines on a real
-GPU with authored asymmetric graphics. It checks screenshots through Direct3D
-and GDI, unaccelerated original results, real BMP bytes/decoded pixels, counter
-wrap with signed filenames, failed Script reload, native allocation release,
-recording in a fresh World and restoring its device before another frame.
+`verify-native-screen-recording.mjs` compares setter/getter state and VM writes
+against each original executable: SDK 11,323 comparisons/3,087 calls, Game
+9,706/2,646. Browser tests compare asymmetric full-frame pixels, screenshot
+orientation, BMP contents, signed filenames, menu capture and fresh World
+continuation. Original D3D/GDI capture evidence remains in the test-only oracle;
+normal capture calls no original view or graph traversal.

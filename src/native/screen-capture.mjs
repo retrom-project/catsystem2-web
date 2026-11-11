@@ -1,162 +1,131 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original view screenshot/recording state, backed by the shared actual device.
+// Screenshots and recording consume the JS compositor's completed framebuffer.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { formatNativeAt } from '../kcs.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
-
+import { nativeDataArgument } from './data-text.mjs';
 export const NATIVE_SCREEN_CAPTURE_CONTRACTS = Object.freeze([
-  Object.freeze({ id: 0x71, words: 0, control: 1, handlers: [0x64b690, 0x518290] }),
-  Object.freeze({ id: 0x1b9, words: 3, control: 2, handlers: [0x64fad0, 0x51b2e0] }),
-  Object.freeze({ id: 0x235, words: 0, control: 1, handlers: [0x650500, 0x51bb40] }),
-  Object.freeze({ id: 0x236, words: 0, control: 1, handlers: [0x64ff40, 0x51b5b0] }),
+  Object.freeze({ id: 0x71, words: 0, control: 1 }),
+  Object.freeze({ id: 0x1b9, words: 3, control: 2 }),
+  Object.freeze({ id: 0x235, words: 0, control: 1 }),
+  Object.freeze({ id: 0x236, words: 0, control: 1 }),
 ]);
-export const NATIVE_SCREEN_CAPTURE_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    capture: 0x6758e0,
-    recording: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.recording,
-    counter: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.counter,
-    prefix: nativeABI('nekopara-vol3-engine-2.6.1.76').layouts.screenCapture.prefix,
-    menuHandler: 0x530200,
-    menuCapture: 0x5305ef,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    capture: 0x54ca70,
-    recording: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.recording,
-    counter: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.counter,
-    prefix: nativeABI('sdk-4.01-engine-2.6.1.74').layouts.screenCapture.prefix,
-    menuHandler: 0x442080,
-    menuCapture: 0x44240a,
-  }),
-});
-const byID = new Map(NATIVE_SCREEN_CAPTURE_CONTRACTS.map((spec) => [spec.id, spec]));
+export function encodeCaptureBMP(width, height, rgba) {
+  if (rgba.length !== width * height * 4) throw new RangeError('Capture pixel dimensions differ');
+  const bytes = new Uint8Array(54 + rgba.length),
+    view = new DataView(bytes.buffer);
+  view.setUint16(0, 0x4d42, true);
+  view.setUint32(2, bytes.length, true);
+  view.setUint32(10, 54, true);
+  view.setUint32(14, 40, true);
+  view.setInt32(18, width, true);
+  view.setInt32(22, height, true);
+  view.setUint16(26, 1, true);
+  view.setUint16(28, 32, true);
+  view.setUint32(34, rgba.length, true);
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
+      const from = (y * width + x) * 4,
+        to = 54 + ((height - 1 - y) * width + x) * 4;
+      bytes.set([rgba[from + 2], rgba[from + 1], rgba[from], rgba[from + 3]], to);
+    }
+  return bytes;
+}
 export class NativeScreenCapture {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.layout = NATIVE_SCREEN_CAPTURE_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error('Screen capture requires a reviewed engine');
-    this.sdk = engine.profile.startsWith('sdk-');
-    engine.registerFeature('screen-capture', this);
+  constructor(world) {
+    this.world = world;
+    this.state = { recording: 0, counter: 0, prefix: '' };
+    this.busy = false;
   }
-  call(address, args, pointer, task) {
-    return this.process.asyncEnabled
-      ? this.engine.callFromHost(address, args, pointer, { task })
-      : this.engine.call(address, args, pointer, { task });
+  frame() {
+    const stage = this.world.stageRenderer,
+      gpu = stage.gpu;
+    if (!gpu) return null;
+    const target = gpu.primaryTarget;
+    return { width: target.width, height: target.height, rgba: gpu.pixels(target) };
   }
   async screenshot(task) {
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    const wrapper = await this.call(this.layout.capture, [], platform.refs.view, task.id);
-    if (!wrapper) return nativeReply(1, 0);
-    const images = this.world.graphics.images,
-      buffers = await this.world.getNativeFeature('data-buffers'),
-      memory = await this.world.getNativeFeature('bitmap-memory');
-    let handle = 0;
-    try {
-      // The original screenshot owns a 536-byte image wrapper. Transfer its
-      // original bitmap into the canonical Script-owned image list; KCS sees
-      // a typed bitmap handle and the raw pixel allocation is never copied.
-      handle = images.create(0, 0, task.id);
-      await memory.adopt(handle, this.process.load(wrapper));
-      return nativeReply(1, handle);
-    } catch (error) {
-      if (handle) await images.release(handle);
-      throw error;
-    } finally {
-      await buffers.releaseBitmapPointer(wrapper);
-    }
+    if (!this.world.graphics.view.active) return nativeReply(1, 0);
+    const frame = this.frame();
+    if (!frame) return nativeReply(1, 0);
+    const { width, height, rgba } = frame,
+      images = this.world.graphics.images,
+      handle = images.create(width, height, task.id),
+      bitmap = images.get(handle),
+      pixels = await bitmap.pixels(),
+      stride = width * 4;
+    for (let y = 0; y < height; y++)
+      pixels.set(rgba.subarray(y * stride, (y + 1) * stride), (height - 1 - y) * stride);
+    bitmap.changed();
+    return nativeReply(1, handle);
+  }
+  async writeBitmap(filename) {
+    const frame = this.frame();
+    if (!frame) return false;
+    if (!this.world.storage?.write) throw new Error('Screen capture storage is unavailable');
+    return this.world.storage.write(
+      filename,
+      encodeCaptureBMP(frame.width, frame.height, frame.rgba),
+    );
   }
   async menuBitmap() {
-    const { engine, world, process: p, layout } = this,
-      owner = p.load(NATIVE_STARTUP_BLOCKS[engine.profile] + 36),
-      view = engine.features.get('graphics-platform')?.refs.view;
-    if (!owner || !view || !world.configuration.authorMode) return;
-    const buffers = await world.getNativeFeature('data-buffers'),
-      bitmap = await this.call(layout.capture, [], view);
-    if (!bitmap) return;
-    let detach;
+    if (!this.world.configuration.authorMode || !this.world.graphics.view.active) return;
+    for (let i = 0; i <= 0x7fffffff; i++) {
+      const filename = `cap${String(i).padStart(4, '0')}.bmp`;
+      if ((await this.world.storage.read(filename)) !== null) continue;
+      await this.writeBitmap(filename);
+      return;
+    }
+    throw new RangeError('Screen capture filename sequence is exhausted');
+  }
+  async afterPresent() {
+    if (!this.state.recording) return;
+    if (this.busy) throw new Error('Frame recording cannot be reentered');
+    this.busy = true;
     try {
-      // The desktop requests the same capture from its render worker. The
-      // browser already serializes frames, so return the worker result at
-      // that call site and leave the name search, row copy and encoder intact.
-      detach = p.beforeInstruction(layout.menuCapture, 'screen capture worker result', () => {
-        p.cpu.reg_write_i32(p.uc.X86_REG_EAX, bitmap);
-        p.cpu.reg_write_i32(p.uc.X86_REG_EIP, layout.menuCapture + 5);
-      });
-      await this.call(layout.menuHandler, [world.window.handle, 0x111, 40030, 0, 0], owner);
+      const counter = this.state.counter | 0,
+        digits = String(Math.abs(counter)).padStart(counter < 0 ? 9 : 10, '0'),
+        filename =
+          `${this.state.prefix}/${this.state.prefix}_${counter < 0 ? '-' : ''}${digits}.bmp`.replaceAll(
+            '\\',
+            '/',
+          );
+      await this.writeBitmap(filename);
+      this.state.counter = (this.state.counter + 1) >>> 0;
     } finally {
-      detach?.();
-      await buffers.releaseBitmapPointer(bitmap);
+      this.busy = false;
     }
   }
   async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
     if (id === 0x71) return this.screenshot(task);
-    const words = Array.from(args);
-    while (words.length < spec.words) words.push(machine.nativeArgument(words.length));
-    if (id === 0x1b9) {
-      const bytes = (this.world.runtime.services.formatBytes ?? formatNativeAt)(words[1], machine);
-      if (
-        (nativeABI(this.engine.profile).text.recordingPrefix.units === 'bytes'
-          ? bytes.length
-          : new TextDecoder('shift_jis').decode(bytes).length) >=
-        nativeABI(this.engine.profile).text.recordingPrefix.limit
-      )
-        throw new RangeError('Native recording prefix exceeds its original view field');
-    }
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    if (id === 0x235 || id === 0x236)
-      return nativeReply(
-        1,
-        this.process.load(
-          platform.refs.view + (id === 0x235 ? this.layout.recording : this.layout.counter),
-        ),
-      );
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine)),
-      argv = p.allocate(Math.max(4, words.length * 4)),
-      out = p.allocate(4),
-      host = p.allocate(120, true);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.store(out, 0xcccccccc);
-      p.store(host + 116, platform.refs.view);
-      const control = await this.call(
-        spec.handlers[Number(this.sdk)],
-        [bridge.pointer, host, argv, out],
-        undefined,
-        task.id,
-      );
-      if (control !== spec.control)
-        throw new Error('Native screen-capture wrapper changed its control');
-      return nativeReply(control, control === 1 ? p.load(out) : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        p.free(host);
-        p.free(out);
-        p.free(argv);
-      }
-    }
+    if (id === 0x235) return nativeReply(1, this.state.recording);
+    if (id === 0x236) return nativeReply(1, this.state.counter);
+    if (id !== 0x1b9) return undefined;
+    const words = Array.from({ length: 3 }, (_, i) => nativeDataArgument(args, machine, i)),
+      bytes = (this.world.runtime.services.formatBytes ?? formatNativeAt)(words[1], machine),
+      prefix = new TextDecoder('shift_jis').decode(bytes),
+      spec = nativeABI(this.world.profile).text.recordingPrefix;
+    if ((spec.units === 'bytes' ? bytes.length : prefix.length) >= spec.limit)
+      throw new RangeError('Native recording prefix exceeds its original view field');
+    this.state = { recording: words[0] >>> 0, counter: words[2] >>> 0, prefix };
+    return nativeReply(2);
   }
   snapshot() {
-    return {};
+    if (this.busy) throw new Error('Cannot checkpoint an in-flight frame recording');
+    return structuredClone(this.state);
   }
-  restore() {}
+  restore(state) {
+    this.state = structuredClone(state);
+  }
 }
 export function installNativeScreenCapture(world) {
-  world.registerNativeFeature('screen-capture', (engine) => new NativeScreenCapture(engine, world));
+  const capture = (world.screenCapture = new NativeScreenCapture(world));
+  world.registerNativeFeature('screen-capture', (engine) => {
+    engine.registerFeature('screen-capture', capture);
+    return capture;
+  });
   for (const { id } of NATIVE_SCREEN_CAPTURE_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('screen-capture')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine, task) =>
+      capture.apply(id, args, machine, task),
     );
 }

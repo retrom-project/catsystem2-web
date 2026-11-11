@@ -1,3 +1,4 @@
+import { routeGraphicsOracle } from '../fixtures/oracle-browser-routes.mjs';
 // SPDX-License-Identifier: MPL-2.0
 import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
@@ -61,9 +62,11 @@ async function checkSnowScene(page, label, profile) {
       bytes = files.get(name);
     return route.fulfill(bytes ? { body: Buffer.from(bytes) } : { status: 404, body: '' });
   });
+  await routeGraphicsOracle(page);
   await page.goto('/');
   const result = await page.evaluate(
     async ({ names, profile }) => {
+      const { installGraphicsOracle } = await import('/tests/fixtures/graphics-oracle-world.mjs');
       const [
         { browserNativeWorld, placeBrowserNativePlane },
         { originalPTCLTask, particleFields },
@@ -100,7 +103,7 @@ async function checkSnowScene(page, label, profile) {
             height,
             storage: { read: async () => null, write: async () => true },
           }),
-        source = make(),
+        source = installGraphicsOracle(make()),
         browser = make();
       let raw, fresh, rawID, taskMemory;
       try {

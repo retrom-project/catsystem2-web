@@ -750,6 +750,28 @@ export class PPIWindowsServices {
     );
     this.pageProtection = new Map(state.pageProtection);
     for (const region of this.virtual.values()) {
+      if (region.rendererPixels) {
+        // JS renderer projections are mapped with final permissions. Keep
+        // contiguous pages together on restore too: splitting a large pixel
+        // span into thousands of CPU mappings stalls checkpoint restoration.
+        // Preserve any explicit protection changes/decommitted holes. Other
+        // Win32 allocations retain the existing reserve/commit path below.
+        let start = region.address,
+          protection = region.committed.get(start);
+        const end = region.address + region.size;
+        for (let page = start + PAGE_SIZE; page <= end; page += PAGE_SIZE) {
+          const next = region.committed.get(page);
+          if (page < end && next === protection) continue;
+          this.process.cpu.mem_protect(
+            start,
+            page - start,
+            protection === undefined ? 0 : this.memoryPermissions(protection),
+          );
+          start = page;
+          protection = next;
+        }
+        continue;
+      }
       this.process.cpu.mem_protect(region.address, region.size, 0);
       for (const [page, protection] of region.committed)
         this.process.cpu.mem_protect(page, 4096, this.memoryPermissions(protection));

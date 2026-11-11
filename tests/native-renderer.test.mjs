@@ -70,7 +70,7 @@ for (const [profile, variable, wide] of [
 for (const startup of [false, true])
   test(
     startup
-      ? 'SDK application callback creates its view and Top on the original worker and restores them'
+      ? 'SDK application uses JS device tasks and lazily restores its remaining consumer view'
       : 'SDK direct view initialization owns one device and restores all original pointers',
     { skip: !process.env.CATSYSTEM2_SDK_EXE },
     async () => {
@@ -83,6 +83,9 @@ for (const startup of [false, true])
             }),
             random = new ParticleRandom(),
             configuration = new NativeConfiguration({ profile });
+          configuration.fields.texture.size.set([64, 64]);
+          configuration.fields.texture.grid.set([1, 1]);
+          configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
           Object.assign(configuration.screen, {
             width: 640,
             height: 480,
@@ -110,8 +113,9 @@ for (const startup of [false, true])
         const renderer = await world.getNativeFeature('renderer'),
           platform = await world.getNativeFeature('graphics-platform'),
           p = renderer.process;
-        assert.equal(renderer.initialized, true);
+        assert.equal(renderer.initialized, false);
         assert.equal(await platform.ensureRenderer(), renderer);
+        assert.equal(renderer.initialized, true);
         assert.equal(renderer.d3d.device, p.load(renderer.core + 308));
         assert.equal(p.load(renderer.view + 4), renderer.view3D);
         assert.equal(p.load(renderer.view + 8), platform.refs.manager);
@@ -123,7 +127,7 @@ for (const startup of [false, true])
             p.allocations.get(renderer.core),
             p.allocations.get(platform.refs.manager),
           ],
-          [startup ? 0xd8 : 0x118, 0xc8, 0x670, 0x220],
+          [0x118, 0xc8, 0x670, 0x220],
         );
         assert.equal(p.load(0xc93b94), renderer.refs.caps);
         assert.equal(p.load(renderer.refs.caps + 88), 4096);
@@ -150,22 +154,25 @@ for (const startup of [false, true])
           script = await taskMemory.pointer(fresh.main.id);
         assert.equal(restored.process.load(root + 104), restored.view);
         assert.equal(restored.process.load(script + 116), restored.view);
+        const nativePages = restored.process.load(restoredPlatform.refs.manager + 8),
+          table = restored.process.load(nativePages + 20),
+          count = restored.process.load(nativePages + 24);
+        assert.ok(fresh.graphics.texturePages.pages.size > 0);
+        assert.ok(
+          Array.from({ length: count }, (_, i) => restored.process.load(table + i * 4)).every(
+            (value) => value === 0,
+          ),
+          'the consumer view must not allocate duplicate VRAM textures',
+        );
         if (startup) {
           const { kernel, refs, process } = fresh.nativeEngine,
-            owner = refs.applicationGraphics,
-            top = fresh.objects.objects.get(fresh.root).implementation;
-          assert.equal(root, owner.top);
-          assert.equal(await taskMemory.pointer(top.input), owner.input);
-          assert.equal(await taskMemory.pointer(top.sound), owner.sound);
-          assert.equal(process.allocations.get(owner.task), 0x54);
-          assert.equal(
-            kernel.threadHandles.threads.get(kernel.threadHandles.handles.get(owner.handle).id).wait
-              .kind,
-            'sleep',
-          );
-          assert.deepEqual([...kernel.timerPeriods], [[1, 1]]);
-          await fresh.close({ flushFiles: false });
+            startupBlock = refs.startupBlock;
           assert.equal(refs.applicationGraphics, undefined);
+          if (startupBlock) assert.equal(process.load(startupBlock + 4), 0);
+          const top = fresh.objects.objects.get(fresh.root).implementation;
+          assert.equal(fresh.objects.objects.get(top.input).kind, 11);
+          assert.equal(fresh.objects.objects.get(top.sound).kind, 13);
+          await fresh.close({ flushFiles: false });
           assert.equal(kernel.timerPeriods.size, 0);
         }
       } finally {

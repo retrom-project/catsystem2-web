@@ -38,7 +38,7 @@ async function startGame(page) {
     applicationHook: true,
     displayOwner: true,
     graphicsOwner: true,
-    graphicsWorker: true,
+    graphicsWorker: false,
     graphicsTasks: true,
     soundBankCount: 64,
     soundWorker: true,
@@ -87,7 +87,7 @@ test('the original game accelerators select the main and secondary languages aft
   ).toBe(true);
   expect(await startupWindow(page)).toMatchObject({
     graphicsOwner: true,
-    graphicsWorker: true,
+    graphicsWorker: false,
     graphicsTasks: true,
   });
   expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
@@ -329,6 +329,10 @@ test('original scene particle changes the rendered frame and continues after a f
 async function runParticle(page) {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  if (process.env.CATSYSTEM2_FRAME_METRICS)
+    page.on('console', (message) => {
+      if (message.text().startsWith('particle checkpoint ')) console.log(message.text());
+    });
   await startGame(page);
   await until(page, 'langselect#WAIT', 900);
   await clickNativeButton(page, 'decide');
@@ -354,7 +358,12 @@ async function runParticle(page) {
     await page.evaluate(async () => {
       const engine = window.catSystem2,
         previous = engine.world;
-      await engine.restore(await engine.snapshot());
+      if (window.nativeFrameMetrics) console.log('particle checkpoint snapshot', previous.frame);
+      const checkpoint = await engine.snapshot();
+      if (window.nativeFrameMetrics) console.log('particle checkpoint restore', previous.frame);
+      await engine.restore(checkpoint);
+      if (window.nativeFrameMetrics)
+        console.log('particle checkpoint restored', engine.world.frame);
       await engine.render();
       return engine.world !== previous;
     }),

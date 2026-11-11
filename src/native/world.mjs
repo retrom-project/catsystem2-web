@@ -931,28 +931,11 @@ export class NativeWorld {
     await this.globalStrings.initialize();
     this.refreshTitle();
     if (m2) await m2.initialize();
-    else if (m2Bootstrap) await (await this.getNativeFeature('graphics-platform')).ensureRenderer();
-    const application = this.nativeEngine?.refs.applicationGraphics,
-      process = this.nativeEngine?.process;
     this.root = await this.objects.create({
       kind: 1,
       name: 'BASE TASK',
-      frameRate: application ? process.load(application.top + 72) : this.configuration.screen.fps,
+      frameRate: this.configuration.screen.fps,
     });
-    if (application) {
-      const tasks = await this.getNativeFeature('task-memory'),
-        top = this.objects.objects.get(this.root);
-      for (const [id, pointer] of [
-        [top.id, application.top],
-        [top.implementation.input, application.input],
-        [top.implementation.sound, application.sound],
-      ]) {
-        const record = this.objects.objects.get(id);
-        if (process.load(pointer + 4) !== record.nativeID)
-          throw new Error('Original application device task ID differs from its World binding');
-        tasks.bind(record, pointer);
-      }
-    }
     this.main = await this.spawnScript(name, { parent: this.root });
   }
   async spawnScript(name, { parent = this.root, context = {}, initialExecute = false } = {}) {
@@ -968,7 +951,7 @@ export class NativeWorld {
     }
   }
   async tick() {
-    if (this.running) throw new Error('Native world frame must be serialized');
+    if (this.running || this.frameSettled) throw new Error('Native world frame must be serialized');
     this.clock.advance(this.configuration.screen.fps);
     let settle;
     this.frameSettled = new Promise((resolve) => {
@@ -996,7 +979,8 @@ export class NativeWorld {
     }
   }
   snapshot() {
-    if (this.running) throw new Error('Native world checkpoint requires a settled frame');
+    if (this.running || this.frameSettled)
+      throw new Error('Native world checkpoint requires a settled frame');
     if (this.quitRequested || this.disposalRequested) throw new Error('Native world is closing');
     const movies = this.movies.snapshot();
     return {
@@ -1066,6 +1050,7 @@ export class NativeWorld {
     } finally {
       this.restoring = false;
     }
+    for (const task of this.graphics.tasks.values()) task.sync?.();
     // Restore the providers before exposing any VM to callers. Lazy binding on
     // its first native call would discard writes made to its checkpoint copy
     // after restore returned, and would temporarily split borrowed aliases.
@@ -1093,7 +1078,8 @@ export class NativeWorld {
   }
   async close({ flushFiles = true } = {}) {
     if (this.closed) return;
-    if (this.running) throw new Error('Native world close requires a settled frame');
+    if (this.running || this.frameSettled)
+      throw new Error('Native world close requires a settled frame');
     const errors = [],
       attempt = async (operation) => {
         try {

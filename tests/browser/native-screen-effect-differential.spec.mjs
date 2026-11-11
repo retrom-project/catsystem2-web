@@ -4,6 +4,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { kcsProgram } from '../helpers.mjs';
+import { routeGraphicsOracle } from '../fixtures/oracle-browser-routes.mjs';
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -25,6 +26,7 @@ for (const [profile, variable] of [
           'emotedriver.dll',
           new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL)),
         );
+      await routeGraphicsOracle(page);
       for (const file of [
         'tests/fixtures/browser-native-world.mjs',
         'oracle/screen-effect-original.mjs',
@@ -88,7 +90,8 @@ for (const [profile, variable] of [
             ];
           for (const [kind, initialize, start, params] of cases) {
             const worlds = [],
-              ids = [];
+              ids = [],
+              baseline = [];
             try {
               for (const original of [true, false]) {
                 const world = browserNativeWorld({
@@ -100,6 +103,10 @@ for (const [profile, variable] of [
                 });
                 worlds.push(world);
                 if (original) {
+                  const { installGraphicsOracle } = await import(
+                    '/tests/fixtures/graphics-oracle-world.mjs'
+                  );
+                  installGraphicsOracle(world);
                   world.registerNativeFeature('screen-effects', (engine) =>
                     OracleEffects.open(engine, world),
                   );
@@ -137,6 +144,8 @@ for (const [profile, variable] of [
                     position,
                   });
                 }
+                await world.stageRenderer.render(world.graphics.stage, null, []);
+                baseline.push(world.stageRenderer.gpu.pixels());
                 const command = original && new OracleCommands(world.nativeEngine, world),
                   rendering = world.screenEffects.rendering;
                 if (original) {
@@ -184,6 +193,14 @@ for (const [profile, variable] of [
                 await world.sendEngine(plane, world.main.id, 59, 1, 0xffa02040);
               }
               const rows = [];
+              let baseMaximum = 0;
+              for (let i = 0; i < baseline[0].length; i++)
+                baseMaximum = Math.max(baseMaximum, Math.abs(baseline[0][i] - baseline[1][i]));
+              if (baseMaximum > 1)
+                throw new Error(
+                  'Ordinary Plane baseline differs at kind ' + kind + ' by ' + baseMaximum,
+                );
+
               for (let frame = 0; frame < 8; frame++) {
                 const pixels = [];
                 for (const world of worlds) {
@@ -207,7 +224,25 @@ for (const [profile, variable] of [
                 );
                 if (activity[0] !== activity[1])
                   throw new Error('Screen activity differs at kind ' + kind + ' frame ' + frame);
-                rows.push({ frame, maximum, different, first });
+                rows.push({
+                  frame,
+                  maximum,
+                  different,
+                  first,
+                  expected: first < 0 ? null : [...pixels[0].slice(first, first + 12)],
+                  actual: first < 0 ? null : [...pixels[1].slice(first, first + 12)],
+                  contexts:
+                    first < 0
+                      ? null
+                      : worlds.map((world) => ({
+                          depth: world.graphics.d3dContext.depthStencilEnabled,
+                          last: [
+                            world.graphics.d3dContext.lastDrawType,
+                            world.graphics.d3dContext.lastBlend,
+                          ],
+                          samplers: [...world.graphics.d3dContext.samplers],
+                        })),
+                });
               }
               results.push({ kind, rows });
             } finally {

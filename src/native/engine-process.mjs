@@ -6,7 +6,9 @@ import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs
 import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
 import { installNativeRasterKernels } from '../../oracle/raster-kernel-projection.mjs';
 import { NativeFESDrawProjection } from '../../oracle/fes-draw-projection.mjs';
-import { NativeAreaGeometryProjection } from '../../oracle/area-geometry-projection.mjs';
+import { NativePlaneMovieProjection } from '../../oracle/plane-movie-projection.mjs';
+import { NativeGraphicsPlatform } from '../../oracle/graphics-consumer-projection.mjs';
+import { NativeRenderer } from '../../oracle/renderer-consumer-projection.mjs';
 import { NativeFESScreenEffectProjection } from '../../oracle/fes-screen-effect-projection.mjs';
 import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -35,7 +37,6 @@ import { releaseNativeWindowOwner } from './engine-startup-window.mjs';
 import { releaseNativeConfigurationEvent } from './engine-configuration-event.mjs';
 import {
   installNativeApplicationWindowBoundary,
-  releaseNativeApplicationGraphics,
   releaseNativeApplicationWindow,
 } from './engine-startup-application.mjs';
 import { NativeEngineWindows } from './windows-services.mjs';
@@ -117,8 +118,14 @@ export class NativeEngineProcess {
   createDrawSourceProjection(world) {
     return new NativeFESDrawProjection(this, world);
   }
-  createAreaGeometryProjection(world) {
-    return new NativeAreaGeometryProjection(this, world);
+  createGraphicsProjection(world) {
+    return new NativeGraphicsPlatform(this, world);
+  }
+  createPlaneMovieProjection(world) {
+    return new NativePlaneMovieProjection(this, world);
+  }
+  createRendererProjection(world) {
+    return NativeRenderer.open(this, world);
   }
   createScreenEffectProjection(world) {
     return new NativeFESScreenEffectProjection(this, world);
@@ -500,11 +507,6 @@ export class NativeEngineProcess {
     if (this.pendingCalls) await this.queue;
     const errors = [];
     try {
-      try {
-        await releaseNativeApplicationGraphics(this);
-      } catch (error) {
-        errors.push(error);
-      }
       for (const feature of [...this.features.values()].reverse())
         try {
           await feature.close?.();

@@ -6,7 +6,7 @@ import { retainedRasterCases } from '../fixtures/retained-raster.mjs';
 import { rasterizeRetainedBitmap, flipBitmapRows } from '../../src/native/raster-kernel.mjs';
 import { floatBits } from '../../src/kcs.mjs';
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeGraphicsPlatform } from '../../src/native/graphics-process.mjs';
+import { NativeGraphicsPlatform } from '../../oracle/graphics-consumer-projection.mjs';
 import { NativeGraphics } from '../../src/native/graphics.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';

@@ -26,7 +26,6 @@ for (const [profile, variable] of [
         const [
             { NativeEngineProcess },
             { NativeGraphics, NativeGraphicTask },
-            { NativeGraphicsPlatform },
             { NativeRetainedDraw },
             { NativeDrawTask },
             { NativeBitmap },
@@ -37,7 +36,6 @@ for (const [profile, variable] of [
           ] = await Promise.all([
             import('/src/native/engine-process.mjs'),
             import('/src/native/graphics.mjs'),
-            import('/src/native/graphics-process.mjs'),
             import('/src/native/retained-draw.mjs'),
             import('/src/native/draw-task.mjs'),
             import('/src/native/image.mjs'),
@@ -72,7 +70,7 @@ for (const [profile, variable] of [
         world.configuration.fields.texture.bppY.set([1, 1]);
         world.configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
         world.graphics = new NativeGraphics(world);
-        new NativeGraphicsPlatform(engine, world);
+        engine.createGraphicsProjection(world);
         new NativeRetainedDraw(engine, world);
         const canvas = new OffscreenCanvas(width, height),
           renderer = {

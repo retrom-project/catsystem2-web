@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 // Native task graphics own graph state; construction alone does not load a
 // graph. Message contracts come from 5DF010/5E0920 and renderer graph setters.
 import { Stage } from '../stage.mjs';
-import { NativeGraphicsPlatform } from './graphics-process.mjs';
 import { NativeRenderer } from './renderer.mjs';
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { applyObjectMotionState } from '../motion/target.mjs';
@@ -39,36 +39,24 @@ import { NativeTexturePages, negotiateNativeTextureLayout } from './texture-layo
 import { divideNativeTriangles, nativeDivisionLayout } from './divided-model.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
-import { NativeTexturePageView } from './texture-memory.mjs';
-import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
+import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { installNativeEngineWorkers } from './engine-workers.mjs';
 import { NativeVMR9 } from './vmr9.mjs';
 import { NativeDirectShow } from './directshow.mjs';
 import { installNativePlaneMovieCommands } from './plane-movie-command.mjs';
 import { installNativePlaneModelCommands } from './plane-model-command.mjs';
 import { nativePlaneInputGeometry } from './plane-input-geometry.mjs';
+import { decodePlaneKX2, NativePlaneTrail } from './plane-models.mjs';
+import { readNativeResource } from './resource-file.mjs';
 import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
 ]);
-const GRAPHIC_TASK_LAYOUTS = {
-  'nekopara-vol3-engine-2.6.1.76': {
-    2: { construct: 0x5df7a0, size: 0x2ac },
-    6: { construct: 0x5decc0, size: 0xa4 },
-  },
-  'sdk-4.01-engine-2.6.1.74': {
-    2: { construct: 0x4bbb50, size: 0x2ac },
-    6: { construct: 0x4bb080, size: 0xa4 },
-  },
-};
 
 export class NativeGraphics {
   synchronizeView() {
-    const engine = this.world.nativeEngine;
-    if (engine?.features.get('renderer')?.initialized)
-      this.world.transitionalExe.syncViewGeometry({ engine, graphics: this });
+    this.world.nativeEngine?.features.get('graphics-platform')?.syncView?.();
   }
   get cameraNear() {
     return bitsFloat(this.cameraNearWord);
@@ -96,7 +84,17 @@ export class NativeGraphics {
     this.screenMatrix = identity();
     this.screenShift = [0, 0];
     this.cameraNear = 1000;
-    this.d3dContext = createD3DContext();
+    const texture = world.configuration?.fields.texture,
+      // The required native renderer's M2 initialization establishes linear
+      // filters before any script. Preserve that state in a JS-only World too.
+      pluginDeviceDefaults = world.profile && nativeABI(world.profile).plugins.requiredRenderer;
+    this.d3dContext = createD3DContext({
+      depthStencilEnabled: true,
+      magFilter: texture && !pluginDeviceDefaults ? texture.mag + 1 : 2,
+      minFilter: texture && !pluginDeviceDefaults ? texture.min + 1 : 2,
+    });
+    this.d3dContext.samplers.set(5, this.d3dContext.magFilter);
+    this.d3dContext.samplers.set(6, this.d3dContext.minFilter);
     const screen = world.configuration?.screen;
     this.view = new NativeView({
       virtualWidth: screen?.virtualWidth ?? world.game.width,
@@ -120,14 +118,6 @@ export class NativeGraphics {
     this.cursor.state.allowed = value >>> 0;
   }
   initializeTextures() {
-    const engine = this.world.nativeEngine;
-    if (engine?.features.get('renderer')?.initialized) {
-      if (!(this.texturePages instanceof NativeTexturePageView)) {
-        this.texturePages?.close();
-        this.texturePages = new NativeTexturePageView(engine.features.get('graphics-platform'));
-      }
-      return;
-    }
     if (this.texturePages) return;
     const texture = this.world.configuration?.fields.texture;
     if (!texture) throw new Error('Native texture configuration is unavailable');
@@ -142,6 +132,7 @@ export class NativeGraphics {
     for (const field of ['grid', 'bppY']) texture[field].set(layout[field]);
     texture.areas.forEach((row, i) => row.set(layout.areas[i]));
     this.texturePages = new NativeTexturePages(layout, {
+      stage: this.world.stageRenderer ?? null,
       release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
     });
   }
@@ -203,9 +194,13 @@ export class NativeGraphics {
     return this.images.get(next);
   }
   async fill(x, y, width, height, color = 0) {
-    const engine = this.world.nativeEngine;
-    if (color === 0 && engine?.features.get('renderer')?.initialized)
-      return engine.features.get('graphics-platform').clearBitmap(x, y, width, height);
+    if (color === 0) {
+      if (!this.view.active || width <= 0 || height <= 0) return 0;
+      this.initializeTextures();
+      this.texturePages.clear(x | 0, y | 0, width | 0, height | 0);
+      if (this.vramHandle) await this.images.get(this.vramHandle).fill(x, y, width, height, 0);
+      return 1;
+    }
     const vram = await this.ensureVRAM(
       Math.max(this.world.game.width, x + width),
       Math.max(this.world.game.height, y + height),
@@ -231,7 +226,7 @@ export class NativeGraphics {
       copy: true,
     });
     this.initializeTextures();
-    if (upload)
+    if (upload && this.view.active)
       await this.texturePages.upload(vram, [x + area[0], y + area[1], x + area[2], y + area[3]]);
   }
   async prepareRender() {
@@ -339,7 +334,10 @@ export class NativeGraphics {
     instance.forceRedrawPending = false;
   }
   drawItems() {
-    return this.cursor.drawItems();
+    return [
+      ...this.cursor.drawItems(),
+      ...[...this.tasks.values()].flatMap((task) => task.trail?.drawItems() ?? []),
+    ];
   }
   projection() {
     return {
@@ -354,10 +352,13 @@ export class NativeGraphics {
     return ++this.renderSequence;
   }
   snapshot() {
+    if (this.world.stageRenderer?.rendering)
+      throw new Error('Cannot checkpoint an in-flight stage render');
     return structuredClone({
       bitmapAssets: this.images.snapshotAssets(),
       retainedDraw: this.world.retainedDraw?.snapshot() ?? null,
       screenEffects: this.world.screenEffects?.snapshot() ?? null,
+      screenCapture: this.world.screenCapture?.snapshot() ?? null,
       planeModelCommands: this.world.planeModelCommands?.snapshot() ?? null,
       vramHandle: this.vramHandle,
       d3dContext: snapshotD3DContext(this.d3dContext),
@@ -381,24 +382,28 @@ export class NativeGraphics {
       nativeRenderOrder,
       retainedDraw,
       screenEffects,
+      screenCapture,
       planeModelCommands,
       ...values
     } = structuredClone(state);
     this.images.restoreAssets(bitmapAssets);
     if (retainedDraw) this.world.retainedDraw.restore(retainedDraw);
     if (screenEffects) this.world.screenEffects.restore(screenEffects);
+    if (screenCapture) this.world.screenCapture.restore(screenCapture);
+    this.graphs.clear();
     if (planeModelCommands) this.world.planeModelCommands.restore(planeModelCommands);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);
     this.view.restore(view);
-    this.texturePages =
-      texturePages && !texturePages.native
-        ? new NativeTexturePages(texturePages.layout, {
-            release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
-          })
-        : null;
-    if (texturePages && !texturePages.native) this.texturePages.restore(texturePages);
+    this.texturePages?.close();
+    this.texturePages = texturePages
+      ? new NativeTexturePages(texturePages.layout, {
+          stage: this.world.stageRenderer ?? null,
+          release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
+        })
+      : null;
+    if (texturePages) this.texturePages.restore(texturePages);
     this.cursor.restore(cursor);
     this.fesSurfaces.clear();
   }
@@ -415,9 +420,6 @@ export class NativeGraphics {
   }
 
   attachment(id) {
-    const platform = this.world.nativeEngine?.features.get('graphics-platform'),
-      native = platform?.attachment(id);
-    if (native) return native;
     const graph = this.graphs.get(id >>> 0);
     if (!graph) return null;
     const bytes = graph.kx2,
@@ -428,15 +430,14 @@ export class NativeGraphics {
       matrix: Array.from({ length: 16 }, (_, i) =>
         view.getFloat32(MOTION_ABI.matrix + i * 4, true),
       ),
-      display: view.getInt32(MOTION_ABI.display, true) !== 0,
+      display: graph.style?.shown !== false && view.getInt32(MOTION_ABI.display, true) !== 0,
     };
   }
   graphHandle(taskID) {
     const task = this.tasks.get(taskID >>> 0);
-    if (task?.receiver)
-      return task.nativePlatform.descriptor(task.record.nativeID) ? task.record.nativeID : -1;
-    return task?.graph ? taskID >>> 0 : -1;
+    return task?.graph ? (task.record.nativeID ?? taskID) >>> 0 : -1;
   }
+
   async effectModel(nativeID) {
     const task = [...this.tasks.values()].find((task) => task.record.nativeID === nativeID);
     if (task?.graph) {
@@ -454,8 +455,7 @@ export class NativeGraphics {
         },
       };
     }
-    if (!this.world.nativeEngine?.features.get('renderer')?.initialized) return null;
-    return (await this.world.getNativeFeature('area-geometry-projection')).model(nativeID);
+    return null;
   }
   effectVertices(graph, vertices, triangle) {
     const id = graph.vertexEffectID;
@@ -497,6 +497,7 @@ export class NativeGraphicTask {
       rect: [0, 0, 0, 0],
       imageIndex: -1,
       shown: true,
+      renderPaused: true,
       blocked: false,
       phase: 0,
       renderType: 1,
@@ -508,64 +509,61 @@ export class NativeGraphicTask {
       vramType: 1,
       after: null,
     };
-    this.graph = null;
+    this.bindState(this.state);
     this.pointer = 0;
+    this.trail = new NativePlaneTrail(this);
   }
-  async prepareNative({ fromHost = false } = {}) {
-    if (this.nativeLayout) return this.pointer;
-    const engine = this.world.nativeEngine,
-      layout = GRAPHIC_TASK_LAYOUTS[engine?.profile]?.[this.record.kind];
-    if (!layout) throw new Error('Native graph preparation requires a reviewed plane task');
-    this.nativePlatform = await this.world.getNativeFeature('graphics-platform');
-    this.taskMemory = await this.world.getNativeFeature('task-memory');
-    const p = engine.process,
-      name = encodeCP932(this.record.name + '\0'),
-      source = p.allocate(name.length, true);
-    this.pointer = p.allocate(layout.size, true);
-    this.taskMemory.bind(this.record, this.pointer, { ready: false });
-    p.write(source, name);
-    let constructed = false;
-    try {
-      await engine[fromHost || p.asyncEnabled ? 'callFromHost' : 'call'](
-        layout.construct,
-        [
-          this.record.nativeID ?? this.record.id,
-          source,
-          this.record.frameRate,
-          this.nativePlatform.refs.view,
-        ],
-        this.pointer,
-        { task: this.record.id },
-      );
-      constructed = true;
-      this.nativeLayout = layout;
-      await this.taskMemory.ready(this.record);
-      this.bindOriginalReceiver();
-      return this.pointer;
-    } catch (error) {
-      if (constructed) await this.close({ fromHost });
-      else {
-        this.taskMemory.unbind(this.record.id);
-        p.free(this.pointer);
-        this.pointer = 0;
-      }
-      throw error;
-    } finally {
-      p.free(source);
-    }
+  get graphKey() {
+    return [2, 6].includes(this.record.kind)
+      ? (this.record.nativeID ?? this.record.id) >>> 0
+      : null;
+  }
+  get stageKey() {
+    return this.graphKey !== null && this.record.nativeID !== undefined
+      ? '@' + this.graphKey
+      : this.record.id;
+  }
+  get graph() {
+    return this.graphKey === null
+      ? (this.localGraph ?? null)
+      : (this.graphics.graphs.get(this.graphKey) ?? null);
+  }
+  set graph(value) {
+    if (this.graphKey === null) this.localGraph = value;
+    else if (value) this.graphics.graphs.set(this.graphKey, value);
+    else this.graphics.graphs.delete(this.graphKey);
+  }
+  bindState(state) {
+    const local = { ...state };
+    for (const key of [
+      'shown',
+      'imageIndex',
+      'drawType',
+      'shapeWords',
+      'blendMode',
+      'colorOverride',
+      'coordMode',
+      'vramType',
+    ])
+      Object.defineProperty(state, key, {
+        configurable: true,
+        enumerable: true,
+        get: () => this.graph?.style?.[key] ?? local[key],
+        set: (value) => {
+          local[key] = value;
+          if (this.graph?.style) this.graph.style[key] = value;
+        },
+      });
+    this.state = state;
   }
   get input() {
     return this.world.inputFor?.(this.record.id);
   }
-  bindOriginalReceiver() {
-    this.receiver = new NativePlaneReceiver(this);
-    this.state = null;
-  }
   beforeChildren() {
-    this.receiver?.beforeChildren();
+    this.state.changed = 0;
   }
-  drawTick(frame) {
-    return this.receiver?.drawTick(frame);
+  drawTick() {
+    this.trail.tick();
   }
   machine(sender) {
     const machine = this.world.objects.machine(sender);
@@ -577,10 +575,10 @@ export class NativeGraphicTask {
   }
   sync() {
     if (!this.graph) {
-      delete this.graphics.stage.planes[this.record.id];
+      delete this.graphics.stage.planes[this.stageKey];
       return;
     }
-    const plane = this.graphics.stage.plane(this.record.id);
+    const plane = this.graphics.stage.plane(this.stageKey);
     applyObjectMotionState(plane, this.graph.kx2, { scaleUnit: 100, visible: 'visible' });
     Object.assign(plane, {
       width: this.graph.width,
@@ -588,37 +586,54 @@ export class NativeGraphicTask {
       priority: motionVector(this.graph.kx2, MOTION_ABI.base)[2],
       blendMode: this.state.blendMode,
       nativeGraph: this.graph,
+      nativeTaskWorldID: this.record.id,
       visible: plane.visible && this.state.shown,
     });
     if (this.graph.colors?.length === 1) plane.color = this.graph.colors[0];
   }
   unload() {
-    this.graphics.graphs.delete(this.record.id);
+    this.trail?.close();
     this.graph = null;
     this.state.rect = [0, 0, 0, 0];
     this.state.drawType = 0;
     this.sync();
   }
   makeGraph(shape) {
-    if (this.receiver)
-      throw new Error('Mounted planes create models through their original receiver');
+    const style = Object.fromEntries(
+      [
+        'shown',
+        'rect',
+        'imageIndex',
+        'drawType',
+        'shapeWords',
+        'blendMode',
+        'colorOverride',
+        'coordMode',
+        'vramType',
+      ].map((key) => [key, structuredClone(this.state[key])]),
+    );
     this.graph = {
       ...shape,
+      style,
       renderOrder: this.graphics.allocateRenderOrder(),
       kx2: initialMotionObject(),
       textureTransform: initialMotionObject(),
       matrixExplicit: false,
       textureMatrixExplicit: false,
     };
-    this.graphics.graphs.set(this.record.id, this.graph);
+    setMotionVector(this.graph.kx2, MOTION_ABI.base, [0, 0, 5000]);
+    // A solid rectangle has one native model. Both selector values resolve
+    // to that model, while textured rectangles have separate UV transforms.
+    if (shape.type === 2 || shape.type === 7) this.graph.textureTransform = this.graph.kx2;
     this.state.rect = [0, 0, Math.abs(shape.width), Math.abs(shape.height)];
     this.state.colorOverride = false;
     this.state.drawType = shape.type;
     this.sync();
   }
   async message(words, context = {}) {
-    if (this.receiver) return this.receiver.message(words, context);
     const [sender, id, w, l] = words;
+    if ([3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id))
+      await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
     if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
       return this.base.message(words, context);
     const load = (address) =>
@@ -631,12 +646,16 @@ export class NativeGraphicTask {
         : this.machine(context.nativeSenderWorldID ?? sender).store(address, value);
     const bytes = (address, size) =>
       context.payload
-        ? context.payload.bytes(address, size)
+        ? context.payload.bytes
+          ? context.payload.bytes(address, size)
+          : context.payload.read(address, size)
         : this.machine(context.nativeSenderWorldID ?? sender).bytes(address, size);
     const floats = (address, count) =>
       Array.from({ length: count }, (_, i) => bitsFloat(load(address + i * 4)));
     const put = (address, values) => values.forEach((v, i) => store(address + i * 4, floatBits(v)));
-    const transformState = () => (w ? this.graph?.textureTransform : this.graph?.kx2);
+    const textureSelected = () => Boolean(w && this.graph?.textureTransform !== this.graph?.kx2);
+    const transformState = () =>
+      textureSelected() ? this.graph?.textureTransform : this.graph?.kx2;
     const vector = (offset) => (this.graph ? motionVector(transformState(), offset) : [0, 0, 0]);
     const setVector = (offset, values) => {
       if (this.graph) setMotionVector(transformState(), offset, values);
@@ -694,12 +713,101 @@ export class NativeGraphicTask {
         });
         return 0;
       }
+      case 43:
+      case 44: {
+        const name = [];
+        for (let at = 0; ; at++) {
+          const byte = bytes(l + 12 + at, 1)[0];
+          if (!byte) break;
+          if (at >= 2048) throw new RangeError('Plane movie filename is too long');
+          name.push(byte);
+        }
+        const projection = await this.world.getNativeFeature('plane-movie-projection'),
+          source = await projection.load(
+            this,
+            id - 43,
+            Array.from({ length: 3 }, (_, i) => load(l + i * 4)),
+            new TextDecoder('shift_jis').decode(Uint8Array.from(name)),
+          );
+        this.unload();
+        if (source)
+          this.makeGraph({
+            type: id - 40,
+            x: bitsFloat(load(l)),
+            y: bitsFloat(load(l + 4)),
+            z: bitsFloat(load(l + 8)),
+            width: source.width,
+            height: source.height,
+            movie: source,
+            vram: false,
+          });
+        return 0;
+      }
+      case 87:
+      case 88:
+        store(l, this.graph?.movie?.mode === id - 87 ? this.graph.movie.pointer : 0);
+        return 0;
+      case 45:
+        this.makeGraph({ type: 5, width: 0, height: 0, triangles: [], vram: false });
+        return 0;
+      case 46: {
+        const a = Array.from({ length: 10 }, (_, i) => load(l + i * 4));
+        this.makeGraph({ type: 5, width: 0, height: 0, triangles: [], vram: false });
+        for (let row = 0; row < (a[9] | 0); row++)
+          for (let column = 0; column < (a[8] | 0); column++) {
+            const id = await this.world.objects.create({
+                kind: 2,
+                parent: this.record.id,
+                name: 'TilePlane',
+              }),
+              child = this.graphics.get(id);
+            await child.message([this.record.nativeID, 41, 0, 0], {
+              payload: new NativeGraphicsPacket([0, 0, 0, ...a.slice(3, 8)]),
+            });
+            await child.message([this.record.nativeID, 53, 0, 0], {
+              payload: new NativeGraphicsPacket([
+                floatBits(Math.fround(bitsFloat(a[0]) + Math.fround(column * bitsFloat(a[3])))),
+                floatBits(Math.fround(bitsFloat(a[1]) + Math.fround(row * bitsFloat(a[4])))),
+                a[2],
+              ]),
+            });
+          }
+        this.state.drawType = 9;
+        return 0;
+      }
+      case 69:
+      case 70: {
+        const name = [];
+        for (let at = 0; ; at++) {
+          const byte = bytes(l + at, 1)[0];
+          if (!byte) break;
+          if (at >= 2048) throw new RangeError('Plane model filename is too long');
+          name.push(byte);
+        }
+        const filename = new TextDecoder('shift_jis').decode(Uint8Array.from(name)),
+          data = await readNativeResource(this.world, filename);
+        this.unload();
+        if (data) {
+          const graph = decodePlaneKX2(data);
+          this.makeGraph({ ...graph, type: id === 69 ? 6 : 7, vram: id === 69, filename });
+          this.state.rect = [graph.rect[0], graph.rect[1], graph.width, graph.height];
+        }
+        return 0;
+      }
+      case 79:
+        this.trail.configure(w ? Array.from({ length: 13 }, (_, i) => load(l + i * 4)) : null);
+        return 0;
+      case 80:
+        this.trail.shift(bytes(l, 128));
+        return 0;
       case 47:
+        this.state.renderPaused = !l;
         this.state.shown = Boolean(l);
         this.setInputDisplay();
         this.sync();
         return 0;
       case 48:
+        this.state.renderPaused = !l;
         if (this.graph)
           new DataView(this.graph.kx2.buffer).setInt32(
             MOTION_ABI.display,
@@ -742,7 +850,8 @@ export class NativeGraphicTask {
         return 0;
       case 55:
         setVector(MOTION_ABI.rotation, floats(l, 3));
-        if (this.graph) this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = false;
+        if (this.graph)
+          this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = false;
         this.sync();
         this.updateGraphInputArea();
         await this.broadcast(56, w, l, context);
@@ -753,10 +862,10 @@ export class NativeGraphicTask {
         if (this.state.inheritPosition && this.graph) {
           if (id === 56) {
             setVector(MOTION_ABI.rotation, floats(l, 3));
-            this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = false;
+            this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = false;
           } else if (id === 58) {
             transformState().set(bytes(l, 64), MOTION_ABI.matrix);
-            this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
+            this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
           } else setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
           this.sync();
         }
@@ -766,7 +875,7 @@ export class NativeGraphicTask {
       case 57:
         if (this.graph) {
           transformState().set(bytes(l, 64), MOTION_ABI.matrix);
-          this.graph[w ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
+          this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
         }
         this.sync();
         this.updateGraphInputArea();
@@ -782,6 +891,32 @@ export class NativeGraphicTask {
       case 85:
       case 86:
         return 0; // Explicit original simple-plane empty branches.
+      case 72: {
+        const position = vector(MOTION_ABI.pos),
+          base = vector(MOTION_ABI.base),
+          left = Math.fround(position[0] - base[0]),
+          top = Math.fround(position[1] - base[1]);
+        await this.message([sender, 89, 0, 0], {
+          ...context,
+          payload: new NativeGraphicsPacket([
+            Math.trunc(left),
+            Math.trunc(top),
+            Math.trunc(Math.fround(this.state.rect[2] + left)),
+            Math.trunc(Math.fround(this.state.rect[3] + top)),
+            Math.trunc(base[2]),
+            l,
+          ]),
+        });
+        this.state.button = Array.from({ length: 12 }, (_, i) => load(w + i * 4));
+        this.state.buttonEnabled = true;
+        this.state.buttonFlags = l;
+        if (this.state.button[0]) await this.selectButton(0);
+        return 0;
+      }
+      case 73:
+        await this.selectButton(l & 65535);
+        this.state.blocked = Boolean(l >>> 31);
+        return 0;
       case 61:
         put(l, vector(MOTION_ABI.base));
         return 0;
@@ -962,8 +1097,6 @@ export class NativeGraphicTask {
         return 0;
       }
       default:
-        if ([43, 44, 45, 46, 69, 70, 72, 73, 79, 80, 87, 88].includes(id))
-          throw new Error(`Native graphic message ${id} requires its complete plane adapter`);
         return this.base.message(words, context);
     }
   }
@@ -976,6 +1109,50 @@ export class NativeGraphicTask {
         this.state.rect.slice(2, 4),
       );
     return [...bounds, priority, flags];
+  }
+  async selectButton(selector) {
+    const row = selector * 3,
+      button = this.state.button;
+    if (!button || selector > 3 || !button[row]) return;
+    if (this.graph) {
+      const transform = this.graph.textureTransform,
+        position = motionVector(transform, MOTION_ABI.pos);
+      setMotionVector(transform, MOTION_ABI.pos, [
+        button[row + 1] | 0,
+        button[row + 2] | 0,
+        position[2],
+      ]);
+    }
+    this.state.phase = selector;
+    this.sync();
+    if (this.state.imageIndex !== -1) {
+      if (selector === 1) await this.positionHint();
+      else await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
+    }
+  }
+  async positionHint() {
+    if (!this.state.frameStep) return;
+    const dimensions = new NativeGraphicsPacket(),
+      bounds = this.input?.get(this.record.id)?.bounds,
+      view = this.graphics.view;
+    if (!bounds) throw new Error('Plane hint positioning requires its input rectangle');
+    await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 75, 0, 4, {
+      payload: dimensions,
+    });
+    const width = Math.trunc(bitsFloat(dimensions.load(0))),
+      height = Math.trunc(bitsFloat(dimensions.load(4))),
+      centered = (bounds[0] - (((bounds[0] - bounds[2] + width) >>> 0) >>> 1)) | 0,
+      x = Math.max(
+        0,
+        (centered + width) >>> 0 < view.clientWidth >>> 0
+          ? centered
+          : (view.clientWidth - width) | 0,
+      ),
+      y = (bounds[1] - height) | 0;
+    await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 51, 0, 0, {
+      payload: new NativeGraphicsPacket([x, y >= 0 ? y : bounds[3], 0].map(floatBits)),
+    });
+    await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 1);
   }
   updateGraphInputArea() {
     if (!this.state.inputTracksGraph) return;
@@ -1035,16 +1212,34 @@ export class NativeGraphicTask {
         await this.world.sendEngine(task.record.id, this.record.id, message, w, l, context);
   }
   async drawGPU(gpu) {
+    return this.drawGraph(gpu, this.graph, this.state);
+  }
+  async drawGraph(gpu, inputGraph, state) {
     if (
-      !this.graph ||
-      !this.state.shown ||
-      this.graph.renderEnabled === false ||
-      !new DataView(this.graph.kx2.buffer).getInt32(MOTION_ABI.display, true)
+      !inputGraph ||
+      !state.shown ||
+      inputGraph.renderEnabled === false ||
+      !new DataView(inputGraph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     )
       return;
-    if (this.graph.mesh || this.graph.vram) {
+    if (inputGraph.movie) {
+      const frame = this.world.nativeEngine.features
+        .get('plane-movie-projection')
+        .frame(inputGraph.movie);
+      gpu.drawGeometry(
+        nativeGraphGeometry(inputGraph, state, this.graphics.projection(), frame),
+        frame,
+        {
+          blendMode: state.blendMode,
+          context: this.graphics.d3dContext,
+          drawType: 0,
+        },
+      );
+      return;
+    }
+    if (inputGraph.mesh || inputGraph.vram) {
       this.graphics.initializeTextures();
-      let graph = this.graph;
+      let graph = inputGraph;
       if (!graph.mesh) {
         const source = graph.textureTransform.slice(),
           offset = motionVector(graph.kx2, MOTION_ABI.vram),
@@ -1061,14 +1256,14 @@ export class NativeGraphicTask {
       }
       for (const item of nativeMeshGeometry(
         graph,
-        this.state,
+        state,
         this.graphics.projection(),
         (vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
       )) {
         const frame =
           item.textureID === -1 ? WHITE : await this.graphics.meshTexture(item.textureID);
         gpu.drawGeometry([item], frame, {
-          blendMode: this.state.blendMode,
+          blendMode: state.blendMode,
           context: this.graphics.d3dContext,
           drawType: 0,
         });
@@ -1077,72 +1272,48 @@ export class NativeGraphicTask {
     }
     gpu.drawGeometry(
       nativeGraphGeometry(
-        this.graph,
-        this.state,
+        inputGraph,
+        state,
         this.graphics.projection(),
         null,
-        (vertices, triangle) => this.graphics.effectVertices(this.graph, vertices, triangle),
+        (vertices, triangle) => this.graphics.effectVertices(inputGraph, vertices, triangle),
       ),
       WHITE,
-      { blendMode: this.state.blendMode, context: this.graphics.d3dContext, drawType: 0 },
+      { blendMode: state.blendMode, context: this.graphics.d3dContext, drawType: 0 },
     );
   }
   snapshot() {
-    if (this.receiver) return { pointer: this.pointer };
-    return structuredClone({ state: this.state, graph: this.graph, pointer: this.pointer });
+    return structuredClone({ state: this.state, graph: this.graph });
   }
   restore(data) {
-    this.pointer = data.pointer ?? 0;
-    if (this.pointer && [2, 6].includes(this.record.kind)) {
-      const engine = this.world.nativeEngine;
-      this.nativeLayout = GRAPHIC_TASK_LAYOUTS[engine.profile][this.record.kind];
-      this.nativePlatform = engine.features.get('graphics-platform');
-      this.taskMemory = engine.features.get('task-memory');
-      if (engine.process.load(this.pointer + 4) !== (this.record.nativeID ?? this.record.id))
-        throw new Error('Native graphic checkpoint task identity differs');
-      this.bindOriginalReceiver();
-      return;
-    }
-    this.state = structuredClone(data.state);
+    this.bindState(structuredClone(data.state));
     this.graph = structuredClone(data.graph);
-    if (this.graph) this.graphics.graphs.set(this.record.id, this.graph);
+    for (const graph of this.state.trail?.graphs ?? [])
+      this.graphics.graphs.set(graph.nativeID, graph);
     this.sync();
   }
   closeGraph() {
-    if (this.receiver) this.receiver.close();
-    else {
-      this.input?.unregister(this.record.id);
-      this.unload();
-    }
+    this.input?.unregister(this.record.id);
+    this.unload();
     this.graphics.tasks.delete(this.record.id);
   }
-  async close({ fromHost = false } = {}) {
+  async close() {
     if (this.nativeClosed) return;
-    try {
-      if (this.nativeLayout && this.pointer) {
-        const engine = this.world.nativeEngine,
-          p = engine.process;
-        await engine[fromHost || p.asyncEnabled ? 'callFromHost' : 'call'](
-          p.load(p.load(this.pointer)),
-          [1],
-          this.pointer,
-          { task: this.record.id },
-        );
-      }
-    } finally {
-      if (this.nativeLayout) this.taskMemory.unbind(this.record.id);
-      this.closeGraph();
-      this.nativeClosed = true;
-    }
+    await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
+    this.closeGraph();
+    this.nativeClosed = true;
   }
 }
 
 export function installNativeGraphics(world) {
   if (world.registerNativeFeature) {
-    world.registerNativeFeature('area-geometry-projection', (engine) =>
-      engine.createAreaGeometryProjection(world),
-    );
     world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
+    world.registerNativeFeature('plane-movie-projection', async (engine) => {
+      await world.getNativeFeature('graphics-platform');
+      await world.getNativeFeature('directshow');
+      await world.getNativeFeature('texture-movie-renderer');
+      return engine.createPlaneMovieProjection(world);
+    });
     world.registerNativeFeature('vmr9', (engine) => new NativeVMR9(engine));
     world.registerNativeFeature(
       'texture-movie-renderer',
@@ -1157,19 +1328,14 @@ export function installNativeGraphics(world) {
     world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {
       await world.getNativeFeature('bitmap-memory');
-      return new NativeGraphicsPlatform(engine, world);
+      return engine.createGraphicsProjection(world);
     });
   }
   const graphics = new NativeGraphics(world);
   world.graphics = graphics;
   world.retainedDraw = new NativeRetainedDraw(world);
   // Kind 2 is the native simple plane; kind 6 is its base image-plane task.
-  for (const kind of [2, 6])
-    world.objects.register(kind, async (record, _objects, options = {}) => {
-      const task = graphics.create(record);
-      if (!options.restoring && world.nativeEngine?.module) await task.prepareNative(options);
-      return task;
-    });
+  for (const kind of [2, 6]) world.objects.register(kind, (record) => graphics.create(record));
   world.objects.register(15, (record) => {
     const task = new NativeDrawTask(graphics, record);
     graphics.drawTasks.set(record.id, task);

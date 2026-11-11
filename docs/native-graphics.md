@@ -10,113 +10,74 @@ The resource HRESULT and COM identity contracts remain observable at the DLL
 boundary. Renderer checkpoints save sparse surface bytes and reject open locks.
 
 The migration board registers this boundary as `renderer-surfaces-to-dll-locks`.
-Original Draw/graph consumers are replaced during phase 6. FES consumers remain
+Original Draw/graph consumers have been replaced. FES consumers remain
 until phase 7 and original E-mote/PPI consumers until phase 9. GPU targets and
 sampling frames are derived from the same JS resource records.
 
-## Original model draw traversal
+Pixel projections use fully committed, nonexecutable RW spans outside the guest
+heap. The renderer maps each span once and registers its lifetime with the
+existing virtual-region registry. It does not reserve a large block and change
+permissions per page from an active COM callback: a real 4095×2122 texture
+exposed a CPU-backend stall in that path. Current checkpoints retain the
+projection identity. Renderer-owned protection runs restore together, preserving
+explicit read-only pages and decommitted holes without splitting every pixel
+page into a CPU mapping. Other Win32 allocations retain their existing restore
+behavior. StageRenderer bytes remain authoritative.
 
-Task routing and graph lookup have different identity domains. A task number
-belongs to its Top. Nested Tops inherit their parent's view: the original game
-factory `5DDCB0` passes `this+104` to both the Top and Plane constructors; SDK
-`4B9F40` does the same. The view's type table and GraphManager's model map use
-the raw task number without a Top component. Two same-number planes sharing a
-view therefore alias one graph. Recreating either replaces that model, queries
-from either see it, and deleting either removes it. Separate host world IDs do
-not become new native graph keys.
+## JS model ownership and frame order
 
-The mounted GraphManager draw functions (`67BB20`, SDK `5527C0`) now execute
-their own model lookup, stable list traversal, transforms, texture selection
-and D3D submission. Their original code and model records remain authoritative;
-the browser does not reconstruct a second geometry model. Existing host text,
-M2 and particle callbacks join at the original traversal points, using the same
-render target, depth surface and D3D state. The original background insertion
-at priority 55000 remains in that execution path.
+Kinds 2 and 6 use JS receivers and owned model data. Task IDs belong to a Top;
+GraphManager IDs are raw native numbers shared by the view. Same-number planes
+therefore alias one JS graph even under different Tops. Replacing or destroying
+either changes the shared model. Queries retain task-local rectangle fields.
 
-The original sort compares only base priority and preserves insertion order
-for ties. A shared derived sequence records native descriptor insertions and
-host graph/particle loads so ties across the platform boundary retain that
-order. Native deletion removes its metadata. The sequence and pointer-to-order
-table are checkpoint metadata; CPU model contents are saved once in the shared
-engine process. Callback return restores the original custom-model FVF,
-texture and shader postamble before native traversal resumes.
+`plane-models.mjs` owns file-backed KX2 triangles and Plane trail history/modes.
+`graphics.mjs` owns transforms, button state and input packets. The initial model
+priority is 5000, confirmed against both original receivers. Solid models share
+the geometry and texture selector's transform, as in the original model.
+File-backed KX3 messages retain the original unchanged-model result.
 
-Public tests execute each frozen engine's full view-to-Present path and compare
-it with StageRenderer using the same D3D platform. They cover visible color
-rectangles, asymmetric cross-page 32/16-bit texture models, same-number Top
-aliasing, replacement, deletion, particle ties in both insertion orders,
-background ordering and fresh process/GPU restoration. The comparison uses
-each mounted executable's original draw path on the browser D3D platform.
-Other model families and arbitrary model callbacks require their own cases.
+`screen-effect-render.mjs` sorts by base priority and stable insertion sequence,
+including particle, text and M2 submissions. StageRenderer owns the active target,
+depth/stencil, texture pages and GPU submission. The original priority-55000
+background ordering remains observable in the sorted queue. No original graph
+traversal, Plane receiver or graphics worker runs on the normal drawing path.
+The old implementation is available only through the explicit test composition
+`tests/fixtures/graphics-oracle-world.mjs`.
 
-## Mounted plane tasks
+World completes clock/window delivery, settles movies, runs task logic and draw
+ticks, then flushes writes before the frame resolves. Tick, checkpoint and close
+reject concurrent unsettled frames. Render has a separate completion guard and
+recording runs after a successful present. Current checkpoints store JS graph,
+trail, page and draw state. This is an unreleased format changed in place;
+fixtures use the current writers and no earlier development reader is retained.
 
-Kinds 2 and 6 use their original packet and derived receivers by default.
-KCS and FES task creation supplies the native task pointer and view. The
-World owns common task routing, clocks and input delivery. The receiver owns
-the graph models and derived task fields. Its checkpoint records the guest
-task pointer and restores that binding to the native state.
+## Remaining consumer projections
 
-Main `1D2` sends a raw coordinate mode word to an existing plane. SDK wrapper
-`513AA0` sends message 80 and game wrapper `6413C0` sends 82. Both original
-receivers store the word at offset 32 in the live graph descriptor. The
-Chromium test reads the exact field in both profiles and repeats the operation
-after a fresh World restore.
+`oracle/graphics-consumer-projection.mjs` lends view/device identities, matrices,
+draw caches and bitmap packets to FES/text (phase 7), SDK/media (phase 8) and
+M2 (phase 9). `renderer-consumer-projection.mjs` constructs the remaining view
+lazily. Its native VRAM area table is empty during construction: remaining
+consumers borrow JS pages instead of allocating a second page store. The canonical
+configuration is restored immediately; Node tests verify both ownership and a
+fresh restore. Large game startup otherwise spends minutes clearing duplicate
+original textures.
 
-The original BasePlane clears its input response before processing children.
-Drag message 6 carries two POINT addresses. Host packets marshal both points
-into the shared process, and guest packets retain their original addresses.
-The shared send entry (`5DD860`, SDK `4B9AA0`) also handles the BasePlane
-destructor's direct query and input unregistration. The vtables retain their
-original entries.
+Device defaults and configured filters are separate. A required M2 renderer
+establishes shared linear sampling before scripts; JS-only Worlds preserve that
+existing ABI capability's initialization state. The standalone consumer view uses
+its configured words at +348/+352. The post-initialization native M2 device state
+is imported explicitly. Both AVI boundary coverage and SDK screen effects retain
+their existing assertions; no ABI format or version-selection logic changes.
 
-Drawing-surface messages 279, 296 and 297 use the base plane's original
-shape, visibility and priority messages. The surface keeps its retained
-bitmap and texture upload responsibilities. The two-profile fixtures exercise
-the rendered base image, hide it after restore and compare the visible pixels
-before and after restoration.
+The accepted `plane-movie-decoded-texture-projection` keeps original movie/COM
+lifetime and borrows VMR9 or Texture Renderer decoded textures. JS owns Plane
+geometry, visibility, transforms, ordering and submission. This D8 projection is
+removed in phase 8. E-mote/PPI use the scoped `withPluginTarget` submission
+interface until phase 9; their DLL algorithms are unchanged.
 
-The original SimplePlane descendant helper (`5DFBD0`, SDK `4BBF70`)
-dispatches through the World's task route table. It visits signed native IDs
-in order, follows intermediate routes to descendants and shares the caller's
-parameter addresses and output word with each receiver. Two-profile tests
-compare that packet sequence and its writes with the original helper and
-exercise inherited movement and pixels before and after fresh restoration.
-
-The game build's custom-plane creation and callback registration entries
-(`675440`, `67E3D0`) keep their original bodies. The M2 platform handles its
-own task's callback, identified by the current task and guest object.
-SimplePlane messages 45 and 46 execute the original entries and allocate
-their original graph models. The tiled path creates two real child tasks
-through the World router in the two-profile browser fixture. The same game
-build also exercises ordinary native callback registration alongside M2.
-Main `18E` configures a trail through a JS packet wrapper.
-The original receiver stores the 52-byte parameter packet and constructs the
-history and auxiliary models. Main `18F` copies three VM vectors, a matrix, and the scalar words into the
-128-byte history sample in JS. The native
-receiver still shifts the history, updates the auxiliary graphs and releases
-them when the trail is disabled. These IDs share the native view without
-requiring a World task of the same number. The browser regression exercises
-the packet fields, visible trail, frame continuation after a fresh World and
-graph removal on both engines.
-
-The movie graph variants of messages 43 and 44 reach the original DirectShow
-loading path. The [VMR9 and Texture Renderer](native-movies.md) both draw
-decoded frames through the shared device and preserve their playback state.
-
-## File-backed Plane models
-
-Main `51` expands the VM filename in JS, resolves the KX2 resource category,
-and sends a canonical filename packet to the mounted Plane. The original loader opens
-the resource, parses its triangle records and installs a type 6 graph model.
-Main `15A` similarly forwards the formatted KX3 path and its raw word in JS. Both frozen BasePlane receivers leave the
-existing model unchanged for this message; this route establishes no KX3 file
-decoder.
-
-The Chromium receiver probe runs both wrappers with an authored two-triangle
-KX2 file and a formatted VM argument in each frozen build. It checks both
-file opens, 48 colored pixels from a live VRAM page, the unchanged model after
-`15A`, and matching pixels after restoring into a fresh World.
+The migration inventory registers each projection's direction, fields, consumers
+and removal phase. Test-only old code is absent from the shipped include list.
 
 ## VRAM pages
 
@@ -127,27 +88,13 @@ cannot update it until the original missing-page allocation operation runs.
 Reallocation clears the new page and preserves the other pages' identities,
 pixels and depth. A missing page follows the native unbound-texture behavior.
 
-Mounted-engine clears execute the original view and TextureManager functions
-(`6745B0` → `6803E0` in the game, `54B6A0` → `557000` in the SDK). They
-intersect the requested rectangle with each existing page, lock its native
-16- or 32-bit texture, and clear the intersecting bytes. Missing pages stay
-unallocated. A 3072×6656 virtual rectangle therefore needs no full-size RGBA
-bitmap. The view's disabled gate still returns failure without changing pages.
-An existing CPU VRAM shadow is cleared only within its current extent.
-Authored tests cover partial cross-page clears, sparse allocation, preserved
-page identities/formats, subsequent original 16-bit dither uploads and fresh
-World restoration in both frozen engines.
-
-Host bitmap uploads keep the CPU VRAM shadow but materialize only each requested
-intersection with an allocated page in native memory. The original uploader
-still locks and converts that rectangle; source rows retain their ascending
-physical order. Splitting at the original page intersections preserves its
-16-bit dither phase. Missing pages require no temporary bitmap. Authored
-comparisons against whole-source uploads in each frozen engine cover source
-clipping, positive/negative origins, cross-page rectangles, asymmetric rows and
-untouched bytes. A small image written at the end of a 3072×6656 virtual canvas,
-a sparse whole-canvas upload, fresh restoration and GPU samples use the same
-bounded path. This does not remove the separately retained CPU shadow.
+JS page clears intersect only allocated pages and update their packed 16/32-bit
+bytes. Missing pages stay unallocated. Uploads materialize only the requested
+source intersections. The 4x4 A4R4G4B4 conversion/dither phase is retained and
+snapshotted at page creation. Page identities and revisions remain stable;
+CPU VRAM and uploaded pages have independent contents and lifetimes. Two-ABI
+sequence tests compare clipping, origins, sparse allocation, clear/upload/release
+and fresh World restoration with the original manager.
 
 The page manager negotiates configured dimensions against device limits, then
 rounds actual texture dimensions to powers of two. Graph subdivision retains
@@ -175,7 +122,7 @@ texture pages remain independent of the CPU bitmap, including stale pixels
 from edits not yet uploaded. Canvas changes commit before their backing handle
 is encoded. Public portable-checkpoint tests cover an 8 MiB bitmap, aliases,
 independent CPU mutations and separate 32/16-bit page contents within a
-256 KiB checkpoint budget. The overall checkpoint limit remains 256 MiB.
+256 KiB checkpoint budget. The temporary transitional checkpoint limit is 768 MiB and is registered for removal in phase 10.
 
 ## Evidence
 

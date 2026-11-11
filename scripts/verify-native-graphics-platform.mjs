@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeTextWindows } from '../src/native/text-windows.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
-import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
+import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 
 const profiles = [

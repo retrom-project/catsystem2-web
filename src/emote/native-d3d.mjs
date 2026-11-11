@@ -1398,7 +1398,9 @@ export class EmoteD3D9 {
     }
   }
   gpuTarget(pointer) {
-    const object = this.surfaceData(pointer);
+    // Internal readback/checkpoint paths also pass the owning texture ID.
+    // COM surface arguments still use surfaceData's strict Surface9 check.
+    const object = this.textureData(pointer) ?? this.surfaceData(pointer);
     if (!object) throw new Error('Native render target is invalid');
     if (
       object.pointer === this.backbuffer &&

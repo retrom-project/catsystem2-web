@@ -34,7 +34,15 @@ export function negotiateNativeTextureLayout(
       size[axis] = 2 ** (Math.floor(Math.log2(size[axis])) + 1);
   if (size[0] > width || size[1] > height)
     throw new RangeError('Native power-of-two texture rounding exceeds the device limit');
-  return { size, configurationSize, grid, areas, bppY, bpp: texture.bpp };
+  return {
+    size,
+    configurationSize,
+    grid,
+    areas,
+    bppY,
+    bpp: texture.bpp,
+    dither: texture.dither ?? 0,
+  };
 }
 
 export function nativeTexturePage(layout, index) {
@@ -67,10 +75,16 @@ export function convertNativeTexturePixels(rgba, bpp) {
   return rgba;
 }
 
+export function textureDitherThreshold(x, y) {
+  return [5, 13, 12, 4, 6, 14, 11, 3, 7, 15, 10, 2, 8, 16, 9, 1][
+    ((((x & 2) * 2) | (x & 1) | (y & 2)) * 2) | (y & 1)
+  ];
+}
 export class NativeTexturePages {
-  constructor(layout, { release = () => {} } = {}) {
+  constructor(layout, { release = () => {}, stage = null } = {}) {
     this.layout = structuredClone(layout);
     this.releaseFrame = release;
+    this.stage = stage;
     this.pages = new Map();
     this.allocateMissing();
   }
@@ -100,14 +114,18 @@ export class NativeTexturePages {
             if (this.pages.has(index)) continue;
             if ((this.pages.size + 1) * width * height > 64 * 1024 * 1024)
               throw new RangeError('Native texture allocation exceeds bitmap capacity');
+            const surface = this.stage?.createSurface(width, height) ?? null;
             this.pages.set(index, {
               x: x * width,
               y: y * height,
               bpp: lower ? 16 : layout.bpp,
+              surface,
               frame: {
                 width,
                 height,
-                rgba: new Uint8ClampedArray(width * height * 4),
+                rgba: surface
+                  ? new Uint8ClampedArray(this.stage.surfaces.get(surface).bytes.buffer)
+                  : new Uint8ClampedArray(width * height * 4),
                 revision: 0,
               },
             });
@@ -126,10 +144,12 @@ export class NativeTexturePages {
         page.y < bottom
       ) {
         this.releaseFrame(page.frame);
+        if (page.surface) this.stage.releaseSurface(page.surface);
         this.pages.delete(index);
       }
   }
   async upload(bitmap, rectangle = null) {
+    const dither = Boolean(this.layout.dither);
     const input = await bitmap.frame(),
       [sx, sy, right, bottom] = rectangle ?? [0, 0, input.width, input.height];
     for (const page of this.pages.values()) {
@@ -144,14 +164,46 @@ export class NativeTexturePages {
           at = ((y - page.y) * frame.width + left - page.x) * 4;
         if (page.bpp === 32) frame.rgba.set(row, at);
         else if (page.bpp === 16)
-          for (let i = 0; i < row.length; i++) frame.rgba[at + i] = (row[i] >>> 4) * 17;
+          for (let i = 0; i < row.length; i++) {
+            const x = i >>> 2,
+              phaseY = y - top,
+              threshold = textureDitherThreshold(x, phaseY),
+              value = row[i],
+              increment = dither && i % 4 !== 3 && (value & 15) >= threshold;
+            frame.rgba[at + i] = Math.min(15, (value >>> 4) + Number(increment)) * 17;
+          }
         else throw new Error(`Unsupported native texture depth ${page.bpp}`);
       }
       frame.revision++;
+      if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
+    }
+  }
+  clear(x, y, width, height) {
+    const right = (x + width) | 0,
+      bottom = (y + height) | 0;
+    if (x >= right || y >= bottom) return;
+    for (const page of this.pages.values()) {
+      const { frame } = page,
+        left = Math.max(x, page.x),
+        top = Math.max(y, page.y),
+        endX = Math.min(right, page.x + frame.width),
+        endY = Math.min(bottom, page.y + frame.height);
+      if (left >= endX || top >= endY) continue;
+      for (let row = top; row < endY; row++)
+        frame.rgba.fill(
+          0,
+          ((row - page.y) * frame.width + left - page.x) * 4,
+          ((row - page.y) * frame.width + endX - page.x) * 4,
+        );
+      frame.revision++;
+      if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
     }
   }
   close() {
-    for (const page of this.pages.values()) this.releaseFrame(page.frame);
+    for (const page of this.pages.values()) {
+      this.releaseFrame(page.frame);
+      if (page.surface) this.stage.releaseSurface(page.surface);
+    }
     this.pages.clear();
   }
   frame(index) {
@@ -167,7 +219,7 @@ export class NativeTexturePages {
     });
   }
   restore(state) {
-    for (const page of this.pages.values()) this.releaseFrame(page.frame);
+    this.close();
     this.layout = structuredClone(state.layout);
     this.pages = new Map(structuredClone(state.pages));
     for (const [index, page] of this.pages) {
@@ -181,7 +233,24 @@ export class NativeTexturePages {
         page.frame.rgba?.length !== page.frame.width * page.frame.height * 4
       )
         throw new Error('Invalid native texture page checkpoint');
-      page.frame.rgba = new Uint8ClampedArray(decodeSparseBytes(page.frame.rgba).buffer);
+      const bytes = decodeSparseBytes(page.frame.rgba);
+      if (page.surface) {
+        if (!this.stage) throw new Error('Texture page checkpoint needs its StageRenderer owner');
+        this.stage.restoreSurfaces([
+          [
+            page.surface,
+            {
+              width: page.frame.width,
+              height: page.frame.height,
+              pitch: page.frame.width * 4,
+              format: 'rgba8',
+              bytes: page.frame.rgba,
+              revision: page.frame.revision,
+            },
+          ],
+        ]);
+        page.frame.rgba = new Uint8ClampedArray(this.stage.surfaces.get(page.surface).bytes.buffer);
+      } else page.frame.rgba = new Uint8ClampedArray(bytes.buffer);
     }
   }
 }

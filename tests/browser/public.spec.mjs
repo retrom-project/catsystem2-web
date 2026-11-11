@@ -1027,6 +1027,9 @@ test('ordinary native planes draw divided VRAM pages with their own depth and re
     texture.areas[0].set([0, 0, 2, 1]);
     texture.bppY.set([0, 1]);
     texture.bpp = 16;
+    // This case checks high-nibble page conversion without ordered dithering.
+    // The independent two-ABI texture-pages differential covers dither on/off.
+    texture.dither = 0;
     const game = { width: 4, height: 2, read: async () => null },
       random = new ParticleRandom(),
       world = new NativeWorld({

@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -215,7 +216,7 @@ for (const [profile, variable, vtables] of [
     { skip: !process.env[variable] },
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable])),
-        world = make(profile, bytes);
+        world = installGraphicsOracle(make(profile, bytes));
       let fresh;
       try {
         await world.ensureNativeEngine();
@@ -248,7 +249,7 @@ for (const [profile, variable, vtables] of [
         world.root = tops[0].top;
         world.main = await world.spawnScript('main.kcs');
         const saved = structuredClone(world.snapshot());
-        fresh = make(profile, bytes);
+        fresh = installGraphicsOracle(make(profile, bytes));
         await fresh.restore(saved);
         const removed = tops[1],
           plane = fresh.graphics.get(removed.planeID),

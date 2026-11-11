@@ -6,12 +6,58 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
-import { installNativeM2 } from '../src/native/emote.mjs';
+import { installNativeM2, NativeM2Task } from '../src/native/emote.mjs';
+import { NativeScreenEffectRenderer } from '../src/native/screen-effect-render.mjs';
+import { initialMotionObject } from '../src/motion/abi.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { installNativeBitmapMemory } from '../src/native/bitmap-memory.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';
 import { memoryGame } from './helpers.mjs';
+
+test('JS frame submission enters M2 normally and FES capture reenters only a suspended process', async () => {
+  const gpu = {},
+    process = { asyncEnabled: false },
+    entries = [],
+    graph = { kx2: initialMotionObject(), renderOrder: 0 },
+    world = {
+      nativeEngine: { process },
+      base: () => ({}),
+      stageRenderer: { withPluginTarget: (_device, render) => render() },
+      graphics: {
+        stage: { planes: { 7: { nativeGraph: graph, nativeTaskWorldID: 7, priority: 5000 } } },
+        drawItems: () => [],
+        get: () => task,
+      },
+    },
+    call = (method) => (address, args, pointer, context) => {
+      assert.equal(method, process.asyncEnabled ? 'callFromHost' : 'call');
+      assert.deepEqual([address, args, pointer, context.task], [1234, [4321, 1], 321, 7]);
+      entries.push(method);
+    },
+    owner = {
+      process,
+      world,
+      engine: { call: call('call'), callFromHost: call('callFromHost') },
+      taskMemory: { push: async () => {} },
+      device: { d3d: { gpu } },
+      graphics: {
+        sync() {},
+        pull() {},
+        plane: () => ({ graph, state: { shown: true } }),
+        callbacks: new Map([[7, { callback: 1234, object: 4321 }]]),
+      },
+    },
+    task = new NativeM2Task(owner, { id: 7 }),
+    rendering = new NativeScreenEffectRenderer({ world });
+  task.pointer = 321;
+  for (const suspended of [false, true, false]) {
+    process.asyncEnabled = suspended;
+    const frame = rendering.currentFrame();
+    await frame.draw(frame.items[0], gpu);
+  }
+  assert.deepEqual(entries, ['call', 'callFromHost', 'call']);
+});
 
 async function sdkWorld(bytes) {
   const source =

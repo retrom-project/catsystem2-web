@@ -5,7 +5,7 @@ import { nativeABI } from './abi/index.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
-import { conditionalNativeGraphicsBoundary } from './graphics-task.mjs';
+import { conditionalNativeGraphicsBoundary } from './exe-boundary.mjs';
 
 const BASE_RECEIVER = 'shared native BaseTask receiver';
 

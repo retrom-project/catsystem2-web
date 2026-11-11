@@ -4,6 +4,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { kcsProgram } from '../helpers.mjs';
+import { routeGraphicsOracle } from '../fixtures/oracle-browser-routes.mjs';
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -26,6 +27,7 @@ for (const [profile, variable] of [
             'emotedriver.dll',
             new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL)),
           );
+        await routeGraphicsOracle(page);
         for (const file of [
           'tests/fixtures/browser-native-world.mjs',
           'tests/fixtures/area-effect-cases.mjs',
@@ -121,6 +123,10 @@ for (const [profile, variable] of [
                   const world = make();
                   worlds.push(world);
                   if (original) {
+                    const { installGraphicsOracle } = await import(
+                      '/tests/fixtures/graphics-oracle-world.mjs'
+                    );
+                    installGraphicsOracle(world);
                     world.registerNativeFeature('area-effects', (engine) =>
                       OriginalArea.open(engine, world),
                     );

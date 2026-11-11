@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { encodeHG2 } from '../../src/formats/hg2.mjs';
 import { kcsProgram } from '../helpers.mjs';
+import { routeGraphicsOracle } from '../fixtures/oracle-browser-routes.mjs';
 
 for (const [profile, variable, prepare] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4d0da0],
@@ -50,9 +51,13 @@ for (const [profile, variable, prepare] of [
           bytes = files.get(name);
         return route.fulfill(bytes ? { body: Buffer.from(bytes) } : { status: 404, body: '' });
       });
+      await routeGraphicsOracle(page);
       await page.goto('/');
       const result = await page.evaluate(
         async ({ profile, names, plugin, prepare, crops, cropSize, projectionModes }) => {
+          const { installGraphicsOracle } = await import(
+            '/tests/fixtures/graphics-oracle-world.mjs'
+          );
           const [
               { browserNativeWorld, placeBrowserNativePlane },
               { NativeGraphicsPacket },
@@ -85,6 +90,7 @@ for (const [profile, variable, prepare] of [
                 storage: { read: async () => null, write: async () => true },
               }),
             world = make(),
+            referenceWorld = installGraphicsOracle(make()),
             texture = world.configuration.fields.texture,
             digest = async (bytes) =>
               Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (byte) =>
@@ -95,9 +101,11 @@ for (const [profile, variable, prepare] of [
           texture.grid.set([1, 1]);
           texture.bppY.set([1, 1]);
           texture.areas[0].set([0, 0, 1, 1]);
+          referenceWorld.configuration.restore(world.configuration.snapshot());
           let fresh;
           try {
             await world.initialize('main.kcs');
+            await referenceWorld.initialize('main.kcs');
             world.random.integer.seed(4357);
             world.random.real.seed(4357);
             const call = (current, id, args) =>
@@ -120,7 +128,24 @@ for (const [profile, variable, prepare] of [
               color: 0xff163456,
               priority: 1000,
             });
-            const apply = async (current, base, position, shown, createModel = false) => {
+            await referenceWorld.objects.create({
+              kind: 2,
+              parent: referenceWorld.root,
+              name: 'reference ground',
+            });
+            const referenceAnchor = await referenceWorld.objects.create({
+              kind: 2,
+              parent: referenceWorld.root,
+              name: 'reference anchor',
+            });
+            const applyOne = async (
+              current,
+              anchor,
+              base,
+              position,
+              shown,
+              createModel = false,
+            ) => {
               if (createModel)
                 await placeBrowserNativePlane(current, anchor, {
                   width: 24,
@@ -137,6 +162,10 @@ for (const [profile, variable, prepare] of [
               await send(57, [1, 0.25, 0, 0, -0.125, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
               await send(66, [1.25, 0.75, 1]);
               await current.sendEngine(anchor, current.main.id, 48, 0, Number(shown));
+            };
+            const apply = async (current, ...args) => {
+              await applyOne(current, anchor, ...args);
+              await applyOne(referenceWorld, referenceAnchor, ...args);
             };
             await apply(world, [7.25, 9.5, 1500], [142, 180, 0], true, true);
 
@@ -155,8 +184,8 @@ for (const [profile, variable, prepare] of [
                 return instance.process.read(instance.instance + 20, 32);
               };
             let reference = fields(world);
-            const originalFields = async (current, graphID) => {
-              const engine = current.nativeEngine,
+            const originalFields = async (_current, graphID) => {
+              const engine = referenceWorld.nativeEngine,
                 p = engine.process,
                 view = engine.features.get('graphics-platform').refs.view,
                 shell = p.allocate(0x360, true),
@@ -164,7 +193,10 @@ for (const [profile, variable, prepare] of [
                 saved = p.registers();
               try {
                 p.store(shell + 104, view);
-                p.store(shell + 812, graphID);
+                p.store(
+                  shell + 812,
+                  graphID === -1 ? -1 : referenceWorld.nativeTaskID(referenceAnchor),
+                );
                 p.write(object + 20, reference);
                 // The mounted native plane origin selects the original graph getters.
                 await engine.call(prepare, [object], shell, { task: ground });
@@ -238,7 +270,7 @@ for (const [profile, variable, prepare] of [
             await phase(world, 'exec0', () => world.tick());
             await phase(world, 'exec1', () => world.tick());
             const modes = [],
-              process = world.nativeEngine.process,
+              process = bank(world).instance.process,
               saved = process.registers();
             try {
               for (const { control, mxcsr } of projectionModes) {
@@ -256,6 +288,7 @@ for (const [profile, variable, prepare] of [
             await phase(world, 'restart', () => call(world, 0x110, [nativeID]));
             await phase(world, 'restart-exec0', () => world.tick());
             await world.sendEngine(anchor, world.main.id, 68, 0, 0);
+            await referenceWorld.sendEngine(referenceAnchor, referenceWorld.main.id, 68, 0, 0);
             await phase(world, 'unloaded', () => world.tick());
             fresh = make();
             await fresh.restore(structuredClone(world.snapshot()));
@@ -267,6 +300,7 @@ for (const [profile, variable, prepare] of [
             await phase(fresh, 'detached', () => fresh.tick(), { id: -1 });
             return { graph, loaded, phases, modes };
           } finally {
+            await referenceWorld.close();
             await fresh?.close();
             await world.close();
           }

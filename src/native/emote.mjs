@@ -496,7 +496,10 @@ export class NativeM2Task {
     if (gpu !== this.owner.device.d3d.gpu)
       throw new Error('M2 task compositor differs from the native device');
     const callback = this.owner.graphics.callbacks.get(this.record.id);
-    if (callback) await this.invoke(callback.callback, [callback.object, 1], { fromHost });
+    if (callback)
+      await this.world.stageRenderer.withPluginTarget(this.owner.device.d3d, () =>
+        this.invoke(callback.callback, [callback.object, 1], { fromHost }),
+      );
   }
   snapshot() {
     return {
