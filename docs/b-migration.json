@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 126, "oracle": 136, "differential": 65 },
+    "counts": { "js": 127, "oracle": 136, "differential": 65 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -142,6 +142,7 @@
         "tests/ppi-contracts.test.mjs",
         "tests/psd.test.mjs",
         "tests/raster.test.mjs",
+        "tests/render-boundary.test.mjs",
         "tests/render-route-audit.test.mjs",
         "tests/scene-contracts.test.mjs",
         "tests/text-font-resource.test.mjs",

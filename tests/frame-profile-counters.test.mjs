@@ -52,6 +52,11 @@ test('profile counters sum array and typed-array bytes and restore host methods 
     assert.equal(totals.readBytes, 7);
     assert.equal(totals.emuStart, 1);
     assert.equal(totals.wasmCalls, 1);
+    assert.equal(totals.ticks, 1);
+    assert.ok(totals.tickMS > 0);
+    assert.equal(events[0].evidence.before.counters.ticks, 0);
+    assert.equal(events[1].evidence.after.counters.ticks, 1);
+    assert.equal(events[1].evidence.after.counters.tickMS, totals.tickMS);
     assert.equal(host.write, originalWrite);
     assert.deepEqual(
       events.map(({ event }) => event),
@@ -60,6 +65,8 @@ test('profile counters sum array and typed-array bytes and restore host methods 
     assert.equal(events[1].evidence.after.liveBytes, 16);
     await window.nativeGameFrame();
     assert.equal(totals.writeBytes, 8);
+    assert.equal(totals.ticks, 2);
+    assert.ok(totals.tickMS >= events[1].evidence.after.counters.tickMS);
   } finally {
     globalThis.window = previous;
   }

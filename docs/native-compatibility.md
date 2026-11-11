@@ -1051,3 +1051,12 @@ FES consumer in domain 7. Their addresses and calls remain in the unchanged
 checker include list and baseline; no file is hidden by this ownership review.
 The removed original graphics implementation is available only through the
 explicit test oracle composition and is absent from the shipped include list.
+
+`npm run check` also runs `check-render-boundary.mjs`: all 219 render slots per
+ABI must remain reviewed JS routes, domain-6 files cannot regain EXE execution
+or selectors, and remaining consumer projections must retain ownership and
+removal records. The source check rejects direct calls, capability aliases and
+unreviewed feature construction. Its only DLL-backend import exception is the
+existing, separately registered `src/particles.mjs` PPI executor (phase 9).
+Negative tests cover execution, selectors, foreign consumers and reintroduction
+of the deleted original graphics worker.

@@ -270,10 +270,11 @@ const sdkJavaScriptState = (page) =>
         (record) => record.name === 'sscript',
       ),
       sceneText = source && world.runtime.stringBank(source, false)?.get(1000),
-      graph = plane && engine.features.get('graphics-platform').attachment(plane.nativeID),
+      graph = plane && world.graphics.attachment(plane.nativeID),
       channel = [...audio.channels.values()].find(({ file }) => file === 'bgm.int/bgm01.ogg');
     return {
       frame: world.frame,
+      task: task?.id ?? null,
       loaded: pointer ? engine.process.load(pointer + 140) : 0,
       running: pointer ? engine.process.load(pointer + 144) : 0,
       plane: plane?.id ?? null,
@@ -315,6 +316,7 @@ test('official SDK JavaScript tutorial draws its moving plane and resumes origin
     else await step(page, 6);
   }
   expect(start).toMatchObject({ loaded: 1, running: 1, playing: true, shown: true });
+  expect(start.task).not.toBeNull();
   expect(start.position).toHaveLength(3);
   const firstImage = await pixels(page);
   for (let i = 0; i < 12; i++) await step(page, 6);
@@ -330,10 +332,17 @@ test('official SDK JavaScript tutorial draws its moving plane and resumes origin
     await step(page, 6);
     end = await sdkJavaScriptState(page);
   }
-  expect(end).toMatchObject({ loaded: 1, running: 0, returned: true, shown: false });
+  // The SDK's synchronous `js` command releases its child after cfExit. The
+  // original private loaded word is not live state after that release.
+  expect(end).toMatchObject({ loaded: 0, running: 0, returned: true, shown: false });
   expect(end.frame - start.frame).toBeGreaterThan(275);
   for (let i = 0; i < 4; i++) await step(page, 6);
-  expect(await sdkJavaScriptState(page)).toMatchObject({ playing: false, returned: true });
+  expect(await sdkJavaScriptState(page)).toMatchObject({
+    playing: false,
+    returned: true,
+    task: null,
+    plane: null,
+  });
 });
 
 async function followSDKDialogue(page, label, attempts) {

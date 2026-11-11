@@ -9,6 +9,8 @@ export function observeFrames() {
   const existingFrameFunction = window.nativeGameFrame;
   const captured = new Set();
   const totals = {
+    ticks: 0,
+    tickMS: 0,
     emuStart: 0,
     emuMS: 0,
     wasmCalls: 0,
@@ -111,6 +113,8 @@ export function observeFrames() {
       } finally {
         const ms = performance.now() - started,
           frame = this.frame;
+        totals.ticks++;
+        totals.tickMS += ms;
         if (slowTicks.length < 10 || ms > slowTicks.at(-1).ms) {
           slowTicks.push({ frame, ms, stack: window.catSystem2.status().stack });
           slowTicks.sort((a, b) => b.ms - a.ms);
