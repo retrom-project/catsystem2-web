@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 150, "oracle": 142, "differential": 67 },
+    "counts": { "js": 151, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -37,6 +37,7 @@
         "tests/emote-world.test.mjs",
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
+        "tests/fes-bitmap.test.mjs",
         "tests/fes-common-model.test.mjs",
         "tests/fes-contracts.test.mjs",
         "tests/fes-file-list.test.mjs",
@@ -176,6 +177,7 @@
         "tests/control-model.test.mjs",
         "tests/emote-document.test.mjs",
         "tests/execution.test.mjs",
+        "tests/fes-effect-model.test.mjs",
         "tests/frame-profile-counters.test.mjs",
         "tests/hg2.test.mjs",
         "tests/native-area-task-lifecycle.test.mjs",
@@ -2719,8 +2721,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 436,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 48, "8": 163, "9": 55 },
+    "runtimeFiles": 438,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 50, "8": 163, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -51472,6 +51474,19 @@
       "review": "needs-review"
     },
     {
+      "file": "src/native/fes-bitmap.mjs",
+      "sourceSha256": "f53e807e708e3feedfc4cb8b8d29580fba5c1d07e17cc7426a0b8fd7b1036ce3",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/fes-common-model.mjs",
       "sourceSha256": "fcdcb5ba6d060471bc7e3ee81ac77e7c21935b981e7b828ef8cda8b6bde72005",
       "domain": 7,
@@ -51636,6 +51651,19 @@
         }
       ],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/fes-effect-model.mjs",
+      "sourceSha256": "eae343092ad22ea350a203ae43bbb24214068fa0591371fff7d7620ebe12093d",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/fes-effects.mjs",
