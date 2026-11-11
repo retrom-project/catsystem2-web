@@ -262,6 +262,7 @@ export default {
     accelerators: 'winmain-region',
   },
   fes: {
+    controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932-as-utf16le', keyEncoding: 'utf16le' },
     macroLiterals: { string: 'raw', character: 'raw' },
     variableBankOffset: 2064,

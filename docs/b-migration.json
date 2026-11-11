@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 156, "oracle": 143, "differential": 67 },
+    "counts": { "js": 157, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -27,6 +27,7 @@
         "tests/calculation-boundary.test.mjs",
         "tests/check-no-exe-addresses.test.mjs",
         "tests/checkpoint-portable.test.mjs",
+        "tests/control-render.test.mjs",
         "tests/data-boundary.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
@@ -2726,9 +2727,9 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 443,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 55, "8": 163, "9": 55 },
-    "fileNeedsReview": 95,
+    "runtimeFiles": 444,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 55, "8": 164, "9": 55 },
+    "fileNeedsReview": 96,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
@@ -49383,7 +49384,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "1346124bfe38a1f6580a3a52e41334465ae505388ba0fecc4237f04ee276fd9d",
+      "sourceSha256": "61ce47ff5871def9612a9c7ff03879979dfe84ab5dd70aa6b034f4cf0eb58f9c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49396,7 +49397,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "1410c6fbab6f9f351f69a37c36f3f77b889de2ac87f50b8ae7b44d2c1f1eaabd",
+      "sourceSha256": "a75237389e6debbd730d4dea94635fedab764eddea5d6300b76d83d814e11211",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49843,6 +49844,41 @@
       "executionSiteCounts": {},
       "indirectSites": [],
       "review": "counted"
+    },
+    {
+      "file": "src/native/control-task-js.mjs",
+      "sourceSha256": "c362e2ebe2c421b460649abf0bf5d488faedbe1aad05f920928c25a53966c06e",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendEngine"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [
+        {
+          "line": 90,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 631,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 633,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        }
+      ],
+      "review": "needs-review"
     },
     {
       "file": "src/native/control-task-model.mjs",

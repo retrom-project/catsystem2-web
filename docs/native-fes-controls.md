@@ -79,8 +79,8 @@ The model preserves these original distinctions:
 - SCROLL held repeat starts at+30 then advances its independent timer by5 once
   per task visit. It does not run a catch-up loop or share Input's repeat state.
 - Display, enable, focus, source/button gates and skin state are separate.
-  SCROLL2's verified game selector ignores its stored table; the unverified SDK
-  selector policy remains an explicit integration gap.
+  SCROLL2's verified selectors in both registered ABIs ignore the stored table.
+  Each ABI records the explicit state-direct skin policy.
 
 The original pixel threshold loop has an exact constant-time form. For positive
 range N, let B be the signed int32 product100×travel, s=trunc(B/N), and
@@ -102,3 +102,32 @@ Remaining D7 work is the resource/skin composer, canonical task receiver,
 World/lifetime wiring, precise FES driver flag-consumption order, sleep masking,
 and actual pixel/new-World acceptance. Missing mandatory SCROLL metadata must
 remain an error; it cannot become zero geometry or a fake successful task.
+
+## JavaScript World resource tasks
+
+`JSControlTask` connects the independent interaction model to actual World
+kind40/41/42 tasks, HG resources, retained Draw entries, kind6 Input areas and
+SCROLL kind2 planes. SCROLL preserves its five wrappers, including an empty
+decoration wrapper when frame200 has no metadata. SCROLL2 composes the original
+cap/middle/cap pixels and optional alpha overlay; SLIDER decodes the selected
+state. The registered ABI owns the reviewed SCROLL2 state-direct skin policy.
+No selector is inferred from a game name or profile prefix.
+
+The canonical receiver preserves unwritten output words on handled mutations
+and delegates unknown/Base messages to the existing Base service. Direction
+queries write their numeric result. Actual area messages drive capture, drag,
+release, focus and held repeat. Notifications use World task identities while
+retained keys use the owning Top's native task route. FES semantic handles are
+kept separate.
+
+A checkpoint saves source bytes, decoded/composed handles, actual child IDs and
+interaction state. New World restoration reuses those resources and input
+captures without loading files, recreating children or replaying events. Exact
+CPU pixels, geometry, task state, ownership release and continuation are
+covered for both registered engines by27 short public cases and24 independently
+recorded original resource states. No pixel tolerance was added.
+
+The service currently has an explicit fixture installer; normal installation
+and the high-level FES13..15 driver still use their counted old implementation.
+Their coordinated default factory switch, definition application and ordered
+flag consumption remain D7 integration work.

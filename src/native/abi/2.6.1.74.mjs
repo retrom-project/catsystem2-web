@@ -229,6 +229,7 @@ export default {
     accelerators: 'ansi-resource',
   },
   fes: {
+    controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     variableBankOffset: 1800,
