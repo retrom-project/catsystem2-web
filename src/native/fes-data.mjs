@@ -31,14 +31,18 @@ export class NativeFESData {
         ).slice(1),
         column = row.columns.indexOf('FILE');
       if (column < 0 || tokens[column] === undefined) continue;
-      const file = instance.soundArgument(tokens[column]),
-        bytes = await this.world.runtime.read(file, 'config');
-      state.rows = bytes?.length ? readFESStringTable(bytes) : [];
+      const file = instance.soundArgument(tokens[column]);
+      state.rows = [];
+      const bytes = await this.world.runtime.read(file, 'config');
+      if (bytes?.length) state.rows = readFESStringTable(bytes);
     }
     return state;
   }
   setString(instance, index, bytes, context) {
-    if (context?.setStringBytes) return context.setStringBytes(index, bytes);
+    if (context?.setStringBytes) {
+      context.setStringBytes(index, bytes);
+      return true;
+    }
     const record = this.world.objects.objects.get(instance.runtimeID),
       handle = record?.context?.stringBank;
     if (!handle) return false;
@@ -94,7 +98,8 @@ export class NativeFESData {
             instance.soundArgument(tokens[0]) === 'fullpath'
               ? entry[1]
               : entry[1].split(/[\\/]/).at(-1);
-          this.setString(instance, value(2), encodeCP932(name), context);
+          if (!this.setString(instance, value(2), encodeCP932(name), context))
+            throw new Error('FES FILELIST string result requires its string bank');
         }
         // Unlike STRTABLE, FILELIST does not suppress a default -1 output.
         this.setGlobal(instance, value(1), Number(found));

@@ -167,3 +167,20 @@ test('FILELIST whole-group make is inert and native missing-output bank semantic
     assert.equal(defaults.bank.get(20), profile === profiles[0] ? 3 : 0);
   }
 });
+
+test('FILELIST missing string-bank storage fails explicitly before reporting successful output', async () => {
+  const f = await fixture(profiles[0], 'files make folder *');
+  await f.player.step();
+  f.world.objects.objects.get(42).context.stringBank = 0;
+  f.bank.set(20, 17);
+  await assert.rejects(
+    f.service.command(f.player.root, f.player.root.byKey.get('files'), 'get', [
+      'name',
+      '20',
+      '1',
+      '0',
+    ]),
+    /FILELIST string result requires its string bank/,
+  );
+  assert.equal(f.bank.get(20), 17);
+});

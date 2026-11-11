@@ -51538,7 +51538,7 @@
     },
     {
       "file": "src/native/fes-data.mjs",
-      "sourceSha256": "23ad6289d90a4e7eb0c04353dc3ad50b317843af8f4db2373aaaa4844c69688f",
+      "sourceSha256": "03b35dbff88b8e34198743bf0c7020ae48e7af7b5aab077e22cd1431a453a608",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51548,14 +51548,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 126,
+          "line": 131,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 143,
+          "line": 148,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",

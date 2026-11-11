@@ -15,7 +15,7 @@ only the independent test oracle.
 
 STRTABLE's `FILE` definition resolves the config category and parses bytes in TAB
 mode in JavaScript. Reapplying FILE clears the previous rows, including on a
-missing resource. The
+missing resource. Rows clear before an asynchronous resource lookup starts. The
 first field is the signed numeric row ID; subsequent fields are strings, with
 the original quote handling. `get row column stringBank statusGlobal` writes a
 string and success flag only for an existing cell. Missing rows or columns
@@ -32,7 +32,9 @@ duplicate name, and accumulates entries across calls. Whole-group `make` is an
 original no-op; an explicitly selected member, or a scalar object, enumerates.
 No explicit pattern supplies `*.*`. `get count` writes the number of entries.
 `get fullpath` returns the stored path; every other selector returns basename.
-Invalid indices report failure and preserve the destination string. Native
+Invalid indices report failure and preserve the destination string. A found
+FILELIST result without its required string-bank storage raises an explicit
+fault before reporting success. Native
 string/variable bank defaults and dirty behavior remain separate from FES's
 strict expression-index interface.
 

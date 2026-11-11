@@ -113,3 +113,22 @@ test('STRTABLE lookup failure preserves output and a missing string bank reports
   assert.equal(f.player.globals[28], 0);
   assert.equal(new TextDecoder().decode(f.cells.get(10)), 'untouched');
 });
+
+test('STRTABLE FILE reload clears rows before an asynchronous lookup and preserves destination strings on a miss', async () => {
+  const f = await fixture(encodeCP932('7\told\n')),
+    object = f.player.root.byKey.get('words');
+  f.cells.set(10, encodeCP932('untouched'));
+  f.player.root.applyObjects('#OBJECT FILE', 'words missing.tsv');
+  let settle;
+  f.world.runtime.read = () =>
+    new Promise((resolve) => {
+      settle = resolve;
+    });
+  const loading = f.service.initialize(f.player.root, object);
+  assert.deepEqual(object.nativeDataState.rows, []);
+  settle(null);
+  await loading;
+  await f.service.command(f.player.root, object, 'get', ['7', '0', '10', '30']);
+  assert.equal(f.player.globals[30], 0);
+  assert.equal(new TextDecoder().decode(f.cells.get(10)), 'untouched');
+});
