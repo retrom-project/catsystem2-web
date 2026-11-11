@@ -47,6 +47,37 @@ failures retain `needs-review`. Raw equal bytes can call different relocated
 helpers. Unmatched entries also retain their review state, including possible
 additions, deletions and renumbering.
 
+## Numeric-ID stability observations
+
+```sh
+node scripts/native-id-stability.mjs .local/left.json .local/right.json .local/alignment.json
+node --test tests/native-id-stability.test.mjs
+```
+
+The inputs may be existing extractor results or enriched offline observations
+with `version`, `sourceSha256` and one `entries` record per contiguous main ID.
+Enriched entries record `stub`, `prefixArgReadOffsets`, `controlCodes`,
+`controlsComplete`, `boundedCFGComplete`, and optional `facts` containing
+`importAPIs`, `strings` and `immediatePushes`. The producer must document its
+bounds and unresolved paths in `limitations`; the comparison preserves them.
+An import API uses `library!symbol`; library-name case is insignificant.
+
+The tool compares same-ID observations and a global sequence alignment that
+allows insertions and deletions. Equal numeric IDs are never a scoring feature.
+The weighted Dice score uses argument reads (1), control codes (2), stub kinds
+(2), imports (6), strings (6), and immediate pushes (1); each gap costs 60.
+Both same-ID and best scores, a reproducible selected path, multiple optimal
+paths, and pairs without shared features remain visible. CLI output binds the
+input observation files by SHA-256 as well as retaining their declared image
+identities.
+
+These are candidate scores. Empty matching feature sets, partial argv reads,
+repeated stubs, and even a unique optimal path do not establish semantic or
+signature equivalence. Internal task-message constants can change without
+native renumbering. Check handler bodies, message receivers and script call
+shapes independently before accepting a mapping. Private inputs and raw
+alignment reports belong in ignored local storage.
+
 ## Static script coverage
 
 ```sh

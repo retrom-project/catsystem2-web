@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 135, "oracle": 142, "differential": 67 },
+    "counts": { "js": 136, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -90,6 +90,7 @@
         "tests/native-graphics.test.mjs",
         "tests/native-heap-data.test.mjs",
         "tests/native-history-cursor.test.mjs",
+        "tests/native-id-stability.test.mjs",
         "tests/native-image.test.mjs",
         "tests/native-input-bindings.test.mjs",
         "tests/native-input.test.mjs",
