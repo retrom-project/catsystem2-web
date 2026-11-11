@@ -18,6 +18,10 @@ Image/plane state is ordinary JavaScript data. The MOT adapter uses KX2's define
 original PE object layout or a serialized object authority. Float32 matrices
 retain their raw words, angles remain in radians, and per-object packet and
 traversal buffers are reused.
+Vector setters first compare the complete native vector and write it only when
+that comparison changes. Consequently an unchanged negative-zero component
+retains its word, including plane W; when another component changes, the whole
+vector is written. Matrix setters instead compare raw words.
 
 ## Object identities and ordering
 

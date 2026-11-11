@@ -185,3 +185,18 @@ test('query outputs only skip exact minus one and reuse borrowed buffers across 
   assert.deepEqual([...fesGraphicalPosition(fresh, restored[0])], [7, -8, 9]);
   assert.deepEqual([...fesGraphicalBase(restored[0])], [4, -5, 6]);
 });
+
+test('pos preserves signed-zero fields when the native vector equality gate skips its write', () => {
+  for (const nativeType of [2, 4]) {
+    const object = { nativeType, key: 'subject', x: -0, y: 0, z: -0, positionW: 1 },
+      s = instance([object]);
+    setFESGraphicalPosition(s, object, [0, 0, 0]);
+    assert.ok(Object.is(object.x, -0));
+    assert.ok(Object.is(object.z, -0));
+    assert.equal(object.dirty, undefined);
+    setFESGraphicalPosition(s, object, [0, 1, 0]);
+    assert.ok(Object.is(object.x, 0), 'a changed component writes the whole vector');
+    assert.equal(object.dirty, true);
+    if (nativeType === 4) assert.ok(Object.is(object.z, 0));
+  }
+});

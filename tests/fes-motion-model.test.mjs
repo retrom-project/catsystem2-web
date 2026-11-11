@@ -114,3 +114,60 @@ test('blend preserves plane RGB but uses the world-owned command address for oth
   );
   assert.throws(() => buildNativeFESMotion('blend', args, bytes, Number), /command-source address/);
 });
+
+test('MOT vector equality preserves negative-zero words until another component requires a full write', () => {
+  const image = fixture({
+      nativeType: 2,
+      x: -0,
+      y: 0,
+      baseX: -0,
+      baseY: 0,
+      scaleX: -0,
+      scaleY: 1,
+      rotation: -0,
+      alpha: 255,
+      pri: 20,
+      displayValue: 0,
+    }),
+    bytes = fesMotionState(image.object),
+    view = new DataView(bytes.buffer);
+  for (const offset of [MOTION_ABI.pos, MOTION_ABI.base, MOTION_ABI.scale, MOTION_ABI.rotation + 8])
+    view.setFloat32(offset, 0, true);
+  applyFESMotionState(image.instance, image.object, bytes);
+  for (const key of ['x', 'baseX', 'scaleX', 'rotation'])
+    assert.ok(Object.is(image.object[key], -0), key);
+  assert.equal(image.object.dirty, undefined);
+  view.setFloat32(MOTION_ABI.pos + 4, 1, true);
+  applyFESMotionState(image.instance, image.object, bytes);
+  assert.ok(Object.is(image.object.x, 0));
+  assert.ok(Object.is(image.object.baseX, -0));
+
+  const sample = oracle.profiles[0].samples.find((s) => s.name === 'plane'),
+    plane = fixture({
+      ...sample.before,
+      x: -0,
+      y: 0,
+      z: 0,
+      positionW: -0,
+      baseX: -0,
+      baseY: 0,
+      baseZ: 0,
+      baseW: -0,
+      pri: 0,
+      scaleX: -0,
+      scaleY: 1,
+      scaleZ: 1,
+      scaleW: -0,
+    }),
+    packet = fesMotionState(plane.object),
+    packetView = new DataView(packet.buffer);
+  for (const offset of [MOTION_ABI.pos, MOTION_ABI.base, MOTION_ABI.scale])
+    packetView.setFloat32(offset, 0, true);
+  applyFESMotionState(plane.instance, plane.object, packet);
+  for (const key of ['x', 'positionW', 'baseX', 'baseW', 'scaleX', 'scaleW'])
+    assert.ok(Object.is(plane.object[key], -0), key);
+  packetView.setFloat32(MOTION_ABI.pos + 4, 1, true);
+  applyFESMotionState(plane.instance, plane.object, packet);
+  assert.ok(Object.is(plane.object.x, 0));
+  assert.ok(Object.is(plane.object.positionW, 0));
+});

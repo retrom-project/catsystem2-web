@@ -59,13 +59,14 @@ function vectorIn(instance, object, view, offset, fields, w) {
     const key = fields[index],
       value = view.getFloat32(offset + index * 4, true);
     if (object[key] !== value) changed = true;
-    object[key] = value;
   }
-  if (w) {
-    if (object[w] !== 0) changed = true;
-    object[w] = 0;
+  if (w && object[w] !== 0) changed = true;
+  if (changed) {
+    for (let index = 0; index < fields.length; index++)
+      object[fields[index]] = view.getFloat32(offset + index * 4, true);
+    if (w) object[w] = 0;
+    markFESObjectDirty(instance, object);
   }
-  if (changed) markFESObjectDirty(instance, object);
 }
 // The returned buffer is borrowed, reused per owner and never checkpoint state.
 export function fesMotionState(object) {

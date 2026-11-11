@@ -109,13 +109,15 @@ export function setFESGraphicalPosition(instance, object, values) {
     object.x !== position[0] ||
     object.y !== position[1] ||
     (family === 'plane' && (object.z !== position[2] || object.positionW !== 1));
-  object.x = position[0];
-  object.y = position[1];
-  if (family === 'plane') {
-    object.z = position[2];
-    object.positionW = 1;
+  if (changed) {
+    object.x = position[0];
+    object.y = position[1];
+    if (family === 'plane') {
+      object.z = position[2];
+      object.positionW = 1;
+    }
+    markFESObjectDirty(instance, object);
   }
-  if (changed) markFESObjectDirty(instance, object);
   return position;
 }
 export function fesGraphicalPosition(instance, object, visible = false) {
