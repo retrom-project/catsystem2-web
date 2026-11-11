@@ -16,6 +16,13 @@ its README's MIT label does not replace those terms. A code translation must
 retain the original applicable grant and attribution. The assessed scope and
 source digests are recorded in `docs/b-phase9-motionplayer.md`.
 
+The phase-9 JS controller, graph, spring, timeline and wind modules translate
+parts of that motionplayer implementation, with CatSystem2-specific behavior
+established through the local original-DLL oracle. Those source files retain
+BSD-3-Clause notices; the applicable original Japanese grant and contributor
+attribution accompany them in `licenses/motionplayer.txt`. Their presence does
+not incorporate KiriKiri's TJS host, native binaries or game assets.
+
 KIF and HG-2/HG-3 format algorithms follow CatSystemKit and
 [GARbro](https://github.com/morkt/GARbro), by morkt, under the MIT license:
 

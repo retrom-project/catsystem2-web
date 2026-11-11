@@ -49,7 +49,7 @@ export async function recordPluginOracle(args) {
       const player = await device.createPlayer(model);
       player.show();
       trace.modelSHA256 = sha256(model);
-      trace.result = recordEmoteFrames(player, input.steps);
+      trace.result = recordEmoteFrames(player, input.steps, input);
     } finally {
       device.close();
     }

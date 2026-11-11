@@ -17,6 +17,14 @@ The source's final reconstruction report records 88 playback frames with no
 mismatch, but also explicitly leaves scalar and paired render evidence blocked.
 Those results describe its own reference targets; they do not certify our DLL.
 
+The 9.2 target matrix confirms that the partial-port boundary is necessary.
+Target differences include float32 controller slicing, full float32 `2π` angle
+wrap, graph/automatic-blink state fallthrough, xorshift RNG, raw timeline easing,
+base-value queries, zero-delta spring initialization, settled-vector handling,
+the unfused spring-angle coefficient, and wind emission/force rules. The port
+retains reusable algorithm structure and replaces these behaviors with direct
+DLL evidence. Controller comparisons remain bit exact; no tolerance is widened.
+
 ## License and provenance
 
 At that commit the repository's `README.md` says MIT, while its actual `LICENSE`
