@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original render/FES consumers receive independent copies of script bitmaps.
-// Raw render targets remain views of their domain 6/7 owner until it migrates.
+// Remaining FES/foreign tasks receive independent script bitmap copies.
+// Producer-owned PE images expose explicit derived views; ordinary Draw, Plane
+// and texture rendering use JS bytes and never this projection (phases 7/8/9).
 import { NativeBitmapMemory } from './bitmap-memory.mjs';
 
 const fields = {

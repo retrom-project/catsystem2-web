@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-// Bulk execution of the lossless HG3 vertical delta loop. The original
-// decoder still owns inflation, sparse runs, the first row and metadata.
+// Existing bounded HG3 vertical delta boundary for FES task/image producers.
+// Its original decoder owns inflation, sparse runs, the first row and metadata.
+// Script images and particle/PPI atlases decode in JS; remove this in phase 7.
 const sites = {
   'sdk-4.01-engine-2.6.1.74': 0x5733e4,
   'nekopara-vol3-engine-2.6.1.76': 0x6a1ff4,

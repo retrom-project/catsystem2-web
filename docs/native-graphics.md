@@ -77,7 +77,15 @@ removed in phase 8. E-mote/PPI use the scoped `withPluginTarget` submission
 interface until phase 9; their DLL algorithms are unchanged.
 
 The migration inventory registers each projection's direction, fields, consumers
-and removal phase. Test-only old code is absent from the shipped include list.
+and removal phase. Shared records follow the approved 6 → 9 → 7 → 8 order:
+DLL output and initialization end in 9, FES borrowing in 7, media/SDK borrowing
+in 8. Test-only old code is absent from the shipped include list.
+
+The [render route audit](b-phase6-route-audit.md) resolves both ABIs' 57 former
+unknown wrappers. Normal Plane/Draw receivers are JS; conditional original
+Scroll, SDK and M2 receivers remain listed per native in the inventory. The
+remaining bitmap/image-owner/HG helpers serve FES or foreign tasks, keep their
+EXE baseline counts, and are no longer classified as domain-6 rendering.
 
 ## VRAM pages
 

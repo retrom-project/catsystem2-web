@@ -63,7 +63,7 @@ all 285 domain-3 slots are pure JS: original-handler and exe-region are zero.
 Scalar, matrix/vector, rectangle/view and game UTF-8/output paths do not execute
 original instructions. The only remaining domain-3 EXE state binding is
 `random-memory.mjs`, explicitly retained through phase 10. The temporary JS view
-projection is a separately registered domain-6 dependency, removed in phase 6.
+projection was removed with the domain-6 JS renderer in phase 6.
 
 Eighteen domain-3 rows remain needs-review with explicit reasons: eight SDK
 host/allocator normal-execution fixtures, eight random-stream rows carrying the
@@ -480,9 +480,8 @@ wrappers and receivers. The browser tests compare the rendered child tiles,
 the native model identities and the lifecycle across restoration.
 
 Main `8/C/2E3/2E4/313` use JavaScript [view geometry](native-view-geometry.md)
-with JS-owned state and ordered writes to overlapping destinations. A one-way
-projection supplies the remaining EXE renderer; that dependency belongs to
-domain 6 and is removed with its renderer migration.
+with JS-owned state and ordered writes to overlapping destinations. StageRenderer consumes that state directly. The former one-way EXE-renderer
+projection was removed in phase 6.
 
 These declaration counts do **not** measure completed emulator behavior. A
 recovered wrapper can still depend on an unfinished task, graphics, input, file
@@ -946,16 +945,16 @@ KCDB, mission/question/selection tables and the shared tile model own JS state.
 Script bitmaps and image-owner metadata use JS handles and pixel storage.
 The inventory separately registers their remaining consumers.
 
-| Authority                        | Representation and consumer                                                           | Removal phase                                 |
-| -------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------- |
-| JS bitmap-data                   | Independent bitmap/wrapper inputs for renderer, retained Draw, texture upload and FES | 6 per renderer consumer, final FES consumer 7 |
-| Domain 6 renderer / domain 7 FES | Derived JS views of consumer-owned targets and decoded images                         | 6/7 with the owning consumer                  |
-| JS image-owner records           | Independent 64-byte collections retained by Draw and IMAGEEX                          | 6/7 with the owning consumer                  |
+| Authority              | Representation and consumer                                                                | Removal phase            |
+| ---------------------- | ------------------------------------------------------------------------------------------ | ------------------------ |
+| JS bitmap-data         | Independent bitmap/wrapper inputs for FES and foreign tasks; JS rendering uses owned bytes | FES 7, SDK/input 8, M2 9 |
+| Remaining PE producers | Explicit import/publish of derived FES/foreign-task images; no original D6 render targets  | With each consumer 7/8/9 |
+| JS image-owner records | Independent 64-byte collections retained only by FES IMAGEEX                               | 7                        |
 
-Wipe3 source RGB preparation is an explicit JS command before projection.
-Script bitmap checkpoints store the JS backing once; retained PE references
-keep their consumer lifetime. File decoding and remaining image-owner pixel
-commands cross the recorded temporary boundary until phases 5.3 and 5.2.
+Wipe3 source RGB preparation is an explicit JS command. Script bitmap
+checkpoints store the JS backing once; foreign PE references retain only their
+registered consumer lifetime. Script decoding, image-owner composition, Draw,
+ANM, texture upload and ordinary Plane drawing are JS-owned.
 
 The SDK V8 `CsImage` and text callbacks create independent PE resources through
 internal functions. Their image/writer pointer at native object +352 and their
@@ -980,22 +979,24 @@ prevents a JS text factory from constructing EXE buffer/file projections.
 Image/text source bytes, bitmap pixels, text layout/reveal and checkpoints are
 JS authority. Registered consumer copies are maintained separately.
 
-| Authority                             | Remaining representation / consumer                                             | Remove                  |
-| ------------------------------------- | ------------------------------------------------------------------------------- | ----------------------- |
-| JS bitmap pixels/metadata             | Independent PE bitmap/wrapper for D6 uploads/effects and D7 IMAGE               | 6 per renderer, final 7 |
-| D6 render targets / D7 decoded images | Explicit derived JS views or output ownership transfer                          | 6/7 with consumer       |
-| JS image-owner layers/program bytes   | Independent PE collections for D7 FES producers                                 | 7                       |
-| JS image-file table bytes             | Immutable input to D6's private view map                                        | 6                       |
-| JS encoded resource bytes             | Independent PE buffer descriptors for D7 IMAGE and D8 MemoryFile/SDK JavaScript | 7 per image, final 8    |
-| JS display-log rows                   | D7 LOG read-only tables                                                         | 7                       |
-| JS text config/source/query state     | D7 generic plane prefix and explicit LOG semantic read/write adapters           | 7                       |
-| Consumer-owned decoded output         | Bounded HG delta acceleration used only by original D6/7/8/9 consumers          | Last consumer 9         |
+| Authority                           | Remaining representation / consumer                                             | Remove               |
+| ----------------------------------- | ------------------------------------------------------------------------------- | -------------------- |
+| JS bitmap pixels/metadata           | Independent PE bitmap/wrapper for FES and foreign SDK/input/M2 consumers        | Per consumer 7/8/9   |
+| FES/foreign decoded images          | Explicit derived JS views or output ownership transfer; no D6 render target     | Per consumer 7/8/9   |
+| JS image-owner layers/program bytes | Independent PE collections for D7 FES producers                                 | 7                    |
+| JS image-file table bytes           | Immutable input to remaining FES/SDK/M2 consumer maps                           | Per consumer 7/8/9   |
+| JS encoded resource bytes           | Independent PE buffer descriptors for D7 IMAGE and D8 MemoryFile/SDK JavaScript | 7 per image, final 8 |
+| JS display-log rows                 | D7 LOG read-only tables                                                         | 7                    |
+| JS text config/source/query state   | D7 generic plane prefix and explicit LOG semantic read/write adapters           | 7                    |
+| Consumer-owned decoded output       | Existing bounded HG delta boundary used only by FES task/image producers        | 7                    |
 
-Phase6 JS Draw owns retained resources, ANM and CPU raster output. Its FES
+Phase 6 JS Draw owns retained resources, ANM and CPU raster output. Its FES
 producer projection imports typed resources and publishes clocks/selection back
-to phase7 records. Remaining original raster support is explicitly registered
-for texture uploads, FES and DLL consumers. StageRenderer-owned surface bytes
-are projected only during D3D Lock/Unlock, until the last DLL consumer in phase9.
+to phase-7 records. Remaining original raster adapters serve FES and foreign
+consumers only. StageRenderer-owned surface bytes are lent during D3D
+Lock/Unlock: DLL output ends in phase 9, FES/media borrowing in phases 7/8.
+Shared projection removal follows the approved 6 → 9 → 7 → 8 order, with per-consumer
+removal records. M2/DLL initialization must end in 9 even if FES/media records remain.
 
 Script image/font decoders no longer consume the PE buffer descriptor. The
 projection implementation is assigned to D7 with its remaining D8 file-host
@@ -1010,8 +1011,8 @@ their COM interface does not. Partial resources are released and the output
 interface is cleared; unrelated faults still propagate. This follows the
 [D3D9 resource failure contract](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-createtexture).
 Successful script progress alone does not establish that every M2 model loaded:
-the original driver can also recover from a null `HeapAlloc` result. Guest texture
-storage and model allocation peaks remain consumers owned by domains 6 and 9.
+the original driver can also recover from a null `HeapAlloc` result. StageRenderer owns texture pixels outside the guest heap after phase 6; the
+remaining DLL model state and COM identities are phase-9 consumers.
 
 ## Temporary x86 heap capacity
 
@@ -1034,3 +1035,19 @@ excluding only the injected backend object. Export and import obtain their
 limit from the active host. PE region restoration validates decoded length
 against the actual mapped region. These allowances are deleted in phase 10
 with the original backend.
+
+## Completed render route review
+
+Both ABI inventories now trace all 219 domain-6 slots as pure JS. The
+[route review](b-phase6-route-audit.md) records the 57 formerly unknown wrappers
+per ABI, their recovered message semantics, and conditional foreign receivers.
+A `renderRoute.consumerRoutes` entry preserves reachable original Scroll controls
+(7), SDK tasks (8), and M2 messages (9); a JS wrapper classification does not
+claim those consumers have migrated. Four particle RNG rows per ABI use the
+already registered phase-10 shared data page, with no original RNG execution.
+
+The oracle bitmap/image-owner/HG helpers are assigned to their actual remaining
+FES consumer in domain 7. Their addresses and calls remain in the unchanged
+checker include list and baseline; no file is hidden by this ownership review.
+The removed original graphics implementation is available only through the
+explicit test oracle composition and is absent from the shipped include list.

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from '../src/native/abi/index.mjs';
-// Persistent bitmap wrappers. Guest kcBitmap storage is authoritative after
-// materialization; host RGBA and Canvas objects are derived presentation views.
+// Remaining FES/foreign-task PE bitmap records. Script bitmap-data is JS-owned;
+// copied inputs never become script authority. Only producer-owned PE buffers
+// expose derived views at explicit import/publish boundaries (phases 7/8/9).
 
 export function sameNativeBitmap(process, first, second) {
   const data = first && process.load(first);

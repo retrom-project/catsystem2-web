@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// FES retains independent PE records and wrappers. JS owns image collections,
+// FES IMAGEEX refex retains 64-byte PE collections and independent wrappers.
+// JS owns image collections,
 // animation and composition. This projection is removed in phase 7.
 import { imageOwnerReleaseAddress } from './image-owner.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';

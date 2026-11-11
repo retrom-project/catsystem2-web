@@ -5,6 +5,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { nativeTestGroups } from './test-native.mjs';
 import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
 import { NATIVE_IMAGE_OWNER_JS_IDS } from '../src/native/image-owner.mjs';
+import { reviewedRenderRoute, reviewRenderIndirect } from './render-route-audit.mjs';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -120,7 +121,7 @@ function domain(file) {
       'oracle/image-owner-projection.mjs',
     ].includes(file)
   )
-    return 6;
+    return 7;
   if (
     file.startsWith('src/emote/') ||
     name.startsWith('emote') ||
@@ -410,6 +411,10 @@ function classify(file, id, callback, features, modules) {
   } else if (reviewedRegions.has(name)) {
     implementation = 'exe-region';
     names = unique([...names, ...reviewedRegions.get(name)]);
+  } else if (reviewedRenderRoute(file, id)) {
+    if (modules.get(file).executionSites.length)
+      throw new Error('Reviewed render wrapper gained an execution site: ' + file);
+    implementation = 'pure-js';
   } else if (messageModules.has(name)) {
     implementation = 'unknown';
     reasons.push(
@@ -467,7 +472,8 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
   const entries = [];
   for (const [table, declaration] of Object.entries(api.NATIVE_ABIS[profile].tables)) {
     for (const entry of api.nativeCatalog(profile, table)) {
-      const reasons = [];
+      const reasons = [],
+        reviewEvidence = [];
       let implementation,
         location,
         implementationFile,
@@ -563,13 +569,22 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         reasons.push(
           '正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。',
         );
-      if (!entry.name) reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
+      const renderRoute = table === 'main' && reviewedRenderRoute(implementationFile, entry.id);
+      const semanticName = renderRoute?.semanticName ?? entry.name;
+      if (!semanticName)
+        reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
+      if (renderRoute)
+        reviewEvidence.push(
+          '6.7 independently traced the installed wrapper, JS receiver and foreign consumer branches; catalog labels are preserved separately when corrected.',
+        );
       if (
         (table === 'generic' && [39, 40].includes(entry.id)) ||
         (table.startsWith('particle-') && [33, 34].includes(entry.id))
       ) {
         dependencies = unique([...dependencies, 'src/native/random-memory.mjs']);
-        reasons.push('JS 随机数使用共享 ParticleRandom，World 可将随机状态绑定到原 EXE RAM。');
+        (table.startsWith('particle-') ? reviewEvidence : reasons).push(
+          'JS 随机数使用共享 ParticleRandom，World 可将随机状态绑定到原 EXE RAM。已登记的 phase-10 数据页投影，不执行原随机数处理器。',
+        );
       }
       const phase =
         table === 'generic'
@@ -591,7 +606,8 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         table,
         id: entry.id,
         hexID: `0x${entry.id.toString(16)}`,
-        semanticName: entry.name,
+        semanticName,
+        ...(renderRoute ? { catalogSemanticName: entry.name, renderRoute } : {}),
         catalogStatus: entry.status,
         implementation,
         module: implementationFile,
@@ -603,6 +619,7 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         docs: documentation(unique([implementationFile, ...dependencies]), docs),
         review: reasons.length && !reviewedUnsupported ? 'needs-review' : 'traced',
         reviewReasons: reviewedUnsupported ? [] : reasons,
+        ...(reviewEvidence.length ? { reviewEvidence } : {}),
         ...(entry.migrationReview ? { migrationReview: entry.migrationReview } : {}),
       });
     }
@@ -640,13 +657,17 @@ const nonNativeGroups = [
         'consumer graph identity',
       ],
       consumers: [
-        { domain: 7, modules: ['fes-objects', 'fes-images', 'text'], removePhase: 7 },
+        {
+          domain: 7,
+          modules: ['fes-objects', 'fes-images', 'text', 'control-task', 'fes-controls'],
+          removePhase: 7,
+        },
         { domain: 8, modules: ['sdk-javascript-task', 'directshow'], removePhase: 8 },
         { domain: 9, modules: ['emote'], removePhase: 9 },
       ],
       lifetime:
         'No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.',
-      removePhase: 9,
+      removePhase: 8,
       operations: ['sync', 'pull', 'bitmap', 'initialize', 'snapshot', 'restore', 'close'],
     },
   },
@@ -714,7 +735,7 @@ const nonNativeGroups = [
       ],
       lifetime:
         'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and DLL code until their consumer phases.',
-      removePhase: 9,
+      removePhase: 8,
       operations: ['install', 'close'],
     },
   },
@@ -753,11 +774,12 @@ const nonNativeGroups = [
       fields: ['surface identity', 'pitch', 'format', 'lock bytes', 'D3D resource handles'],
       consumers: [
         { domain: 7, modules: ['fes-images'], removePhase: 7 },
+        { domain: 8, modules: ['vmr9', 'texture-movie-renderer'], removePhase: 8 },
         { domain: 9, modules: ['emote', 'native-d3d'], removePhase: 9 },
       ],
       lifetime:
         'Guest virtual regions contain temporary DLL-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.',
-      removePhase: 9,
+      removePhase: 8,
       operations: [
         'LockRect',
         'UnlockRect',
@@ -900,9 +922,9 @@ const nonNativeGroups = [
   },
   {
     name: 'js-bitmap-to-exe-consumers',
-    domain: 6,
+    domain: 7,
     entry:
-      'Script-owned JS bitmaps produce independent renderer/FES input copies; Wipe3 source preparation is an explicit JS command',
+      'JS bitmaps produce independent FES/foreign-task input copies; JS Draw and texture pages never use these copies',
     modules: [],
     files: ['oracle/bitmap-memory.mjs', 'oracle/bitmap-projection.mjs'],
     projection: {
@@ -917,100 +939,89 @@ const nonNativeGroups = [
       ],
       consumers: [
         {
-          domain: 6,
-          modules: ['graphics-process', 'retained-draw', 'texture-memory', 'area-effect-commands'],
+          domain: 7,
+          modules: ['fes-images', 'fes-draw-projection', 'control-task'],
+          removePhase: 7,
         },
-        { domain: 7, modules: ['fes-images'] },
+        { domain: 8, modules: ['input-commands', 'sdk-javascript-task'], removePhase: 8 },
+        { domain: 9, modules: ['emote', 'graphics-consumer-projection'], removePhase: 9 },
       ],
       lifetime:
         'Projection references follow JS aliases and retained consumers. Revision changes refresh the source. Wipe3 mutates JS source RGB before projection; there is no global owned-state back-read.',
-      removePhase: 7,
-      operations: ['pointer', 'wrapper', 'beforeCall', 'prepareWipeSource'],
+      removePhase: 8,
+      operations: ['pointer', 'wrapper', 'beforeCall', 'release'],
     },
   },
   {
     name: 'exe-owned-bitmap-derived-views',
-    domain: 6,
+    domain: 7,
     entry:
-      'Renderer targets and FES decoded images remain owned by their unmigrated consumer; borrow exposes a derived view',
-    modules: ['graphics-process', 'fes-images'],
+      'Remaining FES/foreign-task producers expose explicit derived views of their PE-owned bitmap records',
+    modules: ['fes-images'],
     files: ['oracle/bitmap-projection.mjs'],
     projection: {
       direction: 'PE-to-JS-view',
-      authority: 'Original domain 6 renderer targets / domain 7 FES decoded images',
-      fields: ['read-only logical RGBA and metadata', 'consumer-owned pointer identity'],
+      authority:
+        'Producer-owned FES/foreign-task buffers; ordinary script bitmaps and render targets stay JS-owned',
+      fields: [
+        'derived RGBA and metadata at explicit import/publish boundaries',
+        'consumer-owned pointer identity',
+      ],
       consumers: [
-        { domain: 6, modules: ['retained-draw', 'graphics-process'] },
         { domain: 7, modules: ['fes-images'] },
+        { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
+        { domain: 9, modules: ['emote'], removePhase: 9 },
       ],
       lifetime:
         'The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.',
-      removePhase: 7,
+      removePhase: 8,
       operations: ['borrow', 'pixels', 'adopt'],
     },
   },
   {
-    name: 'exe-owner-renderer-to-js-derived-output',
-    domain: 6,
-    entry:
-      'D6 nested collection rasterizers update derived output after actual rendererDraw execution',
-    modules: ['retained-draw'],
-    files: ['oracle/image-owner-projection.mjs'],
-    projection: {
-      direction: 'PE-to-JS',
-      authority:
-        'Domain 6 renderer output; JS layers, frame pixels and program bytes remain authoritative inputs',
-      fields: ['multi-layer output RGBA after an observed compositor draw'],
-      consumers: [{ domain: 5, modules: ['image-owner'] }],
-      lifetime:
-        'Observed rendererDraw identity selects outputs. Bounds refresh and clearing owner dirty do not trigger capture. Async host calls finish capture at the D6 call boundary.',
-      removePhase: 6,
-      operations: ['captureRendered'],
-    },
-  },
-  {
     name: 'js-anm-table-to-exe-view',
-    domain: 6,
-    entry: 'Original D6 view initialization reads the immutable JS-owned anmtable.csv bytes',
+    domain: 9,
+    entry:
+      'Remaining FES/SDK/M2 consumer view initialization reads immutable JS-owned anmtable.csv bytes',
     modules: ['engine-files'],
     projection: {
       direction: 'JS-to-PE',
       authority: 'NativeImageFiles bytes and lookup entries',
       fields: ['immutable encoded table bytes'],
-      consumers: [{ domain: 6, modules: ['render-sources', 'retained-draw'] }],
+      consumers: [
+        { domain: 7, modules: ['fes-images'], removePhase: 7 },
+        { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
+        { domain: 9, modules: ['renderer-consumer-projection', 'emote'], removePhase: 9 },
+      ],
       lifetime:
         'The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.',
-      removePhase: 6,
+      removePhase: 8,
       operations: ['read'],
     },
   },
   {
     name: 'js-image-codec-to-exe-consumers',
-    domain: 6,
+    domain: 7,
     entry:
-      'Original D6/D7/D8/D9 image decoders retain the bounded HG delta host acceleration until their domains migrate',
+      'FES image/task producer decodePointer/decodeBitmapPointer still use the existing bounded HG delta boundary',
     modules: [],
     files: ['oracle/hg3-delta.mjs'],
     projection: {
       direction: 'JS-to-PE',
       authority: 'Encoded input bytes for each consumer-owned decoder',
       fields: ['expanded bitmap bytes in consumer-owned buffers'],
-      consumers: [
-        { domain: 7, modules: ['fes-images'] },
-        { domain: 8, modules: ['sdk-javascript-task'] },
-        { domain: 9, modules: ['ppi'] },
-      ],
+      consumers: [{ domain: 7, modules: ['fes-images', 'fes-task', 'data-buffer-projection'] }],
       lifetime:
         'Script-created images decode entirely in JS. Only the remaining original consumers use the HG kernel; no script bitmap is imported implicitly.',
-      removePhase: 9,
+      removePhase: 7,
       operations: ['installNativeHG3Delta'],
     },
   },
   {
     name: 'js-image-owner-to-exe-consumers',
-    domain: 6,
+    domain: 7,
     entry:
-      'JS image-owner handles and metadata project independent 64-byte collections for retained Draw and IMAGEEX',
+      'FES IMAGEEX refex borrows independent 64-byte collections from JS image-owner handles; JS Draw has no PE collection',
     modules: [],
     files: ['oracle/image-owner.mjs', 'oracle/image-owner-projection.mjs'],
     projection: {
@@ -1021,14 +1032,11 @@ const nonNativeGroups = [
         'collection geometry/format/flags',
         'independent wrapper and retained owner references',
       ],
-      consumers: [
-        { domain: 6, modules: ['retained-draw'] },
-        { domain: 7, modules: ['fes-images'] },
-      ],
+      consumers: [{ domain: 7, modules: ['fes-images'] }],
       lifetime:
         'JS task ownership uses handles. Independent PE vectors, wrappers and frame maps are built from JS values without calling image native handlers. External retained references can outlive JS release.',
       removePhase: 7,
-      operations: ['prepare', 'sync', 'rebuildRenderer', 'releaseModel'],
+      operations: ['prepare', 'sync', 'releaseModel'],
     },
   },
   {
@@ -1421,9 +1429,12 @@ async function build() {
     docs: documentation([facts.file], docs),
     executionSites: facts.executionSites,
     executionSiteCounts: tally(facts.executionSites, 'method'),
-    indirectSites: facts.indirectSites,
+    indirectSites: facts.indirectSites.map((site) => {
+      const reason = reviewRenderIndirect(facts.file, site);
+      return reason ? { ...site, review: 'traced', reason } : site;
+    }),
     review:
-      facts.indirectSites.length ||
+      facts.indirectSites.some((site) => !reviewRenderIndirect(facts.file, site)) ||
       facts.executionSites.some((site) => site.review === 'needs-review')
         ? 'needs-review'
         : 'counted',
