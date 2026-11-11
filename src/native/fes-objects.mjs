@@ -440,6 +440,10 @@ export class NativeFESObjectRuntime {
       ? this.engine.callFromHost(address, args, pointer, options)
       : this.engine.call(address, args, pointer, options);
   }
+  async constructBase(instance, object, pointer, args) {
+    await this.call(this.adapter(0).construct, args, pointer, instance.runtimeID);
+    this.process.store(pointer + 4, object.nativeType);
+  }
   async constructPlane(instance, object, pointer, args) {
     // D7 common motion/parent prefix only; JS text and M2 own their suffixes.
     await this.call(this.sdk ? 0x5ebea0 : 0x74b940, args, pointer, instance.runtimeID);

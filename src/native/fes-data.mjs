@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
-// STRTABLE and FILELIST are base data objects. Their original constructors,
-// definitions and commands execute in the shared process; neither has a frame
-// driver or a renderer child in 628D60 / 500390 and 62DA50 / 504E50.
+// STRTABLE byte cells are JS-owned. FILELIST still uses the original data
+// object pending its narrow/wide search-pattern audit. Neither has a renderer.
 import { registerNativeFESObjectType } from './fes-objects.mjs';
+import { readFESStringTable, fesStringTableCell } from './fes-string-table.mjs';
+import { tokenizeNativeFESSoundConfiguration } from './fes-sound-config.mjs';
 
 const ABI = {
   game: {
-    34: { construct: 0x764620, apply: 0x769440 },
     35: { construct: 0x765530, apply: 0x769460 },
   },
   sdk: {
-    34: { construct: 0x6002e0, apply: 0x605630 },
     35: { construct: 0x6011f0, apply: 0x605650 },
   },
 };
@@ -24,9 +23,53 @@ export class NativeFESData {
   }
   async initialize(instance, object) {
     if (object.deleted) return this.close(object);
+    if (object.nativeType === 34) return this.stringTable(instance, object);
     return (await this.world.getNativeFeature('fes-objects')).create(instance, object);
   }
+  async stringTable(instance, object) {
+    const state = (object.nativeDataState ??= { appliedDefinitions: 0, rows: [] }),
+      definitions = object.nativeDefinitions ?? [];
+    for (; state.appliedDefinitions < definitions.length; state.appliedDefinitions++) {
+      const row = definitions[state.appliedDefinitions],
+        tokens = tokenizeNativeFESSoundConfiguration(
+          [object.key, ...row.values].join(' '),
+          this.world.profile,
+        ).slice(1),
+        column = row.columns.indexOf('FILE');
+      if (column < 0 || tokens[column] === undefined) continue;
+      const file = instance.soundArgument(tokens[column]),
+        bytes = await this.world.runtime.read(file, 'config');
+      state.rows = bytes?.length ? readFESStringTable(bytes) : [];
+    }
+    return state;
+  }
+  setString(instance, index, bytes, context) {
+    if (context?.setStringBytes) return context.setStringBytes(index, bytes);
+    const record = this.world.objects.objects.get(instance.runtimeID),
+      handle = record?.context?.stringBank;
+    if (!handle) return false;
+    this.world.runtime.handles.get(handle, 'string-bank').setBytes(index, bytes);
+    return true;
+  }
   async command(instance, object, verb, args, context) {
+    if (object.nativeType === 34 && verb === 'get') {
+      const tokens = tokenizeNativeFESSoundConfiguration(
+          [object.baseName, verb, ...args].join(' '),
+          this.world.profile,
+        ).slice(2),
+        value = (i) =>
+          tokens[i] === undefined ? -1 : instance.value(instance.soundArgument(tokens[i])),
+        state = await this.stringTable(instance, object),
+        cell = fesStringTableCell(state.rows, value(0), value(1)),
+        output = value(2),
+        status = value(3),
+        record = this.world.objects.objects.get(instance.runtimeID),
+        hasStrings = Boolean(context?.setStringBytes || record?.context?.stringBank);
+      const found = cell !== null && hasStrings;
+      if (found && output !== -1) this.setString(instance, output, cell, context);
+      if (status !== -1) instance.setGlobal(status, Number(found));
+      return 0;
+    }
     return (await this.world.getNativeFeature('fes-objects')).command(
       instance,
       object,
@@ -51,7 +94,15 @@ export class NativeFESData {
 
 export function installNativeFESData(world) {
   world.dataFES = new NativeFESData(world);
-  for (const type of [34, 35])
+  registerNativeFESObjectType(world, 34, (runtime) => ({
+    size: 44,
+    construct: (runtime, instance, object, pointer, args) =>
+      runtime.constructBase(instance, object, pointer, args),
+    verbs: new Set(runtime.table.keys()),
+    vramOffset: null,
+    syncObject() {},
+  }));
+  for (const type of [35])
     registerNativeFESObjectType(world, type, (runtime) => {
       const abi = ABI[runtime.sdk ? 'sdk' : 'game'][type];
       return {
@@ -61,7 +112,6 @@ export function installNativeFESData(world) {
         verbs: new Set(runtime.table.keys()),
         vramOffset: null,
         async initialize(runtime, instance, object, pointer) {
-          if (type === 34) await runtime.world.getNativeFeature('engine-files');
           await runtime.applyDefinition(instance, object, pointer, abi.apply);
         },
         syncObject() {},

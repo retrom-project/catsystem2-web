@@ -79,7 +79,7 @@ for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ]) {
   test(
-    `${profile} original STRTABLE parses rows and reads exact columns across a fresh World`,
+    `${profile} JS STRTABLE parses rows and reads exact columns across a fresh World`,
     { skip: !process.env[variable] },
     async () => {
       const source = `#DEFINE
@@ -108,24 +108,7 @@ table get 26 0 19 28
       try {
         const task = await start(world),
           object = task.player.root.byKey.get('table');
-        assert.ok(object.nativeObjectPointer);
-        assert.equal(
-          world.nativeEngine.process.load(object.nativeObjectPointer + 48),
-          5,
-          JSON.stringify(object.nativeDefinitions),
-        );
-        const runtime = await world.getNativeFeature('fes-objects'),
-          output = runtime.process.allocate(2048, true);
-        assert.equal(
-          await runtime.call(
-            profile.startsWith('sdk-') ? 0x6007f0 : 0x764b30,
-            [7, 0, output],
-            object.nativeObjectPointer,
-          ),
-          1,
-        );
-        assert.equal(runtime.process.string(output), 'alpha');
-        runtime.process.free(output);
+        assert.equal(object.nativeDataState.rows.length, 5);
         assert.equal(task.player.strings[10], undefined);
         await task.tick();
         assert.deepEqual(

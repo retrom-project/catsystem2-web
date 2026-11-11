@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 139, "oracle": 142, "differential": 67 },
+    "counts": { "js": 140, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -38,6 +38,7 @@
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-contracts.test.mjs",
+        "tests/fes-string-table.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
         "tests/formats.test.mjs",
@@ -2160,7 +2161,7 @@
       {
         "kind": "va",
         "file": "src/native/fes-data.mjs",
-        "line": 56,
+        "line": 107,
         "expression": "ABI[runtime.sdk ? 'sdk' : 'game']",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2259,16 +2260,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 445,
-        "expression": "this.sdk",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/fes-objects.mjs",
-        "line": 475,
+        "line": 449,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2286,7 +2278,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 532,
+        "line": 483,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2295,7 +2287,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 547,
+        "line": 536,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2304,7 +2296,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 588,
+        "line": 551,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2313,7 +2305,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 815,
+        "line": 592,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2322,7 +2314,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 822,
+        "line": 819,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2331,7 +2323,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 834,
+        "line": 826,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2340,7 +2332,16 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 965,
+        "line": 838,
+        "expression": "this.sdk",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "src/native/fes-objects.mjs",
+        "line": 969,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2717,13 +2718,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 421,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 159, "9": 55 },
+    "runtimeFiles": 422,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 38, "8": 159, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 78,
-    "exeDependencies": { "addresses": 893, "calls": 99, "references": 6 },
+    "exeDependencies": { "addresses": 889, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
-    "executionSites": 317
+    "executionSites": 318
   },
   "profiles": [
     {
@@ -25104,7 +25105,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:979",
+          "registration": "src/native/fes-objects.mjs:983",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -48349,7 +48350,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:979",
+          "registration": "src/native/fes-objects.mjs:983",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -51531,10 +51532,10 @@
     },
     {
       "file": "src/native/fes-data.mjs",
-      "sourceSha256": "8f785ee2bb8b68522b915a32e154a210c401733d38f1ae7c830da5cad4be9041",
+      "sourceSha256": "3b57b10197703bb1c784e5dc3346b7887151919f04de646d0f8d5a02249958c4",
       "domain": 7,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 8, "calls": 0, "references": 0 },
+      "exeDependencies": { "addresses": 4, "calls": 0, "references": 0 },
       "dependencyTypes": ["getNativeFeature", "in-image-literals"],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
@@ -51548,23 +51549,16 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 30,
+          "line": 73,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 47,
+          "line": 90,
           "method": "getNativeFeature",
           "feature": "fes-objects",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 64,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -51950,7 +51944,7 @@
     },
     {
       "file": "src/native/fes-objects.mjs",
-      "sourceSha256": "702674803067901ad169925c044e9bac58a54d01d722a7a8263fead5e4c272f7",
+      "sourceSha256": "fbbd3a7c12af0d69d4205efb36589b0b7dbc2521ca7fc70fd82994a8ef932dcf",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 62, "calls": 3, "references": 0 },
@@ -51993,126 +51987,133 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 445,
+          "line": 444,
+          "method": "call",
+          "target": "this.adapter(0).construct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 449,
           "method": "call",
           "target": "this.sdk ? 0x5ebea0 : 0x74b940",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 479,
+          "line": 483,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 489,
+          "line": 493,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 532,
+          "line": 536,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 547,
+          "line": 551,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 587,
+          "line": 591,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 774,
+          "line": 778,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 781,
+          "line": 785,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 795,
+          "line": 799,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 814,
+          "line": 818,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 821,
+          "line": 825,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 833,
+          "line": 837,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 839,
+          "line": 843,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 875,
+          "line": 879,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 916,
+          "line": 920,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 928,
+          "line": 932,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 965,
+          "line": 969,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "patch": 1, "call": 19, "callFromHost": 1 },
+      "executionSiteCounts": { "patch": 1, "call": 20, "callFromHost": 1 },
       "indirectSites": [
         {
           "line": 87,
@@ -52129,7 +52130,7 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 980,
+          "line": 984,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -52266,6 +52267,19 @@
     {
       "file": "src/native/fes-source.mjs",
       "sourceSha256": "c52174724ff2d9713c7e005c68707d9e2e4c54401cc27a48ac5a65ec1102fe6c",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-string-table.mjs",
+      "sourceSha256": "5ecc1dc3641c837a947dd7033ff0746c7f049813ea2bdeed4c1a5d486fec8a48",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58102,7 +58116,15 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 445,
+          "line": 444,
+          "method": "call",
+          "target": "this.adapter(0).construct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/fes-objects.mjs",
+          "line": 449,
           "method": "call",
           "target": "this.sdk ? 0x5ebea0 : 0x74b940",
           "review": "needs-review",
@@ -58110,7 +58132,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 479,
+          "line": 483,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
@@ -58118,7 +58140,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 489,
+          "line": 493,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
@@ -58126,7 +58148,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 532,
+          "line": 536,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
@@ -58134,7 +58156,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 547,
+          "line": 551,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
@@ -58142,7 +58164,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 587,
+          "line": 591,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
@@ -58150,7 +58172,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 774,
+          "line": 778,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
@@ -58158,7 +58180,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 781,
+          "line": 785,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
@@ -58166,7 +58188,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 795,
+          "line": 799,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58174,7 +58196,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 814,
+          "line": 818,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
@@ -58182,7 +58204,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 821,
+          "line": 825,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
@@ -58190,7 +58212,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 833,
+          "line": 837,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
@@ -58198,7 +58220,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 839,
+          "line": 843,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
@@ -58206,7 +58228,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 875,
+          "line": 879,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
@@ -58214,7 +58236,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 916,
+          "line": 920,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58222,7 +58244,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 928,
+          "line": 932,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
@@ -58230,7 +58252,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 965,
+          "line": 969,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
@@ -59497,7 +59519,15 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 445,
+          "line": 444,
+          "method": "call",
+          "target": "this.adapter(0).construct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/fes-objects.mjs",
+          "line": 449,
           "method": "call",
           "target": "this.sdk ? 0x5ebea0 : 0x74b940",
           "review": "needs-review",
@@ -59505,7 +59535,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 479,
+          "line": 483,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
@@ -59513,7 +59543,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 489,
+          "line": 493,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
@@ -59521,7 +59551,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 532,
+          "line": 536,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
@@ -59529,7 +59559,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 547,
+          "line": 551,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
@@ -59537,7 +59567,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 587,
+          "line": 591,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
@@ -59545,7 +59575,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 774,
+          "line": 778,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
@@ -59553,7 +59583,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 781,
+          "line": 785,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
@@ -59561,7 +59591,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 795,
+          "line": 799,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59569,7 +59599,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 814,
+          "line": 818,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
@@ -59577,7 +59607,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 821,
+          "line": 825,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
@@ -59585,7 +59615,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 833,
+          "line": 837,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
@@ -59593,7 +59623,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 839,
+          "line": 843,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
@@ -59601,7 +59631,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 875,
+          "line": 879,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
@@ -59609,7 +59639,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 916,
+          "line": 920,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59617,7 +59647,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 928,
+          "line": 932,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
@@ -59625,7 +59655,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 965,
+          "line": 969,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
