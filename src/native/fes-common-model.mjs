@@ -63,10 +63,16 @@ export function setFESEnabled(object, value) {
   return true;
 }
 export function setFESGraphicalDisplay(instance, object, value) {
+  return setFESRawGraphicalDisplay(instance, object, Number((value | 0) !== 0));
+}
+export function setFESRawGraphicalDisplay(instance, object, value) {
   if (!images.has(object.nativeType) && !planes.has(object.nativeType)) return false;
-  value = (value | 0) !== 0;
-  if (object.disp !== value) {
-    object.disp = value;
+  value |= 0;
+  if ((object.displayValue ?? Number(object.disp)) !== value) {
+    object.displayValue = value;
+    object.disp = value !== 0;
+    if (images.has(object.nativeType))
+      object.displayDelta = ((object.displayDelta ?? 0) + (value ? 1 : -1)) | 0;
     markFESObjectDirty(instance, object);
   }
   return true;

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 144, "oracle": 141, "differential": 67 },
+    "counts": { "js": 145, "oracle": 141, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -41,6 +41,7 @@
         "tests/fes-contracts.test.mjs",
         "tests/fes-file-list.test.mjs",
         "tests/fes-image-model.test.mjs",
+        "tests/fes-motion-model.test.mjs",
         "tests/fes-string-table.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -2712,8 +2713,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 427,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 42, "8": 160, "9": 55 },
+    "runtimeFiles": 428,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 43, "8": 160, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -51427,7 +51428,7 @@
     },
     {
       "file": "src/native/fes-common-model.mjs",
-      "sourceSha256": "d7993be3c52dced8790cd461706073daa2107a0b38910b375f80a8b87eea5047",
+      "sourceSha256": "472f81c2feca71fda9f9d4ae2aeb20d240ebf99a45dfbaf63d79d1c631032096",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51969,8 +51970,21 @@
       "review": "needs-review"
     },
     {
+      "file": "src/native/fes-motion-model.mjs",
+      "sourceSha256": "1731e6d3bd04531d57676656ace08c0b682591290f7c61ffc0b9b0f873177b33",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/fes-motion.mjs",
-      "sourceSha256": "94c04d2f90747dd4bbc8ebab4aa4b712a19270f746682839cf5f515a74d0d9bf",
+      "sourceSha256": "2bb84892463543b0c44406d12862856c722724f25bfbd1f07ce4898a618ff711",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52284,7 +52298,7 @@
     },
     {
       "file": "src/native/fes-sound.mjs",
-      "sourceSha256": "419ac72f7672d5b58b391232602c3c14bf71ca5ac39a0bf93b81c5acbaf86121",
+      "sourceSha256": "86075d7d266ce76c33e43df867dfda371138e4260796936bbb9d88dc94f8c57f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

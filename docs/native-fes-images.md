@@ -305,3 +305,34 @@ contract rather than claiming an original runtime comparison for -2.
 This model is not yet the production FES command entry. MOT programs, control and
 log setters, child tasks and render drivers remain separate integration work;
 the migration inventory continues to count their original execution paths.
+
+## Typed MOT state adapters
+
+`src/native/fes-motion-model.mjs` preserves the distinct virtual adapters rather
+than treating every object as an ordinary rendered plane. Its IMAGE snapshot
+starts with 144 zero bytes, exposes priority minus 20 as base Z and includes only
+the alpha color byte. Plane snapshots expose their raw priority as base Z;
+application writes that value into local base Z without changing priority. Even
+PLANE does not expose its separate VRAM origin through this MOT adapter. Angles
+remain in radians, and plane matrices retain their float32 words.
+
+Controls and particles expose only alpha. SCROLL and PARTICLE always propagate
+dirty after motion output; SCROLL2 and SLIDER instead set their alpha-pending
+field. The full raw display word remains separate from its visible boolean;
+image display changes also accumulate the original display-count delta. Known
+Base virtual methods do not replace the manager base or project MOT output into
+object geometry. They still require real manager execution in the command and
+frame driver.
+
+Both engines' authored-MOT fixture independently records the complete snapshot
+and output application for IMAGE, CPLANE, PLANE and all three controls. Additional
+tests cover matrix NaN payloads, signed zeros, buffer reuse and reconstruction
+from copied semantic state. This adapter is not yet connected to the production
+FES family entry.
+
+The built-in blend register builder now makes its recovered source explicit:
+only planes use the previous ARGB's RGB. Other supported families use the
+world-owned command-source address already maintained for FES string identity.
+This is supported by the original handler instructions; the new common oracle
+does not expose the internal register packet and is not claimed as a dynamic
+blend comparison. The existing sound path keeps its verified behavior.

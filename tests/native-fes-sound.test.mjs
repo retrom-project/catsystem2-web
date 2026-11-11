@@ -210,7 +210,7 @@ test('SOUND KX2 starts zeroed and builtin motion parameters retain native source
   expected[MOTION_ABI.color + 3] = 2;
   assert.deepEqual(bytes, expected);
   assert.deepEqual(
-    buildNativeFESMotion('blend', [], bytes, Number, { sound: true, commandPointer: 0x12345678 }),
+    buildNativeFESMotion('blend', [], bytes, Number, { plane: false, commandPointer: 0x12345678 }),
     {
       file: 'pColor',
       registers: [255, 52, 86, 120],
@@ -219,7 +219,7 @@ test('SOUND KX2 starts zeroed and builtin motion parameters retain native source
     },
   );
   assert.throws(
-    () => buildNativeFESMotion('blend', [], bytes, Number, { sound: true }),
+    () => buildNativeFESMotion('blend', [], bytes, Number, { plane: false }),
     /source address/,
   );
   assert.deepEqual(buildNativeFESMotion('arc', ['-1'], bytes, Number, { delay: 7 }), {

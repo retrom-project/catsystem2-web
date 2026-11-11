@@ -579,7 +579,7 @@ export class NativeFESSound {
         target.state(),
         (expression, current) => instance.value(expression, current),
         {
-          sound: true,
+          plane: false,
           commandPointer: context.commandPointer,
           delay: state.get('motionDelay'),
         },

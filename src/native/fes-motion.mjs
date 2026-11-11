@@ -30,11 +30,11 @@ export function buildNativeFESMotion(verb, args, state, evaluate, options = {}) 
       break;
     case 'blend': {
       let color;
-      if (options.sound) {
-        // The original sound branch leaves the command-source pointer in the
-        // local that graphical branches replace with their previous ARGB.
+      if (!options.plane) {
+        // Only the plane family replaces this local with its previous ARGB.
+        // Images, sound, SCROLL2, SLIDER and PARTICLE retain the source address.
         if (!Number.isInteger(options.commandPointer))
-          throw new Error('Native FES sound blend requires its command-source address');
+          throw new Error('Native FES blend requires its command-source address');
         color = options.commandPointer >>> 0;
       } else {
         if (!(state instanceof Uint8Array) || state.length !== MOTION_ABI.objectSize)
