@@ -472,3 +472,30 @@ test('SCROLL mandatory metadata fails visibly and no skin policy is inferred fro
     await world.close();
   }
 });
+
+for (const profile of profiles)
+  test(`${profile} retained control descriptors preserve negative fractional positions`, async () => {
+    const world = await controlWorld(profile);
+    try {
+      const { task, draw } = await setupControl(world, 42),
+        bitmap = task.resource.frames[0][1],
+        fields = task.drawFields;
+      await task.bind(bitmap, task.config.priority, -2.5, -3.75);
+      const item = draw.state.renderer.items.find(
+        (item) => item.key === task.key(task.config.priority),
+      );
+      assert.deepEqual([...item.position], [-2.5, -3.75]);
+      assert.strictEqual(task.drawFields, fields, 'the descriptor buffer is reused');
+      await task.bind(bitmap, task.config.priority, -8.25, 1.5);
+      assert.deepEqual(
+        [
+          ...draw.state.renderer.items.find((item) => item.key === task.key(task.config.priority))
+            .position,
+        ],
+        [-8.25, 1.5],
+      );
+      assert.strictEqual(task.drawFields, fields);
+    } finally {
+      await world.close();
+    }
+  });

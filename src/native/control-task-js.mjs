@@ -54,7 +54,7 @@ export class JSControlTask {
     this.resource = resourceState();
     this.config = null;
     this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args));
-    this.drawFields = new Uint32Array(15);
+    this.drawFields = new Array(15).fill(0);
     this.drawFields[9] = this.drawFields[10] = floatBits(1);
     this.drawFields[11] = 255;
     this.drawFields[12] = 1;

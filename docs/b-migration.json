@@ -49847,7 +49847,7 @@
     },
     {
       "file": "src/native/control-task-js.mjs",
-      "sourceSha256": "c362e2ebe2c421b460649abf0bf5d488faedbe1aad05f920928c25a53966c06e",
+      "sourceSha256": "c90a202aed1c43b3b7a7fbc589060f0a9607fb7cc407f9331626883b579f4fbc",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
