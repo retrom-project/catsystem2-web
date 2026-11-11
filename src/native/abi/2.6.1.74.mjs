@@ -229,6 +229,7 @@ export default {
     accelerators: 'ansi-resource',
   },
   fes: {
+    fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
     variableBankOffset: 1800,
     imageBlockOffset: 1500,
     imageIndexOffset: 1064,

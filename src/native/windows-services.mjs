@@ -5,6 +5,7 @@ import { PPIWindowsServices } from '../ppi/native-services.mjs';
 import { installNativeFileTimes } from './file-time.mjs';
 import { installWindowsPrintf } from './windows-format.mjs';
 import { installNativeFileSearch } from './file-search.mjs';
+import { nativeVirtualFilePath } from './file-path.mjs';
 import { NativeWindowsModules } from './windows-modules.mjs';
 import { NativeWindowsEvents } from './windows-events.mjs';
 import { NativeWindowsClasses } from './windows-class.mjs';
@@ -510,22 +511,7 @@ export class NativeEngineWindows extends PPIWindowsServices {
     if (NATIVE_ABIS[options.profile]?.capabilities.systemEntropy) installNativeEntropy(this);
   }
   path(value) {
-    let path = value.replaceAll('\\', '/');
-    if (/^c:\/catsystem2-web(?:\/|$)/i.test(path))
-      path = path.replace(/^c:\/catsystem2-web\/?/i, '');
-    // A single root separator selects the current virtual drive's root.
-    else if (path.startsWith('/') && !path.startsWith('//')) path = path.slice(1);
-    else if (/^[a-z]:|^\/\//i.test(path)) return path;
-    else if (this.cwd) path = this.cwd + '/' + path;
-    const parts = [];
-    for (const part of path.split('/')) {
-      if (!part || part === '.') continue;
-      if (part === '..') {
-        if (!parts.length) throw new Error('Native file path escaped the mounted directory');
-        parts.pop();
-      } else parts.push(part);
-    }
-    return parts.join('/');
+    return nativeVirtualFilePath(value, this.cwd);
   }
   registerFiles(name, provider) {
     if (this.fileProviders.has(name))

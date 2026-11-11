@@ -191,11 +191,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/fes-data.mjs": {
-      "addresses": 4,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/fes-effects.mjs": {
       "addresses": 24,
       "calls": 0,

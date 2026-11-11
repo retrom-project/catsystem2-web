@@ -147,6 +147,8 @@ function validateBehavior(abi) {
     !abi.layouts.systemInformation ||
     !Number.isSafeInteger(messages?.tilePlaneCommand) ||
     !Number.isSafeInteger(fes?.variableBankOffset) ||
+    !['cp932', 'cp932-as-utf16le'].includes(fes?.fileList?.patternEncoding) ||
+    !['cp932', 'utf16le'].includes(fes?.fileList?.keyEncoding) ||
     !graphics ||
     !startup ||
     floatingPoint?.precisionBits !== 24 ||

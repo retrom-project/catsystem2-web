@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { findNativeFileEntries } from './file-search.mjs';
+import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeRuntime } from './runtime.mjs';
@@ -510,6 +512,18 @@ export class NativeWorld {
     );
     context.nativeRouted = reply.routed;
     return reply.result;
+  }
+  findNativeFiles(pattern) {
+    // The platform directory/provider state is already JS-owned. Reading it
+    // never constructs the transitional engine or executes a Win32 thunk.
+    const context = this.nativeEngine?.kernel ?? {
+      path: (name) => nativeVirtualFilePath(name),
+      directories: new Set(['']),
+      read: (name) => this.storage.read(name),
+      stat: (name) => this.storage.stat?.(name) ?? null,
+      list: () => this.storage.list?.() ?? [],
+    };
+    return findNativeFileEntries(context, pattern);
   }
   registerNativeFeature(name, factory) {
     if (!name || typeof factory !== 'function' || this.nativeFeatureFactories.has(name))

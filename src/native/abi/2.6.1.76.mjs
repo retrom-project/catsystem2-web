@@ -262,6 +262,7 @@ export default {
     accelerators: 'winmain-region',
   },
   fes: {
+    fileList: { patternEncoding: 'cp932-as-utf16le', keyEncoding: 'utf16le' },
     variableBankOffset: 2064,
     imageBlockOffset: 1756,
     imageIndexOffset: 1320,
