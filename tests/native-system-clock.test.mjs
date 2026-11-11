@@ -156,7 +156,7 @@ function world(host = {}) {
   });
 }
 
-test('World, KCS and restored PPI processes use one UTC/monotonic authority while frame counters remain separate', async () => {
+test('World, KCS and restored JS PPI callbacks use one UTC/monotonic authority while frame counters remain separate', async () => {
   const start = Date.now(),
     first = world(),
     second = world();
@@ -169,13 +169,13 @@ test('World, KCS and restored PPI processes use one UTC/monotonic authority whil
     await first.tick();
     assert.equal(first.clock.now(), 50);
     assert.equal(first.frame, 2);
-    const runtime = await first.particles.host.nativeRuntime();
-    assert.equal(runtime.services.clock, first.clock);
+    const runtime = await first.particles.host.pluginRuntime();
+    assert.equal(runtime.options.clock, first.clock);
     assert.equal(nativeStandard(4, [], null, first.runtime.services).value, 50);
     const state = structuredClone(first.snapshot());
     await second.restore(state);
     assert.equal(second.clock.fileTime(), first.clock.fileTime());
-    assert.equal(second.particles.host.runtime.services.clock, second.clock);
+    assert.equal(second.particles.host.runtime.options.clock, second.clock);
     await second.tick();
     assert.equal(second.frame, 3);
     assert.equal(second.clock.performanceCounter(), 83333n);

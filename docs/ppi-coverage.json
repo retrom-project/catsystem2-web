@@ -1,4 +1,5 @@
 {
+  "scope": "Historical oracle coverage and instruction evidence. nativeBytecodeExecuted describes oracle execution, not the product runtime. Current PPI execution uses JSPluginRuntime; see ppi-js.md and b-phase9-summary.md.",
   "oracle": {
     "engineVersion": "2.6.1.76",
     "sha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",

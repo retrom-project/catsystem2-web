@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { loadOracleDLL } from '../oracle/ppi-dll-loader.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -24,8 +25,8 @@ test('PE resources preserve lookup language, mapped pointers and module ownershi
         main = resourcePE();
       new DataView(main.buffer).setUint32(0x98 + 28, 0x400000, true);
       installNativeResourceAPIs(kernel, () => 0x409);
-      p.loadModule(main, () => 0, 'test.exe');
-      const { base } = p.loadModule(bytes, () => 0, 'test.dll');
+      loadOracleDLL(p, main, () => 0, 'test.exe');
+      const { base } = loadOracleDLL(p, bytes, () => 0, 'test.dll');
       return { p, kernel, base, call: resourceImports(p, kernel) };
     },
     { p, kernel, base, call } = make(),

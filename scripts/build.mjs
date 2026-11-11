@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
+import { checkPluginBoundary, validatePluginDistribution } from './check-plugin-boundary.mjs';
 import { checkNativeEntry } from './check-native-entry.mjs';
 import { walk } from './node-files.mjs';
 import { PPI_BACKEND_FILES, PPI_BACKEND_SHA256 } from '../src/ppi/backend-artifact.mjs';
@@ -12,6 +13,7 @@ import { NATIVE_FREETYPE_FILES, NATIVE_FREETYPE_SHA256 } from '../src/native/fre
 const root = fileURLToPath(new URL('..', import.meta.url)),
   output = join(root, 'dist');
 await checkNativeEntry(root);
+await checkPluginBoundary(root);
 await rm(output, { recursive: true, force: true });
 await mkdir(output);
 for (const path of [
@@ -86,6 +88,7 @@ for (const entry of (await walk(output)).sort((a, b) => a.path.localeCompare(b.p
       .update(await readFile(join(output, entry.path)))
       .digest('hex'),
   });
+validatePluginDistribution(files);
 await writeFile(
   join(output, 'build.json'),
   JSON.stringify({ format: 'catsystem2-web-standalone', files }, null, 2) + '\n',

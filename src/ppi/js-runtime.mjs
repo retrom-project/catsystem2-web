@@ -173,7 +173,7 @@ export class JSPluginInstance {
 }
 
 // One host owns module statics and the engine's independent integer/real MT
-// streams. The product Particles owner will select this host in phase 9.8.
+// streams. The product Particles owner selects this JS host.
 export class JSPluginRuntime {
   static async open(options = {}) {
     return new JSPluginRuntime(options);

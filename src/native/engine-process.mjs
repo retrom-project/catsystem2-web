@@ -165,14 +165,8 @@ export class NativeEngineProcess {
         () => options.configuration?.fields.uiLanguage ?? 0x411,
       );
       installNativeVersionAPIs(engine.kernel, engine.name, readPEVersionResource(bytes).slice());
-      // Only the private loader input receives IMAGE_FILE_DLL. The original
-      // bytes and all executable instructions retain their user-mounted source.
-      const mapped = new Uint8Array(bytes),
-        header = new DataView(mapped.buffer),
-        pe = header.getUint32(60, true);
-      header.setUint16(pe + 22, header.getUint16(pe + 22, true) | 0x2000, true);
-      engine.module = engine.process.loadModule(
-        mapped,
+      engine.module = engine.process.loadExecutable(
+        bytes,
         (symbol) => engine.resolve(symbol),
         engine.name,
       );

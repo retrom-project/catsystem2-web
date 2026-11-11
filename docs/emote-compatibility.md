@@ -11,7 +11,11 @@ game M2 native IDs or an invented driver. ABI format and version selection are
 unchanged. Other document/motion/metadata versions warn once with name,
 version, SHA-256 and implementation, then use the same JS parser. Structural
 bounds and explicit unsupported encodings/layer operations still apply.
-The original driver binaries are oracle inputs only, not runtime assets.
+Original driver binaries are not playback dependencies. If a mounted driver
+is available, its bytes may be read once for optional identity diagnostics only;
+an unverified build warns with name, build metadata, SHA-256 and emote-js, then
+continues. No image is mapped or executed. An absent DLL does not block JS
+playback. The single verified driver digest is deliberately a small list.
 
 The old wrapper and DLL device live under `oracle/` and are selected explicitly
 by `M2OracleWorld`. [Original oracle evidence](emote-oracle.md) documents that

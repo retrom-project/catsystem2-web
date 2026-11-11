@@ -67,8 +67,8 @@ export function validateRenderInventory(board) {
     board.nonNativeEntries.some((entry) => entry.name === 'graphics-thread-and-application-tasks')
   )
     throw new Error('Render still registers the original graphics worker');
-  if (board.nonNativeEntries.find((entry) => entry.name === 'ppi-and-dll-host')?.domain !== 9)
-    throw new Error('Render PPI executor lost its phase-9 boundary');
+  if (board.nonNativeEntries.find((entry) => entry.name === 'js-ppi-host')?.domain !== 9)
+    throw new Error('Render PPI lost its JavaScript owner');
 }
 
 export function validateRenderSource(source, file) {
@@ -101,10 +101,6 @@ export function validateRenderSource(source, file) {
                     node.computed ? node.property.value : node.property.name;
                   return {
                     ImportDeclaration(node) {
-                      // Existing, separately registered phase-9 PPI DLL executor. It
-                      // loads the DLL backend, never the original engine EXE backend.
-                      if (file === 'src/particles.mjs' && node.source.value === './ppi/backend.mjs')
-                        return;
                       if (
                         /(?:oracle\/|\/(?:engine-process|kcs-memory|transitional-exe|backend|exe-profiles)\.mjs$)/.test(
                           node.source.value,

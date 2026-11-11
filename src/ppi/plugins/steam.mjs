@@ -49,7 +49,7 @@ function reset(i, n) {
   prepareSpline(v.path, duration, f(duration * f(0.4)));
   v.alpha = f(f(f(r() * s.alphaVar) - f(s.alphaVar * 0.5)) + s.alpha);
   v.tick = 0;
-  v.mark = 0;
+  v.mark ??= 0;
   v.mode = 0;
   v.previous.set(p.pos);
 }
@@ -115,7 +115,8 @@ export const steam = {
     const s = i.state,
       d = s.durations,
       step = delta(i);
-    if (i.host.rand() % s.frequency === 0) s.active = Math.min(i.count, (s.active + s.batch) >>> 0);
+    if (i.host.rand() % s.frequency === 0) s.active = (s.active + s.batch) >>> 0;
+    s.active = Math.min(i.count, s.active);
     for (let n = 0; n < s.active; n++) {
       const v = s.particles[n],
         p = i.particle(n),

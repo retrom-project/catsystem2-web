@@ -1,15 +1,15 @@
 # E-mote JS implementation
 
-The JS implementation is introduced in phase 9. Until its native integration
-is complete, the existing mixed runtime still uses the original DLL. The new
-data layer is not a second executable backend and imports no native process.
+The product M2/FES paths use the JS implementation from phase 9.4 onward.
+The original DLL is available only through explicitly selected local oracle
+tools and tests. The JS data layer imports no native process.
 
 ## Data boundary (9.1)
 
 `EmoteDocument.open(bytes, {name})` reads an ordinary PSB or zlib-compressed PSZ
 through the existing parser. Container version, motion version and metadata
-version remain distinct. The evaluated motion schema requires `id=motion`,
-`spec=win/krkr`, finite positive motion version at most `3.0300001` and, when
+version remain distinct. The reviewed motion schema requires `id=motion`,
+`spec=win/krkr`, finite positive motion version (reviewed through `3.0300001`) and, when
 present, metadata `format=emote`, `version=1`. Missing format/version fields in
 the authored legacy metadata remain valid. This follows the reviewed data
 contract, not a game-name or engine-version branch.
@@ -17,7 +17,7 @@ contract, not a game-name or engine-version branch.
 The document retains the original object/motion tree, metadata controllers,
 variable tracks, keyframe ordering and easing data. It does not normalize away
 unimplemented flags. Source and variable names use Maps. Unknown motion, icon,
-texture encoding or metadata version produces an explicit error. This adds no
+texture encoding produces an explicit error; unverified container/motion/metadata versions warn and continue. This adds no
 engine ABI fields or engine-version selection behavior.
 
 Textures decode lazily and are cached by source (or per-icon resource). The

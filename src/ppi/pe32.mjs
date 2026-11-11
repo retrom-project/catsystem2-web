@@ -945,15 +945,19 @@ export class PE32Process {
       Object.assign(this, execution);
     }
   }
-  loadModule(bytes, resolveImport, name = 'particle.ppi') {
-    const pe = parsePE32(bytes);
+  loadExecutable(bytes, resolveImport, name = 'engine.exe') {
+    const pe = parsePE32(bytes, { allowExecutable: true });
+    const file = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+      header = file.getUint32(60, true);
+    if (file.getUint16(header + 22, true) & 0x2000)
+      throw new Error('The transitional engine loader requires an EXE image');
     let base = pe.base;
     while (
       this.regions.some((r) => base < r.address + r.size && base + pe.image.length > r.address)
     )
       base = (base + 0x1000000) >>> 0;
     if (base !== pe.base && !pe.relocations.length)
-      throw new Error('PPI cannot relocate into available guest address space');
+      throw new Error('PE image cannot relocate into available guest address space');
     const v = new DataView(pe.image.buffer),
       delta = base - pe.base;
     for (const offset of pe.relocations)
@@ -969,7 +973,7 @@ export class PE32Process {
         const entry = pe.exports.get(typeof symbol === 'string' ? pe.names.get(symbol) : symbol);
         if (!entry || entry.forward)
           throw new Error(
-            `PPI export ${symbol} unavailable${entry?.forward ? ': ' + entry.forward : ''}`,
+            `PE export ${symbol} unavailable${entry?.forward ? ': ' + entry.forward : ''}`,
           );
         return base + entry.address;
       },

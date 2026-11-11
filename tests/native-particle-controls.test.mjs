@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
+import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -28,6 +30,7 @@ for (const [profile, variable, receiver, offset] of [
         make = () => {
           const random = new ParticleRandom();
           return new NativeWorld({
+            particleRegistry: new PPIRegistry({ implementations: { emitter: authoredPPI } }),
             game,
             profile,
             configuration: new NativeConfiguration({ profile }),

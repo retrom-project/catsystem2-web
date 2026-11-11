@@ -26,7 +26,6 @@ export class NativeParticles {
       random: world.random,
       clock: world.clock,
       onDebug: (message) => world.host.nativeLog?.(message),
-      nativeThread: () => world.nativeEngine?.process,
       atlas: this.textures,
       scriptBounds: nativeParticleBounds,
       projectGeometry: (particles, geometry) => this.projection.geometry(particles, geometry),

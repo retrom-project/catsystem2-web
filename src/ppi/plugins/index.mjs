@@ -8,7 +8,7 @@ import { blur } from './blur.mjs';
 import { dash } from './dash.mjs';
 import { em_note } from './emote-note.mjs';
 import { cmnptcl } from './cmnptcl.mjs';
-export const PPI_IMPLEMENTATIONS = {
+const definitions = {
   rain,
   filmnoise,
   em_note,
@@ -22,3 +22,17 @@ export const PPI_IMPLEMENTATIONS = {
   em_question,
   em_question_a,
 };
+
+// The original constructors leave the private particle array absent until Init.
+// Reloading an already-active task can call Exec before an explicit start.
+export const PPI_IMPLEMENTATIONS = Object.fromEntries(
+  Object.entries(definitions).map(([name, definition]) => [
+    name,
+    {
+      ...definition,
+      exec(instance) {
+        if (instance.state.particles) definition.exec(instance);
+      },
+    },
+  ]),
+);

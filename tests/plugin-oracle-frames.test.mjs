@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { recordEmoteFrames, recordPPIFrames } from '../oracle/plugin-frames.mjs';
 import { recordPluginOracle } from '../scripts/record-plugin-oracle.mjs';
-import { NativePPI } from '../src/ppi/native.mjs';
+import { NativePPI } from '../oracle/ppi-native-original.mjs';
 import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';

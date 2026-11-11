@@ -58,8 +58,8 @@ source describes2.1. The original inspected2.x loader rejects the1.0 binary;
 its filename is not evidence of equivalence with `rain.ppi`2.1. The1.0 support
 choice is isolated in9.7. No alias or speculative layout conversion is introduced.
 
-The host first lands independently (9.5), algorithms follow (9.6), and product
-selection/removal of the old loader happens in9.8. Node tests cover warnings,
+The host and algorithms are now the product default. The old DLL loader is
+quarantined under oracle/ and is never included in the distribution. Node tests cover warnings,
 unsupported identities, shared lifetimes, attachments, buffered writes,
 close/load races, fresh checkpoints and the existing authored DLL oracle's raw
 records/RNG at irregular frames. No private game EXE or new patch/injection
@@ -94,8 +94,8 @@ All mutable path/particle buffers are allocated per instance and reused by Exec.
 [Baseline records](../tests/fixtures/ppi-js-plugins-golden.json) freeze all twelve
 DLLs at Init, six frames and Stop. [Motion records](../tests/fixtures/ppi-js-motion-golden.json)
 add fifteen authored cases with nondegenerate paths, tail grouping, rapid resets,
-radius/gravity emission, parameter/attachment changes and restart. These contain
-public output bytes and RNG hashes, with no DLL or private game resources.
+radius/gravity emission, equal-frame callbacks, parameter/attachment changes and restart. These contain
+public output bytes, RNG hashes and reviewed private velocity/lifetime/state fields, with no DLL or private game resources.
 Both use the normal script environment's x87 control word0x007f. Existing0x037f
 and changed-control-word evidence remains oracle evidence, outside the selected
 JS cross-call contract. The differential requires **exact bytes**, control flags,
@@ -110,7 +110,7 @@ node scripts/record-ppi-js-oracle.mjs --root /private/ptclpi --output tests/fixt
 node --test tests/differential/ppi-js-plugins.test.mjs
 ```
 
-The recorder uses the existing public DLL lifecycle oracle, never an EXE,
+The recorder uses the existing public DLL lifecycle oracle and host-side read-only state fields, never an EXE,
 patch or injected probe. Input and recorder hashes prevent stale frozen inputs.
 The shipped DLL hashes in the small verified list identify the reviewed builds;
 the default Node differential itself needs no private binary.

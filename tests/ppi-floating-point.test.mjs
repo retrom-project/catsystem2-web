@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
+import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
+import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { PE32Process, parsePE32 } from '../src/ppi/pe32.mjs';
-import { NativePPIRuntime } from '../src/ppi/native.mjs';
+import { NativePPIRuntime } from '../oracle/ppi-native-original.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -192,7 +194,7 @@ test(
 );
 
 test(
-  'SDK full native startup gives PPI the one engine thread before and after a World checkpoint',
+  'SDK full startup gives JS PPI normal arithmetic independent of plugin CPU state through a checkpoint',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const bytes = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
@@ -214,6 +216,7 @@ test(
           virtualHeight: 480,
         });
         return new NativeWorld({
+          particleRegistry: new PPIRegistry({ implementations: { authored: authoredPPI } }),
           game,
           images: {},
           host: {},
@@ -237,21 +240,22 @@ test(
         }),
         task = world.particles.get(id);
       await task.load({ family: 'plugin', program: 'authored', count: 1, priority: 0 });
-      const p = world.nativeEngine.process,
+      const p = (await world.ensureNativeEngine()).process,
         plugin = task.bank.instance;
+      p.cpu.reg_write_i32(p.uc.X86_REG_FPCW, 0x7f);
       assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_FPCW) & 0xffff, 0x7f);
-      assert.equal(plugin.process.cpu.reg_read_i32(plugin.process.uc.X86_REG_FPCW) & 0xffff, 0x7f);
+      assert.equal(plugin.process, undefined);
       plugin.start();
       p.cpu.reg_write_i32(p.uc.X86_REG_FPCW, 0x37f);
       plugin.update(0);
-      assert.equal(plugin.process.cpu.reg_read_i32(plugin.process.uc.X86_REG_FPCW) & 0xffff, 0x37f);
+      assert.equal(plugin.process, undefined);
       fresh = create();
       await fresh.restore(structuredClone(world.snapshot()));
       const next = fresh.particles.get(id).bank.instance,
         q = fresh.nativeEngine.process;
       q.cpu.reg_write_i32(q.uc.X86_REG_FPCW, 0x7f);
       next.update(1);
-      assert.equal(next.process.cpu.reg_read_i32(next.process.uc.X86_REG_FPCW) & 0xffff, 0x7f);
+      assert.equal(next.process, undefined);
       assert.equal(p.cpu.reg_read_i32(p.uc.X86_REG_FPCW) & 0xffff, 0x37f);
     } finally {
       await fresh?.close({ flushFiles: false });

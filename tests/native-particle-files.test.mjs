@@ -8,6 +8,8 @@ import { NativeEngineProcess, nativeImageIdentity } from '../src/native/engine-p
 import { NativeResources } from '../src/native/resources.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { Particles } from '../src/particles.mjs';
+import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
+import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { kif } from './helpers.mjs';
 
@@ -61,7 +63,7 @@ for (const [profile, variable, resolver, encoding] of [
     },
   );
 
-test('a mounted particle DLL and its restored instance use the loose file despite an archive override', async () => {
+test('a mounted plugin identity uses the loose file and JS checkpoint restore never rereads its DLL', async () => {
   const plugin = nativeParticleFixture(),
     override = Uint8Array.of(1, 2, 3),
     files = new Map(
@@ -76,7 +78,14 @@ test('a mounted particle DLL and its restored instance use the loose file despit
     ),
     game = new GameFiles(files),
     create = () =>
-      new Particles({ width: 8, height: 8, frame: 0, emitters: {} }, { game, images: {} });
+      new Particles(
+        { width: 8, height: 8, frame: 0, emitters: {} },
+        {
+          game,
+          images: {},
+          registry: new PPIRegistry({ implementations: { probe: authoredPPI } }),
+        },
+      );
   await game.open();
   assert.deepEqual(await game.readNative('dummy.int/probe.ppi'), override);
   const host = create(),
@@ -90,6 +99,7 @@ test('a mounted particle DLL and its restored instance use the loose file despit
       host.readPlugin('plugins\\archiveonly.ppi'),
       /Missing loose particle library/,
     );
+    game.readLoose = async () => assert.fail('JS restore must not read a DLL');
     await fresh.restore(host.snapshot());
     assert.equal(fresh.get(0).instance.identity, bank.instance.identity);
     assert.deepEqual(fresh.get(0).instance.records(), bank.instance.records());

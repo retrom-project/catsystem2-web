@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
+import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
+import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
@@ -14,11 +15,6 @@ import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { memoryGame } from './helpers.mjs';
-const backend = new URL('../.local/vendor/ppi/unicorn_x86.js', import.meta.url),
-  available = existsSync(backend);
-let pending;
-const unicornFactory = () => (pending ||= import(backend).then((module) => module.default()));
-
 function script() {
   const header = new Uint8Array(52),
     view = new DataView(header.buffer),
@@ -88,7 +84,10 @@ function setup() {
       },
     };
   objects.machine = () => machine;
-  installNativeParticles(world, { unicornFactory, atlas: undefined });
+  installNativeParticles(world, {
+    registry: new PPIRegistry({ implementations: { probe: authoredPPI } }),
+    atlas: undefined,
+  });
   machine.writeString('probe', 32);
   machine.writeString('quad', 64);
   for (let i = 0; i < 32; i++) machine.store(128 + i * 4, floatBits(i + 0.5));
@@ -149,117 +148,110 @@ test('particle inheritance retains the routing context and native registration i
   world.particles.close();
 });
 
-test(
-  'native PPI tasks execute repeated equal-frame callbacks and checkpoint one shared guest process',
-  { skip: !available },
-  async () => {
-    const a = setup();
-    let b;
-    try {
-      const ids = [
-        await a.world.objects.create({ kind: 16 }),
-        await a.world.objects.create({ kind: 16 }),
-      ];
-      for (const id of ids) {
-        await a.call(0x2b5, [id, 32, 64, 2, floatBits(10000), 128]);
-        await a.call(0x110, [id]);
-      }
-      const first = a.world.particles.get(ids[0]),
-        second = a.world.particles.get(ids[1]);
-      assert.equal(first.bank.instance.module, second.bank.instance.module);
-      await a.world.objects.tick(5);
-      await a.world.objects.tick(5);
-      assert.equal(first.bank.instance.particles()[0].disp, 3);
-      assert.equal(second.bank.instance.particles()[0].disp, 4);
-      await a.call(0x111, [ids[0]]);
-      await a.call(0x111, [ids[0]]);
-      const p = second.bank.instance;
-      assert.equal(p.process.load(p.module.base + 0x2128), 2);
-      await a.call(0x110, [ids[0]]);
-      const objectState = a.world.objects.snapshot(),
-        particleState = a.world.particles.snapshot();
-      await a.world.objects.tick(12);
-      const expected = ids.map((id) => a.world.particles.get(id).bank.instance.records());
-      b = setup();
-      await b.world.objects.restore(objectState);
-      await b.world.particles.restore(particleState);
-      await b.world.objects.tick(12);
-      for (const [index, id] of ids.entries())
-        assert.deepEqual(b.world.particles.get(id).bank.instance.records(), expected[index]);
-      await a.world.objects.release(ids[0]);
-      assert.equal(p.process.load(p.module.base + 0x2128), 2); // Destruction releases without an extra Stop.
-      assert.equal(p.process.load(p.module.base + 0x2124), 1);
-    } finally {
-      for (const owner of [a, b].filter(Boolean)) {
-        for (const id of [...owner.world.objects.objects.keys()])
-          await owner.world.objects.release(id);
-        owner.world.particles.close();
-      }
+test('native PPI tasks execute repeated equal-frame callbacks and checkpoint JS module and instance state', async () => {
+  const a = setup();
+  let b;
+  try {
+    const ids = [
+      await a.world.objects.create({ kind: 16 }),
+      await a.world.objects.create({ kind: 16 }),
+    ];
+    for (const id of ids) {
+      await a.call(0x2b5, [id, 32, 64, 2, floatBits(10000), 128]);
+      await a.call(0x110, [id]);
     }
-  },
-);
+    const first = a.world.particles.get(ids[0]),
+      second = a.world.particles.get(ids[1]);
+    assert.equal(first.bank.instance.module, second.bank.instance.module);
+    await a.world.objects.tick(5);
+    await a.world.objects.tick(5);
+    assert.equal(first.bank.instance.particles()[0].disp, 3);
+    assert.equal(second.bank.instance.particles()[0].disp, 4);
+    await a.call(0x111, [ids[0]]);
+    await a.call(0x111, [ids[0]]);
+    const p = second.bank.instance;
+    assert.equal(p.module.shared.stops, 2);
+    await a.call(0x110, [ids[0]]);
+    const objectState = a.world.objects.snapshot(),
+      particleState = a.world.particles.snapshot();
+    await a.world.objects.tick(12);
+    const expected = ids.map((id) => a.world.particles.get(id).bank.instance.records());
+    b = setup();
+    await b.world.objects.restore(objectState);
+    await b.world.particles.restore(particleState);
+    await b.world.objects.tick(12);
+    for (const [index, id] of ids.entries())
+      assert.deepEqual(b.world.particles.get(id).bank.instance.records(), expected[index]);
+    await a.world.objects.release(ids[0]);
+    assert.equal(p.module.shared.stops, 2); // Destruction releases without an extra Stop.
+    assert.equal(p.module.shared.destructs, 1);
+  } finally {
+    for (const owner of [a, b].filter(Boolean)) {
+      for (const id of [...owner.world.objects.objects.keys()])
+        await owner.world.objects.release(id);
+      owner.world.particles.close();
+    }
+  }
+});
 
-test(
-  'the complete NativeWorld saves live PPI tasks and restores their shared DLL execution',
-  { skip: !available },
-  async () => {
-    const make = () => {
-      const profile = 'nekopara-vol3-engine-2.6.1.76',
-        game = memoryGame({ 'main.kcs': script(), 'ptclpi/probe.ppi': nativeParticleFixture() }),
-        random = new ParticleRandom(),
-        configuration = new NativeConfiguration({ profile });
-      game.width = 8;
-      game.height = 8;
-      return new NativeWorld({
-        game,
-        random,
-        configuration,
-        profile,
-        host: {},
-        images: {
-          frame: async () => ({ width: 8, height: 8, rgba: new Uint8Array(256).fill(255) }),
-        },
-        storage: {
-          read: (name) => game.read(name),
-          write: async () => true,
-          remove: async () => true,
-          stat: async () => null,
-        },
-        motionLibrary: new MotionLibrary(game, { profile, random }),
-      });
-    };
-    const first = make();
-    let second;
-    try {
-      await first.initialize('main.kcs');
-      const machine = first.main.machine;
-      machine.writeString('probe', 32);
-      machine.writeString('', 64);
-      const call = (id, args) =>
-          first.runtime.native('main', id, args, machine, first.main, first.runtime.scheduler),
-        a = await first.objects.create({ kind: 16, parent: first.root }),
-        b = await first.objects.create({ kind: 16, parent: first.root });
-      for (const id of [a, b]) {
-        await call(0x2b5, [id, 32, 64, 2, floatBits(10000), 128]);
-        await call(0x110, [id]);
-      }
-      await first.tick();
-      const saved = structuredClone(first.snapshot());
-      await first.tick();
-      await first.tick();
-      const expected = [a, b].map((id) => first.particles.get(id).bank.instance.records());
-      second = make();
-      await second.restore(saved);
-      await second.tick();
-      await second.tick();
-      for (const [index, id] of [a, b].entries())
-        assert.deepEqual(second.particles.get(id).bank.instance.records(), expected[index]);
-      assert.equal(second.particles.host.runtime.modules.size, 1);
-      assert.equal(second.particles.drawItems().length, 2);
-      assert.deepEqual(second.graphics.d3dContext, first.graphics.d3dContext);
-    } finally {
-      await first.close();
-      await second?.close();
+test('the complete NativeWorld saves live PPI tasks and restores their JS execution', async () => {
+  const make = () => {
+    const profile = 'nekopara-vol3-engine-2.6.1.76',
+      game = memoryGame({ 'main.kcs': script(), 'ptclpi/probe.ppi': nativeParticleFixture() }),
+      random = new ParticleRandom(),
+      configuration = new NativeConfiguration({ profile });
+    game.width = 8;
+    game.height = 8;
+    return new NativeWorld({
+      particleRegistry: new PPIRegistry({ implementations: { probe: authoredPPI } }),
+      game,
+      random,
+      configuration,
+      profile,
+      host: {},
+      images: {
+        frame: async () => ({ width: 8, height: 8, rgba: new Uint8Array(256).fill(255) }),
+      },
+      storage: {
+        read: (name) => game.read(name),
+        write: async () => true,
+        remove: async () => true,
+        stat: async () => null,
+      },
+      motionLibrary: new MotionLibrary(game, { profile, random }),
+    });
+  };
+  const first = make();
+  let second;
+  try {
+    await first.initialize('main.kcs');
+    const machine = first.main.machine;
+    machine.writeString('probe', 32);
+    machine.writeString('', 64);
+    const call = (id, args) =>
+        first.runtime.native('main', id, args, machine, first.main, first.runtime.scheduler),
+      a = await first.objects.create({ kind: 16, parent: first.root }),
+      b = await first.objects.create({ kind: 16, parent: first.root });
+    for (const id of [a, b]) {
+      await call(0x2b5, [id, 32, 64, 2, floatBits(10000), 128]);
+      await call(0x110, [id]);
     }
-  },
-);
+    await first.tick();
+    const saved = structuredClone(first.snapshot());
+    await first.tick();
+    await first.tick();
+    const expected = [a, b].map((id) => first.particles.get(id).bank.instance.records());
+    second = make();
+    await second.restore(saved);
+    await second.tick();
+    await second.tick();
+    for (const [index, id] of [a, b].entries())
+      assert.deepEqual(second.particles.get(id).bank.instance.records(), expected[index]);
+    assert.equal(second.particles.host.runtime.modules.size, 1);
+    assert.equal(second.particles.drawItems().length, 2);
+    assert.deepEqual(second.graphics.d3dContext, first.graphics.d3dContext);
+  } finally {
+    await first.close();
+    await second?.close();
+  }
+});

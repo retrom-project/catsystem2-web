@@ -27,7 +27,7 @@ test('render modules reject direct/indirect execution and unreviewed consumer co
     'src/native/graphics.mjs',
   );
   const ppi = "import {loadUnicorn} from './ppi/backend.mjs';";
-  validateRenderSource(ppi, 'src/particles.mjs');
+  assert.throws(() => validateRenderSource(ppi, 'src/particles.mjs'), /Render/);
   assert.throws(() => validateRenderSource(ppi, 'src/native/graphics.mjs'), /Render/);
 });
 
@@ -48,7 +48,7 @@ test('render inventory cannot hide handlers, selectors, foreign consumers or rem
     (b) => b.remainingProfileSelections.addressSelections.push({ domain: 6 }),
     (b) => b.nonNativeEntries.push({ name: 'graphics-thread-and-application-tasks', domain: 8 }),
     (b) => b.nonNativeEntries.find((e) => e.projection).projection.consumers.push({ domain: 6 }),
-    (b) => (b.nonNativeEntries = b.nonNativeEntries.filter((e) => e.name !== 'ppi-and-dll-host')),
+    (b) => (b.nonNativeEntries = b.nonNativeEntries.filter((e) => e.name !== 'js-ppi-host')),
   ]) {
     const changed = structuredClone(board);
     mutate(changed);

@@ -102,10 +102,15 @@ const ownedModules = {
 function domain(file) {
   if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
   if (file === 'oracle/graphics-consumer-projection.mjs') return 7;
-  if (file === 'oracle/renderer-consumer-projection.mjs') return 9;
+  if (file === 'oracle/renderer-consumer-projection.mjs') return 8;
   if (file === 'oracle/plane-movie-projection.mjs') return 8;
   if (file === 'oracle/area-geometry-projection.mjs') return 6;
   const name = basename(file);
+  if (
+    ['pe32', 'native-services', 'backend', 'backend-artifact'].includes(name) &&
+    file.startsWith('src/ppi/')
+  )
+    return 8;
   if (file === 'src/native/xml.mjs') return 4;
   if (['oracle/raster-kernel-projection.mjs', 'src/native/raster-projection.mjs'].includes(file))
     return 7;
@@ -732,7 +737,7 @@ const nonNativeGroups = [
       fields: ['consumer bitmap rows', 'consumer allocation bounds'],
       consumers: [{ domain: 7, modules: ['fes-images'] }],
       lifetime:
-        'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and DLL code until their consumer phases.',
+        'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and SDK/media consumers until their consumer phases.',
       removePhase: 8,
       operations: ['install', 'close'],
     },
@@ -1144,35 +1149,20 @@ const nonNativeGroups = [
   {
     name: 'js-ppi-host',
     domain: 9,
-    entry: 'Standalone JSPluginRuntime; product Particles selects it in phase 9.8',
-    modules: [
-      'js-runtime',
-      'host',
-      'records',
-      'plugin-identity',
-      'verified-versions',
-      'blur',
-      'cmnptcl',
-      'dash',
-      'emote-note',
-      'emote-sweat',
-      'emote-symbols',
-      'filmnoise',
-      'rain',
-      'spline',
-      'steam',
+    entry:
+      'Particles → JSPluginRuntime → reviewed named JS algorithms; no DLL execution or private heap',
+    modules: [],
+    files: [
+      'src/ppi/js-runtime.mjs',
+      'src/ppi/host.mjs',
+      'src/ppi/records.mjs',
+      'src/ppi/plugin-identity.mjs',
+      'src/ppi/verified-versions.mjs',
     ],
+    directories: ['src/ppi/plugins/'],
     review: 'traced',
     reason:
-      'Named JS callback lifecycle, records, RNG, attachment and checkpoint data; identity reads are diagnostic only and do not map/execute a DLL. Twelve reviewed JS algorithms own particle state; product selection follows in 9.8.',
-  },
-  {
-    name: 'ppi-and-dll-host',
-    domain: 9,
-    entry:
-      'Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime → PE32Process; E-mote DLL execution is oracle-only',
-    modules: ['particles'],
-    directories: ['src/ppi/'],
+      'Named JS callback lifecycle, records, RNG, attachment and checkpoint data; identity reads are diagnostic only and do not map/execute a DLL. Twelve reviewed JS algorithms own particle state in the product. Original DLL hosts are oracle-only.',
   },
   {
     name: 'sdk-javascript-image-text-owners',

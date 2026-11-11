@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { routeGraphicsOracle, routeAuthoredPPI } from '../fixtures/oracle-browser-routes.mjs';
 import { test, expect } from '@playwright/test';
 import { nativeParticleFixture } from '../fixtures/ppi-native-fixture.mjs';
 
@@ -226,11 +227,12 @@ test('PPI sampler address modes and deformed colored quads use supplied vertex d
 test('an authored PE32 particle runs in the browser and restores a new process without reinitializing its private object', async ({
   page,
 }) => {
+  await routeGraphicsOracle(page);
   await page.goto('/');
   const result = await page.evaluate(
     async (fixture) => {
       const [{ NativePPI }, { loadUnicorn }] = await Promise.all([
-        import('/src/ppi/native.mjs'),
+        import('/oracle/ppi-native-original.mjs'),
         import('/src/ppi/backend.mjs'),
       ]);
       const bytes = Uint8Array.from(fixture),
@@ -511,13 +513,15 @@ test('native D3D9 fog and sRGB states retain gamma-correct blending and render-t
   }
 });
 
-test('StageRenderer orders a real native plane and x86 particle task into one destination-alpha target', async ({
+test('StageRenderer orders a real native plane and JS particle task into one destination-alpha target', async ({
   page,
 }) => {
+  await routeAuthoredPPI(page);
   await page.goto('/');
   const result = await page.evaluate(
     async (bytes) => {
-      const { NativeObjects } = await import('/src/native/objects.mjs'),
+      const { authoredPPIRegistry } = await import('/tests/fixtures/ppi-js-fixture.mjs'),
+        { NativeObjects } = await import('/src/native/objects.mjs'),
         { NativeHandles } = await import('/src/native/handles.mjs'),
         { NativeBufferMemory } = await import('/src/native/buffer-memory.mjs'),
         { installNativeGraphics, nativeGraphics } = await import('/src/native/graphics.mjs'),
@@ -561,7 +565,10 @@ test('StageRenderer orders a real native plane and x86 particle task into one de
         };
       objects.register(0, (record) => world.base(record));
       installNativeGraphics(world);
-      installNativeParticles(world, { atlas: undefined });
+      installNativeParticles(world, {
+        atlas: undefined,
+        registry: authoredPPIRegistry(['probe'], { color: 0x804080c0 }),
+      });
       const placeholder = await objects.create({ kind: 0 }),
         plane = await objects.create({ kind: 2, parent: placeholder }),
         particle = await objects.create({ kind: 16, parent: placeholder }),

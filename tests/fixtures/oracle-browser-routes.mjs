@@ -5,7 +5,7 @@ export async function routeGraphicsOracle(page) {
   for (const file of [
     'tests/fixtures/graphics-oracle-world.mjs',
     ...(await readdir(new URL('../../oracle/', import.meta.url)))
-      .filter((file) => /^m2-.*\.mjs$/.test(file))
+      .filter((file) => /^(?:m2|ppi)-.*\.mjs$/.test(file))
       .map((file) => 'oracle/' + file),
     'oracle/area-geometry-projection.mjs',
     ...[
@@ -23,4 +23,11 @@ export async function routeGraphicsOracle(page) {
       route.fulfill({ body, contentType: 'text/javascript' }),
     );
   }
+}
+
+export async function routeAuthoredPPI(page) {
+  const body = await readFile(new URL('./ppi-js-fixture.mjs', import.meta.url));
+  await page.route('**/tests/fixtures/ppi-js-fixture.mjs', (route) =>
+    route.fulfill({ body, contentType: 'text/javascript' }),
+  );
 }

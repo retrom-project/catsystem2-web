@@ -2,7 +2,7 @@
 // Existing authored DLL oracle; no private game EXE or new instruction probes.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NativePPIRuntime } from '../../src/ppi/native.mjs';
+import { NativePPIRuntime } from '../../oracle/ppi-native-original.mjs';
 import { loadUnicorn } from '../../src/ppi/backend.mjs';
 import { JSPluginRuntime } from '../../src/ppi/js-runtime.mjs';
 import { PPIRegistry, ppiIdentity } from '../../src/ppi/plugin-identity.mjs';

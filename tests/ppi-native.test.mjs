@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { NativePPI, NativePPIRuntime } from '../src/ppi/native.mjs';
+import { NativePPI, NativePPIRuntime } from '../oracle/ppi-native-original.mjs';
 import { parsePE32 } from '../src/ppi/pe32.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { PPI_HOST_CONTRACTS } from '../src/ppi/contracts.mjs';

@@ -125,6 +125,7 @@ export class NativeWorld {
     bootstrapOwner = null,
     transitionalExe = null,
     installM2 = installNativeM2,
+    particleRegistry,
   }) {
     Object.assign(this, {
       game,
@@ -437,7 +438,7 @@ export class NativeWorld {
       onStart: (instance, object, frame) =>
         host.nativeFESSoundStarted?.(instance, object, frame, this),
     });
-    installNativeParticles(this);
+    installNativeParticles(this, { registry: particleRegistry });
     installNativeMatrices(this);
     installNativeText(this, { glyphs: host.nativeTextGlyphs?.() });
     installM2(this);

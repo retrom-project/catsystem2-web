@@ -100,6 +100,10 @@ test('all twelve JS algorithms reproduce the frozen normal-engine DLL records an
 test('nondegenerate motion, tails, respawn, parameter changes and fresh checkpoints match DLL outputs', async (t) => {
   assert.equal(motion.controlWord, 0x7f);
   assert.equal(
+    motion.privateReaderSHA256,
+    sha(await readFile(new URL('../../oracle/ppi-private-state.mjs', import.meta.url))),
+  );
+  assert.equal(
     motion.inputsSHA256,
     sha(await readFile(new URL('../fixtures/ppi-js-scenarios.mjs', import.meta.url))),
   );
@@ -150,5 +154,32 @@ test('nondegenerate motion, tails, respawn, parameter changes and fresh checkpoi
         runtime.close();
       }
     });
+  }
+});
+
+test('an active task reload can Exec before Init without inventing particle state or consuming RNG', async () => {
+  for (const name of Object.keys(PPI_IMPLEMENTATIONS)) {
+    const runtime = new JSPluginRuntime({ warn: () => {} });
+    try {
+      const p = await runtime.create(bytes, {
+          name: name + '.ppi',
+          count: 3,
+          width: 64,
+          height: 64,
+          screenWidth: 1280,
+          screenHeight: 720,
+          autoStart: false,
+        }),
+        records = p.records().slice(),
+        random = structuredClone(runtime.random.snapshot());
+      p.active = true;
+      p.stopped = false;
+      p.update(0);
+      assert.deepEqual(p.records(), records, name);
+      assert.deepEqual(runtime.random.snapshot(), random, name);
+      assert.equal(p.hasFrame, true);
+    } finally {
+      runtime.close();
+    }
   }
 });

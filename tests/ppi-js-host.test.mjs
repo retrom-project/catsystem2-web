@@ -201,7 +201,7 @@ test('host 2.1/2.2 APIs use typed JS references, preserve records and gate imple
     p.vertices[2].color = 0x12345678;
     assert.equal(new DataView(i.records().buffer).getUint32(148 + 48 + 12, true), 0x12345678);
     assert.throws(() => i.host.abs(-1), /recursive virtual slot/);
-    assert.throws(() => i.host.call(99), /outside.*host API/);
+    assert.throws(() => i.host.service(99), /outside.*host API/);
     i.host.Exit();
     assert.equal(i.active, false);
     assert.equal(i.stopped, false);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // The transitional view projects records consumed by remaining EXE features.
-// StageRenderer owns texture/surface bytes, exposed through bounded DLL locks.
+// StageRenderer owns texture/surface bytes, exposed through bounded PE consumer locks.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
 import { createD3DContext } from '../src/render/particles-gl.mjs';
@@ -31,7 +31,7 @@ export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
   }),
 });
 
-// DLL locks borrow a fully committed RW span. General Win32 VirtualAlloc
+// PE consumer locks borrow a fully committed RW span. General Win32 VirtualAlloc
 // models reserve/commit one page at a time; changing thousands of page
 // protections from a live COM callback can stall the CPU backend. This
 // renderer-owned projection maps its final permissions in one operation.
@@ -107,7 +107,7 @@ export class NativeRenderer {
       context: world.graphics.d3dContext,
       recordCommands: false,
       surfaces: stage.surfaces,
-      // D7/D9 consumers lock a PE projection. Pixel authority stays in JS.
+      // D7/D8 consumers lock a PE projection. Pixel authority stays in JS.
       pixelMemory: nativeRendererPixelMemory(engine),
       onPresent: stage && ((request) => stage.presentNative(request)),
     });

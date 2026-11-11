@@ -78,9 +78,9 @@ export class PPIHost {
     this.instance = instance;
     this.version = version;
     for (const [slot, name] of PPI_HOST_NAMES.entries())
-      this[name] = (...args) => this.call(slot, ...args);
+      this[name] = (...args) => this.service(slot, ...args);
   }
-  call(slot, ...args) {
+  service(slot, ...args) {
     const i = this.instance,
       name = PPI_HOST_NAMES[slot],
       minimum = slot >= 32 ? 0x20002 : slot === 31 ? 0x20001 : 0x20000;

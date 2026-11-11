@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativePPIRuntime } from './native-runtime.mjs';
-export { NativePPIRuntime } from './native-runtime.mjs';
-import { initialParticle, readPPIRecord, writePPIRecord, writePPIParameters } from './abi.mjs';
-import { bitsFloat } from '../kcs/vm.mjs';
+import { NativePPIRuntime } from './ppi-runtime-original.mjs';
+export { NativePPIRuntime } from './ppi-runtime-original.mjs';
+import {
+  initialParticle,
+  readPPIRecord,
+  writePPIRecord,
+  writePPIParameters,
+} from '../src/ppi/abi.mjs';
+import { bitsFloat } from '../src/kcs/vm.mjs';
 import {
   degreeToRadian,
   radianToDegree,
@@ -10,7 +15,7 @@ import {
   rotateVector,
   linearInterpolate,
   triangleWave,
-} from './numeric.mjs';
+} from '../src/ppi/numeric.mjs';
 
 const f = Math.fround;
 const functions = [

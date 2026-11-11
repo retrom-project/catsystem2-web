@@ -9,7 +9,14 @@ import { ImageStore } from '../../src/formats/hg3.mjs';
 import { floatBits } from '../../src/kcs.mjs';
 import { NativeGraphicsPacket } from '../../src/native/graphics-task.mjs';
 
-export function browserNativeWorld({ profile, files, width = 64, height = 48, storage }) {
+export function browserNativeWorld({
+  profile,
+  files,
+  width = 64,
+  height = 48,
+  storage,
+  particleRegistry,
+}) {
   const names = [...files.keys()],
     canvas = new OffscreenCanvas(width, height),
     stageRenderer = new StageRenderer({
@@ -70,6 +77,7 @@ export function browserNativeWorld({ profile, files, width = 64, height = 48, st
     random,
     motionLibrary: new MotionLibrary(game, { profile, random }),
     storage,
+    particleRegistry,
   });
   world.stageRenderer = stageRenderer;
   return world;

@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { readKCS } from './kcs.mjs';
 import { ParticleScriptInstance } from './ppi/script.mjs';
-import { NativePPIRuntime } from './ppi/native.mjs';
+import { JSPluginRuntime } from './ppi/js-runtime.mjs';
 import { ParticleRandom } from './ppi/random.mjs';
-import { loadUnicorn } from './ppi/backend.mjs';
 import { linearInterpolate, roundInteger } from './ppi/numeric.mjs';
 import { scriptParticles, ppiParticles, particleGeometry } from './ppi/geometry.mjs';
 import { ParticlesGL } from './render/particles-gl.mjs';
@@ -17,7 +16,7 @@ export class Particles {
     {
       game,
       images,
-      unicornFactory = loadUnicorn,
+      registry,
       random = new ParticleRandom(),
       fps = 60,
       attachment,
@@ -25,7 +24,6 @@ export class Particles {
       clock,
       epoch = 0,
       onDebug = null,
-      nativeThread,
       atlas,
       projectGeometry = particleGeometry,
       scriptBounds,
@@ -34,12 +32,11 @@ export class Particles {
     this.stage = stage;
     this.game = game;
     this.images = images;
-    this.unicornFactory = unicornFactory;
+    this.registry = registry;
     this.random = random;
     this.fps = fps;
     this.attachment = attachment;
     this.onDebug = onDebug;
-    this.nativeThread = nativeThread;
     this.atlas = atlas;
     this.projectGeometry = projectGeometry;
     this.scriptBounds = scriptBounds;
@@ -123,16 +120,22 @@ export class Particles {
     }
     return this.resources.get(normalize(name)) || null;
   }
-  async nativeRuntime() {
+  async pluginRuntime() {
+    if (this.closed) throw new Error('Particle host is closed');
     if (!this.runtime) {
-      this.runtimeLoading ||= NativePPIRuntime.open({
-        unicornFactory: this.unicornFactory,
+      this.runtimeLoading ||= JSPluginRuntime.open({
+        registry: this.registry,
         random: this.random,
         now: this.now,
         clock: this.clock,
         epoch: this.clock?.epoch ?? this.epoch,
-        nativeThread: this.nativeThread,
-      }).then((runtime) => (this.runtime = runtime));
+      }).then((runtime) => {
+        if (this.closed) {
+          runtime.close();
+          throw new Error('Particle host is closed');
+        }
+        return (this.runtime = runtime);
+      });
       await this.runtimeLoading;
     }
     return this.runtime;
@@ -209,7 +212,7 @@ export class Particles {
       await this.loadBank(bank, spec, previous, nativeTextureName);
     } catch (error) {
       try {
-        this.end(key, { stop: false });
+        if (this.banks.get(key) === bank) this.end(key, { stop: false });
       } catch (cleanup) {
         error.cleanup = cleanup;
       }
@@ -271,7 +274,7 @@ export class Particles {
       : this.game.require(bank.program));
     if (bank.family === 'plugin') {
       await this.preloadData();
-      const runtime = await this.nativeRuntime();
+      const runtime = await this.pluginRuntime();
       bank.instance = await runtime.create(bytes, {
         ...common,
         readParticleData: (name) => this.data(name),
@@ -284,6 +287,10 @@ export class Particles {
         screenBounds: this.scriptBounds,
       });
       bank.instance.stop();
+    }
+    if (this.closed || this.banks.get(bank.key) !== bank) {
+      bank.instance.close?.({ stop: false });
+      throw new Error('Particle load was closed or superseded');
     }
     bank.registers.set(bank.instance.registers);
     bank.loaded = true;
@@ -578,7 +585,7 @@ export class Particles {
         loaded: bank.loaded,
         started: bank.started,
         registers: bank.registers.slice(),
-        nativeID: bank.family === 'plugin' ? bank.instance.id : null,
+        pluginID: bank.family === 'plugin' ? bank.instance.id : null,
         script: bank.family === 'script' ? bank.instance.snapshot() : null,
       })),
     };
@@ -590,20 +597,18 @@ export class Particles {
     this.stage.emitters = {};
     this.frame = state.frame;
     this.sequence = state.sequence;
-    // Native memory is restored once, atomically, before its JavaScript owners.
+    // Restore JS module statics and private instance state before rebinding banks.
     if (state.runtime) {
       await this.preloadData();
-      this.runtime = await NativePPIRuntime.fromSnapshot(state.runtime, {
-        unicornFactory: this.unicornFactory,
+      this.runtime = await JSPluginRuntime.fromSnapshot(state.runtime, {
+        registry: this.registry,
         random: this.random,
         now: this.now,
         clock: this.clock,
         epoch: this.clock?.epoch ?? this.epoch,
-        nativeThread: this.nativeThread,
-        readPlugin: ({ name }) => this.readPlugin(name),
         instanceOptions: (saved) => ({
           attachment: () =>
-            [...this.banks.values()].find((bank) => bank.nativeID === saved.id)?.attachment,
+            [...this.banks.values()].find((bank) => bank.pluginID === saved.id)?.attachment,
           readParticleData: (name) => this.data(name),
         }),
       });
@@ -612,7 +617,7 @@ export class Particles {
       const bank = { ...saved, registers: new Float32Array(saved.registers) };
       this.banks.set(bank.key, bank);
       await this.bindBankImage(bank);
-      if (bank.family === 'plugin') bank.instance = this.runtime.instances.get(saved.nativeID);
+      if (bank.family === 'plugin') bank.instance = this.runtime.instances.get(saved.pluginID);
       else {
         const script = await readKCS(await this.game.require(bank.program));
         script.name = bank.program;

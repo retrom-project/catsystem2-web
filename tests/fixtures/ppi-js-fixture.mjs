@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { PPIRegistry } from '../../src/ppi/plugin-identity.mjs';
 // JS counterpart of the existing authored ppi-native-fixture. It is not a
 // replacement for a shipped effect; both exercise transport/lifecycle only.
 export const authoredPPI = Object.freeze({
@@ -23,3 +24,19 @@ export const authoredPPI = Object.freeze({
     i.module.shared.destructs = (i.module.shared.destructs ?? 0) + 1;
   },
 });
+
+export function coloredAuthoredPPI(color) {
+  return {
+    ...authoredPPI,
+    init(i) {
+      authoredPPI.init(i);
+      if (color !== undefined) for (const vertex of i.particle(0).vertices) vertex.color = color;
+    },
+  };
+}
+
+export function authoredPPIRegistry(names = ['authored'], { color } = {}) {
+  return new PPIRegistry({
+    implementations: Object.fromEntries(names.map((name) => [name, coloredAuthoredPPI(color)])),
+  });
+}

@@ -54,7 +54,7 @@ for (const [profile, variable, prepare] of [
       await routeGraphicsOracle(page);
       await page.goto('/');
       const result = await page.evaluate(
-        async ({ profile, names, plugin, prepare, crops, cropSize, projectionModes }) => {
+        async ({ profile, names, plugin, prepare, crops, cropSize }) => {
           const { installGraphicsOracle } = await import(
             '/tests/fixtures/graphics-oracle-world.mjs'
           );
@@ -181,7 +181,14 @@ for (const [profile, variable, prepare] of [
             const bank = (current) => current.particles.get(effect).bank,
               fields = (current) => {
                 const instance = bank(current).instance;
-                return instance.process.read(instance.instance + 20, 32);
+                const bytes = new Uint8Array(32),
+                  view = new DataView(bytes.buffer);
+                view.setInt32(0, instance.attachPlane, true);
+                [...instance.attachBase, ...instance.attachPos].forEach((value, n) =>
+                  view.setFloat32(4 + n * 4, value, true),
+                );
+                view.setInt32(28, instance.attachDisp, true);
+                return bytes;
               };
             let reference = fields(world);
             const originalFields = async (_current, graphID) => {
@@ -269,18 +276,9 @@ for (const [profile, variable, prepare] of [
             await phase(world, 'init', () => call(world, 0x110, [nativeID]));
             await phase(world, 'exec0', () => world.tick());
             await phase(world, 'exec1', () => world.tick());
-            const modes = [],
-              process = bank(world).instance.process,
-              saved = process.registers();
-            try {
-              for (const { control, mxcsr } of projectionModes) {
-                process.cpu.reg_write_i32(process.uc.X86_REG_FPCW, control);
-                process.cpu.reg_write_i32(process.uc.X86_REG_MXCSR, mxcsr);
-                modes.push(await renderVertices(world));
-              }
-            } finally {
-              process.writeRegisters(saved);
-            }
+            // The normal JS projection is independent of plugin FPCW mutations.
+            // Directed/extended precision remains in the original golden/oracle tests.
+            const modes = [await renderVertices(world)];
             await apply(world, [13.5, 1.25, 1800], [211, 160, 5], false);
             await phase(world, 'hidden-move', () => world.tick());
             await apply(world, [4.25, 17, 1900], [81, 151, 7], true);
@@ -311,7 +309,6 @@ for (const [profile, variable, prepare] of [
           plugin: golden.plugin,
           prepare,
           cropSize: golden.cropSize,
-          projectionModes: golden.projectionModes.map(({ control, mxcsr }) => ({ control, mxcsr })),
           crops: Object.fromEntries(
             golden.phases.filter((p) => p.origin).map((p) => [p.name, p.origin]),
           ),

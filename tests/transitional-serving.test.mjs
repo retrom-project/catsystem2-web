@@ -44,6 +44,10 @@ test('the normal development server serves the explicit transitional modules', a
     );
   }
   for (const file of [
+    'oracle/ppi-native-original.mjs',
+    'oracle/ppi-runtime-original.mjs',
+    'oracle/ppi-dll-loader.mjs',
+    'oracle/m2-device-original.mjs',
     'oracle/scalar-handlers.mjs',
     'oracle/scalar-invoke.mjs',
     'oracle/scalar-handlers.mjs/extra',

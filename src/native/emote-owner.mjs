@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { EmoteProfiles, sections } from '../emote/profiles.mjs';
 import { EmoteDocument } from '../emote/document.mjs';
+import { diagnoseMountedEmoteDriver } from '../emote/driver-identity.mjs';
 import { M2Model } from '../emote/m2-model.mjs';
 import { NativeM2Configuration } from './fes-config.mjs';
 import { parseNativeXML } from './xml.mjs';
@@ -41,6 +42,7 @@ export class M2Owner {
       this.initialized = true;
       return;
     }
+    await (this.driverDiagnosis ??= diagnoseMountedEmoteDriver(this.world.game));
     const game = this.world.game,
       bytes = game.readCategory
         ? await game.readCategory('m2view.cnf', 'm2config')

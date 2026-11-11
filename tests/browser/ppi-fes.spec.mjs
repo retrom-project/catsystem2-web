@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { routeAuthoredPPI } from '../fixtures/oracle-browser-routes.mjs';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
@@ -61,12 +62,14 @@ for (const [profile, variable] of [
         bytes = files.get(name);
       return route.fulfill(bytes ? { body: Buffer.from(bytes) } : { status: 404, body: '' });
     });
+    await routeAuthoredPPI(page);
     await page.goto('/');
     const result = await page.evaluate(
       async ({ names, profile }) => {
         const { browserNativeWorld, browserAssert: assert } = await import(
             '/tests/fixtures/browser-native-world.mjs'
           ),
+          { authoredPPIRegistry } = await import('/tests/fixtures/ppi-js-fixture.mjs'),
           files = new Map(
             await Promise.all(
               names.map(async (name) => [
@@ -82,6 +85,7 @@ for (const [profile, variable] of [
               profile,
               files,
               storage: { read: async () => null, write: async () => true },
+              particleRegistry: authoredPPIRegistry(['authored'], { color: 0xff00d5f0 }),
             }),
           world = make();
         let fresh;

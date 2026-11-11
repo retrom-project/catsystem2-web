@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { loadOracleDLL } from './ppi-dll-loader.mjs';
 // Executes the user-supplied PE32 E-mote driver. No proprietary DLL is shipped.
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { NativeEngineWindows } from '../src/native/windows-services.mjs';
@@ -45,7 +46,8 @@ export class NativeEmoteDevice {
     this.ownsDevice = createDevice;
     this.identity = await digest(bytes);
     const p = this.process;
-    this.module = p.loadModule(
+    this.module = loadOracleDLL(
+      p,
       bytes,
       (symbol) => this.services.resolve(symbol),
       this.options.name ?? 'emotedriver.dll',

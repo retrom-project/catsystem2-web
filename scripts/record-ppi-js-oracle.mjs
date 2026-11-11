@@ -7,14 +7,15 @@ import { parseArgs } from 'node:util';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
 import { resolve } from 'node:path';
-import { NativePPIRuntime } from '../src/ppi/native.mjs';
+import { NativePPIRuntime } from '../oracle/ppi-native-original.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { capturePPIFrame } from '../oracle/plugin-frames.mjs';
+import { reviewedPPIState } from '../oracle/ppi-private-state.mjs';
 import { PPI_SCENARIOS, scenarioPlist } from '../tests/fixtures/ppi-js-scenarios.mjs';
 const sha = (data) => createHash('sha256').update(data).digest('hex');
 export function compactPPIFrame(p, entry) {
   const { random, ...state } = capturePPIFrame(p, entry);
-  return { ...state, randomSHA256: sha(JSON.stringify(random)) };
+  return { ...state, randomSHA256: sha(JSON.stringify(random)), privateState: reviewedPPIState(p) };
 }
 export async function recordPPIPlugins({ root, output }) {
   const plist = new Uint8Array(
@@ -63,6 +64,9 @@ export async function recordPPIPlugins({ root, output }) {
     source: 'Existing public NativePPIRuntime DLL oracle, normal engine floating point',
     controlWord: 0x7f,
     recorderSHA256: sha(await readFile(new URL('../oracle/plugin-frames.mjs', import.meta.url))),
+    privateReaderSHA256: sha(
+      await readFile(new URL('../oracle/ppi-private-state.mjs', import.meta.url)),
+    ),
     inputsSHA256: sha(
       await readFile(new URL('../tests/fixtures/ppi-js-scenarios.mjs', import.meta.url)),
     ),

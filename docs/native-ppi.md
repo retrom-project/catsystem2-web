@@ -1,4 +1,4 @@
-# JavaScript PPI host (phase 9.5–9.6)
+# JavaScript PPI host (phase 9 complete)
 
 [`JSPluginRuntime`](../src/ppi/js-runtime.mjs) owns JS module statics,
 instances, independent engine integer/real RNG streams, lifecycle and checkpoints.
@@ -16,6 +16,8 @@ warns once with all identity fields and the implementation, then continues the
 same implementation. Missing implementations fail with an explicit unsupported
 error. No game-name switch, renamed-plugin alias or x86 fallback is supplied.
 
-This API is independent in 9.5; the existing product still selects its old host.
-The twelve reviewed algorithms are now in src/ppi/plugins; the product switches in 9.8.
-See [JS host contract](ppi-js.md) for lifecycle and reference semantics.
+The product selects this host directly. The original DLL host/mapper live under
+oracle/ and are reachable only from explicitly selected oracle clients.
+[The boundary check](../scripts/check-plugin-boundary.mjs) enforces the source,
+inventory and distribution separation. See [host contract](ppi-js.md) and
+[support limits](ppi-support.md).
