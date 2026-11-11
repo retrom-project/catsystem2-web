@@ -102,7 +102,7 @@ export function parseProgram(text, { include } = {}) {
       }
     } else if (section === 'macro') program.macros[head] = words.join(' ');
     else if (section === 'define') {
-      const match = /^(\w+)(?:\[(\d+)\])?$/.exec(words[0]);
+      const match = /^(\w+)(?:\[(\d+)\])?;?$/.exec(words[0]);
       if (!match) throw new Error(`Invalid FES definition: ${line}`);
       program.definitions.push({
         type: head,

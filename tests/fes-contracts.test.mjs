@@ -14,6 +14,26 @@ import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-con
 import { NativeSteam } from '../src/native/steam.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
+test('FES definitions accept an optional terminator after scalar and array names', () => {
+  const program = parseProgram(`#DEFINE
+BUTTON btn_data[12];
+IMAGE cover;
+PLANE canvas
+BUTTON bare[2]
+#START
+next WAIT
+#WAIT
+`);
+  assert.deepEqual(program.definitions, [
+    { type: 'BUTTON', name: 'btn_data', count: 12 },
+    { type: 'IMAGE', name: 'cover', count: null },
+    { type: 'PLANE', name: 'canvas', count: null },
+    { type: 'BUTTON', name: 'bare', count: 2 },
+  ]);
+  for (const name of ['bad[12];;', 'bad;[12]', 'bad[12;]'])
+    assert.throws(() => parseProgram(`#DEFINE\nBUTTON ${name}\n`), /Invalid FES definition/);
+});
+
 test('FES wndmenu posts the actual window message after native token and expression evaluation', async () => {
   for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74']) {
     const events = [],
