@@ -120,3 +120,28 @@ query writes, deferred copy requests, table outputs, real MOT delay and fresh
 target restore. This coordinator remains independent of the default FES
 factory until the shared collection and family drivers are integrated. The
 old D7 entry and projection counts therefore remain unchanged.
+
+## Collection identity and initialization requests
+
+`FESObjectCollection` separates byte-name/index keys, the first declared group
+count, resource initialization requests and lifetime handles. Keys compare
+NUL-terminated CP932 bytes and signed int32 indices; scalar declarations and
+array index0 share one key. Repeated creation keeps the existing typed object
+and its handle. The first count persists through later grow, shrink and
+delete/recreate operations; explicit lookup may find an index beyond that
+count, while bare selections retain missing slots. NUMIMG registers counts and
+requests without an object. VIEW declares type5 but constructs a raw0 Base.
+
+Every creation request appends its name/index to the initialization FIFO,
+including duplicate and NUMIMG requests. Consumption looks up the current
+object; deletion removes only the first request for its explicit target.
+Stale requests for recursively deleted children can therefore resolve to a
+hole or a later replacement. Resource ordering uses this FIFO independently
+of object-map key order and semantic lifetime order.
+
+Snapshot saves declaration and actual types, first counts, live typed state,
+parent handles, the monotonic handle counter and pending keys. Fresh restore
+rebuilds prototypes and links without replaying declarations or resource
+initialization. These standalone semantics are covered by short public tests.
+Default FESInstance factory/selection/restore and the implicit `_TOPOBJ_`
+identity remain coordinated integration work; no D7 removal is claimed here.
