@@ -1,4 +1,4 @@
-# JavaScript PPI host (phase 9.5)
+# JavaScript PPI host (phase 9.5–9.6)
 
 [`JSPluginRuntime`](../src/ppi/js-runtime.mjs) owns JS module statics,
 instances, independent engine integer/real RNG streams, lifecycle and checkpoints.
@@ -17,5 +17,5 @@ same implementation. Missing implementations fail with an explicit unsupported
 error. No game-name switch, renamed-plugin alias or x86 fallback is supplied.
 
 This API is independent in 9.5; the existing product still selects its old host.
-The reviewed plugin algorithms are added in 9.6 and the product switches in 9.8.
+The twelve reviewed algorithms are now in src/ppi/plugins; the product switches in 9.8.
 See [JS host contract](ppi-js.md) for lifecycle and reference semantics.

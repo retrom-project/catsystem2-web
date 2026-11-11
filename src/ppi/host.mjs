@@ -89,7 +89,7 @@ export class PPIHost {
         `PPI host slot ${slot} (${name ?? 'unknown'}) is outside the JS implementation's host API`,
       );
     i.calls.set(slot, (i.calls.get(slot) ?? 0) + 1);
-    if (math[slot]) return math[slot](...args.map(f));
+    if (math[slot]) return f(math[slot](...args.map(f)));
     switch (slot) {
       case 0:
         return [i.options.screenWidth >>> 0, i.options.screenHeight >>> 0];

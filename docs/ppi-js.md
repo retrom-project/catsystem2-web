@@ -64,3 +64,53 @@ unsupported identities, shared lifetimes, attachments, buffered writes,
 close/load races, fresh checkpoints and the existing authored DLL oracle's raw
 records/RNG at irregular frames. No private game EXE or new patch/injection
 probe is used by the public host differential.
+
+## Reviewed implementations
+
+The default JS registry now contains all twelve reviewed NEKOPARA plugin names.
+Selection uses only the plugin basename; this is an implementation registry,
+not a game allowlist. Unknown versions continue under the warning policy.
+
+| Implementation              | State owned by JS                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| blur                        | Slice vertices, transform, jitter, colors and counters                                         |
+| cmnptcl                     | Plist configuration, emission, private position/velocity, lifetime and compacting active array |
+| dash                        | Head/tail records, travel, fading and module-wide activation count                             |
+| em_angry                    | Scale/rotation stages and growing trails                                                       |
+| em_double                   | Timed four-direction displacement                                                              |
+| em_note                     | Random Hermite paths and activation                                                            |
+| em_question / em_question_a | Distinct state machines, including the A build's permanent state3                              |
+| em_sweat                    | Hermite motion and fading trails                                                               |
+| filmnoise                   | Flicker, scratch and noise record groups                                                       |
+| rain                        | Atlas selection, warm start, emission, velocity and lifetime                                   |
+| steam                       | Random emission line/path, warm start and alpha phases                                         |
+
+The kernels retain observed quirks: centered quads' third Y uses texture width,
+cmnptcl color deltas wrap as bytes, dead records compact from the end, rain/dash
+movement advances once per Exec, and zero-length splines retain their original
+NaN behavior. No SDK sample is substituted for a different shipped algorithm.
+All mutable path/particle buffers are allocated per instance and reused by Exec.
+
+[Baseline records](../tests/fixtures/ppi-js-plugins-golden.json) freeze all twelve
+DLLs at Init, six frames and Stop. [Motion records](../tests/fixtures/ppi-js-motion-golden.json)
+add fifteen authored cases with nondegenerate paths, tail grouping, rapid resets,
+radius/gravity emission, parameter/attachment changes and restart. These contain
+public output bytes and RNG hashes, with no DLL or private game resources.
+Both use the normal script environment's x87 control word0x007f. Existing0x037f
+and changed-control-word evidence remains oracle evidence, outside the selected
+JS cross-call contract. The differential requires **exact bytes**, control flags,
+render/sampler states and RNG state; no floating tolerance was widened.
+Fresh JS checkpoints continue each motion case against the frozen DLL output.
+Each Exec also runs with TypedArray construction prohibited by the test.
+
+To refresh the motion evidence with privately held original plugins:
+
+```sh
+node scripts/record-ppi-js-oracle.mjs --root /private/ptclpi --output tests/fixtures/ppi-js-motion-golden.json
+node --test tests/differential/ppi-js-plugins.test.mjs
+```
+
+The recorder uses the existing public DLL lifecycle oracle, never an EXE,
+patch or injected probe. Input and recorder hashes prevent stale frozen inputs.
+The shipped DLL hashes in the small verified list identify the reviewed builds;
+the default Node differential itself needs no private binary.

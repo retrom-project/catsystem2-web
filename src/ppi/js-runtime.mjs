@@ -3,6 +3,7 @@ import { ParticleRandom } from './random.mjs';
 import { PPIParticleRecords } from './records.mjs';
 import { PPIHost } from './host.mjs';
 import { PPIRegistry, describePPI } from './plugin-identity.mjs';
+import { PPI_IMPLEMENTATIONS } from './plugins/index.mjs';
 
 const f = Math.fround;
 export class JSPluginInstance {
@@ -177,7 +178,11 @@ export class JSPluginRuntime {
   static async open(options = {}) {
     return new JSPluginRuntime(options);
   }
-  constructor({ registry = new PPIRegistry(), random = new ParticleRandom(), ...options } = {}) {
+  constructor({
+    registry = new PPIRegistry({ implementations: PPI_IMPLEMENTATIONS }),
+    random = new ParticleRandom(),
+    ...options
+  } = {}) {
     this.registry = registry;
     this.random = random;
     this.options = options;

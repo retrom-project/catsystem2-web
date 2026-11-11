@@ -71,8 +71,8 @@ export function recordEmoteFrames(player, steps, { observeVariables = [] } = {})
   return { variables, observedVariables, frames };
 }
 
-export function recordPPIFrames(particle, frames, { stop = true } = {}) {
-  const capture = (entry) => ({
+export function capturePPIFrame(particle, entry) {
+  return {
     entry,
     before: particle.before,
     frame: particle.frame,
@@ -85,7 +85,11 @@ export function recordPPIFrames(particle, frames, { stop = true } = {}) {
     renderStates: states(particle.renderStates),
     samplerStates: states(particle.samplerStates),
     random: structuredClone(particle.random.snapshot()),
-  });
+  };
+}
+
+export function recordPPIFrames(particle, frames, { stop = true } = {}) {
+  const capture = (entry) => capturePPIFrame(particle, entry);
   const records = [capture('Init')];
   for (const frame of frames) {
     particle.update(frame);
