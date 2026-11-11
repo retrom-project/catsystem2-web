@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
-import { NativeEmoteBlocks } from '../src/emote/native-blocks.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
+import { NativeEmoteBlocks } from '../oracle/m2-driver-blocks-original.mjs';
 
 test(
   'the bicubic shortcut matches the original driver loop including every XMM lane, MXCSR and memory byte',

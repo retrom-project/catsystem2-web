@@ -154,8 +154,7 @@ export class NativeFESTextProjection {
   async construct(runtime, instance, object, pointer, args) {
     // FES Plane owns only common motion/parent/VRAM fields. Its destructor knows
     // those allocations; the text suffix is projected independently below.
-    await runtime.call(runtime.sdk ? 0x5ebea0 : 0x74b940, args, pointer, instance.runtimeID);
-    runtime.process.store(pointer + 4, object.nativeType);
+    await runtime.constructPlane(instance, object, pointer, args);
     this.objects.set(pointer, { instance, object });
   }
   sync(object) {

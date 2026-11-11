@@ -1,122 +1,38 @@
-# Native M2 / E-mote execution
+# M2 / E-mote compatibility
 
-M2 runs the mounted engine's original wrapper and its original driver. The browser provides Win32 file/memory services, task transport and D3D9 services; it does not replace profiles, expression chains, idle motion, lip motion or inertia with JavaScript animations. This remains an unreleased implementation with the acceptance gaps below.
+The product M2 path is JavaScript. `NativeWorld.m2` owns profiles, settings,
+model documents and task instances; task 54, FES M2PLANE (type 33) and all 37
+reviewed game natives use that owner. No M2 manager, native task suffix or
+E-mote DLL is created. See [implementation and differential evidence](emote-js.md)
+and [native packets](native-emote.md).
 
-Phase 9 introduces the JS replacement in separate steps. The source assessment
-and oracle boundary are in [b-phase9-motionplayer.md](b-phase9-motionplayer.md);
-the new PSB/resource/metadata data contract is in [emote-js.md](emote-js.md).
-These data modules do not yet change the mixed runtime's DLL execution path.
+The SDK ABI retains its reviewed SimplePlane placeholder. It does not acquire
+game M2 native IDs or an invented driver. ABI format and version selection are
+unchanged. Other document/motion/metadata versions warn once with name,
+version, SHA-256 and implementation, then use the same JS parser. Structural
+bounds and explicit unsupported encodings/layer operations still apply.
+The original driver binaries are oracle inputs only, not runtime assets.
 
-## Reviewed source profiles
+The old wrapper and DLL device live under `oracle/` and are selected explicitly
+by `M2OracleWorld`. [Original oracle evidence](emote-oracle.md) documents that
+boundary. Private EXE/DLL/models are never published. Authored frozen fixtures
+run publicly without them; fresh private regeneration skips when inputs are
+absent.
 
-| Profile                         | Original engine                                                           | Behavior                                                                                                                                                                                                                                     |
-| ------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `nekopara-vol3-engine-2.6.1.76` | SHA256 `ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0` | Original manager, main-native family, task 54, FES object 33, and the mounted E-mote DLL execute in one shared x86 process.                                                                                                                  |
-| `sdk-4.01-engine-2.6.1.74`      | SHA256 `0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f` | The SDK has an M2Plane placeholder derived from SimplePlane. Its original constructor/receiver/destructor and FES driver run; there is no E-mote import or model manager to invent. Reserved SDK natives retain their reviewed SDK behavior. |
+StageRenderer owns the model target, integer fade mix and final composite.
+Model/controller checkpoints rebuild derived GPU targets in a fresh World.
+Unloading the task releases documents, uploaded textures and render targets;
+shared documents stay alive while another task uses them. Audio supplies media
+frames and sidecars through JS sound messages; no native lip buffer is borrowed.
 
-The reviewed game driver is SHA256 `85eb459e94e74ab608f649eb7fb440f2526e90aaa1af7276ed01dc10018903ce`. Engine and driver files come from the user mount. No engine, driver or game model is included in the public fixtures or distribution. A different binary revision requires a reviewed ABI profile. Unknown imports and device methods fail explicitly.
+Remaining original FES consumers can request an ordinary plane/motion prefix.
+This is a **domain 7** projection of common fields only, removed in phase 7;
+it contains no M2 state, driver pointer or model pixels. The shared renderer
+still projects textures to FES/media consumers (domains 7/8). Its window setup
+skips the old M2 manager and constructs only their common 3D view. These are
+remaining domain dependencies, not an M2 fallback.
 
-`NativeWorld` owns a single `NativeEngineProcess`. The image hash and version are checked before region execution. Its executable entry, PE TLS callbacks and Steam initialization are not invoked. Required ordinary CRT helpers initialize the original C/C++ runtime data. M2 and text share the process, configuration owner, task prefixes, global strings, graph platform and GPU.
-
-Engine startup executes the original affine sine-table constructors `5C3310` and `49FA90` after the CRT helpers. The retained raster fixture checks the digest of all 32,769 table words against an independent x86 run. The original retained managers then supply the CPU bitmap and VRAM pixel references for the GPU tests.
-
-## Engine and task boundaries
-
-`installNativeM2(world)` installs the reviewed profile's task 54 and FES type 33. The game additionally binds all 37 main native IDs: 906–933, 965–966, 1025, 1027–1030 and 1047–1048. These handlers execute their original instructions, including argument translation, string formatting, map iteration and return-control codes. The temporary dictionary view is read-only; it is not passed to C++ mutation or ownership operations.
-
-The original outer-view constructor `673BB0` obtains the shared renderer/device and initializes the game M2 manager through `57CD60`. M2 then reuses that original manager rather than constructing a second one; model loading and updates execute `57D0E0`, `57EE30` and `57F3E0`. Cleanup executes `57CDF0`. `inspectNativeM2Bootstrap` first matches the mounted image SHA and reads its actual import table. An unrelated executable does not trigger M2. The reviewed game's regular static `EmoteCreate` import requires its actual DLL; removing it is a loader failure, not a null-manager initialization mode. Its original window caller passes enabled D3D mode 1. That constructor's separate DIB mode 0 skips M2. The reviewed SDK imports no E-mote driver and retains its original placeholder. Headless authored VM contracts that mount no engine do not manufacture an initialized M2 manager.
-
-The original task constructor is game `637CF0`, SDK `4B9D20`. Its third argument is FPS, stored at common task offset +72. Task IDs and raw pointers are distinct. Common prefixes contain native IDs; pointer lookup returns the internal World ID. Native routing resolves the current Top namespace rather than looking up an arbitrary global task ID.
-
-The original root frame loop calls all vtable +8 logic phases before all +12 draw/update phases. For the game M2 task these are `6382F0` and `638220`; the original custom graph callback is `6394D0(taskPointer, drawFlag)`. The base draw phase updates its effective frame even while paused. Physical destruction pauses at the original BaseTask destructor entry, performs the World's matching parent-unregister/child-notification/base-notification/child-destruction stages, then continues the original instructions and frees the original allocation. Common-prefix cleanup is ordered child before parent.
-
-The raw handler's 0/1 handled result, the router's 1/0 found result and the output word are separate contracts. Output-word write observation preserves a caller's buffer when native code does not write it, including writes of the same prior value. GCALL arguments retain accessible words beyond the declared count. Root data references and raw Script VM pointers use persistent task-memory arenas; they do not expose a freed temporary VM header.
-
-VM data/stack, extended blocks and shared ranges use one guest arena per allocation identity. Extended blocks retain their original reference-count word before the payload, including distinct non-NULL zero-byte payloads. Their allocations belong to the same native process heap as the original allocator; a retained payload survives the VM's release and the original EXE decrement function can subsequently free it. Allocation inverse translation tests data, shared and then the block list; freeing a shared alias uses its actual payload identity. Providers reacquire the RAM view after WASM growth; block IDs preserve physical addresses when earlier blocks leave the logical address list. A materialized borrowed range retains its actual guest pointer through an owner reload/free/reallocation instead of following a new block at the same logical address. Permission splits retain contiguous host-backed RAM. Native translators borrow these arenas and do not copy their contents on close. Host pointers and provider closures are reconstructed rather than checkpointed.
-
-Borrowed instruction-cache invalidation intersects exposed ranges with the CPU's current executable mappings. Successful mapping/protection changes invalidate the permission cache. Writable data alone cannot contain a translated instruction; sending such pages through Unicorn's code-address TLB lookup can invalidate unrelated executable blocks. Executable views still invalidate before calls and asynchronous resumes, including after permission changes and memory growth.
-
-Registering a new instruction boundary also invalidates its already translated executable byte. Unicorn's hook registration alone does not rebuild cached code. This keeps late feature installation observable in the live process as well as after a fresh restore; a future unmapped or non-executable boundary waits for normal mapping/protection and translation.
-
-The common Base receiver consumes a packet pointer and an output pointer. Its shared bridge uses the canonical World graph, including child registration and recursive dumps, rather than the empty private child maps in prefix mirrors. Message context is selected inside the process queue and restored across nested calls. This preserves the actual newly created child ID during a native registration without overwriting an unwritten result.
-
-FES type 33 executes constructors `75F710`/`5FD7E0`, the original built-in handlers and drivers `65FA50`/`52F460`. M2's offset +740 stores its model program; it is not the text object's VRAM field. The SDK's M2 message range 498–528 reaches its original placeholder receiver. The game's range is 524–554. The original header callback consumes COLOR as an M2 parameter before common plane initialization. Generic `play` and `time` do not acquire invented M2 behavior.
-
-Model files resolve only through `m2psb`; profile resources through `m2config`. The original PSZ wrapper performs its own file-format handling and calls the pinned zlib boundary. General `game.read()` is not rewritten to return substituted file bytes. Original user configuration uses `m2setting.xml` and the original parser/writer through the game-scoped storage service.
-
-## Shared Direct3D platform
-
-`EmoteD3D9` also supplies the engine's `IDirect3D9` adapter independently of loading an E-mote DLL. Adapter enumeration, format/depth checks, device capabilities, device creation, creation parameters and the implicit back buffer use their actual stdcall COM ABI. The device exposes one virtual adapter and a software vertex-processing, fixed-function pipeline. Vertex/pixel shader versions, reference rasterization and multisampling are not advertised. Its texture-memory query is an estimate against the configured virtual budget, not a claim about physical browser VRAM. See Microsoft's [adapter interface](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nn-d3d9-idirect3d9) and [capability structure](https://learn.microsoft.com/en-us/windows/win32/api/d3d9caps/ns-d3d9caps-d3dcaps9).
-
-The reviewed original game core constructor `66F070` and initializer `6709F0` reach a real successful initialization with `D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED` and the original default D16 depth choice. D16, D24X8 and D24S8 have corresponding GPU depth storage; D32 remains unavailable, since floating-point D32F is a distinct [Direct3D format](https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat). XRGB targets retain destination alpha 1. Lockable back buffers provide actual GPU readback, native BGRA pitch/address output and region uploads after writing; see [surface locking](https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3dsurface9-lockrect).
-
-`NativeEmoteDevice` accepts an existing `{process, services, d3d}`. The renderer then owns the device's single checkpoint and destruction; M2 stores only its driver/player references and does not restore or close the shared device again. Device checkpoints include primary color/depth and owned render targets, and restore into the candidate World's separate GPU. Full outer-view initialization and effect callbacks have their own acceptance tests. `Present` requires the renderer's real presentation callback; it is not a successful no-op.
-
-The adapter's authored Wine oracle covers 144 combinations of device flags, x87 rounding, SSE rounding, sticky exception flags and the legacy infinity control bit. Unless `D3DCREATE_FPU_PRESERVE` is set, successful creation masks x87 exceptions and selects single precision/nearest rounding, preserving the other control bits; the ordinary `037F` becomes `007F` while `137F` becomes `107F`. MXCSR remains unchanged. GetDeviceCaps, Reset and release retain their incoming controls. `tests/fixtures/native-d3d9-control-golden.json` fixes those results and the oracle source identity. Separate PPI memory sandboxes exchange the complete thread floating-point context with this shared process, including x87 instruction/data metadata; they do not acquire independent default precision.
-
-## GPU and checkpoints
-
-The driver advertises the implemented software vertex-processing capabilities and executes its own deformation code. Original DrawPrimitiveUP and DrawIndexedPrimitiveUP calls submit their actual FVF, vertices, texture states, render states and sampler states to the shared Stage FBO. Native render targets, depth/stencil surfaces, CPU readback and UpdateSurface remain ordered inside the original call. The original CPU fade code sees the pixels returned by the real WebGL target.
-
-Framebuffer/depth pairs are validated when attachments change. Nested use of the same color target restores the caller's depth attachment. The original D3D BeginScene/EndScene span can keep successive native submissions on their current framebuffer, restoring the surrounding compositor once at EndScene; draw order, state transitions and readbacks remain immediate.
-
-Render-target uploads pass the existing RGBA view directly to WebGL2 with its
-row length and source offset, avoiding a second packed copy of the rectangle.
-Subarray byte offsets and the original row direction are preserved. Empty
-rectangles make no transfer; the unpack row length resets to zero even when an
-upload throws. The browser contract test checks asymmetric pixels, source
-canaries, cropped rows, full rows and a fresh graphics device against the
-[WebGL2 pixel-unpack contract](https://registry.khronos.org/webgl/specs/2.0.0/).
-
-Asynchronous graph submissions lease the current D3D render target, depth surface and shared state context until their callback settles. A nested guest call cannot prematurely restore the framebuffer. Native frame setup can retain existing color, depth and stencil so that the original Clear calls and dirty rectangles determine their lifetime. Presentation copies the current target into an opaque canvas on the GPU without ending the active frame; later original callbacks and the cursor can continue drawing before the surrounding frame ends.
-
-A World checkpoint stores the guest process once, plus host identities, task/VM references, open file state and native GPU resource state. Render-target color and every depth/stencil bit are restored into a fresh candidate GPU. Features reconstruct callbacks against saved guest addresses; they do not replay an assumed allocation history or serialize an approximate JavaScript model. Restoring a failed candidate cannot mutate the currently published process or GPU.
-
-Reviewed engine heaps and stacks use read/write permissions. Code, host traps and the sentinel remain executable; explicit Windows executable-page requests retain their semantics. Checkpoints preserve the actual memory permissions, including partial protection changes. Borrowed VM shared ranges retain their original guest address. RAM getters reacquire their WASM view after memory growth; executable ranges are invalidated before native calls and resumes without remapping RAM. The internal instruction budget retains lazy flags until the exact stopping PC, while user code hooks can still inspect and alter full flags. Immediate M2 draws do not retain an unbounded command history. Commands requested by the standalone capture API still copy their device state.
-
-The reviewed DLL's bicubic and strip-packing shortcuts charge the exact original
-instructions before changing guest state. The mesh shortcut also reserves enough
-budget for its final native pair, which completes scratch registers and flags.
-If the entire loop cannot finish, the original instructions run up to the exact
-budget stop. Budget counters are local to each native execution segment and do
-not enter a checkpoint.
-
-## Acceptance and outstanding work
-
-Public authored fixtures contain a PSB model, a minimal legal PFL/DIF configuration and FES script. Supplying the frozen engine and driver enables these tests:
-
-- `tests/native-m2.test.mjs`: the original SDK constructor, absent-driver receiver, untouched output word, FES command/driver, fresh process restore and nested real parent/child destructor ordering.
-- `tests/native-task-memory.test.mjs` and `tests/native-shared-memory.test.mjs`: persistent live VM data/stack/shared/block arenas, original allocation identities, nested CPU/JS writes, memory growth, source reload/free/reallocation and a fresh World. Translator headers survive a temporary bridge's close without an ownership transfer.
-- `tests/native-emote-bootstrap.test.mjs`: exact-image/import discovery, an unrelated executable, SDK absence and a game whose required driver has not been mounted.
-- `tests/native-cpu-budget.test.mjs` and `tests/native-ram-view.test.mjs`: exact budgets, long x87 blocks, shared RAM through growth/nested callbacks, modified executable views and a fresh process.
-- `tests/native-shortcut-budget.test.mjs`: compares every budget cutoff in three traced original DLL loops with the accelerated paths, including the next PC, full CPU state and scratch bytes. It also checks counted/uncounted translation reuse, atomic rejection, nested/async segments and a fresh process.
-- `tests/native-engine-process.test.mjs`: asynchronous continuation, nested guest calls, Win32 conversion/files, late callback restore, floating result scratch addresses and actual output-word writes.
-- `tests/native-m2-blocks.test.mjs` compares 832 original PE executions with their accelerated paths, including integer registers, arithmetic flags, complete output bytes, signed coefficient extremes and overlapping buffers. It also traces the ten loop entries and checks each budget cutoff, live memory protection changes, and continuation from a fresh process checkpoint.
-- `tests/native-raster-kernel.test.mjs`: 2,624 executions per original profile compare integer mixing, channel masks, copies, all five BTYPE modes, fixed-point affine sampling, alpha discovery and CRT transfers. The complete image arena, stack and CPU state (including XMM/MXCSR) must match. Dispatch, clipping, affine setup and the last native scanline still execute in the mounted PE. Affine BTYPE retains its separate native weight rounding. Unsafe mappings, observed output ranges, aliases and unstablished layouts continue through the original instructions.
-- `tests/native-raster-rep-budget.test.mjs` traces all eleven CRT `REP STOS` and `REP MOVS` sites in each original image. The bulk transfer charges each element and the terminal zero-count visit. The tests compare complete and interrupted transfers, protected memory faults and continuation in a fresh process.
-- `tests/native-raster-alpha-budget.test.mjs` traces both original alpha scans through early exits, fully opaque images and empty dimensions. The shortcut charges the scanned rows and pixels and leaves enough budget for the original comparison that sets EFLAGS. The tests cover cutoff state, protected pages and a fresh continuation.
-- `tests/native-raster-mask-budget.test.mjs` traces both original channel-mask loops. The shortcut charges complete skipped scanlines and executes the final scanline's first instruction before another budget stop. The tests check all cutoffs through clipped and reversed rows, protected memory faults and a fresh continuation.
-- `tests/native-raster-copy-budget.test.mjs` traces both original COPY dispatchers through scalar, MMX and CRT branches. The shortcut reserves the last original row to restore its stack and CPU state before another cutoff. Uncounted CRT branches and unsafe layouts execute in the PE. The tests compare every cutoff, protected memory faults and a fresh continuation.
-- `tests/native-raster-normal-budget.test.mjs` traces both original alpha-blend scanline loops. The preflight counts the actual alpha-table branches and transparent RGB padding before updating any pixels. The tests compare cutoffs, raw pixel and stack bytes, protected memory faults and a fresh continuation.
-- `tests/native-raster-btype-budget.test.mjs` traces the five original BTYPE branches in both profiles, including per-channel overlay and color dodge branches. It checks instruction cutoffs, protected memory faults, changed jump-table entries and fresh continuation.
-- `tests/native-raster-affine-budget.test.mjs` compares ordinary affine and all five affine BTYPE modes in both profiles. It verifies exact cutoffs through the signed multiply, four-corner sampling, per-channel blend branches and redirected BTYPE jumps, including clipped and fractional transforms, native lower-row pitch rounding, faults, floating-point state and fresh continuation.
-- `tests/native-emote-blocks.test.mjs`: 1,152 executions compare the original driver bicubic loop with its compiled and interpreted shortcuts, including every integer/XMM register, MXCSR and all output bytes. Exceptional values, subnormal arithmetic, control modes, input aliases and unsafe layouts retain their original execution paths.
-
-- `tests/native-emote-mesh.test.mjs`: 640 executions compare original strip packing with its shortcut, including every register and a complete 128 KiB scratch arena. Coordinates, colors and UVs are copied as original bits; NaN payloads and signed zero survive. Overlapping layouts continue through the original loop.
-- `tests/bicubic-kernel.test.mjs`: the self-contained WebAssembly kernel matches public authored original-driver golden registers and vertices without requiring a mounted DLL. A failed tentative batch never modifies the caller's inputs.
-- `tests/native-m2-lip.test.mjs`: original LPB/LV sample reconstruction and invalid-header cleanup match the independent Windows oracle, including every float bit and a fresh process checkpoint.
-- `tests/browser/emote-native.spec.mjs`: original DLL DrawUP/variable and Wine pixel golden; exact color/depth/stencil round trip; complete original PSB and PSZ wrapper paths, all 37 main natives, FES-created real task 54, original settings writes and fresh World/process/GPU checkpoints. Both resource formats match the independent Windows EXE-wrapper oracle for all four frames: exact DrawUP bytes and return values, with at most one level of pixel channel rounding. PSB/PSZ browser pixels and native return values must also be equal.
-
-The browser suite also decodes and plays an authored PCM WAV through the actual sound task, installs its LPB through the original task/manager, checks the original nonempty lip-driver instances against the Windows sample golden, and restores them into a fresh World. `scripts/native-m2-lip-oracle.py` runs the original Windows LPB/LV parsers on the same authored inputs. Its fixture contains no game sidecar.
-
-`scripts/native-m2-oracle.py` builds an authored Windows host against the separately supplied, hash-checked EXE and driver. The private composite image reserves the original executable's virtual addresses, substitutes only the host entry/import table, and resolves the original reviewed regions' Windows imports. Steam imports point to a failing trap. The harness calls the original manager's initialize/load/update/output/cleanup sequence and captures actual D3D9 DrawUP records and render-target pixels for both PSB and PSZ. `tests/fixtures/native-m2-golden.json` records the source, harness, composite-builder and immutable Wine image identities. The fixture contains authored model output, not engine or game media.
-
-The real NEKOPARA3 `ce02_l_body_2` PSZ has also traversed the original profile loader, task phases, renderer and a fresh process/GPU restore in private analysis. Its actual Ogg voice and LV sidecar have traversed native sound messages 200/219/220/221/222, the original LV installer and sustained model animation. The frozen game contains LV sidecars and no LPB files. A separate explicitly authored LPB/profile variant exercises its LPB-first path with twelve real native drivers; it is not represented as original NEKOPARA media. Its media and raw evidence remain outside Git.
-
-The reviewed game profile additionally accelerates ten original integer/string loop blocks. These summarize native string scans, vector indexing/shifting and per-row pixel operations; original function setup, floating coefficient conversion, texture locking, control flow outside the block and cleanup still execute. Each accelerated loop charges its original dynamic instruction count, including the transparency branches and the index loop's terminal comparison. A loop that cannot fit the current segment, has unsafe memory permissions, or would observe an aliased mutation executes the original instructions. The SDK profile exercises its own M2 placeholder and checkpoint paths. The CPU process uses the same `uc_mem_read`/`uc_mem_write` APIs with bulk typed-array transfers, avoiding the upstream binding's per-byte JavaScript conversion.
-
-The reviewed driver's bicubic block retains a single ordered operation sequence. A self-contained compiler emits standard WebAssembly float32 operations without reassociation. Its fast path requires default rounding, masked exceptions, an existing precision flag, finite operands and normal intermediates away from underflow; otherwise the complete numerical/status interpreter or original instructions run. No animation state is held in the kernel. Native vertex streams are read in contiguous transfers, and solid Gouraud triangles within each native draw share one ordered submission. sRGB destination-copy, wireframe, flat shading and other distinct primitive behavior retain their separate paths.
-
-Diagnostic real-model runs compare ten frames' original DrawUP bytes and final pixels against a fresh cold run with every native block accelerator disabled. The reference includes the complete cold host/graphics state; an engine-only development cache is not interchangeable with it. Timing must include completed GPU work: excluding a final readback can move synchronization out of the measured interval and understate frame cost. Sustained 451-draw animation, cold initialization and the complete retained-image compositor remain separate performance gates. Fade/cached frames do not establish sustained playable performance. Raw measurements and media remain in ignored private analysis storage.
-
-Required remaining gates include continued native lifecycle/namespace coverage and further performance work with original numerical/DrawUP/pixel comparisons. Cold initialization, first-model rendering and sustained animation still require improvement before a playable-performance claim. Other driver revisions, models and unexercised device paths are not automatically certified by the authored model.
+The accepted 384 MiB transitional process heap, 768 MiB checkpoint limit and
+1024-entry JS log bound remain registered until phase 10. M2 models/textures
+no longer allocate in that simulated heap. Live heap/performance measurements
+are repeated at the phase-end gate.

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { inspectNativeM2Bootstrap } from '../src/native/emote-bootstrap.mjs';
+import { inspectNativeM2Bootstrap } from '../oracle/m2-bootstrap-original.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';

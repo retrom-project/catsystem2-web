@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { NativePPI } from '../src/ppi/native.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { recordEmoteFrames, recordPPIFrames } from '../oracle/plugin-frames.mjs';

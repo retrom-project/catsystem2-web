@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Discovery reads the mounted PE only. It never enters WinMain, TLS or Steam.
-import { nativeABI } from './abi/index.mjs';
-import { requireTransitionalHost } from './transitional-exe.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { requireTransitionalHost } from '../src/native/transitional-exe.mjs';
 
 export const NATIVE_EMOTE_CREATE = '?EmoteCreate@@YAPAVIEmoteDevice@@ABUInitParam@1@@Z';
 

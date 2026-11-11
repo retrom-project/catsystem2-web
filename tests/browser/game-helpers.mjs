@@ -140,11 +140,10 @@ export const gameplay = (page) =>
       stack: e.status().stack,
       language: { ...world.configuration.language },
       touch: e.status().stack.includes('touch#WAIT_TOUCH'),
-      // Native M2 renders through the World's D3D compositor. The separate
-      // ScenePlayer EmoteGL cache stays empty on this path.
-      nativeActors: [...(world.nativeEngine.features.get('m2')?.tasks.values() ?? [])].filter(
+      // M2 instances now belong to the JS owner; GPU targets remain on StageRenderer.
+      nativeActors: [...(world.m2?.tasks.values() ?? [])].filter(
         (task) =>
-          task.pointer && task.state.shown && task.graph && task.graph.renderEnabled !== false,
+          task.model && task.state.shown && task.graph && task.graph.renderEnabled !== false,
       ).length,
       saves: [...e.nativeStorage.store.records.keys()]
         .filter((name) => /save\d+\.dat$/i.test(name))

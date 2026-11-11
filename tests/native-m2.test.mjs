@@ -6,7 +6,7 @@ import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
-import { installNativeM2, NativeM2Task } from '../src/native/emote.mjs';
+import { installNativeM2, NativeM2Task } from '../oracle/m2-original.mjs';
 import { NativeScreenEffectRenderer } from '../src/native/screen-effect-render.mjs';
 import { initialMotionObject } from '../src/motion/abi.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';

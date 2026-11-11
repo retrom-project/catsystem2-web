@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit PSB (OWCramer).
 import { Binary, inflate, boundedCount } from '../binary.mjs';
-export async function readPSB(bytes) {
+export async function readPSB(bytes, options) {
   const b = new Binary(bytes, 'PSZ');
   if (b.magic('PSZ\0')) bytes = await inflate(b.range(16, b.u32(4)), b.u32(8));
-  return new PSB(bytes);
+  return new PSB(bytes, options);
 }
 export class PSB {
-  constructor(bytes) {
+  constructor(bytes, { allowUnverifiedVersion = false } = {}) {
     this.b = new Binary(bytes, 'PSB');
     if (!this.b.magic('PSB\0')) throw new Error('Expected PSB');
     this.version = this.b.u16(4);
-    if (![2, 3, 4].includes(this.version)) throw new Error(`Unsupported PSB ${this.version}`);
+    if (![2, 3, 4].includes(this.version) && !allowUnverifiedVersion)
+      throw new Error(`Unsupported PSB ${this.version}`);
     if (this.b.u16(6)) throw new Error('Encrypted PSB: use a prepared/decrypted game directory');
     const b = this.b;
     this.names = [];

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // The frozen SDK's M2Plane class only derives from SimplePlane. It contains
 // no E-mote manager, driver import, model parser or animation implementation.
-import { NativeGraphicTask } from './graphics.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { NativeGraphicTask } from '../src/native/graphics.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 export class NativeSDKM2Tasks {
   static async open(engine, world) {
     const platform = await world.getNativeFeature('graphics-platform'),

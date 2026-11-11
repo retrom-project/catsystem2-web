@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 129, "oracle": 140, "differential": 65 },
+    "counts": { "js": 132, "oracle": 141, "differential": 65 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -29,7 +29,11 @@
         "tests/checkpoint-portable.test.mjs",
         "tests/data-boundary.test.mjs",
         "tests/emote-animation.test.mjs",
+        "tests/emote-commands.test.mjs",
         "tests/emote-geometry.test.mjs",
+        "tests/emote-m2-lip-samples.test.mjs",
+        "tests/emote-m2-model.test.mjs",
+        "tests/emote-world.test.mjs",
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-contracts.test.mjs",
@@ -63,7 +67,6 @@
         "tests/native-corpus-survey.test.mjs",
         "tests/native-cpu-budget.test.mjs",
         "tests/native-cursor.test.mjs",
-        "tests/native-d3d9-adapter.test.mjs",
         "tests/native-data-containers.test.mjs",
         "tests/native-dictionary.test.mjs",
         "tests/native-differential.test.mjs",
@@ -169,6 +172,7 @@
         "tests/native-configuration-query.test.mjs",
         "tests/native-content-databases.test.mjs",
         "tests/native-controls.test.mjs",
+        "tests/native-d3d9-adapter.test.mjs",
         "tests/native-d3d9-surface.test.mjs",
         "tests/native-data-buffer.test.mjs",
         "tests/native-database.test.mjs",
@@ -1235,7 +1239,7 @@
       {
         "kind": "guard",
         "file": "oracle/fes-text-projection.mjs",
-        "line": 173,
+        "line": 172,
         "expression": "this.engine.profile === 'sdk-4.01-engine-2.6.1.74'",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -1406,15 +1410,6 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "va-condition",
-        "file": "oracle/fes-text-projection.mjs",
-        "line": 157,
-        "expression": "runtime.sdk",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "exe-layout",
         "file": "oracle/graphics-consumer-projection.mjs",
         "line": 57,
@@ -1462,7 +1457,7 @@
       {
         "kind": "exe-layout",
         "file": "oracle/renderer-consumer-projection.mjs",
-        "line": 93,
+        "line": 94,
         "expression": "NATIVE_RENDERER_LAYOUTS[engine.profile]",
         "domain": 9,
         "review": "deferred-domain-migration",
@@ -1483,42 +1478,6 @@
         "line": 41,
         "expression": "ABI[engine.profile]",
         "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/emote-fes.mjs",
-        "line": 63,
-        "expression": "bridge.sdk",
-        "domain": 9,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/emote-fes.mjs",
-        "line": 64,
-        "expression": "bridge.sdk",
-        "domain": 9,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/emote-fes.mjs",
-        "line": 79,
-        "expression": "bridge.sdk",
-        "domain": 9,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/emote-fes.mjs",
-        "line": 88,
-        "expression": "bridge.sdk",
-        "domain": 9,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -2290,7 +2249,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 470,
+        "line": 445,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2299,7 +2258,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 474,
+        "line": 475,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2308,7 +2267,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 527,
+        "line": 479,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2317,7 +2276,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 542,
+        "line": 532,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2326,7 +2285,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 583,
+        "line": 547,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2335,7 +2294,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 810,
+        "line": 588,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2344,7 +2303,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 817,
+        "line": 815,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2353,7 +2312,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 829,
+        "line": 822,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2362,7 +2321,16 @@
       {
         "kind": "va-condition",
         "file": "src/native/fes-objects.mjs",
-        "line": 960,
+        "line": 834,
+        "expression": "this.sdk",
+        "domain": 7,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "src/native/fes-objects.mjs",
+        "line": 965,
         "expression": "this.sdk",
         "domain": 7,
         "review": "deferred-domain-migration",
@@ -2711,16 +2679,16 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 154, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 150, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 154,
+    "remainingExeVASelectionSites": 150,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1769,
-      "original-handler": 71,
+      "pure-js": 1806,
+      "original-handler": 34,
       "exe-region": 2,
       "patch": 0,
       "reserved": 140,
@@ -2739,13 +2707,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 400,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 151, "9": 42 },
-    "fileNeedsReview": 106,
-    "exeDependencyFiles": 84,
-    "exeDependencies": { "addresses": 991, "calls": 103, "references": 6 },
+    "runtimeFiles": 404,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 153, "9": 44 },
+    "fileNeedsReview": 97,
+    "exeDependencyFiles": 78,
+    "exeDependencies": { "addresses": 893, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
-    "executionSites": 360
+    "executionSites": 326
   },
   "profiles": [
     {
@@ -4409,15 +4377,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [51],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -4470,15 +4429,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [49],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -4583,15 +4533,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [62],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -4644,15 +4585,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [49],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -4913,15 +4845,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [55],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -4974,15 +4897,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [63],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -5196,15 +5110,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [59],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -5257,15 +5162,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [66],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -10356,15 +10252,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [57],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -25207,7 +25094,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:974",
+          "registration": "src/native/fes-objects.mjs:979",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -25275,12 +25162,6 @@
           "name": "text",
           "registration": "src/native/text-task.mjs:578",
           "modules": ["src/native/text.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "m2-task",
-          "registration": "src/native/emote.mjs:545",
-          "modules": ["src/native/emote-sdk-task.mjs"],
           "dependencies": []
         }
       ]
@@ -26922,15 +26803,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [51],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -26983,15 +26855,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [49],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27096,15 +26959,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [62],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27157,15 +27011,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [49],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27426,15 +27271,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [55],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27487,15 +27323,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [63],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27709,15 +27536,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [59],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -27770,15 +27588,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [66],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -32914,15 +32723,6 @@
                 "method": "NativeSDKJavaScriptTask.message",
                 "implementation": "original-handler",
                 "removePhase": 8
-              },
-              {
-                "domain": 9,
-                "condition": "Target is kind 54 and ABI plugins.emoteDriver equals native",
-                "module": "src/native/emote.mjs",
-                "method": "NativeM2Task.message",
-                "messages": [57],
-                "implementation": "original-handler",
-                "removePhase": 9
               }
             ]
           },
@@ -43309,14 +43109,14 @@
           "hexID": "0x38a",
           "semanticName": "emote.message524",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43326,14 +43126,14 @@
           "hexID": "0x38b",
           "semanticName": "emote.message526",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43343,14 +43143,14 @@
           "hexID": "0x38c",
           "semanticName": "emote.message527",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43360,14 +43160,14 @@
           "hexID": "0x38d",
           "semanticName": "emote.message528",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43377,14 +43177,14 @@
           "hexID": "0x38e",
           "semanticName": "emote.message529",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43394,14 +43194,14 @@
           "hexID": "0x38f",
           "semanticName": "emote.message530Default",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43411,14 +43211,14 @@
           "hexID": "0x390",
           "semanticName": "emote.message530Named",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43428,14 +43228,14 @@
           "hexID": "0x391",
           "semanticName": "emote.message530Dictionary",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43445,14 +43245,14 @@
           "hexID": "0x392",
           "semanticName": "emote.message532Default",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43462,14 +43262,14 @@
           "hexID": "0x393",
           "semanticName": "emote.message532Named",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43479,14 +43279,14 @@
           "hexID": "0x394",
           "semanticName": "emote.message532Dictionary",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43496,14 +43296,14 @@
           "hexID": "0x395",
           "semanticName": "emote.message533",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43513,14 +43313,14 @@
           "hexID": "0x396",
           "semanticName": "emote.message535",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43530,14 +43330,14 @@
           "hexID": "0x397",
           "semanticName": "emote.message536",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43547,14 +43347,14 @@
           "hexID": "0x398",
           "semanticName": "emote.message538",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43564,14 +43364,14 @@
           "hexID": "0x399",
           "semanticName": "emote.message538Dictionary",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43581,14 +43381,14 @@
           "hexID": "0x39a",
           "semanticName": "emote.globalCommand39A",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43598,14 +43398,14 @@
           "hexID": "0x39b",
           "semanticName": "emote.globalCommand39B",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43615,14 +43415,14 @@
           "hexID": "0x39c",
           "semanticName": "emote.message540",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43632,14 +43432,14 @@
           "hexID": "0x39d",
           "semanticName": "emote.constantOne",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43649,14 +43449,14 @@
           "hexID": "0x39e",
           "semanticName": "emote.message534",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43666,14 +43466,14 @@
           "hexID": "0x39f",
           "semanticName": "emote.message541",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43683,14 +43483,14 @@
           "hexID": "0x3a0",
           "semanticName": "emote.message542",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43700,14 +43500,14 @@
           "hexID": "0x3a1",
           "semanticName": "emote.message543",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43717,14 +43517,14 @@
           "hexID": "0x3a2",
           "semanticName": "emote.message544",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43734,14 +43534,14 @@
           "hexID": "0x3a3",
           "semanticName": "emote.message545",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43751,14 +43551,14 @@
           "hexID": "0x3a4",
           "semanticName": "emote.globalCommand3A4",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -43768,14 +43568,14 @@
           "hexID": "0x3a5",
           "semanticName": "emote.globalCommand3A5",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -44316,14 +44116,14 @@
           "hexID": "0x3c5",
           "semanticName": "emote.message547",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -44333,14 +44133,14 @@
           "hexID": "0x3c6",
           "semanticName": "emote.message531Dictionary",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45438,14 +45238,14 @@
           "hexID": "0x401",
           "semanticName": "emote.selectMessage548Or549",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45472,14 +45272,14 @@
           "hexID": "0x403",
           "semanticName": "emote.message551",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45489,14 +45289,14 @@
           "hexID": "0x404",
           "semanticName": "emote.message553",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45506,14 +45306,14 @@
           "hexID": "0x405",
           "semanticName": "emote.message554Count",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45523,14 +45323,14 @@
           "hexID": "0x406",
           "semanticName": "emote.message554Item",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45815,14 +45615,14 @@
           "hexID": "0x417",
           "semanticName": "emote.message552",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -45832,14 +45632,14 @@
           "hexID": "0x418",
           "semanticName": "emote.message550",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
-          "module": "src/native/emote.mjs",
+          "implementation": "pure-js",
+          "module": "src/native/emote-commands.mjs",
           "domain": 9,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/emote.mjs:541",
-          "features": ["m2"],
-          "dependencies": ["src/native/emote.mjs"],
-          "docs": ["docs/native-compatibility.md"],
+          "registration": "src/native/emote.mjs:16",
+          "features": [],
+          "dependencies": [],
+          "docs": ["docs/native-emote.md"],
           "review": "traced",
           "reviewReasons": []
         },
@@ -48539,7 +48339,7 @@
         },
         {
           "name": "fes-objects",
-          "registration": "src/native/fes-objects.mjs:974",
+          "registration": "src/native/fes-objects.mjs:979",
           "modules": [],
           "dependencies": ["data-buffers"]
         },
@@ -48607,12 +48407,6 @@
           "name": "text",
           "registration": "src/native/text-task.mjs:578",
           "modules": ["src/native/text.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "m2",
-          "registration": "src/native/emote.mjs:536",
-          "modules": [],
           "dependencies": []
         }
       ]
@@ -48725,7 +48519,7 @@
     },
     {
       "file": "src/emote/document.mjs",
-      "sourceSha256": "62ed3b487aaf361fdfd651a65cf6943a7d6456e31184262bdf9d663eeb1852f4",
+      "sourceSha256": "f98741aa3e9caf59066ef4e80e4d0c85799e98937e2a3cec77ef2a85ee68ed3f",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48765,6 +48559,136 @@
     {
       "file": "src/emote/geometry.mjs",
       "sourceSha256": "261adbd742f5b21324a28d17b4773e0d63c596dace444b21a1d6e7bec3de6559",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-actions.mjs",
+      "sourceSha256": "26eb57546a935bd1b6b1e5569b9edd899c0d9f2a03ccb6264eb063f2a2cf0351",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-blink.mjs",
+      "sourceSha256": "058807e82cb711ac282da910f62698fd15b8eed114bb89988ccab41e15dc2fcb",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-controllers.mjs",
+      "sourceSha256": "64c2933fcbfb3200efd9de4a9a9dbcf1d8502c69e1d1b0619aac7c2d6e6fa70a",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-inertia.mjs",
+      "sourceSha256": "1a99fe05c4ad78f57b2882916e203dc549c6c5004cff5941bdaef83b6d0e3cb0",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-lip-samples.mjs",
+      "sourceSha256": "cb88cbdde2a5c685ee53915668899018b96855807f0db1203ac3d93822a6ca59",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-lip.mjs",
+      "sourceSha256": "4a3d159a2587091141cbf49fc58cc7b08e742d7ae34a52da15ac57b7dbff7cdb",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-model.mjs",
+      "sourceSha256": "c610f1da404e96957edd298415170ffe23fb7e0a7075ecbf6b250eeb10d0e4ed",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-render.mjs",
+      "sourceSha256": "1284244ddde6cde95590591411ec0924c48fbf47cf1b9ddafcb17e4da5a4417e",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-splines.mjs",
+      "sourceSha256": "c93e50c252f3efecada1c55e5fb27bba857e4766b1d604053cdc5824a566f012",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/emote/m2-variables.mjs",
+      "sourceSha256": "f8d5edb8507d17f716aa7f849d47edf21a119dd4585361a3a3c3897ccd916aeb",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48817,7 +48741,7 @@
     {
       "file": "src/emote/native-adapter.mjs",
       "sourceSha256": "41913179b8f998315d5a9493596f616ca4f9f2d3086fd546c89d4db717ed4bed",
-      "domain": 9,
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -48826,32 +48750,11 @@
       "executionSiteCounts": {},
       "indirectSites": [],
       "review": "counted"
-    },
-    {
-      "file": "src/emote/native-blocks.mjs",
-      "sourceSha256": "aaeee36dc029066e5ffe6b546be96c45285333661f7b05d4f56ba163af580afb",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 26,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x3f2f0",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
     },
     {
       "file": "src/emote/native-d3d.mjs",
       "sourceSha256": "01c53429c9f2303c8ca745c7af2343ad3bce0d2590ad3704454d05309980e0ae",
-      "domain": 9,
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -48862,148 +48765,8 @@
       "review": "counted"
     },
     {
-      "file": "src/emote/native-device.mjs",
-      "sourceSha256": "5c30057f4855a7c5c27ea338ff144992ba316f39d822f49715acada6eb97a477",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 58,
-          "method": "call",
-          "target": "this.module.base + this.module.pe.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 64,
-          "method": "call",
-          "target": "this.module.export(createExport)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 171,
-          "method": "call",
-          "target": "p.load(p.load(pointer) + slot * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 173,
-          "method": "call",
-          "target": "this.floatReturn",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 234,
-          "method": "call",
-          "target": "this.module.base + this.module.pe.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 265,
-          "method": "call",
-          "target": "31",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 265,
-          "method": "call",
-          "target": "32",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 269,
-          "method": "call",
-          "target": "36",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 273,
-          "method": "call",
-          "target": "37",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 276,
-          "method": "call",
-          "target": "63",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 279,
-          "method": "call",
-          "target": "65",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 287,
-          "method": "call",
-          "target": "6",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 290,
-          "method": "call",
-          "target": "7",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 293,
-          "method": "call",
-          "target": "8",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 297,
-          "method": "call",
-          "target": "2",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 15 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "src/emote/native-mesh.mjs",
-      "sourceSha256": "b05191a0ab4048e159c7d23624f7fb940673f0511eecd89eccfaa7753a5ef397",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 20,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x58b44",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
       "file": "src/emote/profiles.mjs",
-      "sourceSha256": "54867bb88793f5d776f44b84986c956c64f0dbf46b31e965321095efbd3da7cd",
+      "sourceSha256": "da2d3c14d56ef22a3716d39e5c93103c29e0201231086b5de0e5e712949b498f",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49276,7 +49039,7 @@
     },
     {
       "file": "src/formats/psb.mjs",
-      "sourceSha256": "4159fdc50d1d67f36cce1dcde05e1e8448daa78af6fa5c47c80a504edfdd5575",
+      "sourceSha256": "5e0ab5c780cd0ae6fe448a67a74fb985eacd94a8b9f9a3581a841820e454ca61",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49615,7 +49378,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -50313,7 +50076,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -50348,14 +50111,14 @@
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 142,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 206,
@@ -50376,7 +50139,7 @@
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 260,
@@ -50397,21 +50160,21 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 330,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 609,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -50432,346 +50195,106 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 96,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
     },
     {
-      "file": "src/native/emote-blocks.mjs",
-      "sourceSha256": "3ee7fc8b8991d84177b7bf8c879b24bece3c3cad60e576d259cc89fc266b685d",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 15, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 59,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "src/native/emote-bootstrap.mjs",
-      "sourceSha256": "4308480ee3a4affc6c35e6d7f553f005b28de9382e8c97738971aa5840c715ea",
+      "file": "src/native/emote-commands.mjs",
+      "sourceSha256": "e76b2ab49f713ace58bcf72fd084784c20bf29bb97f407ffd82c49d20bd9334f",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "dependencyTypes": ["sendNativeEngine"],
+      "docs": ["docs/native-emote.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [],
-      "review": "counted"
-    },
-    {
-      "file": "src/native/emote-configuration.mjs",
-      "sourceSha256": "6511e2eeee20b18661cdaa9e2fe4052e7be0eafe7a0c19005ecd46e3fe0357a0",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 22, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
+      "indirectSites": [
         {
-          "line": 29,
-          "method": "call",
-          "target": "0x5223d0",
+          "line": 54,
+          "method": "sendNativeEngine",
+          "feature": null,
           "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 32,
-          "method": "call",
-          "target": "0x522420",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 45,
-          "method": "call",
-          "target": "method[0]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 46,
-          "method": "call",
-          "target": "method[0]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 60,
-          "method": "call",
-          "target": "0x581680",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 63,
-          "method": "call",
-          "target": "method[1]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 65,
-          "method": "call",
-          "target": "method[1]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+          "reason": "37 registered M2 wrappers send the reviewed 524..554 family to task54; M2Task, its owner, model and controller state are JS. No model/task pointer projection is made."
         }
       ],
-      "executionSiteCounts": { "call": 7 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "src/native/emote-dictionary.mjs",
-      "sourceSha256": "454cbe987352b37d6be1ed732e19525f2dd0e8ca688189d36752ce0387d48490",
-      "domain": 9,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [],
-      "executionSiteCounts": {},
-      "indirectSites": [],
       "review": "counted"
     },
     {
       "file": "src/native/emote-fes.mjs",
-      "sourceSha256": "254ada13ec04b86543c67c9ebab066aab57983d65a5841b50f9779b098764dec",
+      "sourceSha256": "14f194ca07d0daf590c96521c42b0a52ce4eb1347b39aca6bb7834b7021cf882",
       "domain": 9,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 8, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 79,
-          "method": "call",
-          "target": "bridge.sdk ? 0x5fd890 : 0x75f7c0",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 87,
-          "method": "call",
-          "target": "bridge.sdk ? 0x5fdb00 : 0x75fa30",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 2 },
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["getNativeFeature"],
+      "docs": ["docs/native-emote.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 22,
+          "line": 147,
           "method": "getNativeFeature",
           "feature": "fes-objects",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 26,
-          "method": "getNativeFeature",
-          "feature": "m2",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The remaining D7 common plane prefix is destroyed only when a native FES consumer previously requested it. No M2 constructor or driver is called."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
-      "file": "src/native/emote-graphics.mjs",
-      "sourceSha256": "70fefe94bf61250aad497c96a1aa07f3386e17789c1d3f8267c49c36797cfbc7",
+      "file": "src/native/emote-owner.mjs",
+      "sourceSha256": "bd4c59d687bd26d419acfcdc0f85fef5f65c22f689188123e7d563efe9782b49",
       "domain": 9,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 6, "calls": 1, "references": 0 },
-      "dependencyTypes": ["in-image-literals", "patch", "profile-memory-layout"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 20,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "patch": 1 },
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-emote.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
-      "file": "src/native/emote-sdk-task.mjs",
-      "sourceSha256": "27d706e1e355f2c8c3b847914eba22b2d0b5b30a75e2f7bb829fc786643b06e7",
+      "file": "src/native/emote-task.mjs",
+      "sourceSha256": "f07c530f3de4baf5442cd303eb8db0ff5867ed24ff53817d5aeba0d007c3c327",
       "domain": 9,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "computed-call", "getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 39,
-          "method": "computed-call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 67,
-          "method": "call",
-          "target": "0x4b9d20",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 98,
-          "method": "call",
-          "target": "0x4bb3d0",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 123,
-          "method": "call",
-          "target": "p.load(p.load(this.pointer))",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "computed-call": 1, "call": 3 },
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendNativeEngine"],
+      "docs": ["docs/native-emote.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 8,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 9,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 59,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "line": 116,
+          "method": "sendNativeEngine",
+          "feature": null,
+          "review": "traced",
+          "reason": "Explicit public sound-task queries for media clock, envelope levels and JS sidecar handles; NativeSoundTask owns these messages and invokes no model/DLL code."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/emote.mjs",
-      "sourceSha256": "d207ad272cec9515452254e55cf19ff78d62f96da30f52e224d08c36dc70ca53",
+      "sourceSha256": "7cbcf4025e17900ed69170d74fe3e0b32912bc75a6e23c0d440529d925fbbb7d",
       "domain": 9,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 46, "calls": 3, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "getNativeFeature",
-        "in-image-literals",
-        "patch",
-        "sendNativeEngine"
-      ],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 165,
-          "method": "patch",
-          "target": "0x6a7000",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 247,
-          "method": "call",
-          "target": "byID[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 305,
-          "method": "call",
-          "target": "0x57cdf0",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        }
-      ],
-      "executionSiteCounts": { "patch": 1, "call": 2 },
-      "indirectSites": [
-        {
-          "line": 97,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 98,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 99,
-          "method": "getNativeFeature",
-          "feature": "renderer",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 190,
-          "method": "sendNativeEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 538,
-          "method": "getNativeFeature",
-          "feature": "m2",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 542,
-          "method": "getNativeFeature",
-          "feature": "m2",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 547,
-          "method": "getNativeFeature",
-          "feature": "m2-task",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-emote.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/engine-configuration-event.mjs",
@@ -52120,7 +51643,7 @@
     },
     {
       "file": "src/native/fes-graphics.mjs",
-      "sourceSha256": "8b0bd9e5dae8cac787f603757c162102a6da7ab933db9eb4d35d1fbe46889297",
+      "sourceSha256": "fb8d52afb8ada69b5306adec2b5a5552b363ee20da8b83b05764e260914375b8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52130,28 +51653,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 112,
+          "line": 113,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 123,
+          "line": 124,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 188,
+          "line": 189,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 403,
+          "line": 404,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
@@ -52391,10 +51914,10 @@
     },
     {
       "file": "src/native/fes-objects.mjs",
-      "sourceSha256": "a5a401044ee41e74c41646374ee2f2c99ef5aa954ac8825857b9d63926126389",
+      "sourceSha256": "702674803067901ad169925c044e9bac58a54d01d722a7a8263fead5e4c272f7",
       "domain": 7,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 60, "calls": 3, "references": 0 },
+      "exeDependencies": { "addresses": 62, "calls": 3, "references": 0 },
       "dependencyTypes": [
         "call",
         "callFromHost",
@@ -52434,119 +51957,126 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 474,
+          "line": 445,
+          "method": "call",
+          "target": "this.sdk ? 0x5ebea0 : 0x74b940",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 479,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 484,
+          "line": 489,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 527,
+          "line": 532,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 542,
+          "line": 547,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 582,
+          "line": 587,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 769,
+          "line": 774,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 776,
+          "line": 781,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 790,
+          "line": 795,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 809,
+          "line": 814,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 816,
+          "line": 821,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 828,
+          "line": 833,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 834,
+          "line": 839,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 870,
+          "line": 875,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 911,
+          "line": 916,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 923,
+          "line": 928,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 960,
+          "line": 965,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "patch": 1, "call": 18, "callFromHost": 1 },
+      "executionSiteCounts": { "patch": 1, "call": 19, "callFromHost": 1 },
       "indirectSites": [
         {
           "line": 87,
@@ -52563,7 +52093,7 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 975,
+          "line": 980,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -53063,105 +52593,105 @@
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 725,
           "method": "getNativeFeature",
           "feature": "plane-movie-projection",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1130,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1139,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1152,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1155,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1169,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1212,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 1312,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1313,
           "method": "getNativeFeature",
           "feature": "directshow",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1314,
           "method": "getNativeFeature",
           "feature": "texture-movie-renderer",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1323,
           "method": "getNativeFeature",
           "feature": "engine-workers",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1324,
           "method": "getNativeFeature",
           "feature": "vmr9",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1330,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8), M2 device (9). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1397,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -53760,14 +53290,14 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         },
         {
           "line": 135,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -54207,7 +53737,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -54293,7 +53823,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) and M2 kind 54 (9) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
         }
       ],
       "review": "counted"
@@ -56809,7 +56339,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "d0a2dd0686b0eedcd569f528be94a3c98b014e3ba0acdb1fbaa0407155fd6e08",
+      "sourceSha256": "bf2e7b79a0dd6518cb4be3e630f2d1ccff36413c28f6619b1ec446c6b00f57c3",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56861,21 +56391,14 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 921,
-          "method": "getNativeFeature",
-          "feature": "m2",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 1043,
+          "line": 1038,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1044,
+          "line": 1039,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -57338,7 +56861,7 @@
     },
     {
       "file": "src/render/particles-gl.mjs",
-      "sourceSha256": "d3649ead5abedfbe3813cada2319c4e72e03fc7293bc7aa5775c28a9a157be83",
+      "sourceSha256": "901cc8122468c21402c473636f03ebfc1a7ce9a47362c0ba70089cc38a43847e",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -57351,7 +56874,7 @@
     },
     {
       "file": "src/render/stage.mjs",
-      "sourceSha256": "a6dcbb782c54acf564b6a7d849ef41f45300f07279617a7ede04c5bb7224a2cc",
+      "sourceSha256": "1a0aa3041c6d191c4a0354826b0be091ac17e8020a31f0dbdc75fb6b4575072c",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -57893,11 +57416,11 @@
     },
     {
       "file": "oracle/fes-text-projection.mjs",
-      "sourceSha256": "1edb3581513e308f97cb89cdcf27155eaa15e96dd8ad3c2b2333b92598745baf",
+      "sourceSha256": "2dde9d8b219fafc9ec1fc794451b38bc917f860ece42d96b0bf8fca1be681bf4",
       "domain": 7,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 22, "calls": 1, "references": 0 },
-      "dependencyTypes": ["call", "in-image-literals", "patch", "profile-memory-layout"],
+      "exeDependencies": { "addresses": 20, "calls": 1, "references": 0 },
+      "dependencyTypes": ["in-image-literals", "patch", "profile-memory-layout"],
       "docs": ["docs/native-text.md"],
       "executionSites": [
         {
@@ -57906,16 +57429,9 @@
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 157,
-          "method": "call",
-          "target": "runtime.sdk ? 0x5ebea0 : 0x74b940",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "patch": 1, "call": 1 },
+      "executionSiteCounts": { "patch": 1 },
       "indirectSites": [],
       "review": "needs-review"
     },
@@ -58041,10 +57557,10 @@
     },
     {
       "file": "oracle/renderer-consumer-projection.mjs",
-      "sourceSha256": "be7d45bf6ad8d7d0a4b2aa2217d435c5eb37fec6530928a628c15344b433bc28",
+      "sourceSha256": "37af0454a712bda30f8053bc7581ccb6e58750e7e68cfd81513543a4961ac2fd",
       "domain": 9,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 12, "calls": 2, "references": 0 },
+      "exeDependencies": { "addresses": 13, "calls": 2, "references": 0 },
       "dependencyTypes": [
         "call",
         "callFromHost",
@@ -58055,21 +57571,21 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 135,
+          "line": 136,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 136,
+          "line": 137,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 196,
+          "line": 197,
           "method": "call",
           "target": "layout.capsConstruct",
           "review": "needs-review",
@@ -58079,6 +57595,13 @@
           "line": 219,
           "method": "call",
           "target": "layout.viewConstruct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "line": 223,
+          "method": "call",
+          "target": "layout.view3DConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
@@ -58097,33 +57620,26 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 5 },
+      "executionSiteCounts": { "callFromHost": 1, "call": 6 },
       "indirectSites": [
         {
-          "line": 84,
+          "line": 85,
           "method": "getNativeFeature",
           "feature": "text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 85,
+          "line": 86,
           "method": "getNativeFeature",
           "feature": "engine-files",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 86,
+          "line": 87,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 209,
-          "method": "getNativeFeature",
-          "feature": "m2",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -58194,14 +57710,13 @@
             "modules": ["fes-objects", "fes-images", "text", "control-task", "fes-controls"],
             "removePhase": 7
           },
-          { "domain": 8, "modules": ["sdk-javascript-task", "directshow"], "removePhase": 8 },
-          { "domain": 9, "modules": ["emote"], "removePhase": 9 }
+          { "domain": 8, "modules": ["sdk-javascript-task", "directshow"], "removePhase": 8 }
         ],
         "lifetime": "No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.",
         "removePhase": 8,
         "operations": ["sync", "pull", "bitmap", "initialize", "snapshot", "restore", "close"]
       },
-      "entry": "Explicit FES/text/M2 calls borrow JS graph state and submit to StageRenderer",
+      "entry": "Explicit FES/text calls borrow JS graph state and submit to StageRenderer",
       "modules": [
         "oracle/graphics-consumer-projection.mjs",
         "oracle/renderer-consumer-projection.mjs"
@@ -58233,7 +57748,7 @@
         },
         {
           "file": "oracle/renderer-consumer-projection.mjs",
-          "line": 135,
+          "line": 136,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -58241,7 +57756,7 @@
         },
         {
           "file": "oracle/renderer-consumer-projection.mjs",
-          "line": 136,
+          "line": 137,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58249,7 +57764,7 @@
         },
         {
           "file": "oracle/renderer-consumer-projection.mjs",
-          "line": 196,
+          "line": 197,
           "method": "call",
           "target": "layout.capsConstruct",
           "review": "needs-review",
@@ -58260,6 +57775,14 @@
           "line": 219,
           "method": "call",
           "target": "layout.viewConstruct",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "oracle/renderer-consumer-projection.mjs",
+          "line": 223,
+          "method": "call",
+          "target": "layout.view3DConstruct",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
@@ -58413,7 +57936,15 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 474,
+          "line": 445,
+          "method": "call",
+          "target": "this.sdk ? 0x5ebea0 : 0x74b940",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/fes-objects.mjs",
+          "line": 479,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
@@ -58421,7 +57952,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 484,
+          "line": 489,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
@@ -58429,7 +57960,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 527,
+          "line": 532,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
@@ -58437,7 +57968,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 542,
+          "line": 547,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
@@ -58445,7 +57976,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 582,
+          "line": 587,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
@@ -58453,7 +57984,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 769,
+          "line": 774,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
@@ -58461,7 +57992,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 776,
+          "line": 781,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
@@ -58469,7 +58000,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 790,
+          "line": 795,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58477,7 +58008,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 809,
+          "line": 814,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
@@ -58485,7 +58016,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 816,
+          "line": 821,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
@@ -58493,7 +58024,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 828,
+          "line": 833,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
@@ -58501,7 +58032,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 834,
+          "line": 839,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
@@ -58509,7 +58040,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 870,
+          "line": 875,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
@@ -58517,7 +58048,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 911,
+          "line": 916,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58525,7 +58056,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 923,
+          "line": 928,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
@@ -58533,7 +58064,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 960,
+          "line": 965,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
@@ -58550,10 +58081,7 @@
         "direction": "PE consumer pixel copies/raster loops",
         "authority": "JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers",
         "fields": ["consumer bitmap rows", "consumer allocation bounds"],
-        "consumers": [
-          { "domain": 7, "modules": ["fes-images"] },
-          { "domain": 9, "modules": ["emote"] }
-        ],
+        "consumers": [{ "domain": 7, "modules": ["fes-images"] }],
         "lifetime": "The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and DLL code until their consumer phases.",
         "removePhase": 8,
         "operations": ["install", "close"]
@@ -58687,18 +58215,17 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "renderer-surfaces-to-dll-locks",
-      "domain": 9,
+      "name": "renderer-surfaces-to-foreign-locks",
+      "domain": 8,
       "projection": {
         "direction": "JS-to-PE on lock; explicit PE-to-JS commit on writable unlock",
         "authority": "StageRenderer.surfaces packed bytes; GPU targets are derived render resources",
         "fields": ["surface identity", "pitch", "format", "lock bytes", "D3D resource handles"],
         "consumers": [
           { "domain": 7, "modules": ["fes-images"], "removePhase": 7 },
-          { "domain": 8, "modules": ["vmr9", "texture-movie-renderer"], "removePhase": 8 },
-          { "domain": 9, "modules": ["emote", "native-d3d"], "removePhase": 9 }
+          { "domain": 8, "modules": ["vmr9", "texture-movie-renderer"], "removePhase": 8 }
         ],
-        "lifetime": "Guest virtual regions contain temporary DLL-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.",
+        "lifetime": "Guest virtual regions contain temporary FES/media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.",
         "removePhase": 8,
         "operations": [
           "LockRect",
@@ -58709,7 +58236,7 @@
           "snapshot"
         ]
       },
-      "entry": "StageRenderer.surfaces → D3D LockRect/UnlockRect → DLL draw submission",
+      "entry": "StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining FES/media consumers",
       "modules": [
         "src/emote/native-d3d.mjs",
         "src/native/renderer.mjs",
@@ -58733,7 +58260,7 @@
       "modules": ["oracle/transitional-heap.mjs"],
       "executionSites": [],
       "review": "counted",
-      "reason": "Original M2 native 0x38a retains D3D textures and model data in the guest heap. Temporary x86-only capacity, deleted in phase 10. Texture/model consumers are removed in phases 6 and 9. Live heap measurements remain separate from JS ownership checks."
+      "reason": "Historical original M2 native 0x38a exhausted the guest heap with textures/models. Product M2 is JS from 9.4 and no longer uses this capacity. The accepted x86-only configuration is retained until phase 10; live heap measurements remain separate from JS ownership checks."
     },
     {
       "name": "process-bootstrap",
@@ -59804,7 +59331,15 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 474,
+          "line": 445,
+          "method": "call",
+          "target": "this.sdk ? 0x5ebea0 : 0x74b940",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
+        {
+          "file": "src/native/fes-objects.mjs",
+          "line": 479,
           "method": "call",
           "target": "this.sdk ? 0x622ad0 : 0x78a9d0",
           "review": "needs-review",
@@ -59812,7 +59347,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 484,
+          "line": 489,
           "method": "call",
           "target": "adapter.construct",
           "review": "needs-review",
@@ -59820,7 +59355,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 527,
+          "line": 532,
           "method": "call",
           "target": "this.sdk ? 0x500390 : 0x628d60",
           "review": "needs-review",
@@ -59828,7 +59363,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 542,
+          "line": 547,
           "method": "call",
           "target": "this.sdk ? 0x504e50 : 0x62da50",
           "review": "needs-review",
@@ -59836,7 +59371,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 582,
+          "line": 587,
           "method": "call",
           "target": "this.sdk ? (beforeScript ? 0x500150 : 0x505460) : beforeScript ? 0x628b20 : 0x62e0b0",
           "review": "needs-review",
@@ -59844,7 +59379,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 769,
+          "line": 774,
           "method": "call",
           "target": "adapter.configurationChanged",
           "review": "needs-review",
@@ -59852,7 +59387,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 776,
+          "line": 781,
           "method": "call",
           "target": "adapter.driver",
           "review": "needs-review",
@@ -59860,7 +59395,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 790,
+          "line": 795,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59868,7 +59403,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 809,
+          "line": 814,
           "method": "call",
           "target": "this.sdk ? 0x5f8190 : 0x75a050",
           "review": "needs-review",
@@ -59876,7 +59411,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 816,
+          "line": 821,
           "method": "call",
           "target": "this.sdk ? 0x5f84f0 : 0x75a3b0",
           "review": "needs-review",
@@ -59884,7 +59419,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 828,
+          "line": 833,
           "method": "call",
           "target": "this.sdk ? 0x5e8d10 : 0x7486f0",
           "review": "needs-review",
@@ -59892,7 +59427,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 834,
+          "line": 839,
           "method": "call",
           "target": "apply",
           "review": "needs-review",
@@ -59900,7 +59435,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 870,
+          "line": 875,
           "method": "call",
           "target": "fn",
           "review": "needs-review",
@@ -59908,7 +59443,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 911,
+          "line": 916,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59916,7 +59451,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 923,
+          "line": 928,
           "method": "call",
           "target": "this.process.load(this.process.load(pointer))",
           "review": "needs-review",
@@ -59924,7 +59459,7 @@
         },
         {
           "file": "src/native/fes-objects.mjs",
-          "line": 960,
+          "line": 965,
           "method": "call",
           "target": "this.sdk ? 0x5e1110 : 0x7402b0",
           "review": "needs-review",
@@ -60106,165 +59641,22 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "emote-exe-glue",
-      "domain": 9,
-      "entry": "NativeM2/NativeSDKM2Tasks → EXE driver, configuration and FES/graphics glue before DLL exports",
-      "modules": [
-        "src/native/emote-blocks.mjs",
-        "src/native/emote-configuration.mjs",
-        "src/native/emote-fes.mjs",
-        "src/native/emote-graphics.mjs",
-        "src/native/emote-sdk-task.mjs",
-        "src/native/emote.mjs"
-      ],
-      "executionSites": [
-        {
-          "file": "src/native/emote-blocks.mjs",
-          "line": 59,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 29,
-          "method": "call",
-          "target": "0x5223d0",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 32,
-          "method": "call",
-          "target": "0x522420",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 45,
-          "method": "call",
-          "target": "method[0]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 46,
-          "method": "call",
-          "target": "method[0]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 60,
-          "method": "call",
-          "target": "0x581680",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 63,
-          "method": "call",
-          "target": "method[1]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-configuration.mjs",
-          "line": 65,
-          "method": "call",
-          "target": "method[1]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-fes.mjs",
-          "line": 79,
-          "method": "call",
-          "target": "bridge.sdk ? 0x5fd890 : 0x75f7c0",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-fes.mjs",
-          "line": 87,
-          "method": "call",
-          "target": "bridge.sdk ? 0x5fdb00 : 0x75fa30",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-graphics.mjs",
-          "line": 20,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-sdk-task.mjs",
-          "line": 39,
-          "method": "computed-call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-sdk-task.mjs",
-          "line": 67,
-          "method": "call",
-          "target": "0x4b9d20",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote-sdk-task.mjs",
-          "line": 98,
-          "method": "call",
-          "target": "0x4bb3d0",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote-sdk-task.mjs",
-          "line": 123,
-          "method": "call",
-          "target": "p.load(p.load(this.pointer))",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote.mjs",
-          "line": 165,
-          "method": "patch",
-          "target": "0x6a7000",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/emote.mjs",
-          "line": 247,
-          "method": "call",
-          "target": "byID[id]",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote.mjs",
-          "line": 305,
-          "method": "call",
-          "target": "0x57cdf0",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        }
-      ],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+      "name": "js-m2-plane-prefix-to-fes",
+      "domain": 7,
+      "projection": {
+        "direction": "JS-to-PE",
+        "authority": "JS FESObject and M2Task",
+        "fields": ["common plane motion/parent identity only; no M2 suffix, model or DLL pointer"],
+        "consumers": [{ "domain": 7, "modules": ["fes-objects", "fes-planes"] }],
+        "lifetime": "A remaining D7 consumer can lazily request the common prefix; ordinary M2PLANE execution needs no guest record.",
+        "removePhase": 7,
+        "operations": ["constructPlane", "close"]
+      },
+      "entry": "M2PLANE may expose only a common plane/motion prefix to an original FES parent/child consumer",
+      "modules": ["src/native/emote-fes.mjs"],
+      "executionSites": [],
+      "review": "traced",
+      "reason": "M2 state, commands, model and GPU target are JS. constructPlane creates the existing D7 common plane only; it never constructs an M2 object or runs its driver."
     },
     {
       "name": "js-image-data-to-exe-consumers",
@@ -60355,8 +59747,7 @@
             "modules": ["fes-images", "fes-draw-projection", "control-task"],
             "removePhase": 7
           },
-          { "domain": 8, "modules": ["input-commands", "sdk-javascript-task"], "removePhase": 8 },
-          { "domain": 9, "modules": ["emote", "graphics-consumer-projection"], "removePhase": 9 }
+          { "domain": 8, "modules": ["input-commands", "sdk-javascript-task"], "removePhase": 8 }
         ],
         "lifetime": "Projection references follow JS aliases and retained consumers. Revision changes refresh the source. Wipe3 mutates JS source RGB before projection; there is no global owned-state back-read.",
         "removePhase": 8,
@@ -60509,8 +59900,7 @@
         ],
         "consumers": [
           { "domain": 7, "modules": ["fes-images"] },
-          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 },
-          { "domain": 9, "modules": ["emote"], "removePhase": 9 }
+          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }
         ],
         "lifetime": "The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.",
         "removePhase": 8,
@@ -60645,21 +60035,20 @@
     },
     {
       "name": "js-anm-table-to-exe-view",
-      "domain": 9,
+      "domain": 8,
       "projection": {
         "direction": "JS-to-PE",
         "authority": "NativeImageFiles bytes and lookup entries",
         "fields": ["immutable encoded table bytes"],
         "consumers": [
           { "domain": 7, "modules": ["fes-images"], "removePhase": 7 },
-          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 },
-          { "domain": 9, "modules": ["renderer-consumer-projection", "emote"], "removePhase": 9 }
+          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }
         ],
         "lifetime": "The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.",
         "removePhase": 8,
         "operations": ["read"]
       },
-      "entry": "Remaining FES/SDK/M2 consumer view initialization reads immutable JS-owned anmtable.csv bytes",
+      "entry": "Remaining FES/SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes",
       "modules": ["src/native/engine-files.mjs"],
       "executionSites": [
         {
@@ -60965,14 +60354,6 @@
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/fes-text-projection.mjs",
-          "line": 157,
-          "method": "call",
-          "target": "runtime.sdk ? 0x5ebea0 : 0x74b940",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
       "review": "needs-review",
@@ -61040,31 +60421,8 @@
     {
       "name": "ppi-and-dll-host",
       "domain": 9,
-      "entry": "Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime/EmoteNativeAdapter → PE32Process",
+      "entry": "Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime → PE32Process; E-mote DLL execution is oracle-only",
       "modules": [
-        "src/emote/animation.mjs",
-        "src/emote/bicubic-kernel.mjs",
-        "src/emote/bicubic-operations.mjs",
-        "src/emote/controller-graph.mjs",
-        "src/emote/controllers.mjs",
-        "src/emote/document.mjs",
-        "src/emote/draw-list.mjs",
-        "src/emote/geometry-content.mjs",
-        "src/emote/geometry.mjs",
-        "src/emote/materials.mjs",
-        "src/emote/mesh.mjs",
-        "src/emote/model.mjs",
-        "src/emote/native-adapter.mjs",
-        "src/emote/native-blocks.mjs",
-        "src/emote/native-d3d.mjs",
-        "src/emote/native-device.mjs",
-        "src/emote/native-mesh.mjs",
-        "src/emote/profiles.mjs",
-        "src/emote/random.mjs",
-        "src/emote/runtime.mjs",
-        "src/emote/springs.mjs",
-        "src/emote/timelines.mjs",
-        "src/emote/wind.mjs",
         "src/native/particles.mjs",
         "src/particles.mjs",
         "src/ppi/abi.mjs",
@@ -61087,142 +60445,6 @@
         "src/ppi/x87.mjs"
       ],
       "executionSites": [
-        {
-          "file": "src/emote/native-blocks.mjs",
-          "line": 26,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x3f2f0",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 58,
-          "method": "call",
-          "target": "this.module.base + this.module.pe.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 64,
-          "method": "call",
-          "target": "this.module.export(createExport)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 171,
-          "method": "call",
-          "target": "p.load(p.load(pointer) + slot * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 173,
-          "method": "call",
-          "target": "this.floatReturn",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 234,
-          "method": "call",
-          "target": "this.module.base + this.module.pe.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 265,
-          "method": "call",
-          "target": "31",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 265,
-          "method": "call",
-          "target": "32",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 269,
-          "method": "call",
-          "target": "36",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 273,
-          "method": "call",
-          "target": "37",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 276,
-          "method": "call",
-          "target": "63",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 279,
-          "method": "call",
-          "target": "65",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 287,
-          "method": "call",
-          "target": "6",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 290,
-          "method": "call",
-          "target": "7",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 293,
-          "method": "call",
-          "target": "8",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-device.mjs",
-          "line": 297,
-          "method": "call",
-          "target": "2",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-mesh.mjs",
-          "line": 20,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x58b44",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
         {
           "file": "src/ppi/native-runtime.mjs",
           "line": 106,
@@ -62038,46 +61260,6 @@
       "domain": null,
       "entry": "engine.patch / process.beforeInstruction / feature boundary registration",
       "executionSites": [
-        {
-          "file": "src/emote/native-blocks.mjs",
-          "line": 26,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x3f2f0",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/emote/native-mesh.mjs",
-          "line": 20,
-          "method": "beforeInstruction",
-          "target": "this.base + 0x58b44",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-blocks.mjs",
-          "line": 59,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote-graphics.mjs",
-          "line": 20,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/emote.mjs",
-          "line": 165,
-          "method": "patch",
-          "target": "0x6a7000",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
         {
           "file": "src/native/engine-cpu-survey.mjs",
           "line": 33,

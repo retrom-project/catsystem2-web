@@ -11,7 +11,7 @@ import { memoryGame, kcsProgram } from './helpers.mjs';
 
 test('pure entry excludes the EXE loader and the transitional composition includes it explicitly', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url));
-  assert.ok((await checkNativeEntry(root)).includes('src/native/windows-services.mjs'));
+  assert.ok((await checkNativeEntry(root)).includes('src/native/emote-owner.mjs'));
   assert.ok(
     (await nativeEntryGraph(root, 'web/transitional-entry.mjs')).includes(
       'src/native/engine-process.mjs',

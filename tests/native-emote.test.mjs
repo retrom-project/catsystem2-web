@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { emotePSBFixture } from './fixtures/emote-psb-fixture.mjs';
 import { PSB } from '../src/formats/psb.mjs';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';

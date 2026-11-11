@@ -122,6 +122,7 @@ function domain(file) {
     ].includes(file)
   )
     return 7;
+  if (['src/emote/native-d3d.mjs', 'src/emote/native-adapter.mjs'].includes(file)) return 8;
   if (
     file.startsWith('src/emote/') ||
     file === 'oracle/plugin-frames.mjs' ||
@@ -156,7 +157,7 @@ const originalWrappers = new Set(
     'input-commands registry ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command ' +
-    'version-query sdk-javascript-task emote'
+    'version-query sdk-javascript-task'
   ).split(' '),
 );
 const reviewedRegions = new Map();
@@ -642,7 +643,7 @@ const nonNativeGroups = [
   {
     name: 'js-graphics-to-remaining-consumers',
     domain: 7,
-    entry: 'Explicit FES/text/M2 calls borrow JS graph state and submit to StageRenderer',
+    entry: 'Explicit FES/text calls borrow JS graph state and submit to StageRenderer',
     files: ['oracle/graphics-consumer-projection.mjs', 'oracle/renderer-consumer-projection.mjs'],
     modules: [],
     projection: {
@@ -664,7 +665,6 @@ const nonNativeGroups = [
           removePhase: 7,
         },
         { domain: 8, modules: ['sdk-javascript-task', 'directshow'], removePhase: 8 },
-        { domain: 9, modules: ['emote'], removePhase: 9 },
       ],
       lifetime:
         'No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.',
@@ -730,10 +730,7 @@ const nonNativeGroups = [
       authority:
         'JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers',
       fields: ['consumer bitmap rows', 'consumer allocation bounds'],
-      consumers: [
-        { domain: 7, modules: ['fes-images'] },
-        { domain: 9, modules: ['emote'] },
-      ],
+      consumers: [{ domain: 7, modules: ['fes-images'] }],
       lifetime:
         'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and DLL code until their consumer phases.',
       removePhase: 8,
@@ -765,9 +762,9 @@ const nonNativeGroups = [
     },
   },
   {
-    name: 'renderer-surfaces-to-dll-locks',
-    domain: 9,
-    entry: 'StageRenderer.surfaces → D3D LockRect/UnlockRect → DLL draw submission',
+    name: 'renderer-surfaces-to-foreign-locks',
+    domain: 8,
+    entry: 'StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining FES/media consumers',
     modules: ['native-d3d', 'renderer', 'texture-memory'],
     projection: {
       direction: 'JS-to-PE on lock; explicit PE-to-JS commit on writable unlock',
@@ -776,10 +773,9 @@ const nonNativeGroups = [
       consumers: [
         { domain: 7, modules: ['fes-images'], removePhase: 7 },
         { domain: 8, modules: ['vmr9', 'texture-movie-renderer'], removePhase: 8 },
-        { domain: 9, modules: ['emote', 'native-d3d'], removePhase: 9 },
       ],
       lifetime:
-        'Guest virtual regions contain temporary DLL-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.',
+        'Guest virtual regions contain temporary FES/media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.',
       removePhase: 8,
       operations: [
         'LockRect',
@@ -799,7 +795,7 @@ const nonNativeGroups = [
     configuration: TRANSITIONAL_HEAP_POLICY,
     review: 'counted',
     reason:
-      'Original M2 native 0x38a retains D3D textures and model data in the guest heap. Temporary x86-only capacity, deleted in phase 10. Texture/model consumers are removed in phases 6 and 9. Live heap measurements remain separate from JS ownership checks.',
+      'Historical original M2 native 0x38a exhausted the guest heap with textures/models. Product M2 is JS from 9.4 and no longer uses this capacity. The accepted x86-only configuration is retained until phase 10; live heap measurements remain separate from JS ownership checks.',
   },
   {
     name: 'process-bootstrap',
@@ -888,18 +884,24 @@ const nonNativeGroups = [
     ],
   },
   {
-    name: 'emote-exe-glue',
-    domain: 9,
+    name: 'js-m2-plane-prefix-to-fes',
+    domain: 7,
     entry:
-      'NativeM2/NativeSDKM2Tasks → EXE driver, configuration and FES/graphics glue before DLL exports',
-    modules: [
-      'emote',
-      'emote-configuration',
-      'emote-blocks',
-      'emote-fes',
-      'emote-graphics',
-      'emote-sdk-task',
-    ],
+      'M2PLANE may expose only a common plane/motion prefix to an original FES parent/child consumer',
+    modules: ['emote-fes'],
+    review: 'traced',
+    reason:
+      'M2 state, commands, model and GPU target are JS. constructPlane creates the existing D7 common plane only; it never constructs an M2 object or runs its driver.',
+    projection: {
+      direction: 'JS-to-PE',
+      authority: 'JS FESObject and M2Task',
+      fields: ['common plane motion/parent identity only; no M2 suffix, model or DLL pointer'],
+      consumers: [{ domain: 7, modules: ['fes-objects', 'fes-planes'] }],
+      lifetime:
+        'A remaining D7 consumer can lazily request the common prefix; ordinary M2PLANE execution needs no guest record.',
+      removePhase: 7,
+      operations: ['constructPlane', 'close'],
+    },
   },
   {
     name: 'js-image-data-to-exe-consumers',
@@ -945,7 +947,6 @@ const nonNativeGroups = [
           removePhase: 7,
         },
         { domain: 8, modules: ['input-commands', 'sdk-javascript-task'], removePhase: 8 },
-        { domain: 9, modules: ['emote', 'graphics-consumer-projection'], removePhase: 9 },
       ],
       lifetime:
         'Projection references follow JS aliases and retained consumers. Revision changes refresh the source. Wipe3 mutates JS source RGB before projection; there is no global owned-state back-read.',
@@ -971,7 +972,6 @@ const nonNativeGroups = [
       consumers: [
         { domain: 7, modules: ['fes-images'] },
         { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
-        { domain: 9, modules: ['emote'], removePhase: 9 },
       ],
       lifetime:
         'The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.',
@@ -981,9 +981,9 @@ const nonNativeGroups = [
   },
   {
     name: 'js-anm-table-to-exe-view',
-    domain: 9,
+    domain: 8,
     entry:
-      'Remaining FES/SDK/M2 consumer view initialization reads immutable JS-owned anmtable.csv bytes',
+      'Remaining FES/SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes',
     modules: ['engine-files'],
     projection: {
       direction: 'JS-to-PE',
@@ -992,7 +992,6 @@ const nonNativeGroups = [
       consumers: [
         { domain: 7, modules: ['fes-images'], removePhase: 7 },
         { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
-        { domain: 9, modules: ['renderer-consumer-projection', 'emote'], removePhase: 9 },
       ],
       lifetime:
         'The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.',
@@ -1146,9 +1145,9 @@ const nonNativeGroups = [
     name: 'ppi-and-dll-host',
     domain: 9,
     entry:
-      'Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime/EmoteNativeAdapter → PE32Process',
+      'Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime → PE32Process; E-mote DLL execution is oracle-only',
     modules: ['particles'],
-    directories: ['src/ppi/', 'src/emote/'],
+    directories: ['src/ppi/'],
   },
   {
     name: 'sdk-javascript-image-text-owners',

@@ -2,7 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { recordEmoteFrames } from '../oracle/plugin-frames.mjs';
 import {
   emoteControllerCases,

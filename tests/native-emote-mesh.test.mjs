@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
-import { NativeEmoteMeshBlocks } from '../src/emote/native-mesh.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
+import { NativeEmoteMeshBlocks } from '../oracle/m2-driver-mesh-original.mjs';
 
 test(
   'strip packing matches the original driver including aliases, NaN payloads, CPU state and the entire scratch arena',

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Executes the user-supplied PE32 E-mote driver. No proprietary DLL is shipped.
-import { PE32Process } from '../ppi/pe32.mjs';
-import { NativeEngineWindows } from '../native/windows-services.mjs';
-import { loadUnicorn } from '../ppi/backend.mjs';
-import { EmoteD3D9 } from './native-d3d.mjs';
-import { Binary, inflate } from '../binary.mjs';
-import { floatBits } from '../kcs.mjs';
+import { PE32Process } from '../src/ppi/pe32.mjs';
+import { NativeEngineWindows } from '../src/native/windows-services.mjs';
+import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
+import { Binary, inflate } from '../src/binary.mjs';
+import { floatBits } from '../src/kcs.mjs';
 
 const createExport = '?EmoteCreate@@YAPAVIEmoteDevice@@ABUInitParam@1@@Z';
 const digest = async (bytes) =>

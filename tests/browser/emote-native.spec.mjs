@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { deflateSync, inflateSync } from 'node:zlib';
 import { emotePSBFixture } from '../fixtures/emote-psb-fixture.mjs';
 import { nativeM2Files, nativeM2Program } from '../fixtures/native-m2-fixture.mjs';
 import { nativeLPB, nativeLipWAV } from '../fixtures/native-lip.mjs';
 import { kcsProgram } from '../helpers.mjs';
+
+test.beforeEach(async ({ page }) => {
+  for (const name of (await readdir('oracle')).filter((name) => /^m2-.*\.mjs$/.test(name))) {
+    const source = await readFile('oracle/' + name);
+    await page.route('**/oracle/' + name, (route) =>
+      route.fulfill({ body: source, contentType: 'text/javascript' }),
+    );
+  }
+});
 
 test('native rectangle uploads use the original RGBA view and restore row layout through empty and failing transfers', async ({
   page,
@@ -453,7 +462,7 @@ test('original E-mote DLL draws the authored model through the shared compositor
   const result = await page.evaluate(
     async (model) => {
       const [{ NativeEmoteDevice }, { ParticlesGL }] = await Promise.all([
-        import('/src/emote/native-device.mjs'),
+        import('/oracle/m2-device-original.mjs'),
         import('/src/render/particles-gl.mjs'),
       ]);
       const before = performance.now(),
@@ -648,7 +657,9 @@ async function verifyM2Wrapper(page, variant, lip = false) {
         { AudioMixer },
         { NativeSoundPacket },
       ] = await Promise.all([
-        import('/web/transitional-entry.mjs'),
+        import('/oracle/m2-world.mjs').then(({ M2OracleWorld }) => ({
+          NativeWorld: M2OracleWorld,
+        })),
         import('/src/native/config.mjs'),
         import('/src/motion/library.mjs'),
         import('/src/ppi/random.mjs'),
@@ -657,7 +668,7 @@ async function verifyM2Wrapper(page, variant, lip = false) {
         import('/src/render/canvas.mjs'),
         import('/src/native/dictionary.mjs'),
         import('/src/kcs/vm.mjs'),
-        import('/src/native/emote.mjs'),
+        import('/oracle/m2-original.mjs'),
         import('/src/audio.mjs'),
         import('/src/native/sound.mjs'),
       ]);

@@ -108,7 +108,8 @@ export async function initializeFESGraphics(graphics, record, player) {
       await player.nativePlanes.initialize(instance, object);
     else if (player.nativeArea?.supports(object))
       await player.nativeArea.initialize(instance, object);
-    else if (player.nativeLog?.supports(object) || player.nativeM2?.supports(object))
+    else if (player.nativeM2?.supports(object)) await player.nativeM2.initialize(instance, object);
+    else if (player.nativeLog?.supports(object))
       await (await graphics.world.getNativeFeature('fes-objects')).create(instance, object);
   }
 }

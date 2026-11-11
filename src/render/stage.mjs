@@ -65,7 +65,7 @@ export class StageRenderer {
       depth = target.stageSurface ? this.surfaceDepth(target.stageSurface) : this.screenDepth();
     return device.withStageTarget(target, callback, depth);
   }
-  drawEmote(geometry, { matrix, viewport } = {}) {
+  drawEmote(geometry, { matrix, viewport, opaqueTarget = false } = {}) {
     if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
     if (geometry.commands.some((command) => command.maskWrite))
       this.gpu.clear({ flags: 4, stencil: 0 });
@@ -77,12 +77,39 @@ export class StageRenderer {
     ))
       this.gpu.drawGeometry(command.geometry, command.texture, {
         state: this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite),
+        opaqueTarget,
       });
+  }
+  drawEmoteSurface(id, geometry, { matrix } = {}) {
+    const surface = this.surfaces.get(id),
+      target = this.surfaceTarget(id),
+      depthStencil = this.surfaceDepth(id, 75);
+    this.gpu.withRenderTarget(
+      target,
+      () => {
+        this.gpu.clear({ flags: 7, color: 0, depth: 1, stencil: 0, opaqueTarget: false });
+        this.drawEmote(geometry, { matrix });
+      },
+      { depthStencil },
+    );
+    surface.revision = (surface.revision ?? 0) + 1;
+    return this.surfaceFrame(id);
   }
   createSurface(width, height, rgba) {
     const id = this.surfaces.create({ width, height, pitch: width * 4, format: 'rgba8' });
     if (rgba) this.surfaces.get(id).bytes.set(rgba);
     return id;
+  }
+  blendSurfaces(id, next, previous, alpha) {
+    this.gpu.blendTargets(
+      this.surfaceTarget(id),
+      this.surfaceTarget(next),
+      previous ? this.surfaceTarget(previous) : null,
+      alpha,
+    );
+    const surface = this.surfaces.get(id);
+    surface.revision = (surface.revision ?? 0) + 1;
+    return this.surfaceFrame(id);
   }
   surfaceTarget(id) {
     if (!this.gpu) throw new Error('Stage surface drawing requires a GPU');
@@ -98,14 +125,14 @@ export class StageRenderer {
     }
     return target;
   }
-  surfaceDepth(id) {
+  surfaceDepth(id, format = this.depthFormat) {
     let depth = this.surfaceDepths.get(id);
     if (!depth) {
       const surface = this.surfaces.get(id);
       depth = this.gpu.createDepthStencil(
         surface.width,
         surface.height,
-        surface.depthStencil?.format ?? this.depthFormat,
+        surface.depthStencil?.format ?? format,
       );
       this.surfaceDepths.set(id, depth);
       if (surface.depthStencil) this.gpu.restoreDepthStencil(depth, surface.depthStencil);

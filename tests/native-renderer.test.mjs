@@ -8,6 +8,41 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
+test(
+  'game D7/D8 consumer view constructs without an E-mote feature or DLL',
+  { skip: !process.env.CATSYSTEM2_ENGINE_EXE },
+  async () => {
+    const profile = 'nekopara-vol3-engine-2.6.1.76',
+      game = memoryGame({
+        'engine.exe': new Uint8Array(await readFile(process.env.CATSYSTEM2_ENGINE_EXE)),
+      }),
+      random = new ParticleRandom(),
+      configuration = new NativeConfiguration({ profile }),
+      world = new NativeWorld({
+        game,
+        profile,
+        random,
+        configuration,
+        images: {},
+        host: {},
+        motionLibrary: new MotionLibrary(game, { profile, random }),
+        storage: { read: async () => null, write: async () => true },
+        installM2() {},
+      });
+    try {
+      const renderer = await world.getNativeFeature('renderer');
+      await renderer.initialize();
+      assert.ok(renderer.initialized);
+      assert.ok(renderer.view3D);
+      assert.ok(renderer.platform.refs.manager);
+      assert.equal(world.nativeFeatureFactories.has('m2'), false);
+      assert.equal(renderer.process.load(renderer.core + 308), renderer.d3d.device);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  },
+);
+
 for (const [profile, variable, wide] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', false],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', true],

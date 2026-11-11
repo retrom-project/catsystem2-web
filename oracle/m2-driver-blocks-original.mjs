@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-import { BICUBIC_OPERATIONS } from './bicubic-operations.mjs';
-import { BicubicKernel } from './bicubic-kernel.mjs';
-import { NativeEmoteMeshBlocks } from './native-mesh.mjs';
+import { BICUBIC_OPERATIONS } from '../src/emote/bicubic-operations.mjs';
+import { BicubicKernel } from '../src/emote/bicubic-kernel.mjs';
+import { NativeEmoteMeshBlocks } from './m2-driver-mesh-original.mjs';
 // Numerical execution shortcuts for a reviewed driver. Every scalar/packed
 // operation retains the original SSE order and its individual float32 round.
 const driverIdentity = '85eb459e94e74ab608f649eb7fb440f2526e90aaa1af7276ed01dc10018903ce';

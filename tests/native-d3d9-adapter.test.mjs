@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 
 const invalid = 0x8876086c,
   unavailable = 0x8876086a;

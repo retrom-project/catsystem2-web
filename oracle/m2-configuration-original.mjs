@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // These are the original FES m2_getconf/m2_setconf manager entry points.
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 const methods = Object.freeze({
   motion: [0x581300, 0x580f70],
   eff_dif: [0x581370, 0x580fe0],

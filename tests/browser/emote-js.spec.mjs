@@ -2,6 +2,8 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { inflateSync } from 'node:zlib';
+import { emoteM2Cases } from '../fixtures/emote-m2-sequences.mjs';
+import { kcsProgram } from '../helpers.mjs';
 import { emotePSBFixture } from '../fixtures/emote-psb-fixture.mjs';
 import { emoteGeometryCases, emoteGeometryModel } from '../fixtures/emote-geometry-cases.mjs';
 
@@ -185,3 +187,201 @@ test('JS E-mote materials and masks match frozen original draw pixels', async ({
   expect(result.comparisons).toBeGreaterThan(35 * 64 * 64 * 4);
   expect(result.error).toEqual([0, 0]);
 });
+
+// A real WebGL2 device is required for transparent model-target composition,
+// retained output after Skip, shared depth state and fresh-world GPU restore.
+for (const name of [
+  'curves',
+  'inertia-change',
+  'action-finish-transitions',
+  'fade-four',
+  'fade-override',
+  'crossfade',
+  'crossfade-midblink',
+  'crossfade-interrupted',
+  'effects-fade',
+  'fade-request',
+  'color-mode-1',
+  'color-mode-2',
+  'color-mode-3',
+])
+  test('JS M2 task pixels and fresh-world restore: ' + name, async ({ page }) => {
+    const golden = JSON.parse(
+        await readFile(new URL('../fixtures/emote-m2-golden.json', import.meta.url)),
+      ),
+      inputs = emoteM2Cases()
+        .filter((entry) => entry.name === name)
+        .map((input) => ({
+          ...input,
+          files: Object.entries({ ...input.files, 'main.kcs': kcsProgram([[59]]) }).map(
+            ([name, bytes]) => [name, [...bytes]],
+          ),
+          rows: golden.cases
+            .find((entry) => entry.name === input.name)
+            .rows.map((row) => ({
+              ...row,
+              pixels: [...inflateSync(Buffer.from(row.rgbaDeflate, 'base64'))],
+            })),
+        })),
+      requests = [];
+    page.on('request', (request) => requests.push(request.url()));
+    await page.goto('/');
+    const result = await page.evaluate(async (inputs) => {
+      const [
+        { NativeWorld },
+        { NativeConfiguration },
+        { MotionLibrary },
+        { ParticleRandom },
+        { StageRenderer },
+        { NativeSoundPacket },
+        { floatBits },
+      ] = await Promise.all([
+        import('/src/native/world.mjs'),
+        import('/src/native/config.mjs'),
+        import('/src/motion/library.mjs'),
+        import('/src/ppi/random.mjs'),
+        import('/src/render/stage.mjs'),
+        import('/src/native/sound.mjs'),
+        import('/src/kcs/vm.mjs'),
+      ]);
+      let different = 0,
+        max = 0,
+        restoredDifferent = 0,
+        frames = 0;
+      const failures = [];
+      for (const input of inputs) {
+        const files = new Map(input.files.map(([name, bytes]) => [name, new Uint8Array(bytes)])),
+          game = {
+            width: 64,
+            height: 64,
+            index: new Map([...files.keys()].map((name) => [name, {}])),
+            names: (ext) => [...files.keys()].filter((n) => n.endsWith('.' + ext)),
+            read: async (n) => files.get(n) ?? null,
+            has: (n) => files.has(n),
+            async require(n) {
+              const bytes = await this.read(n);
+              if (!bytes) throw new Error('Missing ' + n);
+              return bytes;
+            },
+            resolveCategory(n, c) {
+              return c === 'm2psb' ? n + '.psb' : n;
+            },
+            async readCategory(n, c) {
+              return this.read(this.resolveCategory(n, c));
+            },
+            async requireCategory(n, c) {
+              return this.require(this.resolveCategory(n, c));
+            },
+          },
+          profile = 'nekopara-vol3-engine-2.6.1.76',
+          make = () => {
+            const random = new ParticleRandom(),
+              configuration = new NativeConfiguration({ profile });
+            for (const key of [
+              'width',
+              'height',
+              'currentWidth',
+              'currentHeight',
+              'virtualWidth',
+              'virtualHeight',
+            ])
+              configuration.setField('screen.' + key, 64);
+            const w = new NativeWorld({
+              game,
+              profile,
+              random,
+              configuration,
+              images: {},
+              host: {},
+              motionLibrary: new MotionLibrary(game, { random, profile }),
+              storage: { read: async () => null, write: async () => true },
+            });
+            w.stageRenderer = new StageRenderer({ canvas: new OffscreenCanvas(64, 64) });
+            return w;
+          },
+          world = make();
+        let fresh;
+        try {
+          await world.initialize('main.kcs');
+          const id = await world.objects.create({ kind: 54, parent: world.root }),
+            task = world.graphics.get(id),
+            native = (id, args) =>
+              world.runtime.native('main', id, args, world.main.machine, world.main),
+            load = async (p) => {
+              world.main.machine.writeString(p, 128);
+              await native(906, [id, 128, 1]);
+            },
+            draw = async (w) => {
+              const gpu = w.stageRenderer.gpu;
+              gpu.beginFrame(0xff000000);
+              await w.graphics.get(id).drawGPU(gpu);
+              gpu.endFrame();
+              return gpu.pixels();
+            };
+          await load(input.programs[0]);
+          await task.message([world.main.id, 47, 0, 1]);
+          for (const [i, row] of input.rows.entries()) {
+            if (i === input.initialFrames) await load(input.programs[1]);
+            for (const op of input.operations.filter((op) => op.index === i)) {
+              const packet = new NativeSoundPacket([
+                0,
+                ...(op.floats?.map(floatBits) ?? op.words ?? []),
+              ]);
+              if (op.text !== undefined) packet.writeString(op.text, 4);
+              await task.message([world.main.id, op.message, op.w ?? 0, op.l ?? 4], {
+                payload: packet,
+              });
+            }
+            await world.tick();
+            const pixels = await draw(world);
+            let changed = 0;
+            for (let p = 0; p < pixels.length; p++) {
+              const delta = Math.abs(pixels[p] - row.pixels[p]);
+              max = Math.max(max, delta);
+              if (delta) changed++;
+            }
+            different += changed;
+            frames++;
+            if (changed)
+              failures.push([
+                input.name,
+                row.frame,
+                changed,
+                [...pixels]
+                  .flatMap((v, p) => (v !== row.pixels[p] ? [[p, v, row.pixels[p]]] : []))
+                  .slice(0, 8),
+              ]);
+            if (i === 9 || (input.replacement && i === input.initialFrames + 3)) {
+              fresh = make();
+              await fresh.restore(structuredClone(world.snapshot()));
+              const restored = await draw(fresh);
+              for (let p = 0; p < pixels.length; p++)
+                if (pixels[p] !== restored[p]) restoredDifferent++;
+              await fresh.close({ flushFiles: false });
+              fresh = null;
+            }
+          }
+          const textures = [...task.model.document.textures.values()];
+          await task.message([world.main.id, 525, 0, 0]);
+          if (
+            world.m2.documents.size ||
+            textures.some((t) => world.stageRenderer.gpu.textures.has(t)) ||
+            world.stageRenderer.surfaces.records.size
+          )
+            throw new Error('Unloaded M2 retained a model/texture/target');
+          if (world.nativeEngine) throw new Error('JS M2 unexpectedly constructed an x86 backend');
+          if (world.stageRenderer.gpu.gl.getError()) throw new Error('M2 WebGL error');
+        } finally {
+          await fresh?.close({ flushFiles: false });
+          await world.close({ flushFiles: false });
+        }
+      }
+      return { different, max, restoredDifferent, frames, failures };
+    }, inputs);
+    expect(result.failures).toEqual([]);
+    expect(result.different).toBe(0);
+    expect(result.max).toBe(0);
+    expect(result.restoredDifferent).toBe(0);
+    expect(result.frames).toBe(inputs.reduce((sum, input) => sum + input.rows.length, 0));
+    expect(requests.filter((url) => /\.(dll|ppi)(?:$|[?])|unicorn_x86/.test(url))).toEqual([]);
+  });

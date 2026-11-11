@@ -667,6 +667,89 @@ export class ParticlesGL {
       this.gl.deleteTexture(depth.texture);
     }
   }
+  blendTargets(target, next, previous, alpha) {
+    const gl = this.gl;
+    if (!this.blendProgram) {
+      const program = gl.createProgram();
+      for (const [type, source] of [
+        [
+          gl.VERTEX_SHADER,
+          `#version 300 es
+          const vec2 p[3]=vec2[3](vec2(-1,-1),vec2(3,-1),vec2(-1,3));
+          void main(){gl_Position=vec4(p[gl_VertexID],0,1);}`,
+        ],
+        [
+          gl.FRAGMENT_SHADER,
+          `#version 300 es
+          precision highp float;precision highp int;
+          uniform sampler2D nextImage;uniform sampler2D previousImage;
+          uniform uint alpha;uniform bool initial;out vec4 color;
+          void main(){ivec2 p=ivec2(gl_FragCoord.xy);
+            uvec4 b=uvec4(round(texelFetch(nextImage,p,0)*255.0));
+            if(initial)b.a=(b.a*alpha)>>8u;
+            else{uvec4 a=uvec4(round(texelFetch(previousImage,p,0)*255.0));
+              if(a.a==0u)a.rgb=b.rgb;
+              b=(a*(256u-alpha)+b*alpha)>>8u;}
+            color=vec4(b)/255.0;}`,
+        ],
+      ]) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+          throw new Error(gl.getShaderInfoLog(shader));
+        gl.attachShader(program, shader);
+        gl.deleteShader(shader);
+      }
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+        throw new Error(gl.getProgramInfoLog(program));
+      this.blendProgram = {
+        program,
+        uniforms: Object.fromEntries(
+          ['nextImage', 'previousImage', 'alpha', 'initial'].map((name) => [
+            name,
+            gl.getUniformLocation(program, name),
+          ]),
+        ),
+      };
+    }
+    if (target === next || target === previous)
+      throw new Error('Surface blend inputs must be distinct from its output');
+    this.withRenderTarget(target, () => {
+      const { program, uniforms } = this.blendProgram;
+      gl.useProgram(program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, next.texture);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, (previous ?? next).texture);
+      gl.uniform1i(uniforms.nextImage, 0);
+      gl.uniform1i(uniforms.previousImage, 1);
+      gl.uniform1ui(uniforms.alpha, Math.max(0, Math.min(256, alpha)));
+      gl.uniform1i(uniforms.initial, Number(!previous));
+      for (const capability of [
+        gl.BLEND,
+        gl.DEPTH_TEST,
+        gl.STENCIL_TEST,
+        gl.SCISSOR_TEST,
+        gl.CULL_FACE,
+        gl.POLYGON_OFFSET_FILL,
+        gl.DITHER,
+      ])
+        gl.disable(capability);
+      gl.colorMask(true, true, true, true);
+      gl.depthMask(false);
+      gl.stencilMask(0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      const error = gl.getError();
+      if (error) throw new Error(`Surface blend failed: 0x${error.toString(16)}`);
+      // The fixed-function shader also has a sampler at unit 1. Leaving a
+      // model target there would form a feedback loop on its next redraw,
+      // even when that shader's destination-copy branch is disabled.
+      gl.bindTexture(gl.TEXTURE_2D, this.destination);
+      gl.activeTexture(gl.TEXTURE0);
+    });
+  }
   depthStateProgram() {
     if (this.depthProgram) return this.depthProgram;
     const gl = this.gl,
@@ -1572,6 +1655,7 @@ export class ParticlesGL {
     for (const target of [...this.nativeTargets]) this.destroyRenderTarget(target);
     for (const depth of [...this.nativeDepth]) this.destroyDepthStencil(depth);
     if (this.depthProgram) gl.deleteProgram(this.depthProgram.program);
+    if (this.blendProgram) gl.deleteProgram(this.blendProgram.program);
     for (const texture of this.ownedTextures) gl.deleteTexture(texture);
     gl.deleteFramebuffer(this.framebuffer);
     gl.deleteRenderbuffer(this.depthStencil);

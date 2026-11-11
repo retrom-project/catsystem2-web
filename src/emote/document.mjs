@@ -58,21 +58,39 @@ function decodeTexture(psb, data) {
   return { width, height, rgba };
 }
 
+const warnedVersions = new Set();
 export class EmoteDocument {
-  static async open(bytes, options) {
-    return new EmoteDocument(await readPSB(bytes), options);
+  static async open(bytes, { warn = (message) => console.warn(message), ...options } = {}) {
+    const document = new EmoteDocument(
+      await readPSB(bytes, { allowUnverifiedVersion: true }),
+      options,
+    );
+    if (
+      ![3, 4].includes(document.containerVersion) ||
+      Math.fround(document.motionVersion) !== Math.fround(3.03) ||
+      (document.metadata.version != null && document.metadata.version !== 1)
+    ) {
+      const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+        hash = [...digest].map((byte) => byte.toString(16).padStart(2, '0')).join(''),
+        version = `${document.containerVersion}/${document.motionVersion}/${document.metadata.version ?? 'absent'}`,
+        key = `${document.name}/${version}/${hash}`;
+      if (!warnedVersions.has(key)) {
+        warnedVersions.add(key);
+        warn(
+          `Unverified E-mote ${document.name}: PSB/motion/metadata=${version}, sha256=${hash}; continuing with emote-js`,
+        );
+      }
+    }
+    return document;
   }
   constructor(psb, { name = '' } = {}) {
     const root = psb.root;
     if (root?.id !== 'motion' || !['win', 'krkr'].includes(root.spec))
       throw new Error(`Unsupported E-mote document ${name}: id=${root?.id}, spec=${root?.spec}`);
-    if (!Number.isFinite(root.version) || root.version <= 0 || root.version > 3.0300001)
+    if (!Number.isFinite(root.version) || root.version <= 0)
       throw new Error(`Unsupported E-mote motion version ${root.version} (${name})`);
     const metadata = root.metadata ?? {};
-    if (
-      (metadata.format != null && metadata.format !== 'emote') ||
-      (metadata.version != null && metadata.version !== 1)
-    )
+    if (metadata.format != null && metadata.format !== 'emote')
       throw new Error(
         `Unsupported E-mote metadata ${metadata.format}/${metadata.version} (${name})`,
       );

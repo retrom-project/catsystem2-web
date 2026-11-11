@@ -5,7 +5,9 @@ import { NativeGraphics } from '../../oracle/graphics-original.mjs';
 import { NativeGraphicsPlatform } from '../../oracle/graphics-process-original.mjs';
 import { NativeRenderer } from '../../oracle/renderer-original.mjs';
 import { NativeScreenEffectRenderer } from '../../oracle/screen-graph-original.mjs';
+import { installM2Oracle } from '../../oracle/m2-world.mjs';
 export function installGraphicsOracle(world) {
+  installM2Oracle(world);
   const register = world.nativeFeatureFactories
     ? (name, factory) => world.nativeFeatureFactories.set(name, factory)
     : world.registerNativeFeature.bind(world);

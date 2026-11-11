@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeM2Blocks } from '../src/native/emote-blocks.mjs';
+import { NativeM2Blocks } from '../oracle/m2-blocks-original.mjs';
 
 test(
   'M2 loop acceleration matches original PE registers, flags and every output byte',

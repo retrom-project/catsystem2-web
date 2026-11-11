@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit EmoteProfiles (OWCramer).
 import { decodeText } from '../binary.mjs';
+import { readM2Splines } from './m2-splines.mjs';
 export function sections(text) {
   const result = {};
   let current = '';
@@ -27,8 +28,13 @@ function emptyExpressions() {
     patterns: {},
     blinks: [],
     lips: [],
+    clipper: [0, 1, 0.4, 0.2, 0.8, 0.6, 0, 1],
     chains: {},
     materials: {},
+    materialMin: {},
+    materialMax: {},
+    inertiaLevels: {},
+    inertiaEnabled: {},
     inertiaLR: [],
     inertiaUD: [],
     inertiaFromChange: [],
@@ -43,6 +49,7 @@ export class EmoteProfiles {
     this.texts = texts;
     this.profiles = new Map();
     this.expressionsCache = new Map();
+    this.fadeFrames = Math.max(0, Number(sections(this.text('m2view.cnf')).fade?.[0]?.[0] ?? 20));
     this.profileFiles = Object.fromEntries(
       (sections(this.text('m2view.cnf')).profile || []).map(([name, rest]) => [
         name.toLowerCase(),
@@ -50,6 +57,12 @@ export class EmoteProfiles {
       ]),
     );
     this.actions = {};
+    this.splines = Object.assign(
+      {},
+      ...(sections(this.text('m2view.cnf')).spline ?? []).map(([file]) =>
+        readM2Splines(this.text(file)),
+      ),
+    );
     for (const [file] of sections(this.text('m2view.cnf')).action || []) {
       let action, step;
       for (const [head, rest] of sections(this.text(file)).action || []) {
@@ -60,7 +73,7 @@ export class EmoteProfiles {
           step = { frames: Number(rest[0]), variables: {}, easing: 0 };
           action.push(step);
         } else if (head === 'wait' && action) {
-          action.push({ frames: Number(rest[0]), variables: {}, easing: 0 });
+          action.push({ frames: Number(rest[0]), variables: {}, easing: 0, wait: true });
           step = null;
         } else if (step && head === 'easing') step.easing = Number(rest[0]);
         else if (step && head === 'var') step.variables[rest[0]] = Number(rest[1]);
@@ -86,7 +99,7 @@ export class EmoteProfiles {
       p = { bodies: {}, expressions: {}, bodyFile: null, idles: {} };
     for (const [n, rest] of s.charaname || []) p.bodies[Number(n)] = rest.at(-1);
     for (const [n, rest] of s.motname || []) {
-      if (rest.length >= 2 && /^\d+$/.test(rest[0]))
+      if (rest.length >= 2 && /^-?\d+$/.test(rest[0]))
         (p.idles[Number(n)] ||= {})[Number(rest[0])] = rest[1];
       const difs = rest.filter((v) => /\.dif$/i.test(v));
       if (!p.expressions[n] && difs.length) {
@@ -148,12 +161,17 @@ export class EmoteProfiles {
         e.lips.push({
           digit: +digit,
           code: rest[0].toLowerCase(),
+          curve: rest[1],
           low: +rest[2],
           high: +rest[3],
           levels: rest.slice(4).map(Number),
-          variable: lipVariables[`${digit}:${rest[0].toLowerCase()}`] || 'face_talk',
+          variable: lipVariables[`${digit}:${rest[0].toLowerCase()}`],
           flow: [],
         });
+    if (s.clipper_default?.[0]) {
+      const [first, rest] = s.clipper_default[0];
+      e.clipper = [first, ...rest].map(Number);
+    }
     for (const [digit, rest] of s.lip_flow || []) {
       const lip = e.lips.find((l) => l.digit === +digit && l.code === rest[0]?.toLowerCase());
       if (lip)
@@ -183,18 +201,34 @@ export class EmoteProfiles {
     }
     for (const [digit, name] of Object.entries(links))
       if (tables[name]) e.chains[digit] = tables[name];
-    for (const [name, rest] of s.material || []) {
-      const n = rest.map(Number);
-      if (n.length >= 5)
-        e.materials[name] = {
-          mass: Math.max(0.01, n[0]),
-          spring: n[1],
-          resistance: n[2],
-          step: n[3],
-          limit: n[4],
-          inverted: !!n[5],
-          scale: Math.max(1, n[6] || 30),
-        };
+    for (const [section, key] of [
+      ['material', 'materials'],
+      ['material_min', 'materialMin'],
+      ['material_max', 'materialMax'],
+    ])
+      for (const [name, rest] of s[section] ?? []) {
+        const n = rest.map(Math.fround);
+        if (n.length >= 5)
+          e[key][name] = {
+            mass: n[0],
+            spring: n[1],
+            resistance: n[2],
+            step: n[3],
+            limit: n[4],
+            inverted: Boolean(n[5]),
+            scale: n[6] ?? 30,
+            shift: n[7] ?? 0,
+          };
+      }
+    for (const [section, key] of [
+      ['inertia_lv', 'inertiaLevels'],
+      ['inertia_enable', 'inertiaEnabled'],
+    ]) {
+      let group = '';
+      for (const [name] of s[section] ?? []) {
+        if (name.startsWith('%')) group = name.slice(1);
+        else e[key][name] = group;
+      }
     }
     e.inertiaLR.push(...(s.inertia_lr || []).map(([name]) => name));
     e.inertiaUD.push(...(s.inertia_ud || []).map(([name]) => name));
@@ -251,6 +285,8 @@ export class EmoteProfiles {
       variables,
       codes,
       bodyCodes,
+      requestedCodes: Object.fromEntries(digits.map((code, i) => [i + 1, code])),
+      requestedBodyCodes: Object.fromEntries(body.map((code, i) => [i + 1, code])),
       face,
       body: bodyProfile,
       idle: profile.idles[n]?.[idle],

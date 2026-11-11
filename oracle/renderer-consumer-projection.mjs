@@ -10,6 +10,7 @@ import { installNativeDirectSound } from '../src/native/windows-directsound.mjs'
 export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({
     viewConstruct: 0x673bb0,
+    view3DConstruct: 0x67f630,
     viewDestroy: 0x6741f0,
     coreGlobal: 0xb90778,
     capsConstruct: 0x5c62e0,
@@ -203,10 +204,6 @@ export class NativeRenderer {
     const p = this.process,
       layout = this.layout,
       world = this.world;
-    // The game view constructor enters its original M2 manager initializer.
-    // Load the driver/platform imports first; initialize that manager only
-    // once, as part of the original view constructor below.
-    if (nativeABI(this.engine.profile).plugins.requiredRenderer) await world.getNativeFeature('m2');
     await this.initializeCapabilities();
     p.store(layout.coreGlobal, 0);
     this.refs.viewStarted = true;
@@ -216,7 +213,16 @@ export class NativeRenderer {
     const areas = world.configuration.fields.texture.areas.map((area) => area.slice());
     try {
       for (const area of world.configuration.fields.texture.areas) area.fill(0xffffffff);
-      await this.call(layout.viewConstruct, [world.window?.handle ?? 1, 1, 0], this.view);
+      const window = world.window?.handle ?? 1;
+      // Keep the D7/D8 window/DIB/cache prefix. Mode zero avoids creating
+      // the old M2 manager; construct only the shared D3D consumer view.
+      await this.call(layout.viewConstruct, [window, layout.view3DConstruct ? 0 : 1, 0], this.view);
+      if (layout.view3DConstruct) {
+        const view3D = p.allocate(0xc8, true);
+        p.store(this.view + 4, view3D);
+        await this.call(layout.view3DConstruct, [window, 1], view3D);
+        p.store(this.view + 8, p.load(view3D + 4));
+      }
     } finally {
       world.configuration.fields.texture.areas.forEach((area, i) => area.set(areas[i]));
       this.engine.configurationMemory?.push();
@@ -245,16 +251,10 @@ export class NativeRenderer {
     // Subsequent draw and clear passes share this single context.
     this.world.graphics.d3dContext.depthStencilEnabled = Boolean(this.d3d.presentation[9]);
     this.world.stageRenderer.depthFormat = this.d3d.presentation[10];
-    // A native M2 device has already established shared sampler state. Keep
-    // that producer state (including its linear defaults), as the old host
-    // callbacks did. A standalone consumer view uses its configured filters.
-    const pluginDevice = this.engine.features.get('m2')?.device;
-    this.world.graphics.d3dContext.magFilter = pluginDevice
-      ? this.d3d.context.samplers.get(5)
-      : p.load(renderer + 348);
-    this.world.graphics.d3dContext.minFilter = pluginDevice
-      ? this.d3d.context.samplers.get(6)
-      : p.load(renderer + 352);
+    // Preserve the game profile's initial linear sampling without creating
+    // a DLL device. The SDK's consumer view uses its configured filters.
+    this.world.graphics.d3dContext.magFilter = layout.view3DConstruct ? 2 : p.load(renderer + 348);
+    this.world.graphics.d3dContext.minFilter = layout.view3DConstruct ? 2 : p.load(renderer + 352);
     platform.sync();
     return this;
   }

@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PE32Process } from '../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
-import { NativeEmoteBlocks } from '../src/emote/native-blocks.mjs';
-import { NativeEmoteMeshBlocks } from '../src/emote/native-mesh.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
+import { NativeEmoteBlocks } from '../oracle/m2-driver-blocks-original.mjs';
+import { NativeEmoteMeshBlocks } from '../oracle/m2-driver-mesh-original.mjs';
 
 const word = (n) => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, n >>> 24],
   smallProcess = async () => new PE32Process(await loadUnicorn(), { heapSize: 0x10000 });

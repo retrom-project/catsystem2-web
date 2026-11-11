@@ -6,7 +6,7 @@ import { deflateSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { PSB } from '../src/formats/psb.mjs';
 import { EmoteDocument } from '../src/emote/document.mjs';
-import { NativeEmoteDevice } from '../src/emote/native-device.mjs';
+import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { emotePSBFixture, encodeAuthoredPSB } from './fixtures/emote-psb-fixture.mjs';
 
 const root = () => structuredClone(new PSB(emotePSBFixture()).root);
@@ -73,11 +73,11 @@ test('per-icon run-length textures retain origin and decode both literal and rep
   assert.equal(icon.left, 0);
 });
 
-test('unknown document versions, texture formats and truncated resources fail at their data boundary', () => {
+test('incompatible documents, texture formats and truncated resources fail at their data boundary', () => {
   for (const change of [
     (r) => (r.id = 'unrelated'),
-    (r) => (r.version = 3.04),
-    (r) => (r.metadata.version = 2),
+    (r) => (r.version = NaN),
+    (r) => (r.metadata.format = 'unrelated'),
   ]) {
     const r = root();
     change(r);
@@ -128,3 +128,21 @@ test(
     }
   },
 );
+
+test('unverified E-mote versions warn once with identity and use the same JS document implementation', async () => {
+  const r = root(),
+    messages = [];
+  r.version = 3.04;
+  r.metadata.version = 2;
+  const bytes = encodeAuthoredPSB(r, [pixels]),
+    options = { name: 'authored-unverified', warn: (message) => messages.push(message) };
+  new DataView(bytes.buffer, bytes.byteOffset).setUint16(4, 5, true);
+  const first = await EmoteDocument.open(bytes, options),
+    second = await EmoteDocument.open(bytes, options);
+  assert.equal(messages.length, 1);
+  assert.match(
+    messages[0],
+    /authored-unverified.*5\/.*\/2, sha256=[0-9a-f]{64}; continuing with emote-js/,
+  );
+  assert.deepEqual(first.texture('tex').rgba, second.texture('tex').rgba);
+});

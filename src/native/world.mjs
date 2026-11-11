@@ -72,7 +72,6 @@ import { installNativeUTF8 } from './utf8.mjs';
 import { installNativeWindowEvents } from './window-events.mjs';
 import { NativeWindow } from './window.mjs';
 import { installNativeWindowCommands } from './window-commands.mjs';
-import { inspectNativeM2Bootstrap } from './emote-bootstrap.mjs';
 import { installNativeSteam } from './steam.mjs';
 import { installNativeRecordQueues } from './record-queue.mjs';
 import { installNativeTileGame } from './tile-game.mjs';
@@ -125,6 +124,7 @@ export class NativeWorld {
     factories = {},
     bootstrapOwner = null,
     transitionalExe = null,
+    installM2 = installNativeM2,
   }) {
     Object.assign(this, {
       game,
@@ -440,7 +440,7 @@ export class NativeWorld {
     installNativeParticles(this);
     installNativeMatrices(this);
     installNativeText(this, { glyphs: host.nativeTextGlyphs?.() });
-    installNativeM2(this);
+    installM2(this);
     for (const [kind, factory] of Object.entries(factories))
       this.objects.register(Number(kind), factory);
   }
@@ -913,12 +913,6 @@ export class NativeWorld {
     return this.main;
   }
   async initializeApplicationServices(name) {
-    const m2Bootstrap = await inspectNativeM2Bootstrap(
-        this.game,
-        this.profile,
-        this.transitionalExe,
-      ),
-      m2 = m2Bootstrap?.required ? await this.getNativeFeature('m2') : null;
     if (this.bootstrapOwner)
       await readNativeStartupSoundConfiguration(
         this.nativeEngine,
@@ -930,7 +924,7 @@ export class NativeWorld {
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();
     this.refreshTitle();
-    if (m2) await m2.initialize();
+    await this.m2?.initialize();
     this.root = await this.objects.create({
       kind: 1,
       name: 'BASE TASK',
@@ -997,6 +991,7 @@ export class NativeWorld {
       tileGame: this.tileGame.snapshot(),
       sound: this.sound.snapshot(),
       particles: this.particles.snapshot(),
+      m2: this.m2?.snapshot() ?? null,
       objects: this.objects.snapshot(),
       configuration: this.configuration.snapshot(),
       soundConfiguration: this.soundConfiguration.snapshot(),
@@ -1044,6 +1039,7 @@ export class NativeWorld {
       const engine = await this.ensureNativeEngine();
       engine.restore(state.nativeEngine);
     }
+    if (state.m2) await this.m2.restore(state.m2);
     this.restoring = true;
     try {
       await this.objects.restore(state.objects);
@@ -1096,6 +1092,7 @@ export class NativeWorld {
       await attempt(() => this.objects.release(id));
     if (flushFiles) await attempt(() => this.flushConfiguration());
     await attempt(() => this.runtime.services.files.closeAll({ flush: flushFiles }));
+    await attempt(() => this.m2?.close({ flushFiles }));
     await attempt(() => this.particles.close());
     await attempt(() => this.movies.close());
     await attempt(() => this.graphics.cursor.close());

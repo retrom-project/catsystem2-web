@@ -93,7 +93,7 @@ npx prettier --write tests/fixtures/emote-controller-golden.json
 The fixture identifies the DLL, generator, frame recorder, authored cases and
 each model by SHA-256. Raw investigation and instruction-level evidence remain
 in ignored `.local/phase9`. No game EXE, patch or injected guest-code probe is
-involved. The JS modules remain separate from the mixed runtime until 9.4.
+involved. The JS modules are the product M2 implementation from 9.4 onward.
 
 ## Geometry and StageRenderer (9.3)
 
@@ -148,5 +148,69 @@ local storage. The new public fixtures contain only authored data.
 The supported layer schema is 0/1/2/3/12. Other layer types, unfamiliar texture
 encodings and unreviewed non-null per-key interpolation curves fail explicitly.
 No such curves occur in the prepared NEKOPARA body PSBs. This does not certify
-the second driver build or all historical motion schemas. The native M2/DLL
-runtime remains in place until 9.4 connects this API and replaces its state.
+the second driver build or all historical motion schemas. The original M2/DLL runtime is an explicitly selected oracle only from 9.4.
+
+## M2 owner, script integration and checkpoints (9.4)
+
+`M2Model` separates the external engine DIF controllers from PSB controls.
+DIF easing names map to the target's actual float32 easing values; DEFVAL
+permanently pins variables. Automatic blink uses the engine integer MT stream,
+queues writes for the next frame and preserves the pending write when a pose
+request restarts its wait timer. Inertia uses one ordered float32 semi-implicit
+Euler step per engine frame, with the original position-initialization switch,
+source normalization, material groups and min/default/max level interpolation.
+LPB/LV decoding and envelope-flow lip controllers use the media clock, not the
+World frame. Action queues retain their captured base, current step and waits;
+Skip settles transitions while retaining the last model target until a visible
+parameter change. Spline coefficients reuse the verified phase-3 kernel.
+
+The configured `#fade` controls initial busy/external-controller timing. During
+that interval the DLL progress clock is suspended after its initial draw; its
+next active update consumes the elapsed frame delta. StageRenderer computes
+8-bit integer texture mixing on the shared GPU (weights 0–256, shift by 8),
+including transparent-RGB padding and the opaque main backbuffer. This avoids
+per-frame texture readback or TypedArray allocation. A document replacement
+captures the old program's requested pose rather than transient automatic values
+or an earlier crossfade. Frozen old/new model state is checkpointed; GPU targets
+are derived and rebuilt. No earlier development checkpoint conversion exists.
+
+`emote-m2-golden.json` uses authored PSBs, configuration/DIF/action/spline files
+and synthetic sound sidecars. The existing original task/native boundary records
+VM returns/control codes, writebacks, busy/action state, raw draws and pixels.
+All float words, integer outputs, vertex packets and the new M2 composite pixels
+require exact equality. Cases include initial/reverse changes, all five curves,
+pins, inertia initialization, blink, lip sources/envelope flow, action/Skip/pause,
+splines, fade lengths, replacement and interrupted replacement. Fresh model and
+World restores retain pending writes, action base, both RNG streams, springs,
+media cursors and retained render poses. No EXE patch/injection probe is used.
+
+```sh
+node scripts/record-m2-sequences.mjs --engine /private/engine.exe --driver /private/emotedriver.dll --output tests/fixtures/emote-m2-golden.json
+npx prettier --write tests/fixtures/emote-m2-golden.json
+```
+
+A retained common plane prefix is exposed only when an original FES consumer
+requests it. Its authority/direction/fields/removal phase are registered as
+`js-m2-plane-prefix-to-fes` (domain 7, remove phase 7). Shared texture locks and
+ANM view projections now list only remaining FES/media consumers (domains 7/8).
+All original M2 task/DLL modules are outside the transitional runtime manifest.
+
+Native 931/message 545 supplies an unsigned fade duration, not a boolean. It
+can request a same-model fade; its old target retains the last visible pose,
+whereas a document replacement captures the requested canonical pose. A new
+program request completes an outstanding same-model fade. Both forms and their
+fresh checkpoints have authored exact-pixel evidence. Native 918/message 535
+stores an image-fallback color mode; the reviewed PSB path does not apply it.
+The three mode callbacks are reached only when the original loader constructs
+non-PSB image sources. PSB mode calls have independent no-effect fixtures.
+Non-PSB/image-only M2 programs are outside the reviewed PSB renderer and fail on
+the missing/unsupported model rather than silently approximating them or
+executing the old image fallback. The static fallback findings remain local
+review evidence; no image-fallback support is claimed by these PSB tests.
+
+The first public sound-envelope tick precedes construction of the actor's lip
+entries: it remembers the level but cannot start a flow. The next changed level
+can start it. A constant nonzero initial envelope and a later changed envelope
+have independent frozen task-oracle coverage. Shared-document release also
+checks cache identity after refresh, so closing an old instance cannot evict a
+new document for the same model name.

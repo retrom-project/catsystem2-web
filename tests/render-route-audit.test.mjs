@@ -7,7 +7,6 @@ import { NATIVE_GRAPHICS_IDS, installNativeGraphics } from '../src/native/graphi
 import { NATIVE_DRAW_IDS } from '../src/native/draw-task.mjs';
 import { NATIVE_MESH_IDS } from '../src/native/mesh.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
-import { NativeM2Task } from '../src/native/emote.mjs';
 
 for (const profile of Object.keys(NATIVE_ABIS))
   test(profile + ' render inventory agrees with the installed wrapper messages', async () => {
@@ -68,7 +67,7 @@ test('foreign receivers and new indirect sites remain explicit in the render aud
   const m2 = RENDER_ROUTE_AUDIT.filter((r) => r.consumerRoutes.some((c) => c.domain === 9));
   assert.deepEqual(
     m2.map((r) => r.id).sort((a, b) => a - b),
-    [0x54, 0x55, 0x57, 0x58, 0x5d, 0x5e, 0x64, 0x65, 0x158],
+    [],
   );
   for (const row of RENDER_ROUTE_AUDIT) {
     assert.equal(
@@ -97,42 +96,5 @@ test('foreign receivers and new indirect sites remain explicit in the render aud
   );
 });
 
-test('common-message M2 branches match the real JS receiver without loading an EXE', async () => {
-  let path,
-    allocation = 64;
-  const process = {
-    allocate: () => (allocation += 16),
-    free() {},
-    watchWrites: () => ({ written: false, close() {} }),
-  };
-  const task = Object.assign(Object.create(NativeM2Task.prototype), {
-    pointer: 1,
-    record: { id: 1 },
-    owner: { process, taskMemory: { messageOptions: () => ({}) } },
-    world: { objects: { objects: new Map() } },
-    plane: {
-      message: () => {
-        path = 'js';
-        return 0;
-      },
-    },
-    base: { message: () => 0 },
-    invoke: () => {
-      path = 'original-handler';
-      return 1;
-    },
-  });
-  for (const row of RENDER_ROUTE_AUDIT.filter((r) => r.module.endsWith('/graphics.mjs'))) {
-    const actual = [];
-    for (const message of row.messages) {
-      path = null;
-      await task.message([9, message, 0, 0]);
-      if (path === 'original-handler') actual.push(message);
-    }
-    assert.deepEqual(
-      actual,
-      row.consumerRoutes.find((c) => c.domain === 9)?.messages ?? [],
-      row.semanticName,
-    );
-  }
-});
+// Actual JS M2 common-message and native packets are covered by emote-world's
+// frozen task-oracle cases; no original M2 receiver branch remains in this audit.
