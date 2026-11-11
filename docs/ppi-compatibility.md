@@ -162,9 +162,9 @@ Native details that need explicit handling:
   transforms the half-viewport vector. The scalar D3DX inverse rounds the
   diagonal cofactor, reciprocal determinant and final inverse scale at
   separate float32 stores. Game `65B190` and SDK `52B0D0` are shared by
-  their version 1 and 2 tables. Mounted tasks use the calling thread's x87
-  and MXCSR settings. Other floating-point modes and dispatch tables run
-  the original callback. The direct oracle covers the zero denominator,
+  their version 1 and 2 tables. Engine-side JS uses normal PC24/nearest
+  precision. The oracle retains evidence for six x87/MXCSR settings and
+  alternate dispatch tables. The direct oracle covers the zero denominator,
   singular inverse, large negative depth and six floating-point settings.
 
 The PTCL frame comparison runs the fixed SDK's `snow.kcs` (version 2) and
@@ -176,12 +176,15 @@ random stream state at the six sampled frames.
 The Chromium test takes the original 100-particle arguments from SDK
 `spl2_ptc.cst`. Each original PE and the mounted browser World load
 `fg_snow.hg3` independently and compare the uploaded atlas, DrawUP quads
-and full frame pixels. The mounted path executes the original particle
-loader's image decode and texture upload. The JPEG colors and transparent
-padding come from its 32×32 Texture9, while the script reads the cropped
-21×22 source dimensions. The bank retains that Texture9 until reload or
-destruction. A fresh World binds the restored texture handle and reproduces
-the frame without decoding the image again.
+and full frame pixels. The JS bank decodes and uploads an owned 32×32
+StageRenderer surface while the script reads the cropped 21×22 dimensions.
+Its JPEG reader uses IJG integer IFAST and integer YCbCr conversion. The
+original JPEG helper writes RGB directly into BGR storage, so the JS reader
+preserves that channel order and converts physical rows into logical rows.
+Four authored baseline/progressive, 4:4:4/4:2:0 fixtures compare every byte
+against both original bitmap decoders. The private snow atlas also matches
+exactly, including transparent pixels. A fresh World restores the surface
+without decoding again. Reload/destruction release that bank's surface.
 
 The original task keeps the image dimensions and depth priority when its
 texture name is empty. A nonempty name that fails to open stores 256×256
@@ -547,18 +550,26 @@ visibility, Stop, restart, unload, fresh restore, model recreation, and
 detach. The mounted `em_question.ppi` matches 11 independent Wine callback
 records. Nine 8×8 interior crops match Wine D3D9 exactly. All projected
 XYZRHW, color and UV words match the original executables byte for byte.
-The browser also draws the same DLL frame with two alternate x87 and SSE
-control settings, matching the independent i386 captures in each case.
+The browser also changes the guest's x87/SSE settings across engine draw
+calls and verifies JS geometry retains normal PC24 results. The independent
+PC53/directed-rounding captures remain frozen oracle evidence.
 The complete frame is identical immediately after restoring the checkpoint
 taken with the attached graph absent.
 
-Mounted particle geometry reads the calling thread's x87 control word and
-MXCSR. The scalar D3DX path preserves the component-specific dot product
-order, significand rounding and float32 stores. It batches the original
-`FSINCOS` and float stores in the same process. Other floating-point modes
-or dispatch tables execute the mounted projector at game `5F5280` or SDK
-`4CFB30` and capture its DrawUP vertices. The shared GraphManager keeps
-ordering and submitting those vertices with the other scene layers.
+Engine-side particle geometry uses JS scalar D3DX operation order, PC24
+rounding and float32 trigonometric stores. Both ABI oracles compare 128
+quads, returned order, XYZRHW/color/UV and exact rounded pixel coordinates.
+Finite floating geometry has a 1 f32 ULP limit. `oracle/particle-*-original.mjs`
+retains the previous mixed-precision implementations and existing harness.
+PPI algorithms and their DLL state continue until phase 9.
+
+The eight main wrappers construct canonical 400-byte load/register packets
+and route live task controls in JS. Load wrappers return control1/value1
+after routing, including a missing task. Query318 initializes its unwritten
+result to zero. Strings are bounded 128-byte C fields. Bytes following the
+terminator in old global scratch are excluded from semantic comparisons.
+Bank resources, atlas ownership, reload clocks and raw register copies are
+covered independently from the remaining PPI DLL callbacks.
 
 The observed D3D9 device does not advertise `D3DPRASTERCAPS_WBUFFER`. It accepts
 `D3DZB_USEW` while retaining z-based XYZRHW depth; the browser matches this

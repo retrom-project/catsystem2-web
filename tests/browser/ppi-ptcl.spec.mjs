@@ -242,8 +242,23 @@ async function checkSnowScene(page, label, profile) {
             atlas.width !== current.texture?.width ||
             atlas.height !== current.texture?.height ||
             !atlas.rgba.every((byte, i) => byte === current.texture.rgba[i])
-          )
-            throw new Error('PTCL uploaded atlas differs at frame ' + frame);
+          ) {
+            const mismatch = atlas.rgba.findIndex((b, i) => b !== current.texture?.rgba[i]);
+            throw new Error(
+              'PTCL uploaded atlas differs at frame ' +
+                frame +
+                ' dimensions ' +
+                [atlas.width, atlas.height, current.texture?.width, current.texture?.height] +
+                ' max ' +
+                Math.max(...atlas.rgba.map((b, i) => Math.abs(b - current.texture.rgba[i]))) +
+                ' byte ' +
+                mismatch +
+                ' ref ' +
+                [...atlas.rgba.slice(Math.max(0, mismatch - 4), mismatch + 8)] +
+                ' JS ' +
+                [...current.texture.rgba.slice(Math.max(0, mismatch - 4), mismatch + 8)],
+            );
+          }
           atlasDimensions = [atlas.width, atlas.height];
           const mismatch = current.words.findIndex((word, i) => word !== reference.words[i]);
           if (
@@ -263,9 +278,9 @@ async function checkSnowScene(page, label, profile) {
           d3d = (world) => world.nativeEngine.features.get('renderer').d3d;
         if (
           restoredBank.nativeAtlas.pointer !== pointer ||
-          d3d(fresh).objects.get(pointer).references !== 1
+          !fresh.particles.textures.owned.has(pointer)
         )
-          throw new Error('Fresh PTCL atlas did not retain its original texture owner');
+          throw new Error('Fresh PTCL atlas did not retain its JS surface owner');
         const restored = (await render(fresh)).pixels;
         for (const spec of [
           { texture: '', priority: 3000 },
@@ -276,7 +291,10 @@ async function checkSnowScene(page, label, profile) {
           await candidate.load({ ...snow, family: 'script', ...spec });
           compareAtlas();
         }
-        if (d3d(browser).objects.has(pointer) || !d3d(fresh).objects.has(pointer))
+        if (
+          browser.particles.textures.owned.has(pointer) ||
+          !fresh.particles.textures.owned.has(pointer)
+        )
           throw new Error('PTCL reload leaked its old texture or released the fresh owner');
         const hg2 = { texture: 'image/asymmetric.hg2', priority: 6000 };
         await raw.reload(hg2);

@@ -1,19 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
-// Factory 5DDCB0 case 0x10 -> 5F4B50; native wrappers 657380..657890.
-// PTCL and PPI share kcTaskParticle. MSG 13A's leading DWORD selects the family.
+// PTCL and PPI banks share the JS engine-side task and render contract.
 import { Particles } from '../particles.mjs';
-import { particleGeometry } from '../ppi/geometry.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
 import { NativeParticleTextures } from './particle-textures.mjs';
 import { nativeParticleBounds } from './particle-bounds.mjs';
-import { nativeReply, bitsFloat } from '../kcs.mjs';
-import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
-import { NativeParticleCommands } from './particle-commands.mjs';
+import { NATIVE_PARTICLE_COMMANDS, installNativeParticleCommands } from './particle-commands.mjs';
 import { installNativeFESParticles } from './fes-particles.mjs';
 
-export const NATIVE_PARTICLE_IDS = Object.freeze([
-  0x10f, 0x110, 0x111, 0x112, 0x113, 0x1aa, 0x1ab, 0x2b5,
-]);
+export const NATIVE_PARTICLE_IDS = Object.freeze(NATIVE_PARTICLE_COMMANDS.map(({ id }) => id));
 
 function registers(bytes) {
   if (bytes.length !== 128) throw new Error('Native particle registers require 128 bytes');
@@ -24,17 +18,8 @@ export class NativeParticles {
   constructor(world, options = {}) {
     this.world = world;
     this.tasks = new Map();
-    const mounted = world.game.names?.('exe').length > 0;
-    if (mounted) {
-      world.registerNativeFeature(
-        'particle-projection',
-        (engine) => new NativeParticleProjection(engine),
-      );
-      world.registerNativeFeature(
-        'particle-textures',
-        (engine) => new NativeParticleTextures(engine, world),
-      );
-    }
+    this.textures = new NativeParticleTextures(world);
+    this.projection = new NativeParticleProjection();
     this.host = new Particles(world.graphics.stage, {
       game: world.game,
       images: world.images,
@@ -42,20 +27,9 @@ export class NativeParticles {
       clock: world.clock,
       onDebug: (message) => world.host.nativeLog?.(message),
       nativeThread: () => world.nativeEngine?.process,
-      atlas: mounted
-        ? {
-            load: async (spec, previous) =>
-              (await world.getNativeFeature('particle-textures')).load(spec, previous),
-            frame: (pointer) => world.nativeEngine.features.get('particle-textures').frame(pointer),
-            release: (pointer) =>
-              world.nativeEngine.features.get('particle-textures').release(pointer),
-          }
-        : undefined,
-      scriptBounds: (...args) => nativeParticleBounds(world.nativeEngine, ...args),
-      projectGeometry: async (particles, geometry) =>
-        world.nativeEngine
-          ? (await world.getNativeFeature('particle-projection')).geometry(particles, geometry)
-          : particleGeometry(particles, geometry),
+      atlas: this.textures,
+      scriptBounds: nativeParticleBounds,
+      projectGeometry: (particles, geometry) => this.projection.geometry(particles, geometry),
       attachment: (handle) => {
         const graph = world.graphics.attachment(handle);
         return graph && { id: handle, ...graph, disp: Number(graph.display) };
@@ -80,9 +54,11 @@ export class NativeParticles {
     return this.host.drawItems();
   }
   snapshot() {
-    return this.host.snapshot();
+    return { ...this.host.snapshot(), textures: this.textures.snapshot() };
   }
   async restore(state) {
+    this.host.close();
+    this.textures.restore(state.textures);
     await this.host.restore(state);
     for (const bank of this.host.banks.values())
       if (![...this.tasks.values()].some((task) => task.key === bank.key))
@@ -141,7 +117,7 @@ export class NativeParticleTask {
           await this.load(context.spec);
           return 0;
         }
-        if (!l) return 0;
+        if (context.nativePointer && !l) return 0;
         const memory = this.source(sender, context),
           bytes = memory.bytes(l, 0x290),
           view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
@@ -220,55 +196,11 @@ export function installNativeParticles(world, options) {
   const particles = new NativeParticles(world, options);
   world.particles = particles;
   world.objects.register(16, (record) => particles.create(record));
-  const mounted = world.game.names?.('exe').length > 0;
-  if (mounted) {
-    installNativeFESParticles(world);
-    world.registerNativeFeature(
-      'particle-commands',
-      (engine) => new NativeParticleCommands(engine, world),
-    );
-  }
-  for (const id of NATIVE_PARTICLE_IDS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      mounted && NativeParticleCommands.has(id)
-        ? (await world.getNativeFeature('particle-commands')).apply(id, args, machine, task)
-        : nativeParticles(id, args, machine, task, world),
-    );
+  if (world.game.names?.('exe').length) installNativeFESParticles(world);
+  installNativeParticleCommands(world);
   return particles;
 }
 
 export async function nativeParticles(id, args, machine, task, world) {
-  if (!NATIVE_PARTICLE_IDS.includes(id)) return undefined;
-  const send = (message, l = 0, context) =>
-      world.sendNativeEngine(args[0], task.id, message, 0, l, context),
-    value = (word) => nativeReply(1, nativeEngineWord(word, 'Native particle query')),
-    done = () => nativeReply(2);
-  if (id === 0x10f || id === 0x2b5) {
-    const program = world.runtime.services.format(args[1], machine),
-      texture = world.runtime.services.format(args[2], machine);
-    if (program === null || texture === null) return value(0);
-    await send(0x13a, 0, {
-      spec: {
-        family: id === 0x2b5 ? 'plugin' : 'script',
-        program,
-        texture,
-        count: args[3] >>> 0,
-        priority: bitsFloat(args[4]),
-        registers: registers(machine.bytes(args[5], 128)),
-        externalDraw: false,
-      },
-    });
-    return value(1);
-  }
-  if (id === 0x112) {
-    const result = await send(0x13e);
-    return value(result === NATIVE_UNWRITTEN_WORD ? 0 : result);
-  }
-  if (id === 0x110) await send(0x13b);
-  else if (id === 0x111) await send(0x13c);
-  else if (id === 0x113)
-    await send(0x13f, 0, { registers: registers(machine.bytes(args[1], 128)) });
-  else if (id === 0x1aa) await send(0x140, args[1]);
-  else if (id === 0x1ab) await send(0x141, args[1]);
-  return done();
+  return world.particleCommands.apply(id, args, machine, task);
 }

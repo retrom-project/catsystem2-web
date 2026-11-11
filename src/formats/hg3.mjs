@@ -4,6 +4,7 @@ import { Binary, inflate } from '../binary.mjs';
 import { unpackHGPixels } from './hg-codec.mjs';
 import { HG2 } from './hg2.mjs';
 import { RasterImage } from './raster.mjs';
+import { decodeNativeJPEG } from './jpeg.mjs';
 
 export class HG3 {
   constructor(bytes) {
@@ -78,24 +79,41 @@ export class HG3 {
     if (sections.has('img_wbp') || sections.has('img_jpg')) {
       const webp = sections.has('img_wbp'),
         jpg = sections.get(webp ? 'img_wbp' : 'img_jpg');
-      if (typeof createImageBitmap === 'undefined')
-        throw new Error('JPEG decoding needs a browser image decoder');
-      const image = await createImageBitmap(
-        new Blob([b.range(jpg.at, jpg.size)], { type: webp ? 'image/webp' : 'image/jpeg' }),
-        { premultiplyAlpha: 'none', colorSpaceConversion: 'none', imageOrientation: 'none' },
-      );
-      const canvas = new OffscreenCanvas(width, height),
-        context = canvas.getContext('2d');
-      context.drawImage(image, 0, 0);
-      image.close();
-      const rgba = context.getImageData(0, 0, width, height).data;
+      let rgba;
+      if (webp) {
+        if (typeof createImageBitmap === 'undefined')
+          throw new Error('WEBP decoding needs a browser image decoder');
+        const image = await createImageBitmap(
+            new Blob([b.range(jpg.at, jpg.size)], { type: 'image/webp' }),
+            { premultiplyAlpha: 'none', colorSpaceConversion: 'none', imageOrientation: 'none' },
+          ),
+          canvas = new OffscreenCanvas(width, height),
+          context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        image.close();
+        rgba = context.getImageData(0, 0, width, height).data;
+      } else {
+        const decoded = decodeNativeJPEG(b.range(jpg.at, jpg.size));
+        if (decoded.width !== width || decoded.height !== height)
+          throw new Error('HG3 JPEG dimensions disagree with frame');
+        rgba = decoded.data;
+      }
       const alpha = sections.get('img_al');
       if (alpha) {
         const values = await inflate(b.range(alpha.at + 8, b.u32(alpha.at)), b.u32(alpha.at + 4));
         if (values.length !== width * height) throw new Error('HG3 invalid alpha dimensions');
         for (let i = 0; i < values.length; i++) rgba[i * 4 + 3] = values[i];
       }
-      frame.rgba = rgba;
+      // The original JPEG helper writes decoded scanlines directly into
+      // bottom-up DIB storage. Expose logical RGBA rows like the HG kernels.
+      if (!webp) {
+        frame.rgba = new Uint8ClampedArray(rgba.length);
+        for (let y = 0; y < height; y++)
+          frame.rgba.set(
+            rgba.subarray(y * width * 4, (y + 1) * width * 4),
+            (height - 1 - y) * width * 4,
+          );
+      } else frame.rgba = rgba;
     } else {
       frame.rgba = new Uint8ClampedArray(width * height * 4);
       const parts = [...sections].filter(([name]) => /^img\d+$/.test(name));

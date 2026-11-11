@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 124, "oracle": 135, "differential": 56 },
+    "counts": { "js": 125, "oracle": 135, "differential": 60 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -36,6 +36,7 @@
         "tests/formats.test.mjs",
         "tests/gallery-contracts.test.mjs",
         "tests/host-log.test.mjs",
+        "tests/jpeg.test.mjs",
         "tests/kcs-contracts.test.mjs",
         "tests/kcs-debug.test.mjs",
         "tests/media-boundary.test.mjs",
@@ -307,6 +308,7 @@
         "tests/differential/native-image-owner-load.test.mjs",
         "tests/differential/native-image-owner-pixels.test.mjs",
         "tests/differential/native-image-owner-projection.test.mjs",
+        "tests/differential/native-jpeg.test.mjs",
         "tests/differential/native-math.test.mjs",
         "tests/differential/native-mission-empty.test.mjs",
         "tests/differential/native-mission-table.test.mjs",
@@ -333,6 +335,9 @@
         "tests/differential/native-unicode-output.test.mjs",
         "tests/differential/native-utf8.test.mjs",
         "tests/differential/native-view-rectangles.test.mjs",
+        "tests/differential/particle-commands.test.mjs",
+        "tests/differential/particle-projection.test.mjs",
+        "tests/differential/particle-textures.test.mjs",
         "tests/differential/plane-model-commands.test.mjs",
         "tests/differential/render-sources.test.mjs",
         "tests/differential/render-surfaces.test.mjs",
@@ -1273,15 +1278,6 @@
         "line": 22,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "src/native/particle-commands.mjs",
-        "line": 31,
-        "expression": "engine.profile.startsWith('sdk-')",
-        "domain": 6,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -2512,51 +2508,6 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "exe-layout",
-        "file": "src/native/particle-bounds.mjs",
-        "line": 29,
-        "expression": "layouts[engine.profile]",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va",
-        "file": "src/native/particle-commands.mjs",
-        "line": 90,
-        "expression": "spec.handlers[Number(this.sdk)]",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/particle-commands.mjs",
-        "line": 91,
-        "expression": "NATIVE_EXE_PROFILES[this.engine.profile]",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/particle-projection.mjs",
-        "line": 54,
-        "expression": "layouts[engine.profile]",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/particle-textures.mjs",
-        "line": 35,
-        "expression": "layouts[engine.profile]",
-        "domain": 6,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "va-condition",
         "file": "src/native/plane-movie-command.mjs",
         "line": 64,
@@ -2836,21 +2787,21 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 170, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 164, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 170,
+    "remainingExeVASelectionSites": 164,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1611,
-      "original-handler": 95,
+      "pure-js": 1631,
+      "original-handler": 79,
       "exe-region": 18,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 439,
+      "unknown": 435,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -2863,14 +2814,14 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 507,
-    "runtimeFiles": 382,
-    "fileDomains": { "3": 32, "4": 48, "5": 42, "6": 51, "7": 31, "8": 149, "9": 29 },
-    "fileNeedsReview": 122,
-    "exeDependencyFiles": 91,
-    "exeDependencies": { "addresses": 1093, "calls": 122, "references": 6 },
+    "nativeNeedsReview": 487,
+    "runtimeFiles": 384,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 51, "7": 31, "8": 149, "9": 29 },
+    "fileNeedsReview": 118,
+    "exeDependencyFiles": 87,
+    "exeDependencies": { "addresses": 1021, "calls": 117, "references": 6 },
     "nonNativeGroups": 31,
-    "executionSites": 402
+    "executionSites": 389
   },
   "profiles": [
     {
@@ -7799,23 +7750,16 @@
           "hexID": "0x10f",
           "semanticName": "particle.loadScript",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7823,23 +7767,16 @@
           "hexID": "0x110",
           "semanticName": "particle.start",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7847,23 +7784,16 @@
           "hexID": "0x111",
           "semanticName": "particle.stop",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7871,23 +7801,16 @@
           "hexID": "0x112",
           "semanticName": "particle.isActive",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -7895,23 +7818,16 @@
           "hexID": "0x113",
           "semanticName": "particle.setRegisters",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -10558,23 +10474,16 @@
           "hexID": "0x1aa",
           "semanticName": "particle.setAlpha",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -10582,23 +10491,16 @@
           "hexID": "0x1ab",
           "semanticName": "particle.attachGraph",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -15379,23 +15281,16 @@
           "hexID": "0x2b5",
           "semanticName": "particle.loadPlugin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -22400,18 +22295,16 @@
           "hexID": "0x26",
           "semanticName": "ParsScreen",
           "catalogStatus": "declared",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/ppi/script.mjs",
           "domain": 6,
           "route": "ParticleScriptInstance.native",
           "registration": "src/ppi/script.mjs:135",
           "features": [],
-          "dependencies": ["src/native/particle-bounds.mjs", "src/native/particles.mjs"],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "PTCL screenBounds 默认使用 JS projectionBounds，NativeParticles 注入的回调可经当前 EXE 计算边界。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "particle-v1",
@@ -23154,18 +23047,16 @@
           "hexID": "0x26",
           "semanticName": "ParsScreen",
           "catalogStatus": "declared",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/ppi/script.mjs",
           "domain": 6,
           "route": "ParticleScriptInstance.native",
           "registration": "src/ppi/script.mjs:135",
           "features": [],
-          "dependencies": ["src/native/particle-bounds.mjs", "src/native/particles.mjs"],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "PTCL screenBounds 默认使用 JS projectionBounds，NativeParticles 注入的回调可经当前 EXE 计算边界。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "particle-v2",
@@ -23572,28 +23463,10 @@
           "dependencies": []
         },
         {
-          "name": "particle-projection",
-          "registration": "src/native/particles.mjs:31",
-          "modules": ["src/native/particle-projection.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "particle-textures",
-          "registration": "src/native/particles.mjs:35",
-          "modules": ["src/native/particle-textures.mjs"],
-          "dependencies": []
-        },
-        {
           "name": "fes-objects",
           "registration": "src/native/fes-objects.mjs:974",
           "modules": [],
           "dependencies": ["data-buffers"]
-        },
-        {
-          "name": "particle-commands",
-          "registration": "src/native/particles.mjs:228",
-          "modules": ["src/native/particle-commands.mjs"],
-          "dependencies": []
         },
         {
           "name": "legacy-text",
@@ -28537,23 +28410,16 @@
           "hexID": "0x10f",
           "semanticName": "particle.loadScript",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -28561,23 +28427,16 @@
           "hexID": "0x110",
           "semanticName": "particle.start",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -28585,23 +28444,16 @@
           "hexID": "0x111",
           "semanticName": "particle.stop",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -28609,23 +28461,16 @@
           "hexID": "0x112",
           "semanticName": "particle.isActive",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -28633,23 +28478,16 @@
           "hexID": "0x113",
           "semanticName": "particle.setRegisters",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -31337,23 +31175,16 @@
           "hexID": "0x1aa",
           "semanticName": "particle.setAlpha",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -31361,23 +31192,16 @@
           "hexID": "0x1ab",
           "semanticName": "particle.attachGraph",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -36145,23 +35969,16 @@
           "hexID": "0x2b5",
           "semanticName": "particle.loadPlugin",
           "catalogStatus": "recovered",
-          "implementation": "original-handler",
+          "implementation": "pure-js",
           "module": "src/native/particle-commands.mjs",
           "domain": 6,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/particles.mjs:232",
-          "features": ["particle-commands"],
-          "dependencies": [
-            "src/native/engine-files.mjs",
-            "src/native/particle-commands.mjs",
-            "src/native/particles.mjs",
-            "src/native/task-memory.mjs"
-          ],
+          "registration": "src/native/particle-commands.mjs:80",
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -43919,18 +43736,16 @@
           "hexID": "0x26",
           "semanticName": "ParsScreen",
           "catalogStatus": "declared",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/ppi/script.mjs",
           "domain": 6,
           "route": "ParticleScriptInstance.native",
           "registration": "src/ppi/script.mjs:135",
           "features": [],
-          "dependencies": ["src/native/particle-bounds.mjs", "src/native/particles.mjs"],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "PTCL screenBounds 默认使用 JS projectionBounds，NativeParticles 注入的回调可经当前 EXE 计算边界。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "particle-v1",
@@ -44673,18 +44488,16 @@
           "hexID": "0x26",
           "semanticName": "ParsScreen",
           "catalogStatus": "declared",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/ppi/script.mjs",
           "domain": 6,
           "route": "ParticleScriptInstance.native",
           "registration": "src/ppi/script.mjs:135",
           "features": [],
-          "dependencies": ["src/native/particle-bounds.mjs", "src/native/particles.mjs"],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "PTCL screenBounds 默认使用 JS projectionBounds，NativeParticles 注入的回调可经当前 EXE 计算边界。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "particle-v2",
@@ -45085,28 +44898,10 @@
           "dependencies": []
         },
         {
-          "name": "particle-projection",
-          "registration": "src/native/particles.mjs:31",
-          "modules": ["src/native/particle-projection.mjs"],
-          "dependencies": []
-        },
-        {
-          "name": "particle-textures",
-          "registration": "src/native/particles.mjs:35",
-          "modules": ["src/native/particle-textures.mjs"],
-          "dependencies": []
-        },
-        {
           "name": "fes-objects",
           "registration": "src/native/fes-objects.mjs:974",
           "modules": [],
           "dependencies": ["data-buffers"]
-        },
-        {
-          "name": "particle-commands",
-          "registration": "src/native/particles.mjs:228",
-          "modules": ["src/native/particle-commands.mjs"],
-          "dependencies": []
         },
         {
           "name": "legacy-text",
@@ -45633,7 +45428,33 @@
     },
     {
       "file": "src/formats/hg3.mjs",
-      "sourceSha256": "66edd8f1d43a9c4b70698b92a419b29e4c27a28b23ee806cc57ef9512faf903a",
+      "sourceSha256": "d040c72e1135eb17101ea469b4f7ab23e88a2a8376046ad2dd80189fe16cfae0",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/formats/jpeg-ifast.mjs",
+      "sourceSha256": "bd1f22d87bb00c134840b9a3b1e090f49de396e461fafcaac9cfa2d12a7f0212",
+      "domain": 5,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/formats/jpeg.mjs",
+      "sourceSha256": "05380c162586e03149f8d55018110c58e043b8bca1c1a73763ab02f2f7c805d1",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -45685,7 +45506,7 @@
     },
     {
       "file": "src/formats/raster.mjs",
-      "sourceSha256": "946d8108e8809cdf9cc5e4a9550a252cb2d64129c72c6bf726dd7f8a9933f53d",
+      "sourceSha256": "533f7b29225881896b32ad735e35e7df3e31ef189bbbb4953af3ea6bd3fd7fb9",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50736,76 +50557,32 @@
     },
     {
       "file": "src/native/particle-bounds.mjs",
-      "sourceSha256": "dbffb7ebf908694416119f0b3afb823e1867f165592d5bb9433b7ccde5223601",
+      "sourceSha256": "7eb47895b3e6893b1cd1014eb3a5715af3b75db3a71d80aaae77126e3158b5cf",
       "domain": 6,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 10, "calls": 0, "references": 0 },
-      "dependencyTypes": ["call", "in-image-literals", "profile-memory-layout"],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 59,
-          "method": "call",
-          "target": "layout.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 1 },
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/particle-commands.mjs",
-      "sourceSha256": "0065daefbf6fa64e3f1913803a31636009b9c029bab70b69fce8488c305c730b",
+      "sourceSha256": "951c5c49d809160ea9be7cbe57de5e04044e0dc918272a57752110a2414df558",
       "domain": 6,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 16, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callFromHost",
-        "getNativeFeature",
-        "in-image-literals",
-        "native-table-lookup",
-        "sendNativeEngine"
-      ],
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendNativeEngine"],
       "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 98,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 99,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 1 },
+      "executionSites": [],
+      "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 52,
+          "line": 67,
           "method": "sendNativeEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 67,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 72,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -50814,170 +50591,42 @@
     },
     {
       "file": "src/native/particle-projection.mjs",
-      "sourceSha256": "ae685d1d3439184e8bdf970827951fdf74fe867e32d7d39cd42c6497bd35312a",
-      "domain": 6,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 30, "calls": 1, "references": 0 },
-      "dependencyTypes": [
-        "beforeInstruction",
-        "call",
-        "callFromHost",
-        "in-image-literals",
-        "profile-memory-layout"
-      ],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 69,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 110,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 113,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 126,
-          "method": "call",
-          "target": "trigEntry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 231,
-          "method": "call",
-          "target": "this.layout.draw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1, "callFromHost": 1, "call": 3 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "src/native/particle-textures.mjs",
-      "sourceSha256": "cebe048df8e8657dc57509be12bff4fc5a417c39335d9b398a619ef597e29c1c",
-      "domain": 6,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 16, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "beforeInstruction",
-        "call",
-        "callFromHost",
-        "getNativeFeature",
-        "in-image-literals"
-      ],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 42,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 85,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 86,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 115,
-          "method": "call",
-          "target": "this.layout.load",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 139,
-          "method": "call",
-          "target": "this.layout.release",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1, "callFromHost": 1, "call": 3 },
-      "indirectSites": [
-        {
-          "line": 93,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 95,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
-    },
-    {
-      "file": "src/native/particles.mjs",
-      "sourceSha256": "820d6d31d21a1460b39f8a0adf02a528c81194e324cc937161b8698a9ef817c7",
+      "sourceSha256": "bdc041a79c57687f2470f650a889f610804dc8357eddd0129f4382372c5e4420",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature", "sendNativeEngine"],
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 48,
-          "method": "getNativeFeature",
-          "feature": "particle-textures",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 57,
-          "method": "getNativeFeature",
-          "feature": "particle-projection",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 234,
-          "method": "getNativeFeature",
-          "feature": "particle-commands",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 243,
-          "method": "sendNativeEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/particle-textures.mjs",
+      "sourceSha256": "4f608b1201e92b1d7c6a52a0f2ebcb6855f488b0812fd3e69c73e696ab62f2c7",
+      "domain": 6,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/particles.mjs",
+      "sourceSha256": "f6cb3ed5481112380b2bb860db5dfb6c715e10a72747f21d1dd540ea9b2bf738",
+      "domain": 6,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/persistence.mjs",
@@ -57963,7 +57612,6 @@
         "authority": "Encoded input bytes for each consumer-owned decoder",
         "fields": ["expanded bitmap bytes in consumer-owned buffers"],
         "consumers": [
-          { "domain": 6, "modules": ["render-sources", "retained-draw", "particle-textures"] },
           { "domain": 7, "modules": ["fes-images"] },
           { "domain": 8, "modules": ["sdk-javascript-task"] },
           { "domain": 9, "modules": ["ppi"] }
@@ -58357,7 +58005,7 @@
     {
       "name": "ppi-and-dll-host",
       "domain": 9,
-      "entry": "Particles → nativeThread/atlas/scriptBounds/projectGeometry; PPINativeRuntime/EmoteNativeAdapter → PE32Process",
+      "entry": "Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime/EmoteNativeAdapter → PE32Process",
       "modules": [
         "src/emote/bicubic-kernel.mjs",
         "src/emote/bicubic-operations.mjs",
@@ -58370,9 +58018,6 @@
         "src/emote/native-mesh.mjs",
         "src/emote/profiles.mjs",
         "src/emote/runtime.mjs",
-        "src/native/particle-bounds.mjs",
-        "src/native/particle-projection.mjs",
-        "src/native/particle-textures.mjs",
         "src/native/particles.mjs",
         "src/particles.mjs",
         "src/ppi/abi.mjs",
@@ -58528,94 +58173,6 @@
           "line": 20,
           "method": "beforeInstruction",
           "target": "this.base + 0x58b44",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-bounds.mjs",
-          "line": 59,
-          "method": "call",
-          "target": "layout.entry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-projection.mjs",
-          "line": 69,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-projection.mjs",
-          "line": 110,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-projection.mjs",
-          "line": 113,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-projection.mjs",
-          "line": 126,
-          "method": "call",
-          "target": "trigEntry",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-projection.mjs",
-          "line": 231,
-          "method": "call",
-          "target": "this.layout.draw",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 42,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 85,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 86,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 115,
-          "method": "call",
-          "target": "this.layout.load",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 139,
-          "method": "call",
-          "target": "this.layout.release",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
@@ -59771,22 +59328,6 @@
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "file": "src/native/particle-projection.mjs",
-          "line": 69,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-textures.mjs",
-          "line": 42,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
           "file": "src/native/plane-movie-command.mjs",
           "line": 63,
           "method": "beforeInstruction",
@@ -59928,22 +59469,6 @@
           "line": 342,
           "method": "call",
           "target": "input.peer",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-commands.mjs",
-          "line": 98,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "src/native/particle-commands.mjs",
-          "line": 99,
-          "method": "call",
-          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

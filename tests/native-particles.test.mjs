@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
+import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { installNativeParticles, NATIVE_PARTICLE_IDS } from '../src/native/particles.mjs';
 import { KCSMachine, floatBits } from '../src/kcs.mjs';
@@ -64,6 +65,7 @@ function setup() {
         },
       },
       runtime: {
+        imageDataBuffers: { process: new NativeBufferMemory() },
         register: (_table, id, handler) => handlers.set(id, handler),
         services: { format: (address, current) => current.string(address) },
       },
@@ -81,11 +83,12 @@ function setup() {
         },
       }),
       sendNativeEngine(target, sender, message, w, l, context) {
+        context.nativeRouted = Boolean(this.objects.objects.get(target));
         return this.particles.send(target, sender, message, w, l, context);
       },
     };
   objects.machine = () => machine;
-  installNativeParticles(world, { unicornFactory });
+  installNativeParticles(world, { unicornFactory, atlas: undefined });
   machine.writeString('probe', 32);
   machine.writeString('quad', 64);
   for (let i = 0; i < 32; i++) machine.store(128 + i * 4, floatBits(i + 0.5));

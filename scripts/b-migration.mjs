@@ -151,7 +151,7 @@ const originalWrappers = new Set(
     'screen-capture ' +
     'input-commands registry ' +
     'task-dump tile-plane-command ' +
-    'plane-movie-command particle-commands ' +
+    'plane-movie-command ' +
     'version-query sdk-javascript-task emote'
   ).split(' '),
 );
@@ -485,13 +485,6 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         location = { file: implementationFile, line: location.loc.start.line };
         implementation = 'pure-js';
         route = table === 'generic' ? 'MotionInstance.native' : 'ParticleScriptInstance.native';
-        if (table.startsWith('particle-') && entry.id === 38) {
-          implementation = 'unknown';
-          dependencies = ['src/native/particle-bounds.mjs', 'src/native/particles.mjs'];
-          reasons.push(
-            'PTCL screenBounds 默认使用 JS projectionBounds，NativeParticles 注入的回调可经当前 EXE 计算边界。',
-          );
-        }
       } else if (['reserved', 'constant-zero'].includes(entry.status)) {
         implementation = entry.status;
         implementationFile = 'src/native/runtime.mjs';
@@ -510,15 +503,6 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           if (featureNames(location.node).length) implementationFile = location.file;
           if (basename(implementationFile) === 'image') {
             implementationFile = `src/native/${entry.id === 0x7a ? 'bitmap-operations' : 'bitmap-factory'}.mjs`;
-          }
-          if (
-            basename(implementationFile) === 'particles' &&
-            api.NativeParticleCommands.has(entry.id)
-          ) {
-            implementationFile = 'src/native/particle-commands.mjs';
-            reasons.push(
-              '正常挂载路径调用原 wrapper，未挂载时闭包改走 nativeParticles JS 消息路径。',
-            );
           }
           route = 'NativeWorld/registered-handler';
           const classification = classify(
@@ -997,7 +981,6 @@ const nonNativeGroups = [
       authority: 'Encoded input bytes for each consumer-owned decoder',
       fields: ['expanded bitmap bytes in consumer-owned buffers'],
       consumers: [
-        { domain: 6, modules: ['render-sources', 'retained-draw', 'particle-textures'] },
         { domain: 7, modules: ['fes-images'] },
         { domain: 8, modules: ['sdk-javascript-task'] },
         { domain: 9, modules: ['ppi'] },
@@ -1147,8 +1130,8 @@ const nonNativeGroups = [
     name: 'ppi-and-dll-host',
     domain: 9,
     entry:
-      'Particles → nativeThread/atlas/scriptBounds/projectGeometry; PPINativeRuntime/EmoteNativeAdapter → PE32Process',
-    modules: ['particles', 'particle-projection', 'particle-bounds', 'particle-textures'],
+      'Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime/EmoteNativeAdapter → PE32Process',
+    modules: ['particles'],
     directories: ['src/ppi/', 'src/emote/'],
   },
   {

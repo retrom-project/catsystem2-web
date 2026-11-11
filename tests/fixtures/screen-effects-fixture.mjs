@@ -9,11 +9,12 @@ import { NativeScreenEffects as OracleEffects } from '../../oracle/screen-effect
 import { NativeEffectCommands as OracleCommands } from '../../oracle/effect-commands-original.mjs';
 import { NATIVE_SCREEN_EFFECT_KINDS } from '../../src/native/screen-effect.mjs';
 import { floatBits } from '../../src/kcs.mjs';
-export async function screenOracleWorld(fixture) {
+export async function screenOracleWorld(fixture, resources = {}) {
   const profile = fixture.profile,
     files = {
       'engine.exe': fixture.bytes,
       'main.kcs': kcsProgram([[37, 2048], [43, 0xd1, 4], [59]]),
+      ...resources,
     };
   if (profile === 'nekopara-vol3-engine-2.6.1.76')
     files['emotedriver.dll'] = new Uint8Array(await readFile(process.env.CATSYSTEM2_EMOTE_DLL));

@@ -2,6 +2,7 @@
 import { Binary } from '../binary.mjs';
 import { PNG } from './png.mjs';
 import { PSD } from './psd.mjs';
+import { decodeNativeJPEG } from './jpeg.mjs';
 
 export class UnsupportedNativeImageFormat extends Error {}
 const checkSize = (width, height) => {
@@ -87,6 +88,10 @@ export class RasterImage {
       this.psd = new PSD(this.bytes);
       width = this.psd.width;
       height = this.psd.height;
+    } else if (this.format === 'jpeg') {
+      this.jpeg = decodeNativeJPEG(this.bytes);
+      width = this.jpeg.width;
+      height = this.jpeg.height;
     } else {
       if (typeof createImageBitmap !== 'function')
         throw new Error(`${this.format} requires a browser image decoder`);
@@ -138,7 +143,15 @@ export class RasterImage {
         }
     } else if (this.format === 'png') frame.rgba = await this.png.decode();
     else if (this.format === 'psd') frame.rgba = this.psd.decode();
-    else {
+    else if (this.format === 'jpeg') {
+      frame.rgba = new Uint8ClampedArray(width * height * 4);
+      for (let y = 0; y < height; y++)
+        frame.rgba.set(
+          this.jpeg.data.subarray(y * width * 4, (y + 1) * width * 4),
+          (height - 1 - y) * width * 4,
+        );
+      this.jpeg = null;
+    } else {
       const canvas = new OffscreenCanvas(width, height),
         ctx = canvas.getContext('2d');
       ctx.drawImage(this.bitmap, 0, 0);

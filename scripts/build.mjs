@@ -14,7 +14,15 @@ const root = fileURLToPath(new URL('..', import.meta.url)),
 await checkNativeEntry(root);
 await rm(output, { recursive: true, force: true });
 await mkdir(output);
-for (const path of ['src', 'web', 'index.html', 'LICENSE', 'NOTICE.md', 'references.json'])
+for (const path of [
+  'src',
+  'web',
+  'index.html',
+  'LICENSE',
+  'licenses',
+  'NOTICE.md',
+  'references.json',
+])
   await cp(join(root, path), join(output, path), { recursive: true });
 for (const file of (await transitionalRuntimeFiles(root)).filter((file) =>
   file.startsWith('oracle/'),

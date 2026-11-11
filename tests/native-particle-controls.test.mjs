@@ -50,6 +50,7 @@ for (const [profile, variable, receiver, offset] of [
             state.runtime.native('main', id, args, state.main.machine, state.main);
         assert.deepEqual(await call(world, 0x112, missing), { control: 1, value: 0 });
         assert.deepEqual(await call(world, 0x113, missing, 0xffffffff), { control: 2 });
+        await world.ensureNativeEngine();
         const { process: p } = world.nativeEngine,
           raw = p.allocate(0x600, true),
           payload = p.allocate(128, true),
@@ -80,13 +81,16 @@ for (const [profile, variable, receiver, offset] of [
         writer.machine.bytes(input, 128).set(words);
         p.write(payload, words);
         assert.equal(send(319, payload), 0);
-        const feature = world.nativeEngine.features.get('particle-commands'),
-          deliver = feature.send.bind(feature),
+        const deliver = world.sendNativeEngine.bind(world),
           receipts = [];
-        feature.send = async (packet) => {
-          if (packet[2] === 319 - offset)
-            receipts.push([packet.slice(0, 4), packet[5], p.read(packet[4], 128)]);
-          return deliver(packet);
+        world.sendNativeEngine = async (target, sender, message, w, l, context) => {
+          if (message === 319)
+            receipts.push([
+              [world.nativeTaskID(sender), target, message - offset, w],
+              context.flags,
+              context.payload.bytes(l, 128).slice(),
+            ]);
+          return deliver(target, sender, message, w, l, context);
         };
         await world.tick();
         assert.deepEqual(receipts, [

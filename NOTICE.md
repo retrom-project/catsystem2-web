@@ -74,3 +74,12 @@ retains `vendor/FREETYPE-2.4.8-LICENSE.txt`, `vendor/FREETYPE-LICENSE.txt`, both
 source bundles and `vendor/freetype-manifest.json`. Maintained wrapper and
 reproduction instructions are in `third_party/freetype` and
 `scripts/prepare-native-freetype.py`.
+
+The pure JS JPEG parser adapts jpeg-js 0.4.4, copyright 2011 notmasteryet,
+under Apache License 2.0. Its CommonJS/browser exports and original inverse
+DCT are replaced by an ESM entry and the engine's integer IFAST/color
+conversion contract. The inverse DCT and quantizer scaling adapt IJG
+`jidctfst.c` and `jddctmgr.c` as published in libjpeg-turbo 3.1.2. This software
+is based in part on the work of the Independent JPEG Group. The license
+texts accompany this distribution in `licenses/Apache-2.0.txt` and
+`licenses/jpeg-ijg.txt`.

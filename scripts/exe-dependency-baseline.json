@@ -306,26 +306,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/particle-bounds.mjs": {
-      "addresses": 10,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/particle-commands.mjs": {
-      "addresses": 16,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/particle-projection.mjs": {
-      "addresses": 30,
-      "calls": 1,
-      "references": 0
-    },
-    "src/native/particle-textures.mjs": {
-      "addresses": 16,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/plane-movie-command.mjs": {
       "addresses": 26,
       "calls": 0,

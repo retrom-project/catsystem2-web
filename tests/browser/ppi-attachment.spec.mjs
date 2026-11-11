@@ -303,12 +303,11 @@ for (const [profile, variable, prepare] of [
           );
         }
       }
-      for (const [i, mode] of golden.projectionModes.entries()) {
-        const vertices = Buffer.from(mode.vertices, 'base64');
-        expect(result.modes[i]).toEqual(
-          Array.from({ length: vertices.length / 4 }, (_, word) => vertices.readUInt32LE(word * 4)),
-        );
-      }
+      // The retained golden stores the original PC53 and directed-rounding
+      // evidence. Engine-side JS deliberately uses the normal PC24 contract,
+      // independent of a plug-in's cross-call FPCW mutations (phase2 decision).
+      const normal = result.phases.find((phase) => phase.name === 'exec1').vertices;
+      for (const vertices of result.modes) expect(vertices).toEqual(normal);
       const unloaded = result.phases.find((p) => p.name === 'unloaded');
       const restored = result.phases.find((p) => p.name === 'restore-absent');
       expect(restored.hash).toBe(unloaded.hash);

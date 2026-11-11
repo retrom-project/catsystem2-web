@@ -8,7 +8,8 @@ import { floatBits, readKCS } from '../src/kcs.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { nativeParticleBounds } from '../src/native/particle-bounds.mjs';
+import { nativeParticleBounds } from '../oracle/particle-bounds-original.mjs';
+import { nativeParticleBounds as jsBounds } from '../src/native/particle-bounds.mjs';
 import { NativeRandomMemory } from '../src/native/random-memory.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
@@ -104,7 +105,7 @@ for (const [profile, path] of [
               width,
               height,
               random,
-              screenBounds: (...args) => nativeParticleBounds(engine, ...args),
+              screenBounds: jsBounds,
             });
             const slot = p.load(p.load(original.vm + 56) + 38 * 4),
               args = p.allocate(20, true),

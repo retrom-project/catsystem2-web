@@ -519,6 +519,7 @@ test('StageRenderer orders a real native plane and x86 particle task into one de
     async (bytes) => {
       const { NativeObjects } = await import('/src/native/objects.mjs'),
         { NativeHandles } = await import('/src/native/handles.mjs'),
+        { NativeBufferMemory } = await import('/src/native/buffer-memory.mjs'),
         { installNativeGraphics, nativeGraphics } = await import('/src/native/graphics.mjs'),
         { installNativeParticles, nativeParticles } = await import('/src/native/particles.mjs'),
         { StageRenderer } = await import('/src/render/stage.mjs'),
@@ -543,6 +544,7 @@ test('StageRenderer orders a real native plane and x86 particle task into one de
           },
           runtime: {
             handles: new NativeHandles(),
+            imageDataBuffers: { process: new NativeBufferMemory() },
             register() {},
             services: { format: (address, current) => current.string(address) },
           },
@@ -559,7 +561,7 @@ test('StageRenderer orders a real native plane and x86 particle task into one de
         };
       objects.register(0, (record) => world.base(record));
       installNativeGraphics(world);
-      installNativeParticles(world);
+      installNativeParticles(world, { atlas: undefined });
       const placeholder = await objects.create({ kind: 0 }),
         plane = await objects.create({ kind: 2, parent: placeholder }),
         particle = await objects.create({ kind: 16, parent: placeholder }),

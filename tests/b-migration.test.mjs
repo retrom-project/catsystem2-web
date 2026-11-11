@@ -36,8 +36,8 @@ test('B inventory reproduces the actual overrides, separate tables and complete 
     assert.equal(entry('main', 0x1d).implementation, 'pure-js');
     assert.equal(entry('main', 0x237).implementation, 'pure-js');
     assert.equal(entry('main', 0x7a).module, 'src/native/bitmap-operations.mjs');
-    assert.equal(entry('main', 0x10f).implementation, 'original-handler');
-    assert.equal(entry('particle-v1', 38).review, 'needs-review');
+    assert.equal(entry('main', 0x10f).implementation, 'pure-js');
+    assert.equal(entry('particle-v1', 38).implementation, 'pure-js');
   }
   for (const file of inventory.files) {
     assert.deepEqual(
