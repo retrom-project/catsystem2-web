@@ -76,3 +76,33 @@ transition coverage remain separate acceptance work.
 Primary references: [CPLANE](https://cs2.suki.jp/manual/fes/code/o_cplane.html),
 [PLANE](https://cs2.suki.jp/manual/fes/code/o_plane.html). Frozen executable
 bytes, raw decompilation and private runtime reports remain outside Git.
+
+## JavaScript plane resource driver
+
+`FESPlaneDriver` creates actual SimplePlane children when the semantic size
+dirty flag is consumed. CPLANE publishes the color shape; PLANE publishes the
+VRAM shape, keeping physical dimensions, local VRAM origin and Draw output
+offset separate from display placement. A later size rebuild destroys the
+previous child and creates a new graph. Ordinary transform changes preserve
+its identity and render order. An unmodified declaration alone creates no graph.
+
+Position uses the existing typed3/4/21 parent rule. Base, scale and matrix
+accumulate only through parent4; the parent's matrix precedes the child's.
+Draw depth uses the current FES priority rather than accumulated baseZ.
+Typed packet and transform buffers are reused. POS2 consumes its pending
+metadata source once; SIZE2 remains active for subsequent size rebuilds.
+Both use the owning FES encoded-byte cache, including inserted resources.
+Missing metadata retains the original zero output fields.
+
+Sleep publishes a temporary display mask and checkpoints that published mask
+without changing authored display. New World restore reuses existing child,
+shape, graph identity, render order and encoded cache without replaying loads
+or transforms. The short public tests exercise both registered ABIs through
+real World/D6 services, metadata, deletion/recreation and no-file continuation.
+They do not add a GPU pixel claim; complete rendering acceptance belongs to
+the coordinated default-entry browser gate.
+
+The new driver is not yet installed by the default FES factory. Its original
+entry, driver and projection dependencies remain counted until that switch.
+SimplePlane message86 is an independently established empty branch, so its
+pending filename request does not invent a file-backed graph.
