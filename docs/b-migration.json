@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 132, "oracle": 141, "differential": 65 },
+    "counts": { "js": 132, "oracle": 142, "differential": 66 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -290,6 +290,7 @@
         "tests/oracle/native-scalar-math.test.mjs",
         "tests/plugin-oracle-frames.test.mjs",
         "tests/ppi-floating-point.test.mjs",
+        "tests/ppi-js-host.test.mjs",
         "tests/ppi-native.test.mjs",
         "tests/ppi-particle-order.test.mjs",
         "tests/progress-budget.test.mjs",
@@ -356,6 +357,7 @@
         "tests/differential/plane-model-commands.test.mjs",
         "tests/differential/plane-state.test.mjs",
         "tests/differential/plane-trail-vectors.test.mjs",
+        "tests/differential/ppi-js-host.test.mjs",
         "tests/differential/render-sources.test.mjs",
         "tests/differential/render-surfaces.test.mjs",
         "tests/differential/retained-animation.test.mjs",
@@ -2707,13 +2709,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 404,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 153, "9": 44 },
-    "fileNeedsReview": 97,
+    "runtimeFiles": 409,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 153, "9": 49 },
+    "fileNeedsReview": 98,
     "exeDependencyFiles": 78,
     "exeDependencies": { "addresses": 893, "calls": 99, "references": 6 },
-    "nonNativeGroups": 29,
-    "executionSites": 326
+    "nonNativeGroups": 30,
+    "executionSites": 327
   },
   "profiles": [
     {
@@ -56538,6 +56540,40 @@
       "review": "counted"
     },
     {
+      "file": "src/ppi/host.mjs",
+      "sourceSha256": "4ba4cf470e885623171411fb09693a6521067f2df71ccfad11e4f584abc8291a",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["call"],
+      "docs": ["docs/native-ppi.md"],
+      "executionSites": [
+        {
+          "line": 81,
+          "method": "call",
+          "target": "slot",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "executionSiteCounts": { "call": 1 },
+      "indirectSites": [],
+      "review": "needs-review"
+    },
+    {
+      "file": "src/ppi/js-runtime.mjs",
+      "sourceSha256": "8ffdf1878ec496636eeab4938f08e30e77db9cb3829968ad79b289f45502fcf4",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-ppi.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/ppi/native-projection-math.mjs",
       "sourceSha256": "c1414ef7f3aa2bf647595a3f287b125d84ba360db23d4c32f2f012eb86c0e97a",
       "domain": 3,
@@ -56717,6 +56753,19 @@
       "review": "needs-review"
     },
     {
+      "file": "src/ppi/plugin-identity.mjs",
+      "sourceSha256": "0b960f7bd033d3ff8f9e5afdb05916a6c6568a9cb3ab6c5a768b0bfc7a78d664",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-ppi.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/ppi/random.mjs",
       "sourceSha256": "a7787744e4612e2d9dc5dc124ec36c76f733100804ec01d9ed2b2fb03ef807d0",
       "domain": 3,
@@ -56724,6 +56773,19 @@
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
       "docs": ["docs/native-standard-review.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/ppi/records.mjs",
+      "sourceSha256": "262a191a51cfa572b3c80f664db8ed926979fdf0b38a8be70aac016dd95ffb0f",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-ppi.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -56750,6 +56812,19 @@
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/ppi/verified-versions.mjs",
+      "sourceSha256": "02b8f77133c110cace5093fae1d160ff088b5845466a7dc1bf2aa3e8cca11d11",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-ppi.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -60419,6 +60494,31 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
+      "name": "js-ppi-host",
+      "domain": 9,
+      "entry": "Standalone JSPluginRuntime; product Particles selects it in phase 9.8",
+      "modules": [
+        "src/host.mjs",
+        "src/ppi/host.mjs",
+        "src/ppi/js-runtime.mjs",
+        "src/ppi/plugin-identity.mjs",
+        "src/ppi/records.mjs",
+        "src/ppi/verified-versions.mjs"
+      ],
+      "executionSites": [
+        {
+          "file": "src/ppi/host.mjs",
+          "line": 81,
+          "method": "call",
+          "target": "slot",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        }
+      ],
+      "review": "traced",
+      "reason": "Named JS callback lifecycle, records, RNG, attachment and checkpoint data; identity reads are diagnostic only and do not map/execute a DLL. Plugin algorithms are added in 9.6."
+    },
+    {
       "name": "ppi-and-dll-host",
       "domain": 9,
       "entry": "Particles → nativeThread for PPI DLL callbacks; engine atlas/bounds/projection owned in JS; PPINativeRuntime → PE32Process; E-mote DLL execution is oracle-only",
@@ -60431,20 +60531,33 @@
         "src/ppi/contracts.mjs",
         "src/ppi/floating-point.mjs",
         "src/ppi/geometry.mjs",
+        "src/ppi/host.mjs",
+        "src/ppi/js-runtime.mjs",
         "src/ppi/native-projection-math.mjs",
         "src/ppi/native-runtime.mjs",
         "src/ppi/native-services.mjs",
         "src/ppi/native.mjs",
         "src/ppi/numeric.mjs",
         "src/ppi/pe32.mjs",
+        "src/ppi/plugin-identity.mjs",
         "src/ppi/random.mjs",
+        "src/ppi/records.mjs",
         "src/ppi/render-state.mjs",
         "src/ppi/script.mjs",
+        "src/ppi/verified-versions.mjs",
         "src/ppi/windows-multibyte.mjs",
         "src/ppi/windows-widechar.mjs",
         "src/ppi/x87.mjs"
       ],
       "executionSites": [
+        {
+          "file": "src/ppi/host.mjs",
+          "line": 81,
+          "method": "call",
+          "target": "slot",
+          "review": "needs-review",
+          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
+        },
         {
           "file": "src/ppi/native-runtime.mjs",
           "line": 106,

@@ -1,8 +1,11 @@
 # Particle, plug-in, motion, and effect compatibility
 
 This document is the implementation contract for CatSystem2 particle effects. A
-game-name or effect-name switch is not a substitute for executing its script or
-plug-in. Completion requires the execution, renderer, lifecycle, and persistence
+game-name switch is not a substitute for implementing its script or plug-in.
+Phase9 replaces DLL execution with independently compared JS plugin algorithms;
+[the JS host](ppi-js.md) first lands independently in9.5 and becomes the product
+selection in9.8. Same-name unverified versions warn and continue; absent
+implementations fail explicitly. Completion requires the execution, renderer, lifecycle, and persistence
 contracts below. Passing one game's route does not establish this coverage.
 
 ## Evidence and current implementation

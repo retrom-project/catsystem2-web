@@ -1142,6 +1142,15 @@ const nonNativeGroups = [
     },
   },
   {
+    name: 'js-ppi-host',
+    domain: 9,
+    entry: 'Standalone JSPluginRuntime; product Particles selects it in phase 9.8',
+    modules: ['js-runtime', 'host', 'records', 'plugin-identity', 'verified-versions'],
+    review: 'traced',
+    reason:
+      'Named JS callback lifecycle, records, RNG, attachment and checkpoint data; identity reads are diagnostic only and do not map/execute a DLL. Plugin algorithms are added in 9.6.',
+  },
+  {
     name: 'ppi-and-dll-host',
     domain: 9,
     entry:
