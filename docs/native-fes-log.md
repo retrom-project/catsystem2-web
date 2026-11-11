@@ -1,0 +1,29 @@
+# FES display-log viewports
+
+`FESLogModel` owns LOGSTRING24 and LOGSTRING8 38 viewport state in JavaScript: binding, top/ring head, physical slots, source identities, positions, six palettes and deferred reference resolution. Rows, normalized scene/block/history indices and language reconstruction remain authoritative in `NativeDisplayLogs`. `FESLogTextService` delegates real generated STRING21/STRING8 37 children to the existing D5 JS text configuration, writer and graphics services. The registered ABI gates STRING8 support.
+
+This model is independently verified. The default FES factory/command scheduler has not yet switched to it; its old D7 execution and projection consumers remain counted. The interpreter must supply typed command selection, original argument defaults/evaluation/output writes, real collection creation/lookup and owner teardown. No original constructor, command or guest prefix is used by the new model or its text service.
+
+## State and ordering
+
+COUNT and resolved size jointly permit allocation. Generated groups are exactly `<base>_cs_<index>` and, for raw38, `<base>_cs_sub_<index>`; each uses factory owner0 and no PARENT link to LOG. The collection owns their lifetime. Ordinary LOG deletion releases its slot/position tables, while complete collection teardown closes the children and their real text tasks/writers.
+
+The driver resolves SIZE2, allocates/configures children, resolves dirty continuous POS2 selectors and consumes previous main-child end changes, before the children run their text phase. Construction and restoration never replay display, source changes, allocation, language remake or end-change consumption. A checkpoint preserves head/top, slots and cached source identities, binding, palette, reference dirtiness and resolved-position bits. Child text/task/writer state is saved by its actual owner.
+
+Binding derives top from a valid log; detaching preserves top, display state and cached children. Binding does not show/refill. Display1 resets head and reloads the viewport; display0 hides both columns only when bound/allocated. Position clamps top and refills only while displayed. Next/rev rotate by the requested signed delta, including a partial boundary hit; they preserve retained writers/reveal and do not show hidden children. An explicit rev argument is used unchanged. Raw group index−1 does not scroll.
+
+Small-edge raw38 rebinding/movement does not test `secondaryEnabled`; full reload/display does. Secondary end changes are consumed once and reposition the corresponding logical display slot. Packed colors update both the FES color cache and real writer configuration. Line/block/path queries index source rows directly, preserve normalized bases, and use the original empty/−1/voice4 results. Block colors can affect all rows of a source block through the original ring mapping, without clipping to the viewport.
+
+## Defined defaults and reallocation
+
+Omitted PRI and unbound top are **defined JS defaults0**, approved as determinization of original uninitialized fields. They are not claimed original constructor defaults. Explicit PRI, valid setlog-derived top, detach-retained top and pos/next rules are preserved. The game's constructor was independently examined; the corresponding SDK constructor was not independently re-examined in this batch.
+
+Complete original game factory evidence establishes unique `(CP932 C-string name, signed index)` insertion. Type is outside the key. The first object/type and first bare group count survive duplicate declarations. Missing indices can be added beyond that retained count and remain accessible by explicit lookup. Object deletion, including the final member, does not remove the count record. Failed native insertion constructs an unreachable allocation; JS does not create a hidden identity or consume a semantic handle for it.
+
+LOG live COUNT/size rebuild therefore reuses registered generated children and only creates missing names. Shrinking keeps surplus collection objects, visibility and writers. Reallocation resets slot metadata/secondaryEnabled but preserves top/head and old child states; it does not hide, refill or restart them. The integrating collection must implement this general rule for every family, rather than adding LOG-specific replacement names.
+
+Fresh native position storage is uninitialized, and COUNT/size changes do not re-arm consumed POS2 dirtiness. A separately approved deterministic JS rule re-resolves an authored POS2 over the full current COUNT after each allocation; without that reference it preserves resolved overlapping positions and leaves new positions unresolved. A head outside the new COUNT becomes0, preserving top and collection/child identities. COUNT0 has an empty viewport, no valid slot, no display/scroll and no modulo operation; surplus collection children remain owned by the collection. A missing authored POS2 rectangle is an explicit resource error. These are intentional replacements for uninitialized positions/out-of-range head, not claims about original dirty-bit equivalence. Negative/huge COUNT, invalid dimensions and corrupted source intervals have no claimed oracle equivalence.
+
+## Verification
+
+`fes-log-model.test.mjs` tests actual display logs with trace children. `fes-log-world.test.mjs` uses real JS D5 text runtime, kind48/63 tasks, exact RGBA output and fresh World restore for both registered raw24 profiles and supported raw38. It covers omitted PRI, binding before position, detach/rebind, language and source indices, ring/reveal preservation, color changes, pending end changes, grow/shrink/size child identity reuse, surplus objects, ordinary LOG close and owner teardown. Its explicit semantic collection fixture bypasses the still-original default FES factory; it is not an end-to-end FESPlayer claim.
