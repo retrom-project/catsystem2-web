@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 149, "oracle": 141, "differential": 67 },
+    "counts": { "js": 149, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -172,6 +172,7 @@
         "tests/zlib-javascript.test.mjs"
       ],
       "oracle": [
+        "tests/control-model.test.mjs",
         "tests/emote-document.test.mjs",
         "tests/execution.test.mjs",
         "tests/frame-profile-counters.test.mjs",
@@ -2717,8 +2718,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 433,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 46, "8": 162, "9": 55 },
+    "runtimeFiles": 435,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 47, "8": 163, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -49836,6 +49837,19 @@
       "review": "counted"
     },
     {
+      "file": "src/native/control-task-model.mjs",
+      "sourceSha256": "36fc464cce76dac9221fc1d2930ffbbe6fec35e18ef9f8a322c665d2c91d18bb",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/control-task.mjs",
       "sourceSha256": "a5d8a620fbc5f811f661dd4d27cd28e876d358d0a5ea034565e213fcd65526c2",
       "domain": 8,
@@ -51472,6 +51486,19 @@
     {
       "file": "src/native/fes-config.mjs",
       "sourceSha256": "f95d1856dcc07c493a0f364cb944432da2c439d13082ec16144d6f2532a7d3b4",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-control-model.mjs",
+      "sourceSha256": "d9f6d0d3130a87da8f4674325ebfcaa1abf1c47b4f6f65ef80137393b5707f25",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

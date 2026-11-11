@@ -46,3 +46,59 @@ Primary references are the official [SCROLL](https://cs2.suki.jp/manual/fes/code
 [SCROLL2](https://cs2.suki.jp/manual/fes/code/o_scroll2.html) and
 [SLIDER](https://cs2.suki.jp/manual/fes/code/o_slider.html) contracts.
 Executable bytes, decompilation and raw traces remain in ignored local storage.
+
+## Phase 7 semantic models
+
+`fes-control-model.mjs` and `control-task-model.mjs` are independently verified
+JavaScript models. They are not yet the default FES or task-40/41/42 entry:
+the original execution and consumer projections above remain counted until
+that integration is removed. No rendering or World migration is credited here.
+
+The FES model separates authored control geometry from its `pos`/`getpos` value,
+keeps constructor priority10 distinct from explicit priority+20, and retains
+the TYPE/PRI_P/rectangle/VRAM type gates and separate pending flags. Common
+lifetime, graph identity and alpha-only MOT state keep their existing owners.
+Load/range/query packets are borrowed buffers reused per object.
+
+`ControlTaskModel(kind, service, state?)` owns numeric/input state and emits
+explicit services for rendering, skin selection, bounds, notifications and
+release. The integrating adapter owns decoded geometry, resource handles,
+real child task IDs, input capture and actual Draw/plane entries. A restored
+model emits no load, reset or replayed FES event. Its snapshot retains drag
+anchors, unsnapped pixel, last value and the control's independent repeat timer.
+
+The model preserves these original distinctions:
+
+- SCROLL page recomputation resets the task value; SCROLL2 preserves value and
+  pixel while rebuilding its thumb. Slider range assignment does not rebuild.
+- SCROLL/SCROLL2 truncate their step before multiplication; slider multiplies
+  before division. Minima do not gain an invented offset correction.
+- Drag reports quantized values while retaining the current pixel. Release
+  snaps again without FES27, so the task value can differ from its last notified
+  FES value. It does not create another input capture.
+- SCROLL held repeat starts at+30 then advances its independent timer by5 once
+  per task visit. It does not run a catch-up loop or share Input's repeat state.
+- Display, enable, focus, source/button gates and skin state are separate.
+  SCROLL2's verified game selector ignores its stored table; the unverified SDK
+  selector policy remains an explicit integration gap.
+
+The original pixel threshold loop has an exact constant-time form. For positive
+range N, let B be the signed int32 product100×travel, s=trunc(B/N), and
+h=trunc(s/2). Every checked threshold h+k×s, 0≤k<N, lies between0 and B because
+N×abs(s)≤abs(B); it cannot wrap. A failed first comparison gives0; with s≤0 a
+successful comparison givesN; with positive s the result is
+min(N,floor((pixel100−h)/s)+1). The final unused threshold increment has no effect.
+This preserves the signed multiplication and ties without a range-sized loop.
+Native division faults and abs(INT_MIN) remain explicit errors.
+
+`tests/control-model.test.mjs` reuses independent authored geometry and recorded
+numeric/notification observations, checks fresh model/graph restoration and
+packet reuse, and compares representative boundary cases to a BigInt
+transcription of the original short loop. Set
+`CATSYSTEM2_EXTENDED_CONTROL_MODEL=1` to run the optional8,064-case boundary
+matrix. The default uses a small representative set.
+
+Remaining D7 work is the resource/skin composer, canonical task receiver,
+World/lifetime wiring, precise FES driver flag-consumption order, sleep masking,
+and actual pixel/new-World acceptance. Missing mandatory SCROLL metadata must
+remain an error; it cannot become zero geometry or a fake successful task.
