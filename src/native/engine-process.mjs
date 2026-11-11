@@ -6,7 +6,7 @@ import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs
 import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
 import { installNativeRasterKernels } from '../../oracle/raster-kernel-projection.mjs';
 import { NativeFESDrawProjection } from '../../oracle/fes-draw-projection.mjs';
-import { NativeOriginalEffectTask } from '../../oracle/area-effect-task.mjs';
+import { NativeAreaGeometryProjection } from '../../oracle/area-geometry-projection.mjs';
 import { NativeFESScreenEffectProjection } from '../../oracle/fes-screen-effect-projection.mjs';
 import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -117,8 +117,8 @@ export class NativeEngineProcess {
   createDrawSourceProjection(world) {
     return new NativeFESDrawProjection(this, world);
   }
-  createAreaEffectTask(owner, record) {
-    return new NativeOriginalEffectTask(owner, record);
+  createAreaGeometryProjection(world) {
+    return new NativeAreaGeometryProjection(this, world);
   }
   createScreenEffectProjection(world) {
     return new NativeFESScreenEffectProjection(this, world);

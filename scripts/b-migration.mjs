@@ -96,11 +96,11 @@ const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
   5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows text-core text-config text-layout text-parser text-profile-data text-raster legacy-text-state font-backend freetype-artifact fes-text fes-text-layout zlib zlib-artifact deflate',
-  6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
+  6: 'area-effect area-effect-geometry area-effect-pixels area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
 };
 function domain(file) {
   if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
-  if (file === 'oracle/area-effect-task.mjs') return 6;
+  if (file === 'oracle/area-geometry-projection.mjs') return 6;
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
   if (['oracle/raster-kernel-projection.mjs', 'src/native/raster-projection.mjs'].includes(file))
@@ -151,7 +151,7 @@ const originalWrappers = new Set(
     'screen-capture ' +
     'input-commands registry ' +
     'task-dump tile-plane-command ' +
-    'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
+    'plane-movie-command particle-commands ' +
     'version-query sdk-javascript-task emote'
   ).split(' '),
 );
@@ -358,6 +358,13 @@ function classify(file, id, callback, features, modules) {
     name === 'effect-commands' &&
     [0x238, 0x35b].includes(id) &&
     modules.get('src/native/graphics-render.mjs')?.executionSites.length;
+  const areaUpload =
+    name === 'area-effect-commands' &&
+    [0xc6, 0xcb].includes(id) &&
+    modules.get('src/native/graphics-process.mjs')?.executionSites.length;
+  const planeModelReceiver =
+    name === 'plane-model-command' &&
+    modules.get('src/native/graphics-task.mjs')?.executionSites.length;
   let names = callback ? featureNames(callback.node) : [];
   // Follow a callback's direct function delegation before following factories.
   // Scanning every function in its installer would, for example, attach the
@@ -388,6 +395,14 @@ function classify(file, id, callback, features, modules) {
     reasons.push(
       'JS捕获调用仍进入graphics-render的原GraphManager遍历，随6.6删除。效果本身与目标像素由JS持有。',
     );
+  } else if (areaUpload || planeModelReceiver) {
+    implementation = 'exe-region';
+    reasons.push(
+      areaUpload
+        ? 'JS区域效果的结束上传仍经过原纹理页上传，随6.6删除。'
+        : '包装器已迁移JS，Plane接收器仍执行EXE，随6.6删除。',
+    );
+    names.push(areaUpload ? 'graphics-platform' : 'task-memory');
   } else if (originalWrappers.has(name)) {
     implementation = 'original-handler';
   } else if (reviewedRegions.has(name)) {
@@ -620,6 +635,24 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 }
 
 const nonNativeGroups = [
+  {
+    name: 'area-model-callback-data-bridge',
+    domain: 6,
+    entry: 'JS area effects → existing Plane vertex callback data slot → JS geometry',
+    files: ['oracle/area-geometry-projection.mjs'],
+    modules: ['area-effect', 'graphics'],
+    projection: {
+      direction:
+        'Existing model triangle input and callback arguments into JS, returned XYZW into its borrowed vertex packet',
+      authority: 'JS area task parameters, clocks, geometry, RNG and lifecycle',
+      fields: ['raw color triangles', 'borrowed XYZW packet', 'model callback identity'],
+      consumers: [{ domain: 6, modules: ['graphics-render', 'graphics-task'] }],
+      lifetime:
+        'Temporary callback data bridge until Plane/GraphManager traversal is removed in 6.6. No executable instruction hooks or EXE function calls are added by the bridge.',
+      removePhase: 6,
+      operations: ['model', 'callback', 'snapshot', 'restore'],
+    },
+  },
   {
     name: 'fes-screen-capture-projection',
     domain: 7,

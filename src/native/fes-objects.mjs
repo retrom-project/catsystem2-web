@@ -120,9 +120,11 @@ export class NativeFESObjectRuntime {
           if (!task) return 0;
           const message = world.screenEffects?.tasks.has(targetWorldID)
             ? mapABIMessage(engine.profile, 'screen', 'canonical', rawMessage, task.record.kind)
-            : adapter?.canonicalMessage
-              ? adapter.canonicalMessage(rawMessage)
-              : rawMessage;
+            : world.areaEffects?.tasks.has(targetWorldID)
+              ? mapABIMessage(engine.profile, 'area', 'canonical', rawMessage)
+              : adapter?.canonicalMessage
+                ? adapter.canonicalMessage(rawMessage)
+                : rawMessage;
           const transport = {
             payload: this.memory,
             nativePointer: true,

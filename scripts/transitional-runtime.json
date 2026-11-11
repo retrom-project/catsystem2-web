@@ -14,7 +14,7 @@
     "oracle/fes-text-projection.mjs",
     "oracle/fes-draw-projection.mjs",
     "oracle/raster-kernel-projection.mjs",
-    "oracle/area-effect-task.mjs",
+    "oracle/area-geometry-projection.mjs",
     "oracle/fes-screen-effect-projection.mjs"
   ]
 }

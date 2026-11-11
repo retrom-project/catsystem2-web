@@ -1,232 +1,100 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original KCS wrappers for the task effect initializer and playback controls.
-import { nativeABI } from './abi/index.mjs';
+// Area packets retain VM bit patterns and resolve tasks in their caller's Top.
 import { mapABIMessage } from './abi/messages.mjs';
-import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
-import { NativeKCSMemory } from './kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from './catalog.mjs';
-
+import { nativeReply } from '../kcs/vm.mjs';
+import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { nativeDataArgument } from './data-text.mjs';
 export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
   [
-    [0xc4, 2, 2, 0x641600, 0x529770],
-    [0xc5, 1, 2, 0x6419a0, 0x529b10],
-    [0xc6, 1, 2, 0x6419d0, 0x529b40],
-    [0xc7, 2, 2, 0x641880, 0x5299f0],
-    [0xc8, 1, 1, 0x641840, 0x5299b0],
-    [0xc9, 3, 2, 0x641910, 0x529a80],
-    [0xca, 2, 2, 0x641a00, 0x529b70],
-    [0xcb, 1, 2, 0x6415d0, 0x529740],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
+    [0xc4, 2, 2],
+    [0xc5, 1, 2],
+    [0xc6, 1, 2],
+    [0xc7, 2, 2],
+    [0xc8, 1, 1],
+    [0xc9, 3, 2],
+    [0xca, 2, 2],
+    [0xcb, 1, 2],
+  ].map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
 const byID = new Map(NATIVE_AREA_EFFECT_COMMANDS.map((spec) => [spec.id, spec])),
-  bitmapPackets = new Map([
-    [260, { size: 20, fields: [4, 16] }],
-    [274, { size: 56, fields: [4, 16, 28] }],
-    [275, { size: 44, fields: [4, 16] }],
-    [276, { size: 48, fields: [4, 16] }],
-    [277, { size: 60, fields: [8, 20, 32] }],
-    [278, { size: 52, fields: [8, 20] }],
+  initializerMessages = [265, 263, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 274, 277, 278],
+  initializers = new Map(initializerMessages.map((message, i) => [17 + i, message])),
+  liveUpdates = new Map([
+    [18, 264],
+    [25, 273],
   ]);
-
 export class NativeAreaEffectCommands {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.sdk = engine.profile.startsWith('sdk-');
-    const p = this.process,
-      route = p.trap('KCS area effect transport', 7, (args) => this.dispatch(args));
-    this.vtable = p.allocate(20, true);
-    p.store(this.vtable + 16, route);
-    engine.registerFeature('area-effect-commands', this);
-  }
-  async bitmapPacket(address, schema) {
-    if (!address) throw new Error('Native area effect command has no mapped VM packet');
-    const p = this.process,
-      world = this.world,
-      bytes = p.read(address, schema.size),
-      packet = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-      refs = world.runtime.handles.records,
-      sources = this.engine.features.get('render-sources'),
-      typed = [],
-      borrowed = [];
-    for (const at of schema.fields) {
-      const value = packet.getUint32(at, true);
-      if (!value) continue;
-      if (refs.has(value)) typed.push([at, value]);
-      else {
-        const identity = sources?.bitmapWrapperIdentity(value);
-        if (!identity) throw new Error(`Unknown or released area-effect bitmap wrapper ${value}`);
-        borrowed.push([value, identity]);
-      }
-    }
-    if (!typed.length) return 0;
-    const memory = await world.getNativeFeature('bitmap-memory');
-    if (schema === bitmapPackets.get(277)) {
-      const source = typed.find(([at]) => at === 8)?.[1],
-        destination = packet.getUint32(20, true);
-      if (source && destination) {
-        const bitmap = world.graphics.images.get(source),
-          record = memory.refs.data.get(bitmap.dataHandle);
-        if (!record || memory.isOwned?.(bitmap.dataHandle)) {
-          const target = refs.has(destination)
-            ? world.graphics.images.get(destination)
-            : (await world.getNativeFeature('graphics-platform')).logicalBitmap(
-                p.load(destination),
-              );
-          await prepareWipeSource(bitmap, target, packet);
-        }
-      }
-    }
-    for (const [at, value] of typed) packet.setUint32(at, await memory.wrapper(value), true);
-    for (const [value, identity] of borrowed)
-      if (sources.bitmapWrapperIdentity(value) !== identity)
-        throw new Error('Area-effect bitmap wrapper was released before dispatch');
-    const copy = p.allocate(bytes.length);
-    p.write(copy, bytes);
-    return copy;
-  }
-  async dispatch([sender, target, raw, w, l, flags, out]) {
-    const p = this.process,
-      world = this.world,
-      origin = this.engine.currentTaskID,
-      query = this.engine.currentMessageContext,
-      message = mapABIMessage(this.engine.profile, 'areaCommand', 'canonical', raw);
-    if (origin == null || w || flags || (message !== 13 && (message < 257 || message > 278)))
-      throw new Error('Unexpected original area effect envelope');
-    const record = world.objects.objects.get(world.resolveTaskID(target, origin)),
-      area = this.engine.features.get('area-effects'),
-      areaTask = area && record?.implementation?.owner === area,
-      schema = areaTask ? bitmapPackets.get(message) : null,
-      // C7 can target arbitrary tasks. Only the SDK area receivers use the
-      // five-slot offset for this raw packet.
-      delivered =
-        message === nativeABI(this.engine.profile).messages.areaNonReceiver && record && !areaTask
-          ? mapABIMessage(this.engine.profile, 'base', 'canonical', raw)
-          : message,
-      copy = schema ? await this.bitmapPacket(l, schema) : 0;
-    try {
-      const context = {
-          payload: p,
-          nativePointer: true,
-          nativeSender: sender,
-          nativeResult: out,
-          fromHost: true,
-          flags,
-        },
-        value = await world.sendNativeEngine(target, origin, delivered, w, copy || l, context);
-      if (out && Number.isInteger(value)) {
-        p.store(out, value);
-        if (message === 259 && query) query.written = true;
-      }
-      if (typeof context.nativeRouted !== 'boolean')
-        throw new Error('Native area effect transport did not report its route');
-      return Number(context.nativeRouted);
-    } finally {
-      if (copy) p.free(copy);
-    }
+  constructor(world) {
+    this.world = world;
   }
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
     if (!spec) return undefined;
-    // PE32 maps its low system page. A failed VM translation must not make
-    // the original C7 copy read a matrix from that page.
-    if (id === 0xc7) machine.bytes(args[1] ?? machine.nativeArgument(1), 64);
-    const memory =
-      this.world.objects.machine(task.id) === machine
-        ? await this.world.getNativeFeature('task-memory')
-        : null;
-    if (memory) memory.vmPointer(task.id);
-    const p = this.process,
-      bridge = new NativeKCSMemory(p, machine, memory?.mapMachine(task.id, machine));
-    let scratch;
+    const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
+      world = this.world,
+      send = (message, l = 0, payload, context = {}) =>
+        world.sendNativeEngine(a[0], task.id, message, 0, l, {
+          flags: 0,
+          ...(payload ? { payload } : {}),
+          ...context,
+        });
+    if (id === 0xc7) {
+      const packet = new NativeGraphicsPacket();
+      packet.bytes(0, 64).set(machine.bytes(a[1], 64));
+      const record = world.objects.objects.get(world.resolveTaskID(a[0], task.id)),
+        raw = mapABIMessage(world.profile, 'area', 'raw', 262),
+        message =
+          record && !world.areaEffects?.tasks.has(record.id)
+            ? mapABIMessage(world.profile, 'base', 'canonical', raw)
+            : 262;
+      // SDK raw257 reaches Base as259 on a foreign receiver. Area receivers
+      // retain their canonical matrix operation262.
+      await send(message, 0, packet);
+      return nativeReply(2);
+    }
+    if (id === 0xc5 || id === 0xc6 || id === 0xcb) {
+      await send(id === 0xc5 ? 257 : id === 0xc6 ? 258 : 261);
+      return nativeReply(2);
+    }
+    const memory = world.runtime.imageDataBuffers.process,
+      out = memory.allocate(4),
+      caller = id === 0xc4 ? out : world.engineMessages.callerAddress(task.id);
+    memory.store(out, caller);
     try {
-      scratch = p.allocate(12 + 4 * spec.words);
-      const host = scratch,
-        out = scratch + 8,
-        onStack = memory && task.io?.native === id && task.io.pc === machine.pc,
-        argv = onStack
-          ? memory.guestAddress(task.id, machine, machine.nativeArgumentBase)
-          : scratch + 12;
-      if (!onStack)
-        for (let i = 0; i < spec.words; i++)
-          p.store(argv + 4 * i, args[i] ?? machine.nativeArgument(i));
-      p.store(host, this.vtable);
-      p.store(host + 4, this.world.nativeTaskID(task.id));
-      p.store(out, NATIVE_RESULT_SENTINEL);
-      const address = spec.handlers[Number(this.sdk)],
-        // The original GCALL leaves ECX pointing at the dispatch slot.
-        slot = NATIVE_EXE_PROFILES[this.engine.profile].tables.main.va + 4 * id,
-        parameters = [bridge.pointer, host, argv, out],
-        query = id === 0xc8 ? { written: false } : null,
-        options = { task: task.id, messageContext: query },
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(address, parameters, slot, options)
-          : await this.engine.call(address, parameters, slot, options);
-      let value = p.load(out);
-      if (control !== spec.control || (control === 2 && value !== NATIVE_RESULT_SENTINEL))
-        throw new Error('Unexpected original area effect command result');
-      // C8 reuses the host argument's stack word for the receiver reply.
-      // If it remains unwritten, return the real caller's guest identity.
-      if (query && !query.written && memory) value = await memory.pointer(task.id);
-      return nativeReply(control, control === 1 ? value : undefined);
-    } finally {
-      try {
-        bridge.close();
-      } finally {
-        if (scratch) p.free(scratch);
+      const value = await send(id === 0xc8 ? 259 : 13, 0, undefined, {
+          nativeResult: out,
+          resultMemory: memory,
+        }),
+        kind = Number.isInteger(value) ? value : memory.load(out);
+      if (id === 0xc8) return nativeReply(1, kind);
+      if (id === 0xc9 && a[1]) return nativeReply(2);
+      const message =
+        id === 0xc4
+          ? initializers.get(kind)
+          : id === 0xc9
+            ? liveUpdates.get(kind)
+            : [26, 27].includes(kind)
+              ? 260
+              : undefined;
+      if (message === undefined) return nativeReply(2);
+      const address = id === 0xc9 ? a[2] : a[1];
+      // Initializers borrow translated VM storage. Unlike C7, they do not
+      // make a private matrix copy, including receivers with empty branches.
+      if (address === 0xffffffff) await send(message, 0, undefined, { nativeNullPayload: true });
+      else {
+        machine.bytes(address, 1);
+        await send(message, address, machine);
       }
+      return nativeReply(2);
+    } finally {
+      memory.free(out);
     }
   }
-  snapshot() {
-    return { vtable: this.vtable };
-  }
-  restore(state) {
-    this.vtable = state.vtable;
-  }
-  close() {
-    this.process.free(this.vtable);
-  }
 }
-
-// Wipe3 exposes this source mutation to scripts. Apply the command to the JS
-// authority before the original receiver consumes its independent projection.
-async function prepareWipeSource(source, destination, packet) {
-  const input = await source.pixels(),
-    output = await destination.pixels(),
-    sx = packet.getInt32(12, true),
-    sy = packet.getInt32(16, true),
-    dx = packet.getInt32(24, true),
-    dy = packet.getInt32(28, true);
-  let changed = false;
-  for (let y = 0; y < source.height; y++)
-    for (let x = 0; x < source.width; x++) {
-      const at = ((source.height - 1 - sy - y) * source.width + sx + x) * 4,
-        target = ((destination.height - 1 - dy - y) * destination.width + dx + x) * 4;
-      if (
-        at < 0 ||
-        at + 3 >= input.length ||
-        target < 0 ||
-        target + 3 >= output.length ||
-        input[at + 3]
-      )
-        continue;
-      for (let channel = 0; channel < 3; channel++) input[at + channel] = output[target + channel];
-      changed = true;
-    }
-  if (changed) {
-    source.state.source = null;
-    await source.changed();
-  }
-}
-
 export function installNativeAreaEffectCommands(world) {
-  world.registerNativeFeature(
-    'area-effect-commands',
-    (engine) => new NativeAreaEffectCommands(engine, world),
-  );
+  const areaCommands = new NativeAreaEffectCommands(world);
   for (const { id } of NATIVE_AREA_EFFECT_COMMANDS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('area-effect-commands')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine, task) =>
+      areaCommands.apply(id, args, machine, task),
     );
 }

@@ -90,11 +90,10 @@ SimplePlane messages 45 and 46 execute the original entries and allocate
 their original graph models. The tiled path creates two real child tasks
 through the World router in the two-profile browser fixture. The same game
 build also exercises ordinary native callback registration alongside M2.
-The original [after](https://cs2.suki.jp/manual/scene/reference/image_plane/after.html)
-command configures a trail through main `18E` (SDK `5136A0`, game `640FC0`).
+Main `18E` configures a trail through a JS packet wrapper.
 The original receiver stores the 52-byte parameter packet and constructs the
-history and auxiliary models. Main `18F` (SDK `513540`, game `640E60`) copies
-three VM vectors and a matrix into the 128-byte history sample. The native
+history and auxiliary models. Main `18F` copies three VM vectors, a matrix, and the scalar words into the
+128-byte history sample in JS. The native
 receiver still shifts the history, updates the auxiliary graphs and releases
 them when the trail is disabled. These IDs share the native view without
 requiring a World task of the same number. The browser regression exercises
@@ -107,12 +106,10 @@ decoded frames through the shared device and preserve their playback state.
 
 ## File-backed Plane models
 
-Main `51` invokes the SDK `5133C0` or game `640CE0` wrapper. It
-expands the VM filename, prefixes the KX2 resource category and sends the
-original guest filename buffer to the mounted Plane. The original loader opens
+Main `51` expands the VM filename in JS, resolves the KX2 resource category,
+and sends a canonical filename packet to the mounted Plane. The original loader opens
 the resource, parses its triangle records and installs a type 6 graph model.
-Main `15A` similarly forwards the formatted KX3 path and its raw word through
-SDK `513320` or game `640C40`. Both frozen BasePlane receivers leave the
+Main `15A` similarly forwards the formatted KX3 path and its raw word in JS. Both frozen BasePlane receivers leave the
 existing model unchanged for this message; this route establishes no KX3 file
 decoder.
 

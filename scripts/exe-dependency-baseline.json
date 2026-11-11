@@ -1,11 +1,6 @@
 {
   "version": 1,
   "files": {
-    "oracle/area-effect-task.mjs": {
-      "addresses": 0,
-      "calls": 2,
-      "references": 0
-    },
     "oracle/bitmap-memory.mjs": {
       "addresses": 14,
       "calls": 2,
@@ -48,16 +43,6 @@
     },
     "oracle/transitional-exe.mjs": {
       "addresses": 2,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/area-effect-commands.mjs": {
-      "addresses": 16,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/area-effect.mjs": {
-      "addresses": 60,
       "calls": 0,
       "references": 0
     },
@@ -339,11 +324,6 @@
     "src/native/particle-textures.mjs": {
       "addresses": 16,
       "calls": 2,
-      "references": 0
-    },
-    "src/native/plane-model-command.mjs": {
-      "addresses": 8,
-      "calls": 0,
       "references": 0
     },
     "src/native/plane-movie-command.mjs": {

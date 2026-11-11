@@ -143,9 +143,24 @@ export class NativeEngineMessages {
     this.unregister(record, { erase: true });
   }
   markReleased(record) {
+    if (record.queryCallerAddress) {
+      this.world.runtime.imageDataBuffers.process.free(record.queryCallerAddress);
+      delete record.queryCallerAddress;
+    }
     const routes = this.records.get(record.parent)?.nativeTaskRoutes;
     for (const [key, branch] of routes ?? [])
       if (branch === record.id) routes.set(key, RELEASED_BRANCH);
+  }
+  callerAddress(id) {
+    const record = this.records.get(id);
+    if (!record) throw new Error('Native query caller is absent');
+    if (record.queryCallerAddress) return record.queryCallerAddress;
+    const projection = this.world.nativeEngine?.features.get('task-memory')?.refs.entries.get(id);
+    if (projection) return projection.pointer;
+    const memory = this.world.runtime.imageDataBuffers.process;
+    record.queryCallerAddress = memory.allocate(4);
+    memory.store(record.queryCallerAddress, record.queryCallerAddress);
+    return record.queryCallerAddress;
   }
   unregister(record, { erase = false } = {}) {
     const parents = [];

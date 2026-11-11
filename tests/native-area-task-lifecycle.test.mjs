@@ -8,6 +8,7 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { installNativeAreaEffects as installOracleAreaEffects } from '../oracle/area-effect-original.mjs';
 
 const areaProgram = (kind, name) => {
   const target = [37, [0x14, 68]],
@@ -63,7 +64,7 @@ for (const [kind, name, size, tables] of [
             const game = memoryGame({ 'engine.exe': executable, 'main.kcs': program }),
               configuration = new NativeConfiguration({ profile }),
               random = new ParticleRandom();
-            return new NativeWorld({
+            const world = new NativeWorld({
               game,
               images: {},
               host: {},
@@ -73,6 +74,8 @@ for (const [kind, name, size, tables] of [
               motionLibrary: new MotionLibrary(game, { profile, random }),
               storage: { read: async () => null, write: async () => true },
             });
+            installOracleAreaEffects(world);
+            return world;
           },
           world = make(),
           call = (owner, id, ...args) =>

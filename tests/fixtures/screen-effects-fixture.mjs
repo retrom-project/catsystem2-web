@@ -122,7 +122,7 @@ export class ScreenVectorGPU {
     this.draws.push(
       structuredClone(
         geometry.flatMap(({ vertices }) =>
-          vertices.length === 3 ? vertices : [0, 1, 2, 1, 3, 2].map((i) => vertices[i]),
+          vertices.length === 4 ? [0, 1, 2, 1, 3, 2].map((i) => vertices[i]) : vertices,
         ),
       ),
     );

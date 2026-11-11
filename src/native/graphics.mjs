@@ -358,6 +358,7 @@ export class NativeGraphics {
       bitmapAssets: this.images.snapshotAssets(),
       retainedDraw: this.world.retainedDraw?.snapshot() ?? null,
       screenEffects: this.world.screenEffects?.snapshot() ?? null,
+      planeModelCommands: this.world.planeModelCommands?.snapshot() ?? null,
       vramHandle: this.vramHandle,
       d3dContext: snapshotD3DContext(this.d3dContext),
       view: this.view.snapshot(),
@@ -380,11 +381,13 @@ export class NativeGraphics {
       nativeRenderOrder,
       retainedDraw,
       screenEffects,
+      planeModelCommands,
       ...values
     } = structuredClone(state);
     this.images.restoreAssets(bitmapAssets);
     if (retainedDraw) this.world.retainedDraw.restore(retainedDraw);
     if (screenEffects) this.world.screenEffects.restore(screenEffects);
+    if (planeModelCommands) this.world.planeModelCommands.restore(planeModelCommands);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);
@@ -433,6 +436,33 @@ export class NativeGraphics {
     if (task?.receiver)
       return task.nativePlatform.descriptor(task.record.nativeID) ? task.record.nativeID : -1;
     return task?.graph ? taskID >>> 0 : -1;
+  }
+  async effectModel(nativeID) {
+    const task = [...this.tasks.values()].find((task) => task.record.nativeID === nativeID);
+    if (task?.graph) {
+      const graph = task.graph;
+      return {
+        triangles: () =>
+          (graph.triangles ?? rectangleTriangles(graph)).map((triangle) =>
+            triangle.map((v) => [v.x, v.y, v.z ?? 0, v.w ?? 1]),
+          ),
+        bind: (effect) => {
+          graph.vertexEffectID = effect.record.id;
+        },
+        unbind: () => {
+          delete graph.vertexEffectID;
+        },
+      };
+    }
+    if (!this.world.nativeEngine?.features.get('renderer')?.initialized) return null;
+    return (await this.world.getNativeFeature('area-geometry-projection')).model(nativeID);
+  }
+  effectVertices(graph, vertices, triangle) {
+    const id = graph.vertexEffectID;
+    if (id === undefined) return vertices;
+    const effect = this.world.areaEffects.tasks.get(id);
+    if (!effect) throw new Error('Graph lost its area effect owner');
+    return effect.vertices(vertices, triangle);
   }
   customGraph(record, { width, height, drawGPU }) {
     if (!Number.isFinite(width) || !Number.isFinite(height) || typeof drawGPU !== 'function')
@@ -1029,7 +1059,12 @@ export class NativeGraphicTask {
           );
         graph = { ...graph, mesh: divideNativeTriangles(triangles, division, position) };
       }
-      for (const item of nativeMeshGeometry(graph, this.state, this.graphics.projection())) {
+      for (const item of nativeMeshGeometry(
+        graph,
+        this.state,
+        this.graphics.projection(),
+        (vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
+      )) {
         const frame =
           item.textureID === -1 ? WHITE : await this.graphics.meshTexture(item.textureID);
         gpu.drawGeometry([item], frame, {
@@ -1041,7 +1076,13 @@ export class NativeGraphicTask {
       return;
     }
     gpu.drawGeometry(
-      nativeGraphGeometry(this.graph, this.state, this.graphics.projection()),
+      nativeGraphGeometry(
+        this.graph,
+        this.state,
+        this.graphics.projection(),
+        null,
+        (vertices, triangle) => this.graphics.effectVertices(this.graph, vertices, triangle),
+      ),
       WHITE,
       { blendMode: this.state.blendMode, context: this.graphics.d3dContext, drawType: 0 },
     );
@@ -1098,6 +1139,9 @@ export class NativeGraphicTask {
 
 export function installNativeGraphics(world) {
   if (world.registerNativeFeature) {
+    world.registerNativeFeature('area-geometry-projection', (engine) =>
+      engine.createAreaGeometryProjection(world),
+    );
     world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
     world.registerNativeFeature('vmr9', (engine) => new NativeVMR9(engine));
     world.registerNativeFeature(

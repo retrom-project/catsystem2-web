@@ -97,7 +97,7 @@ export function transformNativeMesh(
   }));
 }
 
-export function nativeMeshGeometry(graph, state, projection) {
+export function nativeMeshGeometry(graph, state, projection, deform = (vertices) => vertices) {
   const records = transformNativeMesh(graph.mesh, graph.kx2, {
       matrixExplicit: graph.matrixExplicit,
       colorOverride: state.colorOverride,
@@ -111,7 +111,7 @@ export function nativeMeshGeometry(graph, state, projection) {
     };
   return records.map((record) => ({
     textureID: record.textureID,
-    vertices: projectNativeTriangle(record.vertices, options),
+    vertices: projectNativeTriangle(deform(record.vertices, record.id), options),
   }));
 }
 

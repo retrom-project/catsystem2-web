@@ -1,140 +1,107 @@
 # Native area effect controls
 
-KCS can create the original `Task_Eff2D_Wipe2` task with kind 29. Both frozen
-profiles run the original constructor, packet receiver, frame update, masked
-bitmap drawing and destructor in the shared PE process. The area effect writes
-to the native view's bitmap upload path.
+JS owns all fifteen area-task kinds and main `C4`–`CB`. `area-effect.mjs`
+owns parameters, clocks, work bitmaps, graph bindings and checkpoint state.
+`area-effect-pixels.mjs` computes integer pixels. `area-effect-geometry.mjs`
+computes Raster, RainDrop and GlassBreak geometry through the reviewed normal
+script precision state.
 
-Kind 28 runs the original WipeAlpha task. Its 48-byte initializer borrows a
-32-bit source and a 32-bit mask at offsets 4 and 16. The mask's blue byte and
-the elapsed frame determine the working alpha, and the work bitmap keeps the
-source RGB. Natural completion uploads the last calculated work bitmap.
-`C6` and active `CB` calculate the endpoint before uploading. The destructor
-releases the work bitmap while the caller keeps both borrowed images.
+| Kind           | Semantics                                | State and output                                                                                                                                  |
+| -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17, 22, 23, 24 | UnderWater, Weather, WipeCircle, TileRev | Handled receiver leaves every reply unwritten. Logic is empty. Draw bookkeeping advances.                                                         |
+| 21, 25         | Wipe, Hydro                              | Base kind/deletion messages remain visible. Effect controls have no receiver branch. Empty logic retains a pending task until owner/host removal. |
+| 18             | Raster                                   | Single model vertex modifier, both axes, normal/converted frequency and period, live parameter updates.                                           |
+| 19             | RainDrop                                 | Shared random stream, owned line vertices, per-frame movement, respawn, custom JS graph and line projection.                                      |
+| 20             | GlassBreak                               | Borrowed live model triangles, owned shards, radial/angular velocity, cumulative transforms and bounded duration.                                 |
+| 26, 27, 29, 30 | Wipe1, Fade, Wipe2, Wipe3                | Borrowed source/destination/mask, owned working pixels, destination upload at completion.                                                         |
+| 28, 31         | WipeAlpha, WipeAlpha3                    | Source RGB with mask-driven alpha, both directions, previous working image at natural completion and computed endpoint at forced completion.      |
 
-Kinds 30 and 31 run the original Wipe3 and WipeAlpha3 tasks through that same
-path. Wipe3's 60-byte initializer borrows bitmaps at offsets 8, 20 and 32. It
-copies destination RGB into fully transparent pixels of the borrowed source.
-WipeAlpha3's 52-byte initializer borrows bitmaps at offsets 8 and 20 and
-requires 32-bit sources and mask. Its two alpha directions can end naturally
-on a different frame from the explicit `C6` and `CB` finish operations.
+| Main slot | Arguments                 | Control | Canonical messages                                             |
+| --------- | ------------------------- | ------- | -------------------------------------------------------------- |
+| `C4`      | Task, VM packet           | 2       | 13, then kind-specific initializer                             |
+| `C5`      | Task                      | 2       | 257                                                            |
+| `C6`      | Task                      | 2       | 258                                                            |
+| `C7`      | Task, VM matrix           | 2       | 262                                                            |
+| `C8`      | Task                      | 1       | 259                                                            |
+| `C9`      | Task, selector, VM packet | 2       | 13, then 264 for Raster or 273 for Hydro when selector is zero |
+| `CA`      | Task, source pair         | 2       | 13, then 260 for Wipe1/Fade                                    |
+| `CB`      | Task                      | 2       | 261                                                            |
 
-| Main slot | Arguments                  | Control | Game entry | SDK entry | Game / SDK message                    |
-| --------- | -------------------------- | ------- | ---------- | --------- | ------------------------------------- |
-| `C4`      | Task ID, VM packet address | 2       | `641600`   | `529770`  | 13, then 274 / 269 for Wipe2          |
-| `C5`      | Task ID                    | 2       | `6419A0`   | `529B10`  | 257 / 252                             |
-| `C6`      | Task ID                    | 2       | `6419D0`   | `529B40`  | 258 / 253                             |
-| `C7`      | Task ID, VM matrix address | 2       | `641880`   | `5299F0`  | 262 / 257                             |
-| `C8`      | Task ID                    | 1       | `641840`   | `5299B0`  | 259 / 254                             |
-| `C9`      | Task ID, selector, VM data | 2       | `641910`   | `529A80`  | 13, then 264 / 259 or 273 / 268       |
-| `CA`      | Task ID, VM source pair    | 2       | `641A00`   | `529B70`  | 13, then 260 / 255 for Wipe1 and Fade |
-| `CB`      | Task ID                    | 2       | `6415D0`   | `529740`  | 261 / 256                             |
+Per-version message numbers come from the existing ABI message map. `C7`
+reads and privately copies all 64 bytes before dispatch, including a zero
+target. Initializers borrow translated VM storage and preserve the packet.
+VM address zero is valid. Failed translation sends a null initializer.
+`C9` still queries the kind when its selector is nonzero.
 
-`C4` queries the receiver's kind before reading the VM address. The original
-`GCALL` leaves the native table slot address in ECX, which `C4` initially saves
-in its query word. When the receiver leaves that word unwritten, the slot address
-fails the effect-kind check. With a matching kind, the original wrapper translates
-the address and sends the corresponding init message. VM address zero can refer
-to mapped data. `C8` reuses its caller pointer argument as result storage. When
-the receiver leaves it unwritten, the returned word is the original caller's
-guest identity. Messages resolve task IDs from the calling task's Top namespace.
+An unwritten `C8` preserves a stable caller identity. An existing task-memory
+binding supplies its guest identity. A caller without that projection owns a
+small JS raw-data identity cell, checkpointed and freed with the task. `C4`'s
+unwritten kind query starts outside the effect-kind range. The wrapper
+verifier normalizes this opaque dispatch-slot identity after checking the
+original GCALL slot independently.
 
-The Wipe2 initializer copies 56 bytes and borrows the bitmap wrappers in words
-1, 4 and 7. Its receiver owns the work bitmap and releases it on reinitialization
-and destruction. A missing required wrapper leaves initialization unsuccessful.
-For a KCS packet containing browser bitmap handles, the transport substitutes the
-persistent PE wrappers in a temporary copy. Borrowed PE wrapper identities from
-`2BF` and `2C5` remain PE pointers. The VM packet, the wrappers' owners and the
-borrowed reference counts remain intact.
+CPU effects keep physical bitmap row addressing. WipeAlpha's work allocation,
+mask offset, blend rectangle and upload rectangle remain distinct, including
+the natural-end reset of its mask offset. The speed table is sampled on start.
+Wipe3 updates borrowed fully transparent source RGB. FES-origin bitmap aliases
+are explicitly imported at the existing D7 bitmap projection, refreshed before
+calculation, and released on replacement, reinitialization and destruction.
 
-`C5` starts an initialized effect at its current native task clock. `C8` reads
-the active flag. `C6` uploads the destination for any initialized effect, while
-`CB` does so only for an active effect. During playback the original rasterizer
-compares the first byte of each 32-bit mask pixel with the threshold computed from
-elapsed frames and duration. At natural completion it uploads the destination
-and clears the active flag. The Wipe2 receiver also accepts message 260 / 255.
-The main `CA` wrapper only sends that message to kind 26 (Wipe1) and kind 27
-(Fade). Its 20-byte packet borrows the new source and destination at offsets
-4 and 16. The original receiver keeps the active clock and work bitmap, and
-Fade still checks the pair's dimensions and pixel format.
+The oracle demonstrates out-of-bounds writes and heap corruption for paired
+Wipe effects with nonzero source origins and full-size measured work extents.
+The JS implementation checks the borrowed storage bounds and raises a
+`RangeError` for that undefined storage range. The private authored clipping
+evidence is recorded in `.local/phase6/6.4-crop-evidence.log`.
 
-With selector zero, `C9` queries the target kind and sends its mapped packet
-to Raster (kind 18) or Hydro (kind 25). The original Raster initializes from
-`C4`, updates its parameters through `C9`, and draws through the original
-GraphManager callback. Stop or destruction removes that callback. Hydro's
-receiver leaves both `C4` and `C9` initialization messages unhandled. Base
-reports kind 25 and marks a delete request pending. The original logic
-stub keeps the task alive. Its inherited draw still updates the clock,
-and owner destruction calls the original Hydro destructor.
+Raster attaches a single modifier and removes it on stop/destruction. RainDrop
+keeps its initialized allocation when parameters change and retains its random
+stream through restore. GlassBreak reads the current triangles on each start,
+keeps its shard allocation after completion, and detaches the model callback.
+The original centroid's unwritten homogeneous word is represented as zero in
+JS. Finite paired pivot/position cancellation and returned XYZW are covered by
+the callback differential. The existing D3D observation API also recorded a
+VRAM-scratch reuse case where that original word makes all output positions
+NaN. JS initializes it deterministically. The authored finite GPU fixture
+starts GlassBreak before unrelated VRAM transfer scratch, and the NaN evidence
+is retained in `.local/phase6/6.4-glass-sdk-evidence.log`.
 
-UnderWater (kind 17) is an original task without a rendered surface. Its
-receiver leaves query outputs unwritten and ignores the KCS delete message.
-The original draw bookkeeping still advances its draw clock. Rejected child
-registration retains the original route aliases and is covered by the
-[task protocol audit](native-engine-messages.md).
-
-RainDrop (kind 19) takes the original 40-byte `C4` packet and updates its
-separate source and projected arrays using the native clock and shared random
-stream. The original graph callback draws pretransformed diffuse line lists.
-`C6` stops the effect; `CB` leaves it active.
-
-GlassBreak (kind 20) initializes from a 12-byte `C4` packet (graph ID,
-float speed and duration). The original start reads the live graph geometry,
-creates shard records, and installs its vertex callback. Completion, `C6`
-and destruction detach that callback. `CB` does not address this kind.
-
-Wipe (kind 21) obtains the shared view and graph manager in its original
-constructor. The `C4` query reaches Base and reports kind 21, so the wrapper
-sends message 268 (263 in the SDK). The Wipe receiver leaves that message and
-the area controls unhandled. No graph or image is created, and `C8` retains
-the caller's native pointer. Base accepts message 3 and sets the pending
-destruction word. The original logic stub leaves the object alive, while the
-inherited draw updates its frame word and returns before walking children.
-The original destructor releases any owned buffer at offset 196. The shared
-view and manager retain their ownership.
-
-Weather (kind 22), WipeCircle (kind 23) and TileRev (kind 24) each use their
-original constructor and destructor with the same handled, unwritten
-receiver as UnderWater. The `C4` kind query leaves its output unchanged,
-so the wrapper never sends the initializer. These tasks create no graphics
-resources. Their original draw advances the clock, and owner teardown or
-explicit host removal releases the task.
-
-`C7` translates the VM address, copies exactly 64 bytes to the original stack,
-and sends that copy with zero `w` and flags. The original wrappers fault on a
-failed translation before sending. The original receiver scan found no matrix
-consumers among the inspected task types. Raster and SimplePlane receive the
-packet without changing the active effect or applying a matrix to the scene.
+The existing Plane traversal remains until 6.6. During this interval,
+`oracle/area-geometry-projection.mjs` adapts the existing model callback data
+slot to JS geometry. It adds no instruction hooks or EXE function calls. Its
+removal phase is 6.6. CPU finish uploads still reach the old texture-page
+upload path, also scheduled for removal in 6.6. These residual execution paths
+remain visible in `b-migration.json`.
 
 ## Verification
 
-`scripts/verify-native-area-effect-commands.mjs` executes both complete frozen
-wrappers and the adapter with an independent observing transport. Each profile
-runs 7,288 wrapper cases with 56,869 comparisons over initializer, replacement
-and live-update branches, data, shared and extended VM regions, missing addresses,
-receiver writes, output canaries and unwritten replies. Its 1,029 receiver checks
-per profile execute the original Wipe2, Wipe1/Fade, WipeAlpha, Raster, Hydro,
-Wipe3, WipeAlpha3, UnderWater, RainDrop, GlassBreak, Wipe, Weather, WipeCircle
-and TileRev paths.
+`scripts/verify-native-area-effect-commands.mjs` compares all eight JS wrappers
+with the complete frozen wrappers at the existing observing transport. Both
+ABIs run 7,288 cases, including unwritten replies, exact packet bits, VM aliases,
+matrix copy isolation, null translations and canaries. It also retains the
+existing original task lifecycle and receiver evidence.
 
-`tests/browser/native-area-effect.spec.mjs` runs authored KCS in both profiles,
-displays the native upload through a real VRAM plane and compares exact RGBA
-pixels. It restores a fresh World mid-effect, verifies the next frame, then
-exercises both finish commands and destruction. A separate test replaces Wipe1
-and Fade sources during playback and verifies the next pixels before and after
-fresh restore. Another test exercises the original Raster callback, reads
-its rendered pixels after fresh restore and verifies callback removal on
-stop and active destruction. It also verifies that the original `C7` packet is a
-stack copy and has no visual effect. Source ownership stays with the KCS resource
-list or bitmap owner. Frozen executables and raw reports stay outside version control.
+`tests/differential/area-effect-pixels.test.mjs` compares integer working bytes,
+rectangles, activity, forced finishes, speed selection and fresh JS continuation.
+`area-effect-geometry.test.mjs` compares both axes/modes, initial and respawned
+rain, shard callbacks and RNG. Finite geometry allows one f32 ULP. Integer
+pixels, colors, packet bytes and random state are exact.
 
-The wrapper and receiver checks cover every `C4` factory kind. Native
-initialization and fresh browser pixel checks cover Raster, RainDrop, GlassBreak,
-Wipe1, Fade, WipeAlpha, Wipe2, Wipe3 and WipeAlpha3. The WipeAlpha cases
-exercise both directions, exact alpha words and uploads, rejected formats,
-clipping, reinitialization and borrowed image lifetime.
+`tests/native-area-js-state.test.mjs` runs without private files and checks
+empty receiver lifetimes, query identities, work ownership and fresh custom-graph
+restoration. `tests/browser/native-area-effect.spec.mjs` compares the nine
+rendering effects with the original in real WebGL, including a fresh World
+halfway through each sequence. Floating blend/filter output allows one channel
+value. Node tests independently cover the integer pixels and geometry.
 
-The Wipe browser cases run authored KCS against both mounted engines, verify
-unchanged nonempty GPU pixels and restore the pending task with its owned
-buffer. The resumed original draw writes its frame word, and the original
-destructor frees the buffer without changing the visible plane.
+Original implementations are retained in the unshipped `oracle/area-effect-*`
+modules for differential evidence. Private EXEs and game assets stay outside Git.
+
+### RGB24 boundaries
+
+Fade and alpha receivers reject RGB24 source/destination/mask inputs before
+activation, as verified on both ABIs over seven ticks. Wipe1/2/3 accept those
+inputs, but their CPU loops step borrowed bitmap data in DWORDs. An eight-pixel
+RGB24 row has 24 storage bytes while these loops access 32 bytes, including
+beyond the final allocation. JS reports `RangeError` for these unsafe wipe
+inputs instead of reading adjacent allocations. The differential fixture retains
+original activation evidence and exercises the defined RGB32 path separately.

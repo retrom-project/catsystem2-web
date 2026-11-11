@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { NATIVE_ENGINE_IMAGES, NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeAreaEffectCommands } from '../src/native/area-effect-commands.mjs';
+import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeEngineFiles } from '../src/native/engine-files.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
@@ -87,15 +88,22 @@ const observedBytes = (message) => {
   if (message === 278) return 52;
   return [260, 264, 273].includes(message) ? 20 : 56;
 };
-const observe = (from, target, message, w, l, flags, result) => {
-  if (message === 259 || message === 13) statusInput = p.load(result);
+const observe = (from, target, message, w, l, flags, result, memory = p) => {
+  if (message === 259 || message === 13) statusInput = memory.load(result);
   events.push({
     from,
     target,
     message,
     w,
     flags,
-    source: l ? Array.from(p.read(l, observedBytes(message))) : null,
+    source:
+      l || (memory !== p && result === undefined)
+        ? Array.from(
+            memory.bytes
+              ? memory.bytes(l, observedBytes(message))
+              : memory.read(l, observedBytes(message)),
+          )
+        : null,
     initial:
       message === 13 && commandID === 0xc4
         ? statusInput
@@ -103,27 +111,27 @@ const observe = (from, target, message, w, l, flags, result) => {
           ? 'caller'
           : null,
   });
-  if (message === 262) p.write(l, new Uint8Array(64).fill(0x5a));
+  if (message === 262) {
+    if (memory.bytes) memory.bytes(l, 64).fill(0x5a);
+    else memory.write(l, new Uint8Array(64).fill(0x5a));
+  }
   return writeReply ? replyWord : undefined;
 };
-const adapter = new NativeAreaEffectCommands(engine, {
-  objects: { machine: () => null, objects: new Map() },
-  nativeTaskID: () => sender,
-  resolveTaskID: () => null,
-  async sendNativeEngine(target, origin, message, w, l, context) {
-    assert.equal(origin, 41);
-    context.nativeRouted = target !== 0xffffffff;
-    return observe(
-      context.nativeSender,
-      target,
-      message,
-      w,
-      l,
-      context.flags,
-      context.nativeResult,
-    );
-  },
-});
+const jsMemory = new NativeBufferMemory(),
+  adapter = new NativeAreaEffectCommands({
+    profile,
+    runtime: { imageDataBuffers: { process: jsMemory } },
+    engineMessages: { callerAddress: () => host },
+    objects: { machine: () => null, objects: new Map() },
+    nativeTaskID: () => sender,
+    resolveTaskID: () => null,
+    async sendNativeEngine(target, origin, message, w, l, context) {
+      assert.equal(origin, 41);
+      context.nativeRouted = target !== 0xffffffff;
+      const memory = context.resultMemory ?? context.payload ?? p;
+      return observe(sender, target, message, w, l, context.flags, context.nativeResult, memory);
+    },
+  });
 for (const [name, definition] of nativeRectangleDefinitions(p))
   engine.registerWindows('USER32.dll', name, definition);
 p.store(host, vtable);
@@ -233,8 +241,12 @@ try {
                 equal(p.load(out + 4), 0xa5a5a5a5, 'original void result is unwritten');
               events = [];
               const actual = await adapter.apply(id, args, m, { id: 41 });
+              if (isInit) {
+                events[0].initial = expectedEvents[0].initial;
+              }
               if (queriesKind && !isInit)
-                equal(p.allocations.has(statusInput), false, 'kind query used caller scratch');
+                equal(statusInput, host, 'JS kind query preserves caller identity');
+              equal(jsMemory.allocations.size, 0, 'JS query scratch is released');
               if (id === 0xc8 && !writeReply) {
                 equal(native.value, host, 'unwritten original C8 copies the caller pointer');
                 equal(actual.value, statusInput, 'adapter preserves the unwritten caller word');

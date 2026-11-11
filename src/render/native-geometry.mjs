@@ -56,6 +56,7 @@ export function projectNativeTriangle(
   {
     textured = false,
     enabled = true,
+    forcePerspective = false,
     priority = 0,
     position = [0, 0, 0],
     coordMode = 0,
@@ -73,16 +74,16 @@ export function projectNativeTriangle(
   return triangle.map((vertex) => {
     const depth = f(65000 - f(vertex.z + f(priority)));
     let p;
-    if (perspective && (textured || vertex.z !== 0)) {
+    if (perspective && (forcePerspective || textured || vertex.z !== 0)) {
       const denominator = depth === near ? 1 : f(depth - near),
         scale = Math.max(0, f(f(cameraNear) / denominator));
       p = [
         f(f(f(vertex.x - origin[0]) * scale) + origin[0]),
         f(f(f(vertex.y - origin[1]) * scale) + origin[1]),
         f(depth * f(1 / 65000)),
-        f(1 / denominator),
+        f(f(vertex.w ?? 1) * f(1 / denominator)),
       ];
-    } else p = [vertex.x, vertex.y, f(depth * f(1 / 65000)), 1];
+    } else p = [vertex.x, vertex.y, f(depth * f(1 / 65000)), vertex.w ?? 1];
     p = transform(p, screenMatrix);
     return {
       ...vertex,
@@ -94,7 +95,13 @@ export function projectNativeTriangle(
   });
 }
 
-export function nativeGraphGeometry(graph, state, projection, texture = null) {
+export function nativeGraphGeometry(
+  graph,
+  state,
+  projection,
+  texture = null,
+  deform = (vertices) => vertices,
+) {
   const triangles = graph.triangles || rectangleTriangles(graph),
     vram = motionVector(graph.kx2, MOTION_ABI.vram);
   const textured = Boolean(texture),
@@ -114,8 +121,8 @@ export function nativeGraphGeometry(graph, state, projection, texture = null) {
     colorOverride: state.colorOverride,
     useEuler: graph.matrixExplicit === false,
   });
-  return working.map((triangle) => {
-    const projected = projectNativeTriangle(triangle, {
+  return working.map((triangle, index) => {
+    const projected = projectNativeTriangle(deform(triangle, index), {
       ...projection,
       textured,
       priority: motionVector(graph.kx2, MOTION_ABI.base)[2],
