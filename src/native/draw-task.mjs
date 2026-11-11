@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Drawing task constructor/message entry: game 5F3C00/5F3F50.
+import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
@@ -22,6 +23,9 @@ export class NativeDrawTask {
       dirty: true,
       registrations: [],
     };
+  }
+  retained() {
+    return this.world.retainedDraw ?? this.world.nativeEngine?.features.get('retained-draw');
   }
   async message(words, context = {}) {
     const { payload } = context;
@@ -83,14 +87,14 @@ export class NativeDrawTask {
         if (!this.state.renderer) return 0;
         const fields = Array.from({ length: 15 }, (_, i) => load(l + i * 4));
         if (context.imageOwnerHandle !== undefined) {
-          fields[3] = await this.world.imageOwners.materialize(context.imageOwnerHandle);
-          const retained = await this.world.getNativeFeature('retained-draw');
-          await retained.bind(this, key, fields);
+          fields[3] = context.imageOwnerHandle;
+          const retained = this.retained() ?? (await this.world.getNativeFeature('retained-draw'));
+          await retained.bind(this, key, fields, context);
           return 0;
         }
-        if (context.nativePointer) {
-          const retained = await this.world.getNativeFeature('retained-draw');
-          await retained.bind(this, key, fields);
+        if (context.nativePointer || fields.slice(1, 4).some(Boolean)) {
+          const retained = this.retained() ?? (await this.world.getNativeFeature('retained-draw'));
+          await retained.bind(this, key, fields, context);
           return 0;
         }
         if (!fields[0]) {
@@ -149,7 +153,7 @@ export class NativeDrawTask {
         return this.state.renderer?.items.length || 0;
       case 287: {
         const item = this.entry(key);
-        this.world.nativeEngine?.features.get('retained-draw')?.visible(this, key, l);
+        this.retained()?.visible(this, key, l);
         if (item && item.visible !== Boolean(l)) {
           this.mark(item);
           item.visible = Boolean(l);
@@ -165,7 +169,7 @@ export class NativeDrawTask {
             l || payload
               ? Array.from({ length: 4 }, (_, i) => load(l + i * 4) | 0)
               : [0, 0, this.state.renderer.width, this.state.renderer.height];
-          await this.world.nativeEngine?.features.get('retained-draw')?.clip(this, key, item.clip);
+          await this.retained()?.clip(this, key, item.clip);
           this.mark(item);
         }
         return 0;
@@ -199,12 +203,20 @@ export class NativeDrawTask {
         const name = payload
           ? payload.string(l)
           : this.world.objects.machine(context.nativeSenderWorldID ?? sender).string(l);
-        await (await this.world.getNativeFeature('retained-draw')).load(this, key, name);
+        await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).load(
+          this,
+          key,
+          name,
+        );
         return 0;
       }
       case 295:
         if (this.state.renderer)
-          await (await this.world.getNativeFeature('retained-draw')).enable(this, key, l);
+          await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).enable(
+            this,
+            key,
+            l,
+          );
         return 0;
       case 296: {
         const image =
@@ -244,8 +256,11 @@ export class NativeDrawTask {
         const item = this.entry(key);
         if (item) {
           this.mark(item);
-          if (this.world.nativeEngine)
-            await (await this.world.getNativeFeature('retained-draw')).refresh(this, key);
+          if (this.retained())
+            await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).refresh(
+              this,
+              key,
+            );
           this.mark(this.entry(key));
         }
         return 0;
@@ -296,12 +311,9 @@ export class NativeDrawTask {
     }
   }
   async setAnimationVariable(key, index, value) {
-    return (await this.world.getNativeFeature('retained-draw')).setAnimationVariable(
-      this,
-      key,
-      index,
-      value,
-    );
+    return (
+      this.retained() ?? (await this.world.getNativeFeature('retained-draw'))
+    ).setAnimationVariable(this, key, index, value);
   }
   async soundTarget() {
     return nativeEngineWord(
@@ -408,8 +420,16 @@ export class NativeDrawTask {
       }).area;
     }
     const image = this.graphics.images.get(item.image),
-      x = (image.state.offsetX | 0) + Math.trunc(item.position[0]) - Math.trunc(item.base[0]),
-      y = (image.state.offsetY | 0) + Math.trunc(item.position[1]) - Math.trunc(item.base[1]);
+      x =
+        ((image.state.offsetX | 0) +
+          truncateFloat32(item.position[0]) -
+          truncateFloat32(item.base[0])) |
+        0,
+      y =
+        ((image.state.offsetY | 0) +
+          truncateFloat32(item.position[1]) -
+          truncateFloat32(item.base[1])) |
+        0;
     return [x, y, x + image.width, y + image.height];
   }
   mark(item, previous = false) {
@@ -426,7 +446,11 @@ export class NativeDrawTask {
     // Original resource setters may already have destroyed the previous bitmap.
     // Its last valid geometry still invalidates the pixels it occupied.
     if (old) this.mark(old, true);
-    const alias = this.graphics.images.alias(values.image, this.record.id);
+    const source = this.graphics.images.get(values.image),
+      alias =
+        old && this.graphics.images.get(old.image).dataHandle === source.dataHandle
+          ? old.image
+          : this.graphics.images.alias(values.image, this.record.id);
     const item = {
       ...values,
       key: key >>> 0,
@@ -436,14 +460,14 @@ export class NativeDrawTask {
     };
     if (old) {
       renderer.items.splice(renderer.items.indexOf(old), 1, item);
-      await this.graphics.images.release(old.image);
+      if (old.image !== alias) await this.graphics.images.release(old.image);
     } else renderer.items.push(item);
     this.mark(item);
     return item;
   }
   async remove(key) {
     const removed = await this.removeEntry(key);
-    await this.world.nativeEngine?.features.get('retained-draw')?.remove(this, key);
+    await this.retained()?.remove(this, key);
     return removed;
   }
   async removeEntry(key) {
@@ -525,7 +549,7 @@ export class NativeDrawTask {
     const bitmap = this.graphics.images.get(renderer.bitmap),
       areas = region ? [region] : renderer.dirtyRects;
     if (renderer.externalPaint) areas.push([0, 0, renderer.width, renderer.height]);
-    const nativeRenderer = this.world.nativeEngine?.features.get('retained-draw');
+    const nativeRenderer = this.retained();
     if (nativeRenderer) await nativeRenderer.rasterize(this, areas, forceOutput);
     else
       for (const area of areas) {
@@ -553,7 +577,7 @@ export class NativeDrawTask {
   }
   async drawTick(frame) {
     if (!this.state.renderer || !this.state.enabled) return;
-    await this.world.nativeEngine?.features.get('retained-draw')?.update(this, frame);
+    await this.retained()?.update(this, frame);
     await this.render();
   }
   async close() {
@@ -565,7 +589,7 @@ export class NativeDrawTask {
   }
   async releaseRenderer() {
     for (const item of [...this.state.renderer.items]) await this.removeEntry(item.key);
-    await this.world.nativeEngine?.features.get('retained-draw')?.removeSurface(this);
+    await this.retained()?.removeSurface(this);
     await this.world.nativeEngine?.features
       .get('graphics-platform')
       ?.releaseOwnerImages(this.record.id);

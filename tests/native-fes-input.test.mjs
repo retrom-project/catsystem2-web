@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
+import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import assert from 'node:assert/strict';
 import { FESInput } from '../src/native/fes-input.mjs';
 import { NativeInput } from '../src/native/input.mjs';
@@ -211,7 +212,7 @@ test('FES sleep hides retained entries and plane tasks while preserving authored
     buttonID = input.state.buttons[0][1];
   await renderer.render();
   assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
+    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
     [255, 0, 0, 255],
   );
   await world.graphics.setFESSleep(record, player, 1);
@@ -223,7 +224,7 @@ test('FES sleep hides retained entries and plane tasks while preserving authored
   assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, false);
   assert.equal(input.snapshot().sleeping, true);
   assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
+    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
     [0, 0, 0, 0],
   );
   await world.graphics.setFESSleep(record, player, 0);
@@ -232,7 +233,7 @@ test('FES sleep hides retained entries and plane tasks while preserving authored
   assert.equal(world.input.get(buttonID).enabled, true);
   assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, true);
   assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
+    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
     [255, 0, 0, 255],
   );
 });

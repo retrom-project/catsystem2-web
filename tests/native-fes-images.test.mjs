@@ -456,17 +456,19 @@ for (const [profile, variable] of [
         for (let frame = 1; frame <= 3; frame++) await world.objects.drawTick(frame);
         assert.equal(entry(world, surface, 20).alpha, 128);
         assert.deepEqual(await pixel(world, surface, 20), [60, 0, 150, 255]);
-        const retained = world.nativeEngine.features.get('retained-draw');
+        const retained = world.retainedDraw;
         if (!profile.startsWith('sdk-')) {
           const workers = world.nativeEngine.features.get('engine-workers');
-          assert.ok([...workers.threads.values()].every((thread) => thread.completed));
+          assert.equal(
+            [...(workers?.threads.values() ?? [])].filter((thread) => thread.kind === 'image')
+              .length,
+            0,
+            'JS Draw decodes frame maps without an EXE image worker',
+          );
         }
         restored = await fixture(profile, exe);
         await restored.restore(structuredClone(world.snapshot()));
-        assert.equal(
-          restored.nativeEngine.features.get('retained-draw').renderers.get(surface).pointer,
-          retained.renderers.get(surface).pointer,
-        );
+        assert.deepEqual(restored.retainedDraw.snapshot(), retained.snapshot());
         for (let frame = 4; frame <= 9; frame++) {
           for (const current of [world, restored]) await current.objects.drawTick(frame);
           assert.deepEqual(await pixel(restored, surface, 20), await pixel(world, surface, 20));

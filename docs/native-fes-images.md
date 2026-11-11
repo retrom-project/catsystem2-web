@@ -22,20 +22,18 @@ boundary. `logicalBitmap()` and `writeLogicalBitmap()` transfer logical RGBA,
 including canvas, crop offset, anchor, clip, MASK and BTYPE metadata. These APIs
 must not be interchanged or globally flipped.
 
-The original retained compositor remains responsible for integer and affine
-sampling, clipping, opacity, MASK, BTYPE and ordering. A drawing surface retains
-its original manager until the surface is resized or released. Native image and
-ANM entries enter the manager through its retained-source operation
-(`743270` / `5E3EA0`), which holds the same original object. Its owner, canvas,
-anchor, animation and bitmap references are preserved. Effective animated
-opacity is not written back as base opacity during rebinding.
-Host-authored bitmaps cross the CPU format boundary when their data identity or
-revision changes. The retained manager, source references, pixels and dirty
-state belong to the single native process checkpoint. The logical CPU result updates the drawing task's
-bitmap; the original upload boundary writes physical rows to VRAM and its
-allocated texture pages. A source MASK selects a native BGRA byte channel for
-destination alpha. BTYPE is a separate compositing field; it is not the MASK
-selector.
+The JS retained compositor owns integer and affine sampling, clipping, opacity,
+MASK, BTYPE, ordering, dirty regions and references. FES producer descriptors
+cross `oracle/fes-draw-projection.mjs` until phase7. The importer preserves
+allocation generations, frame maps, ANM clocks and live wrapper identities.
+The JS ANM result is published back to each original producer record at the
+call boundary. Animated effective opacity remains separate from base opacity.
+
+NativeBitmap stores logical RGBA rows. The Draw raster uses physical rows and
+converts its final CPU result back to logical rows. VRAM receives physical
+rows. Resource pixels and ANM state belong to JS handle snapshots. GPU/COM
+locks use the StageRenderer-owned surface store through an explicit DLL
+projection. The following original compositor addresses are oracle evidence.
 
 | Boundary                         | Game                | SDK                 |
 | -------------------------------- | ------------------- | ------------------- |
@@ -48,14 +46,11 @@ selector.
 | Clip / priority                  | `7441F0` / `744340` | `5E4E20` / `5E4F70` |
 | Final bitmap upload              | `677690`            | `54E790`            |
 
-ANM files execute the original retained object's interpreter, including its
-frame, alpha and display state. That raw state and the FES object's own KCS
-motion survive a fresh-process checkpoint. The game enumerates HG3 frames for
-the retained all-frame source; the SDK also enumerates HG2 frames. That observed
-profile difference is preserved. The game's image-prefetch worker executes its
-original callback to completion before first presentation. This bounded browser
-substitution is specific to that recovered resource worker, not general Windows
-thread emulation.
+ANM files execute the JS 18-opcode interpreter with the shared World integer
+RNG. Clocks, registers, alpha, display and frame selection survive restoration.
+Game HG3 frames and SDK HG2/HG3 frames retain their observed enumeration
+difference. Script sources are fully decoded before publication. FES's remaining
+producer worker is settled at its registered import boundary.
 
 Source initialization creates BUTTON's BasePlane input child; its original
 frame driver binds the real bounds and priority. Original task and FES object identities remain in the
@@ -67,16 +62,11 @@ public rectangles read the actual registered input region, which can include
 image-frame anchors absent from the object's scalar position.
 
 KCS `2DB` and `2DC` provide a 64-byte image owner in descriptor field 3.
-The original retained object binds it through `745E60` / `5E6CF0`, retaining
-the real owner. Releasing the KCS handle leaves that reference alive; removing
-the last retained record runs the original owner destructor. This ownership
-also survives a fresh World. `tests/native-retained-owner.test.mjs` compares the
-KCS path's complete asymmetric CPU surface against the original manager's
-direct owner-source operation. `tests/browser/native-retained-owner.spec.mjs`
-checks actual uploaded pixels, original-handle release, separate restored GPU
-pixels and final owner destruction in both profiles. Authored clients explicitly
-configure their texture regions; a zero-sized native texture grid does not
-silently gain VRAM pages.
+JS Draw aliases its bitmap-data and layers, preserving independent references
+after the script owner or PE projection is released. This ownership survives a
+fresh World. The Node owner test compares the asymmetric CPU surface against
+the original manager's direct owner-source operation. The browser test checks
+actual uploaded pixels, restored GPU pixels and final resource destruction.
 
 The SDK CG viewer declares an IMAGE and uses `loadlist2` to select from its
 registered CGs. Both pinned engines execute their original `loadlist` and
@@ -194,12 +184,13 @@ Standalone authored compositor clients still use their explicit host page store.
 independently with 43 authored inputs each. The public golden preserves all CPU
 and VRAM bytes for ordinary/affine drawing, variable alpha, all four MASK
 channels, BTYPE 1–5, negative scale, anchors, clip and partial dirty rectangles.
-`native-retained-raster.test.mjs` checks the production drawing-task path against
-those results. Browser tests take ten asymmetric cases per profile through a
+`native-retained-raster.test.mjs` checks the retained oracle against those
+results. `tests/differential/draw-raster.test.mjs` checks the JS compositor
+against the same bytes, with no channel tolerance. Browser tests take ten asymmetric cases per profile through a
 real native textured plane and StageRenderer's shared GPU; RGB and render-target
 alpha agree within one byte. These tests distinguish top and bottom rows.
 
-Large affine and integer BTYPE draws can use additional allowance for
+The retained oracle's large affine and integer BTYPE draws can use additional allowance for
 complete simulated rows within the original retained manager call. The
 scope covers its owned RGBA32 bitmap, up to 2,073,600 pixels with each
 dimension at most 1,920. The descriptor, original loop and helpers must pass
@@ -244,7 +235,8 @@ bitmap with a cap that stopped both original row loops.
 Compound viewport image sources and retained nested-renderer resources still
 have explicit missing adapters. Other image-derived FES object types remain
 separate unfinished contracts. Complete skin/input/scene acceptance is ongoing.
-Exact CPU raster kernels are installed at the reviewed instruction boundaries.
+The remaining phase7/9 producers use registered legacy raster kernels at
+reviewed instruction boundaries. Script Draw uses the JS raster directly.
 Their full register, stack and image comparisons are separate from the manager
 and final GPU pixel checks. Remaining full-game timing and scene acceptance is
 not established by the small authored fixtures.

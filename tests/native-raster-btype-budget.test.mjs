@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeRasterKernels } from '../src/native/raster-kernel.mjs';
+import { NativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 
 const normalPixels = [
     [0x7f605040, 0xff008040],

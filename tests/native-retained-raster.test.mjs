@@ -10,7 +10,7 @@ import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeDrawTask } from '../src/native/draw-task.mjs';
 import { NativeBitmap } from '../src/native/image.mjs';
-import { NativeRetainedDraw } from '../src/native/retained-draw.mjs';
+import { NativeRetainedDraw } from '../oracle/retained-draw-original.mjs';
 import { retainedRasterCases, RETAINED_RASTER_SIZE } from './fixtures/retained-raster.mjs';
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-retained-raster-golden.json', import.meta.url)),

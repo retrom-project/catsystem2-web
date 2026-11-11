@@ -10,7 +10,7 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NATIVE_BITMAP_FACTORY_CONTRACTS } from '../oracle/bitmap-factory.mjs';
 import { bitmapFactoryFixture } from '../tests/fixtures/bitmap-factory-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';
-import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';
+import { installNativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 const [filename, output] = process.argv.slice(2);
 if (!output) throw new Error('Usage: verify-native-bitmap-factories.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(filename)),

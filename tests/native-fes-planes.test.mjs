@@ -47,13 +47,14 @@ test(
           await world.runtime.native('main', 0x2dd, [4, 3], world.main.machine, world.main)
         ).value,
         owners = await world.getNativeFeature('image-owners'),
-        pointer = owners.pointer(handle),
+        pointer = await owners.materialize(handle),
         platform = await world.getNativeFeature('graphics-platform'),
         p = world.nativeEngine.process,
         bitmapPointer = p.load(p.load(pointer + 12)),
         mirror = platform.imageHandle(bitmapPointer, world.main.id),
         source = world.graphics.images.get(mirror);
-      await source.fill(0, 0, 4, 3, 0xffa43019);
+      assert.ok(source);
+      await world.graphics.images.get(owners.get(handle).bitmap).fill(0, 0, 4, 3, 0xffa43019);
       const instance = task.player.root,
         object = instance.byKey.get('face');
       await world.imagesFES.command(instance, object, 'refex', [String(handle)]);
@@ -64,7 +65,7 @@ test(
         retained = await world.getNativeFeature('retained-draw');
       assert.ok(item);
       assert.equal(retained.record(draw, item.key).kind, 3);
-      assert.equal(retained.record(draw, item.key).source, pointer);
+      assert.equal(retained.record(draw, item.key).input, pointer);
       await draw.render();
       const pixels = await world.graphics.images.get(draw.state.renderer.bitmap).pixels();
       let count = 0;

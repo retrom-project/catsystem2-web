@@ -984,16 +984,22 @@ prevents a JS text factory from constructing EXE buffer/file projections.
 Image/text source bytes, bitmap pixels, text layout/reveal and checkpoints are
 JS authority. Registered consumer copies are maintained separately.
 
-| Authority                             | Remaining representation / consumer                                               | Remove                  |
-| ------------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
-| JS bitmap pixels/metadata             | Independent PE bitmap/wrapper for D6 uploads, effects and retained Draw; D7 IMAGE | 6 per renderer, final 7 |
-| D6 render targets / D7 decoded images | Explicit derived JS views or output ownership transfer                            | 6/7 with consumer       |
-| JS image-owner layers/program bytes   | Independent PE collections and D6 ANM compositor output                           | 6/7; output capture 6   |
-| JS image-file table bytes             | Immutable input to D6's private view map                                          | 6                       |
-| JS encoded resource bytes             | Independent PE buffer descriptors for D7 IMAGE and D8 MemoryFile/SDK JavaScript   | 7 per image, final 8    |
-| JS display-log rows                   | D7 LOG read-only tables                                                           | 7                       |
-| JS text config/source/query state     | D7 generic plane prefix and explicit LOG semantic read/write adapters             | 7                       |
-| Consumer-owned decoded output         | Bounded HG delta acceleration used only by original D6/7/8/9 consumers            | Last consumer 9         |
+| Authority                             | Remaining representation / consumer                                             | Remove                  |
+| ------------------------------------- | ------------------------------------------------------------------------------- | ----------------------- |
+| JS bitmap pixels/metadata             | Independent PE bitmap/wrapper for D6 uploads/effects and D7 IMAGE               | 6 per renderer, final 7 |
+| D6 render targets / D7 decoded images | Explicit derived JS views or output ownership transfer                          | 6/7 with consumer       |
+| JS image-owner layers/program bytes   | Independent PE collections for D7 FES producers                                 | 7                       |
+| JS image-file table bytes             | Immutable input to D6's private view map                                        | 6                       |
+| JS encoded resource bytes             | Independent PE buffer descriptors for D7 IMAGE and D8 MemoryFile/SDK JavaScript | 7 per image, final 8    |
+| JS display-log rows                   | D7 LOG read-only tables                                                         | 7                       |
+| JS text config/source/query state     | D7 generic plane prefix and explicit LOG semantic read/write adapters           | 7                       |
+| Consumer-owned decoded output         | Bounded HG delta acceleration used only by original D6/7/8/9 consumers          | Last consumer 9         |
+
+Phase6 JS Draw owns retained resources, ANM and CPU raster output. Its FES
+producer projection imports typed resources and publishes clocks/selection back
+to phase7 records. Remaining original raster support is explicitly registered
+for texture uploads, FES and DLL consumers. StageRenderer-owned surface bytes
+are projected only during D3D Lock/Unlock, until the last DLL consumer in phase9.
 
 Script image/font decoders no longer consume the PE buffer descriptor. The
 projection implementation is assigned to D7 with its remaining D8 file-host

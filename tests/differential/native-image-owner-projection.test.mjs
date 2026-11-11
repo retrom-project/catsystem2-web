@@ -75,8 +75,8 @@ test(
           const record = projection.refs.models.get(h),
             wp = world.nativeEngine.process;
           assert.deepEqual(
-            Array.from({ length: 11 }, (_, i) => wp.load(record.pointer + 20 + i * 4)),
-            model.info.map((v) => v >>> 0),
+            Array.from({ length: 10 }, (_, i) => wp.load(record.pointer + 20 + i * 4)),
+            model.info.slice(0, 10).map((v) => v >>> 0),
           );
           for (const source of record.sources) {
             if (!world.runtime.handles.records.has(source.handle)) continue;

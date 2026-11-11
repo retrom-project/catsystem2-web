@@ -8,7 +8,7 @@ import { nativeABI } from './abi/index.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 
 const decode = (bytes) => new TextDecoder('shift_jis').decode(bytes);
-export async function loadImageOwner(owners, name, task) {
+export async function loadImageOwner(owners, name, task, { describeLayers = false } = {}) {
   const world = owners.world,
     files = world.imageFiles,
     images = world.graphics.images;
@@ -28,7 +28,7 @@ export async function loadImageOwner(owners, name, task) {
     const bitmap = match
       ? await images.load(match[1] + parts.extension, Number(match[2]) >>> 0)
       : await world.imageComposites.load(file);
-    append(bitmap ? { bitmap, program: null } : null);
+    append(bitmap ? { bitmap, program: null, ...(describeLayers ? { name: file } : {}) } : null);
   };
   const animatedLayer = async (file) => {
     const bytes = await files.read(file);
@@ -88,6 +88,7 @@ export async function loadImageOwner(owners, name, task) {
       program = programFile && (await files.readResolved(programFile));
     append({
       bitmap: 0,
+      ...(describeLayers ? { name: file } : {}),
       program: program?.length ? program : null,
       animation: { frames, selected, bounds },
     });

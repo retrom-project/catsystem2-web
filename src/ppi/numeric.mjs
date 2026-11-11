@@ -20,6 +20,13 @@ export function linearInterpolate(areaMin, areaMax, inputMin, inputMax, value) {
   return f(f(f(f(n - lo) / f(hi - lo)) * f(b - a)) + a);
 }
 
+export function truncateFloat32(value) {
+  value = f(value);
+  return Number.isFinite(value) && value >= -2147483648 && value < 2147483648
+    ? Math.trunc(value) | 0
+    : -2147483648;
+}
+
 export function roundInteger(value) {
   const n = f(Math.floor(f(f(value) + 0.5)));
   return Number.isFinite(n) && n >= -2147483648 && n < 2147483648 ? n | 0 : -2147483648;

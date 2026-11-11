@@ -7,6 +7,7 @@ import { NativeRenderer } from './renderer.mjs';
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { applyObjectMotionState } from '../motion/target.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
+import { NativeRetainedDraw } from './retained-draw.mjs';
 import { NativeDrawTask, NATIVE_DRAW_IDS, nativeDraw } from './draw-task.mjs';
 import { NativeImages, NATIVE_IMAGE_IDS, nativeImage } from './image.mjs';
 import { identity } from '../motion/matrix.mjs';
@@ -38,7 +39,6 @@ import { NativeTexturePages, negotiateNativeTextureLayout } from './texture-layo
 import { divideNativeTriangles, nativeDivisionLayout } from './divided-model.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
-import { installNativeRasterKernels } from './raster-kernel.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeTexturePageView } from './texture-memory.mjs';
 import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task.mjs';
@@ -356,6 +356,7 @@ export class NativeGraphics {
   snapshot() {
     return structuredClone({
       bitmapAssets: this.images.snapshotAssets(),
+      retainedDraw: this.world.retainedDraw?.snapshot() ?? null,
       vramHandle: this.vramHandle,
       d3dContext: snapshotD3DContext(this.d3dContext),
       view: this.view.snapshot(),
@@ -369,9 +370,18 @@ export class NativeGraphics {
     });
   }
   restore(state) {
-    const { bitmapAssets, d3dContext, view, texturePages, cursor, nativeRenderOrder, ...values } =
-      structuredClone(state);
+    const {
+      bitmapAssets,
+      d3dContext,
+      view,
+      texturePages,
+      cursor,
+      nativeRenderOrder,
+      retainedDraw,
+      ...values
+    } = structuredClone(state);
     this.images.restoreAssets(bitmapAssets);
+    if (retainedDraw) this.world.retainedDraw.restore(retainedDraw);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);
@@ -1098,7 +1108,6 @@ export function installNativeGraphics(world) {
     installNativePlaneMovieCommands(world);
     installNativePlaneModelCommands(world);
     world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
-    world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
     world.registerNativeFeature('graphics-platform', async (engine) => {
       await world.getNativeFeature('bitmap-memory');
       return new NativeGraphicsPlatform(engine, world);
@@ -1106,6 +1115,7 @@ export function installNativeGraphics(world) {
   }
   const graphics = new NativeGraphics(world);
   world.graphics = graphics;
+  world.retainedDraw = new NativeRetainedDraw(world);
   // Kind 2 is the native simple plane; kind 6 is its base image-plane task.
   for (const kind of [2, 6])
     world.objects.register(kind, async (record, _objects, options = {}) => {

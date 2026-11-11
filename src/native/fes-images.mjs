@@ -6,7 +6,6 @@ import { nativeABI } from './abi/index.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { runNativeFESObjectMotion } from './fes-controls.mjs';
 import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
-import { NativeRetainedDraw } from './retained-draw.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
 const ABI = {
@@ -404,7 +403,14 @@ export function nativeFESImageAdapter(runtime, type) {
 }
 
 export function installNativeFESImages(world) {
-  world.registerNativeFeature('retained-draw', (engine) => new NativeRetainedDraw(engine, world));
+  world.registerNativeFeature('raster-kernels', (engine) => engine.createRasterProjection());
+  world.registerNativeFeature('fes-draw-projection', (engine) =>
+    engine.createDrawSourceProjection(world),
+  );
+  world.registerNativeFeature('retained-draw', (engine) => {
+    engine.registerFeature('retained-draw', world.retainedDraw);
+    return world.retainedDraw;
+  });
   for (const type of [1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25])
     registerNativeFESObjectType(world, type, (runtime) => nativeFESImageAdapter(runtime, type));
   world.imagesFES = new NativeFESImages(world);

@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeRasterKernels } from '../src/native/raster-kernel.mjs';
+import { NativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 
 for (const [profile, fixture] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

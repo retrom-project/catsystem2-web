@@ -96,11 +96,13 @@ const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
   5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows text-core text-config text-layout text-parser text-profile-data text-raster legacy-text-state font-backend freetype-artifact fes-text fes-text-layout zlib zlib-artifact deflate',
-  6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
+  6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
 };
 function domain(file) {
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
+  if (['oracle/raster-kernel-projection.mjs', 'src/native/raster-projection.mjs'].includes(file))
+    return 7;
   if (['src/native/data-buffer-projection.mjs', 'oracle/data-buffer-projection.mjs'].includes(file))
     return 7;
   if (['oracle/text-log-projection.mjs', 'oracle/fes-text-projection.mjs'].includes(file)) return 7;
@@ -144,8 +146,8 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'draw-commands effect-commands screen-capture ' +
-    'input-commands registry render-sources ' +
+    'effect-commands screen-capture ' +
+    'input-commands registry ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
     'version-query sdk-javascript-task emote'
@@ -604,6 +606,52 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 }
 
 const nonNativeGroups = [
+  {
+    name: 'remaining-exe-raster-projection',
+    domain: 7,
+    entry: 'Explicit EXE host installs the existing raster loops for remaining FES/DLL consumers',
+    modules: ['raster-projection'],
+    files: ['oracle/raster-kernel-projection.mjs'],
+    projection: {
+      direction: 'PE consumer pixel copies/raster loops',
+      authority:
+        'JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers',
+      fields: ['consumer bitmap rows', 'consumer allocation bounds'],
+      consumers: [
+        { domain: 6, modules: ['texture-memory'], removePhase: 6 },
+        { domain: 7, modules: ['fes-images'] },
+        { domain: 9, modules: ['emote'] },
+      ],
+      lifetime:
+        'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and DLL code until their consumer phases.',
+      removePhase: 9,
+      operations: ['install', 'close'],
+    },
+  },
+  {
+    name: 'fes-draw-source-projection',
+    domain: 7,
+    entry:
+      'FES producer packets → typed JS Draw sources; source clocks/pixels project back before FES calls',
+    modules: ['fes-images'],
+    files: ['oracle/fes-draw-projection.mjs'],
+    projection: {
+      direction: 'Explicit PE producer-to-JS import and JS-to-PE consumer projection',
+      authority: 'JS render-source handles, bitmap-data aliases, ANM registers and clocks',
+      fields: [
+        'FES bitmap metadata/pixels',
+        'retained identity',
+        'ordered frame maps',
+        'ANM state',
+        'selected wrapper identity',
+      ],
+      consumers: [{ domain: 7, modules: ['fes-images', 'fes-objects'] }],
+      lifetime:
+        'Each Draw entry owns a JS reference. FES retains its original allocation/reference/tree lifecycle. Pending prefetch records must settle through existing workers before import. No original D6 animation step or rasterizer is invoked by this projection.',
+      removePhase: 7,
+      operations: ['importSource', 'publish', 'beforeCall', 'afterCall'],
+    },
+  },
   {
     name: 'renderer-surfaces-to-dll-locks',
     domain: 9,

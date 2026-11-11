@@ -4,6 +4,8 @@ import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-b
 import { NativeBitmapProjection } from '../../oracle/bitmap-projection.mjs';
 import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs';
 import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
+import { installNativeRasterKernels } from '../../oracle/raster-kernel-projection.mjs';
+import { NativeFESDrawProjection } from '../../oracle/fes-draw-projection.mjs';
 import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
@@ -106,6 +108,12 @@ export class NativeEngineProcess {
   }
   createDisplayLogProjection(world) {
     return new NativeDisplayLogProjection(this, world);
+  }
+  createRasterProjection() {
+    return installNativeRasterKernels(this);
+  }
+  createDrawSourceProjection(world) {
+    return new NativeFESDrawProjection(this, world);
   }
   createImageOwnerProjection(world) {
     return new NativeImageOwnerProjection(this, world);

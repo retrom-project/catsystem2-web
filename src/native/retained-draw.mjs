@@ -1,89 +1,17 @@
 // SPDX-License-Identifier: MPL-2.0
-// Native retained image/ANM records execute in the shared mounted PE. Only
-// bitmap presentation and the background image-prefetch worker are host APIs.
-import { nativeABI } from './abi/index.mjs';
-import { floatBits } from '../kcs.mjs';
-import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
-import { installNativeRasterKernels } from './raster-kernel.mjs';
-import { installNativeEngineWorkers } from './engine-workers.mjs';
+// Retained sources, ANM clocks and Draw composition share the JS resource graph.
+import { truncateFloat32 } from '../ppi/numeric.mjs';
+import { bitsFloat, floatBits } from '../kcs.mjs';
+import { RetainedAnimation } from './retained-animation.mjs';
+import { rasterizeRetainedBitmap, flipBitmapRows } from './raster-kernel.mjs';
 
-const ABI = {
-  game: {
-    construct: 7625008,
-    release: 7625824,
-    bitmap: 7625904,
-    imageOwner: 7626336,
-    data: 7626592,
-    load: 7629040,
-    start: 7628992,
-    enable: 7629792,
-    setAnimationVariable: 7629904,
-    step: 7629392,
-    getBitmap: 7627776,
-    alpha: 7628704,
-    shown: 7628848,
-    clip: 7628880,
-    refresh: 7629824,
-    rendererConstruct: 7612944,
-    rendererDestroy: 7613680,
-    rendererBitmap: 7613984,
-    rendererRetained: 7615088,
-    rendererFind: 7621776,
-    rendererRemove: 7615376,
-    rendererDraw: 7616944,
-    rendererClip: 7619056,
-    rendererLayer: 7619392,
-  },
-  sdk: {
-    construct: 6187168,
-    release: 6187808,
-    bitmap: 6187888,
-    imageOwner: 6188272,
-    data: 6188528,
-    load: 6190464,
-    start: 6190416,
-    enable: 6191056,
-    setAnimationVariable: 6191168,
-    step: 6190736,
-    getBitmap: 6189216,
-    alpha: 6190128,
-    shown: 6190272,
-    clip: 6190304,
-    refresh: 6191088,
-    rendererConstruct: 6174496,
-    rendererDestroy: 6175200,
-    rendererBitmap: 6175504,
-    rendererRetained: 6176416,
-    rendererFind: 6183008,
-    rendererRemove: 6176704,
-    rendererDraw: 6178272,
-    rendererClip: 6180384,
-    rendererLayer: 6180720,
-  },
-};
-const readFloat = (p, at) => new DataView(p.read(at, 4).buffer).getFloat32(0, true);
 export class NativeRetainedDraw {
-  constructor(engine, world) {
-    installNativeRasterKernels(engine);
-    Object.assign(this, { engine, world, process: engine.process });
-    this.sdk = engine.profile.startsWith('sdk-');
-    this.abi = ABI[this.sdk ? 'sdk' : 'game'];
+  constructor(world) {
+    this.world = world;
     this.items = new Map();
-    this.renderers = new Map();
-    for (const [name, definition] of nativeRectangleDefinitions(this.process))
-      engine.registerWindows('USER32.dll', name, definition);
-    if (nativeABI(engine.profile).capabilities.engineWorkers) installNativeEngineWorkers(engine);
-    engine.registerFeature('retained-draw', this);
   }
-  async call(address, args, pointer, task, rasterBudget) {
-    const options = { task, rasterBudget },
-      projection = this.engine.features.get('image-owner-projection');
-    if (this.process.asyncEnabled) await projection?.beforeCall();
-    const result = this.process.asyncEnabled
-      ? await this.engine.callFromHost(address, args, pointer, options)
-      : await this.engine.call(address, args, pointer, options);
-    if (address === this.abi.rendererDraw) projection?.captureRendered();
-    return result;
+  get sources() {
+    return this.world.renderSources;
   }
   key(draw, key) {
     return `${draw.record.id}:${key >>> 0}`;
@@ -91,493 +19,424 @@ export class NativeRetainedDraw {
   record(draw, key) {
     return this.items.get(this.key(draw, key));
   }
-  async create(draw, key) {
-    const id = this.key(draw, key);
-    if (this.items.has(id)) return this.items.get(id);
-    const p = this.process,
-      pointer = p.allocate(nativeABI(this.engine.profile).graphics.retainedBytes, true);
-    try {
-      await this.call(
-        this.abi.construct,
-        [key >>> 0, draw.state.renderer.width, draw.state.renderer.height],
-        pointer,
-        draw.record.id,
-      );
-    } catch (error) {
-      p.free(pointer);
-      throw error;
-    }
-    const record = {
-      surface: draw.record.id,
-      key: key >>> 0,
-      pointer,
-      source: null,
-      kind: null,
-    };
-    this.items.set(id, record);
-    return record;
+  async fromBitmap(handle) {
+    return this.sources.create({ bitmap: this.world.graphics.images.alias(handle) });
   }
-  async bindRetained(draw, key, fields) {
-    const p = this.process,
-      surface = draw.record.id,
-      platform = await this.world.getNativeFeature('graphics-platform'),
-      renderer = await this.renderer(draw, platform),
-      call = (address, args) => this.call(address, args, renderer.pointer, surface),
-      existing = await call(this.abi.rendererFind, [key]),
-      previous = this.record(draw, key) ?? (existing ? null : await this.ensure(draw, key)),
-      temporary = previous && !previous.managerOwned ? previous.pointer : 0,
-      oldItem = draw.entry(key),
-      scratch = renderer.scratch;
-    // A deferred bitmap entry may already exist on the Draw task before its
-    // first render. Keep that source when the original command updates its key.
-    const source = !existing && previous ? previous.pointer : fields[2];
-    [4, 5, 6, 7, 9, 10].forEach((field, i) => p.store(scratch + i * 4, fields[field]));
-    await call(this.abi.rendererRetained, [
-      key,
-      source,
-      scratch,
-      scratch + 8,
-      fields[8],
-      scratch + 16,
-      fields[11],
-      fields[12],
-      fields[13],
-    ]);
-    const pointer = await call(this.abi.rendererFind, [key]);
-    if (!pointer) throw new Error('Original Draw manager did not register its retained source');
-    const record = previous ?? { surface, key: key >>> 0, kind: 2, source: pointer };
-    record.pointer = pointer;
-    record.managerOwned = true;
-    this.items.set(this.key(draw, key), record);
-    if (temporary) await this.call(this.abi.release, [], temporary, surface);
-    if (!existing && oldItem) {
-      oldItem.clip.forEach((word, i) => p.store(scratch + 24 + i * 4, word));
-      await call(this.abi.rendererClip, [key, scratch + 24]);
-      await call(this.abi.rendererLayer, [key, oldItem.layer]);
-    }
-    if (fields[14]) p.store(pointer + 192, fields[14]);
-    return this.pull(draw, record);
+  fromLayer(layer) {
+    const images = this.world.graphics.images;
+    const handle = this.sources.create({
+        bitmap: layer.bitmap ? images.alias(layer.bitmap) : 0,
+        frames: (layer.animation?.frames ?? []).map((f) => ({
+          ...f,
+          bitmap: f.bitmap ? images.alias(f.bitmap) : 0,
+        })),
+        bounds: layer.animation?.bounds ?? null,
+        program: layer.program,
+      }),
+      state = layer.animation?.bounds ?? (layer.bitmap ? images.get(layer.bitmap).state : {});
+    Object.assign(this.sources.get(handle), {
+      animatedLayer: Boolean(layer.animation),
+      baseShown: 1,
+      base: [state.baseX ?? 0, state.baseY ?? 0],
+    });
+    return handle;
   }
-  async bind(draw, key, fields) {
+  fromOwner(handle) {
+    const owner = this.world.imageOwners.get(handle),
+      source = this.sources.create({
+        bitmap: owner.bitmap ? this.world.graphics.images.alias(owner.bitmap) : 0,
+        children: (owner.layers ?? []).map((layer) => this.fromLayer(layer)),
+      });
+    Object.assign(this.sources.get(source), {
+      ownerHandle: handle,
+      ownerRevision: owner.rebuild ?? 0,
+    });
+    return source;
+  }
+  async fromData(handle) {
+    const buffers = this.world.runtime.imageDataBuffers;
+    return this.sources.decode(buffers.data(buffers.pointer(handle)));
+  }
+  async bind(draw, key, fields, context = {}) {
     const kind = fields.slice(0, 4).findIndex(Boolean);
     if (kind < 0) return false;
-    if (kind === 2) return this.bindRetained(draw, key, fields);
-    const record = this.record(draw, key) ?? (await this.create(draw, key)),
-      p = this.process,
-      pointer = record.pointer;
-    if (record.source !== fields[kind] || record.kind !== kind) {
-      await this.call(
-        kind === 0 ? this.abi.bitmap : kind === 1 ? this.abi.data : this.abi.imageOwner,
-        [fields[kind]],
-        pointer,
-        draw.record.id,
-      );
-      record.source = fields[kind];
-      record.kind = kind;
+    const projection = context.nativePointer
+        ? await this.world.getNativeFeature('fes-draw-projection')
+        : null,
+      inputToken = projection ? projection.identity(fields) : fields[kind];
+    let record = this.record(draw, key);
+    if (!record || (kind !== 2 && (record.kind !== kind || record.inputToken !== inputToken))) {
+      let source;
+      if (context.nativePointer) {
+        source = await projection.importSource(fields);
+      } else if (kind === 0) source = await this.fromBitmap(fields[0]);
+      else if (kind === 1) source = await this.fromData(fields[1]);
+      else if (kind === 2) source = this.sources.retain(fields[2]);
+      else source = this.fromOwner(fields[3]);
+      if (!source) return false;
+      if (record) await this.sources.release(record.source);
+      record = {
+        surface: draw.record.id,
+        key: key >>> 0,
+        kind,
+        input: fields[kind],
+        inputToken,
+        source,
+      };
+      this.items.set(this.key(draw, key), record);
     }
-    p.store(pointer, key);
-    for (const [offset, value] of [
-      [108, fields[4]],
-      [112, fields[5]],
-      [128, fields[6]],
-      [132, fields[7]],
-      [116, fields[8]],
-      [120, fields[9]],
-      [124, fields[10]],
-      [28, fields[11]],
-      [36, fields[12]],
-      [104, fields[13]],
-      [192, fields[14]],
-    ])
-      p.store(pointer + offset, value);
-    // The original packet path calls 7466E0 / 5E7370 for its explicit base.
-    // Besides the two floats, that setter marks the base for recalculation.
-    p.store(pointer + 156, 1);
-    p.store(pointer + 136, 1);
+    if (projection && kind === 0) await projection.refreshBitmap(fields[0]);
+    const source = this.sources.get(record.source);
+    Object.assign(source, {
+      position: fields.slice(4, 6).map(bitsFloat),
+      base: fields.slice(6, 8).map(bitsFloat),
+      rotation: bitsFloat(fields[8]),
+      scale: fields.slice(9, 11).map(bitsFloat),
+      baseAlpha: fields[11] >>> 0,
+      baseShown: fields[12] >>> 0,
+      mode: fields[13] >>> 0,
+    });
+    if (fields[14]) source.aux = fields[14];
+    source.revision++;
     return this.pull(draw, record);
   }
   async ensure(draw, key) {
-    let record = this.record(draw, key);
-    if (record) return record;
+    const existing = this.record(draw, key);
+    if (existing) return existing;
     const item = draw.entry(key);
     if (!item) return null;
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    await platform.withBitmap(
-      this.world.graphics.images.get(item.image),
-      (bitmap) =>
-        this.bind(draw, key, [
-          bitmap,
-          0,
-          0,
-          0,
-          ...item.position.map(floatBits),
-          ...item.base.map(floatBits),
-          floatBits(item.rotation),
-          ...item.scale.map(floatBits),
-          item.alpha,
-          Number(item.visible),
-          item.mode,
-          0,
-        ]),
-      draw.record.id,
-    );
-    record = this.record(draw, key);
-    return record;
+    await this.bind(draw, key, [
+      item.image,
+      0,
+      0,
+      0,
+      ...item.position.map(floatBits),
+      ...item.base.map(floatBits),
+      floatBits(item.rotation),
+      ...item.scale.map(floatBits),
+      item.alpha,
+      Number(item.visible),
+      item.mode,
+      item.aux,
+    ]);
+    return this.record(draw, key);
   }
   async load(draw, key, name) {
     const record = await this.ensure(draw, key);
     if (!record) return false;
-    const files = await this.world.getNativeFeature('engine-files'),
-      bytes = await files.read(name);
+    const bytes = await this.world.imageFiles.readResolved(name);
     if (!bytes?.length) return false;
-    const p = this.process,
-      source = p.allocate(bytes.length, true);
     try {
-      p.write(source, bytes);
-      return Boolean(
-        await this.call(this.abi.load, [source, bytes.length], record.pointer, draw.record.id),
-      );
-    } finally {
-      p.free(source);
+      const source = this.sources.get(record.source);
+      source.animation = new RetainedAnimation(bytes, this.world.random);
+      source.animation.maxFrameKey = Math.max(0, ...source.frames.map((f) => f.key));
+      source.outputCache = Object.values(source.animation.output).map((word) => word >>> 0);
+      source.hasProgram = true;
+      return true;
+    } catch (error) {
+      this.world.host?.nativeDiagnostic?.({ type: 'invalid-anm', error: error.message });
+      return false;
     }
   }
   async enable(draw, key, value) {
     const record = await this.ensure(draw, key);
     if (!record) return;
     const frame = ((draw.record.effectiveFrame ?? 0) - (draw.record.pausedFrames ?? 0)) >>> 0;
-    await this.call(this.abi.start, [frame], record.pointer, draw.record.id);
-    await this.call(this.abi.enable, [value, frame], record.pointer, draw.record.id);
+    this.sources.get(record.source).animation?.start(frame);
+    const enable = (handle) => {
+      const source = this.sources.get(handle);
+      source.enabled = value >>> 0;
+      for (const child of source.children)
+        if (this.sources.get(child).hasProgram) {
+          enable(child);
+          for (const sibling of source.children) this.advance(sibling, frame);
+        }
+    };
+    enable(record.source);
     await this.update(draw, frame);
   }
   async setAnimationVariable(draw, key, index, value) {
     const record = this.record(draw, key);
-    if (record)
-      await this.call(
-        this.abi.setAnimationVariable,
-        [index, value],
-        record.pointer,
-        draw.record.id,
-      );
+    if (!record) return;
+    const visit = (handle) => {
+      const source = this.sources.get(handle);
+      source.animation?.setVariable(index, value);
+      for (const child of source.children) visit(child);
+    };
+    visit(record.source);
   }
   visible(draw, key, value) {
     const record = this.record(draw, key);
-    if (!record) return;
-    this.process.store(record.pointer + 36, Number(Boolean(value)));
-    this.process.store(record.pointer + 136, 1);
+    if (record) {
+      const source = this.sources.get(record.source);
+      source.baseShown = value >>> 0;
+      source.revision++;
+    }
   }
-  async clip(draw, key, values) {
+  clip(draw, key, clip) {
     const record = this.record(draw, key);
-    if (!record) return;
-    const pointer = this.process.allocate(16, true);
-    try {
-      values.forEach((value, i) => this.process.store(pointer + i * 4, value));
-      await this.call(this.abi.clip, [pointer], record.pointer, draw.record.id);
-    } finally {
-      this.process.free(pointer);
+    if (record) {
+      const source = this.sources.get(record.source);
+      source.clip = [...clip];
+      source.revision++;
     }
   }
   async refresh(draw, key) {
     const record = await this.ensure(draw, key);
     if (!record) return false;
-    await this.call(this.abi.refresh, [], record.pointer, draw.record.id);
+    const visit = (handle) => {
+      const source = this.sources.get(handle),
+        enabled = source.enabled;
+      source.animation?.reset();
+      source.enabled = 1;
+      this.advance(handle, -1);
+      source.enabled = enabled;
+    };
+    visit(record.source);
     await this.pull(draw, record);
     return true;
   }
-  async update(draw, frame) {
-    for (const record of this.items.values()) {
-      if (record.surface !== draw.record.id) continue;
-      if (await this.call(this.abi.step, [frame >>> 0], record.pointer, draw.record.id))
-        await this.pull(draw, record);
+  advance(handle, frame) {
+    const source = this.sources.get(handle);
+    let changed = Boolean(source.dirty);
+    source.dirty = false;
+    if (frame !== undefined && source.enabled && source.animation) {
+      if (source.startPending) {
+        source.animation.start(frame);
+        source.startPending = false;
+      }
+      source.animation.step(frame);
+      const output = Object.values(source.animation.output).map((word) => word >>> 0),
+        outputChanged = output.some((word, i) => word !== source.outputCache?.[i]);
+      source.outputCache = output;
+      changed = changed || outputChanged;
+      if (outputChanged) {
+        const key =
+          frame === -1 && source.prefetchFrames && source.frames.some((f) => f.key === 10000)
+            ? 10000
+            : source.animation.output.frame;
+        if (source.frames.some((f) => f.key === key && f.bitmap)) source.selected = key;
+      }
     }
+    for (const child of source.children)
+      if (this.advance(child, frame)) {
+        changed = true;
+        source.groupDirty = true;
+      }
+    const bitmap = this.sources.bitmap(handle),
+      bitmapRevision = bitmap ? this.world.graphics.images.get(bitmap).state.revision : -1;
+    changed = changed || bitmap !== source.sourceBitmap || bitmapRevision !== source.bitmapRevision;
+    source.sourceBitmap = bitmap;
+    source.bitmapRevision = bitmapRevision;
+    if (changed) source.revision++;
+    return changed;
+  }
+  needsPull(record) {
+    const source = this.sources.get(record.source),
+      model = this.world.runtime.handles.records.get(source.ownerHandle);
+    return (
+      record.revision !== source.revision ||
+      (model?.type === 'image-owner' && source.ownerRevision !== (model.value.rebuild ?? 0))
+    );
+  }
+  async update(draw, frame) {
+    for (const record of this.items.values())
+      if (record.surface === draw.record.id) {
+        this.advance(record.source, frame);
+        if (this.needsPull(record)) await this.pull(draw, record);
+      }
+    this.world.nativeEngine?.features.get('fes-draw-projection')?.publish();
+  }
+  attributes(source) {
+    const output = source.animation?.output;
+    return {
+      position: output
+        ? source.position.map((v, i) =>
+            Math.fround((truncateFloat32(v) + output[i ? 'y' : 'x']) | 0),
+          )
+        : source.position,
+      base: source.base,
+      rotation: source.rotation,
+      scale: source.scale,
+      alpha: output
+        ? Math.min(255, Math.floor((Math.imul(output.alpha, source.baseAlpha) >>> 0) / 255))
+        : source.baseAlpha,
+      visible: Boolean(source.baseShown && (output?.display ?? 1)),
+      mode: source.mode,
+      aux: source.aux,
+    };
+  }
+  async composite(source) {
+    const images = this.world.graphics.images,
+      model = this.world.runtime.handles.records.get(source.ownerHandle);
+    if (model?.type === 'image-owner' && source.ownerRevision !== (model.value.rebuild ?? 0)) {
+      const children = (model.value.layers ?? []).map((layer) => this.fromLayer(layer)),
+        bitmap = model.value.bitmap ? images.alias(model.value.bitmap) : 0;
+      for (const child of source.children) await this.sources.release(child);
+      if (source.bitmap) await images.release(source.bitmap);
+      source.children = children;
+      source.bitmap = bitmap;
+      source.ownerRevision = model.value.rebuild ?? 0;
+      source.groupDirty = false;
+    }
+    if (!source.children.length || !source.bitmap || !source.groupDirty) return;
+    const output = images.get(source.bitmap);
+    output.commitCanvas();
+    const pixels = flipBitmapRows(await output.pixels(), output.width, output.height);
+    pixels.fill(0);
+    for (const child of source.children) {
+      const input = this.sources.get(child),
+        bitmap = this.sources.bitmap(child);
+      if (!bitmap) continue;
+      await this.composite(input);
+      const image = images.get(bitmap);
+      image.commitCanvas();
+      const state = image.state,
+        attrs = this.attributes(input);
+      attrs.position = attrs.position.map((value, i) =>
+        Math.fround(
+          value +
+            (input.animatedLayer
+              ? Math.fround(
+                  Math.fround(input.base[i]) -
+                    Math.fround((i ? output.state.offsetY : output.state.offsetX) >>> 0),
+                )
+              : Math.fround(
+                  (input.base[i] - (i ? output.state.offsetY : output.state.offsetX)) >>> 0,
+                )),
+        ),
+      );
+      attrs.base = [...input.base];
+      rasterizeRetainedBitmap(
+        pixels,
+        output.width,
+        output.height,
+        await image.pixels(),
+        state,
+        { ...attrs, clip: input.clip ?? [0, 0, output.width, output.height] },
+        [0, 0, output.width, output.height],
+      );
+    }
+    output.state.rgba = flipBitmapRows(pixels, output.width, output.height);
+    output.state.source = null;
+    await output.changed();
+    source.groupDirty = false;
+    source.sourceBitmap = source.bitmap;
+    source.bitmapRevision = output.state.revision;
   }
   async pull(draw, record) {
-    const p = this.process,
-      pointer = record.pointer,
-      bitmap = await this.call(this.abi.getBitmap, [], pointer, draw.record.id);
+    const source = this.sources.get(record.source);
+    await this.composite(source);
+    const bitmap = this.sources.bitmap(record.source);
     if (!bitmap) {
       await draw.removeEntry(record.key);
-      const oldImage = record.image;
-      delete record.image;
-      await this.releaseMirror(oldImage);
       return false;
     }
-    const image = (await this.world.getNativeFeature('graphics-platform')).imageHandle(
-        bitmap,
-        record.surface,
-      ),
-      alpha = await this.call(this.abi.alpha, [], pointer, draw.record.id),
-      shown = await this.call(this.abi.shown, [], pointer, draw.record.id);
-    const oldImage = record.image,
-      newEntry = !draw.entry(record.key);
     const item = await draw.upsert(record.key, {
-      image,
-      position: [108, 112].map((at) => readFloat(p, pointer + at)),
-      base: [128, 132].map((at) => readFloat(p, pointer + at)),
-      rotation: readFloat(p, pointer + 116),
-      scale: [120, 124].map((at) => readFloat(p, pointer + at)),
-      alpha,
-      visible: Boolean(shown),
-      mode: p.load(pointer + 104),
-      aux: p.load(pointer + 192),
-      nativeRetained: this.key(draw, record.key),
+      image: bitmap,
+      ...this.attributes(source),
+      retained: record.source,
     });
-    if (record.managerOwned && newEntry) item.layer = p.load(pointer + 4) | 0;
-    record.image = image;
-    if (oldImage !== image) await this.releaseMirror(oldImage);
+    if (source.clip) item.clip = [...source.clip];
+    record.revision = source.revision;
     return item;
   }
-  async releaseMirror(image) {
-    if (image === undefined || [...this.items.values()].some((item) => item.image === image))
-      return;
-    await this.world.graphics.images.release(image);
-  }
-  async renderer(draw, platform) {
-    const renderer = draw.state.renderer,
-      p = this.process,
-      destination = this.world.graphics.images.get(renderer.bitmap);
-    let record = this.renderers.get(draw.record.id);
-    if (
-      record &&
-      (record.width !== renderer.width ||
-        record.height !== renderer.height ||
-        record.destination !== destination.dataHandle)
-    ) {
-      await this.releaseRenderer(draw.record.id);
-      record = null;
-    }
-    if (record) return record;
-    const pointer = p.allocate(60, true),
-      scratch = p.allocate(40, true);
-    let constructed = false;
-    try {
-      await this.call(
-        this.abi.rendererConstruct,
-        [renderer.width, renderer.height, 4, 0],
-        pointer,
-        draw.record.id,
-      );
-      constructed = true;
-      const bitmap = p.load(p.load(pointer + 8));
-      await platform.writeLogicalBitmap(bitmap, destination);
-      record = {
-        pointer,
-        scratch,
-        bitmap,
-        width: renderer.width,
-        height: renderer.height,
-        destination: destination.dataHandle,
-        revision: destination.state.revision,
-        sources: new Map(),
-      };
-      this.renderers.set(draw.record.id, record);
-      return record;
-    } catch (error) {
-      if (constructed) await this.call(this.abi.rendererDestroy, [], pointer, draw.record.id);
-      p.free(pointer);
-      p.free(scratch);
-      throw error;
-    }
-  }
-  rasterBudget({ pointer, bitmap, width, height }) {
-    const pixels = width * height;
-    if (width <= 0 || height <= 0 || width > 1920 || height > 1920 || pixels > 1920 * 1080) return;
-    const p = this.process;
-    try {
-      const owner = p.load(pointer + 8);
-      if (
-        !owner ||
-        p.load(owner) !== bitmap ||
-        p.load(bitmap + 4) !== width ||
-        p.load(bitmap + 8) !== height ||
-        p.load(bitmap + 24) !== 4
-      )
-        return;
-      const destination = p.load(bitmap + 12),
-        pitch = p.load(bitmap + 20);
-      if (!destination || pitch !== width * 4) return;
-      return { destination, width, height, pitch, pixels, credited: 0 };
-    } catch {
-      // An unrecognized owner is still handled by the original native call.
-      return;
-    }
-  }
   async rasterize(draw, areas, forceOutput) {
-    const renderer = draw.state.renderer,
-      p = this.process,
-      platform = await this.world.getNativeFeature('graphics-platform'),
-      record = await this.renderer(draw, platform),
-      { pointer, scratch, bitmap, sources } = record,
-      destination = this.world.graphics.images.get(renderer.bitmap),
-      call = (address, args) => this.call(address, args, pointer, draw.record.id);
-    if (record.revision !== destination.state.revision)
-      await platform.writeLogicalBitmap(bitmap, destination);
-    p.store(pointer + 16, draw.state.offset[0]);
-    p.store(pointer + 20, draw.state.offset[1]);
-    p.store(pointer + 40, renderer.clearColor);
-    const present = new Set(renderer.items.map((item) => item.key));
-    for (const key of sources.keys())
-      if (!present.has(key) && !this.record(draw, key)?.managerOwned) {
-        await call(this.abi.rendererRemove, [key]);
-        sources.delete(key);
+    for (const record of this.items.values())
+      if (record.surface === draw.record.id) {
+        this.advance(record.source);
+        if (this.needsPull(record)) await this.pull(draw, record);
       }
-    for (const item of renderer.items) {
-      const source = this.world.graphics.images.get(item.image);
-      if (!source.width || !source.height) continue;
-      const native = this.record(draw, item.key),
-        nativeBitmap = native
-          ? await this.call(this.abi.getBitmap, [], native.pointer, draw.record.id)
-          : null,
-        signature = JSON.stringify([
-          native?.pointer,
-          nativeBitmap,
-          source.dataHandle,
-          source.state.revision,
-          item.position,
-          item.base,
-          item.scale,
-          item.clip,
-          item.rotation,
-          item.alpha,
-          item.visible,
-          item.mode,
-          item.layer,
-        ]),
-        previous = sources.get(item.key);
-      if (previous?.signature === signature) continue;
-      [...item.position, ...item.base, ...item.scale].forEach((value, i) =>
-        p.store(scratch + i * 4, floatBits(value)),
-      );
-      item.clip.forEach((value, i) => p.store(scratch + 24 + i * 4, value));
-      const bind = async (sourcePointer, retained = false) => {
-        await call(retained ? this.abi.rendererRetained : this.abi.rendererBitmap, [
-          item.key,
-          sourcePointer,
-          scratch,
-          scratch + 8,
-          floatBits(item.rotation),
-          scratch + 16,
-          retained ? p.load(sourcePointer + 28) : item.alpha,
-          retained ? p.load(sourcePointer + 36) : Number(item.visible),
-          item.mode,
-        ]);
-      };
-      // Native records keep their complete owner/canvas/anchor/ANM state.
-      // The original retained-source manager entry holds that same object,
-      // rather than reconstructing a different source from its bitmap.
-      if (nativeBitmap) {
-        const existing = await call(this.abi.rendererFind, [item.key]);
-        if (existing !== native.pointer) {
-          if (native.managerOwned)
-            throw new Error('Original Draw manager lost its retained source identity');
-          if (existing) await call(this.abi.rendererRemove, [item.key]);
-          await bind(native.pointer, true);
-        }
-      } else if (
-        previous &&
-        previous.data === source.dataHandle &&
-        previous.revision === source.state.revision
-      )
-        await bind(previous.pointer);
-      else await platform.withBitmap(source, bind, draw.record.id);
-      if (
-        !native?.managerOwned ||
-        item.clip.some((word, i) => word !== (p.load(native.pointer + 40 + i * 4) | 0))
-      )
-        await call(this.abi.rendererClip, [item.key, scratch + 24]);
-      if (!native?.managerOwned || item.layer !== (p.load(native.pointer + 4) | 0))
-        await call(this.abi.rendererLayer, [item.key, item.layer]);
-      // 744C90 retrieves the manager-owned retained entry. Its wrapper at
-      // +8 owns a reference to the input bitmap after withBitmap returns.
-      const managerItem = await call(this.abi.rendererFind, [item.key]),
-        sourcePointer = await this.call(this.abi.getBitmap, [], managerItem, draw.record.id);
-      sources.set(item.key, {
-        signature,
-        data: source.dataHandle,
-        revision: source.state.revision,
-        pointer: sourcePointer,
-      });
+    for (const item of draw.state.renderer.items) {
+      const bitmap = this.world.graphics.images.get(item.image);
+      bitmap.commitCanvas();
+      if (item.imageRevision !== bitmap.state.revision) {
+        draw.mark(item, true);
+        draw.mark(item);
+        item.imageRevision = bitmap.state.revision;
+      }
     }
-    // Each original dirty-region record contains its fixed tile at +0 and
-    // pending rectangle at +16. This unsegmented manager has one full tile.
-    const dirty = p.load(p.load(pointer + 12)),
+    const renderer = draw.state.renderer,
+      images = this.world.graphics.images,
+      bitmap = images.get(renderer.bitmap);
+    bitmap.commitCanvas();
+    const pixels = flipBitmapRows(await bitmap.pixels(), renderer.width, renderer.height),
       area = areas.length
         ? [
-            Math.min(...areas.map((r) => r[0])),
-            Math.min(...areas.map((r) => r[1])),
-            Math.max(...areas.map((r) => r[2])),
-            Math.max(...areas.map((r) => r[3])),
+            Math.min(...areas.map((a) => a[0])),
+            Math.min(...areas.map((a) => a[1])),
+            Math.max(...areas.map((a) => a[2])),
+            Math.max(...areas.map((a) => a[3])),
           ]
         : [0, 0, 0, 0];
-    area.forEach((value, i) => p.store(dirty + 16 + i * 4, value));
-    await this.call(
-      this.abi.rendererDraw,
-      [
-        draw.state.enabled || forceOutput ? platform.refs.view : 0,
-        Number(forceOutput || (draw.state.pending && !areas.length)),
-        0,
-      ],
-      pointer,
-      draw.record.id,
-      this.rasterBudget(record),
-    );
-    destination.state.rgba = platform.logicalBitmap(bitmap).state.rgba;
-    destination.state.source = null;
-    destination.changed();
-    record.revision = destination.state.revision;
-  }
-  async releaseRenderer(surface) {
-    const record = this.renderers.get(surface);
-    if (!record) return;
-    await this.call(this.abi.rendererDestroy, [], record.pointer, surface);
-    this.process.free(record.pointer);
-    this.process.free(record.scratch);
-    this.renderers.delete(surface);
-    for (const [id, item] of this.items)
-      if (item.surface === surface && item.managerOwned) {
-        this.items.delete(id);
-        await this.releaseMirror(item.image);
+    area[0] = Math.max(0, area[0]);
+    area[1] = Math.max(0, area[1]);
+    area[2] = Math.min(renderer.width, area[2]);
+    area[3] = Math.min(renderer.height, area[3]);
+    if (area[0] < area[2] && area[1] < area[3]) {
+      if (!renderer.externalPaint) {
+        const color = renderer.clearColor;
+        for (let y = area[1]; y < area[3]; y++)
+          for (let x = area[0]; x < area[2]; x++)
+            pixels.set(
+              [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24],
+              (y * renderer.width + x) * 4,
+            );
       }
+      for (const item of renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key)) {
+        const source = images.get(item.image);
+        source.commitCanvas();
+        rasterizeRetainedBitmap(
+          pixels,
+          renderer.width,
+          renderer.height,
+          await source.pixels(),
+          source.state,
+          item,
+          area,
+        );
+      }
+      bitmap.state.rgba = flipBitmapRows(pixels, renderer.width, renderer.height);
+      bitmap.state.source = null;
+      await bitmap.changed();
+    }
+    if ((draw.state.enabled && (areas.length || draw.state.pending)) || forceOutput) {
+      const frame = { ...bitmap.state, rgba: pixels };
+      await this.world.graphics.output(
+        {
+          state: frame,
+          width: frame.width,
+          height: frame.height,
+          pixels: async () => pixels,
+          frame: async () => frame,
+        },
+        draw.state.offset,
+        forceOutput || (!areas.length && draw.state.pending) ? null : area,
+      );
+    }
   }
   async remove(draw, key) {
     const id = this.key(draw, key),
       record = this.items.get(id);
-    const renderer = this.renderers.get(draw.record.id);
-    if (renderer && (record?.managerOwned || renderer.sources.has(key))) {
-      await this.call(this.abi.rendererRemove, [key], renderer.pointer, draw.record.id);
-      renderer.sources.delete(key);
-    }
     if (!record) return;
-    // A single-entry native removal destroys the object immediately. A
-    // deferred host entry still needs its own release if it never reached
-    // the manager or if the manager stored a different record.
-    if (!record.managerOwned && this.process.allocations.has(record.pointer))
-      await this.call(this.abi.release, [], record.pointer, draw.record.id);
     this.items.delete(id);
-    await this.releaseMirror(record.image);
+    await this.sources.release(record.source, { destroy: record.kind === 2 });
   }
   async removeSurface(draw) {
-    // The original manager destructor releases its references. Running the
-    // individual remove command for each key would destroy shared records.
-    await this.releaseRenderer(draw.record.id);
-    for (const record of [...this.items.values()])
-      if (record.surface === draw.record.id) await this.remove(draw, record.key);
+    for (const [id, record] of [...this.items])
+      if (record.surface === draw.record.id) {
+        this.items.delete(id);
+        await this.sources.release(record.source);
+      }
   }
   snapshot() {
-    return structuredClone({
-      items: [...this.items],
-      renderers: [...this.renderers],
-    });
+    return structuredClone({ items: [...this.items] });
   }
   restore(state) {
-    this.items = new Map(state.items);
-    this.renderers = new Map(state.renderers);
+    this.items = new Map(structuredClone(state.items));
   }
   async close() {
-    for (const surface of [...this.renderers.keys()]) await this.releaseRenderer(surface);
-    for (const [id, record] of this.items) {
-      await this.call(this.abi.release, [], record.pointer, record.surface);
-      this.items.delete(id);
-      await this.releaseMirror(record.image);
-    }
+    for (const record of this.items.values()) await this.sources.release(record.source);
+    this.items.clear();
   }
 }

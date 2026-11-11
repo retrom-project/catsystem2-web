@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeRenderSources } from '../../src/native/render-sources.mjs';
-import { NativeRetainedDraw } from '../../src/native/retained-draw.mjs';
+import { NativeRenderSources } from '../../oracle/render-sources-original.mjs';
+import { NativeRetainedDraw } from '../../oracle/retained-draw-original.mjs';
 import { NativeBitmapOperations } from '../../src/native/bitmap-operations.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';

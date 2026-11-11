@@ -31,6 +31,11 @@
       "calls": 0,
       "references": 0
     },
+    "oracle/raster-kernel-projection.mjs": {
+      "addresses": 34,
+      "calls": 0,
+      "references": 0
+    },
     "oracle/text-log-projection.mjs": {
       "addresses": 4,
       "calls": 2,
@@ -58,11 +63,6 @@
     },
     "src/native/control-task.mjs": {
       "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/draw-commands.mjs": {
-      "addresses": 18,
       "calls": 2,
       "references": 0
     },
@@ -356,28 +356,13 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/raster-kernel.mjs": {
-      "addresses": 34,
-      "calls": 0,
-      "references": 0
-    },
     "src/native/registry.mjs": {
       "addresses": 8,
       "calls": 2,
       "references": 0
     },
-    "src/native/render-sources.mjs": {
-      "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/renderer.mjs": {
       "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/retained-draw.mjs": {
-      "addresses": 48,
       "calls": 2,
       "references": 0
     },

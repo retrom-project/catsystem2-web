@@ -6,7 +6,7 @@ import { NativeImageOwners, nativeImageOwnerCodec } from '../../oracle/image-own
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';
-import { NativeRetainedDraw } from '../../src/native/retained-draw.mjs';
+import { NativeRetainedDraw } from '../../oracle/retained-draw-original.mjs';
 import { KCSMachine, readKCS } from '../../src/kcs.mjs';
 import { kcsProgram } from '../helpers.mjs';
 import { imageOwnerFiles } from './image-files.mjs';

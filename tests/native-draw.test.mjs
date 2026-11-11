@@ -6,7 +6,13 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
+import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { floatBits } from '../src/kcs.mjs';
+
+async function drawPixels(world, id) {
+  const bitmap = world.graphics.surface(id).bitmap;
+  return flipBitmapRows(await bitmap.pixels(), bitmap.width, bitmap.height);
+}
 
 function fixture() {
   const world = {
@@ -104,7 +110,7 @@ test('native draw entries share source pixels after release and rasterize offset
   assert.equal(entry.key, (99 | (7 << 16)) >>> 0);
   assert.equal(entry.layer, 7);
   await task.render();
-  const pixels = await world.graphics.surface(id).bitmap.pixels(),
+  const pixels = await drawPixels(world, id),
     at = (3 * 8 + 3) * 4;
   assert.deepEqual([...pixels.subarray(at, at + 4)], [18, 52, 86, 128]);
   assert.deepEqual([...pixels.subarray(0, 4)], [0, 0, 0, 0]);
@@ -121,7 +127,7 @@ test('draw priority, visibility, clipping and removal modify the actual retained
   await draw(world, id, 5, red);
   await draw(world, id, 9, blue);
   const task = world.graphics.drawTasks.get(id),
-    pixel = async () => [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)];
+    pixel = async () => [...(await drawPixels(world, id)).subarray(0, 4)];
   await task.render();
   assert.deepEqual(await pixel(), [0, 0, 255, 255]);
   await nativeDraw(0x1cf, [id, 9, 1], null, { id: 99 }, world);
@@ -144,10 +150,7 @@ test('disabled output still updates the offscreen native bitmap', async () => {
   await draw(world, id, 1, image);
   const task = world.graphics.drawTasks.get(id);
   await task.render();
-  assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
-    [171, 205, 239, 255],
-  );
+  assert.deepEqual([...(await drawPixels(world, id)).subarray(0, 4)], [171, 205, 239, 255]);
   assert.equal(world.graphics.vramHandle, 0);
 });
 
@@ -158,7 +161,7 @@ test('rotated draw entries use the original fixed-point samples, alpha and desti
     input = world.graphics.images.get(image);
   const colors = [0xffff0000, 0x8000ff00, 0xff0000ff, 0x00ffffff, 0xc0804020, 0xff123456];
   for (let i = 0; i < colors.length; i++)
-    await input.fill(i % 2, Math.floor(i / 2), 1, 1, colors[i]);
+    await input.fill(i % 2, 2 - Math.floor(i / 2), 1, 1, colors[i]);
   await draw(world, id, 2, image, {
     position: [4.25, 2.5],
     base: [0.5, 0.25],
@@ -169,7 +172,7 @@ test('rotated draw entries use the original fixed-point samples, alpha and desti
   });
   await nativeDraw(0x153, [id, 2, 1, 0, 6, 6], null, { id: 99 }, world);
   await world.graphics.drawTasks.get(id).render();
-  const pixels = await world.graphics.surface(id).bitmap.pixels();
+  const pixels = await drawPixels(world, id);
   const argb = Array.from(
     { length: 48 },
     (_, i) =>
@@ -226,10 +229,7 @@ test('FES retained surfaces create real visible VRAM planes and retain separate 
   assert.equal(plane.state.shown, true);
   assert.equal(plane.graph.vram, true);
   assert.equal(new DataView(plane.graph.kx2.buffer).getUint32(0x70, true) >>> 24, 128);
-  assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
-    [255, 0, 0, 255],
-  );
+  assert.deepEqual([...(await drawPixels(world, id)).subarray(0, 4)], [255, 0, 0, 255]);
   assert.equal(
     draw.state.renderer.items[0].key,
     (owner | (player.root.byKey.get('red').handle << 16)) >>> 0,
@@ -256,10 +256,7 @@ test('base-image capture is a deep bitmap copy, survives entry reset and control
     [0],
   );
   await task.render();
-  assert.deepEqual(
-    [...(await world.graphics.surface(id).bitmap.pixels()).subarray(0, 4)],
-    [18, 52, 86, 255],
-  );
+  assert.deepEqual([...(await drawPixels(world, id)).subarray(0, 4)], [18, 52, 86, 255]);
   const handles = world.runtime.handles.snapshot(),
     state = task.snapshot();
   await nativeDraw(0x1c7, [id, 0], null, { id: 99 }, world);

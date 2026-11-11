@@ -71,7 +71,7 @@ test(
       machine.writeString('panel.hg2', 256);
       const handle = (await call(0x2c6, [256])).value,
         owners = await world.getNativeFeature('image-owners'),
-        pointer = owners.pointer(handle),
+        pointer = await owners.materialize(handle),
         p = world.nativeEngine.process;
       assert.equal(p.load(pointer), 1);
       const reference = p.allocate(60, true),
@@ -115,26 +115,30 @@ test(
         1,
         0,
       ]);
-      assert.equal(p.load(pointer), 2, 'the original retained record owns a real reference');
+      assert.equal(
+        p.load(pointer),
+        1,
+        'JS Draw retains canonical aliases independently of the FES projection',
+      );
       const retained = await world.getNativeFeature('retained-draw'),
         key = (world.nativeTaskID(task.id) | (7 << 16)) >>> 0,
         record = retained.record(draw, key);
       assert.equal(record.kind, 3);
-      assert.equal(record.source, pointer);
+      assert.ok(world.renderSources.get(record.source));
       await call(0x154, [nativeSurface]);
       const bitmap = world.graphics.images.get(draw.state.renderer.bitmap),
         pixels = (await bitmap.pixels()).slice();
       assert.deepEqual(pixels, expected, 'all asymmetric source rows reach the CPU surface');
       await call(0x2c7, [handle]);
-      assert.equal(p.load(pointer), 1);
+      assert.equal(p.allocations.has(pointer), false);
       assert.throws(() => owners.pointer(handle), /released|Unknown/);
       fresh = make();
       await fresh.restore(structuredClone(world.snapshot()));
       const restored = fresh.graphics.drawTasks.get(surface),
         restoredRetained = await fresh.getNativeFeature('retained-draw'),
         fp = fresh.nativeEngine.process;
-      assert.equal(restoredRetained.record(restored, key).source, pointer);
-      assert.equal(fp.load(pointer), 1);
+      assert.equal(restoredRetained.record(restored, key).source, record.source);
+      assert.equal(fp.allocations.has(pointer), false);
       restored.state.dirty = true;
       restored.state.renderer.dirtyRects = [[0, 0, 8, 6]];
       await restored.render();
@@ -149,9 +153,9 @@ test(
         'removing the last record runs owner destruction',
       );
       assert.equal(
-        p.allocations.has(pointer),
+        world.runtime.handles.records.has(record.source),
         true,
-        'the original World owns its independent reference',
+        'the original World owns its independent JS source',
       );
     } finally {
       await fresh?.close({ flushFiles: false });

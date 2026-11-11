@@ -7,7 +7,7 @@ import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NATIVE_BITMAP_OPERATION_CONTRACTS } from '../oracle/bitmap-operations.mjs';
 import { bitmapMemoryFixture } from '../tests/fixtures/bitmap-memory-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';
-import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';
+import { installNativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
 const [filename, output] = process.argv.slice(2);
 if (!output) throw new Error('Usage: verify-native-bitmap-operations.mjs FIXED_EXE IGNORED_REPORT');

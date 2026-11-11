@@ -163,7 +163,8 @@ export function affineBitmap(
       // This path tests destination alpha, whereas the untransformed blit
       // tests the entire destination DWORD before copying zero-alpha RGB.
       const effective = (((sample[3] + 1) * (alpha & 65535)) >>> 8) & 255;
-      if (!effective && !destination[at + 3])
+      if (options.blendPixel) options.blendPixel(destination, at, sample, 0, alpha);
+      else if (!effective && !destination[at + 3])
         destination.set([sample[0], sample[1], sample[2], 0], at);
       else blendBitmapPixel(destination, at, sample, 0, alpha);
     }

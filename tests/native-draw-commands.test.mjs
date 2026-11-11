@@ -87,11 +87,12 @@ test(
         record = retained.record(draw, key);
       m.writeString('@cat/image/anim.hg3', 256);
       await call(0x270, [nativeID, 0, 256]);
-      const animation = p.load(record.pointer + 72);
-      assert.ok(animation, 'the original filename helper resolves and loads the ANM');
+      const source = world.renderSources.get(record.source),
+        animation = source.animation;
+      assert.ok(animation, 'the shared filename lookup resolves and loads the JS ANM');
       assert.deepEqual(await call(0x370, [nativeID, 0, 0, 0x81234567]), { control: 2 });
       await call(0x370, [nativeID, 0, 63, 0xfedcba98]);
-      const variables = () => Array.from({ length: 64 }, (_, i) => p.load(animation + 32 + i * 4));
+      const variables = () => [...animation.registers];
       const expected = variables();
       assert.equal(expected[0], 0x81234567);
       assert.equal(expected[63], 0xfedcba98);
@@ -105,9 +106,9 @@ test(
         'an absent drawing key cannot overwrite another entry',
       );
       await call(0x271, [nativeID, 0, 0]);
-      assert.equal(p.load(record.pointer + 80), 0);
+      assert.equal(source.enabled, 0);
       await call(0x271, [nativeID, 0, 1]);
-      assert.equal(p.load(record.pointer + 80), 1);
+      assert.equal(source.enabled, 1);
       await call(0x16e, [handle]);
       assert.equal(
         p.allocations.has(pointer),
@@ -121,35 +122,29 @@ test(
         invoke = (id, args) => fresh.runtime.native('main', id, args, fm, ft),
         restored = fresh.graphics.drawTasks.get(id),
         rr = (await fresh.getNativeFeature('retained-draw')).record(restored, key),
-        fp = (await fresh.getNativeFeature('draw-commands')).process;
-      assert.equal(rr.pointer, record.pointer);
+        fp = fresh.nativeEngine.process,
+        restoredSource = fresh.renderSources.get(rr.source);
+      assert.equal(rr.source, record.source);
       assert.equal(fp.allocations.has(pointer), false);
-      assert.equal(fp.load(rr.pointer + 80), 1);
-      assert.equal(fp.load(rr.pointer + 72), animation);
-      assert.deepEqual(
-        Array.from({ length: 64 }, (_, i) => fp.load(animation + 32 + i * 4)),
-        expected,
-      );
+      assert.equal(restoredSource.enabled, 1);
+      assert.deepEqual(restoredSource.animation.snapshot(), animation.snapshot());
+      assert.deepEqual([...restoredSource.animation.registers], expected);
       await invoke(0x370, [nativeID, 0, 63, 1000]);
-      assert.equal(fp.load(animation + 32 + 63 * 4), 1000);
-      assert.equal(p.load(animation + 32 + 63 * 4), expected[63]);
+      assert.equal(restoredSource.animation.registers[63], 1000);
+      assert.equal(animation.registers[63], expected[63]);
       await invoke(0x271, [nativeID, 0, 0]);
-      assert.equal(fp.load(rr.pointer + 80), 0);
-      assert.equal(p.load(record.pointer + 80), 1, 'fresh controls have independent native RAM');
+      assert.equal(restoredSource.enabled, 0);
+      assert.equal(source.enabled, 1, 'fresh controls have independent native RAM');
       await invoke(0x271, [0xffffffff, 0, 1]);
-      assert.equal(
-        fp.load(rr.pointer + 80),
-        0,
-        'an absent target leaves other drawing tasks alone',
-      );
+      assert.equal(restoredSource.enabled, 0, 'an absent target leaves other drawing tasks alone');
       await invoke(0x102, [nativeID, 0]);
       assert.equal(restored.state.renderer.items.length, 0);
       assert.equal(
-        fp.allocations.has(rr.pointer),
+        fresh.runtime.handles.records.has(rr.source),
         false,
-        'removal releases the native retained object',
+        'removal releases the JS retained source',
       );
-      assert.equal(p.allocations.has(record.pointer), true);
+      assert.equal(world.runtime.handles.records.has(record.source), true);
     } finally {
       await fresh?.close({ flushFiles: false });
       await world.close({ flushFiles: false });

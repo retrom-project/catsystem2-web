@@ -6,7 +6,7 @@ import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { NATIVE_IMAGE_COMMAND_CONTRACTS } from '../oracle/image-commands.mjs';
 import { imageCommandsFixture } from '../tests/fixtures/image-commands-fixture.mjs';
-import { installNativeRasterKernels } from '../src/native/raster-kernel.mjs';
+import { installNativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 
 const [filename, output] = process.argv.slice(2);
 if (!output) throw new Error('Usage: verify-native-image-commands.mjs FIXED_EXE IGNORED_REPORT');

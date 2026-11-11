@@ -109,7 +109,7 @@ export async function exercisePlaneFlow(make, assert) {
     assert.deepEqual(attachment(world, base).base, [0, 0, 2000]);
     assert.equal(attachment(world, base).display, true);
     const pixels = async (current) => {
-      if (!current.stageRenderer) return null;
+      if (!current.stageRenderer?.renderer) return null;
       await current.stageRenderer.render(
         current.graphics.stage,
         null,
