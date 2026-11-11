@@ -7,6 +7,8 @@ import { truncateFloat32 } from '../ppi/numeric.mjs';
 const scratch = new WeakMap(),
   fields = [
     'file',
+    'positionReference',
+    'positionPending',
     'x',
     'y',
     'width',
@@ -72,6 +74,8 @@ export function initializeFESControl(object) {
   requireControl(object);
   Object.assign(object, {
     file: '',
+    positionReference: null,
+    positionPending: false,
     x: 0,
     y: 0,
     width: 0,
@@ -193,7 +197,7 @@ export function fesControlRangePacket(object) {
 
 // drawID is a World identity. This packet deliberately contains no PE pointer,
 // native namespace identity, input area ID, retained key or FES object handle.
-// POS2 resolution has already called Origin/Rect; a PL link only accepts PLANE4.
+// POS2 resolution has already called Origin/Rect; a PL link only accepts PLANE4 and borrows its local VRAM origin.
 export function fesControlLoadPacket(object, drawID, plane = null) {
   requireControl(object);
   const out = workspace(object).load;
@@ -210,8 +214,8 @@ export function fesControlLoadPacket(object, drawID, plane = null) {
   out.rect[1] = out.y;
   out.rect[2] = (out.x + (object.width | 0)) | 0;
   out.rect[3] = (out.y + (object.height | 0)) | 0;
-  out.planeX = plane?.nativeType === 4 ? truncateFloat32(plane.x) : 0;
-  out.planeY = plane?.nativeType === 4 ? truncateFloat32(plane.y) : 0;
+  out.planeX = plane?.nativeType === 4 ? truncateFloat32(plane.vramX) : 0;
+  out.planeY = plane?.nativeType === 4 ? truncateFloat32(plane.vramY) : 0;
   return out;
 }
 export function snapshotFESControl(object) {

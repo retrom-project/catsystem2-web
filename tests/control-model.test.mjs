@@ -115,7 +115,13 @@ test('FES pos is a value and load/range/query packets are reused without identit
   assert.equal(object.pageSize, 0, 'SLIDER page has only min/max');
   const position = fesControlPosition(object),
     range = fesControlRangePacket(object),
-    packet = fesControlLoadPacket(object, 77, { nativeType: 4, x: 3.75, y: -5.75 });
+    packet = fesControlLoadPacket(object, 77, {
+      nativeType: 4,
+      x: 100.25,
+      y: 200.25,
+      vramX: 3.75,
+      vramY: -5.75,
+    });
   assert.deepEqual([...position], [25, 0, 0]);
   assert.deepEqual([...range], [0, 100]);
   assert.deepEqual([...packet.rect], [16, 12, 88, 24]);

@@ -131,3 +131,9 @@ The service currently has an explicit fixture installer; normal installation
 and the high-level FES13..15 driver still use their counted old implementation.
 Their coordinated default factory switch, definition application and ordered
 flag consumption remain D7 integration work.
+
+The semantic rectangle-control load packet uses an associated type4 PLANE's
+local VRAM x/y, truncating each float before sending it. Display x/y and
+PARENT placement do not supply that origin. The regression deliberately gives
+the plane different display and VRAM values. POS2's pending reference belongs
+to the FES object and its checkpoint; it is not a load-packet field.

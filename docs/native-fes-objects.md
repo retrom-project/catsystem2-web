@@ -5,14 +5,19 @@ modules below are verified models; they do not yet replace the production
 family entry, constructors or restore path. The migration inventory continues
 to count those original consumers until the entry switch removes them.
 
-| Model                   | Responsibility                                                                         |
-| ----------------------- | -------------------------------------------------------------------------------------- |
-| `fes-object-graph.mjs`  | Object identity, lifetime parents, ordered children, allocation counter                |
-| `fes-image-model.mjs`   | Image selectors, typed coordinate queries, BUTTON lock                                 |
-| `fes-common-model.mjs`  | Typed graphical setters, dirty propagation and query output sentinels                  |
-| `fes-motion-model.mjs`  | Distinct image, plane, alpha-only and Base virtual state adapters                      |
-| `fes-motion-driver.mjs` | Recursive busy, base snapshot gating, child-first updates, stopping and target restore |
-| `fes-image-cache.mjs`   | Task-owned encoded image cache and complete independent bitmap decodes                 |
+| Model                       | Responsibility                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| `fes-object-graph.mjs`      | Object identity, lifetime parents, ordered children, allocation counter                |
+| `fes-image-model.mjs`       | Image selectors, typed coordinate queries, BUTTON lock                                 |
+| `fes-common-model.mjs`      | Typed graphical setters, dirty propagation and query output sentinels                  |
+| `fes-motion-model.mjs`      | Distinct image, plane, alpha-only and Base virtual state adapters                      |
+| `fes-motion-driver.mjs`     | Recursive busy, base snapshot gating, child-first updates, stopping and target restore |
+| `fes-image-cache.mjs`       | Task-owned encoded image cache and complete independent bitmap decodes                 |
+| `fes-object-collection.mjs` | First-wins CP932 keys, persistent group counts and initialization request FIFO         |
+| `fes-common-commands.mjs`   | Whole-selection common commands and argument/output boundaries                         |
+| `fes-object-factory.mjs`    | Pure typed constructors with explicit family initializers                              |
+| `fes-definitions.mjs`       | Actual header, numeric tuple and reference parsing, then typed application             |
+| `fes-plane-driver.mjs`      | Real SimplePlane resource children, transforms and cached metadata                     |
 
 Image/plane state is ordinary JavaScript data. The MOT adapter uses KX2's defined
 144-byte script interface; that byte packet is an execution interface, not an
@@ -145,3 +150,48 @@ rebuilds prototypes and links without replaying declarations or resource
 initialization. These standalone semantics are covered by short public tests.
 Default FESInstance factory/selection/restore and the implicit `_TOPOBJ_`
 identity remain coordinated integration work; no D7 removal is claimed here.
+
+## Typed definitions and frozen applicability
+
+`FESDefinitionModel` compiles the original header codes and reads each row
+once before its typed targets are visited. Tuple components are selected by
+commas before evaluation; an empty component evaluates as0, while a missing
+preceding comma leaves that component absent. Object references scan CP932
+bytes and evaluate their index once. Bare references retain index-1 only when
+the first declared count exceeds1. Resource setters then parse the first
+colon's integer selector, separately from that object-reference index.
+
+PARENT binds the lifetime graph before the type-specific application. PL and
+external plane IDs remain independent. TABLE16..20 requires an immediate
+owned loader before FILE, so START can query the loaded table. The factory
+creates no World resources; text, sound, M2 and image tails must provide their
+existing pure initializers and typed definition services. Missing services
+fail explicitly. VIEW declaration5 owns a raw0 Base; NUMIMG has no instance.
+
+Definition POS and common `pos` are separate contracts. PLANE/CPLANE definition
+POS preserves omitted fractional coordinates and W; the command truncates
+omitted coordinates through integer getters and writes W1. IMAGE SIZE2 retains
+its metadata-source flag without setting the common size dirty flag. PLANE
+SIZE2 additionally requests a size rebuild. Control POS2 pending references
+are ordinary state and survive a standalone control checkpoint. Rectangle
+control loading borrows an associated raw4 PLANE's local VRAM origin, rather
+than its display position.
+
+The frozen typed appliers define narrower applicability than the unversioned
+manual. IMAGE/PANEL/SAVEPANEL/IMGWND headers do not apply generic SIZE/BASE/COLOR;
+CIMAGE has SIZE/COLOR and BUTTON adds SIZE. Common command `size` remains
+separate. SCROLL2 excludes ordinary POS/TYPE headers; SLIDER excludes POS/BASE;
+control ID.\* columns have no typed application. Recognized inapplicable
+columns still retain their original parsing side effects.
+
+PRI's row-wide relative flag is set for whole-group selection. IMAGE, PLANE
+and SCROLL add the element index when it is set; SCROLL2/SLIDER use the
+opposite index rule. PRI_P is SCROLL's separate dedicated-plane priority,
+not a generic image or parent-relative priority. These statements supersede
+the earlier common-survey shorthand.
+
+These independently tested models retain the evidenced74/76 behavior. The
+contract inventory must record manual-versus-frozen differences and ABI
+applicability separately from real missing implementations. They do not
+create an unversioned extension API or establish another engine version.
+Default factory/definition entry integration remains pending and counted.
