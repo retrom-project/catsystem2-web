@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 142, "oracle": 141, "differential": 67 },
+    "counts": { "js": 143, "oracle": 141, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -39,6 +39,7 @@
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-contracts.test.mjs",
         "tests/fes-file-list.test.mjs",
+        "tests/fes-image-model.test.mjs",
         "tests/fes-string-table.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -2710,8 +2711,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 425,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 40, "8": 160, "9": 55 },
+    "runtimeFiles": 426,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 41, "8": 160, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -51723,6 +51724,19 @@
         }
       ],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/fes-image-model.mjs",
+      "sourceSha256": "b30b38e8da46e01063e2cbdc15c7318308366c7b296f7e962476032baefac13d",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/fes-images.mjs",

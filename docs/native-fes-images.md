@@ -248,3 +248,40 @@ Primary references: [CIMAGE](https://cs2.suki.jp/manual/fes/code/o_cimage.html),
 [ptype](https://cs2.suki.jp/manual/fes/reference/co/ptype.html).
 Frozen executable bytes, decompilation, resources and raw traces are never
 distributed in the public fixtures.
+
+## Standalone JS model during phase 7
+
+`fes-image-model.mjs` currently provides independently verified selector and
+coordinate helpers; it has not yet replaced the original default FES image
+entry or its projections. The existing execution counts stay in the migration
+inventory until the coordinated family switch.
+
+The selector stores 32 initial IDs, explicit-table activation, the current raw
+unsigned ID and independent table/image dirty flags. A table entry can force a
+reload of the same ID. Invalid table indices leave all state unchanged; an
+explicit table rejects `setid` above 31, while a direct selector retains
+`0xffffffff`.
+
+Coordinate queries distinguish PARENT from PL. Image coordinates sum
+`float32(float32(origin + position) - base)` and only recurse through raw parent
+types CIMAGE/IMAGE. Plane coordinates add local position and only recurse
+through CPLANE/PLANE/STRING parents. Parent base, scale, rotation and drawing
+plane association are not added by these queries. Parent-first arithmetic and
+CVTT float-to-int behavior are explicit; changing the sum order changes the
+observed float32 cancellation cases. Buffers are borrowed and reused per object;
+checkpoint state remains ordinary authored fields and selector values.
+
+`tests/fes-image-model.test.mjs` compares both profiles' eight selector states
+and eight coordinate cases plus five BUTTON-lock states against independently
+captured original command
+outputs, including unsigned sentinel values, invalid indices, parent type
+filters, cancellation, overflow and fresh model reconstruction. It also checks
+buffer identity, cycles and the absence of serialized pointer/cache fields.
+BUTTON lock captures visible floating coordinates only on an unlocked-to-locked
+transition and retains the raw lock word. Its input query uses that snapshot
+plus the current image parent, including the original double-parent addition;
+image drawing continues to use live position. Reassigning a nonzero lock does
+not capture again. Lock state restores as ordinary fields.
+
+These helpers do not establish complete image loading, definitions, rendering,
+input or family integration; those remain phase-7 work.
