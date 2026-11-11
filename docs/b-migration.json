@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 154, "oracle": 143, "differential": 67 },
+    "counts": { "js": 155, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -38,6 +38,7 @@
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-bitmap.test.mjs",
+        "tests/fes-common-commands.test.mjs",
         "tests/fes-common-model.test.mjs",
         "tests/fes-contracts.test.mjs",
         "tests/fes-file-list.test.mjs",
@@ -2724,8 +2725,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 441,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 53, "8": 163, "9": 55 },
+    "runtimeFiles": 442,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 54, "8": 163, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -51490,6 +51491,19 @@
       "review": "counted"
     },
     {
+      "file": "src/native/fes-common-commands.mjs",
+      "sourceSha256": "fbb0f66a49c1c149c7e5792efe1cbb8522b6a8af10d426fc09dace6fc5deaa70",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/fes-common-model.mjs",
       "sourceSha256": "fcdcb5ba6d060471bc7e3ee81ac77e7c21935b981e7b828ef8cda8b6bde72005",
       "domain": 7,
@@ -52112,7 +52126,7 @@
     },
     {
       "file": "src/native/fes-motion-driver.mjs",
-      "sourceSha256": "ce22ae363765b3548d506e08e94e3b258056b7378d05354737e02046f9382527",
+      "sourceSha256": "7c04453b0e420fed7bbd5f1cc39bb407e61fd1db4bea85805ca2c645348e4303",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

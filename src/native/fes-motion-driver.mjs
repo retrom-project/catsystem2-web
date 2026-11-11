@@ -32,7 +32,7 @@ export class FESMotionDriver {
     const idle = !this.busy(object),
       target = this.targetFor(object, true);
     if (idle) {
-      const snapshot = fesMotionState(object);
+      const snapshot = target.state();
       if (snapshot) target.manager.base.set(snapshot);
     }
     return target;

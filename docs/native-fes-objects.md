@@ -95,3 +95,28 @@ their bytes and reference counts first. Closing an individual interpreter must
 not release this task-owned cache. Final task close releases its descriptors.
 The cache model is independently verified against a new World without loading
 an EXE; the production FES task will adopt it at the family entry switch.
+
+## Whole-selection common commands
+
+`FESCommonCommands` coordinates the recovered 24 common commands through explicit
+collection, variable-bank, motion and typed resource services. It evaluates
+authored expressions once before iteration and preserves holes: position and
+stop skip them, size and delete stop, and an interrupted `ismot` does not write
+a partial OR. Coordinate queries require an explicit element and suppress only
+the exact output index -1. PARTICLE contributes its raw busy word. SCROLL's
+common `pri` changes its dedicated plane priority; SCROLL2 and SLIDER change
+their biased image priorities.
+
+Image/plane position commands write their typed coordinates and then execute
+the actual `pPos` MOT with the object's delay. A motion registry can retain the
+existing sound adapter as the sole snapshot and output owner. Blend keeps one
+RGB source for the entire selection: a plane replaces it with its previous
+ARGB, and later supported objects inherit that value. Other objects initially
+use the explicit command-source address. This preserves the recovered boundary;
+it does not introduce PE addresses as object state.
+
+The public short tests cover expression side effects, type gates, holes,
+query writes, deferred copy requests, table outputs, real MOT delay and fresh
+target restore. This coordinator remains independent of the default FES
+factory until the shared collection and family drivers are integrated. The
+old D7 entry and projection counts therefore remain unchanged.
