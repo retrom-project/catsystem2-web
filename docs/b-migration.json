@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 147, "oracle": 141, "differential": 67 },
+    "counts": { "js": 148, "oracle": 141, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -44,6 +44,7 @@
         "tests/fes-image-model.test.mjs",
         "tests/fes-motion-driver.test.mjs",
         "tests/fes-motion-model.test.mjs",
+        "tests/fes-source-model.test.mjs",
         "tests/fes-string-table.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -2661,7 +2662,7 @@
       {
         "kind": "identity",
         "file": "src/native/fes-sound-config.mjs",
-        "line": 152,
+        "line": 90,
         "expression": "soundConfiguration.profile !== configuration?.profile",
         "domain": 7
       },
@@ -2715,8 +2716,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 431,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 46, "8": 160, "9": 55 },
+    "runtimeFiles": 433,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 46, "8": 162, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -48955,6 +48956,32 @@
       "review": "counted"
     },
     {
+      "file": "src/fes/source.mjs",
+      "sourceSha256": "7e945de487ff7b57be6365a57744fb3a4a46f826138bc75cc48259260b00d629",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/fes/tokens.mjs",
+      "sourceSha256": "5b346d282e5104716d30b84e04c357f1c0acc12bbcc2ff5f4b0d47c0ee6e4590",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/fes/types.mjs",
       "sourceSha256": "09e69b62005869cf69145ccf6060e2d46a5688870d44ff9f7db4055980b41671",
       "domain": 8,
@@ -49346,7 +49373,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "93ddfb4b7bb80a739f733a6bb49dd41f48011ade7632c4698a289d3f8f518fba",
+      "sourceSha256": "1346124bfe38a1f6580a3a52e41334465ae505388ba0fecc4237f04ee276fd9d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49359,7 +49386,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "df5d539978b834180345d84fb1e3ea663fe085d4b6918709c32ec03d88458dc7",
+      "sourceSha256": "1410c6fbab6f9f351f69a37c36f3f77b889de2ac87f50b8ae7b44d2c1f1eaabd",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49372,7 +49399,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "f34e32f47f20eae36ff78ffe4f6d7ee88931a1d0c433c99b34049c93708e674c",
+      "sourceSha256": "547eefa3495ad0041cccdb1808d4c6be14dcd4c02ac95d2caa26007cd2379c04",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52313,7 +52340,7 @@
     },
     {
       "file": "src/native/fes-sound-config.mjs",
-      "sourceSha256": "8e3075c96683d5298c376ef9da59efab1c2c2ad227701c861c12c2f11fce274a",
+      "sourceSha256": "2f4cbb750bf92b0c872e3a596666ff1cffa567f03a17f13265c0bcf7b8317d66",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

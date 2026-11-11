@@ -149,6 +149,8 @@ function validateBehavior(abi) {
     !Number.isSafeInteger(fes?.variableBankOffset) ||
     !['cp932', 'cp932-as-utf16le'].includes(fes?.fileList?.patternEncoding) ||
     !['cp932', 'utf16le'].includes(fes?.fileList?.keyEncoding) ||
+    !['raw', 'unescape-quote'].includes(fes?.macroLiterals?.string) ||
+    !['raw', 'wrap-raw'].includes(fes?.macroLiterals?.character) ||
     !graphics ||
     !startup ||
     floatingPoint?.precisionBits !== 24 ||

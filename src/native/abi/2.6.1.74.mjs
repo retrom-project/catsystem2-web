@@ -230,6 +230,7 @@ export default {
   },
   fes: {
     fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
+    macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     variableBankOffset: 1800,
     imageBlockOffset: 1500,
     imageIndexOffset: 1064,

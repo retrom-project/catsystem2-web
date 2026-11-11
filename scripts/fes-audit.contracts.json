@@ -3710,11 +3710,11 @@
       "id": "fes.syntax.INCLUDE",
       "domain": "fes-syntax",
       "names": ["#INCLUDE"],
-      "status": "implemented",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/h_include.html",
       "implementation": "src/fes",
       "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Recursive includes, unresolved includes and include cycles are tested.",
+      "note": "Recursive plain-source includes are tested. Original compressed FES bypasses include expansion; retaining that decoder/player distinction is pending.",
       "signatures": []
     },
     {
@@ -3732,11 +3732,11 @@
       "id": "fes.syntax.MACRO",
       "domain": "fes-syntax",
       "names": ["#MACRO"],
-      "status": "implemented",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/h_macro.html",
       "implementation": "src/fes",
       "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Recursive token replacement covers command names, object counts and variable indices.",
+      "note": "A verified one-pass lexical model and per-version literal emission exist. Production still uses an incorrect recursive parse-time pass over DEFINE/OBJECT; runtime-line integration remains.",
       "signatures": []
     },
     {
@@ -3776,11 +3776,11 @@
       "id": "fes.syntax.comments",
       "domain": "fes-syntax",
       "names": ["comments"],
-      "status": "implemented",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/comment.html",
       "implementation": "src/fes",
       "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Both C comment forms are tested, preserving command line boundaries.",
+      "note": "The independent source model preserves original quote-blind deletion, line boundaries and whitespace stages. Production still inserts spaces for deleted comments; prepared/plain integration remains.",
       "signatures": []
     },
     {
