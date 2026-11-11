@@ -3813,7 +3813,7 @@
       "source": "https://cs2.suki.jp/manual/fes/code/headblock.html",
       "implementation": "src/fes",
       "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Case-sensitive labels; blocks repeat once per frame, next transitions in the same frame.",
+      "note": "Case-sensitive labels; repeated headers append commands in source order, blocks repeat once per frame, and next transitions in the same frame. Repeated OBJECT headers retain their own column association.",
       "signatures": []
     },
     {

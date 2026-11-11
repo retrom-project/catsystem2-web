@@ -98,7 +98,7 @@ export function parseProgram(text, { include } = {}) {
           break;
         default:
           section = 'block';
-          current = program.blocks[label] = [];
+          current = program.blocks[label] ??= [];
       }
     } else if (section === 'macro') program.macros[head] = words.join(' ');
     else if (section === 'define') {

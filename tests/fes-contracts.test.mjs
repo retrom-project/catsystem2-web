@@ -34,6 +34,28 @@ next WAIT
     assert.throws(() => parseProgram(`#DEFINE\nBUTTON ${name}\n`), /Invalid FES definition/);
 });
 
+test('repeated FES block headers append commands while repeated object headers retain their own columns', async () => {
+  const source =
+      '#DEFINE\nCIMAGE first\n#OBJECT PRI\nfirst 10\n#START\n$0=1\n#DEFINE\nCIMAGE second\n#OBJECT DISP\nsecond 1\n#START\n$0+=2\nnext WAIT\n#WAIT\n',
+    program = parseProgram(source);
+  assert.deepEqual(program.blocks.START, ['$0=1', '$0+=2', 'next WAIT']);
+  assert.deepEqual(
+    program.definitions.map((o) => o.name),
+    ['first', 'second'],
+  );
+  assert.deepEqual(
+    program.tables.map((t) => [t.columns, t.rows]),
+    [
+      [['PRI'], [['first', ['10']]]],
+      [['DISP'], [['second', ['1']]]],
+    ],
+  );
+  const player = await screen(source);
+  await player.step();
+  assert.equal(player.globals[0], 3);
+  assert.equal(player.root.label, 'WAIT');
+});
+
 test('FES wndmenu posts the actual window message after native token and expression evaluation', async () => {
   for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74']) {
     const events = [],
