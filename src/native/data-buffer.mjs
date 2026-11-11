@@ -199,6 +199,9 @@ export class NativeDataBuffers {
     return { success: result.success, bytes: nullOutput ? null : bytes };
   }
   async decode(pointer, selector = 0) {
+    return (await this.decodeImage(pointer, selector))?.frame ?? null;
+  }
+  async decodeImage(pointer, selector = 0) {
     this.require(pointer);
     const bytes = this.data(pointer);
     if (!bytes.length) return null;
@@ -208,7 +211,7 @@ export class NativeDataBuffers {
     const image = await openImage(bytes),
       frame = image.frame(jpeg ? 0 : selector >>> 0);
     if (!frame) return null;
-    return image.decode(frame);
+    return { image, frame: await image.decode(frame) };
   }
   async fileMetadata(name, initial = null, options = {}) {
     if (typeof this.read !== 'function')

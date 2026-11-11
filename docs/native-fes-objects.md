@@ -12,6 +12,7 @@ to count those original consumers until the entry switch removes them.
 | `fes-common-model.mjs`  | Typed graphical setters, dirty propagation and query output sentinels                  |
 | `fes-motion-model.mjs`  | Distinct image, plane, alpha-only and Base virtual state adapters                      |
 | `fes-motion-driver.mjs` | Recursive busy, base snapshot gating, child-first updates, stopping and target restore |
+| `fes-image-cache.mjs`   | Task-owned encoded image cache and complete independent bitmap decodes                 |
 
 Image/plane state is ordinary JavaScript data. The MOT adapter uses KX2's defined
 144-byte script interface; that byte packet is an execution interface, not an
@@ -77,3 +78,20 @@ tests compare complete original state packets and real MOT execution, check
 shared RNG continuation, and reconstruct a new graph and target registry.
 Production World integration and its complete rendering/input tests remain
 phase-7 work.
+
+## Encoded image cache
+
+`FESImageCache` uses the canonical JavaScript data-buffer store. It retains the
+first descriptor inserted under a category-resolved name, caches file bytes
+once, and decodes each requested image into an independently owned bitmap. It
+preserves native selector behavior, format-specific RGB24 policy, canvas and
+crop offsets, anchors, attributes, bitmap modes and alpha hints through
+the shared bitmap import. A missing selector does not choose the first frame.
+
+Concurrent reads share pending I/O. An explicit insertion while a read is pending
+retains ownership of that name even when the read misses. Cache snapshots save
+the descriptor references after I/O settles; runtime restoration reconstructs
+their bytes and reference counts first. Closing an individual interpreter must
+not release this task-owned cache. Final task close releases its descriptors.
+The cache model is independently verified against a new World without loading
+an EXE; the production FES task will adopt it at the family entry switch.
