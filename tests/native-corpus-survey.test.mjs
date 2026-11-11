@@ -60,7 +60,7 @@ test('FES counting expands macros and includes while keeping object definitions'
   assert.deepEqual(report.objects, [{ type: 'TEXT', name: 'label' }]);
 });
 
-test('an unresolved CST condition retains other decoded command sites', async () => {
+test('CST end-of-line grouping retains other decoded command sites', async () => {
   const report = await inspectCST(
     catScene([
       [0x30, 'wait 1'],
@@ -70,9 +70,7 @@ test('an unresolved CST condition retains other decoded command sites', async ()
   );
   assert.equal(report.lines, 3);
   assert.deepEqual(report.commands, ['wait', 'rdraw']);
-  assert.equal(report.commandErrors.length, 1);
-  assert.equal(report.commandErrors[0].line, 2);
-  assert.match(report.commandErrors[0].reason, /Unclosed condition/);
+  assert.deepEqual(report.commandErrors, []);
 });
 
 test('container failures retain a reason even when decompression has no message', async () => {

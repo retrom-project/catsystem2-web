@@ -3,6 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ScenePlayer, cleanText, parseMessage } from '../src/scene.mjs';
 import { catScene, memoryGame } from './helpers.mjs';
+import { condition } from '../src/fes/expression.mjs';
+import { cstCommandBody } from '../src/cst-syntax.mjs';
+import { inspectCST } from '../scripts/survey-native-corpus.mjs';
 
 async function scene(scripts, host = {}, globals = {}, strings = {}) {
   const game = memoryGame(
@@ -17,6 +20,39 @@ async function scene(scripts, host = {}, globals = {}, strings = {}) {
 const command = (text) => [0x30, text];
 const text = (value) => [0x20, value];
 const input = [2, ''];
+
+test('CST unmatched groups follow the original false branch without evaluating child mutations', async () => {
+  const lines = [
+      command('if (( #1 > 0 )&&(( #2 < 1 )||( \\2 > 19 )) #2 = #3 / 10000'),
+      command('if (( #1 > 0 )&&(( #2 < 1 )||( \\2 > 19 )) #3 = #2 * 10000 + #1'),
+      command('if ((#1++ > 0) #2++'),
+      command('#4=1'),
+      command('if (#1 > 0) (#5=7)'),
+      command('if (#1 < 0) (#6=8)'),
+      text('After'),
+      input,
+    ],
+    globals = { 1: 37, 2: 0, 3: 73007 },
+    p = await scene({ main: lines }, {}, globals);
+  await p.tick();
+  assert.deepEqual(globals, { 1: 37, 2: 0, 3: 73007, 4: 1, 5: 7 });
+  assert.equal(p.currentMessage.text, 'After');
+  assert.deepEqual([...p.unsupported], []);
+  for (const [, source] of lines.slice(0, 3)) {
+    assert.equal(cstCommandBody(source), '');
+    assert.throws(() => condition(source), /Unclosed condition/, 'FES block syntax remains strict');
+  }
+  const inspected = await inspectCST(catScene(lines));
+  assert.deepEqual(inspected.commandErrors, []);
+  assert.deepEqual(inspected.commands, []);
+  assert.equal(cstCommandBody('if (#1>0) if (#2==0) bg 0 authored'), 'bg 0 authored');
+  assert.equal(cstCommandBody('if (1)\0 #2=8'), '');
+  assert.equal(cstCommandBody('if ((1)\0) #2=8'), '');
+  await assert.rejects(
+    p.command('if (unknown_condition) (#5=9)'),
+    /Unexpected FES expression identifier/,
+  );
+});
 
 test('CST call/return and conditional assignments preserve the caller and shared variable domain', async () => {
   const p = await scene({

@@ -2718,8 +2718,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 422,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 38, "8": 159, "9": 55 },
+    "runtimeFiles": 423,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 39, "8": 159, "9": 55 },
     "fileNeedsReview": 95,
     "exeDependencyFiles": 78,
     "exeDependencies": { "addresses": 889, "calls": 99, "references": 6 },
@@ -48464,6 +48464,19 @@
       "review": "counted"
     },
     {
+      "file": "src/cst-syntax.mjs",
+      "sourceSha256": "1fdf5fd5a25890d2115cf3ec3b665dc5edc774140a51261069cb6dc8722da3d7",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/emote/animation.mjs",
       "sourceSha256": "ed577e533b21352c54ce76cf3ff604a0ee0eea26586d1bd57090570905f0643c",
       "domain": 9,
@@ -57106,7 +57119,7 @@
     },
     {
       "file": "src/scene.mjs",
-      "sourceSha256": "deaf310c6a15c68ed0427729793a8af52b1eebf5fe41fb693429f346d075a8e6",
+      "sourceSha256": "a3f82da16ea11ccb094cbf6c7f71218e5fe714013f1c75dbb274c152791a9a6f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -3,6 +3,8 @@
 import { readScene, readTranslation } from './formats/scene.mjs';
 import { evaluate, assign, condition } from './fes/expression.mjs';
 import { Stage, planeNumbers } from './stage.mjs';
+import { cstCondition } from './cst-syntax.mjs';
+import { evaluateNativeExpression } from './native/expression.mjs';
 
 // Keep formatting instructions separate from text. The message window owns its
 // default font/size/color; relative changes must not assume a fixed pixel size.
@@ -436,9 +438,15 @@ export class ScenePlayer {
   async command(source) {
     let line = this.expand(source.trim());
     while (/^if\s*\(/.test(line)) {
-      const [expr, rest] = condition(line);
-      if (!this.value(expr)) return;
-      line = rest;
+      const { expression, command, closed } = cstCondition(line),
+        value = closed
+          ? this.value(expression)
+          : evaluateNativeExpression(expression, { words: this.globals, privateWords: null });
+      // An unmatched native group is a default expression node. The original
+      // evaluator returns zero without visiting its children or dispatching a
+      // trailing assignment. This is independent of resource names.
+      if (!value) return;
+      line = command;
     }
     if (!line) return;
     if (line.startsWith('(') && !condition(line)[1]) line = condition(line)[0].trim();

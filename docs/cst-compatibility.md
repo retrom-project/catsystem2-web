@@ -130,3 +130,18 @@ node scripts/fes-audit.mjs --cst /absolute/path/to/frozen/sdk/system/scene
 The probes are structural inventories. The complete matrix still includes unimplemented native
 commands, rendering features, motion executors and host services. New native evidence must update
 the implementation, public contract fixture and matrix entry together.
+
+## Conditional token grouping
+
+CST's `if` command first selects one native parenthesized token. An unmatched
+opening group consumes the rest of that command line. The recovered expression
+evaluator treats the unmatched group as its default zero node and does not
+visit child assignments or increments. The command therefore takes the false
+branch, with no trailing command dispatched; the next CST line still executes.
+This applies to source syntax, without resource-name or game-name branches.
+
+The original 2.6.1.63 system-script call chain and expression dispatch, plus the
+existing 2.6.1.76 original expression oracle, establish this behavior. Public
+fixtures use independently authored variables and commands. The corpus and
+manual-audit tools use the same CST grouping; FES block conditions remain
+strict and balanced unknown identifiers retain explicit errors.

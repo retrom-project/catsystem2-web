@@ -8,6 +8,7 @@ import { parseProgram } from '../src/fes/program.mjs';
 import { FESInstance } from '../src/fes/instance.mjs';
 import { readFES, readScene } from '../src/formats/scene.mjs';
 import { condition } from '../src/fes/expression.mjs';
+import { cstCommandBody } from '../src/cst-syntax.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 export const registry = JSON.parse(
@@ -176,7 +177,7 @@ async function probeCST(directory) {
       for (const line of script.lines) {
         kinds[line.kind] = (kinds[line.kind] || 0) + 1;
         if (line.kind !== 0x30) continue;
-        const source = commandBody(line.text);
+        const source = cstCommandBody(line.text);
         if (!source || /^[\d#(]/.test(source)) continue;
         const [head, bank, verb] = source.split(/\s+/);
         commands[head] = (commands[head] || 0) + 1;

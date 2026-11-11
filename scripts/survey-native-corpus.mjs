@@ -9,6 +9,7 @@ import { readFES, readScene } from '../src/formats/scene.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
 import { NodeFile } from './node-files.mjs';
 import { commandBody } from './fes-audit.mjs';
+import { cstCommandBody } from '../src/cst-syntax.mjs';
 
 export async function inspectKCS(bytes, container) {
   const script = await readKCS(bytes),
@@ -88,7 +89,7 @@ export async function inspectCST(bytes) {
   for (const [index, record] of scene.lines.entries()) {
     if (record.kind !== 0x30) continue;
     try {
-      const line = commandBody(record.text);
+      const line = cstCommandBody(record.text);
       if (line && !/^[\d#(]/.test(line)) commands.push(line.split(/\s+/)[0]);
     } catch (error) {
       commandErrors.push({
