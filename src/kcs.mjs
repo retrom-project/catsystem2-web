@@ -6,17 +6,22 @@ import { encodeCP932 } from './kcs/strings.mjs';
 export { KCSMachine, nativeReply, floatBits, bitsFloat } from './kcs/vm.mjs';
 export { encodeCP932 } from './kcs/strings.mjs';
 
-export async function readKCS(bytes) {
+const verifiedScriptVersions = new Set([0, 0x10000, 0x20000]);
+const warnedVersions = new Set();
+
+export async function readKCS(bytes, { warn = (message) => console.warn(message) } = {}) {
   const b = new Binary(bytes, 'KCS');
-  if (!b.magic('KCS\0') || b.u32(4) !== 2 || b.u32(12) !== 52)
-    throw new Error('Unsupported KCS header');
+  if (!b.magic('KCS\0')) throw new Error('Expected KCS');
+  const headerBytes = b.u32(12);
+  if (headerBytes < 52) throw new Error('KCS header is shorter than its structural fields');
+  b.range(0, headerBytes);
   const codeSize = boundedCount(b.u32(16), 64 * 1024 * 1024, 'KCS code'),
     count = boundedCount(b.u32(24), 1000000, 'KCS strings');
-  const tableOffset = b.u32(20) - 52,
+  const tableOffset = b.u32(20) - headerBytes,
     tableSize = boundedCount(b.u32(28), 64 * 1024 * 1024, 'KCS string table'),
     bodyCapacity = boundedCount(b.u32(48), 128 * 1024 * 1024, 'KCS body capacity');
   const body = new Binary(
-    await inflate(b.range(52, bytes.length - 52), undefined, bodyCapacity),
+    await inflate(b.range(headerBytes, bytes.length - headerBytes), undefined, bodyCapacity),
     'KCS body',
   );
   body.range(0, codeSize);
@@ -38,22 +43,40 @@ export async function readKCS(bytes) {
     data.set(body.range(at, end - at), dest);
     strings.set(dest, body.str(at));
   }
+  const stackSize = boundedCount(b.u32(36), 16 * 1024 * 1024, 'KCS stack'),
+    formatVersion = b.u32(4),
+    scriptVersion = ((b.u16(8) << 16) | b.u16(10)) >>> 0;
+  // Version metadata does not select an ABI or bypass structural validation.
+  // Unknown executable/native/plugin implementations still fail at dispatch.
+  if (formatVersion !== 2 || headerBytes !== 52 || !verifiedScriptVersions.has(scriptVersion)) {
+    const sha256 = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
+      .map((n) => n.toString(16).padStart(2, '0'))
+      .join('');
+    const version = `format=${formatVersion}, headerBytes=${headerBytes}, script=${b.u16(8)}.${b.u16(10)}`,
+      key = version + '/' + sha256;
+    if (!warnedVersions.has(key)) {
+      warnedVersions.add(key);
+      warn(
+        `Unverified KCS script container: ${version}, sha256=${sha256}; continuing with JS KCS reader`,
+      );
+    }
+  }
   return {
-    header: b.range(0, 52).slice(),
+    header: b.range(0, headerBytes).slice(),
     body,
     codeSize,
     data,
     strings,
-    formatVersion: b.u32(4),
+    formatVersion,
     scriptMajor: b.u16(8),
     scriptMinor: b.u16(10),
-    scriptVersion: ((b.u16(8) << 16) | b.u16(10)) >>> 0,
+    scriptVersion,
     tableOffset,
     tableSize,
-    debugOffset: b.u32(40) - 52,
+    debugOffset: b.u32(40) - headerBytes,
     debugSize: b.u32(44),
     bodyCapacity,
-    stackSize: boundedCount(b.u32(36), 16 * 1024 * 1024, 'KCS stack'),
+    stackSize,
   };
 }
 

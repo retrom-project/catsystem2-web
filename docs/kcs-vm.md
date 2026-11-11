@@ -101,3 +101,18 @@ node scripts/verify-native-vm.mjs .local/analysis/native-vm-oracle/kcs-native-or
 SDK 的 186 份与游戏的 103 份 KCS 还逐条检查 codeSize 的指令边界和 header，
 目前均可解码。这是语料解析证据，不能称为全部脚本执行通过。
 PTCL 的全语料执行单独由粒子模块记录。
+
+## Container version diagnostics
+
+The JS reader verifies the signature, declared header length, compressed body,
+string ranges, allocation counts and stack limit before reporting version
+metadata. The reviewed small set is container format 2 / header 52 bytes and
+script versions 0.0, 1.0 and 2.0. A structurally readable unverified version
+emits one console diagnostic per version and source SHA-256, then continues with
+the same reader. This diagnostic neither selects an engine ABI nor implements
+unknown VM instructions, native calls or plugins. Header extensions use the
+declared header length when resolving absolute table/debug offsets.
+
+FES text/packed and CatScene containers have no recovered version field. Their
+size or reserved words are not promoted to a version or an ABI loading contract.
+Malformed bodies and ranges still fail explicitly.

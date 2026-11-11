@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 138, "oracle": 142, "differential": 67 },
+    "counts": { "js": 139, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -46,6 +46,7 @@
         "tests/jpeg.test.mjs",
         "tests/kcs-contracts.test.mjs",
         "tests/kcs-debug.test.mjs",
+        "tests/kcs-versions.test.mjs",
         "tests/media-boundary.test.mjs",
         "tests/motion-contracts.test.mjs",
         "tests/native-abi-behavior.test.mjs",
@@ -49152,7 +49153,7 @@
     },
     {
       "file": "src/kcs.mjs",
-      "sourceSha256": "90e31626726dcf9b29f323bafbc9b67505537f521cc7515afcbe5ae05bff465f",
+      "sourceSha256": "24a8cc89d39d8fd7bf25074cbe259aa7c1058c01e7f014d41ff3e2504a315d65",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
