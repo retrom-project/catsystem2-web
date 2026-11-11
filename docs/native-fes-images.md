@@ -368,3 +368,42 @@ release ownership explicitly. Those inputs make the original unsigned tiling
 bounds underflow or fail to progress; they are not covered by the normal-window
 pixel equivalence claim. Full FES initialization timing, resource dirty flags,
 Draw/input ownership and default new-World restoration remain integration work.
+
+## JavaScript image table model
+
+`FESImageTable(type,bytes)` independently implements raw types16..20 and saves
+ordinary table/node/section state plus the CP932 base option. Default TABLE and
+image-driver integration is still pending, so the old execution remains counted.
+Selectors are complete evaluated integer arrays. Results are owned CP932 bytes
+or null; **empty bytes can be success**, so callers test `result !== null`.
+
+| Type        | Selection and missing values                                                                                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BGTABLE16   | Existing D4 binary names table; row and variant0..3, empty name is a miss.                                                                                                                                                |
+| BGTABLE2 17 | Count only exact CP932 ○ marker rows. Signed column is variant+2; -1 can select the description, -2 the marker, and positive variants use actual column bounds.                                                           |
+| CHTABLE18   | Existing D4 character/pose and two16-entry variant banks, with their separate enabled/count checks.                                                                                                                       |
+| CHTABLE2 19 | First two selectors match node IDs; later selectors match their bank ID and variant ID. A lower miss retains the accumulated prefix/mask. Sibling insertion reverses wire order, so the last duplicate ID is found first. |
+| CHTABLE3 20 | Start at _TOP_, then follow row ordinals and the next-section name. Missing later rows retain partial output; invalid first row can succeed empty. Missing _TOP_ is a miss.                                               |
+
+The CSV field rules retain quote/newline/empty-field behavior from the frozen
+parser, rather than RFC CSV assumptions. CHTABLE3 reads raw lines: only byte0#
+starts a section; TAB, quotes, comment markers and trailing section-name bytes
+are content. Empty sections are not inserted and repeated nonempty section
+names keep their first rows. Comma merge drops empty tokens and treats a single
+right-side @ as a placeholder. Its final @->0 replacement is byte-blind,
+including a CP932 trail byte0x40; CHTABLE2 does not perform that replacement.
+Base options append to CHTABLE2's prefix but enter CHTABLE3 only before an
+existing nonleading comma.
+
+The typed max API preserves each table's query structure. In the command
+adapter, an invalid CHTABLE max mode must leave the output bank untouched; it
+must not turn a typed API error into a successful write0. Missing command
+arguments, the16-selector cap, type gates and image dirty/reload timing remain
+interpreter responsibilities.
+
+`tests/fes-image-table-model.test.mjs` uses existing independently authored
+original selection/missing/base-option expectations and complete static parser
+transcripts for the additional raw boundaries. Both registered Worlds select,
+decode and draw actual pixels, then restore without image/table resource files.
+Malformed cyclic/out-of-range trees, embedded CSV NUL and an unterminated fixed
+prefix fail explicitly; arbitrary original out-of-bounds reads are not emulated.
