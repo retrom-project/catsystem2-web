@@ -264,6 +264,8 @@ export function inspectHandler(bytes, pe, instructions, address) {
     pattern,
     callAnchors: calls,
     strings: [...strings],
+    // Static observations are not reviewed ABI declarations. Missing types stay
+    // unknown here; no structured ABI signature is inferred from prefix reads.
     signature: {
       parameters: null,
       types: null,

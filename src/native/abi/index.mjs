@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import engine74 from './2.6.1.74.mjs';
 import engine76 from './2.6.1.76.mjs';
+import { validateNativeSignature, nativeSignatureDifferences } from './signature.mjs';
 
 export function validateABI(abi) {
   validatePlainData(abi);
@@ -27,6 +28,20 @@ export function validateABI(abi) {
         (entry.name !== null && typeof entry.name !== 'string')
       )
         throw new Error(`Invalid ABI entry ${abi.id}/${table}/${id}`);
+      try {
+        validateNativeSignature(entry.signature);
+        if (
+          nativeSignatureDifferences(entry.signature, {
+            ...entry.signature,
+            parameters: entry.parameters,
+            result: entry.result,
+            controlCodes: entry.controlCodes,
+          }).length
+        )
+          throw new Error('Mirrored declaration fields disagree');
+      } catch (error) {
+        throw new Error(`Invalid ABI signature ${abi.id}/${table}/${id}: ${error.message}`);
+      }
     });
   }
   return abi;

@@ -2,6 +2,70 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { nativeSignatureDifferences } from '../src/native/abi/signature.mjs';
+
+export function compareNativeSignatures(source, reference) {
+  if (
+    !source.tables ||
+    !reference.tables ||
+    Array.isArray(source.tables) ||
+    Array.isArray(reference.tables)
+  )
+    throw new Error('Signature comparison requires reviewed ABI table declarations');
+  const tables = Object.entries(source.tables).map(([name, table]) => {
+    const other = reference.tables[name],
+      index = new Map(other?.entries.map((entry) => [entry.id, entry]) ?? []);
+    const entries = table.entries.map((entry) => {
+      const previous = index.get(entry.id);
+      if (!previous)
+        return { id: entry.id, name: entry.name, relation: 'additional-declared-slot' };
+      if (!entry.name || !previous.name)
+        return {
+          id: entry.id,
+          name: entry.name,
+          referenceName: previous.name,
+          relation: 'unresolved-semantic',
+        };
+      if (entry.name !== previous.name)
+        return {
+          id: entry.id,
+          name: entry.name,
+          referenceName: previous.name,
+          relation: 'different-name-or-enablement',
+        };
+      const differences = nativeSignatureDifferences(previous.signature, entry.signature);
+      return {
+        id: entry.id,
+        name: entry.name,
+        relation: differences.length ? 'declaration-difference' : 'matching-declaration',
+        differences,
+      };
+    });
+    return {
+      name,
+      sourceCount: table.count,
+      referenceCount: other?.count ?? null,
+      entries,
+      counts: Object.fromEntries(
+        [...new Set(entries.map((entry) => entry.relation))].map((relation) => [
+          relation,
+          entries.filter((entry) => entry.relation === relation).length,
+        ]),
+      ),
+    };
+  });
+  return {
+    source: source.engineVersion,
+    reference: reference.engineVersion,
+    tables,
+    limitations: [
+      'Structured declarations are compared in place; this does not recover unknown semantics or register an engine.',
+      'Descriptions and review notes are excluded. Explicit widths, spaces, direction, encoding, counts, controls and result-write knowledge remain comparable.',
+      'A resultWritten null/boolean difference can describe knowledge rather than a proved behavior change.',
+      'Binary extractor signature observations have a separate schema and supply no inferred precise ABI types.',
+    ],
+  };
+}
 
 export function compareNativeTables(source, reference) {
   const tables = source.tables.map((table) => {
@@ -95,14 +159,16 @@ export function compareNativeTables(source, reference) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const [source, reference, output] = process.argv.slice(2);
+  const args = process.argv.slice(2),
+    signatures = args[0] === '--signatures';
+  const [source, reference, output] = signatures ? args.slice(1) : args;
   if (!source || !reference || !output)
     throw new Error(
-      'Usage: node scripts/compare-native-abi.mjs SOURCE_JSON REFERENCE_JSON OUTPUT_JSON',
+      'Usage: node scripts/compare-native-abi.mjs [--signatures] SOURCE_JSON REFERENCE_JSON OUTPUT_JSON',
     );
   const read = async (path) => JSON.parse(await readFile(path, 'utf8'));
   await writeFile(
     output,
-    `${JSON.stringify(compareNativeTables(await read(source), await read(reference)), null, 2)}\n`,
+    `${JSON.stringify((signatures ? compareNativeSignatures : compareNativeTables)(await read(source), await read(reference)), null, 2)}\n`,
   );
 }

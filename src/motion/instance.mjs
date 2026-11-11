@@ -144,9 +144,9 @@ export class MotionInstance {
     const contract = this.contracts[id];
     if (!contract || contract.status === 'unknown' || !contract.parameters)
       throw new Error(`Unrecovered MOT native ${this.profile}:${id.toString(16)}`);
-    if (id !== 0 && args.length !== contract.parameters.length)
+    if (id !== 0 && args.length !== contract.argumentWords)
       throw new Error(
-        `MOT ${contract.name} expects ${contract.parameters.length} arguments, got ${args.length}`,
+        `MOT ${contract.name} expects ${contract.argumentWords} arguments, got ${args.length}`,
       );
     const word = (value) => nativeReply(1, value >>> 0),
       real = (value) => word(floatBits(f(value))),

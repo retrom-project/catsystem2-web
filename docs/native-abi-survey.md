@@ -47,6 +47,19 @@ failures retain `needs-review`. Raw equal bytes can call different relocated
 helpers. Unmatched entries also retain their review state, including possible
 additions, deletions and renumbering.
 
+For reviewed ABI declarations serialized as JSON, compare their structured
+signatures separately:
+
+```sh
+node scripts/compare-native-abi.mjs --signatures .local/declared-source.json .local/declared-reference.json .local/signatures.json
+```
+
+These inputs have declared `tables` objects, rather than the binary extractor's
+array of observations. The comparison preserves unknown semantic slots and
+actual type/count/control differences, ignores description prose, and reports
+differences in result-write knowledge. It does not register another engine or
+infer types from argv offsets. See [native signatures](native-signatures.md).
+
 ## Numeric-ID stability observations
 
 ```sh

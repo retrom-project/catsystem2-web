@@ -34,7 +34,7 @@ export const NATIVE_EXE_PROFILES = Object.freeze(executableTables);
 export function nativeCatalog(profile, table = 'main') {
   const definition = nativeABI(profile).tables[table];
   if (!definition) throw new Error(`Unknown native profile/table ${profile}/${table}`);
-  return definition.entries.map(({ signature: _signature, ...entry }) =>
-    Object.freeze({ profile, table, ...entry }),
+  return definition.entries.map(({ signature, ...entry }) =>
+    Object.freeze({ profile, table, ...entry, argumentWords: signature.argumentWords }),
   );
 }

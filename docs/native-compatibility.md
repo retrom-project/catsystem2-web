@@ -13,6 +13,12 @@ IDs use the engine version. Existing profile keys identify the remaining
 transition layouts. EXE table locations remain in the catalog's transition
 metadata while the owning domains migrate.
 
+Parameter and result types use [structured signature records](native-signatures.md),
+with explicit raw bits, numeric widths, pointer spaces/directions, handle kinds,
+encodings and unknown facts. Original labels remain descriptions. Explicit word
+counts, controls, result-write knowledge and review evidence remain independent;
+the catalog exposes the declared `argumentWords` for consumers such as MOT.
+
 `nativeABI(profile)` supplies text widths, configuration layouts, language
 behavior, sound protocol fields, startup ordering, plugin capabilities and
 ordered message rules. `layouts` holds the remaining non-address memory-layout

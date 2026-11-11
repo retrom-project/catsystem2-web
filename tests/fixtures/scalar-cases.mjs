@@ -19,7 +19,7 @@ export function nativeScalarCases(profile) {
       'triangleWave',
       'sqrt',
     ].includes(name);
-    const floating = entry.result === 'f32';
+    const floating = entry.result.kind === 'float' && entry.result.bits === 32;
     cases.push({
       profile,
       table: 'main',

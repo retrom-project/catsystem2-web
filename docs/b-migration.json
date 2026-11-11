@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 137, "oracle": 142, "differential": 67 },
+    "counts": { "js": 138, "oracle": 142, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -121,6 +121,7 @@
         "tests/native-scene-history.test.mjs",
         "tests/native-script-replacement.test.mjs",
         "tests/native-signature-records.test.mjs",
+        "tests/native-signatures.test.mjs",
         "tests/native-sound-config.test.mjs",
         "tests/native-sound-math.test.mjs",
         "tests/native-sound-values.test.mjs",
@@ -49255,7 +49256,7 @@
     },
     {
       "file": "src/motion/instance.mjs",
-      "sourceSha256": "1a35465e5ecf2a160c18b99770fd9c7eaf3df7c1d925d202c7eb4042e2d582b4",
+      "sourceSha256": "cfac1d01af4232e420836622e7fc085a6c81559ff3ac81bd00a825fe2b08931c",
       "domain": 3,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49333,7 +49334,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "0e714fb2b7d9862f65268aadb440d2b4fb77abb668c8b03b54e88a125aa218fc",
+      "sourceSha256": "fa576d785f3652c229f9235b5d412502099a30ac481f09aa8e65e460efe03a50",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49346,7 +49347,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "95dd12166c47656d972e480236c19cfadd0a4262ccf786fb75eb8f95857bd527",
+      "sourceSha256": "c92149cf46068ef4fa0ca2213a0a9da87daf7104bb8a5a7faaacac272ee1c05b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49359,7 +49360,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "d229ed8562313a6ee93a1fc8585e4905f26dd4039408acd40f6ae6dec9223cb0",
+      "sourceSha256": "ad63806881fc60d81de4a3cac38b31a59f2043d85eee5faa6243bb2820b73d2f",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49666,7 +49667,7 @@
     },
     {
       "file": "src/native/catalog.mjs",
-      "sourceSha256": "ca8a5dd9b4c255a1aed846c9e703b808c8d56d4d1f48cd283a6db5eca1fae021",
+      "sourceSha256": "8c831e140f4347a81358f00ad2cd90f9dff797052f788d3130e3d7b83e2495e7",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 8, "calls": 0, "references": 0 },
