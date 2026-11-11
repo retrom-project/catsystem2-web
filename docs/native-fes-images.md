@@ -285,3 +285,23 @@ not capture again. Lock state restores as ordinary fields.
 
 These helpers do not establish complete image loading, definitions, rendering,
 input or family integration; those remain phase-7 work.
+
+## Typed common state model
+
+`src/native/fes-common-model.mjs` contains independently verified JavaScript
+setters and queries for the image and plane families. It preserves the distinct
+size setter/query type gates, image priority's comparison and +20 adjustment,
+the separately retained definition entry key, float32 positions and integer
+queries, auxiliary image sizes, raw clipping rectangles, PL associations and
+external parent-plane numbers. Dirty propagation follows PARENT relationships;
+PL does not create a lifetime or coordinate parent.
+
+The authored fixture records 32 original command observations for each registered
+engine. A separate variable-bank test covers the exact -1 output sentinel and
+out-of-range dirty behavior; the original oracle's host bridge rejects -2 before
+its native bank setter, so that test uses the independently recovered bank
+contract rather than claiming an original runtime comparison for -2.
+
+This model is not yet the production FES command entry. MOT programs, control and
+log setters, child tasks and render drivers remain separate integration work;
+the migration inventory continues to count their original execution paths.

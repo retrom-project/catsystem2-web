@@ -1,0 +1,2688 @@
+{
+  "source": "Existing unmodified FES constructor/command oracle; original PE state observed before the JS model existed.",
+  "scope": "Typed setters and queries only; real MOT/child-task side effects and command return values remain separate.",
+  "profiles": [
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "exeSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "initial": [
+        {
+          "key": "color",
+          "nativeType": 1,
+          "x": 3.75,
+          "y": -7.75,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "parentImage",
+          "nativeType": 1,
+          "x": 20,
+          "y": 30,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "sample",
+          "nativeType": 2,
+          "x": 3.75,
+          "y": -7.75,
+          "imageOriginX": 5,
+          "imageOriginY": 9,
+          "baseX": 1.75,
+          "baseY": -2.75,
+          "parent": "parentImage",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "planeChild",
+          "nativeType": 2,
+          "x": 3,
+          "y": 4,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": "cplane",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "button",
+          "nativeType": 6,
+          "x": 11,
+          "y": 12,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "cplane",
+          "nativeType": 3,
+          "x": 6,
+          "y": 7,
+          "z": 8,
+          "positionW": 1,
+          "baseX": 1,
+          "baseY": 2,
+          "baseZ": 3,
+          "baseW": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "plane",
+          "nativeType": 4,
+          "x": 7.75,
+          "y": -8.75,
+          "z": 9.75,
+          "positionW": 1,
+          "baseX": 4.75,
+          "baseY": -5.75,
+          "baseZ": 6.75,
+          "baseW": 0,
+          "parent": "cplane",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "view",
+          "nativeType": 0,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "scroll",
+          "nativeType": 13,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "scroll2",
+          "nativeType": 14,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "slider",
+          "nativeType": 15,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "log",
+          "nativeType": 24,
+          "top": 0,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "pair[0]",
+          "nativeType": 2,
+          "x": 0,
+          "y": 0,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "pair[1]",
+          "nativeType": 2,
+          "x": 0,
+          "y": 0,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        }
+      ],
+      "samples": [
+        {
+          "label": "enable-image-type-no-op",
+          "verb": "enable",
+          "args": ["0"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "enable": true
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "enable": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "enable-button-missing-default",
+          "verb": "enable",
+          "args": [],
+          "target": "button",
+          "context": {},
+          "before": [
+            {
+              "key": "button",
+              "nativeType": 6,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "after": [
+            {
+              "key": "button",
+              "nativeType": 6,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "enable-scroll-nonzero",
+          "verb": "enable",
+          "args": ["-3"],
+          "target": "scroll",
+          "context": {},
+          "before": [
+            {
+              "key": "scroll",
+              "nativeType": 13,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "after": [
+            {
+              "key": "scroll",
+              "nativeType": 13,
+              "dirty": true,
+              "enable": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-color-missing-default",
+          "verb": "disp",
+          "args": [],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-plane-nonzero",
+          "verb": "disp",
+          "args": ["-3"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-whole-image-group",
+          "verb": "disp",
+          "args": ["1"],
+          "target": "pair[0]",
+          "context": {
+            "index": -1
+          },
+          "before": [
+            {
+              "key": "pair[0]",
+              "nativeType": 2,
+              "dirty": false,
+              "disp": false
+            },
+            {
+              "key": "pair[1]",
+              "nativeType": 2,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "pair[0]",
+              "nativeType": 2,
+              "dirty": true,
+              "disp": true
+            },
+            {
+              "key": "pair[1]",
+              "nativeType": 2,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pos-color-partial",
+          "verb": "pos",
+          "args": ["9"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": false,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": null
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": true,
+              "x": 9,
+              "y": -7,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": null
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pos-plane-partial",
+          "verb": "pos",
+          "args": ["-4", "5"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "x": 7.75,
+              "y": -8.75,
+              "z": 9.75,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos-image-fractional",
+          "verb": "getpos",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [3, 4294967289, 0],
+            "signed": [3, -7, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos-view-type-no-op",
+          "verb": "getpos",
+          "args": ["10", "11", "12"],
+          "target": "view",
+          "context": {},
+          "before": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos2-image-parent-image",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [27, 34, 0],
+            "signed": [27, 34, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos2-image-ignores-plane-parent",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "planeChild",
+          "context": {},
+          "before": [
+            {
+              "key": "planeChild",
+              "nativeType": 2,
+              "x": 3,
+              "y": 4,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "planeChild",
+              "nativeType": 2,
+              "x": 3,
+              "y": 4,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [3, 4, 0],
+            "signed": [3, 4, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos2-plane-parent-plane",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": true
+          }
+        },
+        {
+          "label": "size-color-missing-height",
+          "verb": "size",
+          "args": ["5"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -8,
+              "auxiliaryHeight": 1
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": true,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "size-cplane",
+          "verb": "size",
+          "args": ["8", "9"],
+          "target": "cplane",
+          "context": {},
+          "before": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 30,
+              "height": 40,
+              "sizeDirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "size-view-type-no-op",
+          "verb": "size",
+          "args": ["8", "9"],
+          "target": "view",
+          "context": {},
+          "before": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getsize-image",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [5, 0, 0],
+            "signed": [5, 0, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getsize-cplane",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "cplane",
+          "context": {},
+          "before": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [8, 9, 0],
+            "signed": [8, 9, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getsize-log-type-no-op",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "log",
+          "context": {},
+          "before": [
+            {
+              "key": "log",
+              "nativeType": 24
+            }
+          ],
+          "after": [
+            {
+              "key": "log",
+              "nativeType": 24
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-image-request-equals-existing-raw",
+          "verb": "pri",
+          "args": ["30"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-image-change-key-preserved",
+          "verb": "pri",
+          "args": ["7"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 27,
+              "renderID": 10,
+              "priorityChanged": true,
+              "oldPriority": 30
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-plane",
+          "verb": "pri",
+          "args": ["42"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "pri": 200
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "pri": 42
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getbase-image-fractional",
+          "verb": "getbase",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "baseX": 1.75,
+              "baseY": -2.75
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "baseX": 1.75,
+              "baseY": -2.75
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [1, 4294967294, 0],
+            "signed": [1, -2, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getbase-plane-local-only",
+          "verb": "getbase",
+          "args": ["10", "11", "12"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [4, 4294967291, 6],
+            "signed": [4, -5, 6],
+            "dirty": true
+          }
+        },
+        {
+          "label": "clip-image-int32-wrap",
+          "verb": "clip",
+          "args": ["2147483647", "2147483647", "2", "2"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "clip": [0, 0, 0, 0],
+              "clipEnabled": false
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "clip": [2147483647, 2147483647, -2147483647, -2147483647],
+              "clipEnabled": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "clip-plane-type-no-op",
+          "verb": "clip",
+          "args": ["1", "2", "3", "4"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-image",
+          "verb": "refparentpl",
+          "args": ["7"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "parentPlaneID": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "parentPlaneID": 7
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-image-missing-default",
+          "verb": "refparentpl",
+          "args": [],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "parentPlaneID": 7
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "parentPlaneID": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-plane-type-no-op",
+          "verb": "refparentpl",
+          "args": ["7"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pl-image-plane-binding",
+          "verb": "pl",
+          "args": ["plane"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "planeReference": {
+                "name": "",
+                "index": 0
+              }
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "planeReference": {
+                "name": "plane",
+                "index": 0
+              }
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pl-plane-type-no-op",
+          "verb": "pl",
+          "args": ["cplane"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos-all-outputs-suppressed",
+          "verb": "getpos",
+          "args": ["-1", "-1", "-1"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        }
+      ]
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "exeSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "initial": [
+        {
+          "key": "color",
+          "nativeType": 1,
+          "x": 3.75,
+          "y": -7.75,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "parentImage",
+          "nativeType": 1,
+          "x": 20,
+          "y": 30,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "sample",
+          "nativeType": 2,
+          "x": 3.75,
+          "y": -7.75,
+          "imageOriginX": 5,
+          "imageOriginY": 9,
+          "baseX": 1.75,
+          "baseY": -2.75,
+          "parent": "parentImage",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "planeChild",
+          "nativeType": 2,
+          "x": 3,
+          "y": 4,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": "cplane",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "button",
+          "nativeType": 6,
+          "x": 11,
+          "y": 12,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "cplane",
+          "nativeType": 3,
+          "x": 6,
+          "y": 7,
+          "z": 8,
+          "positionW": 1,
+          "baseX": 1,
+          "baseY": 2,
+          "baseZ": 3,
+          "baseW": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "plane",
+          "nativeType": 4,
+          "x": 7.75,
+          "y": -8.75,
+          "z": 9.75,
+          "positionW": 1,
+          "baseX": 4.75,
+          "baseY": -5.75,
+          "baseZ": 6.75,
+          "baseW": 0,
+          "parent": "cplane",
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "view",
+          "nativeType": 0,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "scroll",
+          "nativeType": 13,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "scroll2",
+          "nativeType": 14,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "slider",
+          "nativeType": 15,
+          "value": 0,
+          "enable": false,
+          "motionDelay": 0
+        },
+        {
+          "key": "log",
+          "nativeType": 24,
+          "top": 0,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "pair[0]",
+          "nativeType": 2,
+          "x": 0,
+          "y": 0,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        },
+        {
+          "key": "pair[1]",
+          "nativeType": 2,
+          "x": 0,
+          "y": 0,
+          "imageOriginX": 0,
+          "imageOriginY": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "parent": null,
+          "enable": true,
+          "motionDelay": 0
+        }
+      ],
+      "samples": [
+        {
+          "label": "enable-image-type-no-op",
+          "verb": "enable",
+          "args": ["0"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "enable": true
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "enable": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "enable-button-missing-default",
+          "verb": "enable",
+          "args": [],
+          "target": "button",
+          "context": {},
+          "before": [
+            {
+              "key": "button",
+              "nativeType": 6,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "after": [
+            {
+              "key": "button",
+              "nativeType": 6,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "enable-scroll-nonzero",
+          "verb": "enable",
+          "args": ["-3"],
+          "target": "scroll",
+          "context": {},
+          "before": [
+            {
+              "key": "scroll",
+              "nativeType": 13,
+              "dirty": false,
+              "enable": false
+            }
+          ],
+          "after": [
+            {
+              "key": "scroll",
+              "nativeType": 13,
+              "dirty": true,
+              "enable": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-color-missing-default",
+          "verb": "disp",
+          "args": [],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-plane-nonzero",
+          "verb": "disp",
+          "args": ["-3"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "disp-whole-image-group",
+          "verb": "disp",
+          "args": ["1"],
+          "target": "pair[0]",
+          "context": {
+            "index": -1
+          },
+          "before": [
+            {
+              "key": "pair[0]",
+              "nativeType": 2,
+              "dirty": false,
+              "disp": false
+            },
+            {
+              "key": "pair[1]",
+              "nativeType": 2,
+              "dirty": false,
+              "disp": false
+            }
+          ],
+          "after": [
+            {
+              "key": "pair[0]",
+              "nativeType": 2,
+              "dirty": true,
+              "disp": true
+            },
+            {
+              "key": "pair[1]",
+              "nativeType": 2,
+              "dirty": true,
+              "disp": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pos-color-partial",
+          "verb": "pos",
+          "args": ["9"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": false,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": null
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "dirty": true,
+              "x": 9,
+              "y": -7,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": null
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pos-plane-partial",
+          "verb": "pos",
+          "args": ["-4", "5"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "x": 7.75,
+              "y": -8.75,
+              "z": 9.75,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [0, 0, 0],
+            "signed": [0, 0, 0],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos-image-fractional",
+          "verb": "getpos",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [3, 4294967289, 0],
+            "signed": [3, -7, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos-view-type-no-op",
+          "verb": "getpos",
+          "args": ["10", "11", "12"],
+          "target": "view",
+          "context": {},
+          "before": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos2-image-parent-image",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [27, 34, 0],
+            "signed": [27, 34, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos2-image-ignores-plane-parent",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "planeChild",
+          "context": {},
+          "before": [
+            {
+              "key": "planeChild",
+              "nativeType": 2,
+              "x": 3,
+              "y": 4,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "planeChild",
+              "nativeType": 2,
+              "x": 3,
+              "y": 4,
+              "imageOriginX": 0,
+              "imageOriginY": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [3, 4, 0],
+            "signed": [3, 4, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getpos2-plane-parent-plane",
+          "verb": "getpos2",
+          "args": ["10", "11", "12"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "x": -4,
+              "y": 5,
+              "z": 9,
+              "positionW": 1,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0,
+              "parent": "cplane"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": true
+          }
+        },
+        {
+          "label": "size-color-missing-height",
+          "verb": "size",
+          "args": ["5"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -8,
+              "auxiliaryHeight": 1
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": true,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "size-cplane",
+          "verb": "size",
+          "args": ["8", "9"],
+          "target": "cplane",
+          "context": {},
+          "before": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 30,
+              "height": 40,
+              "sizeDirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "size-view-type-no-op",
+          "verb": "size",
+          "args": ["8", "9"],
+          "target": "view",
+          "context": {},
+          "before": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "view",
+              "nativeType": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [2, 12, 17],
+            "signed": [2, 12, 17],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getsize-image",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "color",
+          "context": {},
+          "before": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "after": [
+            {
+              "key": "color",
+              "nativeType": 1,
+              "width": 5,
+              "height": 0,
+              "sizeDirty": false,
+              "auxiliarySizeMode": 0,
+              "auxiliaryWidth": -11,
+              "auxiliaryHeight": -8
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [5, 0, 0],
+            "signed": [5, 0, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getsize-cplane",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "cplane",
+          "context": {},
+          "before": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "cplane",
+              "nativeType": 3,
+              "width": 8,
+              "height": 9,
+              "sizeDirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [8, 9, 0],
+            "signed": [8, 9, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getsize-log-type-no-op",
+          "verb": "getsize",
+          "args": ["10", "11", "12"],
+          "target": "log",
+          "context": {},
+          "before": [
+            {
+              "key": "log",
+              "nativeType": 24
+            }
+          ],
+          "after": [
+            {
+              "key": "log",
+              "nativeType": 24
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-image-request-equals-existing-raw",
+          "verb": "pri",
+          "args": ["30"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-image-change-key-preserved",
+          "verb": "pri",
+          "args": ["7"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 30,
+              "renderID": 10,
+              "priorityChanged": false,
+              "oldPriority": -1
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "pri": 27,
+              "renderID": 10,
+              "priorityChanged": true,
+              "oldPriority": 30
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pri-plane",
+          "verb": "pri",
+          "args": ["42"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false,
+              "pri": 200
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": true,
+              "pri": 42
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getbase-image-fractional",
+          "verb": "getbase",
+          "args": ["10", "11", "12"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "baseX": 1.75,
+              "baseY": -2.75
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "baseX": 1.75,
+              "baseY": -2.75
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [1, 4294967294, 0],
+            "signed": [1, -2, 0],
+            "dirty": true
+          }
+        },
+        {
+          "label": "getbase-plane-local-only",
+          "verb": "getbase",
+          "args": ["10", "11", "12"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "baseX": 4.75,
+              "baseY": -5.75,
+              "baseZ": 6.75,
+              "baseW": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [4, 4294967291, 6],
+            "signed": [4, -5, 6],
+            "dirty": true
+          }
+        },
+        {
+          "label": "clip-image-int32-wrap",
+          "verb": "clip",
+          "args": ["2147483647", "2147483647", "2", "2"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "clip": [0, 0, 0, 0],
+              "clipEnabled": false
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "clip": [2147483647, 2147483647, -2147483647, -2147483647],
+              "clipEnabled": true
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "clip-plane-type-no-op",
+          "verb": "clip",
+          "args": ["1", "2", "3", "4"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-image",
+          "verb": "refparentpl",
+          "args": ["7"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "parentPlaneID": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "parentPlaneID": 7
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-image-missing-default",
+          "verb": "refparentpl",
+          "args": [],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "parentPlaneID": 7
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "parentPlaneID": 0
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "refparentpl-plane-type-no-op",
+          "verb": "refparentpl",
+          "args": ["7"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pl-image-plane-binding",
+          "verb": "pl",
+          "args": ["plane"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": false,
+              "planeReference": {
+                "name": "",
+                "index": 0
+              }
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "dirty": true,
+              "planeReference": {
+                "name": "plane",
+                "index": 0
+              }
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "pl-plane-type-no-op",
+          "verb": "pl",
+          "args": ["cplane"],
+          "target": "plane",
+          "context": {},
+          "before": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "after": [
+            {
+              "key": "plane",
+              "nativeType": 4,
+              "dirty": false
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        },
+        {
+          "label": "getpos-all-outputs-suppressed",
+          "verb": "getpos",
+          "args": ["-1", "-1", "-1"],
+          "target": "sample",
+          "context": {},
+          "before": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "after": [
+            {
+              "key": "sample",
+              "nativeType": 2,
+              "x": 3.75,
+              "y": -7.75,
+              "imageOriginX": 5,
+              "imageOriginY": 9,
+              "baseX": 1.75,
+              "baseY": -2.75,
+              "parent": "parentImage"
+            }
+          ],
+          "globalsBefore": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          },
+          "globalsAfter": {
+            "words": [100001, 100002, 100003],
+            "signed": [100001, 100002, 100003],
+            "dirty": false
+          }
+        }
+      ]
+    }
+  ]
+}
