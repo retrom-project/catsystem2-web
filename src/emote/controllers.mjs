@@ -19,6 +19,16 @@ export class ValueController {
     this.power = 1;
   }
   set(values, duration = 0, exponent = 1, append = false) {
+    // The DLL keeps an earlier request for the same float-bit target when it
+    // will finish sooner. In particular a looping timeline must not restart it.
+    if (
+      !append &&
+      duration > 0 &&
+      this.state &&
+      values.every((value, i) => Object.is(f(value), this.target[i])) &&
+      f(duration) > f(f(1 - this.phase) / this.inverse)
+    )
+      return;
     if (!append || duration <= 0) {
       this.queue.length = 0;
       this.state = 0;
@@ -92,8 +102,16 @@ export class AngleController {
   wrap(value) {
     const period = f(2 * Math.PI);
     if (!Number.isFinite(value)) throw new Error('Non-finite E-mote angle');
-    while (value < 0) value = f(value + period);
-    while (value >= period) value = f(value - period);
+    while (value < 0) {
+      const next = f(value + period);
+      if (next === value) throw new Error('E-mote angle cannot wrap in float32');
+      value = next;
+    }
+    while (value >= period) {
+      const next = f(value - period);
+      if (next === value) throw new Error('E-mote angle cannot wrap in float32');
+      value = next;
+    }
     return value;
   }
   set(value, duration = 0, exponent = 1, append = false) {

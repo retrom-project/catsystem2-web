@@ -186,6 +186,8 @@ export class EmoteAnimation {
     if (!Number.isFinite(dt)) throw new Error('E-mote frame delta must be finite');
     dt = f(dt);
     if (!Number.isFinite(dt)) throw new Error('E-mote frame delta exceeds float32');
+    if (dt > 0 && f(dt - f(1.1)) === dt)
+      throw new Error('E-mote frame delta cannot progress in float32');
     this.timelines.update(dt);
     let remaining = dt;
     while (remaining > 0 || this.dirty) {
@@ -202,7 +204,10 @@ export class EmoteAnimation {
         }
       for (const name of ['position', 'color', 'scale', 'angle']) this.root[name].step(step);
       this.wind?.step(step);
-      remaining = f(remaining - slice);
+      const next = f(remaining - slice);
+      if (next === remaining && remaining > 0)
+        throw new Error('E-mote frame delta cannot progress in float32');
+      remaining = next;
     }
     const metadata = this.document.metadata;
     for (const [label, value] of this.values) {

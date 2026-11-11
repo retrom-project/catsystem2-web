@@ -13,11 +13,12 @@ function dimensions(width, height) {
 function decodeTexture(psb, data) {
   if (data.type !== 'RGBA8') throw new Error(`Unsupported E-mote texture type ${data.type}`);
   const count = dimensions(data.width, data.height),
-    stored = psb.resource(data.pixel?.resource),
-    rgba = new Uint8Array(count);
+    stored = psb.resource(data.pixel?.resource);
+  let pixels = stored;
   if (data.compress && data.compress !== 'RL')
     throw new Error(`Unsupported E-mote texture compression ${data.compress}`);
   if (data.compress === 'RL') {
+    pixels = new Uint8Array(count);
     let input = 0,
       output = 0;
     while (output < count) {
@@ -28,7 +29,7 @@ function decodeTexture(psb, data) {
       if (output + length > count || input + (repeat ? 4 : length) > stored.length)
         throw new Error('E-mote RL texture bounds');
       for (let i = 0; i < length; i += 4)
-        rgba.set(
+        pixels.set(
           stored.subarray(input + (repeat ? 0 : i), input + (repeat ? 4 : i + 4)),
           output + i,
         );
@@ -38,10 +39,23 @@ function decodeTexture(psb, data) {
     if (input !== stored.length) throw new Error('Trailing E-mote RL texture bytes');
   } else {
     if (stored.length !== count) throw new Error('E-mote texture resource size mismatch');
-    rgba.set(stored);
   }
-  for (let at = 0; at < count; at += 4) [rgba[at], rgba[at + 2]] = [rgba[at + 2], rgba[at]];
-  return { width: data.width, height: data.height, rgba };
+  const width = data.truncated_width ?? data.width,
+    height = data.truncated_height ?? data.height;
+  dimensions(width, height);
+  if (width > data.width || height > data.height)
+    throw new Error('E-mote truncated texture exceeds resource dimensions');
+  const rgba = new Uint8Array(width * height * 4);
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
+      const source = (y * data.width + x) * 4,
+        target = (y * width + x) * 4;
+      rgba[target] = pixels[source + 2];
+      rgba[target + 1] = pixels[source + 1];
+      rgba[target + 2] = pixels[source];
+      rgba[target + 3] = pixels[source + 3];
+    }
+  return { width, height, rgba };
 }
 
 export class EmoteDocument {

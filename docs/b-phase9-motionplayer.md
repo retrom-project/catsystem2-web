@@ -25,6 +25,14 @@ the unfused spring-angle coefficient, and wind emission/force rules. The port
 retains reusable algorithm structure and replaces these behaviors with direct
 DLL evidence. Controller comparisons remain bit exact; no tolerance is widened.
 
+The 9.3 geometry comparisons independently confirm the target's null-patch
+semantics, cropped atlas dimensions, matrix/quad float32 stores, separate
+owned-patch and inherited-grid parameter arithmetic, packed gradient store
+order, and stencil/priority behavior. The authored records and one private
+full-model frame are byte exact. The existing Wine pixel fixture and an actual
+1280×720 DLL/JS WebGL2 frame also pass without widening a bound. These are
+CatSystem2 observations; ARM source structure is reused only after comparison.
+
 ## License and provenance
 
 At that commit the repository's `README.md` says MIT, while its actual `LICENSE`

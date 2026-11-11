@@ -30,6 +30,7 @@ uniform ivec2 filters;
 uniform vec4 borderColor;
 uniform bool srgbTexture;
 uniform ivec2 textureOperations;
+uniform int followingColorOperation;
 uniform ivec3 textureColorArgs;
 uniform ivec3 textureAlphaArgs;
 uniform vec4 textureFactor;
@@ -121,6 +122,8 @@ void main(){
   vec4 tex=sampleImage();
   color=textureOperation(textureOperations.x,textureArgument(textureColorArgs.x,tex),textureArgument(textureColorArgs.y,tex),textureArgument(textureColorArgs.z,tex),tex);
   if(textureOperations.x!=1)color.a=textureOperation(textureOperations.y,textureArgument(textureAlphaArgs.x,tex),textureArgument(textureAlphaArgs.y,tex),textureArgument(textureAlphaArgs.z,tex),tex).a;
+  if(followingColorOperation==1)color.rgb*=color.a;
+  else if(followingColorOperation==2)color.rgb=1.0-color.rgb;
   color=clamp(color,0.0,1.0);
   if(alphaTest){float a=floor(color.a*255.0+0.5);bool pass=alphaFunction==8||(alphaFunction==2&&a<alphaReference)||(alphaFunction==3&&a==alphaReference)||(alphaFunction==4&&a<=alphaReference)||(alphaFunction==5&&a>alphaReference)||(alphaFunction==6&&a!=alphaReference)||(alphaFunction==7&&a>=alphaReference);if(!pass)discard;}
   if(lineAntialias){vec2 delta=lineSegment.zw-lineSegment.xy;float len=length(delta);vec2 axis=delta/len,p=gl_FragCoord.xy-0.5-lineSegment.xy;float along=dot(p,axis),distance=abs(p.x*axis.y-p.y*axis.x);color.a*=clamp(1.0-distance,0.0,1.0)*clamp(along+0.5,0.0,1.0)*clamp(len-along+0.5,0.0,1.0);}
@@ -369,6 +372,7 @@ export class ParticlesGL {
         'borderColor',
         'srgbTexture',
         'textureOperations',
+        'followingColorOperation',
         'textureColorArgs',
         'textureAlphaArgs',
         'textureFactor',
@@ -938,7 +942,10 @@ export class ParticlesGL {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   }
   upload(vertices) {
-    const data = new Float32Array(vertices.length * 10);
+    const count = vertices.length * 10;
+    if (!this.vertexData || this.vertexData.length < count)
+      this.vertexData = new Float32Array(Math.max(count, (this.vertexData?.length ?? 128) * 2));
+    const data = this.vertexData;
     for (let i = 0; i < vertices.length; i++) {
       const v = vertices[i],
         at = i * 10;
@@ -956,7 +963,9 @@ export class ParticlesGL {
       data[at + 8] = v.u;
       data[at + 9] = v.v;
     }
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STREAM_DRAW);
+    // WebGL2's source range avoids allocating a fresh TypedArray view for
+    // every mesh/particle draw. Capacity grows only when a larger draw arrives.
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STREAM_DRAW, 0, count);
   }
   beginFrame(destination = 0xff000000, { preserve = false } = {}) {
     if (this.drawing) throw new Error('Particle graphics frame is already open');
@@ -1135,9 +1144,27 @@ export class ParticlesGL {
     for (const argument of [...colorArgs, ...alphaArgs])
       if (argument & ~63 || (argument & 15) > 6)
         throw new Error(`Invalid D3D texture-stage argument ${argument}`);
-    for (const [stage, states] of state?.stages || [])
-      if (stage && states.get(1) !== undefined && states.get(1) !== 1)
-        throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
+    let following = 0;
+    for (const [stage, states] of state?.stages || []) {
+      if (!stage || states.get(1) === undefined || states.get(1) === 1) continue;
+      if (
+        stage === 1 &&
+        (states.get(4) ?? 1) === 1 &&
+        states.get(1) === 4 &&
+        states.get(2) === 33 &&
+        states.get(3) === 1
+      )
+        following = 1; // CURRENT alpha-replicate * CURRENT.
+      else if (
+        stage === 1 &&
+        (states.get(4) ?? 1) === 1 &&
+        states.get(1) === 2 &&
+        states.get(2) === 17
+      )
+        following = 2; // Complement CURRENT; no additional texture source.
+      else throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
+    }
+    gl.uniform1i(this.uniform.followingColorOperation, following);
     gl.uniform2i(this.uniform.textureOperations, colorOperation, alphaOperation);
     gl.uniform3i(this.uniform.textureColorArgs, ...colorArgs);
     gl.uniform3i(this.uniform.textureAlphaArgs, ...alphaArgs);

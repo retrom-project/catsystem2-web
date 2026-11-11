@@ -12,23 +12,7 @@ const golden = JSON.parse(
   await readFile(new URL('./fixtures/emote-controller-golden.json', import.meta.url)),
 );
 const cases = emoteControllerCases();
-function apply(animation, step) {
-  if (step.root) {
-    const r = step.root;
-    if (r.position) animation.setRoot('position', r.position, r.frames, r.easing);
-    if (r.scale != null) animation.setRoot('scale', [r.scale], r.frames, r.easing);
-    if (r.angle != null) animation.setRoot('angle', r.angle, r.frames, r.easing);
-    if (r.color != null) animation.setColor(r.color, r.frames, r.easing);
-  }
-  if (step.wind) animation.setWind(step.wind);
-  if (step.timeline) {
-    const t = step.timeline;
-    if (t.action === 'play') animation.timelines.play(t.label, t.flags);
-    else animation.timelines.stop(t.label);
-  }
-  for (const v of step.variables ?? []) animation.setVariable(v.name, v.value, v.frames, v.easing);
-  animation.update(step.elapsed);
-}
+import { apply } from './fixtures/emote-js-steps.mjs';
 
 test('all authored controller sequences match the original DLL float bits and integer states', async () => {
   for (const [index, input] of cases.entries()) {
@@ -80,4 +64,16 @@ test('fresh JS controller restore retains queues, graphs, RNG, springs, wind and
     }
     assert.deepEqual(saved, frozen);
   }
+});
+
+test('out-of-range float32 inputs fail before wrapping or frame slicing can stop making progress', async () => {
+  const animation = new EmoteAnimation(await EmoteDocument.open(emoteControllerModel('root')));
+  assert.throws(() => animation.setRoot('angle', 1e30), /cannot wrap/);
+  assert.throws(() => animation.update(1e30), /cannot progress/);
+  assert.throws(() => animation.update(Infinity), /must be finite/);
+  const looping = new EmoteAnimation(
+    await EmoteDocument.open(emoteControllerModel('timeline', { loop: true })),
+  );
+  looping.timelines.play('timeline', 2);
+  assert.throws(() => looping.update(1e30), /cannot progress/);
 });

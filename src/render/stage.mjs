@@ -2,6 +2,7 @@
 // Stage placement and pixel effects adapted from CatSystemKit StageLayout (OWCramer).
 import { StageSurfaces } from './surfaces.mjs';
 import { ParticlesGL, createD3DContext } from './particles-gl.mjs';
+import { EmoteMaterials } from '../emote/materials.mjs';
 function boxBlur(pixels, width, height, radius, horizontal) {
   const count = horizontal ? width : height,
     lines = horizontal ? height : width,
@@ -45,6 +46,7 @@ export class StageRenderer {
     this.frameDepth = null;
     this.savedFrameDepth = null;
     this.d3dContext = createD3DContext();
+    this.emoteMaterials = new EmoteMaterials();
     this.effects = new WeakMap();
     if (renderer) this.attach(renderer, emote);
   }
@@ -62,6 +64,20 @@ export class StageRenderer {
     const target = this.gpu.target,
       depth = target.stageSurface ? this.surfaceDepth(target.stageSurface) : this.screenDepth();
     return device.withStageTarget(target, callback, depth);
+  }
+  drawEmote(geometry, { matrix, viewport } = {}) {
+    if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
+    if (geometry.commands.some((command) => command.maskWrite))
+      this.gpu.clear({ flags: 4, stencil: 0 });
+    for (const command of geometry.project(
+      this.gpu.target.width,
+      this.gpu.target.height,
+      matrix,
+      viewport,
+    ))
+      this.gpu.drawGeometry(command.geometry, command.texture, {
+        state: this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite),
+      });
   }
   createSurface(width, height, rgba) {
     const id = this.surfaces.create({ width, height, pitch: width * 4, format: 'rgba8' });

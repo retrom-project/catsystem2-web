@@ -23,8 +23,10 @@ engine ABI fields or engine-version selection behavior.
 Textures decode lazily and are cached by source (or per-icon resource). The
 reviewed `RGBA8` PSB bytes have BGRA channel order in the original DLL upload;
 the JS decoder returns canonical RGBA for StageRenderer. It supports complete
-raw and RL32 resources, preserves the full texture dimensions and icon origins,
-and checks resource/run/icon bounds. It performs no per-frame texture decode or
+raw and RL32 resources and checks resource/run/icon bounds. The PSB retains
+its encoded dimensions. When `truncated_width/height` are present, the canonical
+upload is cropped to those dimensions, as the DLL's texture and UV denominator
+require; icon origins are preserved. It performs no per-frame texture decode or
 buffer allocation. Additional pixel formats require their own oracle evidence;
 an unfamiliar type does not fall back to RGBA8.
 
@@ -92,3 +94,59 @@ The fixture identifies the DLL, generator, frame recorder, authored cases and
 each model by SHA-256. Raw investigation and instruction-level evidence remain
 in ignored `.local/phase9`. No game EXE, patch or injected guest-code probe is
 involved. The JS modules remain separate from the mixed runtime until 9.4.
+
+## Geometry and StageRenderer (9.3)
+
+`EmoteGeometry` compiles the model's layer and child-motion hierarchy once.
+It evaluates parameterized frame and priority tracks, inherited transforms,
+origins, opacity and packed RGBA weights, Bezier patches, combined patches,
+relative mesh resolution, inheritance separators and stencil composites.
+The root pose stays frozen unless a parameter or explicit motion changes it.
+`mesh.bp=null` disables the patch; an exact key with a null patch must not
+materialize a tessellated identity patch.
+
+The target has distinct numeric paths: an owned patch uses a cached Bernstein
+basis with division; an inherited bilinear grid multiplies a float32 reciprocal.
+Coordinates multiply U before V, accumulate rows in order 1/0/2/3 and reduce
+column pairs. Matrix/quad origin stores, the bypass-parent inheritance flag,
+texture-coordinate stepping, per-byte halving of ordinary color weights and
+vertical-before-horizontal packed gradient stores retain the DLL's order.
+Root weights and opacity apply to each corner before the gradient. Repeated
+requests for an identical controller target retain an earlier finish, matching
+the DLL's looping-timeline behavior.
+
+Mesh packets, projected vertices, patch scratch and topology buffers belong to
+an instance and are reused. `StageRenderer.drawEmote(geometry, {matrix,viewport})`
+submits them through the existing shared `ParticlesGL` device and texture cache.
+There is no separate E-mote WebGL context. GPU vertex-upload capacity is reused;
+WebGL2's source range avoids making a new TypedArray view for each upload.
+Materials implement the reviewed blend modes 0–6 and the parameter-16 flag,
+including the alpha-modulate/invert CURRENT texture stages and stencil passes.
+Textures remain immutable model assets rather than checkpoint surface copies.
+
+`emote-geometry-golden.json` records authored models, generator and driver hashes,
+raw vertex words and active device state. Comparisons require exact vertex/UV
+float bits, packed colors, topology and active render state. Inactive depth or
+stencil comparison values can remain from earlier device draws and are ignored
+while that test is disabled. No floating-point tolerance has been increased.
+The public browser cases check actual WebGL2 pixels: the existing Wine device
+fixture retains its one-byte sampler rounding bound; frozen authored draw
+payloads require zero pixel difference from StageRenderer.
+
+Regenerate the geometry evidence explicitly:
+
+```sh
+node scripts/record-emote-geometry.mjs --driver /private/emotedriver.dll --output tests/fixtures/emote-geometry-golden.json
+npx prettier --write tests/fixtures/emote-geometry-golden.json
+```
+
+Private extended evidence for a reviewed PSB covers 519 nodes, 200 draws and
+3960 vertices, all byte exact, and a 1280×720 frame with zero pixel differences.
+The private source, raw records and extended Playwright case stay in ignored
+local storage. The new public fixtures contain only authored data.
+
+The supported layer schema is 0/1/2/3/12. Other layer types, unfamiliar texture
+encodings and unreviewed non-null per-key interpolation curves fail explicitly.
+No such curves occur in the prepared NEKOPARA body PSBs. This does not certify
+the second driver build or all historical motion schemas. The native M2/DLL
+runtime remains in place until 9.4 connects this API and replaces its state.

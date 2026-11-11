@@ -16,7 +16,7 @@ its README's MIT label does not replace those terms. A code translation must
 retain the original applicable grant and attribution. The assessed scope and
 source digests are recorded in `docs/b-phase9-motionplayer.md`.
 
-The phase-9 JS controller, graph, spring, timeline and wind modules translate
+The phase-9 JS controller, graph, spring, timeline, wind, layer and mesh modules translate
 parts of that motionplayer implementation, with CatSystem2-specific behavior
 established through the local original-DLL oracle. Those source files retain
 BSD-3-Clause notices; the applicable original Japanese grant and contributor
