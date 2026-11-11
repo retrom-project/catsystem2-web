@@ -15,7 +15,8 @@ const integers = (values) => {
   ]);
 };
 
-export function encodeAuthoredPSB(root, resources = []) {
+export function encodeAuthoredPSB(root, resources = [], { version = 3 } = {}) {
+  if (![3, 4].includes(version)) throw new Error('Authored PSB container must be 3 or 4');
   const names = new Set(),
     strings = new Map();
   const scan = (value) => {
@@ -129,19 +130,20 @@ export function encodeAuthoredPSB(root, resources = []) {
     integers(chunks),
     integers(lengths),
     concat(...resources),
+    ...(version === 4 ? [integers([]), integers([]), []] : []),
   ];
-  const header = new Uint8Array(44),
+  const header = new Uint8Array(version === 4 ? 56 : 44),
     view = new DataView(header.buffer);
-  header.set([80, 83, 66, 0, 3]);
-  view.setUint32(8, 44, true);
-  let at = 44;
+  header.set([80, 83, 66, 0, version]);
+  view.setUint32(8, header.length, true);
+  let at = header.length;
   sections.forEach((section, i) => {
-    view.setUint32([12, 36, 16, 20, 24, 28, 32][i], at, true);
+    view.setUint32([12, 36, 16, 20, 24, 28, 32, 44, 48, 52][i], at, true);
     at += section.length;
   });
   let sum = 1,
     high = 0;
-  for (const byte of header.subarray(8, 40)) {
+  for (const byte of [...header.subarray(8, 40), ...header.subarray(44)]) {
     sum = (sum + byte) % 65521;
     high = (high + sum) % 65521;
   }

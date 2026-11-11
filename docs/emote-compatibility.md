@@ -2,6 +2,11 @@
 
 M2 runs the mounted engine's original wrapper and its original driver. The browser provides Win32 file/memory services, task transport and D3D9 services; it does not replace profiles, expression chains, idle motion, lip motion or inertia with JavaScript animations. This remains an unreleased implementation with the acceptance gaps below.
 
+Phase 9 introduces the JS replacement in separate steps. The source assessment
+and oracle boundary are in [b-phase9-motionplayer.md](b-phase9-motionplayer.md);
+the new PSB/resource/metadata data contract is in [emote-js.md](emote-js.md).
+These data modules do not yet change the mixed runtime's DLL execution path.
+
 ## Reviewed source profiles
 
 | Profile                         | Original engine                                                           | Behavior                                                                                                                                                                                                                                     |

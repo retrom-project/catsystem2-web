@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 127, "oracle": 137, "differential": 65 },
+    "counts": { "js": 127, "oracle": 138, "differential": 65 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -150,6 +150,7 @@
         "tests/zlib-javascript.test.mjs"
       ],
       "oracle": [
+        "tests/emote-document.test.mjs",
         "tests/execution.test.mjs",
         "tests/frame-profile-counters.test.mjs",
         "tests/hg2.test.mjs",
@@ -2734,8 +2735,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 388,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 151, "9": 30 },
+    "runtimeFiles": 389,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 37, "8": 151, "9": 31 },
     "fileNeedsReview": 106,
     "exeDependencyFiles": 84,
     "exeDependencies": { "addresses": 991, "calls": 103, "references": 6 },
@@ -48680,6 +48681,19 @@
       "review": "counted"
     },
     {
+      "file": "src/emote/document.mjs",
+      "sourceSha256": "b556618524c8c5091e7d335ac9d2e916992ba97c4030718ff57e005be0a3ea9f",
+      "domain": 9,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/emote/draw-list.mjs",
       "sourceSha256": "8c3e8a933ec49a78197a13846af3f9b2969590698381a0975b37dbac748f1fca",
       "domain": 9,
@@ -60883,6 +60897,7 @@
       "modules": [
         "src/emote/bicubic-kernel.mjs",
         "src/emote/bicubic-operations.mjs",
+        "src/emote/document.mjs",
         "src/emote/draw-list.mjs",
         "src/emote/model.mjs",
         "src/emote/native-adapter.mjs",
