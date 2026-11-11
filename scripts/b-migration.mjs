@@ -124,6 +124,7 @@ function domain(file) {
     return 7;
   if (
     file.startsWith('src/emote/') ||
+    file === 'oracle/plugin-frames.mjs' ||
     name.startsWith('emote') ||
     (file.startsWith('src/ppi/') &&
       ![

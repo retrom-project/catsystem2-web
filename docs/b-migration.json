@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 127, "oracle": 136, "differential": 65 },
+    "counts": { "js": 127, "oracle": 137, "differential": 65 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -279,6 +279,7 @@
         "tests/native-windows-volume.test.mjs",
         "tests/native-world.test.mjs",
         "tests/oracle/native-scalar-math.test.mjs",
+        "tests/plugin-oracle-frames.test.mjs",
         "tests/ppi-floating-point.test.mjs",
         "tests/ppi-native.test.mjs",
         "tests/ppi-particle-order.test.mjs",

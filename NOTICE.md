@@ -7,6 +7,15 @@ Its format parsers, VM, script execution and E-mote implementation adapt
 WebGL backend, audio, persistence and standalone host are implemented here.
 Modified and derived files remain under MPL-2.0 with source available in this repository.
 
+Phase 9 evaluates algorithms in `cpp/plugins/motionplayer` from
+[kirikiroid2-web](https://github.com/fenghengzhi/kirikiroid2-web), source commit
+`3840e3d86cab38217a193abaaea2c404e1bc71dc`. No code from that implementation
+is included by the 9.0 evaluation. The supplied repository's actual LICENSE
+contains a Japanese three-clause BSD-style grant and bundled-library notices;
+its README's MIT label does not replace those terms. A code translation must
+retain the original applicable grant and attribution. The assessed scope and
+source digests are recorded in `docs/b-phase9-motionplayer.md`.
+
 KIF and HG-2/HG-3 format algorithms follow CatSystemKit and
 [GARbro](https://github.com/morkt/GARbro), by morkt, under the MIT license:
 
