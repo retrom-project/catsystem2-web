@@ -7,10 +7,12 @@ import { NativeDictionary } from '../native/dictionary.mjs';
 import { expandNativeFESSoundConfigurationToken } from '../native/fes-sound-config.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_FES_SAVE_COMMANDS } from '../native/save-slots.mjs';
+import { replaceFESMacros, fesRawTail } from './source.mjs';
+import { tokenizeFESLine } from './tokens.mjs';
 const nativeArgumentDecoder = new TextDecoder('shift_jis');
 
 export class FESInstance {
-  constructor(name, program, player, { nativeVariableContextKey = null } = {}) {
+  constructor(name, program, player, { nativeVariableContextKey = null, macros = null } = {}) {
     Object.assign(this, {
       name,
       program,
@@ -58,6 +60,13 @@ export class FESInstance {
       declaredGroups: Object.create(null),
     });
     this.byKey = new Map();
+    this.macros = new Map(
+      macros ??
+        program.macros.map(([name, value]) => [
+          this.soundArgument(name),
+          this.soundArgument(value),
+        ]),
+    );
     this.nativeDictionary = new NativeDictionary();
     this.keyNames = new Set();
     for (const d of program.definitions) {
@@ -70,12 +79,14 @@ export class FESInstance {
       }
     }
     for (const table of program.tables)
-      for (const [target, values] of table.rows) {
-        const found = this.elements(target);
+      for (const { target: token, values, source } of table.rows) {
+        const target = this.soundArgument(token),
+          found = this.elements(target);
         if (!found.length && !Object.hasOwn(this.declaredGroups, target.replace(/\[.*$/, ''))) {
           this.player.unresolvedTargets.add(`${this.name}: undeclared #OBJECT target ${target}`);
         }
-        for (const o of found) this.apply(o, table.columns, values);
+        for (const o of found)
+          this.apply(o, table.columns, values, { header: table.header, source });
       }
   }
   add(type, name, index) {
@@ -101,11 +112,12 @@ export class FESInstance {
     return true;
   }
   applyObjects(columnHeader, row) {
-    const columns = columnHeader.trim().split(/\s+/).slice(1),
-      [target, ...values] = row.trim().split(/\s+/),
-      objects = this.elements(target);
+    const columns = this.tokens(columnHeader).slice(1),
+      [target, ...values] = this.tokens(row),
+      objects = this.elements(this.soundArgument(target));
     if (!columns.length || !objects.length) return false;
-    for (const object of objects) this.apply(object, columns, values);
+    for (const object of objects)
+      this.apply(object, columns, values, { header: columnHeader, source: row });
     return true;
   }
   diagnostic(message) {
@@ -158,8 +170,11 @@ export class FESInstance {
     }
     this.locals[n] = v | 0;
   }
-  macro(name) {
-    return this.program.macros[name];
+  tokens(line) {
+    return this.player.tokens ? this.player.tokens(line) : tokenizeFESLine(line);
+  }
+  expandMacros(line) {
+    return replaceFESMacros(line, this.macros, this.player.host.fesMacroLiterals?.());
   }
   objectHandle(name, index) {
     return (
@@ -211,8 +226,20 @@ export class FESInstance {
       id = +m[2];
     return { file, id, frame: this.player.picture(file)?.frame(id) };
   }
-  apply(o, columns, values) {
-    (o.nativeDefinitions ||= []).push({ columns: [...columns], values: [...values] });
+  apply(
+    o,
+    columns,
+    values,
+    { header = '#OBJECT ' + columns.join(' '), source = o.key + ' ' + values.join(' ') } = {},
+  ) {
+    (o.nativeDefinitions ||= []).push({
+      columns: [...columns],
+      values: [...values],
+      header,
+      source,
+    });
+    columns = columns.map((value) => this.soundArgument(value));
+    values = values.map((value) => this.soundArgument(value));
     {
       o.nativeDefinition ||= {};
       for (let i = 0; i < Math.min(columns.length, values.length); i++)
@@ -598,7 +625,7 @@ export class FESInstance {
   skip(lines, pc, stopAtElse) {
     let depth = 0;
     for (; pc < lines.length; pc++) {
-      const line = lines[pc];
+      const line = this.expandMacros(lines[pc]);
       if (/^if\s*\(/.test(line) && !condition(line)[1]) depth++;
       else if (line === 'endif') {
         if (!depth) return pc + 1;
@@ -607,11 +634,15 @@ export class FESInstance {
     }
     return pc;
   }
-  execute(line, lines, pc) {
-    const words = line.split(/\s+/),
+  execute(line, lines, pc, execution) {
+    if (!execution) {
+      line = this.expandMacros(line);
+      execution = { text: line, offset: 0 };
+    }
+    const words = this.tokens(line),
       head = words[0],
       args = words.slice(1),
-      p = (i) => this.value(args[i] || '0');
+      p = (i) => this.value(this.soundArgument(args[i] || '0'));
     const store = (i, v) => {
       if (args[i] !== undefined) this.setGlobal(p(i), v);
     };
@@ -620,7 +651,10 @@ export class FESInstance {
         truth = this.value(expr) !== 0;
       return rest
         ? truth
-          ? this.execute(rest, lines, pc)
+          ? this.execute(rest, lines, pc, {
+              text: execution.text,
+              offset: execution.offset + line.length - rest.length,
+            })
           : {}
         : truth
           ? {}
@@ -1182,8 +1216,7 @@ export class FESInstance {
               this.program.sourceKey,
               this.executingLabel || this.label,
               (this.executingLine || pc) - 1,
-              line,
-              objects[0]?.baseName || head,
+              { ...execution, name: objects[0]?.baseName || head },
             )
           : {};
         const selectedIndex = this.selectionIndex(head),
@@ -1192,7 +1225,11 @@ export class FESInstance {
             : 0,
           index = groupCount === 1 ? 0 : selectedIndex;
         const results = objects.map((o) =>
-          objectCommand(this, o, args[0], args.slice(1), { ...source, index }),
+          objectCommand(this, o, args[0], args.slice(1), {
+            ...source,
+            index,
+            rawTail: fesRawTail(line, 2),
+          }),
         );
         if (results.some((result) => result && typeof result.then === 'function')) {
           this.player.enqueue(

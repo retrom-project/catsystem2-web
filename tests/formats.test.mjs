@@ -98,7 +98,7 @@ test('CSTL indexes UTF-8 by message and language, including 255-byte length runs
 test('FES recognizes both original UTF-8 and CP932 script text', async () => {
   const text = new TextEncoder().encode('#START\nstrvar 1 日本語\0'),
     packed = deflateSync(text);
-  assert.equal(
+  assert.deepEqual(
     await readFES(
       new Uint8Array([
         ...ascii('FES\0'),
@@ -108,7 +108,7 @@ test('FES recognizes both original UTF-8 and CP932 script text', async () => {
         ...packed,
       ]),
     ),
-    '#START\nstrvar 1 日本語',
+    { text: '#START\nstrvar 1 日本語', prepared: true },
   );
 });
 test('HG3 reconstructs known RGBA pixels, including vertical order and horizontal/vertical deltas', async () => {

@@ -4,6 +4,7 @@ import { readFES } from '../formats/scene.mjs';
 import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
 import { NativeFESSourceArena } from '../native/fes-source.mjs';
+import { tokenizeFESLine } from './tokens.mjs';
 
 export class FESPlayer {
   constructor(game, images, host = {}, globals = {}, strings = {}) {
@@ -45,15 +46,21 @@ export class FESPlayer {
       .replace(/%LANG%/g, this.language)
       .replace(/\$str(\d+)/g, (_, n) => this.strings[n] || '');
   }
+  tokens(line) {
+    return this.host.fesTokens ? this.host.fesTokens(line) : tokenizeFESLine(line);
+  }
   async load(name, options) {
-    const text = await readFES(
+    const source = await readFES(
       this.game.requireCategory
         ? await this.game.requireCategory(name, 'fes')
         : await this.game.require(/\.fes$/i.test(name) ? name : `${name}.fes`),
     );
     const includes = new Map();
     const loadIncludes = async (source) => {
-      for (const file of includeNames(source)) {
+      for (const file of includeNames(source.text, {
+        prepared: source.prepared,
+        tokens: (line) => this.tokens(line),
+      })) {
         if (includes.has(file)) continue;
         const contents = await readFES(
           this.game.requireCategory
@@ -64,15 +71,19 @@ export class FESPlayer {
         await loadIncludes(contents);
       }
     };
-    await loadIncludes(text);
-    const program = parseProgram(text, { include: (file) => includes.get(file) });
+    await loadIncludes(source);
+    const program = parseProgram(source.text, {
+      prepared: source.prepared,
+      tokens: (line) => this.tokens(line),
+      include: (file) => includes.get(file),
+    });
     const sources = this.nativeSources || this.localSources;
     program.sourceKey = sources.register(
       this.nativeOwner,
       name.toLowerCase().replace(/\.fes$/, ''),
       program,
     );
-    program.source = [text, ...includes.values()].join('\n');
+    program.source = [source, ...includes.values()].map(({ text }) => text).join('\n');
     const tokens = new Set(this.expand(program.source).match(/[\w%-]+/g) || []);
     const names = [...tokens].filter((t) =>
       this.game.resolveCategory
@@ -592,6 +603,7 @@ export class FESPlayer {
             commandDelayUntil: s.commandDelayUntil,
             deferredCommandReturn: s.deferredCommandReturn,
             dynamicDefinitions: s.dynamicDefinitions,
+            macros: [...s.macros],
             nativeDictionary: s.nativeDictionary.snapshot(),
             objects: s.objects.map((o) => ({ ...o, motionState: o.motionTarget?.snapshot() })),
           }
@@ -617,6 +629,7 @@ export class FESPlayer {
       if (!saved) return null;
       const s = await this.load(saved.name, {
         nativeVariableContextKey: saved.nativeVariableContextKey,
+        macros: saved.macros,
       });
       s.nativeDictionary.restore(saved.nativeDictionary);
       for (const definition of saved.dynamicDefinitions)

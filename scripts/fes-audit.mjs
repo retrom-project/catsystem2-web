@@ -111,7 +111,10 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
   for (const name of (await readdir(directory)).filter((n) => /\.fes(?:\.txt)?$/i.test(n)).sort()) {
     try {
       const source = await readFES(new Uint8Array(await readFile(path.join(directory, name))));
-      const program = parseProgram(source, { include: (file) => includes.get(file) });
+      const program = parseProgram(source.text, {
+        prepared: source.prepared,
+        include: (file) => includes.get(file),
+      });
       const diagnostics = [];
       const player = {
         frameCount: 0,
@@ -129,7 +132,7 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
       for (const table of program.tables) for (const column of table.columns) columns.add(column);
       for (const lines of Object.values(program.blocks))
         for (const source of lines) {
-          const line = commandBody(source);
+          const line = commandBody(instance.expandMacros(source));
           if (!line || /^(?:(?:\+\+|--))?[$\\]/.test(line)) continue;
           const [head, verb] = line.split(/\s+/);
           const object =
@@ -141,7 +144,7 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
         }
       reports.push({
         name,
-        lines: source.split('\n').length,
+        lines: source.text.split('\n').length,
         objects: instance.objects.length,
         blocks: Object.keys(program.blocks).length,
         diagnostics,

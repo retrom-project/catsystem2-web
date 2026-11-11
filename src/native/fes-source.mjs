@@ -66,26 +66,32 @@ export class NativeFESSourceArena {
         throw new Error(`FES source program changed during its lifetime: ${name}`);
       return key;
     }
-    const blocks = {};
+    const blocks = Object.create(null);
     for (const [label, lines] of Object.entries(program.blocks))
       blocks[label] = lines.map((text) => ({
         text,
-        address: this.allocateString(text),
-        names: {},
+        copies: new Map([[text, this.allocateString(text)]]),
+        names: new Map(),
       }));
     this.programs.set(key, { signature: JSON.stringify(program.blocks), blocks });
     return key;
   }
-  context(key, label, index, line, objectName) {
+  context(key, label, index, { text, offset = 0, name }) {
     const record = this.programs.get(key)?.blocks[label]?.[index];
     if (!record) throw new Error(`FES source command ${key}#${label}:${index + 1} is unavailable`);
-    const offset = record.text.indexOf(line);
-    if (offset < 0) throw new Error('FES executing command does not belong to its source record');
-    if (!Object.hasOwn(record.names, objectName))
-      record.names[objectName] = this.allocateString(objectName);
+    if (
+      typeof text !== 'string' ||
+      !Number.isInteger(offset) ||
+      offset < 0 ||
+      offset > text.length ||
+      typeof name !== 'string'
+    )
+      throw new Error('Invalid FES executing source copy');
+    if (!record.copies.has(text)) record.copies.set(text, this.allocateString(text));
+    if (!record.names.has(name)) record.names.set(name, this.allocateString(name));
     return {
-      commandPointer: record.address + encodeCP932(record.text.slice(0, offset)).length,
-      objectNameAddress: record.names[objectName],
+      commandPointer: record.copies.get(text) + encodeCP932(text.slice(0, offset)).length,
+      objectNameAddress: record.names.get(name),
     };
   }
   snapshot() {

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 148, "oracle": 141, "differential": 67 },
+    "counts": { "js": 149, "oracle": 141, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -45,6 +45,7 @@
         "tests/fes-motion-driver.test.mjs",
         "tests/fes-motion-model.test.mjs",
         "tests/fes-source-model.test.mjs",
+        "tests/fes-source-player.test.mjs",
         "tests/fes-string-table.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -48905,7 +48906,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "24a91178687d61824d1e1fec8954e172dce7bdabb6da71e0d5b879ef013c0c95",
+      "sourceSha256": "69b6facdd24f453fa80b639916d72e17dc451a73d14ed0ebf828088a785821b2",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48918,7 +48919,7 @@
     },
     {
       "file": "src/fes/object.mjs",
-      "sourceSha256": "ba9bb29c4737ac3e4cad217d811eda7a7e6aa11ddc8613e47f19e0a64d80396b",
+      "sourceSha256": "75dcbfb4862433c012733125e40b5ae4964dd792299d31266d2fca4e58c912e3",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48931,7 +48932,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "760a122d2bdacfb0de92e51c3cba42518b170365f70e16f0d2f9a70e5f9ab48b",
+      "sourceSha256": "fee316510eaebc9181e327880b3cce61acdd02c00f5c1ebd2d6736c74f5e5f42",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48944,7 +48945,7 @@
     },
     {
       "file": "src/fes/program.mjs",
-      "sourceSha256": "f8c1eb0f1da351cfc541bb95c8b56cdfa19766d255378b996d5481def7672752",
+      "sourceSha256": "25a5137a23bee4e1d1277c289d866d74d38992ec8dc96b78c9eaa7dd5056d84a",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49139,7 +49140,7 @@
     },
     {
       "file": "src/formats/scene.mjs",
-      "sourceSha256": "744d865701e7abb9c3a78aaa7bd6390cb7b4e473d7439cb276b37126b9e9d97c",
+      "sourceSha256": "9b726fcbf41edd88fd2e1d26925941267624a760c4a16881abb0a7672a2b7e2c",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51582,7 +51583,7 @@
     },
     {
       "file": "src/native/fes-data.mjs",
-      "sourceSha256": "03b35dbff88b8e34198743bf0c7020ae48e7af7b5aab077e22cd1431a453a608",
+      "sourceSha256": "2b69eace35cfe2a87fd17b013b311816823f2fa45ab491dd7ddd33b51dba40a4",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51592,14 +51593,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 131,
+          "line": 118,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 148,
+          "line": 135,
           "method": "getNativeFeature",
           "feature": "fes-objects",
           "review": "needs-review",
@@ -52065,7 +52066,7 @@
     },
     {
       "file": "src/native/fes-objects.mjs",
-      "sourceSha256": "fbbd3a7c12af0d69d4205efb36589b0b7dbc2521ca7fc70fd82994a8ef932dcf",
+      "sourceSha256": "e461bd32e2b072fff1a6acb7bc95f8c947d075de2eb74d2fa898f3661001c681",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 62, "calls": 3, "references": 0 },
@@ -52387,7 +52388,7 @@
     },
     {
       "file": "src/native/fes-source.mjs",
-      "sourceSha256": "c52174724ff2d9713c7e005c68707d9e2e4c54401cc27a48ac5a65ec1102fe6c",
+      "sourceSha256": "48f67186d6c3c5ccf1249941dfd6e318cef7f209b1fc01d5409cf9b2ef34dff8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52524,7 +52525,7 @@
     },
     {
       "file": "src/native/fes-text.mjs",
-      "sourceSha256": "3526eff454d46cad77cb6eef75970343675b7dcf15fac1e88fcc4d7d76592302",
+      "sourceSha256": "409528204d624f806e69403c63adf8cbbdb26f9446a1a47decdd76466c953efa",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56523,7 +56524,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "29e22d652ac7a9b27c0c55d91e5082547b39e2f6800d19b4ddab4dcd76a4b7d2",
+      "sourceSha256": "7e2efd6a0ec453a0daf50be0673fd4b3478c78bc5827274b3fa2676669dacd4b",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56554,35 +56555,35 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 883,
+          "line": 889,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 905,
+          "line": 911,
           "method": "getNativeFeature",
           "feature": "renderer",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 913,
+          "line": 919,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1053,
+          "line": 1059,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1054,
+          "line": 1060,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",

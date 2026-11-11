@@ -782,6 +782,12 @@ export class NativeWorld {
       soundConfigTokens(line) {
         return world.fesSoundConfiguration.tokens(line);
       },
+      fesTokens(line) {
+        return world.fesSoundConfiguration.tokens(line);
+      },
+      fesMacroLiterals() {
+        return nativeABI(world.profile).fes.macroLiterals;
+      },
       soundConfig(tokens, context) {
         return world.fesSoundConfiguration.get(tokens, context);
       },

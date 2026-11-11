@@ -6,7 +6,6 @@ import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesFileListPattern, fesFileListKey, fesFileListEntries } from './fes-file-list.mjs';
 import { readFESStringTable, fesStringTableCell } from './fes-string-table.mjs';
-import { tokenizeNativeFESSoundConfiguration } from './fes-sound-config.mjs';
 
 export class NativeFESData {
   constructor(world) {
@@ -25,10 +24,7 @@ export class NativeFESData {
       definitions = object.nativeDefinitions ?? [];
     for (; state.appliedDefinitions < definitions.length; state.appliedDefinitions++) {
       const row = definitions[state.appliedDefinitions],
-        tokens = tokenizeNativeFESSoundConfiguration(
-          [object.key, ...row.values].join(' '),
-          this.world.profile,
-        ).slice(1),
+        tokens = row.values,
         column = row.columns.indexOf('FILE');
       if (column < 0 || tokens[column] === undefined) continue;
       const file = instance.soundArgument(tokens[column]);
@@ -55,15 +51,9 @@ export class NativeFESData {
     if (handle) this.world.runtime.handles.get(handle, 'variable-bank').set(index, value);
     else if (index >= 0) instance.setGlobal(index, value);
   }
-  tokens(object, verb, args) {
-    return tokenizeNativeFESSoundConfiguration(
-      [object.baseName, verb, ...args].join(' '),
-      this.world.profile,
-    ).slice(2);
-  }
   async fileList(instance, object, verb, args, context) {
     const state = await this.initialize(instance, object),
-      tokens = this.tokens(object, verb, args),
+      tokens = args,
       value = (i) =>
         tokens[i] === undefined ? -1 : instance.value(instance.soundArgument(tokens[i]));
     if (verb === 'make') {
@@ -111,10 +101,7 @@ export class NativeFESData {
     if (object.nativeType === 35 && ['make', 'get'].includes(verb))
       return this.fileList(instance, object, verb, args, context);
     if (object.nativeType === 34 && verb === 'get') {
-      const tokens = tokenizeNativeFESSoundConfiguration(
-          [object.baseName, verb, ...args].join(' '),
-          this.world.profile,
-        ).slice(2),
+      const tokens = args,
         value = (i) =>
           tokens[i] === undefined ? -1 : instance.value(instance.soundArgument(tokens[i])),
         state = await this.stringTable(instance, object),

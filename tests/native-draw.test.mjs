@@ -205,6 +205,8 @@ test('FES retained surfaces create real visible VRAM planes and retain separate 
     { parseProgram } = await import('../src/fes/program.mjs');
   const player = {
     frameCount: 0,
+    host: {},
+    strings: {},
     metadata: new Map(),
     picture: () => null,
     expand: (v) => v,

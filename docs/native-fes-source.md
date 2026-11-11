@@ -1,10 +1,9 @@
 # FES source boundaries
 
-`src/fes/source.mjs` is an independently verified source-processing model.
-`src/fes/tokens.mjs` is the existing raw parameter helper, factored out of the
-sound-configuration adapter without changing its behavior. The source model is
-not yet the default `parseProgram`/`FESPlayer` pipeline. The compatibility registry
-therefore keeps the affected source contracts partial until that integration.
+`src/fes/source.mjs` owns source processing in the default `parseProgram` and
+`FESPlayer` pipeline. `src/fes/tokens.mjs` supplies the raw parameter helper,
+shared with the sound-configuration adapter. `readFES` returns the current
+`{ text, prepared }` decoder contract so compressed source is not prepared again.
 
 The original engine uses four distinct operations:
 
@@ -25,9 +24,8 @@ The original engine uses four distinct operations:
    quotes. These operations cannot be replaced by split/unquote/join.
 
 The compressed `FES\0` loader skips plain-source normalization and include
-expansion, then indexes its stored lines. The decoder/player must retain that
-distinction when adopting the model. It does not require a new format generation,
-version rejection or component loading gate.
+expansion, then indexes its stored lines. The decoder/player retains that
+distinction without a format generation, version rejection or component gate.
 
 ## Registered version differences
 
@@ -59,7 +57,13 @@ per engine. This is bounded evidence for the listed rules, not a claim that the
 whole loader or arbitrary malformed control flow has been compared. Existing
 sound-configuration tests retain their independent 147 raw-token cases per ABI.
 
-Remaining work is to adopt the prepared/plain distinction, preserve processed
-OBJECT rows and execution tails, move macro use to each block read, and update
-source-address/checkpoint records around those exact executing copies. The old
-parse-time recursive macro pass is still a known production gap at this commit.
+OBJECT records retain their original prepared header and row, alongside raw
+parameter tokens. Runtime text commands receive the literal tail rather than
+rejoining those tokens. The source arena preserves the stored instruction and
+its separately allocated executing copies; CP932 offsets refer to the actual
+copy. Macro values and all copy/name addresses survive a fresh player checkpoint.
+Restoring a changed string bank does not register macros again.
+
+Typed object-definition restrictions, expression semantics and the remaining
+object drivers are separate phase-7 work; source integration does not credit
+those families or remove their old EXE ownership.

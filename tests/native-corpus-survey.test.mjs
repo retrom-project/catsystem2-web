@@ -52,8 +52,11 @@ test('table binding keeps generic and versioned particle namespaces separate', a
 
 test('FES counting expands macros and includes while keeping object definitions', () => {
   const report = inspectFES(
-    '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
-    () => '#MACRO\nACTION wait\n',
+    {
+      text: '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
+      prepared: false,
+    },
+    () => ({ text: '#MACRO\nACTION wait\n', prepared: false }),
   );
   assert.deepEqual(report.commands, ['wait']);
   assert.deepEqual(report.objectCommands, [{ type: 'TEXT', command: 'show' }]);

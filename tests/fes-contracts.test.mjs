@@ -44,7 +44,7 @@ test('repeated FES block headers append commands while repeated object headers r
     ['first', 'second'],
   );
   assert.deepEqual(
-    program.tables.map((t) => [t.columns, t.rows]),
+    program.tables.map((t) => [t.columns, t.rows.map(({ target, values }) => [target, values])]),
     [
       [['PRI'], [['first', ['10']]]],
       [['DISP'], [['second', ['1']]]],
@@ -555,7 +555,7 @@ test('FES source expands includes and token macros, and strips both C comment fo
   SLOT 12
   SHOW disp
 #DEFINE
-  BUTTON button[NUMBER]
+  BUTTON button[3]
 #OBJECT SIZE DISP
   button 20,10 0
 #START
@@ -574,13 +574,21 @@ test('FES source expands includes and token macros, and strips both C comment fo
   assert.equal(p.root.finished, 0);
 });
 
-test('FES include and macro cycles are reported instead of becoming runnable blocks', () => {
+test('FES includes reject cycles while macro replacement is single-pass', () => {
   assert.throws(
-    () => parseProgram('#INCLUDE\na.h', { include: () => '#INCLUDE\na.h' }),
+    () =>
+      parseProgram('#INCLUDE\na.h', {
+        include: () => ({ text: '#INCLUDE\na.h', prepared: false }),
+      }),
     /include cycle/,
   );
   assert.throws(() => parseProgram('#INCLUDE\nmissing.h'), /Unresolved FES include/);
-  assert.throws(() => parseProgram('#MACRO\nA B\nB A\n#START\n$1=A'), /macro cycle/);
+  const program = parseProgram('#MACRO\nA B\nB A\n#START\n$1=A');
+  assert.deepEqual(program.macros, [
+    ['A', 'B'],
+    ['B', 'A'],
+  ]);
+  assert.deepEqual(program.blocks.START, ['$1=A']);
 });
 
 test('FES expression mutations, indirect references and short circuiting retain C behavior', () => {

@@ -399,11 +399,11 @@ export function objectCommand(s, o, sub, args, context = {}) {
       store(0, o.idIndex);
       break;
     case 'str':
-      o.text = s.text(args.join(' '));
+      o.text = s.text(context.rawTail ?? args.join(' '));
       o.revealStart = player.frameCount;
       break;
     case 'apend':
-      o.text += s.text(args.join(' '));
+      o.text += s.text(context.rawTail ?? args.join(' '));
       break;
     case 'clear':
       o.text = '';

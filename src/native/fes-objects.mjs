@@ -804,8 +804,8 @@ export class NativeFESObjectRuntime {
     const rows = object.nativeDefinitions || [];
     for (let index = object.nativeDefinitionAppliedCount || 0; index < rows.length; index++) {
       const row = rows[index];
-      const header = encodeCP932('#OBJECT ' + row.columns.join(' ') + '\0'),
-        source = encodeCP932(object.key + ' ' + row.values.join(' ') + '\0'),
+      const header = encodeCP932(row.header + '\0'),
+        source = encodeCP932(row.source + '\0'),
         columns = p.allocate(264, true),
         record = p.allocate(896, true),
         name = p.allocate(64, true),

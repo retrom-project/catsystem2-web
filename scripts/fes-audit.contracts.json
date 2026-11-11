@@ -3710,11 +3710,11 @@
       "id": "fes.syntax.INCLUDE",
       "domain": "fes-syntax",
       "names": ["#INCLUDE"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/h_include.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Recursive plain-source includes are tested. Original compressed FES bypasses include expansion; retaining that decoder/player distinction is pending.",
+      "evidence": ["tests/fes-source-player.test.mjs", "tests/fes-contracts.test.mjs"],
+      "note": "Plain-source includes expand before section registration; compressed FES bypasses include processing. Missing files and cycles are explicit errors. Included source retains its decoder preparation state.",
       "signatures": []
     },
     {
@@ -3732,11 +3732,11 @@
       "id": "fes.syntax.MACRO",
       "domain": "fes-syntax",
       "names": ["#MACRO"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/h_macro.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "A verified one-pass lexical model and per-version literal emission exist. Production still uses an incorrect recursive parse-time pass over DEFINE/OBJECT; runtime-line integration remains.",
+      "evidence": ["tests/fes-source-model.test.mjs", "tests/fes-source-player.test.mjs"],
+      "note": "Registration expands the first name/value tokens once. Each runtime block read replaces whole lexical identifiers once, retaining quoted literals and per-ABI emission. DEFINE/OBJECT are not source-macro expanded. Checkpoints preserve registered values and actual executing source copies.",
       "signatures": []
     },
     {
@@ -3776,11 +3776,11 @@
       "id": "fes.syntax.comments",
       "domain": "fes-syntax",
       "names": ["comments"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/comment.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "The independent source model preserves original quote-blind deletion, line boundaries and whitespace stages. Production still inserts spaces for deleted comments; prepared/plain integration remains.",
+      "evidence": ["tests/fes-source-model.test.mjs", "tests/fes-source-player.test.mjs"],
+      "note": "Plain sources use native quote-blind C-comment deletion, TAB/space cleanup, CR/LF/NUL boundaries, parenthesis-space handling and mechanical inline-if expansion; prepared compressed files bypass this pass.",
       "signatures": []
     },
     {

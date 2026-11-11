@@ -121,11 +121,9 @@ export class NativeFESText {
     const runtime = await this.initialize(instance, object);
     await runtime.runDriver(instance, object, options);
   }
-  input(instance, object, args) {
-    let bytes =
-      object.nativeType === 37
-        ? new TextEncoder().encode(args.join(' '))
-        : encodeCP932(args.join(' '));
+  input(instance, object, args, context) {
+    const text = context.rawTail ?? args.join(' ');
+    let bytes = object.nativeType === 37 ? new TextEncoder().encode(text) : encodeCP932(text);
     const expand = instance.player.host.nativeFESStringBytes;
     if (expand) bytes = expand(bytes);
     return this.world.configuration?.scriptReplacements?.apply(bytes) ?? bytes;
@@ -141,14 +139,14 @@ export class NativeFESText {
         value = (i, fallback = 0) => (args[i] === undefined ? fallback : instance.value(args[i]));
       switch (verb) {
         case 'str':
-          s.source = this.input(instance, target, args);
+          s.source = this.input(instance, target, args, context);
           s.pendingClear = s.fullSource = true;
           s.oldLength = 0;
           s.remaining = -1;
           break;
         case 'apend':
           if (args.length) {
-            s.source = join(s.source, this.input(instance, target, args));
+            s.source = join(s.source, this.input(instance, target, args, context));
             s.remaining = -1;
           }
           break;

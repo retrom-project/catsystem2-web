@@ -62,8 +62,8 @@ export function readTranslation(bytes) {
 
 export async function readFES(bytes) {
   const b = new Binary(bytes, 'FES');
-  if (!b.magic('FES\0')) return decodeText(bytes);
+  if (!b.magic('FES\0')) return { text: decodeText(bytes), prepared: false };
   const body = await inflate(b.range(16, b.u32(4)), b.u32(8));
   const end = body.indexOf(0);
-  return decodeText(end < 0 ? body : body.subarray(0, end));
+  return { text: decodeText(end < 0 ? body : body.subarray(0, end)), prepared: true };
 }

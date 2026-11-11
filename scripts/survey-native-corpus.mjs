@@ -7,6 +7,7 @@ import { KIFArchive } from '../src/files.mjs';
 import { readKCS, KCSMachine } from '../src/kcs.mjs';
 import { readFES, readScene } from '../src/formats/scene.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
+import { replaceFESMacros } from '../src/fes/source.mjs';
 import { NodeFile } from './node-files.mjs';
 import { commandBody } from './fes-audit.mjs';
 import { cstCommandBody } from '../src/cst-syntax.mjs';
@@ -55,12 +56,13 @@ export async function inspectKCS(bytes, container) {
   };
 }
 
-export function inspectFES(text, include) {
-  const program = parseProgram(text, { include });
+export function inspectFES({ text, prepared }, include) {
+  const program = parseProgram(text, { prepared, include }),
+    macros = new Map(program.macros);
   const commands = [],
     objectCommands = [];
   for (const source of Object.values(program.blocks).flat()) {
-    const line = commandBody(source);
+    const line = commandBody(replaceFESMacros(source, macros));
     if (!line || /^(?:(?:\+\+|--))?[$\\]/.test(line)) continue;
     const [head, verb] = line.split(/\s+/);
     const object = program.definitions.find(
