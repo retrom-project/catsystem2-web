@@ -31,9 +31,19 @@ export class StageRenderer {
     this.effects = new WeakMap();
     if (this.plane) this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
     this.surfaces.records.clear();
+    this.surfaceTargets.clear();
+    this.surfaceDepths.clear();
+    this.surfaceFrames.clear();
+    this.frameDepth = null;
   }
   constructor(renderer, emote) {
     this.surfaces = new StageSurfaces();
+    this.surfaceTargets = new Map();
+    this.surfaceDepths = new Map();
+    this.surfaceFrames = new Map();
+    this.depthFormat = 80;
+    this.frameDepth = null;
+    this.savedFrameDepth = null;
     this.d3dContext = createD3DContext();
     this.effects = new WeakMap();
     if (renderer) this.attach(renderer, emote);
@@ -45,6 +55,134 @@ export class StageRenderer {
     this.plane = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.mask = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height);
+  }
+  createSurface(width, height, rgba) {
+    const id = this.surfaces.create({ width, height, pitch: width * 4, format: 'rgba8' });
+    if (rgba) this.surfaces.get(id).bytes.set(rgba);
+    return id;
+  }
+  surfaceTarget(id) {
+    if (!this.gpu) throw new Error('Stage surface drawing requires a GPU');
+    let target = this.surfaceTargets.get(id);
+    if (!target) {
+      const surface = this.surfaces.get(id);
+      const frame = this.surfaceFrames.get(id);
+      if (frame) this.gpu.releaseTextureFrame(frame);
+      this.surfaceFrames.delete(id);
+      target = this.gpu.createRenderTarget(surface.width, surface.height, surface.bytes);
+      target.stageSurface = id;
+      this.surfaceTargets.set(id, target);
+    }
+    return target;
+  }
+  surfaceDepth(id) {
+    let depth = this.surfaceDepths.get(id);
+    if (!depth) {
+      const surface = this.surfaces.get(id);
+      depth = this.gpu.createDepthStencil(
+        surface.width,
+        surface.height,
+        surface.depthStencil?.format ?? this.depthFormat,
+      );
+      this.surfaceDepths.set(id, depth);
+      if (surface.depthStencil) this.gpu.restoreDepthStencil(depth, surface.depthStencil);
+      else
+        this.gpu.withRenderTarget(this.surfaceTarget(id), () => this.gpu.clear({ flags: 6 }), {
+          depthStencil: depth,
+        });
+    }
+    return depth;
+  }
+  screenDepth() {
+    const view = this.gpu.primaryTarget;
+    if (
+      this.frameDepth &&
+      (this.frameDepth.width !== view.width ||
+        this.frameDepth.height !== view.height ||
+        this.frameDepth.format !== this.depthFormat)
+    ) {
+      this.gpu.destroyDepthStencil(this.frameDepth);
+      this.frameDepth = null;
+    }
+    if (!this.frameDepth) {
+      this.frameDepth = this.gpu.createDepthStencil(view.width, view.height, this.depthFormat);
+      if (this.savedFrameDepth) {
+        this.gpu.restoreDepthStencil(this.frameDepth, this.savedFrameDepth);
+        this.savedFrameDepth = null;
+      } else
+        this.gpu.withRenderTarget(this.gpu.primaryTarget, () => this.gpu.clear({ flags: 6 }), {
+          depthStencil: this.frameDepth,
+        });
+    }
+    return this.frameDepth;
+  }
+  surfaceFrame(id) {
+    const surface = this.surfaces.get(id),
+      target = this.surfaceTargets.get(id);
+    let frame = this.surfaceFrames.get(id);
+    if (frame?.revision === (surface.revision ?? 0)) return frame;
+    frame = target
+      ? { width: surface.width, height: surface.height, nativeTarget: target }
+      : { width: surface.width, height: surface.height, rgba: surface.bytes };
+    frame.revision = surface.revision ?? 0;
+    this.surfaceFrames.set(id, frame);
+    return frame;
+  }
+  surfacePixels(id) {
+    const surface = this.surfaces.get(id),
+      target = this.surfaceTargets.get(id);
+    if (target) surface.bytes.set(this.gpu.pixels(target));
+    return surface.bytes;
+  }
+  writeSurface(id, bytes) {
+    const surface = this.surfaces.get(id);
+    if (bytes.length !== surface.bytes.length)
+      throw new RangeError('Stage surface write dimensions differ');
+    surface.bytes.set(bytes);
+    surface.revision = (surface.revision ?? 0) + 1;
+    const frame = this.surfaceFrames.get(id);
+    if (frame) frame.revision = surface.revision;
+    const target = this.surfaceTargets.get(id);
+    if (target)
+      this.gpu.uploadRenderTarget(target, {
+        width: surface.width,
+        height: surface.height,
+        rgba: surface.bytes,
+      });
+  }
+  releaseSurface(id) {
+    const target = this.surfaceTargets.get(id);
+    if (target) this.gpu.destroyRenderTarget(target);
+    const depth = this.surfaceDepths.get(id);
+    if (depth) this.gpu.destroyDepthStencil(depth);
+    this.surfaceTargets.delete(id);
+    this.surfaceDepths.delete(id);
+    const frame = this.surfaceFrames.get(id);
+    if (frame) this.gpu?.releaseTextureFrame(frame);
+    this.surfaceFrames.delete(id);
+    this.surfaces.release(id);
+  }
+  snapshotSurfaces(ids) {
+    for (const id of ids) {
+      this.surfacePixels(id);
+      const depth = this.surfaceDepths.get(id);
+      if (depth) this.surfaces.get(id).depthStencil = this.gpu.snapshotDepthStencil(depth);
+    }
+    return this.surfaces.snapshot(ids);
+  }
+  restoreSurfaces(records) {
+    for (const [id] of records) {
+      const target = this.surfaceTargets.get(id);
+      if (target) this.gpu.destroyRenderTarget(target);
+      this.surfaceTargets.delete(id);
+      const depth = this.surfaceDepths.get(id);
+      if (depth) this.gpu.destroyDepthStencil(depth);
+      this.surfaceDepths.delete(id);
+      const frame = this.surfaceFrames.get(id);
+      if (frame) this.gpu?.releaseTextureFrame(frame);
+      this.surfaceFrames.delete(id);
+    }
+    this.surfaces.restore(records);
   }
   effect(frame, picture) {
     if (!picture.mode?.length && !picture.tone?.length && !picture.blur?.length)
@@ -104,9 +242,7 @@ export class StageRenderer {
       ctx = r.ctx;
     await stage.nativeGraphics?.prepareRender(this);
     const nativeWorld = stage.nativeGraphics?.world,
-      effects = nativeWorld?.nativeEngine?.features.get('renderer')?.initialized
-        ? await nativeWorld.getNativeFeature('screen-effects')
-        : null;
+      effects = nativeWorld?.screenEffects ?? null;
     if (!effects) r.begin();
     this.gpu.beginFrame(0xff000000, { preserve: Boolean(effects) });
     this.currentD3DContext = stage.nativeGraphics?.d3dContext || this.d3dContext;
@@ -172,7 +308,13 @@ export class StageRenderer {
       ctx.drawImage(this.gpu.endFrame(), 0, 0);
     }
   }
-  presentNative({ device, source, destination, window, dirty }) {
+  presentNative({ device, source, destination, window, dirty, stageTarget }) {
+    if (stageTarget) {
+      const ctx = this.renderer.ctx;
+      ctx.reset();
+      ctx.drawImage(this.gpu.presentTarget(stageTarget), 0, 0);
+      return 0;
+    }
     const p = device.process,
       ctx = this.renderer.ctx,
       record = device.surfaceData(device.backbuffer),

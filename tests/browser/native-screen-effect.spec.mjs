@@ -8,7 +8,7 @@ for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
 ])
-  test(`${profile} original screen-effect callbacks render every task and preserve a captured fade across a fresh World`, async ({
+  test(`${profile} JS screen effects render every task and preserve a captured fade across a fresh World`, async ({
     page,
   }) => {
     test.skip(
@@ -66,7 +66,7 @@ for (const [profile, variable] of [
             { MotionLibrary },
             { ParticleRandom },
             { StageRenderer },
-            { NATIVE_SCREEN_EFFECT_LAYOUTS },
+            { NativeGraphicsPacket },
             { placeBrowserNativePlane },
             { ImageStore },
           ] = await Promise.all([
@@ -75,7 +75,7 @@ for (const [profile, variable] of [
             import('/src/motion/library.mjs'),
             import('/src/ppi/random.mjs'),
             import('/src/render/stage.mjs'),
-            import('/src/native/screen-effect.mjs'),
+            import('/src/native/graphics-task.mjs'),
             import('/tests/fixtures/browser-native-world.mjs'),
             import('/src/formats/hg3.mjs'),
           ]),
@@ -211,92 +211,86 @@ for (const [profile, variable] of [
           const baseline = sample(world),
             baselineHash = await hash(world),
             rows = [];
-          const effects = await world.getNativeFeature('screen-effects'),
-            capture = profile.startsWith('sdk-') ? 0x54d140 : 0x6760a0;
+          const effects = world.screenEffects;
           const canvasPixels = () =>
               world.stageRenderer.renderer.ctx.getImageData(0, 0, 64, 48).data,
-            displayed = new Uint8Array(canvasPixels()),
-            p = world.nativeEngine.process;
+            displayed = new Uint8Array(canvasPixels());
           // The original outer-view pause gate applies even without an FX
           // callback. A submitted graph change must not erase the retained
           // backbuffer or present a replacement frame while this gate is set.
-          p.store(effects.platform.refs.view + 12, 1);
+          world.graphics.view.paused = true;
           await tint(0xffa02040);
           await render(world);
           const paused = {
-            callback: p.load(effects.platform.refs.view3D + 192),
+            callback: effects.callback,
             pixel: sample(world),
             hash: await hash(world),
             displayPreserved: canvasPixels().every((value, i) => value === displayed[i]),
           };
-          p.store(effects.platform.refs.view + 12, 0);
+          world.graphics.view.paused = false;
           await tint(0xff406080);
           await render(world);
-          for (const [kindString, abi] of Object.entries(NATIVE_SCREEN_EFFECT_LAYOUTS[profile])) {
-            await world.nativeEngine.call(
-              profile.startsWith('sdk-') ? 0x54cdf0 : 0x675ce0,
-              [2],
-              effects.platform.refs.view,
-            );
-            await world.nativeEngine.call(capture, [0, 0, 0x49742400], effects.platform.refs.view);
-            const kind = Number(kindString),
-              id = await world.objects.create({ kind, parent: world.root, name: 'Authored FX' }),
+          const bits = (value) => new Uint32Array(new Float32Array([value]).buffer)[0],
+            lo = bits(0),
+            hi = bits(60000),
+            matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1].map(bits),
+            mask = await world.graphics.images.load('mask', 0, world.main.id),
+            cases = [
+              [35, 378, 379, [...matrix, 0, 0, 0, 0, lo, hi]],
+              [36, 380, 381, [...[0, 0, 64, 48, 2, 2, 0, 60000].map(bits), 0xffffffff]],
+              [37, 382, 383, [2, lo, hi]],
+              [38, 384, 385, [lo, hi, 8]],
+              [39, 387, 388, [lo, hi, 8, mask, 0]],
+              [50, 516, 518, [lo, hi, 8, 4, 0]],
+              [51, 519, 520, [lo, hi, 8, 4, 0, 0]],
+              [52, 521, 522, [lo, hi, 8, 32, 24, bits(1), bits(5)]],
+              [57, 390, 391, [lo, hi, 8, bits(0.3), bits(8), bits(2)]],
+              [58, 394, 395, [lo, hi, 8, 32, 24, bits(0.2), bits(16), bits(0.1), 0xff102030]],
+            ];
+          for (const [kind, initialize, start, params] of cases) {
+            effects.rendering.prepare(2);
+            await effects.rendering.capture(0, 0, 60000);
+            await effects.rendering.capture(1, 0, 60000);
+            const id = await world.objects.create({
+                kind,
+                parent: world.root,
+                name: 'Authored FX',
+              }),
               task = world.objects.objects.get(id).implementation,
-              p = world.nativeEngine.process,
-              registered = p.load(effects.platform.refs.view3D + 192) === abi.callback,
-              phases = [],
-              stop = p.beforeInstruction(
-                abi.callback,
-                'authored screen-effect phase trace',
-                (p) => {
-                  const sp = p.cpu.reg_read_i32(p.uc.X86_REG_ESP) >>> 0;
-                  phases.push(p.load(sp + 8));
-                },
-              );
+              ranges = [],
+              drawRange = effects.rendering.drawRange.bind(effects.rendering);
+            effects.rendering.drawRange = async (minimum, maximum) => {
+              ranges.push([minimum, maximum]);
+              return drawRange(minimum, maximum);
+            };
             try {
               await render(world);
               const inactive = {
-                phases: [...phases],
+                ranges: [...ranges],
                 pixel: sample(world),
                 hash: await hash(world),
               };
-              phases.length = 0;
-              if (kind === 36)
-                await world.sendEngine(id, world.root, 380, 0, task.pointer + 120, {
-                  nativePointer: true,
-                });
-              await world.sendEngine(
-                id,
-                world.root,
-                {
-                  35: 379,
-                  36: 381,
-                  37: 383,
-                  38: 385,
-                  39: 388,
-                  50: 517,
-                  51: 520,
-                  52: 522,
-                  57: 391,
-                  58: 395,
-                }[kind],
-                0,
-                1,
-              );
+              ranges.length = 0;
+              await world.sendEngine(id, world.root, initialize, 0, 0, {
+                payload: new NativeGraphicsPacket(params),
+              });
+              if (kind === 50) await world.sendEngine(id, world.root, 517);
+              await world.sendEngine(id, world.root, start, 0, 1);
               await render(world);
               rows.push({
                 kind,
-                registered,
-                capability: p.load(task.pointer + 112),
+                registered: effects.callback === id,
+                capability: task.state.capability,
                 inactive,
-                phases,
+                ranges,
                 pixel: sample(world),
               });
             } finally {
-              stop();
+              effects.rendering.drawRange = drawRange;
               await world.objects.release(id);
             }
           }
+          await world.graphics.images.release(mask);
           const id = await world.objects.create({
               kind: 34,
               parent: world.main.id,
@@ -318,17 +312,12 @@ for (const [profile, variable] of [
           const state = (current) => {
             const objects = current.objects.objects.get(id).implementation.player.root.objects,
               object = objects.find((o) => o.nativeType === 26),
-              child = current.objects.objects.get(object.nativeTaskID)?.implementation,
-              p = current.nativeEngine.process;
+              child = current.objects.objects.get(object.nativeTaskID)?.implementation;
             return {
               frame: current.frame,
               object: [object.deleted, object.nativeObjectPointer, object.nativeTaskID],
               motionBusy: object.nativeMotionBusy,
-              data: child
-                ? [88, 100, 112, 116, 128, 132, 136, 260, 264].map((at) =>
-                    p.load(child.pointer + at),
-                  )
-                : [],
+              data: child ? structuredClone(child.state) : null,
             };
           };
           const before = state(world);
@@ -428,11 +417,14 @@ for (const [profile, variable] of [
     });
     expect(result.rows).toHaveLength(10);
     for (const row of result.rows) {
-      expect(row.capability, JSON.stringify(row)).toBe(1);
-      if (row.registered) expect(row.inactive.phases, JSON.stringify(row)).toContain(0);
+      expect(row.capability, JSON.stringify(row)).toBe(true);
+      expect(row.registered, JSON.stringify(row)).toBe(true);
       expect(row.inactive.pixel, JSON.stringify(row)).toEqual(result.baseline);
-      expect(row.inactive.hash, JSON.stringify(row)).toEqual(result.baselineHash);
-      expect(row.phases, JSON.stringify(row)).toContain(5);
+      expect(row.ranges, JSON.stringify(row)).toContainEqual([
+        0,
+        [35, 36, 37].includes(row.kind) ? 0 : 60000,
+      ]);
+      expect(row.ranges, JSON.stringify(row)).toContainEqual([60000, 1000000]);
     }
     expect(result.captured).toEqual(result.baseline);
     expect(result.capturedHash).toEqual(result.baselineHash);

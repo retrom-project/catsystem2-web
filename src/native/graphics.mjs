@@ -357,6 +357,7 @@ export class NativeGraphics {
     return structuredClone({
       bitmapAssets: this.images.snapshotAssets(),
       retainedDraw: this.world.retainedDraw?.snapshot() ?? null,
+      screenEffects: this.world.screenEffects?.snapshot() ?? null,
       vramHandle: this.vramHandle,
       d3dContext: snapshotD3DContext(this.d3dContext),
       view: this.view.snapshot(),
@@ -378,10 +379,12 @@ export class NativeGraphics {
       cursor,
       nativeRenderOrder,
       retainedDraw,
+      screenEffects,
       ...values
     } = structuredClone(state);
     this.images.restoreAssets(bitmapAssets);
     if (retainedDraw) this.world.retainedDraw.restore(retainedDraw);
+    if (screenEffects) this.world.screenEffects.restore(screenEffects);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
     this.d3dContext = restoreD3DContext(d3dContext);

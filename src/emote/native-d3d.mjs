@@ -1358,14 +1358,15 @@ export class EmoteD3D9 {
       throw new Error('Native host drawing requires an active shared GPU');
     const pointer = this.renderTargets.get(0),
       surface = this.surfaceData(pointer),
-      target = this.gpuTarget(pointer),
-      depth = this.depthTarget(this.depthStencil),
+      projection = pointer === this.backbuffer && this.stageTarget,
+      target = projection?.target ?? this.gpuTarget(pointer),
+      depth = projection ? projection.depthStencil : this.depthTarget(this.depthStencil),
       previousContext = this.gpu.frameContext,
       previousOpaque = this.gpu.frameOpaqueTarget;
     surface.dirty = true;
     surface.revision = (surface.revision ?? 0) + 1;
     this.gpu.frameContext = this.context;
-    this.gpu.frameOpaqueTarget = surface.format === 22;
+    this.gpu.frameOpaqueTarget = projection ? projection.opaqueTarget : surface.format === 22;
     try {
       return await this.gpu.withRenderTargetAsync(
         target,
@@ -1380,6 +1381,20 @@ export class EmoteD3D9 {
     } finally {
       this.gpu.frameContext = previousContext;
       this.gpu.frameOpaqueTarget = previousOpaque;
+    }
+  }
+  async withStageTarget(target, callback, depthStencil = null) {
+    const previous = this.stageTarget;
+    this.stageTarget = {
+      target,
+      depthStencil,
+      opaqueTarget:
+        target === this.gpu.primaryTarget && this.surfaceData(this.backbuffer).format === 22,
+    };
+    try {
+      return await callback();
+    } finally {
+      this.stageTarget = previous;
     }
   }
   gpuTarget(pointer) {
@@ -1452,7 +1467,8 @@ export class EmoteD3D9 {
   }
   execute(command) {
     const gpu = this.gpu,
-      target = this.gpuTarget(command.target);
+      projection = command.target === this.backbuffer && this.stageTarget,
+      target = projection?.target ?? this.gpuTarget(command.target);
     if (command.type === 'upload') {
       gpu.uploadRenderTarget(target, command.frame, command.rectangle);
       return;
@@ -1461,7 +1477,12 @@ export class EmoteD3D9 {
       target,
       () => {
         if (command.type === 'clear') {
-          gpu.clear({ ...command, opaqueTarget: this.surfaceData(command.target).format === 22 });
+          gpu.clear({
+            ...command,
+            opaqueTarget: projection
+              ? projection.opaqueTarget
+              : this.surfaceData(command.target).format === 22,
+          });
           return;
         }
         const source = this.gpuTargets.get(command.texture),
@@ -1475,11 +1496,15 @@ export class EmoteD3D9 {
             lineViewport: command.type === 'lines' ? command.viewport : null,
             state: command.state,
             scissor: command.scissor,
-            opaqueTarget: this.surfaceData(command.target).format === 22,
+            opaqueTarget: projection
+              ? projection.opaqueTarget
+              : this.surfaceData(command.target).format === 22,
           },
         );
       },
-      { depthStencil: this.depthTarget(command.depthStencil) },
+      {
+        depthStencil: projection ? projection.depthStencil : this.depthTarget(command.depthStencil),
+      },
     );
   }
   vertexCount(type, count) {

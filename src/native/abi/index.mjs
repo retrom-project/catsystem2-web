@@ -94,6 +94,7 @@ function validateBehavior(abi) {
     !capabilities ||
     [
       'embeddedJavaScript',
+      'cubeFlipGridHeightProduct',
       'steam',
       'windowReturnTitle',
       'broadcast',

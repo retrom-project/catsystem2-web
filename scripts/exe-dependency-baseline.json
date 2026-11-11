@@ -1,6 +1,11 @@
 {
   "version": 1,
   "files": {
+    "oracle/area-effect-task.mjs": {
+      "addresses": 0,
+      "calls": 2,
+      "references": 0
+    },
     "oracle/bitmap-memory.mjs": {
       "addresses": 14,
       "calls": 2,
@@ -63,11 +68,6 @@
     },
     "src/native/control-task.mjs": {
       "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/effect-commands.mjs": {
-      "addresses": 60,
       "calls": 2,
       "references": 0
     },
@@ -368,16 +368,6 @@
     },
     "src/native/screen-capture.mjs": {
       "addresses": 14,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/screen-effect-render.mjs": {
-      "addresses": 4,
-      "calls": 2,
-      "references": 0
-    },
-    "src/native/screen-effect.mjs": {
-      "addresses": 80,
       "calls": 2,
       "references": 0
     },

@@ -13,6 +13,8 @@
     "oracle/text-log-projection.mjs",
     "oracle/fes-text-projection.mjs",
     "oracle/fes-draw-projection.mjs",
-    "oracle/raster-kernel-projection.mjs"
+    "oracle/raster-kernel-projection.mjs",
+    "oracle/area-effect-task.mjs",
+    "oracle/fes-screen-effect-projection.mjs"
   ]
 }

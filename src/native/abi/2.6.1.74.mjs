@@ -206,6 +206,7 @@ export default {
     requiredRenderer: false,
   },
   capabilities: {
+    cubeFlipGridHeightProduct: false,
     bitmapColorQuery: false,
     nameTableAliases: false,
     embeddedJavaScript: true,

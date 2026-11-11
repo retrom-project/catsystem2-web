@@ -1,14 +1,14 @@
 # KCS screen-effect commands
 
-Thirty KCS interfaces execute their complete original wrappers: `208..214`,
-`238`, `355..35D`, `389` and `3C7..3CC`. They address the original screen-effect
+Thirty KCS interfaces build their packets in JavaScript: `208..214`,
+`238`, `355..35D`, `389` and `3C7..3CC`. They address JS screen-effect
 tasks through the caller's Top namespace. SDK's two distinct message ranges
 are normalized independently at the transport boundary.
 
 Matrices and packet fields keep raw DWORD bits, original field order and the
-original zero-target guards. `212` and `389` use the same persistent native
+original zero-target guards. `212` and `389` use the same persistent JS
 bitmap backing as the image interfaces. Their final payload flag remains
-different. The three view capture interfaces preserve their original target
+different. The three view capture interfaces preserve their shared target
 allocation and depth-range calling conventions.
 
 `208` initializes its public result to zero but uses a stack-local copy of the
@@ -23,13 +23,17 @@ targets, optional bitmaps, unwritten queries, output canaries and complete VM
 state. The probe explicitly supplies task receivers, bitmap identity and view
 capture boundaries; it does not claim GPU pixels from that transport check.
 
-The public SDK World test constructs all ten original task types and controls
-them through KCS, then restores active native state into a fresh World. The
+The public SDK World test constructs all ten JS task types and controls
+them through KCS, then restores active JS state into a fresh World. The
 mask interfaces additionally exercise aliases of a real persistent bitmap,
 the receiver's independently allocated screen-sized mask, source mutation,
 replacement, each wrapper's flag, fresh restoration and separate destruction
 of the receiver's mask and the Script-owned source.
-The
-actual callback, capture, presentation and FES lifecycle coverage is recorded
+The actual callback, capture, presentation and FES lifecycle coverage is recorded
 in [native screen effects](native-screen-effects.md). Bitmap ownership and the
 ordinary frame capture path have their own independent tests.
+
+The complete original wrapper remains in `oracle/effect-commands-original.mjs`
+for transport evidence. Runtime registration uses `NativeEffectCommands(world)`
+and holds no handler addresses. Norm-frame geometry and working-texture
+differentials are described in the screen-effect document.

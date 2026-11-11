@@ -37,12 +37,12 @@ function dot(left, right, row, column, [a, b, c, d], round) {
   const fourth = round(left[row + d] * right[column + d * 4]);
   return f(round(round(round(first + second) + third) + fourth));
 }
-function multiply(left, right, round) {
+function multiply(left, right, round = round53) {
   const matrix = Array(16);
   for (let i = 0; i < 16; i++) matrix[i] = dot(left, right, i & ~3, i & 3, matrixOrders[i], round);
   return matrix;
 }
-function transform(vector, matrix, round) {
+function transform(vector, matrix, round = round53) {
   return [
     dot(vector, matrix, 0, 0, vectorOrders[0], round),
     dot(vector, matrix, 0, 1, vectorOrders[1], round),
@@ -50,6 +50,7 @@ function transform(vector, matrix, round) {
     dot(vector, matrix, 0, 3, vectorOrders[1], round),
   ];
 }
+export { multiply as multiplyNativeMatrix, transform as transformNativeVector };
 function rotation(axis, [cos, sin]) {
   const matrix = identity();
   if (axis === 0) [matrix[5], matrix[6], matrix[9], matrix[10]] = [cos, sin, -sin, cos];

@@ -1,73 +1,78 @@
 # Native screen effects
 
-The two frozen engine profiles execute their original constructors, task receivers,
-frame handlers, effect callbacks and view renderer. The browser supplies the shared
-D3D9 device, graph enumeration and presentation surface. No effect is replaced by a
-Canvas fade or an effect-specific JavaScript curve.
+`NativeScreenEffects` owns the ten task kinds, their Base identities, clocks,
+activity, single callback slot, shared captures and private working textures.
+`NativeScreenEffectRenderer` submits their phases through `StageRenderer`.
 
-| Native task | Effect      | Game constructor | SDK constructor |
-| ----------- | ----------- | ---------------- | --------------- |
-| 35          | Blur        | `5F6EC0`         | `4D1700`        |
-| 36          | Mosaic      | `5F7710`         | `4D1F50`        |
-| 37          | Shade       | `5F82D0`         | `4D2B10`        |
-| 38          | Draw        | `5F8FA0`         | `4D37E0`        |
-| 39          | Wipe        | `5F9610`         | `4D3E50`        |
-| 50          | Wipe mosaic | `5FA430`         | `4D4C50`        |
-| 51          | Fade mosaic | `5FC310`         | `4D6AF0`        |
-| 52          | Break       | `5FDCA0`         | `4D8320`        |
-| 57          | Page flip   | `5FF0F0`         | `4D9770`        |
-| 58          | Cube flip   | `600340`         | `4DA9C0`        |
+| Native task | Effect      | JS state                                                      |
+| ----------- | ----------- | ------------------------------------------------------------- |
+| 35          | Blur        | Two captures, transformed previous-frame feedback             |
+| 36          | Mosaic      | Capture, reduced target, first-initialization geometry        |
+| 37          | Shade       | The original 49-quad index collisions and radius weights      |
+| 38          | Draw        | Captured frame alpha over the live priority range             |
+| 39          | Wipe        | Shared bitmap alias and independent resized blue-channel mask |
+| 50          | Wipe mosaic | Two private captures, discrete mirrored cache                 |
+| 51          | Fade mosaic | Private capture, discrete resampling and alpha cache          |
+| 52          | Break       | Shared RNG, triangle velocities and accumulated rotations     |
+| 57          | Page flip   | Stored-f32 page mesh and curl projection                      |
+| 58          | Cube flip   | Two face meshes, sweep band and background color              |
 
-Task identity belongs to its native Top namespace. Constructors register the same
-Base task route used by KCS engine messages; a direct World handle is not substituted
-for a native task ID. SDK effect messages have two separate numbering ranges, rather
-than a single offset from the game profile.
+Task and sender IDs resolve through their Top namespace. SDK messages retain
+the independently mapped screen ranges. Raw activity values, untouched reply
+words, constructor capability gates, configured capture limits, deferred Wipe-mosaic registration and the
+unstacked callback destruction rule follow the oracle. A task clock excludes
+paused Base frames. Page/Cube advance during tick, Break advances during render,
+and the final rendered frame clears the active flag.
 
-`NativeScreenEffectRenderer` calls the original outer view frame function
-(`675EE0` / `54CFF0`). Both ordinary frames and frames with an effect callback use
-the actual shared D3D backbuffer. The host graph submission invalidates the native
-manager's client rectangle; the original view retains its pause and dirty gates.
-The original inner renderer controls callback phases, depth ranges, capture targets,
-clears and Present. The outer renderer performs recording after Present.
+The ordinary frame clears black and draws the full priority range. Blur,
+Mosaic and Shade split background, captured middle and foreground. The other
+transitions draw the live `[0, maximum)` underlay before their captured overlay,
+then draw the foreground. Each pass preserves the original depth-clear order.
+The outer view pause gate retains both backbuffer and presentation.
 
-The GPU begins these frames without clearing retained color, depth or stencil.
-Only original D3D calls clear native targets. Canvas cursor overlays are drawn after
-presentation and do not become backbuffer pixels.
+StageRenderer surfaces own RGBA and captured depth/stencil snapshots. Private
+textures and mask pixels survive a fresh World restore independently of bitmap
+aliases. A pending render/capture rejects checkpoints. The transitional device's
+creation result initializes the shared JS depth/filter context before captures.
+Original graph traversal remains the model producer until phase 6.6.
 
-FES `RDRAW`, `RWIPE`, `WBREAK`, `RWMOS` and `RFMOS` use their original object
-constructors and the common definition parser. Initial allocation uses the original
-FES resource list; frame drivers and deletion use that same per-interpreter list.
-Global `rdraw`, `rwipe`, `wbreak`, `rwmos` and `rfmos` execute their original command
-handlers, including target preparation/capture, category resolution, MOT scheduling,
-the guard against a second live object, completion and deletion. They do not select a
-JavaScript transition by game or object name.
+## FES projection
 
-The wide game category helper `5D3B30` shares the mounted `NativeResources` resolver
-with the narrow helper. Its original classifier reads startup INT records directly
-and does not call the narrow helper. Extension detection treats a trailing period as
-an existing extension. SDK uses its independently recovered CP932 category helper.
+The five FES object/resource drivers and global commands remain in domain 7.
+Their capture metadata and D3D target identities cross the registered
+`oracle/fes-screen-effect-projection.mjs` boundary. JS publishes its shared slots
+before FES execution and imports dirty producer pixels before task transport.
+Private Wipe/Mosaic copies keep separate ownership when FES releases shared slots.
+Mask import reuses the existing FES bitmap projection. This projection is removed
+in phase 7.
 
-`tests/native-screen-effect.test.mjs` covers all ten task receivers in both profiles,
-untouched output words, actual constructor capability gates, separate FES allocation
-lists, cleanup and fresh-process restoration. `tests/native-engine-files.test.mjs`
-compares complete destination buffers from the unmodified game wide filename helper
-with the host boundary, including Japanese paths, explicit paths and failure.
+## Evidence and limits
 
-`tests/browser/native-screen-effect.spec.mjs` mounts either frozen executable and,
-for the game profile, the supplied E-mote DLL. It exercises all ten callback tasks,
-all five FES global transitions, an authored HG2 mask, repeated live requests and
-reusing an object name after completion. A captured fade has matching whole-frame
-RGBA hashes for each subsequent frame in a fresh World. It also checks ordinary
-frames with no effect callback: the original outer-view pause gate preserves both
-the backbuffer and displayed pixels.
+`tests/differential/screen-effect-vectors.test.mjs` compares submitted geometry
+against both frozen EXEs and against the authored public vectors in
+`tests/fixtures/native-screen-effect-vectors.json`. Norm x87 PC24/nearest follows
+the ABI's normal D3D initialization. Colors are exact and finite coordinates,
+rhw and UV have a one-f32-ULP bound. The fixture records source hashes and seeds.
+The private oracle uses existing task and D3D submission APIs.
 
-These checks do not establish every effect parameter combination or a separate
-Wine final-screen oracle. The compatibility matrix keeps these FES rows partial
-until the remaining parameter and object-command coverage is accepted. The
-standalone CST `ScenePlayer` screen commands are a separate contract; this native
-task implementation does not upgrade their matrix rows.
+`tests/differential/screen-effect-pixels.test.mjs` compares Wipe and both mosaic
+working textures byte for byte, including mask flags, odd duration, cache
+selection and activity. Zero-duration Wipe fails during initialization in both
+EXEs. Its JS initialization raises a RangeError at the same command.
 
-Public command descriptions remain in the official
-[FES rdraw](https://cs2.suki.jp/manual/fes/reference/cn/rdraw.html) and
-[FES rwipe](https://cs2.suki.jp/manual/fes/reference/cn/rwipe.html) documentation.
-Raw executable captures and probe outputs stay in ignored local storage.
+Chromium exercises real WebGL blending, depth, sampling and coverage. The FES
+integration test includes all five global effects, live-request reuse, an HG2
+mask, pause retention and whole-frame hashes across a fresh World restore.
+The separate WebGL differential uses an authored layered scene and a default
+per-channel bound of one. Integer working textures retain their exact bound.
+
+Game Cube multiplies the scaled grid height by its input height again. SDK uses
+the scaled height. The existing per-version `capabilities` map records this as
+`cubeFlipGridHeightProduct`. The format/identity/signature proposals from the ABI
+survey remain pending. Default D16 attachments preserve the observed overlap
+coverage. A captured depth attachment retains its format across restoration.
+
+A prior multi-effect reuse oracle run exposed Break's uninitialized homogeneous
+pivot field. The fresh-World authored vectors and layered WebGL fixture remain
+finite. JS initializes the homogeneous pivot deterministically to zero. Raw
+heap-history evidence stays in `.local/phase6/` for later review.

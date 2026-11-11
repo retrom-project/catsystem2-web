@@ -7,7 +7,7 @@ import {
   NATIVE_SCREEN_EFFECT_LAYOUTS,
   NativeScreenEffectTask,
   screenEffectRawMessage,
-} from '../src/native/screen-effect.mjs';
+} from '../oracle/screen-effect-original.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
@@ -132,63 +132,39 @@ for (const [profile, variable] of [
   );
 
 test(
-  'SDK original screen-effect tasks use the initialized shared renderer and restore their callbacks',
+  'SDK JS screen-effect tasks retain canonical state and callback ownership in a fresh World',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
   async () => {
     const exe = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
-      profile = 'sdk-4.01-engine-2.6.1.74',
       create = () => sdkWorld(exe),
       world = create();
     let fresh;
     try {
       await world.initialize('main.kcs');
-      for (const [kindString, abi] of Object.entries(NATIVE_SCREEN_EFFECT_LAYOUTS[profile])) {
-        const kind = Number(kindString),
-          id = await world.objects.create({ kind, parent: world.root, name: 'Authored FX' }),
-          task = world.objects.objects.get(id).implementation,
-          p = world.nativeEngine.process;
-        assert.equal(p.load(task.pointer), abi.vtable);
-        assert.equal(
-          p.load(task.pointer + 108),
-          (await world.getNativeFeature('graphics-platform')).refs.view3D,
-        );
-        assert.equal(
-          p.load(task.pointer + 112),
-          1,
-          `kind ${kind} initializes with the original render-target capability`,
-        );
+      for (const kind of [35, 36, 37, 38, 39, 50, 51, 52, 57, 58]) {
+        const id = await world.objects.create({ kind, parent: world.root, name: 'Authored FX' }),
+          task = world.objects.objects.get(id).implementation;
+        assert.equal(task.state.capability, true);
         assert.equal(await world.sendEngine(id, world.root, 377), 0);
         await world.sendEngine(id, world.root, 29, 0, 73);
         assert.equal(world.objects.objects.get(id).userValue, 73);
-        assert.equal(p.load(task.pointer + 92), 73);
-        const pointer = task.pointer;
         await world.objects.release(id);
-        assert.equal(p.allocations.has(pointer), false);
+        assert.equal(world.screenEffects.tasks.has(id), false);
       }
-      const id = await world.objects.create({
-          kind: 38,
-          parent: world.root,
-          name: 'Authored retained FX',
-        }),
+      const id = await world.objects.create({ kind: 38, parent: world.root, name: 'Retained FX' }),
         task = world.objects.objects.get(id).implementation,
-        p = world.nativeEngine.process,
-        feature = await world.getNativeFeature('screen-effects'),
-        callback = p.read(feature.platform.refs.view3D + 192, 8),
-        snapshot = structuredClone(world.snapshot());
+        state = structuredClone(world.snapshot());
       fresh = create();
-      await fresh.restore(snapshot);
-      const restored = fresh.objects.objects.get(id).implementation,
-        restoredFeature = await fresh.getNativeFeature('screen-effects');
-      assert.equal(restored.pointer, task.pointer);
-      assert.deepEqual(
-        fresh.nativeEngine.process.read(restoredFeature.platform.refs.view3D + 192, 8),
-        callback,
-      );
+      await fresh.restore(state);
+      const restored = fresh.objects.objects.get(id).implementation;
+      assert.deepEqual(restored.state, task.state);
+      assert.equal(fresh.screenEffects.callback, world.screenEffects.callback);
+      assert.equal(fresh.screenEffects.callback, id);
       assert.equal(await fresh.sendEngine(id, fresh.root, 377), 0);
-      const pointer = restored.pointer;
       await fresh.objects.release(id);
-      assert.equal(fresh.nativeEngine.process.allocations.has(pointer), false);
-      assert.equal(p.allocations.has(pointer), true);
+      assert.equal(fresh.screenEffects.callback, 0);
+      assert.equal(world.screenEffects.callback, id);
+      assert.equal(world.screenEffects.tasks.has(id), true);
     } finally {
       await fresh?.close({ flushFiles: false });
       await world.close({ flushFiles: false });

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original area effects share the mounted view and borrow caller bitmaps.
 import { mapABIMessage } from './abi/messages.mjs';
-import { NativeScreenEffectTask } from './screen-effect.mjs';
 import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 
 const ABI = {
@@ -89,7 +88,7 @@ export class NativeAreaEffects {
     engine.registerFeature('area-effects', this);
   }
   async create(record, options) {
-    const task = new NativeScreenEffectTask(this, record);
+    const task = this.engine.createAreaEffectTask(this, record);
     if (!options.restoring) {
       if (task.abi.requiresRenderer) await this.platform.ensureRenderer();
       await task.construct();

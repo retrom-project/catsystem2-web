@@ -1113,6 +1113,7 @@ export class NativeWorld {
     await attempt(() => this.particles.close());
     await attempt(() => this.movies.close());
     await attempt(() => this.graphics.cursor.close());
+    await attempt(() => this.screenEffects.close());
     await attempt(() => this.resourceCache.close());
     if (this.ownsSteam) await attempt(() => this.steamService.close());
     if (this.nativeEngineLoading)

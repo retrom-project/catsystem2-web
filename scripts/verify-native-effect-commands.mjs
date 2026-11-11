@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original complete wrappers; task receivers and the two view calls are the
-// explicit supplied boundaries. GPU/render-target behavior is tested separately.
+// Compare complete original wrappers with JS packets using the existing task
+// and view boundaries. GPU/render-target behavior is tested separately.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import {
-  NativeEffectCommands,
-  NATIVE_EFFECT_COMMAND_CONTRACTS,
-} from '../src/native/effect-commands.mjs';
+import { NATIVE_EFFECT_COMMAND_CONTRACTS } from '../oracle/effect-commands-original.mjs';
+import { NativeEffectCommands } from '../src/native/effect-commands.mjs';
+import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
+import { floatBits } from '../src/kcs.mjs';
 import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
 import { imageOwnerFixture } from '../tests/fixtures/image-owner-fixture.mjs';
 
@@ -22,7 +22,7 @@ if (!profile) throw new Error('Effect command oracle requires a frozen engine');
 const sdk = profile.startsWith('sdk-'),
   f = await imageOwnerFixture(bytes, profile),
   { engine, world, machine: m, process: p, platform } = f,
-  commands = new NativeEffectCommands(engine, world),
+  commands = new NativeEffectCommands(world),
   host = p.allocate(160, true),
   vtable = p.allocate(32, true),
   argv = p.allocate(40, true),
@@ -54,7 +54,12 @@ const compare = (actual, expected, label) => {
   comparisons++;
 };
 const receive = (sender, target, message, w, l, flags, memory, result) => {
-  const size = payloadSizes[message];
+  const size = payloadSizes[message],
+    payload = size ? memory.bytes(l, size).slice() : null;
+  if (message === 387) {
+    const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
+    if (view.getUint32(12, true) === bitmap) view.setUint32(12, 99, true);
+  }
   if (message === 377) queryInitial = memory.load(result);
   events.push({
     sender,
@@ -62,8 +67,8 @@ const receive = (sender, target, message, w, l, flags, memory, result) => {
     message,
     w,
     l: size ? 'payload' : l,
-    flags,
-    ...(size ? { payload: Array.from(memory.bytes(l, size)) } : {}),
+    flags: flags ?? 0,
+    ...(size ? { payload: Array.from(payload) } : {}),
     ...(message === 377 ? { initial: 'caller-result-address' } : {}),
   });
 };
@@ -80,9 +85,33 @@ world.getNativeFeature = async (name) =>
       }
     : getFeature(name);
 world.sendNativeEngine = async (target, sender, message, w, l, context) => {
-  receive(sender, target, message, w, l, context.flags, context.payload, context.nativeResult);
+  receive(
+    sender,
+    target,
+    message,
+    w,
+    l,
+    context.flags,
+    context.resultMemory ?? context.payload,
+    context.nativeResult,
+  );
   context.nativeRouted = target !== 0xffffffff;
   return queryWrites ? queryWord : undefined;
+};
+world.runtime.imageDataBuffers = { process: new NativeBufferMemory() };
+world.screenEffects = {
+  rendering: {
+    prepare(count) {
+      if (id !== 0x238) events.push({ view: platform.refs.view, name: 'prepare', args: [count] });
+    },
+    capture(index, minimum, maximum) {
+      events.push({
+        view: platform.refs.view,
+        name: id === 0x238 ? 'prepare-and-capture' : 'capture',
+        args: [...(id === 0x238 ? [] : [index]), floatBits(minimum), floatBits(maximum)],
+      });
+    },
+  },
 };
 const vm = () => [m.memory.slice(), m.shared.slice(), ...m.blocks.map((b) => b.slice())];
 try {
@@ -209,7 +238,7 @@ try {
         operations,
         comparisons,
         scope:
-          'All 30 complete original KCS screen-effect wrappers; exact packet layouts, transform bit patterns, VM data/shared/extended matrices, guarded invalid pointers, bitmap wrapper translation, zero/missing/extreme targets, null bitmap guards, query writes and original unwritten pointer result, view prepare/capture calling conventions, all VM memory and output canaries. Receivers, view prepare/capture and bitmap ownership are explicit supplied probe boundaries; separate real World/GPU tests cover those implementations.',
+          'All 30 JS KCS screen-effect wrappers against their complete original bodies; exact packet layouts, transform bit patterns, VM data/shared/extended matrices, guarded invalid pointers, bitmap identity normalization, zero/missing/extreme targets, null bitmap guards, query writes and original unwritten pointer result, view prepare/capture calling conventions, all VM memory and output canaries. Receivers, view prepare/capture and bitmap ownership are explicit supplied probe boundaries; separate real World/GPU tests cover those implementations.',
       },
       null,
       2,

@@ -11,6 +11,8 @@ export default {
     'native-plane-trail.spec.mjs',
     'native-view-geometry.spec.mjs',
     'native-area-effect.spec.mjs',
+    'native-screen-effect.spec.mjs',
+    'native-screen-effect-differential.spec.mjs',
   ],
   outputDir: '.local/playwright-image',
 };

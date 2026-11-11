@@ -3,6 +3,7 @@
 // execute from the mounted engine image. Only script storage/variable access,
 // file metadata and native task message transport cross into the host.
 import { nativeABI } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { planeState } from './fes-graphics.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
@@ -71,6 +72,7 @@ export class NativeFESObjectRuntime {
           ? world.resolveTaskID(target, senderWorldID)
           : target;
         if (targetWorldID == null) return 0;
+        await world.effectsFES?.prepareTaskTransport(rawMessage, w, targetWorldID);
         let value;
         if (rawMessage === 1) {
           let id;
@@ -116,9 +118,11 @@ export class NativeFESObjectRuntime {
             this.world.graphics.get(targetWorldID) ||
             world.objects.objects.get(targetWorldID)?.implementation;
           if (!task) return 0;
-          const message = adapter?.canonicalMessage
-            ? adapter.canonicalMessage(rawMessage)
-            : rawMessage;
+          const message = world.screenEffects?.tasks.has(targetWorldID)
+            ? mapABIMessage(engine.profile, 'screen', 'canonical', rawMessage, task.record.kind)
+            : adapter?.canonicalMessage
+              ? adapter.canonicalMessage(rawMessage)
+              : rawMessage;
           const transport = {
             payload: this.memory,
             nativePointer: true,

@@ -16,6 +16,7 @@ export class NativeView {
     deviceScale = 1,
     windowShift = [0, 0],
     active = true,
+    paused = false,
     drawingRectangle = [0, 0, clientWidth ?? virtualWidth, clientHeight ?? virtualHeight],
     ratios = null,
   } = {}) {
@@ -28,12 +29,14 @@ export class NativeView {
       deviceScale,
       windowShift,
       active,
+      paused,
       drawingRectangle,
       ratios,
     });
   }
   configure(values) {
     if (values.active !== undefined) this.active = Boolean(values.active);
+    if (values.paused !== undefined) this.paused = Boolean(values.paused);
     if (values.drawingRectangle !== undefined) {
       if (!Array.isArray(values.drawingRectangle) || values.drawingRectangle.length !== 4)
         throw new TypeError('Invalid native drawing rectangle');
@@ -100,6 +103,7 @@ export class NativeView {
           'deviceScale',
           'windowShift',
           'active',
+          'paused',
           'drawingRectangle',
           'ratios',
         ].map((key) => [key, this[key]]),

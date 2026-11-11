@@ -187,6 +187,12 @@ export class NativeRenderer {
     }
     Object.assign(platform.refs, { view, view3D, manager, renderer });
     this.refs.initialized = true;
+    // The producer's CreateDevice decision initializes the JS depth state.
+    // Subsequent draw and clear passes share this single context.
+    this.world.graphics.d3dContext.depthStencilEnabled = Boolean(this.d3d.presentation[9]);
+    this.world.stageRenderer.depthFormat = this.d3d.presentation[10];
+    this.world.graphics.d3dContext.magFilter = this.d3d.context.samplers.get(5);
+    this.world.graphics.d3dContext.minFilter = this.d3d.context.samplers.get(6);
     platform.sync();
     return this;
   }

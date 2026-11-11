@@ -96,9 +96,11 @@ const ownedModules = {
   3: 'arguments calendar cp932 cp932-data utf8-codec calculation-math calculation-memory geometry matrix rectangles scalar-math view-geometry random-memory utf8 unicode-output standard',
   4: 'mission-table question-table record-sort selection-table compiled-table data-text buffer-memory image-buffer-info bank character-names comma-fields configuration-query content-databases database data-buffer dictionary gallery gallery-tables heap-data history-cursor nametable ordered-map persistence record-stack record-queue resource-cache resource-search resource-selection resources save-slots scene-checkpoint scene-data scene-history scene-memory section-table sparse-bytes storage string-bank motion-persistence script-xml tile-game tile-model tile-hands tile-actions tile-round tile-special',
   5: 'data-buffer-projection bitmap-memory bitmap-factory bitmap-operations image-owner image-composite image-file image-commands image image-owner-pixels image-owner-load bitmap-pixels image-affine image-persistence hg3-delta text text-log text-scanner text-legacy text-plain text-task text-windows text-core text-config text-layout text-parser text-profile-data text-raster legacy-text-state font-backend freetype-artifact fes-text fes-text-layout zlib zlib-artifact deflate',
-  6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render texture-layout texture-memory view',
+  6: 'area-effect area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
 };
 function domain(file) {
+  if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
+  if (file === 'oracle/area-effect-task.mjs') return 6;
   const name = basename(file);
   if (file === 'src/native/xml.mjs') return 4;
   if (['oracle/raster-kernel-projection.mjs', 'src/native/raster-projection.mjs'].includes(file))
@@ -146,7 +148,7 @@ function domain(file) {
 
 const originalWrappers = new Set(
   (
-    'effect-commands screen-capture ' +
+    'screen-capture ' +
     'input-commands registry ' +
     'task-dump tile-plane-command ' +
     'plane-movie-command plane-model-command area-effect-commands particle-commands ' +
@@ -352,6 +354,10 @@ function resolveFeatures(names, features, modules, visited = new Set()) {
 function classify(file, id, callback, features, modules) {
   const name = basename(file);
   const ownerTransition = name === 'image-owner' && !NATIVE_IMAGE_OWNER_JS_IDS.includes(id);
+  const capturedGraph =
+    name === 'effect-commands' &&
+    [0x238, 0x35b].includes(id) &&
+    modules.get('src/native/graphics-render.mjs')?.executionSites.length;
   let names = callback ? featureNames(callback.node) : [];
   // Follow a callback's direct function delegation before following factories.
   // Scanning every function in its installer would, for example, attach the
@@ -377,6 +383,11 @@ function classify(file, id, callback, features, modules) {
         'JS持有逻辑句柄、所有层位图和像素操作。文件/ANM装载仍通过显式输入导入边界，阶段5.3删除。',
       );
     }
+  } else if (capturedGraph) {
+    implementation = 'exe-region';
+    reasons.push(
+      'JS捕获调用仍进入graphics-render的原GraphManager遍历，随6.6删除。效果本身与目标像素由JS持有。',
+    );
   } else if (originalWrappers.has(name)) {
     implementation = 'original-handler';
   } else if (reviewedRegions.has(name)) {
@@ -417,6 +428,9 @@ function classify(file, id, callback, features, modules) {
     dependencies: unique([
       ...resolveFeatures(names, features, modules),
       ...(ownerTransition ? ['oracle/image-owner.mjs', 'oracle/image-owner-projection.mjs'] : []),
+      ...(capturedGraph
+        ? ['src/native/graphics-render.mjs', 'src/native/screen-effect-render.mjs']
+        : []),
     ]),
     reasons,
   };
@@ -606,6 +620,29 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 }
 
 const nonNativeGroups = [
+  {
+    name: 'fes-screen-capture-projection',
+    domain: 7,
+    entry: 'Original FES capture/resource drivers → JS screen-effect capture slots',
+    modules: ['fes-effects', 'fes-objects'],
+    files: ['oracle/fes-screen-effect-projection.mjs'],
+    projection: {
+      direction: 'Explicit JS target publication and PE producer readback at FES boundaries',
+      authority:
+        'StageRenderer surfaces and JS screen-effect task clocks, geometry and callback slot',
+      fields: [
+        'shared target metadata and Texture9 identities',
+        'capture slot RGBA bytes and revisions',
+        'depth/stencil target identity',
+        'FES mask bitmap identity',
+      ],
+      consumers: [{ domain: 7, modules: ['fes-effects', 'fes-objects'] }],
+      lifetime:
+        'FES retains its original object/resource lifecycle. Only its target producer data cross this boundary. JS effects retain independent private working textures. No screen-effect constructor, callback or receiver executes in the EXE.',
+      removePhase: 7,
+      operations: ['pushCaptures', 'importCaptures', 'releaseTargets', 'snapshot', 'restore'],
+    },
+  },
   {
     name: 'remaining-exe-raster-projection',
     domain: 7,

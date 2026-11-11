@@ -35,7 +35,17 @@ export class StageSurfaces {
   snapshot(ids = this.records.keys()) {
     return [...ids].map((id) => {
       const { bytes, ...record } = this.get(id);
-      return [id, { ...record, bytes: encodeSparseBytes(bytes) }];
+      const depthStencil = record.depthStencil;
+      return [
+        id,
+        {
+          ...record,
+          bytes: encodeSparseBytes(bytes),
+          ...(depthStencil
+            ? { depthStencil: { ...depthStencil, bytes: encodeSparseBytes(depthStencil.bytes) } }
+            : {}),
+        },
+      ];
     });
   }
   restore(records) {
@@ -43,7 +53,14 @@ export class StageSurfaces {
       const bytes = decodeSparseBytes(record.bytes);
       if (!Number.isSafeInteger(id) || id < 1 || bytes.length !== record.pitch * record.height)
         throw new Error('Invalid stage surface checkpoint');
-      this.records.set(id, { ...structuredClone(record), bytes });
+      const depthStencil = record.depthStencil;
+      this.records.set(id, {
+        ...structuredClone(record),
+        bytes,
+        ...(depthStencil
+          ? { depthStencil: { ...depthStencil, bytes: decodeSparseBytes(depthStencil.bytes) } }
+          : {}),
+      });
       this.next = Math.max(this.next, id + 1);
     }
   }

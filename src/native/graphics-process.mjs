@@ -191,6 +191,9 @@ export class NativeGraphicsPlatform {
         },
       );
     this.graphRendering = new NativeGraphRendering(this);
+    this.graphRendering.frameProvider = world.screenEffects
+      ? () => world.screenEffects.rendering.currentFrame()
+      : null;
     this.sync();
     engine.registerFeature('graphics-platform', this);
   }
@@ -615,12 +618,12 @@ export class NativeGraphicsPlatform {
     }
   }
   pull() {
-    const layout = nativeABI(this.engine.profile).graphics.synchronization;
-    if (!layout) return;
     const p = this.process,
       context = this.world.graphics.d3dContext;
-    context.lastDrawType = p.load(this.refs.renderer + layout.lastDrawType);
-    context.lastBlend = p.load(this.refs.renderer + layout.lastBlend);
+    // These two cache words are shared by both reviewed renderer layouts,
+    // as in NativeGraphRendering.flush. SDK has no full manager projection.
+    context.lastDrawType = p.load(this.refs.renderer + 340);
+    context.lastBlend = p.load(this.refs.renderer + 344);
   }
   snapshot() {
     if (this.pendingBitmaps)
