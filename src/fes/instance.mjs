@@ -61,6 +61,8 @@ export class FESInstance {
       resultValue: 0,
       commandDelayUntil: null,
       deferredCommandReturn: null,
+      decodePending: false,
+      nativeQueuePending: false,
       dynamicDefinitions: [],
       declaredGroups: Object.create(null),
     });
@@ -436,7 +438,12 @@ export class FESInstance {
     if (this.deferredCommandReturn !== null) {
       const value = this.deferredCommandReturn;
       this.deferredCommandReturn = null;
-      if (this.nativeCommandReturn(value).action === 'suspend') return;
+      const { action } = this.nativeCommandReturn(value);
+      if (action === 'suspend') return;
+      if (action === 'flush') {
+        this.decodePending = true;
+        return;
+      }
     }
     if (
       (this.waitFrames > 0 ||
@@ -543,6 +550,7 @@ export class FESInstance {
             this.deferredCommandReturn = null;
             if (this.nativeCommandReturn(value).action === 'suspend') break;
           }
+          await this.flushNativeRecords();
           jumped = this.run(continuation) || jumped;
         }
         if (jumped || this.finished !== null) break;
@@ -575,7 +583,10 @@ export class FESInstance {
     const word = value >>> 0,
       signed = word | 0;
     if (!word) return {};
-    if (signed === -3) return { action: 'flush' };
+    if (signed === -3) {
+      this.nativeQueuePending = true;
+      return { action: 'flush' };
+    }
     if (signed === -1) {
       this.waitMotion = true;
       return { action: 'suspend' };
@@ -586,6 +597,11 @@ export class FESInstance {
       );
     this.commandDelayUntil = (this.player.frameCount + word) >>> 0;
     return { action: 'suspend' };
+  }
+  async flushNativeRecords() {
+    if (!this.nativeQueuePending) return;
+    await this.runtime?.flushRecords();
+    this.nativeQueuePending = false;
   }
   invoke(label, parameters = []) {
     if (!this.program.blocks[label]) return false;
@@ -804,7 +820,9 @@ export class FESInstance {
         return { action: 'flush' };
       case 'baseimg': {
         const object = args.length ? this.elements(args[0])[0] : null;
-        if (!args.length || object) this.player.snapshotBase(this, object);
+        if (args.length && !object) return {};
+        this.player.snapshotBase(this, object);
+        if (this.runtime) return this.nativeCommandReturn(-3);
         return { action: 'flush' };
       }
       case 'rdraw':

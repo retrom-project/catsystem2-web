@@ -286,17 +286,37 @@ export class FESCoordinator {
       frame = ((record.effectiveFrame ?? 0) - (record.pausedFrames ?? 0)) >>> 0;
     for (const root of this.collection.graph.children()) this.motions.update(root, frame);
   }
+  queueBaseImage(object) {
+    if (object?.nativeType === 4)
+      this.pendingRecords.push({ operation: 'base-plane', handle: object.handle });
+    else if (!object || [1, 2, 6, 11, 12, 22].includes(object.nativeType))
+      this.pendingRecords.push({
+        operation: 'base-image',
+        bitmap: object ? this.images.currentBitmap(object) : 0,
+      });
+  }
   async flushRecords() {
     while (this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
-      if (record.operation !== 'draw-upload') throw new Error('Unknown FES scheduling operation');
-      await this.world.sendEngine(
-        this.instance.player.surface,
-        this.instance.runtimeID,
-        286,
-        0,
-        record.value,
-      );
+      if (record.operation === 'draw-upload')
+        await this.world.sendEngine(
+          this.instance.player.surface,
+          this.instance.runtimeID,
+          286,
+          0,
+          record.value,
+        );
+      else if (record.operation === 'base-plane') {
+        const object = this.collection.graph.get(record.handle);
+        if (!object || object.nativeType !== 4)
+          throw new Error('FES baseimg pending PLANE has no live semantic object');
+        await this.world.graphics.baseImage(this.instance, object);
+      } else if (record.operation === 'base-image') {
+        const draw = this.world.graphics.drawTasks.get(this.instance.player.surface);
+        if (!draw?.state.renderer)
+          throw new Error('FES baseimg requires its initialized Draw surface');
+        await draw.setBaseImage(record.bitmap);
+      } else throw new Error('Unknown FES scheduling operation');
     }
   }
   async initializeResources() {

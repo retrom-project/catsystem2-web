@@ -28,7 +28,6 @@ export async function setFESBaseImage(graphics, instance, object) {
   if (!draw?.state.renderer) throw new Error('FES baseimg requires its initialized Draw surface');
   if (!object) return draw.setBaseImage(0);
   if (![1, 2, 4, 6, 11, 12, 22].includes(object.nativeType)) return;
-  await instance.runtime.sync();
   if (object.nativeType === 4) {
     await draw.render();
     const x = Math.trunc(object.vramX),

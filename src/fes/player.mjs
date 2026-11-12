@@ -128,6 +128,7 @@ export class FESPlayer {
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
+      await s.flushNativeRecords();
       s.runtime?.beforeStep();
       const tick = async () => {
         if (s.waitSound !== null) {
@@ -151,6 +152,7 @@ export class FESPlayer {
         if (++flushes > 10000) throw new Error(`${s.name}: FES decode instruction budget`);
         s.decodePending = false;
         await this.flush();
+        await s.flushNativeRecords();
         await tick();
       }
       if (!s.keySkipControlOnly || !s.skipControl) s.clickL = 0;
@@ -273,7 +275,8 @@ export class FESPlayer {
     this.host.transition?.(frames, kind, mask);
   }
   snapshotBase(instance, object) {
-    if (this.nativeGraphics) this.enqueue(this.nativeGraphics.baseImage(instance, object));
+    if (instance.runtime) instance.runtime.queueBaseImage(object);
+    else if (this.nativeGraphics) this.enqueue(this.nativeGraphics.baseImage(instance, object));
     else if (typeof this.host.snapshotBase === 'function')
       this.enqueue(Promise.resolve(this.host.snapshotBase(object, instance)));
     else throw new Error('FES baseimg requires a native drawing surface or a bitmap host');
@@ -600,6 +603,8 @@ export class FESPlayer {
             resultValue: s.resultValue,
             commandDelayUntil: s.commandDelayUntil,
             deferredCommandReturn: s.deferredCommandReturn,
+            decodePending: s.decodePending,
+            nativeQueuePending: s.nativeQueuePending,
             dynamicDefinitions: s.dynamicDefinitions,
             macros: [...s.macros],
             nativeDictionary: s.nativeDictionary.snapshot(),
@@ -661,6 +666,8 @@ export class FESPlayer {
         'resultValue',
         'commandDelayUntil',
         'deferredCommandReturn',
+        'decodePending',
+        'nativeQueuePending',
       ])
         s[key] = structuredClone(saved[key]);
       if (!s.program.blocks[s.label]) throw new Error('Save refers to missing FES block');

@@ -32,6 +32,7 @@ export async function defaultFESWorld(profile, files = {}, options = {}) {
       fes: ['fes'],
       scene: ['cst'],
       config: ['cnf'],
+      mot: ['kcs'],
       ptcl: ['kcs'],
       ptclpi: ['ppi'],
       m2psb: ['psb'],
