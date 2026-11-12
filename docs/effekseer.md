@@ -1,6 +1,7 @@
 # Effekseer legacy resources
 
-Phase 7's E1 implements a JS reader and resource owner for legacy SKFE Effects.
+Phase 7 implements a JS reader, resource owner and independent algorithm modules
+for legacy SKFE Effects.
 It does not yet implement EFKPLANE commands, particle simulation, geometry,
 drawing or task checkpoints. FES raw type 36 remains explicitly unsupported.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
@@ -72,6 +73,29 @@ include 20,480 comparisons with an independent BigInt recurrence; local original
 oracle evidence separately compares 320 return values and 320 PTD state words.
 That observation uses authored seeds on its synthetic thread, not a real first
 Play or a complete external-caller map.
+
+`numerical.mjs`, `math43.mjs` and `generation.mjs` implement the old scalar/vector
+random sampling, PVA/easing/curves, HSVA colors, affine matrices and generation
+locations from that same fixed source. Sampling and evaluation are separate:
+evaluation reuses stored samples and does not consume randomness. Callers supply
+the selected CRT stream; scratch and output buffers can be reused. Circle's
+inclusive random endpoint retains the old denominator-decrement behavior. Its
+one-division endpoint produces an explicit operation error after the original
+four draws. The observed null ModelLoader branch records an unavailable model
+generation without adding a modern loader or consuming model-selection draws.
+Nonfinite results, integer conversion overflow and unimplemented operations fail
+explicitly; the modules do not clamp them into invented valid values.
+
+Tests include 71 direct numerical/generation unit cases and 31 comparison groups
+against retained outputs from the fixed public source, built with contraction
+and fast-math disabled. Those reference values are not original game outputs.
+Separate local original-function calibration has 116 calls and 1,266 exact
+float32 outputs under the recorded synthetic oracle FPCW `0x037F` configuration.
+This does not establish the real frame thread's complete floating environment;
+successful D3D device creation has a separate single-precision API contract.
+GetScale/GetRotation and unsampled parameter domains retain their source-reference
+scope. No pixel tolerance, playback integration or browser support follows from
+these independent algorithms.
 
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their

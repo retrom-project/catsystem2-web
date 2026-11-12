@@ -28,3 +28,14 @@ rows `ff4000ff ff8000ff` and `ffc000ff ffff00ff`. All authored files use this
 project's MPL-2.0 license. These are parser/resource fixtures; their existence
 does not establish EFK simulation or drawing support. They are not private game
 assets and are excluded from the standalone build.
+
+`numerical-reference.json` and `generation-reference.json` retain exact float32
+words, integers and color channels produced from authored inputs by the fixed
+official 1.23 algorithms. They are test references from public MIT source, not
+private game captures. The reference build used g++ 14.2.0, C++17, `-O0`,
+`-ffp-contract=off`, `-fno-fast-math` and `-fno-strict-aliasing`. Numerical
+references cover 17 groups; generation references cover 14. Tests label these
+as source references and read the retained JSON without a compiler, native
+executable or provider. The algorithm attribution is in
+`../../../licenses/effekseer-MIT.txt`; authored inputs and expected-value
+fixtures use this project's MPL-2.0 license.

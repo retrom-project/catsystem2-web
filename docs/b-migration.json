@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 179, "oracle": 148, "differential": 67 },
+    "counts": { "js": 181, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -32,6 +32,8 @@
         "tests/default-fes-world.test.mjs",
         "tests/effekseer-crt-random.test.mjs",
         "tests/effekseer-crt-threads.test.mjs",
+        "tests/effekseer-generation.test.mjs",
+        "tests/effekseer-numerical.test.mjs",
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-resources.test.mjs",
         "tests/emote-animation.test.mjs",
@@ -2347,8 +2349,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 446,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 52, "8": 170, "9": 55 },
+    "runtimeFiles": 449,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 55, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48430,6 +48432,45 @@
     {
       "file": "src/effekseer/effect-reader.mjs",
       "sourceSha256": "d6a1ca03423c1bd761e8d6c6cacb268042f06a9421450509b04d95d1d7886bab",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/generation.mjs",
+      "sourceSha256": "10221e0cd7de7acea4e9c9bd9a8adb7988722aaa75097532fbd71515776ddcfe",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/math43.mjs",
+      "sourceSha256": "8d74c50077a1a81ca04e219315b259211dd74755277160bb19436f17df04093a",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/numerical.mjs",
+      "sourceSha256": "3ced8e244766547019b67fa2fe1ee14030ece57eeee102d8f417aa379f8bc145",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
