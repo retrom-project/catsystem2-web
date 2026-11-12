@@ -49,6 +49,14 @@ export function initializeFESString(object, { profile, configuration }) {
   object.dirty = true;
   return object;
 }
+function nvConfiguration(profile, configuration) {
+  const cores = nativeABI(profile).layouts.textCores,
+    bytes = textPacket(profile, 'nv', configuration).slice(4, 4 + cores.nv.configSize),
+    view = new DataView(bytes.buffer);
+  for (const offset of [24, 24 + cores.cp932.configSize + 16])
+    view.setUint32(offset + 124, configuration.fields.font.prop, true);
+  return bytes;
+}
 function createTextState(object, profile, configuration) {
   const mode = object.nativeType === 37 ? 'utf8' : 'cp932',
     layout =
@@ -67,13 +75,7 @@ function createTextState(object, profile, configuration) {
   }
   return {
     layout: layout?.snapshot(),
-    nv:
-      object.nativeType === 29
-        ? textPacket(profile, 'nv', configuration).slice(
-            4,
-            4 + nativeABI(profile).layouts.textCores.nv.configSize,
-          )
-        : null,
+    nv: object.nativeType === 29 ? nvConfiguration(profile, configuration) : null,
     source: new Uint8Array(),
     secondary: new Uint8Array(),
     secondaryPending: false,
@@ -349,10 +351,7 @@ export class FESStringDriver {
           for (let at = -1; at <= 2; at++) layout.word(layout.abi.flags + at, 1);
           this.saveLayout(target, layout);
         } else {
-          s.nv = textPacket(this.world.profile, 'nv', this.world.configuration).slice(
-            4,
-            4 + nativeABI(this.world.profile).layouts.textCores.nv.configSize,
-          );
+          s.nv = nvConfiguration(this.world.profile, this.world.configuration);
           s.nvFontDefault = true;
         }
         s.dirty = true;

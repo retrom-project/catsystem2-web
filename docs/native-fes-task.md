@@ -109,6 +109,13 @@ owned bytes and fresh restoration are covered without an EXE constructor.
 The FES task's separate message19 conditional-default refresh over saved
 resource-entry types remains an independent phase-7 consumer gap.
 
+FES NV construction and full reset copy the current Settings proportional DWORD
+into both existing embedded text configurations. The field remains in those
+canonical configuration bytes and is copied without Boolean normalization.
+This FES boundary does not change the generic D5 NV packet defaults. A fresh
+World restores the saved value without replaying construction or reset against
+different current Settings.
+
 FES motion admission preserves the original failed-resource return. On a cache
 miss, an absent or zero-length MOT file returns0 before creating a VM or motion
 record. The object snapshot and command effects that precede loading still
