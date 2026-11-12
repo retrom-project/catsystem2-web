@@ -420,7 +420,7 @@ export class NativeRetainedDraw {
       record = this.items.get(id);
     if (!record) return;
     this.items.delete(id);
-    await this.sources.release(record.source, { destroy: record.kind === 2 });
+    await this.sources.release(record.source);
   }
   async removeSurface(draw) {
     for (const [id, record] of [...this.items])

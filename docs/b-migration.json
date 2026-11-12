@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 159, "oracle": 143, "differential": 67 },
+    "counts": { "js": 160, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -136,6 +136,7 @@
         "tests/native-resource-cache.test.mjs",
         "tests/native-resource-contracts.test.mjs",
         "tests/native-resource-search.test.mjs",
+        "tests/native-retained-source-lifetime.test.mjs",
         "tests/native-runtime.test.mjs",
         "tests/native-scalar-math.test.mjs",
         "tests/native-scene-data.test.mjs",
@@ -54632,7 +54633,7 @@
     },
     {
       "file": "src/native/retained-draw.mjs",
-      "sourceSha256": "8e0d94f2d905f64542a38fdd3e3f0ed30f9f4685644ff14f363d2a1e8cad21ea",
+      "sourceSha256": "e7d413faf2453749765c1ec5c94e70923bb2f309179bb1dde685e9a512105ce5",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

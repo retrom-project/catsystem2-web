@@ -108,3 +108,12 @@ draws 24 exact pixels. After restoration it uses the saved handle through
 7A and draws 96 exact pixels. The tests reject a queued resize after
 release and an unrelated allocation at the same address with the same
 size and bytes. See [Browser image tests](../playwright.image.config.mjs).
+
+Removing a retained Draw entry releases exactly its source reference. Slot2
+borrows and retains an existing source, so removing that entry leaves the
+external owner's reference alive. Slots0/1/3 create one source owned by the
+entry; an ordinary release reaches zero and frees its internal aliases.
+Surface removal, rebinding and individual removal use the same ownership rule.
+The two-ABI no-EXE regression covers shared pixels, rebind, new World restore
+and the final owner's release, and verifies that internally created resources
+do not leak.
