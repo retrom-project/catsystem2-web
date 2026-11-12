@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 238, "oracle": 148, "differential": 67 },
+    "counts": { "js": 239, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -244,6 +244,7 @@
         "tests/native-windows-messages.test.mjs",
         "tests/native-windows-version.test.mjs",
         "tests/native-windows-views.test.mjs",
+        "tests/native-xml-bytes.test.mjs",
         "tests/native-xml.test.mjs",
         "tests/native-zlib.test.mjs",
         "tests/oracle-fixtures.test.mjs",
@@ -2406,8 +2407,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 483,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 81, "8": 178, "9": 55 },
+    "runtimeFiles": 484,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 81, "8": 179, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -52876,7 +52877,7 @@
     },
     {
       "file": "src/native/handles.mjs",
-      "sourceSha256": "7b309155962ba3a4fd278844463c26549e5c73d0fce57614c70c50f9841a8f94",
+      "sourceSha256": "3e29785722110a683058e4b78d46af34e1b7b059e4263b3246cde3b4a02cddf1",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56533,8 +56534,21 @@
       "review": "needs-review"
     },
     {
+      "file": "src/native/xml-node.mjs",
+      "sourceSha256": "c50ba5de1682dd1d26749ef59100162b7b81d7626d83ac5df304515c409c97a7",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/xml.mjs",
-      "sourceSha256": "d3c7e2930e63c478f5c003d62a5d16fb9958c8bceeecef76d7f01f9dbc4495ed",
+      "sourceSha256": "e97ac076697ad2062927aa26ea52b5baff4b34bb4af68bab3214f1da390ff7c3",
       "domain": 4,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

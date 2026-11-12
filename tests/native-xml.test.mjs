@@ -19,7 +19,8 @@ function setup(text) {
   const services = {
     handles,
     format: (at, vm) => vm.string(at),
-    read: async () => new TextEncoder().encode('<?xml version="1.0" encoding="UTF-8"?>' + text),
+    xmlEncoding: 'Shift_JIS',
+    read: async () => encodeCP932('<?xml version="1.0" encoding="Shift_JIS"?>' + text),
   };
   m.writeString('config.int/settings.xml', 32);
   return { m, handles, services };

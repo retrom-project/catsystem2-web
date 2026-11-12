@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Serializable opaque handles for browser-owned resource records.
+import { nativeXMLHandleCodec } from './xml-node.mjs';
 export class NativeHandles {
   constructor() {
     this.next = 1;
     this.records = new Map();
     this.codecs = new Map();
+    this.registerType('xml', nativeXMLHandleCodec);
   }
   registerType(type, codec) {
     if (
