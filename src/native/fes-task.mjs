@@ -141,7 +141,7 @@ export function createNativeFESTask(world, record) {
       world.host.nativeFESLoaded?.(record, this.player, world);
       return true;
     },
-    async tick() {
+    async tick(_frame, context = {}) {
       const player = this.player,
         live = () =>
           this.player === player && record.state !== 'releasing' && !player?.root?.runtime?.closed;
@@ -151,11 +151,11 @@ export function createNativeFESTask(world, record) {
       if (!live()) return;
       await player.step();
       if (!live()) return;
-      await this.syncObjects();
+      await this.syncObjects(context);
       if (live() && player.root.finished !== null) record.exitCode = player.root.finished;
     },
-    async syncObjects() {
-      await world.graphics.syncFES(record, this.player);
+    async syncObjects(context = {}) {
+      await world.graphics.syncFES(record, this.player, { executorEntry: context.executorEntry });
       await input.sync();
     },
     snapshot() {
@@ -298,7 +298,7 @@ export function createNativeFESTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 333) {
-        await this.tick();
+        await this.tick(undefined, context);
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 334) {
@@ -338,7 +338,10 @@ export function createNativeFESTask(world, record) {
           index = name === null ? 0 : memory.load(wParam + 32);
         await this.player.notify(memory.string(lParam), name, index);
         if (!input.state.sleeping) {
-          await world.graphics.syncFES(record, this.player, { resourcesOnly: true });
+          await world.graphics.syncFES(record, this.player, {
+            resourcesOnly: true,
+            executorEntry: context.executorEntry,
+          });
           await input.sync();
           await world.graphics.flushFESRedraw(this.player.root);
         }

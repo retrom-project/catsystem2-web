@@ -97,11 +97,19 @@ establish the seed at the first actual EFK Play after other engine consumers.
 Snapshots retain every current state word and diagnostic draw/reseed counter;
 fresh restore neither draws nor reseeds.
 
-These are independent data APIs. They are not registered with World or remaining
-native consumers. That later binding must share one authoritative CRT state with
-the actual logical thread, rather than keep independently advancing JS and guest
-copies. No EFKPLANE runtime capability follows from these modules. Integer tests
-include 20,480 comparisons with an independent BigInt recurrence; local original
+The pure-JS World gateway in `native/dispatch-context.mjs` and `effekseer/world.mjs`
+owns one CRT registry and creates its logical frame executor once. Each gateway
+Play/Update requires a live explicit executor entry; awaits and reentry retain
+that entry, while queued messages use the actual drain executor. Sender task IDs
+never select a stream. The existing `frameSettled` signal is published after the
+frame entry fully exits, so awaiting it preserves the snapshot/close safe point.
+Settled checkpoints store the current CRT words once and restore without replay.
+While a native process exists or is loading, the gateway rejects sampling before
+manager callbacks because the actual native-owner binding remains unverified.
+The kind61 task/factory and FES type36 playback are still unconnected; this gateway
+does not establish EFKPLANE runtime support.
+
+Integer tests include 20,480 comparisons with an independent BigInt recurrence; local original
 oracle evidence separately compares 320 return values and 320 PTD state words.
 That observation uses authored seeds on its synthetic thread, not a real first
 Play or a complete external-caller map.

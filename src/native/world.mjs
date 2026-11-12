@@ -109,6 +109,8 @@ import { NativeSaveSlots } from './save-slots.mjs';
 import { installNativeUnicodeOutput } from './unicode-output.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeSystemClock } from './clock.mjs';
+import { NativeDispatchContext } from './dispatch-context.mjs';
+import { EffekseerWorld, EFFEKSEER_FRAME_EXECUTOR } from '../effekseer/world.mjs';
 
 // The world owns the task graph. A KCS program is attached to a native script
 // task rather than being run until a convenient UI request and discarded.
@@ -144,6 +146,11 @@ export class NativeWorld {
       motionLibrary,
       bootstrapOwner,
       transitionalExe,
+    });
+    this.dispatchContext = new NativeDispatchContext();
+    this.effekseer = new EffekseerWorld({
+      dispatch: this.dispatchContext,
+      hasNativeProcess: () => !!(this.nativeEngine || this.nativeEngineLoading),
     });
     this.stageRenderer = new StageRenderer();
     this.clock = new NativeSystemClock({
@@ -639,6 +646,9 @@ export class NativeWorld {
     }
     return this.nativeFeatureLoading.get(name);
   }
+  withExecutor(executor, operation) {
+    return this.dispatchContext.run(executor, operation);
+  }
   async sendEngine(id, sender, message, wParam = 0, lParam = 0, context = {}) {
     const reply = await this.engineMessages.dispatch(id, sender, message, wParam, lParam, context);
     context.nativeRouted = reply.routed;
@@ -722,13 +732,13 @@ export class NativeWorld {
     this.markConfigurationDirty();
     if (this.nativeEngine) await refreshNativeLanguageMenu(this.nativeEngine);
   }
-  async processWindowMessages() {
+  async processWindowMessages(context = {}) {
     if (this.window.opened) {
       const exit = await runNativeWindowPump(this.nativeEngine, this.window.handle, {
         handles: (message, wParam) =>
           (message === NATIVE_APPLICATION_SERVICES_MESSAGE && this.startupScript !== undefined) ||
           this.window.handlesBrowserMessage(message, wParam),
-        deliver: (message) => this.dispatchWindowMessage(message),
+        deliver: (message) => this.dispatchWindowMessage(message, context),
         stopping: () => this.disposalRequested || this.quitRequested,
       });
       if (exit !== null) this.quitRequested = true;
@@ -737,10 +747,10 @@ export class NativeWorld {
     let processed = 0;
     while (this.windowMessages.length && !this.disposalRequested) {
       if (++processed > 10000) throw new Error('Native window message queue did not settle');
-      await this.dispatchWindowMessage(this.windowMessages.shift());
+      await this.dispatchWindowMessage(this.windowMessages.shift(), context);
     }
   }
-  async dispatchWindowMessage(message) {
+  async dispatchWindowMessage(message, context = {}) {
     if (
       message.message === NATIVE_APPLICATION_SERVICES_MESSAGE &&
       this.startupScript !== undefined
@@ -756,7 +766,7 @@ export class NativeWorld {
       await this.applyNativeLanguage(field, { reloadMainFirst: field === 'main' });
     } else if (message.message === 0x467 && !this.host.nativeWindowMessage)
       throw new Error('Native fullscreen/window mode service is unavailable');
-    await this.host.nativeWindowMessage?.(message, this);
+    await this.host.nativeWindowMessage?.(message, this, context);
   }
   script(record) {
     return createNativeScriptTask(this, record);
@@ -989,31 +999,41 @@ export class NativeWorld {
   }
   async tick() {
     if (this.running || this.frameSettled) throw new Error('Native world frame must be serialized');
-    this.clock.advance(this.configuration.screen.fps);
     let settle;
     this.frameSettled = new Promise((resolve) => {
       settle = resolve;
     });
+    try {
+      return await this.withExecutor(this.effekseer.frameExecutor, (executorEntry) =>
+        this.#tickFrame(executorEntry),
+      );
+    } finally {
+      // frameSettled is the existing checkpoint/close safe point. Publish it
+      // only after the frame executor entry has left, including on rejection.
+      this.frameSettled = null;
+      settle();
+    }
+  }
+  async #tickFrame(executorEntry) {
+    if (this.dispatchContext.executorID(executorEntry) !== EFFEKSEER_FRAME_EXECUTOR)
+      throw new Error('Native frame requires its explicit logical executor');
+    const dispatch = { executorEntry };
+    this.clock.advance(this.configuration.screen.fps);
     this.running = true;
     this.runtime.scheduler.running = true;
     this.frame++;
     this.runtime.scheduler.frame = this.frame;
     try {
-      try {
-        await this.processWindowMessages();
-        if (this.quitRequested || this.disposalRequested) return;
-        await this.movies.settle();
-        await this.objects.tick(this.frame);
-        await this.objects.drawTick(this.frame);
-      } finally {
-        this.runtime.scheduler.running = false;
-        this.running = false;
-      }
-      await this.flushConfiguration();
+      await this.processWindowMessages(dispatch);
+      if (this.quitRequested || this.disposalRequested) return;
+      await this.movies.settle();
+      await this.objects.tick(this.frame, dispatch);
+      await this.objects.drawTick(this.frame, dispatch);
     } finally {
-      this.frameSettled = null;
-      settle();
+      this.runtime.scheduler.running = false;
+      this.running = false;
     }
+    await this.flushConfiguration();
   }
   snapshot() {
     if (this.running || this.frameSettled)
@@ -1023,6 +1043,7 @@ export class NativeWorld {
     return {
       frame: this.frame,
       clock: this.clock.snapshot(),
+      effekseer: this.effekseer.snapshot(),
       root: this.root,
       main: this.main.id,
       menu: [...this.menu],
@@ -1055,6 +1076,7 @@ export class NativeWorld {
     if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
+    this.effekseer.restore(state.effekseer);
     this.clock.restore(state.clock);
     this.calculations.matrix.set(state.calculations.matrix);
     this.tileGame.restore(state.tileGame);
@@ -1121,6 +1143,7 @@ export class NativeWorld {
     if (this.closed) return;
     if (this.running || this.frameSettled)
       throw new Error('Native world close requires a settled frame');
+    this.dispatchContext.assertSettled();
     const errors = [],
       attempt = async (operation) => {
         try {
@@ -1149,6 +1172,8 @@ export class NativeWorld {
       await attempt(async () => (await this.nativeEngineLoading).close());
     await attempt(() => this.graphics.texturePages?.close());
     await attempt(() => this.stageRenderer?.dispose());
+    await attempt(() => this.effekseer.close());
+    await attempt(() => this.dispatchContext.close());
     this.runtime.handles.records.clear();
     this.runtime.scheduler.tasks.clear();
     this.runtime.scheduler.events.length = 0;

@@ -701,6 +701,8 @@ export class NativeEngineMessages {
     return this.upward(parent, packet, context, output);
   }
   async dispatchNative(senderWorldID, targetNativeID, message, w = 0, l = 0, context = {}) {
+    if (context.executorEntry !== undefined)
+      this.world.dispatchContext.executorID(context.executorEntry);
     const origin = this.records.get(senderWorldID);
     if (!origin) throw new Error(`Native message origin ${senderWorldID} is absent`);
     const packet = [
@@ -727,6 +729,8 @@ export class NativeEngineMessages {
     return { routed: !!control, handled: !context.nativeUnhandled, result: output.value };
   }
   async dispatch(target, sender, message, w = 0, l = 0, context = {}) {
+    if (context.executorEntry !== undefined)
+      this.world.dispatchContext.executorID(context.executorEntry);
     const record = this.records.get(target);
     if (!record) {
       context.nativeUnhandled = true;

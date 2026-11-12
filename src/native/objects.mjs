@@ -213,7 +213,7 @@ export class NativeObjects {
   machine(id) {
     return this.objects.get(id)?.implementation?.machine ?? null;
   }
-  async send(id, words, { queued = false } = {}) {
+  async send(id, words, { queued = false, executorEntry } = {}) {
     if (!Array.isArray(words) || words.length !== 4 || words.some((n) => !Number.isInteger(n)))
       throw new Error('Native messages require four integer words');
     const record = this.objects.get(id);
@@ -226,26 +226,29 @@ export class NativeObjects {
       });
       return 1;
     }
-    const reply = await record.implementation.message(words.map((n) => n >>> 0));
+    const reply = await record.implementation.message(
+      words.map((n) => n >>> 0),
+      { executorEntry },
+    );
     if (!Number.isInteger(reply))
       throw new Error(`Task ${id} message ${words[1]} did not return a word`);
     return reply >>> 0;
   }
-  async tick(frame) {
+  async tick(frame, context = {}) {
     const visit = async (record, clock) => {
       if (record.state !== 'active') return;
       clock >>>= 0;
       if (record.implementation.runsBaseLogic === false) {
         // These original vtables replace the Base logic phase entirely.
         if (record.hostDestroyRequested) await this.release(record.id);
-        else await record.implementation.tick?.(clock);
+        else await record.implementation.tick?.(clock, context);
         return;
       }
       if (record.userValue)
         record.pausedFrames = ((record.pausedFrames ?? 0) + clock - (record.lastFrame ?? 0)) >>> 0;
       else record.effectiveFrame = clock;
       record.lastFrame = clock;
-      record.implementation.beforeChildren?.();
+      record.implementation.beforeChildren?.(context);
       // The original walk resolves live signed native route keys.
       await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
       if (!this.objects.has(record.id)) return;
@@ -258,9 +261,12 @@ export class NativeObjects {
       this.queue = this.queue.filter((q) => q.target !== record.id);
       for (const message of queued) {
         if (!this.objects.has(record.id)) break;
-        await this.send(record.id, message.words);
+        // Queued words retain sender provenance only. The current drain
+        // executor, not the enqueue caller, owns this actual execution.
+        await this.send(record.id, message.words, { executorEntry: context.executorEntry });
       }
-      if (this.objects.has(record.id)) await record.implementation.tick?.(record.effectiveFrame);
+      if (this.objects.has(record.id))
+        await record.implementation.tick?.(record.effectiveFrame, context);
     };
     let rootID = -1;
     for (;;) {
@@ -272,7 +278,7 @@ export class NativeObjects {
       await visit(root, frame);
     }
   }
-  async drawTick(frame) {
+  async drawTick(frame, context = {}) {
     // Root manager 5DC470 calls vft+12 after the entire vft+8 logic phase.
     // Base 5DCBE0 writes its current frame even while the task is paused,
     // then walks the live ordered child map before the derived draw phase.
@@ -283,12 +289,12 @@ export class NativeObjects {
         // An original logic stub can leave the task alive after Base marks
         // it. Its inherited draw still runs and updates the native clock.
         if (record.implementation.runsBaseLogic === false)
-          await record.implementation.drawTick?.(record.effectiveFrame);
+          await record.implementation.drawTick?.(record.effectiveFrame, context);
         return;
       }
       await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
       if (this.objects.has(record.id))
-        await record.implementation.drawTick?.(record.effectiveFrame);
+        await record.implementation.drawTick?.(record.effectiveFrame, context);
     };
     let rootID = -1;
     for (;;) {
