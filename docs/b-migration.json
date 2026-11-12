@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 162, "oracle": 143, "differential": 67 },
+    "counts": { "js": 163, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -53,6 +53,7 @@
         "tests/fes-motion-driver.test.mjs",
         "tests/fes-motion-model.test.mjs",
         "tests/fes-object-collection.test.mjs",
+        "tests/fes-particle-driver.test.mjs",
         "tests/fes-plane-driver.test.mjs",
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
@@ -2732,9 +2733,9 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 448,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 59, "8": 164, "9": 55 },
-    "fileNeedsReview": 97,
+    "runtimeFiles": 449,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 60, "8": 164, "9": 55 },
+    "fileNeedsReview": 98,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
@@ -52254,7 +52255,7 @@
     },
     {
       "file": "src/native/fes-object-factory.mjs",
-      "sourceSha256": "12208ee3f490e714ee344836fbea993d5636e245b4b6773035718a9c94c7e327",
+      "sourceSha256": "b68a70af40eeb0f168a0bb0b9601327b68b43b237a386806b9c590f0724c97b0",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52469,6 +52470,27 @@
           "line": 984,
           "method": "getNativeFeature",
           "feature": "data-buffers",
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        }
+      ],
+      "review": "needs-review"
+    },
+    {
+      "file": "src/native/fes-particle-driver.mjs",
+      "sourceSha256": "1059de1ef28251f981c22a65224ba72789d7b62575f0701e0938be9216c87962",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendEngine"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [
+        {
+          "line": 89,
+          "method": "sendEngine",
+          "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }

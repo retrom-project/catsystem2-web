@@ -5,6 +5,8 @@ import { FES_OBJECT_TYPES } from '../fes/types.mjs';
 import { fesObjectFamily } from './fes-common-model.mjs';
 import { initializeFESControl } from './fes-control-model.mjs';
 import { initializeFESLog } from './fes-log-model.mjs';
+import { initializeFESParticle } from './fes-particle-driver.mjs';
+export { initializeFESParticle } from './fes-particle-driver.mjs';
 
 const effects = new Set([7, 8, 26, 27, 30, 31, 32]);
 export function initializeFESPlane(object) {
@@ -53,25 +55,6 @@ export function initializeFESPlane(object) {
       currentCount: 0,
       beforeCount: 0,
     });
-  return object;
-}
-export function initializeFESParticle(object) {
-  Object.assign(object, {
-    particleProgram: '',
-    particleTexture: '',
-    particleCount: 0,
-    pri: 0,
-    particleFamily: 0,
-    particleRegisters: new Float32Array(32),
-    alpha: 255,
-    allocationDirty: false,
-    commonDirty: false,
-    pendingStart: false,
-    pendingStop: false,
-    running: false,
-    attachment: null,
-    attachmentDirty: false,
-  });
   return object;
 }
 
