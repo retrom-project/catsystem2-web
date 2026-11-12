@@ -66,7 +66,7 @@ export class FESResourceEntries {
     }
     return appended;
   }
-  async traverse() {
+  async traverse(context = {}) {
     let at = 0,
       visited = 0,
       cleaned = 0;
@@ -74,7 +74,7 @@ export class FESResourceEntries {
       const entry = this.entries[at],
         object = this.resolve(entry.nameBytes, entry.index);
       if (object) {
-        await this.visit(entry, object);
+        await this.visit(entry, object, context);
         at++;
         visited++;
       } else {

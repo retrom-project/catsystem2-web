@@ -373,7 +373,7 @@ export function createNativeFESTask(world, record) {
       if (message === 342) {
         if (this.sleepValue !== lParam) {
           this.sleepValue = lParam;
-          await world.graphics.setFESSleep(record, this.player, lParam);
+          await world.graphics.setFESSleep(record, this.player, lParam, context);
         }
         context.nativeUnhandled = true;
         return NATIVE_UNWRITTEN_WORD;

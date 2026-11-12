@@ -4,8 +4,9 @@ Phase 7 implements a JS reader, resource owner, independent CPU state algorithms
 and typed geometry builders for legacy SKFE Effects.
 The default registered76 kind61 factory now owns real CPU playback, mounted
 resources and settled task/World checkpoints. Actual task drawing requires the
-unimplemented GPU adapter and reports an explicit error. FES raw type36 remains
-explicitly unsupported; this is not complete EFKPLANE support.
+unimplemented GPU adapter and reports an explicit error. Registered76 default
+FES raw type36 now reaches that CPU task through its normal resource FIFO.
+This is partial EFKPLANE support; actual FES task GPU drawing remains unavailable.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
 
@@ -395,3 +396,51 @@ native/GPU failure observations. No EXE is opened by this CPU path. The existing
 mixed-native CRT guard remains unchanged. Actual D6 registration/display producer,
 default FES36, shared GPU target/state and nonempty rendered-World/2000-particle
 acceptance remain separate required closures.
+
+## Default FES raw36 CPU integration
+
+The typed factory requires the explicitly registered Effekseer capability. A
+plain factory call without a profile, SDK74, or an unregistered ABI cannot enable
+EFKPLANE. This adds no native-table slot or version-name fallback.
+
+Default FESTask333 and337 pass the live executor entry to Coordinator.sync,
+resource traversal/visit and the EFK driver. The entry is borrowed for this
+invocation only: it is absent from semantic objects, FIFO entries, pending
+records and checkpoints. Sender/task IDs do not choose a CRT stream. Existing
+mixed-native and closed/unknown-entry guards still reject sampling.
+
+The raw36 constructor requests its first kind61 child through sizeDirty. Each
+SIZE rebuild sends destruction3 for the previous resource-entry ID, creates a
+new ordinary kind61 child, and publishes the new ID to the existing entry and
+owner before asynchronous FILE work. A rebuild does not re-mark FILE or Play;
+the replacement can therefore remain empty. Normal logic later releases the
+old child, and FES close releases all remaining owned children.
+
+A different FILE stores its CP932 bytes and marks resource pending, using the
+registered C-locale ASCII byte comparison. Case-only equality preserves the
+original stored spelling and successful load; no language substitution is
+added. The bounded256-byte field rejects an unsafe overflow. The FILE getter
+consumes pending before569, and a failed load leaves current Effect NULL while
+old drawsets keep their own load references. The driver then consumes dirty
+position/metadata, base/priority, scale, matrix, color and display in the original
+51,49,66,57,59,47 order. It uses the current common plane state; it emits neither
+ordinary plane vertices nor an extra alpha override.
+
+Both FES play and FES stop set pending value1 and send571. Stop first stops
+motions, then preserves this observed original quirk; it does not become task572.
+The play-pending getter clears before dispatch, including a failed dispatch.
+Repeated Play retains old instances; FILE replacement keeps their old logical
+load/tokens alive. Settled fresh restore revalidates mounted source/texture
+identity and restores current IDs, aliases, matrices, manager state and the
+single CRT word without replaying FILE commands, Play, allocation or RNG.
+
+The default tests exercise actual managers, public authored nonempty Effects,
+the existing PNG decoder and normal World resources. Forced333/337 and sleep
+traversal retain their live caller. The window-queue test uses an explicitly
+authored Host callback forwarding the actual drain entry to FES333; it is not
+evidence that a native window automatically generates333. The independent
+word-only object queue does not accept FESTask's UNWRITTEN return, and no normal
+World publisher of333/337 into that queue was found; its contract is unchanged.
+CPU render-only queries do not update time or RNG. Nonempty actual task draw
+continues to throw the explicit unimplemented-GPU error. These checks complete
+only this CPU/FES slice, not W5 pixels, complete W4 or phase7.

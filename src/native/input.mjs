@@ -232,7 +232,7 @@ export class NativeInput {
       throw new Error('Native input target did not initialize its result word');
     return reply === 0;
   }
-  async hover(x = this.x, y = this.y) {
+  async hover(x = this.x, y = this.y, context) {
     const point = this.virtualPoint(x, y),
       regions = this.ordered();
     let owner =
@@ -248,7 +248,7 @@ export class NativeInput {
       if (!record.enabled || !record.hoverEnabled || !record.active) continue;
       if (record.owner === owner) owner = -1;
       else {
-        await this.send(record, 8, ...point);
+        await this.send(record, 8, ...point, context);
         record.active = 0;
       }
     }
@@ -256,7 +256,7 @@ export class NativeInput {
       const record = this.get(owner);
       if (record && !record.active) {
         record.active = 1;
-        await this.send(record, 7, ...point);
+        await this.send(record, 7, ...point, context);
       }
     }
   }
@@ -340,7 +340,7 @@ export class NativeInput {
     this.dragging = false;
     await this.services.clearKeys?.();
   }
-  async tick(frame) {
+  async tick(frame, context) {
     this.frame = frame >>> 0;
     await this.services.poll?.();
     const sampled = this.services.pointer?.();
@@ -358,7 +358,7 @@ export class NativeInput {
       this.warp.remaining = remaining <= 1 ? 0 : (remaining + this.warp.started - this.frame) | 0;
       if (remaining > 1 && this.warp.remaining <= 0) this.warp.remaining = 1;
       if (oldX || oldY) {
-        await this.hover(x, y);
+        await this.hover(x, y, context);
         if (this.cursorAutoHide && this.cursorEnabled && !this.cursorVisible) {
           this.showCursor(true);
           await this.notifyCursor(true);
@@ -388,7 +388,7 @@ export class NativeInput {
         if (this.cursorAutoHide && this.cursorEnabled && !this.cursorVisible) this.showCursor(true);
       }
     } else {
-      await this.hover(localX, localY);
+      await this.hover(localX, localY, context);
       const moved = localX !== this.previousX || localY !== this.previousY;
       if (!this.forceCursor && moved) this.idleFrames = 0;
       if (

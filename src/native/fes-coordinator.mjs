@@ -26,6 +26,11 @@ import { initializeFESImageFilename, setFESImageSourceFilename } from './fes-ima
 import { FESPanelImages } from './fes-panel-driver.mjs';
 import { initializeFESPanelTail, setFESPanelFile } from './fes-panel-model.mjs';
 import { initializeFESDifTail, setFESDifImageFile } from './fes-dif-image.mjs';
+import {
+  FESEffekseerDriver,
+  setFESEffekseerFile,
+  requestFESEffekseerPlay,
+} from './fes-effekseer-driver.mjs';
 import { FESPlaneDriver } from './fes-plane-driver.mjs';
 import { FESControlDriver } from './fes-control-driver.mjs';
 import { FESStringDriver, initializeFESString, FES_TEXT_VERBS } from './fes-string-driver.mjs';
@@ -102,6 +107,7 @@ export class FESCoordinator {
     const cacheFor = () => cache;
     this.images = world.imagesFES;
     this.planes = world.planesFES;
+    this.effekseer = world.effekseerFES;
     this.controls = world.controlsFES;
     this.particles = world.particlesFES;
     this.strings = world.text.fes;
@@ -181,6 +187,7 @@ export class FESCoordinator {
         world.fesSound.state(instance, object).load(file, crossfade, frames),
       soundLoadParameters: nativeABI(world.profile).sound.fesLoadParameters,
       loadM2: (object, file) => world.m2FES.setFile(object, file),
+      loadEFK: (object, file, bytes) => setFESEffekseerFile(world.profile, object, file, bytes),
       bitmap: (object) => {
         const handle =
           object.nativeType === 25
@@ -198,7 +205,7 @@ export class FESCoordinator {
     this.resources = new FESResourceEntries({
       resolve: (name, index) => this.collection.lookup(name, index),
       allocate: (entry, object) => this.allocateEntry(entry, object),
-      visit: (entry, object) => this.visitEntry(entry, object),
+      visit: (entry, object, context) => this.visitEntry(entry, object, context),
       cleanup: (entry) => this.cleanupEntry(entry),
       validate: (entry, object) => this.validateEntry(entry, object),
     });
@@ -212,6 +219,7 @@ export class FESCoordinator {
   }
   construct(identity) {
     const object = createFESTypedObject(identity, {
+      profile: this.world.profile,
       initializeImage: (object) => {
         initializeFESImage(object);
         initializeFESImageFilename(object, this.world.profile);
@@ -329,6 +337,11 @@ export class FESCoordinator {
       }
       return true;
     }
+    if (type === 36) {
+      if (fields.has('FILE'))
+        setFESEffekseerFile(this.world.profile, object, fields.get('FILE'), record.fileBytes);
+      return true;
+    }
     if (type === 34) {
       if (fields.has('FILE'))
         await this.world.dataFES.loadStringTable(this.instance, object, fields.get('FILE'));
@@ -425,7 +438,7 @@ export class FESCoordinator {
   async initializeResources() {
     await this.resources.appendPending(this.collection);
   }
-  async sync({ restoring = false, resourcesOnly = false } = {}) {
+  async sync({ restoring = false, resourcesOnly = false, executorEntry } = {}) {
     if (restoring) {
       for (const entry of this.resources.entries)
         this.validateEntry(entry, this.collection.lookup(entry.nameBytes, entry.index));
@@ -441,7 +454,7 @@ export class FESCoordinator {
       }
       return;
     }
-    if (resourcesOnly) return this.resources.traverse();
+    if (resourcesOnly) return this.resources.traverse({ executorEntry });
     await this.flushRecords();
     for (const entry of this.resources.entries) {
       const object = this.collection.lookup(entry.nameBytes, entry.index);
@@ -453,7 +466,7 @@ export class FESCoordinator {
       object.displayDelta = 0;
     }
     await this.resources.appendPending(this.collection);
-    await this.resources.traverse();
+    await this.resources.traverse({ executorEntry });
   }
   async allocateEntry(entry, object) {
     const type = object.nativeType;
@@ -491,7 +504,7 @@ export class FESCoordinator {
       await this.effects.model.allocate(effect);
       entry.effectTaskID = effect.taskId;
       entry.effectOwnedBitmaps = effect.ownedBitmaps.slice();
-    } else if (![3, 4, 9, 10, 24, 25, 29, 33, 37, 38].includes(type))
+    } else if (![3, 4, 9, 10, 24, 25, 29, 33, 36, 37, 38].includes(type))
       throw new Error('Unimplemented FES resource allocator raw' + type);
     for (const id of [
       entry.cleanupTaskID,
@@ -501,7 +514,7 @@ export class FESCoordinator {
     ])
       if (id != null) this.ownedTaskIDs.add(id);
   }
-  async visitEntry(entry, object) {
+  async visitEntry(entry, object, context = {}) {
     const { instance, world } = this,
       type = object.nativeType,
       options = { configurationDirty: world.configurationDirty };
@@ -516,6 +529,18 @@ export class FESCoordinator {
       });
       entry.previousTaskID = object.nativeTaskID;
       if (object.nativeTaskID != null) this.ownedTaskIDs.add(object.nativeTaskID);
+    } else if (type === 36) {
+      await this.effekseer.update(instance, object, {
+        ...options,
+        executorEntry: context.executorEntry,
+        previousTaskID: entry.previousTaskID ?? null,
+        bindTask: (id) => {
+          if (this.closed) return false;
+          entry.previousTaskID = id;
+          this.ownedTaskIDs.add(id);
+          return true;
+        },
+      });
     } else if (type === 33) {
       await world.m2FES.update(instance, object, {
         ...options,
@@ -604,6 +629,7 @@ export class FESCoordinator {
   }
   validateEntry(entry, object) {
     if (entry.savedType === 6) validateFESButtonInitialHandle(entry);
+    if (entry.savedType === 36) this.effekseer.validateEntry(this.instance, object, entry);
     if (entry.savedType === 23) this.particles.validateEntry(this.instance, object, entry);
     if (imageEntryTypes.has(entry.savedType))
       this.images.validateEntry(this.instance, object, entry);
@@ -633,6 +659,7 @@ export class FESCoordinator {
   async stopExtra(object) {
     if (soundTypes.has(object.nativeType)) this.world.fesSound.state(this.instance, object).play(0);
     else if (object.nativeType === 23) this.particles.stop(object);
+    else if (object.nativeType === 36) requestFESEffekseerPlay(object);
     else throw new Error('FES stop has no JS task service for raw' + object.nativeType);
   }
   context(args, context) {
@@ -849,7 +876,8 @@ export class FESCoordinator {
       } else if (soundTypes.has(type)) {
         const result = await world.fesSound.command(instance, object, verb, args, context);
         if (typeof result === 'number' && result !== 0) return result;
-      } else if (type === 33 && FES_M2_VERBS.has(verb))
+      } else if (type === 36 && verb === 'play') requestFESEffekseerPlay(object);
+      else if (type === 33 && FES_M2_VERBS.has(verb))
         await world.m2FES.command(instance, object, verb, args, context);
       else if (type === 34 || type === 35) {
         await world.dataFES.command(instance, object, verb, args, context);
@@ -895,7 +923,10 @@ export class FESCoordinator {
           Number(object.disp && !sleeping),
         );
       } else if (this.controls.supports(object)) await this.controls.update(instance, object);
-      else if ([3, 4, 21, 29, 33, 37].includes(object.nativeType) && object.nativeTaskID != null)
+      else if (
+        [3, 4, 21, 29, 33, 36, 37].includes(object.nativeType) &&
+        object.nativeTaskID != null
+      )
         await world.sendEngine(
           object.nativeTaskID,
           instance.runtimeID,
@@ -914,12 +945,12 @@ export class FESCoordinator {
     }
     await instance.player.nativeInput.sync();
   }
-  async setSleeping(value) {
+  async setSleeping(value, context = {}) {
     const sleeping = Boolean(value),
       { instance } = this;
     if (instance.player.nativeInput.state.sleeping === sleeping) return;
     await instance.player.notify(sleeping ? '_FES_SLEEP_' : '_FES_WAKE_');
-    await this.resources.traverse();
+    await this.resources.traverse({ executorEntry: context.executorEntry });
     if (sleeping)
       for (const effect of this.effects.model.entries.values())
         if ([7, 8].includes(effect.type) && effect.taskId)
@@ -1033,6 +1064,9 @@ export function installFESCoordinator(world) {
     snapshotMotion: (instance, object) => instance.runtime.motions.prepare(object),
   });
   world.planesFES = new FESPlaneDriver(world, { cacheFor });
+  world.effekseerFES = new FESEffekseerDriver(world, {
+    metadata: (...args) => world.planesFES.metadata(...args),
+  });
   world.controlsFES = new FESControlDriver(world, { cacheFor, lookup });
   world.particlesFES = new FESParticleDriver(world);
   world.text.fes = new FESStringDriver(world, {

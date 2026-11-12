@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Typed construction is pure: actual World resources are allocated separately.
+import { nativeABI } from './abi/index.mjs';
+import { initializeFESEffekseer } from './fes-effekseer-driver.mjs';
 import { FESObject } from '../fes/object.mjs';
 import { FES_OBJECT_TYPES } from '../fes/types.mjs';
 import { fesObjectFamily } from './fes-common-model.mjs';
@@ -60,7 +62,10 @@ export function initializeFESPlane(object) {
 
 // Existing sound/text/M2 authorities specialize their own tails. The image
 // driver supplies its shared pure initializer rather than a second default set.
-export function createFESTypedObject(identity, { initializeImage, initializeSpecial } = {}) {
+export function createFESTypedObject(
+  identity,
+  { initializeImage, initializeSpecial, profile } = {},
+) {
   const declared = identity.type,
     expected = declared === 'BASE' ? 0 : FES_OBJECT_TYPES[declared],
     raw = declared === 'VIEW' ? 0 : expected;
@@ -68,8 +73,11 @@ export function createFESTypedObject(identity, { initializeImage, initializeSpec
     throw new Error(`Invalid FES declaration/raw type ${declared}/${identity.nativeType}`);
   if (raw === FES_OBJECT_TYPES.NUMIMG)
     throw new Error('FES NUMIMG registers a group but does not construct an object');
-  if (raw === FES_OBJECT_TYPES.EFKPLANE)
-    throw new Error('FES EFKPLANE has no registered JavaScript implementation');
+  if (
+    raw === FES_OBJECT_TYPES.EFKPLANE &&
+    (!profile || !nativeABI(profile).capabilities.effekseerTask)
+  )
+    throw new Error('FES EFKPLANE has no registered JavaScript implementation for this ABI');
   const object = new FESObject(
     declared === 'BASE' ? 'VIEW' : declared,
     identity.baseName,
@@ -84,8 +92,10 @@ export function createFESTypedObject(identity, { initializeImage, initializeSpec
       throw new Error('FES image pure initializer is missing');
     initializeImage(object);
     specialized = [11, 12, 25].includes(raw);
-  } else if (raw === 3 || raw === 4) initializeFESPlane(object);
-  else if (raw >= 13 && raw <= 15) initializeFESControl(object);
+  } else if (raw === 3 || raw === 4 || raw === 36) {
+    initializeFESPlane(object);
+    if (raw === 36) initializeFESEffekseer(object);
+  } else if (raw >= 13 && raw <= 15) initializeFESControl(object);
   else if (raw === 24 || raw === 38) initializeFESLog(object);
   else if (raw === 23) initializeFESParticle(object);
   else if (raw !== 0 && raw !== 34 && raw !== 35 && !effects.has(raw)) specialized = true;

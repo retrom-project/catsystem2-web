@@ -808,6 +808,7 @@ const nonNativeGroups = [
       'fes-resource-commands',
       'fes-image-driver',
       'fes-plane-driver',
+      'fes-effekseer-driver',
       'fes-control-driver',
       'fes-string-driver',
       'fes-log-driver',

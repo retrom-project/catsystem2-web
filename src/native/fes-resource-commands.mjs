@@ -62,7 +62,7 @@ export class FESResourceCommands {
       }
       // Even ignored classes read FILE and ID, once for each live element.
       const source =
-          this.imageFileBytes && imageTypes.has(type) && context.bytes
+          this.imageFileBytes && (imageTypes.has(type) || type === 36) && context.bytes
             ? args[0] === undefined
               ? new Uint8Array()
               : context.bytes(0)
@@ -81,7 +81,7 @@ export class FESResourceCommands {
       } else if (type === 33) this.loadM2(object, file);
       else if (type === 36) {
         if (!this.loadEFK) throw new Error('Unimplemented FES EFKPLANE load');
-        this.loadEFK(object, file);
+        this.loadEFK(object, file, source);
       }
     }
     return 0;

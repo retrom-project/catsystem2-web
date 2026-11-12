@@ -258,8 +258,8 @@ export class NativeGraphics {
   closeFES(record, player) {
     return closeFESGraphics(this, record, player);
   }
-  async setFESSleep(_record, player, value) {
-    if (player?.root) await player.root.runtime.setSleeping(value);
+  async setFESSleep(_record, player, value, context = {}) {
+    if (player?.root) await player.root.runtime.setSleeping(value, context);
   }
   baseImage(instance, object) {
     return setFESBaseImage(this, instance, object);

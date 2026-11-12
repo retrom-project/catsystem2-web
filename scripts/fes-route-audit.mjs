@@ -66,6 +66,7 @@ const indirect = {
   'fes-control-driver': ['sendEngine'],
   'fes-coordinator': ['sendEngine'],
   'fes-effect-driver': ['sendEngine'],
+  'fes-effekseer-driver': ['sendEngine'],
   'fes-image-driver': ['sendEngine'],
   'fes-particle-driver': ['sendEngine'],
   'fes-sound': ['sendNativeEngine'],
@@ -80,6 +81,8 @@ export function reviewFESIndirect(file, site) {
     return 'Only an explicit context.nativePointer sender maps its D8 task pointer to the same JS private bank. Ordinary nativeFES copies carry nativeVariableContextKey directly; source checking enforces the guard.';
   if (name === 'fes-sound')
     return 'The bound Top sound receiver is the World-owned JS NativeSoundTask. Audible host output remains D8; no FES object or sound state is projected.';
+  if (name === 'fes-effekseer-driver')
+    return 'Registered EFKPLANE raw36 owns its default kind61 JS child and sends FILE/transform/play messages with the same explicit live executor. Resources and the real CPU manager are World-owned; actual task GPU drawing remains an explicit unimplemented operation.';
   if (name === 'fes-task')
     return 'JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities.';
   if (name === 'fes')

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 234, "oracle": 148, "differential": 67 },
+    "counts": { "js": 237, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -79,6 +79,9 @@
         "tests/fes-control-driver.test.mjs",
         "tests/fes-cross-family-entry.test.mjs",
         "tests/fes-definitions.test.mjs",
+        "tests/fes-effekseer-caller.test.mjs",
+        "tests/fes-effekseer-default.test.mjs",
+        "tests/fes-effekseer-input-executor.test.mjs",
         "tests/fes-file-list.test.mjs",
         "tests/fes-fontcom-default.test.mjs",
         "tests/fes-image-cache.test.mjs",
@@ -2402,8 +2405,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 482,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 80, "8": 178, "9": 55 },
+    "runtimeFiles": 483,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 81, "8": 178, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -51739,7 +51742,7 @@
     },
     {
       "file": "src/native/fes-common-model.mjs",
-      "sourceSha256": "fcdcb5ba6d060471bc7e3ee81ac77e7c21935b981e7b828ef8cda8b6bde72005",
+      "sourceSha256": "36feac2215271fea88ea2a807d0d1d584695917d9a87488ca1831b6f0ad4e693",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51799,7 +51802,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "710a5023418db83ac314b5eec8ad0411349cd4977d51ac9ba3f04090cc849986",
+      "sourceSha256": "b9d8c0f5b68f8143c934e36068e9580ab04e35b52d79af6d475b6c2d7464f039",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51809,35 +51812,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 405,
+          "line": 418,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 890,
+          "line": 918,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 899,
+          "line": 930,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 907,
+          "line": 938,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 929,
+          "line": 960,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -51861,7 +51864,7 @@
     },
     {
       "file": "src/native/fes-definitions.mjs",
-      "sourceSha256": "60203abe45992a126c5f357537179026e8d7653a0fb15a0ee50d7026bb3de90c",
+      "sourceSha256": "98e650bbac230ceb3c69d3af1f7303e63e283fc00f7c971ebe73892c516b05e8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51917,6 +51920,27 @@
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-effekseer-driver.mjs",
+      "sourceSha256": "4e8b646ff8fe679c33ada4b4fd24f5e968289fd22c26ff079020d13489613dc3",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendEngine"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [
+        {
+          "line": 107,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "traced",
+          "reason": "Registered EFKPLANE raw36 owns its default kind61 JS child and sends FILE/transform/play messages with the same explicit live executor. Resources and the real CPU manager are World-owned; actual task GPU drawing remains an explicit unimplemented operation."
+        }
+      ],
       "review": "counted"
     },
     {
@@ -52170,7 +52194,7 @@
     },
     {
       "file": "src/native/fes-object-factory.mjs",
-      "sourceSha256": "b68a70af40eeb0f168a0bb0b9601327b68b43b237a386806b9c590f0724c97b0",
+      "sourceSha256": "4a8148fd25b9f7435d2db3ac7d604aad24c2543b31867500f63121933c29815f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52269,7 +52293,7 @@
     },
     {
       "file": "src/native/fes-resource-commands.mjs",
-      "sourceSha256": "2027141b87d83f8c774fd7fbab643896bf0ca1b6f4a25e28da29d82912bf3adc",
+      "sourceSha256": "257f9b27efa13a8afdc6ccad5cdbc1c6f6d52a479d97bc9e068deaf4052b7c97",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52282,7 +52306,7 @@
     },
     {
       "file": "src/native/fes-resource-entries.mjs",
-      "sourceSha256": "8b93d6bbf51887889a00023c14300f0ac78f72513a9639205e660cc7f462f298",
+      "sourceSha256": "7bdb3fd8d14863f43f547d966204372c69f67c4ae86002a640244aee8ce8a5d2",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52407,7 +52431,7 @@
     },
     {
       "file": "src/native/fes-task.mjs",
-      "sourceSha256": "2083d410a8e9a5c8c7abee59d99c7a7806c3c99c06d99570a17a2aa2e442ce9d",
+      "sourceSha256": "f5db432f81548190917432dc2f72ddd6a057d591cafa61cc7142b5a22b70b007",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52732,7 +52756,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "642ae6fff672630c3f07c96bf728626a09d19dc011c0bb4a2862761f500e4c9b",
+      "sourceSha256": "8ed96cc67d4f64b44152cf5739be60a2a2ffa1f16bfa05224c1175f4890ce791",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53313,7 +53337,7 @@
     },
     {
       "file": "src/native/input.mjs",
-      "sourceSha256": "43cffacb85dfd36d0dd60ff0b21a04d7092ae2405073b88594864644770a19c5",
+      "sourceSha256": "49e6c745a0196aeb327ee0ebbdf0ff2459eb309245d6afc077e59b8fc035d11f",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56452,7 +56476,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "5ee57b03b5d0651df28932c030da5169d3d977551296062c75052f7328332b87",
+      "sourceSha256": "e0d9c536d20489c0793318a14069a2d80844f887d5e0291c14682433d01aad3d",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58648,6 +58672,7 @@
         "src/native/fes-data.mjs",
         "src/native/fes-definitions.mjs",
         "src/native/fes-effect-driver.mjs",
+        "src/native/fes-effekseer-driver.mjs",
         "src/native/fes-fonts.mjs",
         "src/native/fes-image-control-commands.mjs",
         "src/native/fes-image-driver.mjs",

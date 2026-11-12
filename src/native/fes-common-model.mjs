@@ -7,7 +7,7 @@ import { fesCoordinateParent, fesPositionQuery } from './fes-image-model.mjs';
 const images = new Set([1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25]),
   planes = new Set([3, 4, 21, 29, 33, 36, 37]),
   sizedImages = new Set([1, 2, 6, 11, 12, 22]),
-  sizedPlanes = new Set([3, 4, 21, 29, 37]),
+  sizedPlanes = new Set([3, 4, 21, 29, 36, 37]),
   clippedImages = new Set([1, 2, 6, 11, 12, 22, 25]),
   scratch = new WeakMap(),
   f = Math.fround;

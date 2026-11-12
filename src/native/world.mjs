@@ -504,7 +504,7 @@ export class NativeWorld {
           });
         return result === undefined ? base.message(words, context) : result;
       },
-      tick: (frame) => input.tick(frame),
+      tick: (frame, context) => input.tick(frame, context),
       snapshot: () => input.snapshot(),
       restore: (state) => input.restore(state),
     };
