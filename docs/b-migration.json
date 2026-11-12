@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 163, "oracle": 145, "differential": 67 },
+    "counts": { "js": 163, "oracle": 146, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -318,6 +318,7 @@
         "tests/native-windows-thread-handles.test.mjs",
         "tests/native-windows-tls.test.mjs",
         "tests/native-windows-volume.test.mjs",
+        "tests/native-world-text.test.mjs",
         "tests/native-world.test.mjs",
         "tests/oracle/emote-controllers.test.mjs",
         "tests/oracle/emote-geometry.test.mjs",
@@ -1674,7 +1675,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 139,
+        "line": 143,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1683,16 +1684,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 271,
-        "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/engine-process.mjs",
-        "line": 287,
+        "line": 275,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1702,6 +1694,15 @@
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
         "line": 291,
+        "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
+        "domain": 8,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "exe-layout",
+        "file": "src/native/engine-process.mjs",
+        "line": 295,
         "expression": "NATIVE_ENGINE_IMAGES[options.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1710,7 +1711,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 351,
+        "line": 355,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1719,7 +1720,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 365,
+        "line": 369,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1728,7 +1729,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 537,
+        "line": 541,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2638,6 +2639,13 @@
     "identityChecks": [
       {
         "kind": "identity",
+        "file": "oracle/text-consumer-view.mjs",
+        "line": 8,
+        "expression": "core.profile !== engine.profile",
+        "domain": 8
+      },
+      {
+        "kind": "identity",
         "file": "src/motion/instance.mjs",
         "line": 315,
         "expression": "state.profile !== this.profile",
@@ -2674,7 +2682,7 @@
       {
         "kind": "identity",
         "file": "src/native/engine-process.mjs",
-        "line": 453,
+        "line": 457,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -2735,12 +2743,12 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 451,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 62, "8": 164, "9": 55 },
+    "runtimeFiles": 452,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 62, "8": 165, "9": 55 },
     "fileNeedsReview": 99,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
-    "nonNativeGroups": 29,
+    "nonNativeGroups": 30,
     "executionSites": 318
   },
   "profiles": [
@@ -15282,7 +15290,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15308,7 +15316,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15334,7 +15342,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15360,7 +15368,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15386,7 +15394,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15412,7 +15420,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15438,7 +15446,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15464,7 +15472,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15490,7 +15498,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15516,7 +15524,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -15542,7 +15550,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -16913,7 +16921,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -20293,7 +20301,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -25182,14 +25190,14 @@
         },
         {
           "name": "fes-text-projection",
-          "registration": "src/native/text-task.mjs:575",
+          "registration": "src/native/text-task.mjs:600",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:578",
-          "modules": ["src/native/text.mjs"],
+          "registration": "src/native/text-task.mjs:603",
+          "modules": [],
           "dependencies": []
         }
       ]
@@ -37745,7 +37753,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37771,7 +37779,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37797,7 +37805,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37823,7 +37831,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37849,7 +37857,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37875,7 +37883,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37901,7 +37909,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37927,7 +37935,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37953,7 +37961,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37979,7 +37987,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -38005,7 +38013,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -39376,7 +39384,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -42756,7 +42764,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:594",
+          "registration": "src/native/text-task.mjs:618",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -48427,14 +48435,14 @@
         },
         {
           "name": "fes-text-projection",
-          "registration": "src/native/text-task.mjs:575",
+          "registration": "src/native/text-task.mjs:600",
           "modules": [],
           "dependencies": []
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:578",
-          "modules": ["src/native/text.mjs"],
+          "registration": "src/native/text-task.mjs:603",
+          "modules": [],
           "dependencies": []
         }
       ]
@@ -50768,7 +50776,7 @@
     },
     {
       "file": "src/native/engine-process.mjs",
-      "sourceSha256": "0f1192edb5ed6aa380324c1e7dadddceb1dc26bf9c92ffe1d7e872cdab22476b",
+      "sourceSha256": "eab6774be578c830dbbaaad1e793bcad709d5aceeb728563933d5d79aea2cc8c",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 46, "calls": 8, "references": 2 },
@@ -50784,91 +50792,91 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 178,
+          "line": 182,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 180,
+          "line": 184,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 187,
+          "line": 191,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 189,
+          "line": 193,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 199,
+          "line": 203,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 218,
+          "line": 222,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 250,
+          "line": 254,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 274,
+          "line": 278,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 352,
+          "line": 356,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 364,
+          "line": 368,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 400,
+          "line": 404,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 431,
+          "line": 435,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 538,
+          "line": 542,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -55610,7 +55618,7 @@
     },
     {
       "file": "src/native/text-core.mjs",
-      "sourceSha256": "b7b058214c3bdd7b40d822601921f72c655dbfd8aaf70f850e459d237b92a765",
+      "sourceSha256": "b50130bbf81bcd4136dda902659115995f7fe9a87686b060d00ba6dab86c4c92",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55636,7 +55644,7 @@
     },
     {
       "file": "src/native/text-legacy.mjs",
-      "sourceSha256": "6afa6a68b0350af15c677ab567aa63137aef23879ef283745d3f9f9ae57ae2fa",
+      "sourceSha256": "242d4d17ca070de339571f62143a8305807d6197891a29ec4e882eef39b37085",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55656,13 +55664,6 @@
           "line": 66,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 231,
-          "method": "getNativeFeature",
-          "feature": "text",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
@@ -55771,7 +55772,7 @@
     },
     {
       "file": "src/native/text-task.mjs",
-      "sourceSha256": "3f2d70a6c761b0a52842169b948033875599f46b8e953b1096b2a9f876a8016f",
+      "sourceSha256": "43f9bdcfcb82f1e182893c9f903a038e00f9058c74923cb15921bc0600b235f2",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55785,35 +55786,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 31,
-          "method": "getNativeFeature",
-          "feature": "text",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 271,
+          "line": 296,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 529,
+          "line": 554,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 607,
+          "line": 631,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 656,
+          "line": 680,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -56822,7 +56816,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "7e2efd6a0ec453a0daf50be0673fd4b3478c78bc5827274b3fa2676669dacd4b",
+      "sourceSha256": "36d163b5e79bfd0ca09b8a856de74cfff4e9f231703d4235c50bcc72f98c31a8",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56874,14 +56868,14 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1059,
+          "line": 1061,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1060,
+          "line": 1062,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -58028,6 +58022,19 @@
       "review": "needs-review"
     },
     {
+      "file": "oracle/text-consumer-view.mjs",
+      "sourceSha256": "664171fb44af59d0d6009a3bcb702f59de6c2b9b60ce23e970f3ddc3e4769bc9",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "oracle/fes-text-projection.mjs",
       "sourceSha256": "2dde9d8b219fafc9ec1fc794451b38bc917f860ece42d96b0bf8fca1be681bf4",
       "domain": 7,
@@ -59028,7 +59035,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 178,
+          "line": 182,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59036,7 +59043,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 180,
+          "line": 184,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59044,7 +59051,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 187,
+          "line": 191,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
@@ -59052,7 +59059,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 189,
+          "line": 193,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
@@ -59060,7 +59067,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 199,
+          "line": 203,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
@@ -59068,7 +59075,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 218,
+          "line": 222,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
@@ -59076,7 +59083,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 250,
+          "line": 254,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
@@ -59084,7 +59091,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 274,
+          "line": 278,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
@@ -59092,7 +59099,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 352,
+          "line": 356,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59100,7 +59107,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 364,
+          "line": 368,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -59108,7 +59115,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 400,
+          "line": 404,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -59116,7 +59123,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 431,
+          "line": 435,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -59124,7 +59131,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 538,
+          "line": 542,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -60948,6 +60955,35 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
+      "name": "js-text-to-exe-windows-consumer",
+      "domain": 8,
+      "projection": {
+        "direction": "Borrowed JS text services and process-backed byte inputs at an explicit legacy boundary",
+        "authority": "World owns one text writer/font state and its checkpoint; the consumer view owns only Windows handle state",
+        "fields": [
+          "borrowed writer identities",
+          "GDI/DC/font handles",
+          "explicit native resource byte inputs"
+        ],
+        "consumers": [
+          { "domain": 7, "modules": ["fes-objects", "fes-log"], "removePhase": 7 },
+          {
+            "domain": 8,
+            "modules": ["engine-process", "windows-gdi", "sdk-javascript-task"],
+            "removePhase": 8
+          }
+        ],
+        "lifetime": "Ordinary text and LOG obtain the World core without EXE initialization. The explicit engine view does not snapshot, restore or close JS writers. Its Windows handles remain with the remaining D8 consumer.",
+        "removePhase": 8,
+        "operations": ["borrow", "Windows snapshot", "Windows restore", "close view"]
+      },
+      "entry": "Explicit Windows/GDI consumers borrow the World-owned JavaScript text runtime",
+      "modules": ["oracle/text-consumer-view.mjs"],
+      "executionSites": [],
+      "review": "needs-review",
+      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+    },
+    {
       "name": "js-text-to-exe-fes-consumers",
       "domain": 7,
       "projection": {
@@ -61831,7 +61867,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 178,
+          "line": 182,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61839,7 +61875,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 180,
+          "line": 184,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61847,7 +61883,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 352,
+          "line": 356,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -61855,7 +61891,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 364,
+          "line": 368,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",

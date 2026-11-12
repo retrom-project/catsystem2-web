@@ -2,8 +2,6 @@
 import { dataWorld } from './data-world.mjs';
 import { translation, u32 } from '../helpers.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
-import { JSTextRuntime } from '../../src/native/text-core.mjs';
-import { NativeTextWindows } from '../../src/native/text-windows.mjs';
 import { FESObjectGraph } from '../../src/native/fes-object-graph.mjs';
 import { FESLogModel, initializeFESLog } from '../../src/native/fes-log-model.mjs';
 import { FESLogTextService } from '../../src/native/fes-log-text-service.mjs';
@@ -226,25 +224,10 @@ export async function realFixture(
   saved = null,
   { omitPriority = false, initialBind = true, initialPosition = true } = {},
 ) {
-  const world = await dataWorld(profile, files, { initialize: !saved }),
-    // No process/kernel emulation is used. NativeTextWindows owns the existing
-    // JS glyph facade; any accidental imported Windows call fails explicitly.
-    windows = new NativeTextWindows(null, {
-      glyphs,
-      kernel: {
-        resolve() {
-          throw new Error('Unexpected Windows import');
-        },
-      },
-    }),
-    runtime = new JSTextRuntime({ profile, textWindows: windows }, { world, glyphs });
+  const world = await dataWorld(profile, files, { initialize: !saved, glyphs }),
+    runtime = await world.text.runtime();
   mountCategories(world);
-  await runtime.ready();
-  world.text.runtime = async () => runtime;
-  if (saved) {
-    runtime.restore(saved.text);
-    await world.restore(saved.world);
-  }
+  if (saved) await world.restore(saved.world);
   const objects = saved ? structuredClone(saved.objects) : [],
     graph = new FESObjectGraph({ objects, ...(saved?.graph ?? {}) }),
     instance = {
@@ -368,7 +351,6 @@ export async function realFixture(
     snapshot() {
       return {
         world: world.snapshot(),
-        text: runtime.snapshot(),
         graph: graph.snapshot(),
         objects: structuredClone(objects),
       };
@@ -389,7 +371,6 @@ export async function realFixture(
       if (closed) return;
       closed = true;
       await world.close({ flushFiles: false });
-      await runtime.close();
     },
   };
 }

@@ -463,6 +463,7 @@ for (const [profile, variable] of [
           );
           const saved = {
             engine: first.engine.snapshot(),
+            text: first.text.snapshot(),
             handles: first.runtime.handles.snapshot(),
             objects: first.objects.snapshot(),
             graphics: first.graphics.snapshot(),
@@ -474,6 +475,7 @@ for (const [profile, variable] of [
           second.engine.attachConfiguration(second.configuration);
           for (const [name] of saved.engine.features) await second.getNativeFeature(name);
           second.engine.restore(saved.engine);
+          await second.text.restore(saved.text);
           second.runtime.handles.restore(saved.handles);
           second.graphics.restore(saved.graphics);
           await second.objects.restore(saved.objects);
@@ -839,6 +841,7 @@ async function fixture(profile, bytes, source) {
   world.close = async () => {
     for (const id of [...world.objects.objects.keys()]) await world.objects.release(id);
     await world.engine.close();
+    await world.text.close();
   };
   return world;
 }
@@ -919,6 +922,7 @@ for (const [profile, variable, types] of [
             assert.equal(nativeTextTask.graph.height, 64);
             const state = {
               engine: first.engine.snapshot(),
+              text: first.text.snapshot(),
               graphics: first.graphics.snapshot(),
               handles: first.runtime.handles.snapshot(),
               objects: first.objects.snapshot(),
@@ -939,6 +943,7 @@ for (const [profile, variable, types] of [
             second = await fixture(profile, bytes, source);
             for (const [name] of state.engine.features) await second.getNativeFeature(name);
             second.engine.restore(state.engine);
+            await second.text.restore(state.text);
             second.runtime.handles.restore(state.handles);
             second.graphics.restore(state.graphics);
             await second.objects.restore(state.objects);
@@ -1028,6 +1033,7 @@ for (const [profile, variable] of [
         await advance(first, 1, 3);
         const saved = {
           engine: first.engine.snapshot(),
+          text: first.text.snapshot(),
           graphics: first.graphics.snapshot(),
           handles: first.runtime.handles.snapshot(),
           objects: first.objects.snapshot(),
@@ -1045,6 +1051,7 @@ for (const [profile, variable] of [
         second = await fixture(profile, bytes, '');
         for (const [name] of saved.engine.features) await second.getNativeFeature(name);
         second.engine.restore(saved.engine);
+        await second.text.restore(saved.text);
         second.runtime.handles.restore(saved.handles);
         second.graphics.restore(saved.graphics);
         await second.objects.restore(saved.objects);

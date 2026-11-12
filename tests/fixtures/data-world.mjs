@@ -8,7 +8,7 @@ import { kcsProgram, memoryGame } from '../helpers.mjs';
 export async function dataWorld(
   profile,
   files = {},
-  { initialize = true, storage = { read: async () => null, write: async () => true } } = {},
+  { initialize = true, storage = { read: async () => null, write: async () => true }, glyphs } = {},
 ) {
   const game = memoryGame({
       'case.kcs': kcsProgram([[37, 240], [43, 0x47, 4], [59]]),
@@ -19,7 +19,7 @@ export async function dataWorld(
       profile,
       game,
       random,
-      host: {},
+      host: glyphs ? { nativeTextGlyphs: () => glyphs } : {},
       images: {},
       configuration: new NativeConfiguration({ profile }),
       motionLibrary: new MotionLibrary(game, { profile, random }),

@@ -76,18 +76,18 @@ export class JSTextRuntime {
   async defaultPacket(mode) {
     return textPacket(this.profile, mode, this.world?.configuration);
   }
-  snapshot() {
+  snapshot({ windows = true } = {}) {
     return {
       nextWriter: this.nextWriter,
       writers: [...this.writers.values()].map((w) => w.snapshot()),
-      windows: this.windows.snapshot(),
+      ...(windows ? { windows: this.windows.snapshot() } : {}),
       fonts: this.glyphs.snapshot(),
     };
   }
-  restore(saved) {
+  restore(saved, { windows = true } = {}) {
     this.glyphs.restore(saved.fonts ?? []);
     this.nextWriter = saved.nextWriter;
-    this.windows.restore(saved.windows);
+    if (windows) this.windows.restore(saved.windows);
     this.writers = new Map(
       saved.writers.map((s) => {
         const w = new (s.mode === 'nv' ? JSNVTextWriter : JSTextWriter)(this, s);

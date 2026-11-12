@@ -14,13 +14,11 @@ test('media modules reject direct and address-free EXE execution, including proj
     'runtime.call(target, args);',
     "world['invokeNative']('image.decode');",
     "world.registerNativeFeature('text',async()=>world.getNativeFeature('data-buffers'));",
+    "world.getNativeFeature('text');",
     'const handler=0x6970a0;',
   ])
     assert.throws(() => validateMediaSource(source, 'src/native/text.mjs'), /EXE/);
-  validateMediaSource(
-    "writer.parse(); world.getNativeFeature('text');",
-    'src/native/text-task.mjs',
-  );
+  validateMediaSource('writer.parse(); world.text.runtime();', 'src/native/text-task.mjs');
 });
 test('media inventory cannot hide EXE implementations, unresolved names or unowned projections', () => {
   const names = [

@@ -7,6 +7,8 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime } from './text.mjs';
+import { NativeTextWindows } from './text-windows.mjs';
+import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { NativeFESText, nativeFESTextAdapter } from './fes-text.mjs';
 import { registerNativeFESObjectType } from './fes-objects.mjs';
@@ -22,13 +24,36 @@ import { installNativeFESPlanes } from './fes-planes.mjs';
 import { installNativeFESArea } from './fes-area.mjs';
 
 export class NativeTextService {
-  constructor(world) {
+  constructor(world, { glyphs = new CanvasTextGlyphs() } = {}) {
     this.world = world;
+    const windows = new NativeTextWindows(null, {
+      glyphs,
+      kernel: {
+        resolve() {
+          throw new Error('Text Windows imports require an explicit consumer view');
+        },
+      },
+    });
+    this.core = new NativeTextRuntime(
+      { profile: world.profile, textWindows: windows },
+      { world, glyphs },
+    );
     this.fes = new NativeFESText(this);
     this.log = new NativeFESLog(world);
   }
   async runtime() {
-    return this.world.getNativeFeature('text');
+    await (this.ready ??= this.core.ready());
+    return this.core;
+  }
+  snapshot() {
+    return this.core.snapshot({ windows: false });
+  }
+  async restore(state) {
+    if (state.writers.length || state.fonts.length) await this.runtime();
+    this.core.restore(state, { windows: false });
+  }
+  close() {
+    return this.core.close();
   }
   create(record) {
     const task =
@@ -576,9 +601,8 @@ export function installNativeText(world, { glyphs } = {}) {
     engine.createFESTextProjection(world),
   );
   world.registerNativeFeature('text', async (engine) => {
-    const runtime = new NativeTextRuntime(engine, { world, glyphs });
-    await runtime.ready();
-    return runtime;
+    const core = await world.text.runtime();
+    return engine.createTextConsumerView(core);
   });
   registerNativeFESObjectType(world, 21, (bridge) => nativeFESTextAdapter(bridge, 21));
   registerNativeFESObjectType(world, 29, (bridge) => nativeFESTextAdapter(bridge, 29));
@@ -587,7 +611,7 @@ export function installNativeText(world, { glyphs } = {}) {
     registerNativeFESObjectType(world, 37, (bridge) => nativeFESTextAdapter(bridge, 37));
   if (nativeABI(world.profile).capabilities.utf8Text)
     registerNativeFESObjectType(world, 38, (bridge) => nativeFESLogAdapter(bridge, 38));
-  const service = new NativeTextService(world);
+  const service = new NativeTextService(world, { glyphs });
   world.text = service;
   for (const kind of [48, 49, 63]) world.objects.register(kind, (record) => service.create(record));
   for (const id of NATIVE_TEXT_IDS)

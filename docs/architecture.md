@@ -45,6 +45,13 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
 main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列。FES、CST、运动、
 声音和插件属于这些任务的服务，界面入口和流程由原系统脚本决定。
 
+文字 writer、字体缓存及其生命周期由 `World.text` 中的单一 JavaScript runtime 拥有。
+普通文字任务和 LOG 使用 `world.text.runtime()`，不会为取得文字服务构造 EXE 后端。
+World checkpoint 的 `text` 字段保存并恢复这份状态；任务只保存 writer 身份和自己的图形状态。
+仍需原 Windows/GDI 服务的显式 D8 消费者通过 `text-consumer-view` 借用同一 runtime，
+只在自己的 checkpoint 保存 Windows 句柄，不重复保存、恢复或关闭 writer。
+FES 对象的旧前缀消费在第 7 阶段默认入口迁移完成前仍保留并计入盘点。
+
 原 EXE 的已恢复处理器、解析器、图像/字体代码与 DLL/PPI 共享 PE32 地址空间。
 `NativeEngineProcess` 管理指纹、已审查切点和平台边界。KCS 的数据、栈、共享区和扩展块
 映射到这一进程，避免每次 native 调用复制出相互失联的内存。浏览器拥有的变量、字符串、

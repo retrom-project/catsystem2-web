@@ -1012,6 +1012,7 @@ export class NativeWorld {
       tileGame: this.tileGame.snapshot(),
       sound: this.sound.snapshot(),
       particles: this.particles.snapshot(),
+      text: this.text.snapshot(),
       m2: this.m2?.snapshot() ?? null,
       objects: this.objects.snapshot(),
       configuration: this.configuration.snapshot(),
@@ -1036,6 +1037,7 @@ export class NativeWorld {
     this.calculations.matrix.set(state.calculations.matrix);
     this.tileGame.restore(state.tileGame);
     this.configuration.restore(state.configuration);
+    await this.text.restore(state.text);
     this.globalStrings.restore(state.globalStrings);
     this.soundConfiguration.restore(state.soundConfiguration);
     this.random.restore(state.random);
@@ -1111,6 +1113,7 @@ export class NativeWorld {
       await attempt(() => this.objects.release(id));
     for (const id of [...this.objects.objects.keys()])
       await attempt(() => this.objects.release(id));
+    await attempt(() => this.text.close());
     if (flushFiles) await attempt(() => this.flushConfiguration());
     await attempt(() => this.runtime.services.files.closeAll({ flush: flushFiles }));
     await attempt(() => this.m2?.close({ flushFiles }));

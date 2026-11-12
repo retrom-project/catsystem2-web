@@ -4,6 +4,7 @@ import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-b
 import { NativeBitmapProjection } from '../../oracle/bitmap-projection.mjs';
 import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs';
 import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
+import { NativeTextConsumerView } from '../../oracle/text-consumer-view.mjs';
 import { installNativeRasterKernels } from '../../oracle/raster-kernel-projection.mjs';
 import { NativeFESDrawProjection } from '../../oracle/fes-draw-projection.mjs';
 import { NativePlaneMovieProjection } from '../../oracle/plane-movie-projection.mjs';
@@ -100,6 +101,9 @@ export const NATIVE_ENGINE_IMAGES = Object.freeze({
   }),
 });
 export class NativeEngineProcess {
+  createTextConsumerView(core) {
+    return new NativeTextConsumerView(this, core);
+  }
   createFESTextProjection(world) {
     return new NativeFESTextProjection(this, world);
   }

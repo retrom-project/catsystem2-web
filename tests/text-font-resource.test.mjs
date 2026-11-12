@@ -70,7 +70,7 @@ test('legacy image-font maps fall back to a blank cell when no 32-bit bitmap is 
         glyphMap: new Map([[65, [0, 0, 2, 2]]]),
         world: {
           graphics: { images: { get: () => bitmap } },
-          getNativeFeature: async () => ({ glyphs }),
+          text: { runtime: async () => ({ glyphs }) },
         },
       };
     await NativeLegacyTextTask.prototype.raster.call(task, 1);

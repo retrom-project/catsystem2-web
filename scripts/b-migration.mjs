@@ -104,6 +104,7 @@ function domain(file) {
   if (file === 'oracle/graphics-consumer-projection.mjs') return 7;
   if (file === 'oracle/renderer-consumer-projection.mjs') return 8;
   if (file === 'oracle/plane-movie-projection.mjs') return 8;
+  if (file === 'oracle/text-consumer-view.mjs') return 8;
   if (file === 'oracle/area-geometry-projection.mjs') return 6;
   const name = basename(file);
   if (
@@ -1059,6 +1060,36 @@ const nonNativeGroups = [
         'Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.',
       removePhase: 7,
       operations: ['prepare', 'sync'],
+    },
+  },
+  {
+    name: 'js-text-to-exe-windows-consumer',
+    domain: 8,
+    modules: [],
+    entry: 'Explicit Windows/GDI consumers borrow the World-owned JavaScript text runtime',
+    files: ['oracle/text-consumer-view.mjs'],
+    projection: {
+      direction:
+        'Borrowed JS text services and process-backed byte inputs at an explicit legacy boundary',
+      authority:
+        'World owns one text writer/font state and its checkpoint; the consumer view owns only Windows handle state',
+      fields: [
+        'borrowed writer identities',
+        'GDI/DC/font handles',
+        'explicit native resource byte inputs',
+      ],
+      consumers: [
+        { domain: 7, modules: ['fes-objects', 'fes-log'], removePhase: 7 },
+        {
+          domain: 8,
+          modules: ['engine-process', 'windows-gdi', 'sdk-javascript-task'],
+          removePhase: 8,
+        },
+      ],
+      lifetime:
+        'Ordinary text and LOG obtain the World core without EXE initialization. The explicit engine view does not snapshot, restore or close JS writers. Its Windows handles remain with the remaining D8 consumer.',
+      removePhase: 8,
+      operations: ['borrow', 'Windows snapshot', 'Windows restore', 'close view'],
     },
   },
   {

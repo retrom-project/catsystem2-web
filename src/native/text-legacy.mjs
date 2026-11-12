@@ -228,7 +228,7 @@ export class NativeLegacyTextTask {
     const t = this.text,
       bitmap = this.world.graphics.images.get(this.bitmap),
       pixels = { width: bitmap.width, height: bitmap.height, rgba: await bitmap.pixels() },
-      runtime = await this.world.getNativeFeature('text');
+      runtime = await this.world.text.runtime();
     for (let i = 0; i < Math.min(count >>> 0, t.rows.length); i++) {
       const r = t.rows[i];
       if (!r[0] || r[0] === 65535 || r[9]) continue;

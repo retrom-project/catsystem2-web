@@ -79,6 +79,11 @@ export function validateMediaSource(source, file) {
                     CallExpression(node) {
                       const callee = node.callee,
                         name = callee.computed ? callee.property?.value : callee.property?.name;
+                      if (name === 'getNativeFeature' && node.arguments[0]?.value === 'text')
+                        context.report({
+                          node,
+                          message: 'Media text implicitly constructs an EXE consumer',
+                        });
                       if (name !== 'registerNativeFeature' || node.arguments[0]?.value !== 'text')
                         return;
                       const walk = (n) => {
