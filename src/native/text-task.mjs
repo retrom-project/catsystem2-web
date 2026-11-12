@@ -322,7 +322,7 @@ export class NativeTextTask {
         return 0;
       case 16:
         if (!memory) throw new Error('Native text profile requires sender memory');
-        await writer.profile(w, this.readString(memory, l));
+        await writer.profileEncoded(w, this.readBytes(memory, l));
         return 0;
       case 18:
         if (pointer) {

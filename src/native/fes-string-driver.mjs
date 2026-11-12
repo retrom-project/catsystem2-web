@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Typed FES text orchestration. D5 owns writers, parsing, glyphs and rendering.
 import { nativeABI } from './abi/index.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesSourceBytes, fesNarrowText } from '../fes/tokens.mjs';
 import { NativeFESTextLayout } from './fes-text-layout.mjs';
 import { textConfig, textPacket } from './text-config.mjs';
@@ -316,19 +315,33 @@ export class FESStringDriver {
         break;
       case 'layout':
         if (!args.length) break;
-        args = [context.text ? context.text(0) : fesNarrowText(args[0]), ...args.slice(1)];
+        args = [
+          context.layoutMode ?? (context.text ? context.text(0) : fesNarrowText(args[0])),
+          ...args.slice(1),
+        ];
+        if (layout && (args[0] === 'prof' || args[0] === 'd_prof')) {
+          this.setProfile(
+            target,
+            args[0],
+            value(1),
+            args[2] === undefined
+              ? undefined
+              : context.bytes
+                ? context.bytes(2)
+                : instance.argumentBytes
+                  ? instance.argumentBytes(fesSourceBytes(args[2]))
+                  : fesSourceBytes(args[2]),
+          );
+          break;
+        }
         if (layout) {
-          const before = layout.profiles[args[0]],
-            out = layout.apply(args[0], args.slice(1), evaluate, {
-              font: this.world.configuration?.fields?.font?.name,
-              weight: this.world.configuration?.fields?.font?.weight ? 700 : 400,
-              frame: this.world.configuration?.blocks?.[1]
-                ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)
-                : 0,
-            });
-          if (out.applied && ['d_prof', 'prof'].includes(args[0]) && before) {
-            layout.profiles[args[0]].text = before.text + layout.profiles[args[0]].text;
-          }
+          const out = layout.apply(args[0], args.slice(1), evaluate, {
+            font: this.world.configuration?.fields?.font?.name,
+            weight: this.world.configuration?.fields?.font?.weight ? 700 : 400,
+            frame: this.world.configuration?.blocks?.[1]
+              ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)
+              : 0,
+          });
           if (out.applied && args[0] === 'view') {
             target.width = layout.word(44) | 0;
             target.height = layout.word(45) | 0;
@@ -454,6 +467,13 @@ export class FESStringDriver {
     if (previous) previous[1] = selector;
     else s.fontMap.push([char, selector]);
     s.fontDirty = true;
+  }
+  setProfile(object, mode, index, bytes) {
+    const layout = this.layout(object);
+    if (!layout) return { recognized: true, applied: false };
+    const result = layout.apply(mode, bytes === undefined ? [index] : [index, bytes], Number);
+    this.saveLayout(object, layout);
+    return result;
   }
   setFontSource(object, source) {
     if (source && source.nativeType !== 2)
@@ -665,8 +685,8 @@ export class FESStringDriver {
       for (const kind of ['d_prof', 'prof'])
         if (layout.profiles[kind]) {
           const entry = layout.profiles[kind];
-          if (kind === 'prof') await writer.profile(entry.index, entry.text);
-          else await writer.category(entry.index, encodeCP932(entry.text));
+          if (kind === 'prof') await writer.profileEncoded(entry.index, entry.bytes);
+          else await writer.category(entry.index, entry.bytes);
           delete layout.profiles[kind];
           layoutChanged = true;
         }

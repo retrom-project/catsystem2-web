@@ -3,6 +3,7 @@
 // These records describe layout; glyph rasterization is a separate service.
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesSourceBytes } from '../fes/tokens.mjs';
 
 export const FES_TEXT_LAYOUT_MODES = Object.freeze(
   'view color vcolor acolor vacolor pcolor vpcolor margin move ruby frame font fontind fontind_sub shadow size rsize indent weight d_prof c_prof prof shift shift_sub scrolltype wipewidth fontfix profmode profmode_sub prof_enable prof_enable_sub c_prof_sub prof_sub escape'.split(
@@ -168,9 +169,17 @@ export class NativeFESTextLayout {
         // Missing text reaches an invalid source pointer in the native
         // std::string constructor; it is not an empty profile contract.
         if (args.length < 2) throw new Error(`FES layout ${mode} requires profile text`);
-        const index = abi.profile + (mode === 'prof' ? 2 : 0);
-        this.word(index, p(0));
-        this.profiles[mode] = { index: p(0) >>> 0, text: args.slice(1).join(' ') };
+        const index = abi.profile + (mode === 'prof' ? 2 : 0),
+          category = p(0),
+          source = fesSourceBytes(args[1]),
+          end = source.indexOf(0),
+          input = source.subarray(0, end < 0 ? source.length : end),
+          previous = this.profiles[mode]?.bytes,
+          bytes = new Uint8Array((previous?.length ?? 0) + input.length);
+        if (previous) bytes.set(previous);
+        bytes.set(input, previous?.length ?? 0);
+        this.word(index, category);
+        this.profiles[mode] = { index: category >>> 0, bytes };
         break;
       }
       case 'c_prof': {

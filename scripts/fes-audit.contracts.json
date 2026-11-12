@@ -3026,9 +3026,14 @@
       "names": ["layout"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/layout.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
-      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-text-layout.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-text-service.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/native-text.test.mjs",
+        "tests/fes-text-profiles.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "prof/d_prof preserve one expanded byte parameter, once-only category evaluation, mixed groups/holes, the original STRING/LOG main-child gates and fresh default-World restoration. Other layout text arguments and remaining whole-handler/type coverage are still partial; no complete layout compatibility claim.",
       "signatures": ["[obj] layout [mode] (p1) (p2) ..."]
     },
     {

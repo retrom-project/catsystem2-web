@@ -99,6 +99,20 @@ default World mixed groups, pending D5 clears, canonical LOG child aliases and
 fresh restore are covered. `draw`, `layout` and remaining whole handlers retain
 their separate audit requirements.
 
+The `layout prof` and `layout d_prof` wrappers read the category expression and
+one expanded byte parameter once before visiting their selected group. They skip
+holes and preserve their separate class gates: `d_prof` admits STRING/STRING8;
+`prof` also visits LOG's original main-child subset. NVSTRING remains inapplicable.
+Extra tokens are not joined into the profile parameter. Pending profiles own only
+`{index, bytes}`; repeated commands append those bytes once and keep the last
+category. Checkpoints retain the current pending bytes without expansion replay.
+FES drivers and D5 message16 pass exact bytes to `profileEncoded`, including
+CP932, UTF8 and dual-valid inputs shared across different text classes. The
+existing explicit JavaScript `writer.profile(category, text)` is a Unicode API
+with its writer's encoding; FES does not use it. Direct JavaScript-authored FES
+source/layout strings follow the UTF8 source convention. Other layout text
+arguments and complete whole-handler coverage remain separate phase-7 work.
+
 `verify-native-fes-initialization.mjs` independently runs both original
 allocation functions with authored enumeration and task-factory boundaries.
 It checks 27 game and 24 SDK object types, empty wrappers, the exact eager child

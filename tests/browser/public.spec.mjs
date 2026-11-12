@@ -515,7 +515,7 @@ for (const profile of [sdkProfile, gameProfile])
           encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
           payload = encode('猫'),
           source = encode(
-            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
+            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
           ),
           glyphs = {
             measure: (_font, text) => ({
@@ -629,6 +629,10 @@ for (const profile of [sdkProfile, gameProfile])
             restored: [...restored.nativeTextState.source],
             whitePixels: before.filter((value, index) => index % 4 === 0 && value === 255).length,
             samePixels: before.every((value, index) => value === after[index]),
+            profile: writer.parser.profiles[2].has(type === 'STRING8' ? 0x732b : 0x944c),
+            restoredProfile: (
+              await fresh.graphics.get(restored.nativeTaskID).writer()
+            ).parser.profiles[2].has(type === 'STRING8' ? 0x732b : 0x944c),
             exe: Boolean(world.nativeEngine || fresh.nativeEngine),
           };
         } finally {
@@ -643,6 +647,8 @@ for (const profile of [sdkProfile, gameProfile])
     expect(result.restored).toEqual(result.payload);
     expect(result.whitePixels).toBeGreaterThan(0);
     expect(result.samePixels).toBe(true);
+    expect(result.profile).toBe(true);
+    expect(result.restoredProfile).toBe(true);
     expect(result.exe).toBe(false);
   });
 

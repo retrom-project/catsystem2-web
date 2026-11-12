@@ -372,18 +372,16 @@ export class JSTextWriter {
     }
   }
   async profile(category, text) {
-    const units = nativeTextUnits(
-      this.mode === 'utf8' ? new TextEncoder().encode(text) : new Uint8Array(),
-      this.mode === 'utf8',
-    );
+    if (this.mode === 'utf8') return this.profileEncoded(category, new TextEncoder().encode(text));
+    const { encodeCP932 } = await import('../kcs/strings.mjs');
+    return this.profileEncoded(category, encodeCP932(text));
+  }
+  async profileEncoded(category, bytes) {
+    const units = nativeTextUnits(bytes, this.mode === 'utf8');
     if (category < 5) {
       if (this.mode === 'utf8')
         for (let i = 0; i < units.length; i += 3) this.parser.profiles[category].add(units[i]);
-      else {
-        const { encodeCP932 } = await import('../kcs/strings.mjs');
-        for (const code of nativeTextUnits(encodeCP932(text)))
-          this.parser.profiles[category].add(code);
-      }
+      else for (const code of units) this.parser.profiles[category].add(code);
     }
   }
   async category(category, bytes) {

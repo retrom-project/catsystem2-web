@@ -487,7 +487,7 @@ export class FESLogModel {
       const slot = o.slots[index];
       if (slot.main !== null)
         applied = (await this.service.layout(slot.main, mode, args, evaluate)).applied || applied;
-      if (slot.secondary !== null)
+      if (slot.secondary !== null && mode !== 'prof')
         applied =
           (await this.service.layout(slot.secondary, mode, args, evaluate)).applied || applied;
     }

@@ -119,10 +119,7 @@ export class FESLogTextService {
           ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)
           : 0,
       },
-      before = layout.profiles[mode],
       result = layout.apply(mode, args, evaluate, defaults);
-    if (result.applied && (mode === 'd_prof' || mode === 'prof') && before)
-      layout.profiles[mode].text = before.text + layout.profiles[mode].text;
     s.layout = layout.snapshot();
     return result;
   }

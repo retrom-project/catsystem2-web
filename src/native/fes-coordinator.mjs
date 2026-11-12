@@ -569,6 +569,25 @@ export class FESCoordinator {
         selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
       first = selection.index === -1 ? 0 : selection.index,
       lookup = (index) => collection.lookup(selection.nameBytes, index);
+    if (verb === 'layout' && args.length) {
+      const mode = context.text(0);
+      context.layoutMode = mode;
+      if (mode === 'prof' || mode === 'd_prof') {
+        const index = args[1] === undefined ? 0 : context.argument(1),
+          bytes = args[2] === undefined ? undefined : new Uint8Array(context.bytes(2));
+        for (let at = first; at < count; at++) {
+          const object = lookup(at);
+          if (!object) continue;
+          if (object.nativeType === 21 || object.nativeType === 37)
+            this.strings.setProfile(object, mode, index, bytes);
+          else if (mode === 'prof' && this.logs.supports(object))
+            await this.logs
+              .model(instance, object)
+              .layout(mode, bytes === undefined ? [index] : [index, bytes], Number);
+        }
+        return 0;
+      }
+    }
     if (verb === 'getdiv') {
       let division = 0;
       for (let at = first; at < count; at++) {
