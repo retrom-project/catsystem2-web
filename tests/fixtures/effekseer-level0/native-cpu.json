@@ -1,0 +1,119 @@
+{
+  "license": "CC0-1.0",
+  "scope": "Six authored PNGs and existing native CPU level0 bytes only; no GPU/World or additional native execution evidence",
+  "profile": {
+    "textureCaps": 5,
+    "maxWidth": 4096,
+    "maxHeight": 4096,
+    "maxAspectRatio": 4096,
+    "format": 21,
+    "pool": 1,
+    "usage": 0,
+    "levels": 1
+  },
+  "provenance": {
+    "originalEXESHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+    "frozenInputsSHA256": "fe55f2a2d174ef049fdf02fa9fac7b231b6afe4c965d34ae03ad635585c15c06",
+    "nativeResultSHA256": "09045326115b70deb78f3ed3f2c9e7ae0ec228415627c83ccd9a4e0b96da9cde",
+    "originalCalls": 6,
+    "additionalCalls": 0,
+    "comparison": "Native packed BGRA reordered to straight RGBA only, all bytes exact"
+  },
+  "cases": [
+    {
+      "name": "one",
+      "file": "one.png",
+      "sourceSHA256": "aa9d1a8ffa58e54c62e4789b5116a4fa4f1dab4fa03edc09532935e0c66e016e",
+      "sourceWidth": 1,
+      "sourceHeight": 1,
+      "sourceRGBA": [255, 17, 93, 255],
+      "width": 1,
+      "height": 1,
+      "rgba": [255, 17, 93, 255],
+      "nativeBGRA_SHA256": "91470f5a2c0e22b33e6d76b7080f814811a7d6299e792990df7c43e119d9bfea"
+    },
+    {
+      "name": "pot-opaque",
+      "file": "pot-opaque.png",
+      "sourceSHA256": "42ad41aa25db6c09b620095708a083b9452b1bba62d2134fd7b2dcea520c4ba4",
+      "sourceWidth": 2,
+      "sourceHeight": 2,
+      "sourceRGBA": [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 127, 128, 129, 255],
+      "width": 2,
+      "height": 2,
+      "rgba": [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 127, 128, 129, 255],
+      "nativeBGRA_SHA256": "17db97b35d1904ec32afea1cb8b6300f6c9e742dd71e6f33bd316643e842301f"
+    },
+    {
+      "name": "pot-alpha",
+      "file": "pot-alpha.png",
+      "sourceSHA256": "7c6e1b58247b185a5514ea9b1542203073fa9d158b91f138b149a9a3e8775640",
+      "sourceWidth": 2,
+      "sourceHeight": 2,
+      "sourceRGBA": [255, 64, 32, 0, 0, 255, 127, 127, 127, 0, 255, 128, 32, 64, 255, 255],
+      "width": 2,
+      "height": 2,
+      "rgba": [255, 64, 32, 0, 0, 255, 127, 127, 127, 0, 255, 128, 32, 64, 255, 255],
+      "nativeBGRA_SHA256": "887255f98aac11f69f634ea9892807ad0807eea1dfde0e749d3a4967c63dfa6d"
+    },
+    {
+      "name": "npot-wide",
+      "file": "npot-wide.png",
+      "sourceSHA256": "04196fa6a12a20cde6d7a35be4ff57e0d35dc87061e867a24290ed1ed629346d",
+      "sourceWidth": 3,
+      "sourceHeight": 2,
+      "sourceRGBA": [
+        17, 53, 113, 0, 58, 72, 150, 127, 99, 91, 187, 128, 30, 100, 142, 128, 71, 119, 179, 255,
+        112, 138, 216, 0
+      ],
+      "width": 4,
+      "height": 2,
+      "rgba": [
+        36, 72, 135, 48, 46, 77, 143, 111, 77, 91, 171, 136, 87, 95, 180, 88, 42, 95, 149, 91, 52,
+        100, 157, 175, 83, 115, 186, 152, 93, 119, 195, 50
+      ],
+      "nativeBGRA_SHA256": "8d94d38fcd1f3a6a4cbf49684bbf625c0383b3299470b5bc604bdb1748897ebd"
+    },
+    {
+      "name": "npot-tall",
+      "file": "npot-tall.png",
+      "sourceSHA256": "bf1e639355206436c9752c5d1442f0180147c2fd91881e882d981afd184ab6d7",
+      "sourceWidth": 3,
+      "sourceHeight": 5,
+      "sourceRGBA": [
+        17, 53, 113, 0, 58, 72, 150, 127, 99, 91, 187, 128, 30, 100, 142, 128, 71, 119, 179, 255,
+        112, 138, 216, 0, 43, 147, 171, 0, 84, 166, 208, 127, 125, 185, 245, 128, 56, 194, 200, 128,
+        97, 213, 237, 255, 138, 232, 18, 0, 69, 241, 229, 0, 110, 4, 10, 127, 151, 23, 47, 128
+      ],
+      "width": 4,
+      "height": 8,
+      "rgba": [
+        43, 88, 140, 28, 53, 71, 128, 81, 84, 66, 137, 128, 94, 79, 154, 106, 38, 81, 140, 64, 48,
+        85, 148, 135, 79, 100, 177, 142, 89, 104, 186, 74, 46, 110, 158, 98, 56, 115, 167, 186, 88,
+        129, 195, 155, 97, 134, 204, 44, 54, 140, 176, 53, 64, 144, 185, 119, 95, 158, 213, 137,
+        105, 163, 222, 83, 63, 169, 181, 54, 73, 174, 203, 119, 104, 188, 201, 138, 114, 192, 177,
+        83, 71, 196, 174, 98, 80, 195, 213, 186, 112, 205, 156, 154, 122, 211, 78, 44, 79, 198, 182,
+        64, 89, 142, 149, 135, 120, 103, 82, 142, 130, 131, 68, 74, 74, 168, 177, 28, 84, 88, 102,
+        81, 115, 27, 54, 128, 125, 65, 95, 105
+      ],
+      "nativeBGRA_SHA256": "6684036bb623d783439188ec55716445202467aa6b1e4df083408b9884806f16"
+    },
+    {
+      "name": "npot-row",
+      "file": "npot-row.png",
+      "sourceSHA256": "628040704f3fd1139afa427dab106623a0ccd6880732e22da656505c5df119ec",
+      "sourceWidth": 5,
+      "sourceHeight": 1,
+      "sourceRGBA": [
+        17, 53, 113, 0, 58, 72, 150, 127, 99, 91, 187, 128, 140, 110, 224, 255, 181, 129, 5, 0
+      ],
+      "width": 8,
+      "height": 1,
+      "rgba": [
+        51, 69, 92, 2, 35, 61, 129, 56, 61, 74, 153, 121, 86, 85, 175, 128, 112, 97, 199, 168, 137,
+        109, 209, 228, 163, 121, 101, 112, 148, 113, 29, 3
+      ],
+      "nativeBGRA_SHA256": "912e3398d1b1e187b356bdca33c8ef3329f3c8428c528ae3a0a1ef933ad6e6ec"
+    }
+  ]
+}
