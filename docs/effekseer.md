@@ -444,3 +444,55 @@ World publisher of333/337 into that queue was found; its contract is unchanged.
 CPU render-only queries do not update time or RNG. Nonempty actual task draw
 continues to throw the explicit unimplemented-GPU error. These checks complete
 only this CPU/FES slice, not W5 pixels, complete W4 or phase7.
+
+## D6 callback registration and query gates
+
+The registered kind61 callback now opts into an explicit D6 registration mode
+through the existing `NativeGraphics.customGraph`. Its saved graph owns one
+`registrationEnabled` value. The verified41/42 rectangle,45/46 container and
+custom callback registration paths initialize it to false, independently of
+the model's initial MOT display. A boolean means a verified registration and
+known enable value; null means the registration exists but its current value
+is unknown. Other creators retain an explicit `unverified` value because their
+registration existence has not been established here. Common47/48 can establish
+a value only for a verified registration.47 follows a successful parent lookup;
+a real missing registration retains the previous flag even when the external
+request changes. An unverified parent leaves the child's value unknown, including
+when a lookup failure could have preserved a previous nonzero value.48 combines
+its request with the current external47 request without assuming a parent's
+registration exists. Ordinary messages continue their existing shown/MOT/input
+behavior with unknown metadata. Only the new callback query or eligible draw
+reports an explicit error when it needs either unknown value, before treating
+it as enabled or empty. Neither parent MOT nor parent shown substitutes for the
+registration flag. The ordinary derived drawing flag and vertex path remain
+unchanged. The independent model MOT word is not another callback draw gate.
+Actual FES MOT output already reaches the common display setter, dirty FIFO and
+47 producer; no second motion manager or display authority is added.
+
+D6 actual draw checks registration enable, positive range maximum and the
+existing inclusive-minimum/exclusive-maximum float priority interval. The
+callback itself still checks current Effect and pending reset. Its query
+checks the registered enable and invokes the existing task query without a
+priority condition, drawing or updating. Range selection remains in the shared
+screen compositor; stable priority/insertion order is unchanged. Ordinary plane
+alpha/color, geometric clip and transform are not applied by this callback.
+The current task's eligible actual draw continues to raise its unimplemented
+GPU-adapter error. This gate work does not establish pixel/GPU support.
+
+`NativeScreenEffectRenderer.queryRange` provides only the callback boolean
+subbehavior, visiting enabled callbacks even after a previous positive result.
+Its normal consumer is the no-GPU branch of full-target `captureInto`: a
+positive result still requires a real GPU, while a false result permits the
+existing full-target clear/write. That branch never uses a prior dirty region;
+GPU captures also clear the whole target before drawing the selected range.
+The complete original query's historical dirty-rectangle union and expansion
+to full screen remain unimplemented here. This helper is not a replacement for
+that complete native query or partial invalidation contract.
+
+The ordinary area-effect customGraph caller does not select the callback-query
+mode and retains its previous behavior. Checkpoints keep the current registration
+flag and rebind the callback to the restored graph without Play, RNG or elapsed
+replay. The focused default FES/World cases cover47/48, distinct query/draw range
+gates, current-FILE NULL with retained instances, pending reset, real MOT display
+consumption and true fresh World. Fullscreen dirty history, actual GPU/state
+submission and W5 acceptance remain separate requirements.

@@ -60,13 +60,15 @@ export class NativeScreenEffectRenderer {
     ].sort(compare);
     return {
       items,
-      draw: async (item, gpu) => {
+      draw: async (item, gpu, options = {}) => {
         if (item.drawGPU)
           await item.drawGPU(gpu, {
+            ...options,
             fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
           });
         else
           await this.world.graphics.get(item.p?.nativeTaskWorldID ?? Number(item.n)).drawGPU(gpu, {
+            ...options,
             fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
           });
       },
@@ -112,10 +114,24 @@ export class NativeScreenEffectRenderer {
     gpu.frameOpaqueTarget = gpu.target === gpu.primaryTarget;
     try {
       for (const item of frame.items)
-        if (minimum <= item.priority && item.priority < maximum) await frame.draw(item, gpu);
+        if (minimum <= item.priority && item.priority < maximum)
+          await frame.draw(item, gpu, { minimum, maximum });
     } finally {
       gpu.frameOpaqueTarget = previous;
     }
+  }
+  queryRange(minimum = -Infinity, maximum = Infinity) {
+    let changed = false;
+    for (const item of this.currentFrame().items) {
+      if (!(minimum <= item.priority && item.priority < maximum)) continue;
+      if (item.p?.nativeGraph?.callback) {
+        const task = this.world.graphics.get(item.p.nativeTaskWorldID ?? Number(item.n));
+        if (!task?.queryDraw) throw new Error('Native callback registration lost its query');
+        // Queries visit all enabled callbacks, including after a positive one.
+        changed = Boolean(task.queryDraw()) || changed;
+      } else changed = true;
+    }
+    return changed;
   }
   async prepareModels() {}
   clear(color, depthOnly = false) {
@@ -132,11 +148,7 @@ export class NativeScreenEffectRenderer {
     try {
       await this.prepareModels();
       if (!this.gpu) {
-        if (
-          this.currentFrame().items.some(
-            (item) => minimum <= item.priority && item.priority < maximum,
-          )
-        )
+        if (this.queryRange(minimum, maximum))
           throw new Error('A nonempty screen capture requires its GPU renderer');
         const bytes = new Uint8Array(this.stage.surfaces.get(id).bytes.length);
         for (let at = 0; at < bytes.length; at += 4)

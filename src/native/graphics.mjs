@@ -51,6 +51,11 @@ import { decodePlaneKX2, NativePlaneTrail } from './plane-models.mjs';
 import { readNativeResource } from './resource-file.mjs';
 import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
+// One current registration field: boolean is known, null has a verified record
+// but an unknown enable value, and this tag has unverified record existence.
+const UNVERIFIED_REGISTRATION = 'unverified';
+const hasRegistration = (graph) =>
+  graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
 ]);
@@ -406,14 +411,52 @@ export class NativeGraphics {
     if (!effect) throw new Error('Graph lost its area effect owner');
     return effect.vertices(vertices, triangle);
   }
-  customGraph(record, { width, height, drawGPU }) {
+  customGraph(record, { width, height, drawGPU, queryDraw }) {
     if (!Number.isFinite(width) || !Number.isFinite(height) || typeof drawGPU !== 'function')
       throw new TypeError('Native custom graphics require bounds and a GPU callback');
+    if (queryDraw !== undefined && typeof queryDraw !== 'function')
+      throw new TypeError('Native callback graphics require a synchronous query');
     const plane = this.create(record);
-    plane.makeGraph({ type: 1, width, height, custom: true });
+    plane.makeGraph({
+      type: 1,
+      width,
+      height,
+      custom: true,
+      ...(queryDraw ? { registrationEnabled: false } : {}),
+    });
+    if (queryDraw) {
+      // Callback registration has its own enable word. It is not the model's
+      // MOT display field and never projects ordinary plane vertices.
+      plane.graph.callback = true;
+      Object.defineProperty(plane, 'queryDraw', {
+        configurable: true,
+        value: () => {
+          const graph = plane.graph;
+          if (!graph) return 0;
+          if (typeof graph.registrationEnabled !== 'boolean')
+            throw new Error('Native callback registration is unknown');
+          if (!graph.registrationEnabled) return 0;
+          const result = queryDraw(plane);
+          if (!Number.isInteger(result))
+            throw new TypeError('Native callback query must return a word synchronously');
+          return result;
+        },
+      });
+    }
     Object.defineProperty(plane, 'drawGPU', {
       configurable: true,
-      value: (gpu) => drawGPU(gpu, plane),
+      value: (gpu, options = {}) => {
+        if (queryDraw) {
+          const { minimum = 0, maximum = Infinity } = options,
+            graph = plane.graph,
+            priority = graph && motionVector(graph.kx2, MOTION_ABI.base)[2];
+          if (!graph || !(maximum > 0 && minimum <= priority && priority < maximum)) return 0;
+          if (typeof graph.registrationEnabled !== 'boolean')
+            throw new Error('Native callback registration is unknown');
+          if (!graph.registrationEnabled) return 0;
+        }
+        return drawGPU(gpu, plane);
+      },
     });
     return plane;
   }
@@ -555,6 +598,7 @@ export class NativeGraphicTask {
       ].map((key) => [key, structuredClone(this.state[key])]),
     );
     this.graph = {
+      registrationEnabled: UNVERIFIED_REGISTRATION,
       ...shape,
       style,
       renderOrder: this.graphics.allocateRenderOrder(),
@@ -630,6 +674,7 @@ export class NativeGraphicTask {
         this.state.shapeWords = Array.from({ length: 8 }, (_, i) => load(l + i * 4));
         this.makeGraph({
           type: 1,
+          registrationEnabled: false,
           x: numbers[0],
           y: numbers[1],
           z: numbers[2],
@@ -645,6 +690,7 @@ export class NativeGraphicTask {
         this.state.shapeWords = Array.from({ length: 8 }, (_, i) => load(l + i * 4));
         this.makeGraph({
           type: 2,
+          registrationEnabled: false,
           x: numbers[0],
           y: numbers[1],
           z: numbers[2],
@@ -690,11 +736,25 @@ export class NativeGraphicTask {
         store(l, this.graph?.movie?.mode === id - 87 ? this.graph.movie.pointer : 0);
         return 0;
       case 45:
-        this.makeGraph({ type: 5, width: 0, height: 0, triangles: [], vram: false });
+        this.makeGraph({
+          type: 5,
+          registrationEnabled: false,
+          width: 0,
+          height: 0,
+          triangles: [],
+          vram: false,
+        });
         return 0;
       case 46: {
         const a = Array.from({ length: 10 }, (_, i) => load(l + i * 4));
-        this.makeGraph({ type: 5, width: 0, height: 0, triangles: [], vram: false });
+        this.makeGraph({
+          type: 5,
+          registrationEnabled: false,
+          width: 0,
+          height: 0,
+          triangles: [],
+          vram: false,
+        });
         for (let row = 0; row < (a[9] | 0); row++)
           for (let column = 0; column < (a[8] | 0); column++) {
             const id = await this.world.objects.create({
@@ -745,11 +805,27 @@ export class NativeGraphicTask {
       case 47:
         this.state.renderPaused = !l;
         this.state.shown = Boolean(l);
+        if (hasRegistration(this.graph)) {
+          const parent = this.state.inheritPosition
+            ? this.graphics.get(this.record.parent)?.graph
+            : null;
+          if (!this.state.inheritPosition) this.graph.registrationEnabled = this.state.shown;
+          else if (parent)
+            // An unverified parent may be a failed lookup, so even an external
+            // zero does not establish the result. A real miss retains it.
+            this.graph.registrationEnabled = !hasRegistration(parent)
+              ? null
+              : this.state.shown
+                ? parent.registrationEnabled
+                : false;
+        }
         this.setInputDisplay();
         this.sync();
         return 0;
       case 48:
         this.state.renderPaused = !l;
+        if (hasRegistration(this.graph))
+          this.graph.registrationEnabled = this.state.shown && Boolean(l);
         if (this.graph)
           new DataView(this.graph.kx2.buffer).setInt32(
             MOTION_ABI.display,

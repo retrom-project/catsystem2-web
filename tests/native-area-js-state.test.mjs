@@ -5,6 +5,7 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import { authoredAreaBitmaps, areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   test(
     profile + ' JS area resources, empty receivers and opaque query identity survive fresh restore',
@@ -96,9 +97,30 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         });
         await world.sendEngine(id, world.root, 257);
         await world.tick();
+        const rain = world.objects.objects.get(id).implementation,
+          state = structuredClone(rain.state),
+          random = world.random.snapshot(),
+          calls = [];
+        assert.equal(rain.rainGraph.queryDraw, undefined);
+        assert.equal(rain.rainGraph.graph.callback, undefined);
+        assert.equal(rain.rainGraph.graph.registrationEnabled, 'unverified');
+        await rain.rainGraph.drawGPU(
+          { drawGeometry: (...args) => calls.push(args) },
+          { minimum: 0, maximum: 0 },
+        );
+        assert.equal(calls.length, 1, 'legacy draw has no new D6 range gate');
+        assert.equal(calls[0][0].length, 4);
+        assert.ok(calls[0][0].every((drop) => drop.vertices.length === 2));
+        assert.equal(calls[0][2].context, world.graphics.d3dContext);
+        assert.deepEqual(calls[0][2].lineViewport, [0, 0, world.game.width, world.game.height]);
+        assert.deepEqual(rain.state, state);
+        assert.deepEqual(world.random.snapshot(), random);
         fresh = await dataWorld(profile, {}, { initialize: false });
         await fresh.restore(structuredClone(world.snapshot()));
         assert.equal(fresh.graphics.renderSequence, world.graphics.renderSequence);
+        const restoredRain = fresh.objects.objects.get(id).implementation;
+        assert.equal(restoredRain.rainGraph.queryDraw, undefined);
+        assert.equal(restoredRain.rainGraph.graph.registrationEnabled, 'unverified');
         await fresh.tick();
         await world.tick();
         assert.deepEqual(
@@ -106,6 +128,14 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
           world.objects.objects.get(id).implementation.state,
         );
         assert.deepEqual(fresh.random.snapshot(), world.random.snapshot());
+        if (nativeABI(profile).capabilities.effekseerTask) {
+          const effectID = await world.objects.create({ kind: 61, parent: world.root });
+          assert.equal(
+            world.objects.objects.get(effectID).implementation.plane.graph.registrationEnabled,
+            false,
+            'the registered kind61 query opt-in retains its proven initial value',
+          );
+        }
         await fresh.objects.release(id);
         assert.equal(fresh.graphics.get(id), null);
       } finally {

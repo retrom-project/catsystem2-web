@@ -61,7 +61,8 @@ class EffekseerTask {
     this.plane = this.world.graphics.customGraph(this.record, {
       width,
       height,
-      drawGPU: () => this.drawGPU(),
+      drawGPU: (gpu) => this.drawGPU(gpu),
+      queryDraw: () => this.queryDraw(),
     });
     this.world.effekseer.registerTask(this);
   }
