@@ -95,12 +95,20 @@ export function fesButtonCursorPoint(instance, object) {
   const parent = fesCoordinateParent(instance, object),
     f = Math.fround;
   let x, y;
-  if (!object.buttonLock && (parent?.nativeType === 3 || parent?.nativeType === 4)) {
+  if (parent?.nativeType === 3 || parent?.nativeType === 4) {
     const point = fesPlanePosition(instance, parent),
       px = f(point[0] - f(parent.baseX)),
-      py = f(point[1] - f(parent.baseY));
-    x = truncateFloat32(f(f(f(f(object.imageOriginX) + f(object.x)) - f(object.baseX)) + px));
-    y = truncateFloat32(f(f(f(f(object.imageOriginY) + f(object.y)) - f(object.baseY)) + py));
+      py = f(point[1] - f(parent.baseY)),
+      captured = object.buttonLock ? object.lockedPosition : null;
+    if (object.buttonLock && !captured) throw new Error('FES BUTTON lock has no captured position');
+    const localX = captured
+        ? f(captured[0])
+        : f(f(f(object.imageOriginX) + f(object.x)) - f(object.baseX)),
+      localY = captured
+        ? f(captured[1])
+        : f(f(f(object.imageOriginY) + f(object.y)) - f(object.baseY));
+    x = truncateFloat32(f(localX + px));
+    y = truncateFloat32(f(localY + py));
   } else [x, y] = fesPositionQuery(instance, object, 'image');
   x = (x + (object.auxiliaryWidth | 0)) | 0;
   y = (y + (object.auxiliaryHeight | 0)) | 0;

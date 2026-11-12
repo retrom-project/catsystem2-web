@@ -390,6 +390,12 @@ behavior coverage. Stack liveness is checked after actual awaits before Input138
 and further work; no continuation is saved. Native Input owns cursor warping and
 region activity, rather than direct pointer/Graph assignments in the reader.
 
+The shared cursor-point query adds a direct PLANE/CPLANE parent's current pos2
+minus its local base even when the BUTTON is locked. In that branch the local
+term is the captured XY, with the original float32 addition before truncation.
+This parent offset does not depend on the separate PL reference/property gate.
+The image getpos2 query and retained image driver keep their distinct formulas.
+
 The ordinary direction caller also restores its initial selection. Only an
 absent current map object triggers another actual Top Input125 query into two
 initially zero words, followed by the resource FIFO mouse-hit helper. This query

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 237, "oracle": 148, "differential": 67 },
+    "counts": { "js": 238, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -71,6 +71,7 @@
         "tests/fes-bitmap.test.mjs",
         "tests/fes-boundary.test.mjs",
         "tests/fes-button-attach-default.test.mjs",
+        "tests/fes-button-cursor-point.test.mjs",
         "tests/fes-common-commands.test.mjs",
         "tests/fes-common-model.test.mjs",
         "tests/fes-configuration-image.test.mjs",
@@ -51716,7 +51717,7 @@
     },
     {
       "file": "src/native/fes-button-navigation.mjs",
-      "sourceSha256": "464b18fa9351380bef80676ec2697eae0367e8c935b73beb24df7eaf25905997",
+      "sourceSha256": "be8b4bbe1be416d4ac8a784097960eda5ae8dba4b609cf9523b2a2944d2fe4ba",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
