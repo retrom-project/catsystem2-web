@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 232, "oracle": 148, "differential": 67 },
+    "counts": { "js": 233, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -222,6 +222,7 @@
         "tests/native-sparse-bytes.test.mjs",
         "tests/native-sse.test.mjs",
         "tests/native-standard.test.mjs",
+        "tests/native-startup-blowfish.test.mjs",
         "tests/native-string-bank.test.mjs",
         "tests/native-table-registration.test.mjs",
         "tests/native-token.test.mjs",
@@ -2400,8 +2401,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 481,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 80, "8": 177, "9": 55 },
+    "runtimeFiles": 482,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 80, "8": 178, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -54929,6 +54930,19 @@
       "file": "src/native/standard.mjs",
       "sourceSha256": "b28d6386785453c16574b8835155eb2d36971db35b89c5b10d00adec81ee97c8",
       "domain": 3,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/startup-blowfish.mjs",
+      "sourceSha256": "2c4fc700d243320e7a31c878a4fbb40a74e3634336586591462eba0934d9fdf5",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],

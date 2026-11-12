@@ -1,0 +1,28 @@
+Startup Blowfish primitive and mathematical data
+
+The project-written JavaScript implementation is under MPL-2.0; see LICENSE.
+The Blowfish algorithm was designed by Bruce Schneier. His original paper
+places the algorithm in the public domain and permits use by anyone:
+https://www.schneier.com/academic/archives/1994/09/description_of_a_new.html
+The designer's official algorithm/source page also states free use:
+https://www.schneier.com/academic/blowfish/
+
+The mathematical pi initialization values are from the official constant data:
+https://www.schneier.com/wp-content/uploads/2015/12/constants-2.txt
+That file credits Mike Schaudies for arranging the pi values. The numeric data
+is retained with that attribution; it was not copied from a game binary.
+
+Published numerical known answers (credited to Eric Young) are from:
+https://www.schneier.com/wp-content/uploads/2015/12/vectors-2.txt
+They are factual cipher inputs/outputs; no surrounding article prose is copied.
+New synthetic inputs and factual outputs in the test fixture are project
+authored under MPL-2.0. Their independent reference used the designer's C:
+https://www.schneier.com/wp-content/uploads/2015/12/bfsh-sch.zip
+The reference was used only to produce local expected data. Its source is not
+included or translated into this distribution, and normal tests do not compile
+or require it. No Paul Kocher/SSLeay/OpenSSL implementation is included.
+
+The startup-specific effective-key domain and LE32 resource carrier are a
+separate compatibility contract. The original paper's normal maximum key
+length does not replace that proved caller behavior. No SDK/startup consumer
+is enabled by this primitive alone.

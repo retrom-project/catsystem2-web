@@ -113,3 +113,12 @@ in `licenses/effekseer-samples-CC0.txt` and each artifact has source and SHA-256
 in the adjacent manifest. Existing authored effect fixtures use this project’s MPL-2.0 license. The new
 normal GPU profile input/output golden and measured UNORM data are CC0-1.0.
 These fixtures contain no private game data and are excluded from the player build.
+
+The startup Blowfish primitive is this project's MPL-2.0 implementation of
+Bruce Schneier's published algorithm. Its mathematical pi initialization data
+comes from the designer's official constants page. The designer places the
+algorithm in the public domain. Official known-answer data and newly authored
+independent-reference results accompany its tests. Sources, exact data hashes
+and scope are recorded in `licenses/startup-blowfish.txt` and
+`tests/fixtures/startup-blowfish/README.md`. No original game data, key file,
+native cipher code or independent C reference source is included.
