@@ -19,6 +19,14 @@ GPU backend; World and EFK tasks do not yet mount them. See
 The 21 packet tests include six public-source matrix comparison groups and three
 observed D3DCOLOR normalization boundaries; they do not establish task drawing.
 
+`ring-current-state.mjs` owns the complete persistent 16-word Ring matrix for
+one renderer. It initializes once to identity, replaces only the 12 Matrix43
+components on a submitted single Ring, and snapshots/restores the current words
+without replay. The geometry builder's single-Ring zero-submission path retains
+its zero reservation and skips the immediate End flush and matrix read. A future
+task-owned shared batch must still preserve that reservation until its normal
+flush; this independent correction does not mount the cache or batch in World.
+
 `src/effekseer/effect-reader.mjs` adapts the structures from official Effekseer
 1.23, commit `5239bb1e416cbf55b4d3c8170594cbdc7815f263`. Its implemented layouts
 cover legacy versions 0–9: UTF-16 dependency paths, common generation/lifetime

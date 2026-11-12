@@ -414,12 +414,11 @@ export class SpriteRingGeometry {
   }
   endNode() {
     if (!this.open) fail('endNode', 'no active node');
-    const deferred = this.kind === 'ring' && this.count === 1;
-    if (deferred && !this.deferredReady)
-      fail(
-        'ring.deferred-matrix-unset',
-        'single-instance node never supplied its current transform; original stale matrix path is unverified',
-      );
+    const singleRing = this.kind === 'ring' && this.count === 1,
+      deferred = singleRing && this.deferredReady;
+    // Original76 End only submits when both its reservation and sprite count
+    // are present. A zero-submission reservation remains in the shared batch;
+    // it neither reads the persistent Ring matrix nor forces an End flush.
     const out = this.mesh;
     out.kind = this.kind;
     out.vertexCount = this.reserved;
@@ -431,7 +430,7 @@ export class SpriteRingGeometry {
     out.submittedInstanceCount = this.submitted;
     out.coordinateSpace = deferred ? 'local' : 'world';
     out.deferredMatrix43 = deferred ? this.deferredStorage : null;
-    out.flushBefore = deferred;
+    out.flushBefore = singleRing;
     out.flushAfter = deferred;
     this.open = false;
     return out;

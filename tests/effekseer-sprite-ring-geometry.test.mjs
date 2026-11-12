@@ -357,11 +357,26 @@ test('no internal random call and no input mutation', 'lifecycle-unit', () => {
   }
   assert.equal(JSON.stringify(input), saved);
 });
-test('single Ring without a current matrix is a concrete pending error', 'error-boundary', () => {
-  const b = new SpriteRingGeometry();
-  b.beginNode('ring', 1, { billboard: 2, vertexCount: 3 });
-  assert.throws(() => b.endNode(), error('ring.deferred-matrix-unset'));
-});
+test(
+  'single Ring with no submissions retains its zero reservation without an End flush',
+  'lifecycle-unit',
+  () => {
+    const b = new SpriteRingGeometry();
+    b.beginNode('ring', 1, { billboard: 2, vertexCount: 3 });
+    const mesh = b.endNode();
+    assert.equal(mesh.vertexCount, 24);
+    assert.equal(mesh.indexCount, 36);
+    assert.equal(mesh.submittedInstanceCount, 0);
+    assert.equal(mesh.completedQuadCount, 0);
+    assert.equal(mesh.coordinateSpace, 'world');
+    assert.equal(mesh.deferredMatrix43, null);
+    assert.equal(mesh.flushBefore, true);
+    assert.equal(mesh.flushAfter, false);
+    assert.ok(mesh.positions.subarray(0, 72).every((value) => value === 0));
+    assert.ok(mesh.uv.subarray(0, 48).every((value) => value === 0));
+    assert.ok(mesh.colors.subarray(0, 96).every((value) => value === 0));
+  },
+);
 test('zero ring division is rejected explicitly', 'error-boundary', () => {
   assert.throws(
     () => new SpriteRingGeometry().beginNode('ring', 1, { billboard: 2, vertexCount: 0 }),

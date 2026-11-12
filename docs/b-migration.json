@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 199, "oracle": 148, "differential": 67 },
+    "counts": { "js": 200, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -44,6 +44,7 @@
         "tests/effekseer-render-state.test.mjs",
         "tests/effekseer-resources.test.mjs",
         "tests/effekseer-ribbon-track-geometry.test.mjs",
+        "tests/effekseer-ring-current-state.test.mjs",
         "tests/effekseer-sprite-ring-geometry.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
@@ -2367,8 +2368,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 459,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 65, "8": 170, "9": 55 },
+    "runtimeFiles": 460,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 66, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48604,6 +48605,19 @@
       "review": "counted"
     },
     {
+      "file": "src/effekseer/ring-current-state.mjs",
+      "sourceSha256": "6f366c7cd739b07d3b23e7309c15fffc366e0d928a38f07c9996eda1b0481512",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/effekseer/shared-device-view.mjs",
       "sourceSha256": "e80c48c6abe0f4cfe69810efe7b6c5713315496ece13aaa60845cead572032ab",
       "domain": 7,
@@ -48618,7 +48632,7 @@
     },
     {
       "file": "src/effekseer/sprite-ring-geometry.mjs",
-      "sourceSha256": "d9c69aa2ce2b8d4d4b6dd76878f843ab51c76c3ab2c1c004bd21d9a098029034",
+      "sourceSha256": "272eb0e0679de70888438ce42cd616b98f78a7d24886bc64c594a32ef566edac",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
