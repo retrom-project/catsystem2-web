@@ -432,6 +432,32 @@ control changed result keeps its separate behavior above. Actual125 and pixels
 awaits preserve the same player/root/runtime/owner checks: close cancels further
 writes and routing, including in-flight rejection, while live failures propagate.
 
-This bounded leaf does not complete the NULL/resetactive private branch,
-automove/react, other keyboard/input frontends or the raw23 attachment protocol.
-The direct JS-source input API retains its separate path.
+The frozen normal `resetactive` frontend reads no operands and enqueues the
+existing active-reference operation with a NULL payload, then returns0. Extra
+operands therefore cause no parameter-getter, bank/SCRIPT or numeric side effects,
+and this return does not itself flush the queue. Game uses private record11 and
+SDK14; these remain semantic queue operations rather than raw Task messages.
+
+The NULL consumer shares setact's mouse refresh and old-name Input93/UNFOCUS
+order above. It then clears the single active reference, including its implicit
+zero index, and sends actual Top Input canonical145, w0/l1/flags1. This is SDK
+raw143. The already-owned Input service clears region activity, sets its previous
+XY cache to-1 and forces cursor processing. A non-NULL empty name/index7 instead
+copies that exact pair and sends neither a new-name93/FOCUS nor145; it remains
+distinct through a fresh checkpoint. Noact/default state is unaffected. Repeated
+NULL records still execute145, with no deduplication or new lookup/type/enable
+gate. Already issued145 effects survive an owner-close cancellation; pending
+work after a real UNFOCUS Host wait or145 await stops under the existing same-
+player/root/runtime/owner checks. Live errors still propagate.
+
+A separate ordinary notification entering while a config_open Host wait owns a
+platform drain currently exposes shared nativeQueuePending reentrancy. Its real
+JS reproduction is retained as a separate unresolved boundary; these NULL caller
+and typed object-frontend cancellation tests do not complete that concurrency
+domain. The resetactive registry row remains partial. The recorded manual
+signature text `reset_frame` is preserved as a manual/frozen mismatch, without
+adding a new alias.
+
+This bounded leaf does not complete automove/react, other keyboard/input frontends
+or the raw23 attachment protocol. The direct JS-source input API retains its
+separate path.

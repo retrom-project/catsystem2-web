@@ -368,6 +368,10 @@ export class FESCoordinator {
         bitmap: object ? this.images.currentBitmap(object) : 0,
       });
   }
+  resetActive() {
+    this.pendingRecords.push({ operation: 'active-reference', reference: null });
+    return 0;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();

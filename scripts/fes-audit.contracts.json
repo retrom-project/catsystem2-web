@@ -1904,11 +1904,11 @@
       "id": "fes.reference.cn.resetactive",
       "domain": "fes-command",
       "names": ["resetactive"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/resetactive.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "evidence": ["tests/fes-input-resetactive-default.test.mjs"],
+      "note": "Frozen SDK74/Game76 default normal resetactive queues a NULL active-reference record, ignores operands, and uses the existing mouse/UNFOCUS/clear/Input145 consumer with fresh/close coverage. Concurrent notification during a Host-owned platform drain remains unresolved. Recorded manual signature reset_frame is retained as a manual/frozen mismatch; no alias is added.",
       "signatures": ["reset_frame"]
     },
     {

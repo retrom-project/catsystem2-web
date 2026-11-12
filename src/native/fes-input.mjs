@@ -290,7 +290,9 @@ export class FESInput {
         if (!live()) return;
       }
       this.state.focus = reference;
-      if (reference.nameBytes.length) {
+      if (reference === null) {
+        await this.world.engineMessages.dispatch(inputID, this.record.id, 145, 0, 1, { flags: 1 });
+      } else if (reference.nameBytes.length) {
         await input(1);
         if (!live()) return;
         await event(reference, 'FOCUS');
