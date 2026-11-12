@@ -4,6 +4,7 @@ import { Binary } from './binary.mjs';
 import { encodeCP932 } from './kcs/strings.mjs';
 
 const decoder = new TextDecoder('shift_jis');
+const variantOwners = new WeakMap();
 const foldASCII = (s) =>
   Array.from(encodeCP932(s), (b) => (b >= 65 && b <= 90 ? b + 32 : b)).join(',');
 
@@ -54,6 +55,13 @@ export function readCGList(bytes) {
           cstring(b, at + 72 + i * variantWidth, variantWidth),
         ),
       };
+      // Offsets refer to the same original listBytes retained by GalleryLibrary.
+      // Store no second filename-byte list.
+      group.variantRecords = Array.from({ length: variants }, (_, i) => {
+        const relative = at + 72 + i * variantWidth,
+          length = b.range(relative, variantWidth).indexOf(0);
+        return { offset: relative + (variantWidth === 256 ? 4 : 0), length };
+      });
       section.groups.push(group);
       groups.push(group);
       // The native flat counter advances on a nonzero next-group link, even at
@@ -212,6 +220,50 @@ export class CGGallery {
     const variants = this.group(block, section)?.variants ?? [];
     return seenOnly ? variants.filter((s) => this.registry.hasReference(s, true)) : variants;
   }
+  selectVariant(block, variant, section = 0, seenOnly = false) {
+    const group = this.group(block, section);
+    if (!group) return null;
+    let index = variant >>> 0;
+    if (seenOnly) {
+      const indices = [];
+      for (let at = 0; at < group.variants.length; at++)
+        if (this.registry.hasReference(group.variants[at], true)) indices.push(at);
+      index = indices[index];
+    }
+    if (index === undefined || index >= group.variants.length) return null;
+    const selected = Object.freeze({ group, index });
+    variantOwners.set(selected, { gallery: this, list: this.list });
+    return selected;
+  }
+  variantBytes(selection) {
+    const owner = variantOwners.get(selection),
+      { group, index } = selection;
+    if (
+      owner?.gallery !== this ||
+      owner.list !== this.list ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= group.variants.length
+    )
+      throw new TypeError('CG variant bytes require a selected variant from this list');
+    // Explicit JS-authored gallery lists keep their existing Unicode -> CP932 API.
+    if (!group.variantRecords) return encodeCP932(group.variants[index]);
+    const record = group.variantRecords[index],
+      bytes = this.listBytes;
+    if (
+      !(bytes instanceof Uint8Array) ||
+      !record ||
+      !Number.isSafeInteger(record.offset) ||
+      !Number.isSafeInteger(record.length) ||
+      record.offset < 0 ||
+      record.length < 0 ||
+      record.length >= this.list.variantWidth ||
+      record.offset + record.length >= bytes.length ||
+      bytes[record.offset + record.length] !== 0
+    )
+      throw new Error('CG selected variant has no matching parsed list-byte span');
+    return new Uint8Array(bytes.subarray(record.offset, record.offset + record.length));
+  }
   seen(block, section = 0) {
     return this.variants(block, section, true).length > 0;
   }
@@ -230,13 +282,13 @@ export class CGGallery {
       registry: this.registry.write(),
       storage: structuredClone(this.storage),
       // Retained resource input for the explicit original gallery consumer.
-      listBytes: this.listBytes?.slice(),
+      listBytes: this.listBytes ? new Uint8Array(this.listBytes) : undefined,
     };
   }
   static restore(state) {
     const gallery = new CGGallery(structuredClone(state.list), new CGRegistry(state.registry));
     gallery.storage = structuredClone(state.storage);
-    gallery.listBytes = state.listBytes?.slice();
+    gallery.listBytes = state.listBytes ? new Uint8Array(state.listBytes) : undefined;
     return gallery;
   }
 }
@@ -249,7 +301,8 @@ export class GalleryLibrary {
   }
   async open(file, entry, listFile) {
     const registry = new CGRegistry(await this.readEntry(file, entry));
-    const bytes = await this.read(listFile);
+    const source = await this.read(listFile),
+      bytes = source ? new Uint8Array(source) : source;
     if (!bytes?.length) this.diagnostic?.({ resource: listFile, error: 'CG list was not found' });
     const gallery = new CGGallery(bytes?.length ? readCGList(bytes) : null, registry);
     gallery.listBytes = bytes;

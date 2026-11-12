@@ -18,13 +18,14 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 207, "oracle": 148, "differential": 67 },
+    "counts": { "js": 208, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
         "tests/b-migration.test.mjs",
         "tests/bicubic-kernel.test.mjs",
         "tests/calculation-boundary.test.mjs",
+        "tests/cgl-filename-bytes.test.mjs",
         "tests/check-no-exe-addresses.test.mjs",
         "tests/checkpoint-portable.test.mjs",
         "tests/control-render.test.mjs",
@@ -49354,7 +49355,7 @@
     },
     {
       "file": "src/gallery.mjs",
-      "sourceSha256": "4719478c9e89ac4d74069488214bcebef223673311f27890e3127c57d9dd5d88",
+      "sourceSha256": "dfe433e586e0cfff96feba258bfa48ee37dd13192b4dae591c57c189856e39f7",
       "domain": 4,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51642,7 +51643,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "d2311b20ef641de9864271c67ab38ae1748a7cdbf4b66b55a732e3baea6e3e6f",
+      "sourceSha256": "e93b3065f8611169ae822ba6688972f2723807e19912204355785a592d44efd7",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52099,7 +52100,7 @@
     },
     {
       "file": "src/native/fes-resource-commands.mjs",
-      "sourceSha256": "991f9fc8ef629fcb38017b76ed9d42bfb0c7933f589539ed76f9aa5d3cb90d20",
+      "sourceSha256": "66a6479aabe29692134574e458d022df7316d4a91080717919adc3aef223367e",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -104,9 +104,13 @@ export class FESResourceCommands {
       block = /^[$0-9]/.test(group)
         ? evaluate(mode.numericSource === 'group' ? group : scratch)
         : group,
-      selected = gallery.variants(block, section, mode.seenOnly)[variant >>> 0];
-    if (selected !== undefined && imageTypes.has(object.nativeType)) {
-      this.setImageFile(object, selected);
+      selected = gallery.selectVariant(block, variant, section, mode.seenOnly);
+    if (selected !== null && imageTypes.has(object.nativeType)) {
+      this.setImageFile(
+        object,
+        selected.group.variants[selected.index],
+        gallery.variantBytes(selected),
+      );
       setFESImageID(object, section);
     }
     return 0;

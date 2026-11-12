@@ -7,6 +7,18 @@ call a menu selected by a game filename. The complete original task handler is
 still being audited; this document distinguishes the implemented message
 contracts from the remaining controls and parser work.
 
+CGL-backed `loadlist` and `loadlist2` keep the original selected filename bytes.
+The parser records each variant CString offset and length into the same owned
+`CGGallery.listBytes` resource already retained for its explicit original
+consumer. Selection runs once; a separate query copies only that selected span
+into an owned plain `Uint8Array`. CP932 aliases that decode to the same string
+remain distinct at this boundary. Snapshots retain that single list-byte
+authority and numeric span metadata; fresh restoration neither reopens the CGL
+nor repeats selection. Explicit JavaScript-authored gallery strings retain their
+existing CP932 encoding boundary. This leaf supplies bytes to the normal image
+setter; Game image SOURCE/CURRENT and configuration-event consumption belong to
+their separate closure.
+
 The reviewed task handlers are game `62C480` and SDK `503930`. The World's
 internal message numbers use the game convention. SDK FES messages starting at
 raw 326 correspond to game 331; SDK bank queries 174/175 correspond to game

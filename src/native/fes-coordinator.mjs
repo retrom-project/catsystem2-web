@@ -169,7 +169,7 @@ export class FESCoordinator {
     this.resourceCommands = new FESResourceCommands(instance, {
       collection: this.collection,
       images: this.images,
-      setImageFile: (object, name) => this.setImageFile(object, name),
+      setImageFile: (object, name, bytes) => this.setImageFile(object, name, bytes),
       loadSound: (object, file, crossfade, frames) =>
         world.fesSound.state(instance, object).load(file, crossfade, frames),
       soundLoadParameters: nativeABI(world.profile).sound.fesLoadParameters,
