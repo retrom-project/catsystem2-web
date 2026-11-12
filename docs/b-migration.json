@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 196, "oracle": 148, "differential": 67 },
+    "counts": { "js": 197, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -60,6 +60,7 @@
         "tests/fes-common-model.test.mjs",
         "tests/fes-contracts.test.mjs",
         "tests/fes-control-driver.test.mjs",
+        "tests/fes-cross-family-entry.test.mjs",
         "tests/fes-definitions.test.mjs",
         "tests/fes-file-list.test.mjs",
         "tests/fes-image-cache.test.mjs",
@@ -51766,7 +51767,7 @@
     },
     {
       "file": "src/native/fes-image-driver.mjs",
-      "sourceSha256": "032f1982acf1ed3f78054d13f7b185fc08716c1a72cddc10587a42975f816efc",
+      "sourceSha256": "a04dfb4cd6a5e6d1b7019988d1afd9100029b2419dbb1ec3252f8d117818f608",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51776,14 +51777,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 743,
+          "line": 754,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 973,
+          "line": 984,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",

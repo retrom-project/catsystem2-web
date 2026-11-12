@@ -500,7 +500,7 @@ test('FES dialog buttons produce the original Win32 result and Yes/No ignores Es
 });
 
 for (const profile of [sdkProfile, gameProfile])
-  test(`${profile} default JS FES source bytes reach StageRenderer text pixels and survive post-first redeclaration and fresh restore`, async ({
+  test(`${profile} default JS FES source bytes reach StageRenderer text pixels and survive redeclaration, CIMAGE entry gates and fresh restore`, async ({
     page,
   }) => {
     await page.goto('/');
@@ -516,7 +516,7 @@ for (const profile of [sdkProfile, gameProfile])
           encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
           payload = encode('猫'),
           source = encode(
-            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫 EXTRA\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
+            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫 EXTRA\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n#DROP\nlabel delete\nbreak\n`,
           ),
           glyphs = {
             measure: (_font, text) => ({
@@ -596,6 +596,7 @@ for (const profile of [sdkProfile, gameProfile])
           },
           world = create(true),
           fresh = create(false),
+          crossFresh = create(false),
           render = async (owner) => {
             await owner.stageRenderer.render(owner.graphics.stage, {});
             return [...owner.stageRenderer.gpu.pixels()];
@@ -639,6 +640,48 @@ for (const profile of [sdkProfile, gameProfile])
             restored = freshTask.player.root.byKey.get('label');
           await freshTask.syncObjects();
           const after = await render(fresh);
+          await task.player.notify('DROP');
+          await world.sendEngine(
+            id,
+            parent.id,
+            338,
+            0,
+            FES_OBJECT_DEFINITION_ORDER.indexOf('CIMAGE'),
+            {
+              payload: {
+                string: (at) =>
+                  new TextDecoder().decode(declaration.subarray(at, declaration.indexOf(0, at))),
+                load: (at) => declarationView.getUint32(at, true),
+              },
+            },
+          );
+          await task.syncObjects();
+          const image = task.player.root.collection.lookup('label', 0),
+            crossPixels = await render(world);
+          await crossFresh.restore(world.snapshot());
+          const crossTask = crossFresh.objects.objects.get(id).implementation,
+            restoredImage = crossTask.player.root.collection.lookup('label', 0);
+          await crossTask.syncObjects();
+          const crossAfter = await render(crossFresh),
+            definition = new TextEncoder().encode('#OBJECT SIZE\0label 24,16\0'),
+            errors = [];
+          for (const [owner, implementation] of [
+            [world, task],
+            [crossFresh, crossTask],
+          ]) {
+            await owner.sendEngine(id, parent.id, 339, 0, 13, {
+              payload: {
+                string: (at) =>
+                  new TextDecoder().decode(definition.subarray(at, definition.indexOf(0, at))),
+              },
+            });
+            try {
+              await implementation.syncObjects();
+              errors.push(null);
+            } catch (error) {
+              errors.push(error.message);
+            }
+          }
           return {
             bytes: [...object.nativeTextState.source],
             parser: [...writer.parser.source],
@@ -662,9 +705,21 @@ for (const profile of [sdkProfile, gameProfile])
             restoredProfile: (await fresh.graphics.get(oldTaskID).writer()).parser.profiles[2].has(
               type === 'STRING8' ? 0x732b : 0x944c,
             ),
-            exe: Boolean(world.nativeEngine || fresh.nativeEngine),
+            sameCrossPixels: before.every(
+              (value, index) => value === crossPixels[index] && value === crossAfter[index],
+            ),
+            crossUnallocated:
+              image.imageResource.bitmap === 0 && restoredImage.imageResource.bitmap === 0,
+            crossEntryTypes: task.player.root.runtime.resources.entries.map(
+              (entry) => entry.savedType,
+            ),
+            crossOldWriterRetained:
+              crossFresh.graphics.get(oldTaskID).text.writer === writer.pointer,
+            crossErrors: errors,
+            exe: Boolean(world.nativeEngine || fresh.nativeEngine || crossFresh.nativeEngine),
           };
         } finally {
+          await crossFresh.close({ flushFiles: false });
           await fresh.close({ flushFiles: false });
           await world.close({ flushFiles: false });
         }
@@ -686,6 +741,14 @@ for (const profile of [sdkProfile, gameProfile])
     expect(result.profile).toBe(true);
     expect(result.profileTail).toBe(true);
     expect(result.restoredProfile).toBe(true);
+    expect(result.sameCrossPixels).toBe(true);
+    expect(result.crossUnallocated).toBe(true);
+    expect(result.crossEntryTypes).toEqual(profile === gameProfile ? [37, 37, 1] : [21, 21, 1]);
+    expect(result.crossOldWriterRetained).toBe(true);
+    expect(result.crossErrors).toEqual([
+      'FES image entry has no live wrapper',
+      'FES image entry has no live wrapper',
+    ]);
     expect(result.exe).toBe(false);
   });
 

@@ -225,6 +225,17 @@ export class FESImages {
   async visitEntry(instance, object, entry, options = {}) {
     if (!wrapperTypes.has(object.nativeType))
       throw new TypeError('FES explicit image wrapper visit requires its current wrapper family');
+    // A stale STRING entry can resolve to a newly declared CIMAGE. Both
+    // original drivers leave its NULL wrapper untouched while all three
+    // work gates are zero; SIZE initialization still requires that wrapper.
+    if (
+      entry.image == null &&
+      object.nativeType === 1 &&
+      object.sizeDirty === false &&
+      object.dirty === false &&
+      object.displayDelta === 0
+    )
+      return 0;
     return this.withResource(object, entry.image, () => this.update(instance, object, options));
   }
   validateEntry(instance, object, entry) {

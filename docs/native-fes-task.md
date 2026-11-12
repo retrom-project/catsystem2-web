@@ -75,6 +75,17 @@ before object synchronization, so commands such as IMGWND `size` can initialize
 the dimensions used by its first resource decode. Rendering consumes retained
 task output and does not execute FES logic or object drivers again.
 
+A resource entry resolves its current byte key on every pass. An earlier STRING
+entry can therefore visit a newly declared CIMAGE with a NULL entry wrapper.
+Both frozen CIMAGE drivers leave that argument untouched when initialization,
+dirty rendering and display-delta gates are all zero. The default coordinator
+preserves this reachable no-op, including the independently owned old text child
+and its visible pixels through a fresh World. Setting SIZE activates the original
+wrapper dereference; that NULL boundary remains an explicit error. The driver
+does not substitute the new CIMAGE's current wrapper, discard the old entry or
+delete its text child. Other cross-family driver branches keep their separate
+argument and ownership requirements.
+
 The default JavaScript coordinator evaluates `getdiv` over its entire selected
 range. It skips missing slots and non-NV objects, retains the last live NVSTRING
 division, and writes private local0 exactly once; an empty NV subset writes0.
