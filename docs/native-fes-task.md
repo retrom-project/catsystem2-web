@@ -85,6 +85,20 @@ groups, interior and trailing holes, explicit indexes, and a fresh World without
 source reads or EXE construction. Other text whole-command gates remain separate
 phase-7 work.
 
+The text controller also owns the complete `clear`, `apendmark`, `skip`, `reset`,
+`isdraw`, `isdrawmark`, `insert`, `linecnt` and `endpos` selection wrappers. The
+first six skip holes; `insert` and `linecnt` stop at the first missing slot.
+`endpos` skips holes after reading each optional output index once. `linecnt`
+reads its required output index once even when only inapplicable types are
+selected. Repeated expression text at two parameter positions remains two
+reads. Status queries write local0 for each admitted text object and leave it
+unchanged when none are admitted. Their frozen class gates stay distinct:
+`insert` only changes NVSTRING, `linecnt` excludes NVSTRING, and `reset` also
+visits LOG's generated text subset. Both frozen handler sets and the real
+default World mixed groups, pending D5 clears, canonical LOG child aliases and
+fresh restore are covered. `draw`, `layout` and remaining whole handlers retain
+their separate audit requirements.
+
 `verify-native-fes-initialization.mjs` independently runs both original
 allocation functions with authored enumeration and task-factory boundaries.
 It checks 27 game and 24 SDK object types, empty wrappers, the exact eager child

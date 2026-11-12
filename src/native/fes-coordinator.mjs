@@ -43,6 +43,17 @@ const screenVerbs = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
 const imageEntryTypes = new Set([1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22]);
 const soundTypes = new Set([9, 10]);
 const textTypes = new Set([21, 29, 37]);
+const textSelectionCommands = new Set([
+  'clear',
+  'apendmark',
+  'skip',
+  'reset',
+  'isdraw',
+  'isdrawmark',
+  'insert',
+  'linecnt',
+  'endpos',
+]);
 const clone = (state) => structuredClone(state);
 const decoder = new TextDecoder('shift_jis');
 
@@ -557,6 +568,35 @@ export class FESCoordinator {
         if (object?.nativeType === 29) division = this.strings.state(object).division;
       }
       instance.setLocal(0, division);
+      return 0;
+    }
+    if (textSelectionCommands.has(verb)) {
+      let parameters = args;
+      if (verb === 'linecnt') {
+        if (!args.length) return 0;
+        parameters = [context.argument(0)];
+      } else if (verb === 'endpos')
+        parameters = [0, 1].map((at) =>
+          args[at] === undefined ? undefined : context.argument(at),
+        );
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (!object) {
+          if (verb === 'insert' || verb === 'linecnt') break;
+          continue;
+        }
+        const type = object.nativeType;
+        if (
+          verb === 'insert'
+            ? type === 29
+            : verb === 'linecnt'
+              ? type === 21 || type === 37
+              : textTypes.has(type)
+        )
+          await this.strings.command(instance, object, verb, parameters, context);
+        else if (verb === 'reset' && this.logs.supports(object))
+          await this.logs.command(instance, object, verb, parameters, context);
+      }
       return 0;
     }
     if (verb === 'str' || verb === 'apend' || verb === 'name') {

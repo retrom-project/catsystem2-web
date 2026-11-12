@@ -2570,11 +2570,16 @@
       "id": "fes.reference.co.apendmark",
       "domain": "fes-object-command",
       "names": ["apendmark"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/apendmark.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
-      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler skips null slots and admits frozen STRING/NVSTRING/STRING8 only. It preserves each admitted class's encoded mark, ignores supplied argument tokens and retains pending text across a fresh World without EXE construction.",
       "signatures": ["[obj] apendmark"]
     },
     {
@@ -2682,9 +2687,14 @@
       "names": ["clear"],
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/clear.html",
-      "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler skips null slots, admits frozen STRING/NVSTRING/STRING8 only and ignores supplied argument tokens. Pending clears reach the actual D5 writer and survive fresh World restoration with EXE construction disabled.",
       "signatures": ["[obj] clear"]
     },
     {
@@ -2805,11 +2815,16 @@
       "id": "fes.reference.co.endpos",
       "domain": "fes-object-command",
       "names": ["endpos"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/endpos.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
-      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler reads its two optional output-index expressions once at their distinct parameter positions before traversal. It skips null slots, admits frozen STRING/NVSTRING/STRING8 and suppresses each output only at index-1; later admitted objects overwrite earlier outputs. Default World tests retain expression side effects and exact output order.",
       "signatures": ["[obj] endpos [x] [y]"]
     },
     {
@@ -2940,26 +2955,32 @@
       "id": "fes.reference.co.insert",
       "domain": "fes-object-command",
       "names": ["insert"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/insert.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
-      "evidence": ["tests/native-text.test.mjs", "docs/native-text.md"],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler stops at the first null slot and changes only NVSTRING section state. Other frozen object types are no-ops; supplied argument tokens are ignored. Explicit-index and mixed-group default World paths are verified.",
       "signatures": ["[obj] insert"]
     },
     {
       "id": "fes.reference.co.isdraw",
       "domain": "fes-object-command",
       "names": ["isdraw"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/isdraw.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
       "evidence": [
-        "tests/fes-contracts.test.mjs",
-        "tests/native-text.test.mjs",
-        "docs/native-text.md"
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
       ],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "note": "Default JS whole-selection handler skips null slots and writes local0 for each admitted STRING/NVSTRING/STRING8 in selection order. An empty admitted subset leaves the previous local untouched; supplied argument tokens are ignored.",
       "signatures": ["[obj] isdraw"]
     },
     {
@@ -3311,11 +3332,16 @@
       "id": "fes.reference.co.reset",
       "domain": "fes-object-command",
       "names": ["reset"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/reset.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler skips null slots and admits frozen STRING/NVSTRING/STRING8 plus LOGSTRING/LOGSTRING8. LOG reset visits the original generated text subset through the existing canonical first-wins child group. Supplied argument tokens are ignored; SDK74 has no UTF8 object factory.",
       "signatures": ["[obj] reset"]
     },
     {
@@ -3445,9 +3471,14 @@
       "names": ["skip"],
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/skip.html",
-      "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-driver.mjs; src/native/text-task.mjs",
+      "evidence": [
+        "tests/fes-text-commands.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-task.md"
+      ],
+      "note": "Default JS whole-selection handler skips null slots and admits frozen STRING/NVSTRING/STRING8 only. It queues the existing D5 finish state, ignores supplied argument tokens and retains that pending operation across fresh World restoration.",
       "signatures": ["[obj] skip"]
     },
     {
