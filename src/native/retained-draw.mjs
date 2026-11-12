@@ -146,11 +146,17 @@ export class NativeRetainedDraw {
     const enable = (handle) => {
       const source = this.sources.get(handle);
       source.enabled = value >>> 0;
+      let changed = false;
       for (const child of source.children)
         if (this.sources.get(child).hasProgram) {
-          enable(child);
-          for (const sibling of source.children) this.advance(sibling, frame);
+          if (enable(child)) changed = true;
+          for (const sibling of source.children) if (this.advance(sibling, frame)) changed = true;
         }
+      if (changed) {
+        source.groupDirty = true;
+        source.revision++;
+      }
+      return changed;
     };
     enable(record.source);
     await this.update(draw, frame);
