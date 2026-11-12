@@ -550,6 +550,15 @@ export class FESCoordinator {
       return this.imageCommands.command(verb, selection, args, context);
     if (FES_RESOURCE_COMMANDS.has(verb))
       return this.resourceCommands.command(verb, selection, args, context);
+    if (verb === 'getdiv') {
+      let division = 0;
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (object?.nativeType === 29) division = this.strings.state(object).division;
+      }
+      instance.setLocal(0, division);
+      return 0;
+    }
     if (verb === 'str' || verb === 'apend' || verb === 'name') {
       const hasTail = source.rawTail === undefined ? args.length > 0 : source.rawTail.length > 0;
       if (verb === 'apend' && !hasTail) return 0;
@@ -634,8 +643,7 @@ export class FESCoordinator {
           const ref = this.reference(args[0]);
           this.particles.attach(instance, object, collection.lookup(ref.nameBytes, ref.index));
         }
-      } else if (verb === 'getdiv') instance.setLocal(0, 0);
-      else throw new Error('Unimplemented FES raw' + type + ' command ' + verb);
+      } else throw new Error('Unimplemented FES raw' + type + ' command ' + verb);
     }
     return 0;
   }

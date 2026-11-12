@@ -75,6 +75,16 @@ before object synchronization, so commands such as IMGWND `size` can initialize
 the dimensions used by its first resource decode. Rendering consumes retained
 task output and does not execute FES logic or object drivers again.
 
+The default JavaScript coordinator evaluates `getdiv` over its entire selected
+range. It skips missing slots and non-NV objects, retains the last live NVSTRING
+division, and writes private local0 exactly once; an empty NV subset writes0.
+The handler does not expand or evaluate argument tokens. Complete frozen SDK
+`6119C0` and game `777950` bodies establish this shared raw29 gate and aggregate
+behavior. `tests/fes-text-log-driver.test.mjs` exercises real multi-element mixed
+groups, interior and trailing holes, explicit indexes, and a fresh World without
+source reads or EXE construction. Other text whole-command gates remain separate
+phase-7 work.
+
 `verify-native-fes-initialization.mjs` independently runs both original
 allocation functions with authored enumeration and task-factory boundaries.
 It checks 27 game and 24 SDK object types, empty wrappers, the exact eager child

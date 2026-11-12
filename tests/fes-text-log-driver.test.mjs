@@ -7,6 +7,91 @@ import { initializeFESLogObject } from '../src/native/fes-log-driver.mjs';
 import { fesMotionState, applyFESMotionState } from '../src/native/fes-motion-model.mjs';
 import { setFESGraphicalPosition } from '../src/native/fes-common-model.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
+
+for (const profile of profiles)
+  test(`${profile}: ordinary FES getdiv writes the last live NV division once across a mixed group and fresh restore`, async () => {
+    const source = `#DEFINE
+NVSTRING mixed[5]
+#OBJECT SIZE DIV
+mixed 24,16 7
+#START
+next IDLE
+#IDLE
+#QUERY
+mixed getdiv ++$10
+break
+#FIRST
+mixed[0] getdiv
+break
+#PLAIN
+mixed[1] getdiv
+break
+`,
+      world = await defaultFESWorld(profile, {
+        'screen.fes': new TextEncoder().encode(source),
+      });
+    let fresh;
+    try {
+      const h = await loadDefaultFES(world),
+        { instance } = h,
+        collection = instance.collection;
+      for (const index of [1, 2, 4]) await collection.remove(collection.lookup('mixed', index));
+      instance.createObjects(FES_OBJECT_DEFINITION_ORDER.indexOf('STRING'), 'mixed', 2);
+      await instance.applyObjects('#OBJECT SIZE', 'mixed[1] 24,16');
+      await instance.applyObjects('#OBJECT DIV', 'mixed[0] 11');
+      await instance.applyObjects('#OBJECT DIV', 'mixed[3] 37');
+      await h.task.syncObjects();
+      assert.equal(collection.count('mixed'), 5);
+      assert.deepEqual(
+        Array.from({ length: 5 }, (_, index) => collection.lookup('mixed', index)?.nativeType),
+        [29, 21, undefined, 29, undefined],
+      );
+      instance.setGlobal(10, 41);
+      const query = async (player, label, expected) => {
+        const root = player.root,
+          writes = [],
+          original = root.setLocal.bind(root);
+        root.setLocal = (index, value) => {
+          writes.push([index, value]);
+          return original(index, value);
+        };
+        try {
+          await player.notify(label);
+        } finally {
+          root.setLocal = original;
+        }
+        assert.deepEqual(writes, [[0, expected]]);
+        assert.equal(root.local(0), expected);
+        assert.equal(root.global(10), 41, 'getdiv does not read ignored argument tokens');
+      };
+      await query(h.task.player, 'QUERY', 37);
+      await query(h.task.player, 'FIRST', 11);
+      await query(h.task.player, 'PLAIN', 0);
+      const saved = world.snapshot();
+      fresh = await defaultFESWorld(profile, {}, { initialize: false });
+      const read = fresh.game.read.bind(fresh.game);
+      fresh.game.read = (name) => {
+        if (name !== 'case.kcs') throw new Error(`getdiv restore read unexpected resource ${name}`);
+        return read(name);
+      };
+      await fresh.restore(saved);
+      const player = fresh.objects.objects.get(h.id).implementation.player,
+        restored = player.root;
+      await query(player, 'QUERY', 37);
+      await restored.collection.remove(restored.collection.lookup('mixed', 3));
+      await query(player, 'QUERY', 11);
+      await restored.collection.remove(restored.collection.lookup('mixed', 0));
+      restored.createObjects(FES_OBJECT_DEFINITION_ORDER.indexOf('STRING'), 'mixed', 1);
+      await query(player, 'QUERY', 0);
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
 
 for (const profile of profiles) {
   const types = profile.startsWith('sdk') ? [21, 29] : [21, 29, 37];
