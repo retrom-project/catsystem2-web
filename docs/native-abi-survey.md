@@ -54,8 +54,8 @@ signatures separately:
 node scripts/compare-native-abi.mjs --signatures .local/declared-source.json .local/declared-reference.json .local/signatures.json
 ```
 
-These inputs have declared `tables` objects, rather than the binary extractor's
-array of observations. The comparison preserves unknown semantic slots and
+These inputs have resolved ABI `tables` objects, rather than raw registration
+descriptors or the binary extractor's array of observations. The comparison preserves unknown semantic slots and
 actual type/count/control differences, ignores description prose, and reports
 differences in result-write knowledge. It does not register another engine or
 infer types from argv offsets. See [native signatures](native-signatures.md).
@@ -86,7 +86,9 @@ identities.
 
 These are candidate scores. Empty matching feature sets, partial argv reads,
 repeated stubs, and even a unique optimal path do not establish semantic or
-signature equivalence. Internal task-message constants can change without
+signature equivalence. The [shared semantic catalog](native-abi-data.md) uses
+explicit reviewed engine registrations and signature differences; survey
+similarity does not register an engine or enable an unknown slot. Internal task-message constants can change without
 native renumbering. Check handler bodies, message receivers and script call
 shapes independently before accepting a mapping. Private inputs and raw
 alignment reports belong in ignored local storage.

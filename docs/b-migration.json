@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 209, "oracle": 148, "differential": 67 },
+    "counts": { "js": 210, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -190,6 +190,7 @@
         "tests/native-scene-data.test.mjs",
         "tests/native-scene-history.test.mjs",
         "tests/native-script-replacement.test.mjs",
+        "tests/native-shared-abi.test.mjs",
         "tests/native-signature-records.test.mjs",
         "tests/native-signatures.test.mjs",
         "tests/native-sound-config.test.mjs",
@@ -7348,9 +7349,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -7523,9 +7524,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14745,9 +14746,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14771,9 +14772,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14797,9 +14798,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14823,9 +14824,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14849,9 +14850,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14875,9 +14876,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14901,9 +14902,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14927,9 +14928,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14953,9 +14954,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -14979,9 +14980,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -15005,9 +15006,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -16719,9 +16720,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -20156,9 +20157,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -29930,9 +29931,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -30105,9 +30106,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -31074,16 +31075,16 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 4,
-            "decision": "retain-unsupported",
             "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "decision": "retain-unsupported",
+            "evidence": "docs/native-domain4-review.md",
+            "phase": 4,
             "reachability": {
-              "reviewedScripts": { "game": 103, "sdk": 186 },
-              "observedCallSites": 0,
               "dynamicNativeOperands": 0,
+              "observedCallSites": 0,
+              "reviewedScripts": { "game": 103, "sdk": 186 },
               "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
-            },
-            "evidence": "docs/native-domain4-review.md"
+            }
           }
         },
         {
@@ -31103,16 +31104,16 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 4,
-            "decision": "retain-unsupported",
             "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "decision": "retain-unsupported",
+            "evidence": "docs/native-domain4-review.md",
+            "phase": 4,
             "reachability": {
-              "reviewedScripts": { "game": 103, "sdk": 186 },
-              "observedCallSites": 0,
               "dynamicNativeOperands": 0,
+              "observedCallSites": 0,
+              "reviewedScripts": { "game": 103, "sdk": 186 },
               "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
-            },
-            "evidence": "docs/native-domain4-review.md"
+            }
           }
         },
         {
@@ -31132,16 +31133,16 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 4,
-            "decision": "retain-unsupported",
             "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "decision": "retain-unsupported",
+            "evidence": "docs/native-domain4-review.md",
+            "phase": 4,
             "reachability": {
-              "reviewedScripts": { "game": 103, "sdk": 186 },
-              "observedCallSites": 0,
               "dynamicNativeOperands": 0,
+              "observedCallSites": 0,
+              "reviewedScripts": { "game": 103, "sdk": 186 },
               "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
-            },
-            "evidence": "docs/native-domain4-review.md"
+            }
           }
         },
         {
@@ -31161,16 +31162,16 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 4,
-            "decision": "retain-unsupported",
             "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "decision": "retain-unsupported",
+            "evidence": "docs/native-domain4-review.md",
+            "phase": 4,
             "reachability": {
-              "reviewedScripts": { "game": 103, "sdk": 186 },
-              "observedCallSites": 0,
               "dynamicNativeOperands": 0,
+              "observedCallSites": 0,
+              "reviewedScripts": { "game": 103, "sdk": 186 },
               "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
-            },
-            "evidence": "docs/native-domain4-review.md"
+            }
           }
         },
         {
@@ -31190,16 +31191,16 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 4,
-            "decision": "retain-unsupported",
             "behavior": "UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics",
+            "decision": "retain-unsupported",
+            "evidence": "docs/native-domain4-review.md",
+            "phase": 4,
             "reachability": {
-              "reviewedScripts": { "game": 103, "sdk": 186 },
-              "observedCallSites": 0,
               "dynamicNativeOperands": 0,
+              "observedCallSites": 0,
+              "reviewedScripts": { "game": 103, "sdk": 186 },
               "scope": "Only the two frozen script corpora; authored or future KCS can still call this ID"
-            },
-            "evidence": "docs/native-domain4-review.md"
+            }
           }
         },
         {
@@ -37348,9 +37349,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37374,9 +37375,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37400,9 +37401,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37426,9 +37427,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37452,9 +37453,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37478,9 +37479,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37504,9 +37505,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37530,9 +37531,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37556,9 +37557,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37582,9 +37583,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -37608,9 +37609,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -39322,9 +39323,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -42759,9 +42760,9 @@
           "review": "traced",
           "reviewReasons": [],
           "migrationReview": {
-            "phase": 5,
             "decision": "js-owned-inputs",
-            "evidence": "docs/native-domain5-review.md"
+            "evidence": "docs/native-domain5-review.md",
+            "phase": 5
           }
         },
         {
@@ -49577,12 +49578,12 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "beaa468ba408d26d32026801af16d6ac004b901c9080bf2e19d2f7e9b69482ba",
+      "sourceSha256": "9545ed39a8e02389883ac2f921d9f44226d20e3ff529fd93920f3f690bd4d0c3",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-abi-data.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49590,12 +49591,12 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "2321944477cb38ade5d0b90f25bea2f3eec69d84038d41c01fac73a543831d97",
+      "sourceSha256": "ae78cef96ca2700c76c4a9d278d5d1ee74e22ec17c3730d3d93bd4e7ca1548f4",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-abi-data.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49603,12 +49604,12 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "547eefa3495ad0041cccdb1808d4c6be14dcd4c02ac95d2caa26007cd2379c04",
+      "sourceSha256": "39568e2a7237ac5bda7d4c657273d8eb4f039b3564249a7a493bd9db2894edb1",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-abi-data.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49634,7 +49635,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-abi-data.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
@@ -49660,7 +49661,7 @@
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
+      "docs": ["docs/native-abi-data.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],

@@ -2,6 +2,12 @@
 import engine74 from './2.6.1.74.mjs';
 import engine76 from './2.6.1.76.mjs';
 import { validateNativeSignature, nativeSignatureDifferences } from './signature.mjs';
+import { resolveNativeTables } from './tables.mjs';
+
+export function resolveABI(registration) {
+  validatePlainData(registration);
+  return validateABI({ ...registration, tables: resolveNativeTables(registration.tables) });
+}
 
 export function validateABI(abi) {
   validatePlainData(abi);
@@ -56,7 +62,7 @@ function freeze(value) {
 }
 
 export const NATIVE_ABIS = freeze(
-  Object.fromEntries([engine74, engine76].map((abi) => [abi.profile, validateABI(abi)])),
+  Object.fromEntries([engine74, engine76].map((abi) => [abi.profile, resolveABI(abi)])),
 );
 
 export function nativeABI(profile) {

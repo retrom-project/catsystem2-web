@@ -5,10 +5,13 @@ The authoritative public catalog is [src/native/catalog.mjs](../src/native/catal
 constant-zero handlers and unresolved contracts. Descriptive names are project
 names; the main compiler's original symbol table has not been recovered.
 
-Per-version declarations now live in `src/native/abi/2.6.1.74.mjs` and
-`2.6.1.76.mjs`. The ABI loader validates complete main, generic and particle
-tables and freezes all data. These documents include signatures, observed
-argument counts, controls, encodings and sound-bank differences. Canonical ABI
+Reviewed table/ID meanings and signatures live once in
+`src/native/abi/semantics.mjs`. The engine modules `2.6.1.74.mjs` and
+`2.6.1.76.mjs` explicitly register slot states, signature differences, observed
+argument counts and evidence, alongside their own encodings and service behavior.
+The ABI loader resolves complete main, generic and particle tables and freezes
+all data. Unknown slots and stubs never inherit another engine's meaning. See
+[the registration contract](native-abi-data.md). Canonical ABI
 IDs use the engine version. Existing profile keys identify the remaining
 transition layouts. EXE table locations remain in the catalog's transition
 metadata while the owning domains migrate.
@@ -33,8 +36,10 @@ version. Unknown-only, missing and multiple matching candidates report the
 observed filenames and versions. A utility executable with an unrelated version
 can coexist with the selected engine. An explicit profile must also be registered.
 
-Unresolved semantic names retain their explicit review state. The data extraction preserves every
-existing declaration and does not infer a contract from another ABI's slot.
+Unresolved semantic names retain their explicit review state. Registration
+preserves every existing declaration and does not infer a contract from another
+ABI's slot. Only explicitly registered engines are available; the shared catalog
+does not enable unregistered versions.
 
 The domain-4 SDK review recovers 65 names and signatures from its own native
 pointer table and wrapper bodies. Five game name-pair entries retain explicit

@@ -1,6 +1,8 @@
 # Native signature declarations
 
-Registered ABI entries use structured parameter and result records. The records
+Registered ABI entries use structured parameter and result records. Shared
+table/ID signatures and explicit engine differences follow
+[the registration contract](native-abi-data.md). The records
 describe reviewed knowledge; they do not coerce VM words, decode strings, choose
 an implementation, or recover a missing signature. Engine and ABI identifiers
 remain unchanged.
@@ -92,8 +94,12 @@ retain their independent evidence.
 ## Consumers and comparison
 
 `validateNativeSignature` validates the current structured records.
-`validateABI` also checks that the entry-level catalog fields and nested
-signature describe the same contract. Both remain ordinary deeply frozen data.
+`resolveABI` expands the engine's explicit slot registration and signature
+differences. `validateABI` checks that the derived entry-level catalog fields and
+nested signature describe the same contract. Both remain ordinary deeply frozen
+data in the registered ABI registry. The signature is maintained once; the
+entry-level fields are independent derived copies for consumer projections and
+mirror validation.
 The public catalog exposes the explicit `argumentWords`; MOT uses that count
 instead of deriving it from parameter descriptions. Scalar differential
 fixtures identify float32 results by `kind` and `bits`, preserving their existing
