@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NativeFESScreenEffectProjection } from './fes-screen-effect-projection.mjs';
 // These five base FES objects create native screen-effect tasks in the original
 // allocation phase. Their complete resource-list frame driver owns activation,
 // completion, object deletion and the subsequent child-task cleanup pass.
@@ -133,8 +134,9 @@ export class NativeFESEffects {
 
 export function installNativeFESEffects(world) {
   installNativeScreenEffects(world);
-  world.registerNativeFeature('fes-screen-effect-projection', (engine) =>
-    engine.createScreenEffectProjection(world),
+  world.registerNativeFeature(
+    'fes-screen-effect-projection',
+    (engine) => new NativeFESScreenEffectProjection(engine, world),
   );
   world.effectsFES = new NativeFESEffects(world);
   for (const type of [26, 27, 30, 31, 32])

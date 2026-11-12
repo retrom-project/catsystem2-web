@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Temporary D7 FES/text and D9 M2 consumer projection. No per-frame EXE graph traversal.
+// Explicit D8 SDK/media consumer view. No per-frame EXE graph traversal.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NativeBitmap } from '../src/native/image.mjs';

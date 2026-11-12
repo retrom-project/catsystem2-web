@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 173, "oracle": 146, "differential": 67 },
+    "counts": { "js": 173, "oracle": 147, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -271,6 +271,7 @@
         "tests/native-raster-mask-budget.test.mjs",
         "tests/native-raster-normal-budget.test.mjs",
         "tests/native-raster-rep-budget.test.mjs",
+        "tests/native-raw-bitmap-consumers.test.mjs",
         "tests/native-record-queue.test.mjs",
         "tests/native-rectangles.test.mjs",
         "tests/native-registry.test.mjs",
@@ -1277,33 +1278,6 @@
     "versionGuards": [
       {
         "kind": "guard",
-        "file": "oracle/fes-text-projection.mjs",
-        "line": 13,
-        "expression": "this.engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "oracle/fes-text-projection.mjs",
-        "line": 172,
-        "expression": "this.engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
-        "file": "oracle/image-owner.mjs",
-        "line": 4,
-        "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "guard",
         "file": "oracle/transitional-exe.mjs",
         "line": 5,
         "expression": "engine.profile !== 'nekopara-vol3-engine-2.6.1.76'",
@@ -1408,43 +1382,25 @@
         "file": "oracle/bitmap-memory.mjs",
         "line": 53,
         "expression": "layouts[engine.profile]",
-        "domain": 7,
+        "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
         "kind": "exe-layout",
         "file": "oracle/data-buffer-projection.mjs",
-        "line": 42,
+        "line": 18,
         "expression": "NATIVE_DATA_BUFFER_LAYOUTS[engine.profile]",
-        "domain": 7,
+        "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
         "kind": "exe-layout",
         "file": "oracle/data-buffer-projection.mjs",
-        "line": 45,
+        "line": 21,
         "expression": "NATIVE_DATA_BUFFER_LAYOUTS[engine.profile]",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "oracle/fes-screen-effect-projection.mjs",
-        "line": 39,
-        "expression": "captures[engine.profile]",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va",
-        "file": "oracle/fes-text-projection.mjs",
-        "line": 15,
-        "expression": "addresses[sdk ? 1 : 0]",
-        "domain": 7,
+        "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1453,25 +1409,7 @@
         "file": "oracle/graphics-consumer-projection.mjs",
         "line": 57,
         "expression": "ABI[engine.profile]",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "oracle/hg3-delta.mjs",
-        "line": 36,
-        "expression": "sites[engine.profile]",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "oracle/image-owner.mjs",
-        "line": 4,
-        "expression": "engine.profile === 'sdk-4.01-engine-2.6.1.74'",
-        "domain": 7,
+        "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1486,28 +1424,10 @@
       },
       {
         "kind": "exe-layout",
-        "file": "oracle/raster-kernel-projection.mjs",
-        "line": 57,
-        "expression": "profiles[engine.profile]",
-        "domain": 7,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
         "file": "oracle/renderer-consumer-projection.mjs",
         "line": 94,
         "expression": "NATIVE_RENDERER_LAYOUTS[engine.profile]",
         "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "oracle/text-log-projection.mjs",
-        "line": 14,
-        "expression": "layouts[engine.profile]",
-        "domain": 7,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
@@ -1667,7 +1587,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 143,
+        "line": 119,
         "expression": "NATIVE_ENGINE_IMAGES[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1676,7 +1596,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 275,
+        "line": 251,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1685,7 +1605,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 291,
+        "line": 267,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1694,7 +1614,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 295,
+        "line": 271,
         "expression": "NATIVE_ENGINE_IMAGES[options.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1703,7 +1623,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 355,
+        "line": 331,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1712,7 +1632,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 369,
+        "line": 345,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1721,7 +1641,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-process.mjs",
-        "line": 541,
+        "line": 517,
         "expression": "NATIVE_ENGINE_IMAGES[this.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2359,7 +2279,7 @@
       {
         "kind": "identity",
         "file": "src/native/engine-process.mjs",
-        "line": 457,
+        "line": 433,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -2392,12 +2312,12 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 112, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 104, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 112,
+    "remainingExeVASelectionSites": 104,
     "profileSelectionNeedsReview": 0,
     "implementations": {
       "pure-js": 1806,
@@ -2420,13 +2340,13 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 452,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 63, "8": 165, "9": 55 },
-    "fileNeedsReview": 88,
-    "exeDependencyFiles": 67,
-    "exeDependencies": { "addresses": 586, "calls": 91, "references": 6 },
-    "nonNativeGroups": 30,
-    "executionSites": 265
+    "runtimeFiles": 443,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 49, "8": 170, "9": 55 },
+    "fileNeedsReview": 80,
+    "exeDependencyFiles": 60,
+    "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
+    "nonNativeGroups": 22,
+    "executionSites": 244
   },
   "profiles": [
     {
@@ -3831,14 +3751,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -3883,14 +3795,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -3934,14 +3838,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4024,14 +3920,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4075,14 +3963,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4128,14 +4008,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4179,14 +4051,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4232,14 +4096,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4283,14 +4139,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4336,14 +4184,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4387,14 +4227,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4440,14 +4272,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4491,14 +4315,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4544,14 +4360,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4595,14 +4403,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4705,14 +4505,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4756,14 +4548,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4809,14 +4593,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4860,14 +4636,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -4913,14 +4681,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -4964,14 +4724,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -5017,14 +4769,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -5069,14 +4813,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -5120,14 +4856,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -5190,14 +4918,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -5242,14 +4962,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -5293,14 +5005,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -5880,7 +5584,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:570",
+          "registration": "src/native/script-task.mjs:568",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -7875,14 +7579,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -7926,14 +7622,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -7979,14 +7667,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -8030,14 +7710,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -8083,14 +7755,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -8134,14 +7798,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -8187,14 +7843,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -8239,14 +7887,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -8290,14 +7930,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -9691,14 +9323,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -9742,14 +9366,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -9795,14 +9411,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -9846,14 +9454,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -9899,14 +9499,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -9951,14 +9543,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -10002,14 +9586,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -11022,14 +10598,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -12003,14 +11571,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -12160,14 +11720,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -12212,14 +11764,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -12263,14 +11807,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -12333,14 +11869,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -12384,14 +11912,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -13562,14 +13082,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -14237,7 +13749,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -14256,7 +13768,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -14275,7 +13787,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -15888,14 +15400,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -16624,7 +16128,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -16641,7 +16145,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -16658,7 +16162,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -16675,7 +16179,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -16692,7 +16196,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -16874,7 +16378,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16891,7 +16395,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16908,7 +16412,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16925,7 +16429,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16942,7 +16446,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16959,7 +16463,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16976,7 +16480,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -16993,7 +16497,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17010,7 +16514,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17027,7 +16531,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17044,7 +16548,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17061,7 +16565,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17078,7 +16582,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17095,7 +16599,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17112,7 +16616,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17129,7 +16633,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17146,7 +16650,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17163,7 +16667,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17180,7 +16684,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17197,7 +16701,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17214,7 +16718,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17231,7 +16735,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17248,7 +16752,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17265,7 +16769,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17282,7 +16786,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17299,7 +16803,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17316,7 +16820,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -17333,7 +16837,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -18151,7 +17655,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -19267,14 +18771,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -19319,14 +18815,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -19361,7 +18849,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -19378,7 +18866,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -19574,14 +19062,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -19838,7 +19318,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -21601,7 +21081,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -24645,7 +24125,7 @@
         },
         {
           "name": "scene-memory",
-          "registration": "src/native/script-task.mjs:568",
+          "registration": "src/native/script-task.mjs:566",
           "modules": ["src/native/scene-memory.mjs"],
           "dependencies": []
         },
@@ -24723,15 +24203,9 @@
         },
         {
           "name": "image-owners",
-          "registration": "src/native/image-owner.mjs:278",
+          "registration": "src/native/image-owner.mjs:267",
           "modules": [],
           "dependencies": []
-        },
-        {
-          "name": "image-owner-projection",
-          "registration": "src/native/image-owner.mjs:282",
-          "modules": [],
-          "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
         {
           "name": "draw-commands",
@@ -24813,13 +24287,7 @@
         },
         {
           "name": "display-logs",
-          "registration": "src/native/text-log.mjs:530",
-          "modules": [],
-          "dependencies": []
-        },
-        {
-          "name": "display-log-projection",
-          "registration": "src/native/text-log.mjs:534",
+          "registration": "src/native/text-log.mjs:526",
           "modules": [],
           "dependencies": []
         },
@@ -26215,14 +25683,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26267,14 +25727,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26318,14 +25770,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26408,14 +25852,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26459,14 +25895,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26512,14 +25940,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26563,14 +25983,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26616,14 +26028,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26667,14 +26071,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26720,14 +26116,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26771,14 +26159,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26824,14 +26204,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26875,14 +26247,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -26928,14 +26292,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -26979,14 +26335,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -27089,14 +26437,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27140,14 +26480,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -27193,14 +26525,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27244,14 +26568,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -27297,14 +26613,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27348,14 +26656,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -27401,14 +26701,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27453,14 +26745,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27504,14 +26788,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -27574,14 +26850,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27626,14 +26894,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -27677,14 +26937,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -28264,7 +27516,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:570",
+          "registration": "src/native/script-task.mjs:568",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -30259,14 +29511,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -30310,14 +29554,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -30363,14 +29599,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -30414,14 +29642,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -30467,14 +29687,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -30518,14 +29730,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -30571,14 +29775,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -30623,14 +29819,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -30674,14 +29862,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -32120,14 +31300,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -32171,14 +31343,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -32224,14 +31388,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -32275,14 +31431,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -32328,14 +31476,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -32380,14 +31520,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -32431,14 +31563,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -33451,14 +32575,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -34424,14 +33540,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -34581,14 +33689,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -34633,14 +33733,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -34684,14 +33776,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -34754,14 +33838,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -34805,14 +33881,6 @@
               "tests/differential/plane-state.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -35983,14 +35051,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -36658,7 +35718,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -36677,7 +35737,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -36696,7 +35756,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:591",
+          "registration": "src/native/script-task.mjs:589",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -38309,14 +37369,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -39045,7 +38097,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -39062,7 +38114,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -39079,7 +38131,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -39096,7 +38148,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -39113,7 +38165,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -39295,7 +38347,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39312,7 +38364,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39329,7 +38381,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39346,7 +38398,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39363,7 +38415,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39380,7 +38432,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39397,7 +38449,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39414,7 +38466,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39431,7 +38483,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39448,7 +38500,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39465,7 +38517,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39482,7 +38534,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39499,7 +38551,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39516,7 +38568,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39533,7 +38585,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39550,7 +38602,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39567,7 +38619,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39584,7 +38636,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39601,7 +38653,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39618,7 +38670,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39635,7 +38687,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39652,7 +38704,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39669,7 +38721,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39686,7 +38738,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39703,7 +38755,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39720,7 +38772,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39737,7 +38789,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -39754,7 +38806,7 @@
           "module": "src/native/image-owner.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/image-owner.mjs:292",
+          "registration": "src/native/image-owner.mjs:272",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-image-owners.md"],
@@ -40572,7 +39624,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -41688,14 +40740,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -41740,14 +40784,6 @@
             ],
             "consumerRoutes": [
               {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
-              {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
                 "module": "src/native/sdk-javascript-task.mjs",
@@ -41782,7 +40818,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -41799,7 +40835,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -41995,14 +41031,6 @@
               "tests/differential/draw-raster.test.mjs"
             ],
             "consumerRoutes": [
-              {
-                "domain": 7,
-                "condition": "Target is an original Scroll/Scroll2/Slider control kind 40/41/42",
-                "module": "src/native/control-task.mjs",
-                "method": "NativeControlTask.message",
-                "implementation": "original-handler",
-                "removePhase": 7
-              },
               {
                 "domain": 8,
                 "condition": "ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55",
@@ -42259,7 +41287,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -43998,7 +43026,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -45069,7 +44097,7 @@
           "module": "src/native/text-log.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-log.mjs:539",
+          "registration": "src/native/text-log.mjs:532",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-text.md"],
@@ -47854,7 +46882,7 @@
         },
         {
           "name": "scene-memory",
-          "registration": "src/native/script-task.mjs:568",
+          "registration": "src/native/script-task.mjs:566",
           "modules": ["src/native/scene-memory.mjs"],
           "dependencies": []
         },
@@ -47926,15 +46954,9 @@
         },
         {
           "name": "image-owners",
-          "registration": "src/native/image-owner.mjs:278",
+          "registration": "src/native/image-owner.mjs:267",
           "modules": [],
           "dependencies": []
-        },
-        {
-          "name": "image-owner-projection",
-          "registration": "src/native/image-owner.mjs:282",
-          "modules": [],
-          "dependencies": ["data-buffers", "engine-files", "graphics-platform", "retained-draw"]
         },
         {
           "name": "draw-commands",
@@ -48016,13 +47038,7 @@
         },
         {
           "name": "display-logs",
-          "registration": "src/native/text-log.mjs:530",
-          "modules": [],
-          "dependencies": []
-        },
-        {
-          "name": "display-log-projection",
-          "registration": "src/native/text-log.mjs:534",
+          "registration": "src/native/text-log.mjs:526",
           "modules": [],
           "dependencies": []
         },
@@ -49098,7 +48114,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -49131,7 +48147,7 @@
     },
     {
       "file": "src/native/area-effect.mjs",
-      "sourceSha256": "2119c5b9e3f7e5c78e527c8bd13aa27eb0774b73f3fbca73cb7da1966427b56c",
+      "sourceSha256": "a9857c5fc3332cc69b97819f209a8889a8de0620211761a921c8930b5f04049c",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49141,18 +48157,18 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 124,
+          "line": 128,
           "method": "getNativeFeature",
-          "feature": "fes-draw-projection",
+          "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit context.nativePointer producer import/publish; JS Draw/Area state is authoritative. FES consumer projection removes in phase 7."
+          "reason": "Explicit context.nativePointer bitmap wrappers from D8 task transport borrow the existing bitmap view. Default FES sends semantic JS handles and never enters this branch."
         },
         {
-          "line": 482,
+          "line": 487,
           "method": "getNativeFeature",
-          "feature": "fes-draw-projection",
+          "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit context.nativePointer producer import/publish; JS Draw/Area state is authoritative. FES consumer projection removes in phase 7."
+          "reason": "Explicit context.nativePointer bitmap wrappers from D8 task transport borrow the existing bitmap view. Default FES sends semantic JS handles and never enters this branch."
         }
       ],
       "review": "counted"
@@ -49582,8 +48598,8 @@
     },
     {
       "file": "src/native/data-buffer-projection.mjs",
-      "sourceSha256": "dc8d5131f89a4dc8c2aa155f00f5fcb35f53225e49dff46beeace1bd4d01457b",
-      "domain": 7,
+      "sourceSha256": "3bccc15e93c2f4413e9f5bfc0477e0c97570c6360d35e7d1d293e8fcc2c35d1b",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -49779,14 +48795,14 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
     },
     {
       "file": "src/native/draw-task.mjs",
-      "sourceSha256": "a4a1b1d6094134737109d75e29d99a35d8f0584ddc10f80b528c24bb31e6066a",
+      "sourceSha256": "367df0569a53c2b2d210f6f39e3f664a259a67444a009b43e48aff546dd65697",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49796,88 +48812,46 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 91,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 96,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 108,
+          "line": 110,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 142,
+          "line": 144,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 206,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 215,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 224,
+          "line": 217,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 260,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 315,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "traced",
-          "reason": "Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer."
-        },
-        {
-          "line": 320,
+          "line": 307,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 330,
+          "line": 317,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 609,
+          "line": 596,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -49898,14 +48872,14 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 96,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -50322,7 +49296,7 @@
     },
     {
       "file": "src/native/engine-process.mjs",
-      "sourceSha256": "eab6774be578c830dbbaaad1e793bcad709d5aceeb728563933d5d79aea2cc8c",
+      "sourceSha256": "5e3b3926a53c3be21dba885da251d87cd54348041fc1b0c25ea3b79d11b43ec8",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 46, "calls": 8, "references": 2 },
@@ -50338,91 +49312,91 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 182,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 184,
+          "line": 160,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 191,
+          "line": 167,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 193,
+          "line": 169,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 203,
+          "line": 179,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 222,
+          "line": 198,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 254,
+          "line": 230,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 278,
+          "line": 254,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 356,
+          "line": 332,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 368,
+          "line": 344,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 404,
+          "line": 380,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 435,
+          "line": 411,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 542,
+          "line": 518,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -51958,105 +50932,105 @@
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 656,
           "method": "getNativeFeature",
           "feature": "plane-movie-projection",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1061,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1070,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1083,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1086,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1100,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1143,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 1243,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1244,
           "method": "getNativeFeature",
           "feature": "directshow",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1245,
           "method": "getNativeFeature",
           "feature": "texture-movie-renderer",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1254,
           "method": "getNativeFeature",
           "feature": "engine-workers",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1255,
           "method": "getNativeFeature",
           "feature": "vmr9",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1261,
           "method": "getNativeFeature",
           "feature": "bitmap-memory",
           "review": "traced",
-          "reason": "Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
+          "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
           "line": 1328,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -52201,52 +51175,16 @@
     },
     {
       "file": "src/native/image-owner.mjs",
-      "sourceSha256": "d06da3f534909b0e54947191a0d178988cf95b314650e0e8283464226ebc1ab8",
+      "sourceSha256": "e010bd8c47ac28c1cd814a677b77398531598d3bdae5e172c8d33e09afc77907",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature"],
+      "dependencyTypes": [],
       "docs": ["docs/native-image-owners.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 59,
-          "method": "getNativeFeature",
-          "feature": "image-owner-projection",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 283,
-          "method": "getNativeFeature",
-          "feature": "engine-files",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 284,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 285,
-          "method": "getNativeFeature",
-          "feature": "retained-draw",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 286,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/image-persistence.mjs",
@@ -52655,14 +51593,14 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
           "line": 135,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -53102,7 +52040,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -53188,7 +52126,7 @@
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7)."
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         }
       ],
       "review": "counted"
@@ -53347,19 +52285,6 @@
       "file": "src/native/raster-kernel.mjs",
       "sourceSha256": "6d984ce8dadff4811a47c060b28800d5697dc35e66698af1f9fb1607383b5429",
       "domain": 6,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [],
-      "executionSiteCounts": {},
-      "indirectSites": [],
-      "review": "counted"
-    },
-    {
-      "file": "src/native/raster-projection.mjs",
-      "sourceSha256": "26d93d14d786e68b7610f7442e3f82ee2f0c97dbdd89f06a051a30d398717ffd",
-      "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
@@ -53596,23 +52521,15 @@
     },
     {
       "file": "src/native/retained-draw.mjs",
-      "sourceSha256": "5009b30bfa72a64af96ccfd933d860c328d33c0266f04876743007696b662c25",
+      "sourceSha256": "04a232d174f171087cf015acdfb45085f01c5d571300a5fcc6155b835657e1d7",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature"],
+      "dependencyTypes": [],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 64,
-          "method": "getNativeFeature",
-          "feature": "fes-draw-projection",
-          "review": "traced",
-          "reason": "Explicit context.nativePointer producer import/publish; JS Draw/Area state is authoritative. FES consumer projection removes in phase 7."
-        }
-      ],
+      "indirectSites": [],
       "review": "counted"
     },
     {
@@ -53850,7 +52767,7 @@
     },
     {
       "file": "src/native/script-task.mjs",
-      "sourceSha256": "391436fe01879ca276a6091bde17455ad2695e98741b21e7944de8bf9008ee93",
+      "sourceSha256": "8bf3b8f7dbfba91e605dd1313b9bbf27bd8edf555a0bb77a12f8563057dc3551",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53942,28 +52859,28 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 575,
+          "line": 573,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 581,
+          "line": 579,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 599,
+          "line": 597,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 601,
+          "line": 599,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -54560,24 +53477,16 @@
     },
     {
       "file": "src/native/text-log.mjs",
-      "sourceSha256": "1cc4288381f29e8704641660aabdaf39e397bb771e626e08ec13600725edbef4",
+      "sourceSha256": "3ce6369f164a2e08e49e36b8211ddb742d3f1ce3d4f40d3fe7e7998dddf7d84b",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature"],
+      "dependencyTypes": [],
       "docs": ["docs/native-text.md"],
       "executionSites": [],
       "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 517,
-          "method": "getNativeFeature",
-          "feature": "display-log-projection",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/text-parser.mjs",
@@ -56498,64 +55407,43 @@
     },
     {
       "file": "oracle/data-buffer-projection.mjs",
-      "sourceSha256": "92b71be6fab8a963ead3e98c0361d80fd91782f3b7b5892bc869c3de8facd775",
-      "domain": 7,
+      "sourceSha256": "3b1562e6f3207cafc066e1130b8f3188884f263b1b7d2388d079a5f38dd6df8b",
+      "domain": 8,
       "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 21, "calls": 2, "references": 0 },
+      "exeDependencies": { "addresses": 2, "calls": 2, "references": 0 },
       "dependencyTypes": ["call", "callFromHost", "in-image-literals"],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 84,
+          "line": 59,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 85,
+          "line": 60,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 271,
-          "method": "call",
-          "target": "container ? this.layout.containerInfo : this.layout.frameInfo",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 284,
-          "method": "call",
-          "target": "this.layout.image",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 296,
-          "method": "call",
-          "target": "this.layout.imageTo32",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 319,
+          "line": 232,
           "method": "call",
           "target": "this.layout.imageRelease",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         }
       ],
-      "executionSiteCounts": { "callFromHost": 1, "call": 5 },
+      "executionSiteCounts": { "callFromHost": 1, "call": 2 },
       "indirectSites": [],
       "review": "needs-review"
     },
     {
       "file": "oracle/bitmap-memory.mjs",
-      "sourceSha256": "3bff987b97058c0b9bee1d2729ec252388fb66c0b0c352d423b69f654b143cd0",
-      "domain": 7,
+      "sourceSha256": "2060e04563a1e8674f1e29011f79ed0c3e198ab0758c806a15d6a979dc648e84",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 14, "calls": 2, "references": 0 },
       "dependencyTypes": ["call", "callFromHost", "getNativeFeature", "in-image-literals"],
@@ -56653,8 +55541,8 @@
     },
     {
       "file": "oracle/bitmap-projection.mjs",
-      "sourceSha256": "5111dffc012ed93d032b93a031f37d6d0d791c5653f71481b5a8b296fe81f6e1",
-      "domain": 7,
+      "sourceSha256": "5f56046026067fdd4f4b26c63c7aa10b017367095d64968c2bd9d6636fb3959a",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": ["call", "callAsync", "getNativeFeature"],
@@ -56709,193 +55597,6 @@
       "review": "needs-review"
     },
     {
-      "file": "oracle/image-owner.mjs",
-      "sourceSha256": "bfd2d16bb5efc07d8d43c22965b82e50c886ba1396366ad85d3c963671a97d6c",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
-      "dependencyTypes": ["in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [],
-      "executionSiteCounts": {},
-      "indirectSites": [],
-      "review": "counted"
-    },
-    {
-      "file": "oracle/image-owner-projection.mjs",
-      "sourceSha256": "34e53bc30c9259f246e9b5f034bf2fbf01be3759cea2eab869290e42f8b6921d",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callAsync",
-        "callFromHost",
-        "getNativeFeature",
-        "profile-memory-layout"
-      ],
-      "docs": ["docs/native-image-owners.md"],
-      "executionSites": [
-        {
-          "line": 56,
-          "method": "call",
-          "target": "memory.layout.wrapperConstruct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 191,
-          "method": "call",
-          "target": "this.engine.features.get('data-buffers').layout.imageRelease",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 219,
-          "method": "call",
-          "target": "memory.layout.configure",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 232,
-          "method": "call",
-          "target": "memory.layout.clearAttributes",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 237,
-          "method": "call",
-          "target": "memory.layout.attribute",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 255,
-          "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 271,
-          "method": "callAsync",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 274,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 275,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "call": 7, "callAsync": 1, "callFromHost": 1 },
-      "indirectSites": [
-        {
-          "line": 133,
-          "method": "getNativeFeature",
-          "feature": "graphics-platform",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 216,
-          "method": "getNativeFeature",
-          "feature": "data-buffers",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
-    },
-    {
-      "file": "oracle/hg3-delta.mjs",
-      "sourceSha256": "fa5981074a87a836e7c77cb196fff9e588bbc90814ff27457426afdc65ba5d15",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 2, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 45,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "oracle/text-log-projection.mjs",
-      "sourceSha256": "86ee740786539c167086c38adfc7e6adaf5b90cbf71e9fa7610f711b994a2c31",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 4, "calls": 2, "references": 0 },
-      "dependencyTypes": [
-        "call",
-        "callAsync",
-        "callFromHost",
-        "in-image-literals",
-        "profile-memory-layout"
-      ],
-      "docs": ["docs/native-text.md"],
-      "executionSites": [
-        {
-          "line": 25,
-          "method": "callAsync",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 27,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 28,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 36,
-          "method": "call",
-          "target": "p.load(this.layout.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 65,
-          "method": "call",
-          "target": "this.layout.load",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "callAsync": 1, "callFromHost": 1, "call": 3 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
       "file": "oracle/text-consumer-view.mjs",
       "sourceSha256": "664171fb44af59d0d6009a3bcb702f59de6c2b9b60ce23e970f3ddc3e4769bc9",
       "domain": 8,
@@ -56909,92 +55610,9 @@
       "review": "counted"
     },
     {
-      "file": "oracle/fes-text-projection.mjs",
-      "sourceSha256": "2dde9d8b219fafc9ec1fc794451b38bc917f860ece42d96b0bf8fca1be681bf4",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 20, "calls": 1, "references": 0 },
-      "dependencyTypes": ["in-image-literals", "patch", "profile-memory-layout"],
-      "docs": ["docs/native-text.md"],
-      "executionSites": [
-        {
-          "line": 17,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "patch": 1 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "oracle/fes-draw-projection.mjs",
-      "sourceSha256": "00a7bd4455044afc78ab7c10a22aa19cd880a910ad07e34dacc01dce46777acb",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
-      "dependencyTypes": [],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [],
-      "executionSiteCounts": {},
-      "indirectSites": [],
-      "review": "counted"
-    },
-    {
-      "file": "oracle/raster-kernel-projection.mjs",
-      "sourceSha256": "5d3a2c1630a40cce4871e332e3a9dd32198fda1ab8172ef4a37f470f798046da",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 34, "calls": 0, "references": 0 },
-      "dependencyTypes": ["beforeInstruction", "in-image-literals", "profile-memory-layout"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [
-        {
-          "line": 89,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "line": 111,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "executionSiteCounts": { "beforeInstruction": 2 },
-      "indirectSites": [],
-      "review": "needs-review"
-    },
-    {
-      "file": "oracle/fes-screen-effect-projection.mjs",
-      "sourceSha256": "fadff9903a00e0053e6700971903bf59ba6fb3acc6f5f9a010e2bdb614c6edec",
-      "domain": 7,
-      "role": "domain implementation/support",
-      "exeDependencies": { "addresses": 6, "calls": 0, "references": 0 },
-      "dependencyTypes": ["getNativeFeature", "in-image-literals"],
-      "docs": ["docs/native-compatibility.md"],
-      "executionSites": [],
-      "executionSiteCounts": {},
-      "indirectSites": [
-        {
-          "line": 49,
-          "method": "getNativeFeature",
-          "feature": "fes-draw-projection",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        }
-      ],
-      "review": "needs-review"
-    },
-    {
       "file": "oracle/graphics-consumer-projection.mjs",
-      "sourceSha256": "5c6ab1bb5aeb5f15e1b35601881920a66016fd05fcd60ac54d1701625071f308",
-      "domain": 7,
+      "sourceSha256": "a9a59e01604c227a2f7d74079058d6a42f556021cfe345bdaea8a3e11da62ecb",
+      "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 24, "calls": 3, "references": 0 },
       "dependencyTypes": [
@@ -57186,7 +55804,7 @@
   "nonNativeEntries": [
     {
       "name": "js-graphics-to-remaining-consumers",
-      "domain": 7,
+      "domain": 8,
       "projection": {
         "direction": "JS view/matrix/draw state into PE consumer records; explicit bitmap copies import at consumer boundaries",
         "authority": "StageRenderer surfaces, JS Plane models, texture pages and frame scheduling",
@@ -57199,18 +55817,13 @@
           "consumer graph identity"
         ],
         "consumers": [
-          {
-            "domain": 7,
-            "modules": ["fes-objects", "fes-images", "text", "control-task", "fes-controls"],
-            "removePhase": 7
-          },
           { "domain": 8, "modules": ["sdk-javascript-task", "directshow"], "removePhase": 8 }
         ],
         "lifetime": "No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.",
         "removePhase": 8,
         "operations": ["sync", "pull", "bitmap", "initialize", "snapshot", "restore", "close"]
       },
-      "entry": "Explicit FES/text calls borrow JS graph state and submit to StageRenderer",
+      "entry": "Explicit SDK JavaScript task transport and media consumers borrow JS view/device records",
       "modules": [
         "oracle/graphics-consumer-projection.mjs",
         "oracle/renderer-consumer-projection.mjs"
@@ -57357,88 +55970,6 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "fes-screen-capture-projection",
-      "domain": 7,
-      "projection": {
-        "direction": "Explicit JS target publication and PE producer readback at FES boundaries",
-        "authority": "StageRenderer surfaces and JS screen-effect task clocks, geometry and callback slot",
-        "fields": [
-          "shared target metadata and Texture9 identities",
-          "capture slot RGBA bytes and revisions",
-          "depth/stencil target identity",
-          "FES mask bitmap identity"
-        ],
-        "consumers": [{ "domain": 7, "modules": ["fes-effects", "fes-objects"] }],
-        "lifetime": "FES retains its original object/resource lifecycle. Only its target producer data cross this boundary. JS effects retain independent private working textures. No screen-effect constructor, callback or receiver executes in the EXE.",
-        "removePhase": 7,
-        "operations": ["pushCaptures", "importCaptures", "releaseTargets", "snapshot", "restore"]
-      },
-      "entry": "Original FES capture/resource drivers → JS screen-effect capture slots",
-      "modules": ["oracle/fes-screen-effect-projection.mjs"],
-      "executionSites": [],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
-      "name": "remaining-exe-raster-projection",
-      "domain": 7,
-      "projection": {
-        "direction": "PE consumer pixel copies/raster loops",
-        "authority": "JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers",
-        "fields": ["consumer bitmap rows", "consumer allocation bounds"],
-        "consumers": [{ "domain": 7, "modules": ["fes-images"] }],
-        "lifetime": "The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and SDK/media consumers until their consumer phases.",
-        "removePhase": 8,
-        "operations": ["install", "close"]
-      },
-      "entry": "Explicit EXE host installs the existing raster loops for remaining FES/DLL consumers",
-      "modules": ["src/native/raster-projection.mjs", "oracle/raster-kernel-projection.mjs"],
-      "executionSites": [
-        {
-          "file": "oracle/raster-kernel-projection.mjs",
-          "line": 89,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/raster-kernel-projection.mjs",
-          "line": 111,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
-      "name": "fes-draw-source-projection",
-      "domain": 7,
-      "projection": {
-        "direction": "Explicit PE producer-to-JS import and JS-to-PE consumer projection",
-        "authority": "JS render-source handles, bitmap-data aliases, ANM registers and clocks",
-        "fields": [
-          "FES bitmap metadata/pixels",
-          "retained identity",
-          "ordered frame maps",
-          "ANM state",
-          "selected wrapper identity"
-        ],
-        "consumers": [{ "domain": 7, "modules": ["fes-images", "fes-objects"] }],
-        "lifetime": "Each Draw entry owns a JS reference. FES retains its original allocation/reference/tree lifecycle. Pending prefetch records must settle through existing workers before import. No original D6 animation step or rasterizer is invoked by this projection.",
-        "removePhase": 7,
-        "operations": ["importSource", "publish", "beforeCall", "afterCall"]
-      },
-      "entry": "FES producer packets → typed JS Draw sources; source clocks/pixels project back before FES calls",
-      "modules": ["oracle/fes-draw-projection.mjs"],
-      "executionSites": [],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
       "name": "renderer-surfaces-to-foreign-locks",
       "domain": 8,
       "projection": {
@@ -57446,10 +55977,9 @@
         "authority": "StageRenderer.surfaces packed bytes; GPU targets are derived render resources",
         "fields": ["surface identity", "pitch", "format", "lock bytes", "D3D resource handles"],
         "consumers": [
-          { "domain": 7, "modules": ["fes-images"], "removePhase": 7 },
           { "domain": 8, "modules": ["vmr9", "texture-movie-renderer"], "removePhase": 8 }
         ],
-        "lifetime": "Guest virtual regions contain temporary FES/media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.",
+        "lifetime": "Guest virtual regions contain temporary media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers were removed in phase 6 and D7 captures now use JS surfaces directly.",
         "removePhase": 8,
         "operations": [
           "LockRect",
@@ -57460,7 +55990,7 @@
           "snapshot"
         ]
       },
-      "entry": "StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining FES/media consumers",
+      "entry": "StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining media/SDK consumers",
       "modules": [
         "src/emote/native-d3d.mjs",
         "src/native/renderer.mjs",
@@ -57631,7 +56161,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 182,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -57639,7 +56169,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 184,
+          "line": 160,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -57647,7 +56177,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 191,
+          "line": 167,
           "method": "call",
           "target": "helper",
           "review": "needs-review",
@@ -57655,7 +56185,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 193,
+          "line": 169,
           "method": "call",
           "target": "image.affineTrig",
           "review": "needs-review",
@@ -57663,7 +56193,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 203,
+          "line": 179,
           "method": "call",
           "target": "engine.process.load(image.comImports[0])",
           "review": "needs-review",
@@ -57671,7 +56201,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 222,
+          "line": 198,
           "method": "callAsync",
           "target": "image.readGameDefaults",
           "review": "needs-review",
@@ -57679,7 +56209,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 254,
+          "line": 230,
           "method": "callAsync",
           "target": "initialize",
           "review": "needs-review",
@@ -57687,7 +56217,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 278,
+          "line": 254,
           "method": "callAsync",
           "target": "destroy",
           "review": "needs-review",
@@ -57695,7 +56225,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 356,
+          "line": 332,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -57703,7 +56233,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 368,
+          "line": 344,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -57711,7 +56241,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 404,
+          "line": 380,
           "method": "callAsync",
           "target": "address",
           "review": "needs-review",
@@ -57719,7 +56249,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 435,
+          "line": 411,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -57727,7 +56257,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 542,
+          "line": 518,
           "method": "call",
           "target": "this.process.load(address)",
           "review": "needs-review",
@@ -58267,20 +56797,30 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "fes-and-text-lifecycle",
+      "name": "default-fes-and-text-lifecycle",
       "domain": 7,
-      "entry": "createNativeFESTask → NativeFESObjectRuntime and registered FES type adapters; NativeTextRuntime lifecycle",
+      "entry": "Default World kind34 → FESCoordinator → typed collection, MOT, resource FIFO and JS family services",
       "modules": [
-        "src/native/control-task.mjs",
+        "src/native/emote-fes.mjs",
+        "src/native/fes-common-commands.mjs",
+        "src/native/fes-control-driver.mjs",
+        "src/native/fes-coordinator.mjs",
         "src/native/fes-data.mjs",
-        "src/native/text-legacy.mjs",
-        "src/native/text-log.mjs",
-        "src/native/text-task.mjs",
-        "src/native/text.mjs"
+        "src/native/fes-definitions.mjs",
+        "src/native/fes-effect-driver.mjs",
+        "src/native/fes-image-control-commands.mjs",
+        "src/native/fes-image-driver.mjs",
+        "src/native/fes-log-driver.mjs",
+        "src/native/fes-object-collection.mjs",
+        "src/native/fes-particle-driver.mjs",
+        "src/native/fes-plane-driver.mjs",
+        "src/native/fes-resource-entries.mjs",
+        "src/native/fes-string-driver.mjs",
+        "src/native/fes-task.mjs"
       ],
       "executionSites": [],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
+      "review": "traced",
+      "reason": "The ordinary factory, service routing and fresh restore do not request an EXE feature. Explicit Windows/SDK/media consumers remain separately counted; kind61/EFK is an unfinished subsystem."
     },
     {
       "name": "vm-and-shared-state-bridges",
@@ -58438,44 +56978,23 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "js-m2-plane-prefix-to-fes",
-      "domain": 7,
-      "projection": {
-        "direction": "JS-to-PE",
-        "authority": "JS FESObject and M2Task",
-        "fields": ["common plane motion/parent identity only; no M2 suffix, model or DLL pointer"],
-        "consumers": [{ "domain": 7, "modules": ["fes-objects", "fes-planes"] }],
-        "lifetime": "A remaining D7 consumer can lazily request the common prefix; ordinary M2PLANE execution needs no guest record.",
-        "removePhase": 7,
-        "operations": ["constructPlane", "close"]
-      },
-      "entry": "M2PLANE may expose only a common plane/motion prefix to an original FES parent/child consumer",
-      "modules": ["src/native/emote-fes.mjs"],
-      "executionSites": [],
-      "review": "traced",
-      "reason": "M2 state, commands, model and GPU target are JS. constructPlane creates the existing D7 common plane only; it never constructs an M2 object or runs its driver."
-    },
-    {
       "name": "js-image-data-to-exe-consumers",
-      "domain": 7,
+      "domain": 8,
       "projection": {
         "direction": "JS-to-PE",
         "authority": "NativeRuntime.imageDataBuffers",
         "fields": ["immutable source bytes", "size", "capacity"],
-        "consumers": [
-          { "domain": 7, "modules": ["fes-images", "fes-objects"] },
-          { "domain": 8, "modules": ["sdk-javascript-task", "engine-files"] }
-        ],
-        "lifetime": "No script image/text decoder needs this descriptor. Remaining D7 images and D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.",
+        "consumers": [{ "domain": 8, "modules": ["sdk-javascript-task", "engine-files"] }],
+        "lifetime": "No script image/text decoder needs this descriptor. D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.",
         "removePhase": 8,
         "operations": ["projectPointer", "lendPointer", "transferPointer"]
       },
-      "entry": "JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS",
+      "entry": "JS image-data bytes → independent PE descriptor snapshots for SDK JavaScript consumers; script image/text decoders use JS",
       "modules": ["src/native/data-buffer-projection.mjs", "oracle/data-buffer-projection.mjs"],
       "executionSites": [
         {
           "file": "oracle/data-buffer-projection.mjs",
-          "line": 84,
+          "line": 59,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -58483,7 +57002,7 @@
         },
         {
           "file": "oracle/data-buffer-projection.mjs",
-          "line": 85,
+          "line": 60,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -58491,31 +57010,7 @@
         },
         {
           "file": "oracle/data-buffer-projection.mjs",
-          "line": 271,
-          "method": "call",
-          "target": "container ? this.layout.containerInfo : this.layout.frameInfo",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/data-buffer-projection.mjs",
-          "line": 284,
-          "method": "call",
-          "target": "this.layout.image",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/data-buffer-projection.mjs",
-          "line": 296,
-          "method": "call",
-          "target": "this.layout.imageTo32",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/data-buffer-projection.mjs",
-          "line": 319,
+          "line": 232,
           "method": "call",
           "target": "this.layout.imageRelease",
           "review": "needs-review",
@@ -58527,7 +57022,7 @@
     },
     {
       "name": "js-bitmap-to-exe-consumers",
-      "domain": 7,
+      "domain": 8,
       "projection": {
         "direction": "JS-to-PE",
         "authority": "NativeImages bitmap-data handles",
@@ -58539,18 +57034,13 @@
           "independent bitmap/wrapper references"
         ],
         "consumers": [
-          {
-            "domain": 7,
-            "modules": ["fes-images", "fes-draw-projection", "control-task"],
-            "removePhase": 7
-          },
           { "domain": 8, "modules": ["input-commands", "sdk-javascript-task"], "removePhase": 8 }
         ],
         "lifetime": "Projection references follow JS aliases and retained consumers. Revision changes refresh the source. Wipe3 mutates JS source RGB before projection; there is no global owned-state back-read.",
         "removePhase": 8,
         "operations": ["pointer", "wrapper", "beforeCall", "release"]
       },
-      "entry": "JS bitmaps produce independent FES/foreign-task input copies; JS Draw and texture pages never use these copies",
+      "entry": "JS bitmaps produce independent foreign-task input copies; JS Draw and texture pages never use these copies",
       "modules": ["oracle/bitmap-memory.mjs", "oracle/bitmap-projection.mjs"],
       "executionSites": [
         {
@@ -58687,23 +57177,20 @@
     },
     {
       "name": "exe-owned-bitmap-derived-views",
-      "domain": 7,
+      "domain": 8,
       "projection": {
         "direction": "PE-to-JS-view",
-        "authority": "Producer-owned FES/foreign-task buffers; ordinary script bitmaps and render targets stay JS-owned",
+        "authority": "Producer-owned foreign-task buffers; ordinary script bitmaps and render targets stay JS-owned",
         "fields": [
           "derived RGBA and metadata at explicit import/publish boundaries",
           "consumer-owned pointer identity"
         ],
-        "consumers": [
-          { "domain": 7, "modules": ["fes-images"] },
-          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }
-        ],
+        "consumers": [{ "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }],
         "lifetime": "The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.",
         "removePhase": 8,
         "operations": ["borrow", "pixels", "adopt"]
       },
-      "entry": "Remaining FES/foreign-task producers expose explicit derived views of their PE-owned bitmap records",
+      "entry": "Remaining foreign-task producers expose explicit derived views of their PE-owned bitmap records",
       "modules": ["oracle/bitmap-projection.mjs"],
       "executionSites": [
         {
@@ -58757,15 +57244,12 @@
         "direction": "JS-to-PE",
         "authority": "NativeImageFiles bytes and lookup entries",
         "fields": ["immutable encoded table bytes"],
-        "consumers": [
-          { "domain": 7, "modules": ["fes-images"], "removePhase": 7 },
-          { "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }
-        ],
+        "consumers": [{ "domain": 8, "modules": ["sdk-javascript-task"], "removePhase": 8 }],
         "lifetime": "The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.",
         "removePhase": 8,
         "operations": ["read"]
       },
-      "entry": "Remaining FES/SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes",
+      "entry": "Remaining SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes",
       "modules": ["src/native/engine-files.mjs"],
       "executionSites": [
         {
@@ -58837,189 +57321,6 @@
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
     {
-      "name": "js-image-codec-to-exe-consumers",
-      "domain": 7,
-      "projection": {
-        "direction": "JS-to-PE",
-        "authority": "Encoded input bytes for each consumer-owned decoder",
-        "fields": ["expanded bitmap bytes in consumer-owned buffers"],
-        "consumers": [
-          { "domain": 7, "modules": ["fes-images", "fes-task", "data-buffer-projection"] }
-        ],
-        "lifetime": "Script-created images decode entirely in JS. Only the remaining original consumers use the HG kernel; no script bitmap is imported implicitly.",
-        "removePhase": 7,
-        "operations": ["installNativeHG3Delta"]
-      },
-      "entry": "FES image/task producer decodePointer/decodeBitmapPointer still use the existing bounded HG delta boundary",
-      "modules": ["oracle/hg3-delta.mjs"],
-      "executionSites": [
-        {
-          "file": "oracle/hg3-delta.mjs",
-          "line": 45,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
-      "name": "js-image-owner-to-exe-consumers",
-      "domain": 7,
-      "projection": {
-        "direction": "JS-to-PE",
-        "authority": "NativeImageOwners logical records and NativeImages bitmap-data",
-        "fields": [
-          "bitmap pixels/metadata/attributes",
-          "collection geometry/format/flags",
-          "independent wrapper and retained owner references"
-        ],
-        "consumers": [{ "domain": 7, "modules": ["fes-images"] }],
-        "lifetime": "JS task ownership uses handles. Independent PE vectors, wrappers and frame maps are built from JS values without calling image native handlers. External retained references can outlive JS release.",
-        "removePhase": 7,
-        "operations": ["prepare", "sync", "releaseModel"]
-      },
-      "entry": "FES IMAGEEX refex borrows independent 64-byte collections from JS image-owner handles; JS Draw has no PE collection",
-      "modules": ["oracle/image-owner.mjs", "oracle/image-owner-projection.mjs"],
-      "executionSites": [
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 56,
-          "method": "call",
-          "target": "memory.layout.wrapperConstruct",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 191,
-          "method": "call",
-          "target": "this.engine.features.get('data-buffers').layout.imageRelease",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 219,
-          "method": "call",
-          "target": "memory.layout.configure",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 232,
-          "method": "call",
-          "target": "memory.layout.clearAttributes",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 237,
-          "method": "call",
-          "target": "memory.layout.attribute",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 255,
-          "method": "call",
-          "target": "this.releaseAddress",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 271,
-          "method": "callAsync",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 274,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/image-owner-projection.mjs",
-          "line": 275,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
-      "name": "js-log-to-exe-fes-consumer",
-      "domain": 7,
-      "projection": {
-        "direction": "JS-to-PE",
-        "authority": "NativeDisplayLogs JS rows, blocks and strings",
-        "fields": ["CSS wire tables", "derived row second strings", "consumer object identity"],
-        "consumers": [{ "domain": 7, "modules": ["fes-log"] }],
-        "lifetime": "Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.",
-        "removePhase": 7,
-        "operations": ["prepare", "sync"]
-      },
-      "entry": "D7 LOGSTRING/LOGSTRING8 read an independent display-log table projection",
-      "modules": ["oracle/text-log-projection.mjs"],
-      "executionSites": [
-        {
-          "file": "oracle/text-log-projection.mjs",
-          "line": 25,
-          "method": "callAsync",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/text-log-projection.mjs",
-          "line": 27,
-          "method": "callFromHost",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/text-log-projection.mjs",
-          "line": 28,
-          "method": "call",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/text-log-projection.mjs",
-          "line": 36,
-          "method": "call",
-          "target": "p.load(this.layout.main + id * 4)",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/text-log-projection.mjs",
-          "line": 65,
-          "method": "call",
-          "target": "this.layout.load",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
       "name": "js-text-to-exe-windows-consumer",
       "domain": 8,
       "projection": {
@@ -59031,7 +57332,6 @@
           "explicit native resource byte inputs"
         ],
         "consumers": [
-          { "domain": 7, "modules": ["fes-objects", "fes-log"], "removePhase": 7 },
           {
             "domain": 8,
             "modules": ["engine-process", "windows-gdi", "sdk-javascript-task"],
@@ -59045,47 +57345,6 @@
       "entry": "Explicit Windows/GDI consumers borrow the World-owned JavaScript text runtime",
       "modules": ["oracle/text-consumer-view.mjs"],
       "executionSites": [],
-      "review": "needs-review",
-      "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
-    },
-    {
-      "name": "js-text-to-exe-fes-consumers",
-      "domain": 7,
-      "projection": {
-        "direction": "JS-to-PE and explicit D7-to-JS semantic commands",
-        "authority": "JS text parser/configuration/source/cached query state; D7 owns the common plane and motion prefix for LOG children",
-        "fields": [
-          "independent FES configuration bytes",
-          "cached remaining/page/line/end words",
-          "generic plane identity"
-        ],
-        "consumers": [{ "domain": 7, "modules": ["fes-log", "fes-objects"] }],
-        "lifetime": "No original text parser, text constructor or text driver runs. Fourteen semantic entries service LOG reads/writes; only LOG-owned common plane fields are read back. The generic plane destructor owns that prefix.",
-        "removePhase": 7,
-        "operations": [
-          "construct",
-          "bind",
-          "sync",
-          "pull",
-          "read configuration",
-          "replace source",
-          "set view/colors/page",
-          "read inline ID/end",
-          "consume endChanged"
-        ]
-      },
-      "entry": "D7 LOGSTRING children use generic plane prefixes and explicit JS text read/write commands",
-      "modules": ["oracle/fes-text-projection.mjs"],
-      "executionSites": [
-        {
-          "file": "oracle/fes-text-projection.mjs",
-          "line": 17,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        }
-      ],
       "review": "needs-review",
       "reason": "生命周期和消息路径与 native 调用共享部分实现，调用点是保守候选。需区分 EXE、宿主 thunk 与独立 DLL 目标。"
     },
@@ -59932,7 +58191,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 182,
+          "line": 158,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59940,7 +58199,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 184,
+          "line": 160,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59948,7 +58207,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 356,
+          "line": 332,
           "method": "patch",
           "target": "address",
           "review": "needs-review",
@@ -59956,7 +58215,7 @@
         },
         {
           "file": "src/native/engine-process.mjs",
-          "line": 368,
+          "line": 344,
           "method": "patch",
           "target": "NATIVE_ENGINE_IMAGES[this.profile].deflate",
           "review": "needs-review",
@@ -60127,38 +58386,6 @@
           "line": 31,
           "method": "beforeInstruction",
           "target": "this.sdk ? 0x4b9120 : 0x5dcf00",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/hg3-delta.mjs",
-          "line": 45,
-          "method": "beforeInstruction",
-          "target": "site",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/fes-text-projection.mjs",
-          "line": 17,
-          "method": "patch",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/raster-kernel-projection.mjs",
-          "line": 89,
-          "method": "beforeInstruction",
-          "target": "address",
-          "review": "needs-review",
-          "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
-        },
-        {
-          "file": "oracle/raster-kernel-projection.mjs",
-          "line": 111,
-          "method": "beforeInstruction",
-          "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },

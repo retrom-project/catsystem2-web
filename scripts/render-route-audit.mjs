@@ -91,14 +91,6 @@ export const RENDER_ROUTE_AUDIT = Object.freeze(
       consumerRoutes: messages.length
         ? [
             {
-              domain: 7,
-              condition: 'Target is an original Scroll/Scroll2/Slider control kind 40/41/42',
-              module: 'src/native/control-task.mjs',
-              method: 'NativeControlTask.message',
-              implementation: 'original-handler',
-              removePhase: 7,
-            },
-            {
               domain: 8,
               condition:
                 'ABI capabilities.embeddedJavaScript is true and target is native SDK JavaScript task kind 55',
@@ -122,13 +114,11 @@ export function reviewedRenderRoute(file, id) {
 const indirect = {
   'emote-commands': ['sendNativeEngine'],
   'emote-task': ['sendNativeEngine'],
-  'emote-fes': ['getNativeFeature:fes-objects'],
   'area-effect-commands': ['sendNativeEngine'],
-  'area-effect': ['getNativeFeature:fes-draw-projection'],
+  'area-effect': ['getNativeFeature:graphics-platform'],
   'draw-commands': ['sendNativeEngine'],
   'draw-task': [
     'sendNativeEngine',
-    'getNativeFeature:retained-draw',
     'getNativeFeature:graphics-platform',
     'getNativeFeature:bitmap-memory',
   ],
@@ -147,23 +137,18 @@ const indirect = {
   mesh: ['sendNativeEngine'],
   'particle-commands': ['sendNativeEngine'],
   'plane-model-command': ['sendNativeEngine'],
-  'retained-draw': ['getNativeFeature:fes-draw-projection'],
 };
 export function reviewRenderIndirect(file, site) {
   const name = file.match(/^src\/native\/([^/]+)\.mjs$/)?.[1];
   const key = site.method + (site.feature ? ':' + site.feature : '');
   if (!indirect[name]?.includes(key)) return null;
-  if (name === 'emote-fes')
-    return 'The remaining D7 common plane prefix is destroyed only when a native FES consumer previously requested it. No M2 constructor or driver is called.';
   if (name === 'emote-commands')
     return '37 registered M2 wrappers send the reviewed 524..554 family to task54; M2Task, its owner, model and controller state are JS. No model/task pointer projection is made.';
   if (name === 'emote-task')
     return 'Explicit public sound-task queries for media clock, envelope levels and JS sidecar handles; NativeSoundTask owns these messages and invokes no model/DLL code.';
-  if (site.feature === 'fes-draw-projection')
-    return 'Explicit context.nativePointer producer import/publish; JS Draw/Area state is authoritative. FES consumer projection removes in phase 7.';
-  if (['retained-draw'].includes(site.feature))
-    return 'Registered factory returns the existing JS NativeRetainedDraw, never an original rasterizer.';
+  if (name === 'area-effect' && site.feature === 'graphics-platform')
+    return 'Explicit context.nativePointer bitmap wrappers from D8 task transport borrow the existing bitmap view. Default FES sends semantic JS handles and never enters this branch.';
   if (site.method === 'getNativeFeature')
-    return 'Explicit remaining consumer factory: FES bitmap/view records (7), media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections.';
-  return 'Traced JS task routing and factories: ordinary render receivers are JS. Foreign controls 40/41/42 (7), SDK kind 55 (8) retain separately registered message/lifecycle paths; FES pointer producers use explicit projections (7).';
+    return 'Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections.';
+  return 'Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary.';
 }

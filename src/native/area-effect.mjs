@@ -98,6 +98,10 @@ export class NativeAreaEffectTask {
     if (this.state.work) await this.world.graphics.images.release(this.state.work);
     this.state.work = 0;
     for (const { handle } of this.state.imports) await this.world.graphics.images.release(handle);
+    if (this.state.imports.length)
+      await this.world.nativeEngine?.features
+        .get('graphics-platform')
+        ?.releaseOwnerImages(this.record.id);
     this.state.imports = [];
   }
   async readPacket(message, l, context) {
@@ -121,8 +125,9 @@ export class NativeAreaEffectTask {
   async bitmap(handle, context) {
     if (!handle) return 0;
     if (!context.nativePointer) return handle;
-    const projection = await this.world.getNativeFeature('fes-draw-projection'),
-      imported = projection.wrapper(handle);
+    const platform = await this.world.getNativeFeature('graphics-platform'),
+      borrowed = platform.imageHandle(platform.process.load(handle), this.record.id),
+      imported = this.world.graphics.images.alias(borrowed, this.record.id);
     this.state.imports.push({ wrapper: handle, handle: imported });
     return imported;
   }
@@ -479,9 +484,9 @@ export class NativeAreaEffectTask {
   }
   async refreshImports() {
     if (!this.state.imports.length) return;
-    const projection = await this.world.getNativeFeature('fes-draw-projection');
+    const platform = await this.world.getNativeFeature('graphics-platform');
     for (const { wrapper } of this.state.imports)
-      await projection.refreshBitmap(projection.process.load(wrapper));
+      platform.imageHandle(platform.process.load(wrapper), this.record.id);
   }
   async calculate(elapsed) {
     const state = this.state,

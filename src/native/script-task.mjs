@@ -517,10 +517,8 @@ export function createNativeScriptTask(world, record) {
       } catch (error) {
         destructionError = error;
       }
+      await world.imageOwners.releaseOwner(record.id, { dispose: true });
       await world.graphics.images.releaseOwner(record.id);
-      await world.nativeEngine?.features
-        .get('image-owners')
-        ?.releaseOwner(record.id, { dispose: true });
       world.runtime.services.motion?.releaseOwner(record.id);
       {
         const task = this.task;

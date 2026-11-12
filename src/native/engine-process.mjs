@@ -2,16 +2,10 @@
 // Original EXE backend, reached only through an explicitly injected host.
 import { NativeDataBuffers as NativeBufferProjection } from '../../oracle/data-buffer-projection.mjs';
 import { NativeBitmapProjection } from '../../oracle/bitmap-projection.mjs';
-import { NativeDisplayLogProjection } from '../../oracle/text-log-projection.mjs';
-import { NativeFESTextProjection } from '../../oracle/fes-text-projection.mjs';
 import { NativeTextConsumerView } from '../../oracle/text-consumer-view.mjs';
-import { installNativeRasterKernels } from '../../oracle/raster-kernel-projection.mjs';
-import { NativeFESDrawProjection } from '../../oracle/fes-draw-projection.mjs';
 import { NativePlaneMovieProjection } from '../../oracle/plane-movie-projection.mjs';
 import { NativeGraphicsPlatform } from '../../oracle/graphics-consumer-projection.mjs';
 import { NativeRenderer } from '../../oracle/renderer-consumer-projection.mjs';
-import { NativeFESScreenEffectProjection } from '../../oracle/fes-screen-effect-projection.mjs';
-import { NativeImageOwnerProjection } from '../../oracle/image-owner-projection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { PE32Process } from '../ppi/pe32.mjs';
 import { loadUnicorn } from '../ppi/backend.mjs';
@@ -104,23 +98,11 @@ export class NativeEngineProcess {
   createTextConsumerView(core) {
     return new NativeTextConsumerView(this, core);
   }
-  createFESTextProjection(world) {
-    return new NativeFESTextProjection(this, world);
-  }
   createDataBufferProjection(options) {
     return new NativeBufferProjection(this, options);
   }
   createBitmapProjection(world) {
     return new NativeBitmapProjection(this, world);
-  }
-  createDisplayLogProjection(world) {
-    return new NativeDisplayLogProjection(this, world);
-  }
-  createRasterProjection() {
-    return installNativeRasterKernels(this);
-  }
-  createDrawSourceProjection(world) {
-    return new NativeFESDrawProjection(this, world);
   }
   createGraphicsProjection(world) {
     return new NativeGraphicsPlatform(this, world);
@@ -130,12 +112,6 @@ export class NativeEngineProcess {
   }
   createRendererProjection(world) {
     return NativeRenderer.open(this, world);
-  }
-  createScreenEffectProjection(world) {
-    return new NativeFESScreenEffectProjection(this, world);
-  }
-  createImageOwnerProjection(world) {
-    return new NativeImageOwnerProjection(this, world);
   }
 
   static async open({ game, profile, bytes, name, ...options }) {

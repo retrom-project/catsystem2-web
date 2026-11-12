@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NativeFESDrawProjection } from './fes-draw-projection.mjs';
+import { installNativeRasterKernels } from './raster-kernel-projection.mjs';
 // Original CPU image objects and frame drivers. FES owns the source wrapper;
 // retained renderer entries borrow its decoded pixels through native messages.
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
@@ -403,10 +405,10 @@ export function nativeFESImageAdapter(runtime, type) {
 }
 
 export function installNativeFESImages(world) {
-  world.registerNativeFeature('raster-kernels', (engine) => engine.createRasterProjection());
+  world.registerNativeFeature('raster-kernels', (engine) => installNativeRasterKernels(engine));
   world.registerNativeFeature('fes-draw-projection', async (engine) => {
     await world.getNativeFeature('graphics-platform');
-    return engine.createDrawSourceProjection(world);
+    return new NativeFESDrawProjection(engine, world);
   });
   world.registerNativeFeature('retained-draw', (engine) => {
     engine.registerFeature('retained-draw', world.retainedDraw);

@@ -25,7 +25,7 @@ export class NativeDrawTask {
     };
   }
   retained() {
-    return this.world.retainedDraw ?? this.world.nativeEngine?.features.get('retained-draw');
+    return this.world.retainedDraw;
   }
   async message(words, context = {}) {
     const { payload } = context;
@@ -88,13 +88,15 @@ export class NativeDrawTask {
         const fields = Array.from({ length: 15 }, (_, i) => load(l + i * 4));
         if (context.imageOwnerHandle !== undefined) {
           fields[3] = context.imageOwnerHandle;
-          const retained = this.retained() ?? (await this.world.getNativeFeature('retained-draw'));
-          await retained.bind(this, key, fields, context);
+          const retained = this.retained();
+          await retained.bind(this, key, fields);
           return 0;
         }
-        if (context.nativePointer || fields.slice(1, 4).some(Boolean)) {
-          const retained = this.retained() ?? (await this.world.getNativeFeature('retained-draw'));
-          await retained.bind(this, key, fields, context);
+        if (fields.slice(1, 4).some(Boolean)) {
+          if (context.nativePointer)
+            throw new Error('Draw retained inputs require JavaScript resource handles');
+          const retained = this.retained();
+          await retained.bind(this, key, fields);
           return 0;
         }
         if (!fields[0]) {
@@ -203,20 +205,11 @@ export class NativeDrawTask {
         const name = payload
           ? payload.string(l)
           : this.world.objects.machine(context.nativeSenderWorldID ?? sender).string(l);
-        await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).load(
-          this,
-          key,
-          name,
-        );
+        await this.retained().load(this, key, name);
         return 0;
       }
       case 295:
-        if (this.state.renderer)
-          await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).enable(
-            this,
-            key,
-            l,
-          );
+        if (this.state.renderer) await this.retained().enable(this, key, l);
         return 0;
       case 296: {
         const image =
@@ -256,11 +249,7 @@ export class NativeDrawTask {
         const item = this.entry(key);
         if (item) {
           this.mark(item);
-          if (this.retained())
-            await (this.retained() ?? (await this.world.getNativeFeature('retained-draw'))).refresh(
-              this,
-              key,
-            );
+          if (this.retained()) await this.retained().refresh(this, key);
           this.mark(this.entry(key));
         }
         return 0;
@@ -311,9 +300,7 @@ export class NativeDrawTask {
     }
   }
   async setAnimationVariable(key, index, value) {
-    return (
-      this.retained() ?? (await this.world.getNativeFeature('retained-draw'))
-    ).setAnimationVariable(this, key, index, value);
+    return this.retained().setAnimationVariable(this, key, index, value);
   }
   async soundTarget() {
     return nativeEngineWord(

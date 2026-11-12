@@ -56,6 +56,7 @@ for (const fixture of await engineFixtureSet())
           await image.fill(0, 0, 4, 3, 0xff102030);
           const rgba = await image.pixels();
           for (let i = 0; i < rgba.length; i++) rgba[i] = (i * 71 + 13) & 255;
+          image.state.attributes = [{ id: 7, rect: [10, -20, 30, -40], color: 0xff800123 }];
           await image.changed();
         }
         async function call(id, args) {

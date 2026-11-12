@@ -237,7 +237,7 @@ for (const [profile, variable] of [
     },
   );
   test(
-    `${profile} decoded bitmap adoption retains metadata, attributes and identity through resize and rotation`,
+    `${profile} original bitmap adoption retains metadata, attributes and identity through original resize and rotation`,
     { skip: !process.env[variable] },
     async () => {
       const f = await bitmapMemoryFixture(
@@ -262,7 +262,7 @@ for (const [profile, variable] of [
         ]);
         const head = p.load(p.load(pointer + 72)),
           attributeData = p.load(p.load(head) + 20);
-        await bitmap.resize(8, 6);
+        await f.operations.apply(0x7a, [h, 8, 6], f.machine, { id: 1 });
         assert.equal(p.load(p.load(p.load(p.load(pointer + 72))) + 20), attributeData);
         assert.equal(await f.memory.pointer(h), pointer);
         assert.deepEqual([bitmap.width, bitmap.height], [8, 6]);

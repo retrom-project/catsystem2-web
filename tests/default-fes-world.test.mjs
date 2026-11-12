@@ -16,6 +16,33 @@ import { append } from './fixtures/fes-log-model.mjs';
 const bytes = (value) => new TextEncoder().encode(value),
   pixel = Uint8Array.from([22, 33, 44, 255, 55, 66, 77, 255, 88, 99, 111, 255, 122, 133, 144, 255]);
 for (const profile of profiles) {
+  test(`${profile} default Script reload and close release their JS image owners without constructing a PE list`, async () => {
+    const world = await defaultFESWorld(profile);
+    try {
+      const owner = world.main.id,
+        child = await world.objects.create({ kind: 12, parent: owner }),
+        implementation = world.objects.objects.get(child).implementation;
+      await implementation.loadScript('case.kcs');
+      const create = async (task) => {
+        const handle = (await world.runtime.native('main', 0x2dd, [2, 2], task.machine, task))
+          .value;
+        return { handle, bitmap: world.imageOwners.get(handle).bitmap };
+      };
+      const first = await create(implementation.task);
+      await implementation.loadScript('missing.kcs', { nativeLoad: true });
+      for (const handle of Object.values(first))
+        assert.equal(world.runtime.handles.records.has(handle), false);
+      await implementation.loadScript('case.kcs');
+      const second = await create(implementation.task);
+      await world.objects.release(child);
+      for (const handle of Object.values(second))
+        assert.equal(world.runtime.handles.records.has(handle), false);
+      assert.equal(world.nativeEngine, undefined);
+    } finally {
+      await world.close();
+    }
+  });
+
   test(`${profile} ordinary DIFIMAGE refex owns external pixels through release, deletion and fresh World restore`, async () => {
     const source =
         '#DEFINE\nDIFIMAGE face\n#OBJECT POS PRI DISP\nface 3,4 60000 1\n#START\nnext IDLE\n#IDLE\n#BIND\nface refex $0\nbreak\n#DROP\nface delete\nbreak\n',

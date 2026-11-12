@@ -9,6 +9,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
+import { installImageOwnerOracle } from './fixtures/image-owner-oracle-world.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -147,7 +148,7 @@ for (const [profile, variable] of [
     },
   );
   test(
-    `${profile} World image owners use the original view and release on failed Script reload`,
+    `${profile} original World image owners use their original view and release on failed Script reload`,
     {
       skip:
         !process.env[variable] ||
@@ -178,16 +179,18 @@ for (const [profile, variable] of [
           game.readCategory = (name, category) => game.read(game.resolveCategory(name, category));
           game.resolveCategory = (name, category) =>
             game.has(name) ? name : `@cat/${category}/${name}`;
-          return new NativeWorld({
-            game,
-            images: {},
-            host: {},
-            profile,
-            configuration,
-            random,
-            motionLibrary: new MotionLibrary(game, { profile, random }),
-            storage: { read: async () => null, write: async () => true },
-          });
+          return installImageOwnerOracle(
+            new NativeWorld({
+              game,
+              images: {},
+              host: {},
+              profile,
+              configuration,
+              random,
+              motionLibrary: new MotionLibrary(game, { profile, random }),
+              storage: { read: async () => null, write: async () => true },
+            }),
+          );
         },
         world = make();
       let fresh;
@@ -208,9 +211,10 @@ for (const [profile, variable] of [
         assert.equal(renderer.initialized, true);
         assert.equal(p.load(script + 116), platform.refs.view);
         assert.equal(p.load(pointer + 4), platform.refs.view);
-        assert.notEqual(
+        // Original Script owns this exact list. Default JS owners have no PE list.
+        assert.equal(
           p.load(script + 156),
-          world.nativeEngine.features.get('image-owner-projection').refs.contexts.get(task.id).list,
+          world.nativeEngine.features.get('image-owners').refs.contexts.get(task.id).list,
         );
         const child = await world.objects.create({
             kind: 12,

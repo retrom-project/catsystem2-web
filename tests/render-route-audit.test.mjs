@@ -72,7 +72,7 @@ test('foreign receivers and new indirect sites remain explicit in the render aud
   for (const row of RENDER_ROUTE_AUDIT) {
     assert.equal(
       row.consumerRoutes.some((c) => c.domain === 7),
-      Boolean(row.messages.length),
+      false,
     );
     assert.equal(
       row.consumerRoutes.some((c) => c.domain === 8),

@@ -7,18 +7,8 @@
       "references": 0
     },
     "oracle/data-buffer-projection.mjs": {
-      "addresses": 21,
+      "addresses": 2,
       "calls": 2,
-      "references": 0
-    },
-    "oracle/fes-screen-effect-projection.mjs": {
-      "addresses": 6,
-      "calls": 0,
-      "references": 0
-    },
-    "oracle/fes-text-projection.mjs": {
-      "addresses": 20,
-      "calls": 1,
       "references": 0
     },
     "oracle/graphics-consumer-projection.mjs": {
@@ -26,38 +16,13 @@
       "calls": 3,
       "references": 0
     },
-    "oracle/hg3-delta.mjs": {
-      "addresses": 2,
-      "calls": 0,
-      "references": 0
-    },
-    "oracle/image-owner-projection.mjs": {
-      "addresses": 0,
-      "calls": 2,
-      "references": 0
-    },
-    "oracle/image-owner.mjs": {
-      "addresses": 2,
-      "calls": 0,
-      "references": 0
-    },
     "oracle/plane-movie-projection.mjs": {
       "addresses": 10,
       "calls": 0,
       "references": 0
     },
-    "oracle/raster-kernel-projection.mjs": {
-      "addresses": 34,
-      "calls": 0,
-      "references": 0
-    },
     "oracle/renderer-consumer-projection.mjs": {
       "addresses": 13,
-      "calls": 2,
-      "references": 0
-    },
-    "oracle/text-log-projection.mjs": {
-      "addresses": 4,
       "calls": 2,
       "references": 0
     },

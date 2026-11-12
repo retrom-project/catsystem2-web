@@ -61,7 +61,7 @@ for (const fixture of await engineFixtureSet())
         };
       world.graphics = new NativeGraphics(world);
       const platform = new NativeGraphicsPlatform(engine, world),
-        retained = new NativeRetainedDraw(engine, world),
+        retained = (world.retainedDraw = new NativeRetainedDraw(engine, world)),
         p = engine.process,
         probes = [
           { bpp: 3, alpha: 173 },

@@ -102,7 +102,7 @@ const ownedModules = {
 function domain(file) {
   if (file.startsWith('src/effekseer/')) return 7;
   if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
-  if (file === 'oracle/graphics-consumer-projection.mjs') return 7;
+  if (file === 'oracle/graphics-consumer-projection.mjs') return 8;
   if (file === 'oracle/renderer-consumer-projection.mjs') return 8;
   if (file === 'oracle/plane-movie-projection.mjs') return 8;
   if (file === 'oracle/text-consumer-view.mjs') return 8;
@@ -114,21 +114,9 @@ function domain(file) {
   )
     return 8;
   if (file === 'src/native/xml.mjs') return 4;
-  if (['oracle/raster-kernel-projection.mjs', 'src/native/raster-projection.mjs'].includes(file))
-    return 7;
   if (['src/native/data-buffer-projection.mjs', 'oracle/data-buffer-projection.mjs'].includes(file))
-    return 7;
-  if (['oracle/text-log-projection.mjs', 'oracle/fes-text-projection.mjs'].includes(file)) return 7;
-  if (
-    [
-      'oracle/hg3-delta.mjs',
-      'oracle/bitmap-memory.mjs',
-      'oracle/bitmap-projection.mjs',
-      'oracle/image-owner.mjs',
-      'oracle/image-owner-projection.mjs',
-    ].includes(file)
-  )
-    return 7;
+    return 8;
+  if (['oracle/bitmap-memory.mjs', 'oracle/bitmap-projection.mjs'].includes(file)) return 8;
   if (['src/emote/native-d3d.mjs', 'src/emote/native-adapter.mjs'].includes(file)) return 8;
   if (
     file.startsWith('src/emote/') ||
@@ -649,8 +637,9 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
 const nonNativeGroups = [
   {
     name: 'js-graphics-to-remaining-consumers',
-    domain: 7,
-    entry: 'Explicit FES/text calls borrow JS graph state and submit to StageRenderer',
+    domain: 8,
+    entry:
+      'Explicit SDK JavaScript task transport and media consumers borrow JS view/device records',
     files: ['oracle/graphics-consumer-projection.mjs', 'oracle/renderer-consumer-projection.mjs'],
     modules: [],
     projection: {
@@ -665,14 +654,7 @@ const nonNativeGroups = [
         'borrowed bitmap metadata/bytes',
         'consumer graph identity',
       ],
-      consumers: [
-        {
-          domain: 7,
-          modules: ['fes-objects', 'fes-images', 'text', 'control-task', 'fes-controls'],
-          removePhase: 7,
-        },
-        { domain: 8, modules: ['sdk-javascript-task', 'directshow'], removePhase: 8 },
-      ],
+      consumers: [{ domain: 8, modules: ['sdk-javascript-task', 'directshow'], removePhase: 8 }],
       lifetime:
         'No EXE graph traversal or graphics worker. Consumer view/device construction remains lazy and owns only the registered PE records. The former area callback bridge is oracle-only.',
       removePhase: 8,
@@ -704,85 +686,17 @@ const nonNativeGroups = [
     },
   },
   {
-    name: 'fes-screen-capture-projection',
-    domain: 7,
-    entry: 'Original FES capture/resource drivers → JS screen-effect capture slots',
-    modules: ['fes-effects', 'fes-objects'],
-    files: ['oracle/fes-screen-effect-projection.mjs'],
-    projection: {
-      direction: 'Explicit JS target publication and PE producer readback at FES boundaries',
-      authority:
-        'StageRenderer surfaces and JS screen-effect task clocks, geometry and callback slot',
-      fields: [
-        'shared target metadata and Texture9 identities',
-        'capture slot RGBA bytes and revisions',
-        'depth/stencil target identity',
-        'FES mask bitmap identity',
-      ],
-      consumers: [{ domain: 7, modules: ['fes-effects', 'fes-objects'] }],
-      lifetime:
-        'FES retains its original object/resource lifecycle. Only its target producer data cross this boundary. JS effects retain independent private working textures. No screen-effect constructor, callback or receiver executes in the EXE.',
-      removePhase: 7,
-      operations: ['pushCaptures', 'importCaptures', 'releaseTargets', 'snapshot', 'restore'],
-    },
-  },
-  {
-    name: 'remaining-exe-raster-projection',
-    domain: 7,
-    entry: 'Explicit EXE host installs the existing raster loops for remaining FES/DLL consumers',
-    modules: ['raster-projection'],
-    files: ['oracle/raster-kernel-projection.mjs'],
-    projection: {
-      direction: 'PE consumer pixel copies/raster loops',
-      authority:
-        'JS Draw uses raster-kernel directly; this adapter serves only remaining original consumers',
-      fields: ['consumer bitmap rows', 'consumer allocation bounds'],
-      consumers: [{ domain: 7, modules: ['fes-images'] }],
-      lifetime:
-        'The original Draw constructor, dispatch and compositor are absent from JS drawing. Existing instruction adapters stay for FES and SDK/media consumers until their consumer phases.',
-      removePhase: 8,
-      operations: ['install', 'close'],
-    },
-  },
-  {
-    name: 'fes-draw-source-projection',
-    domain: 7,
-    entry:
-      'FES producer packets → typed JS Draw sources; source clocks/pixels project back before FES calls',
-    modules: ['fes-images'],
-    files: ['oracle/fes-draw-projection.mjs'],
-    projection: {
-      direction: 'Explicit PE producer-to-JS import and JS-to-PE consumer projection',
-      authority: 'JS render-source handles, bitmap-data aliases, ANM registers and clocks',
-      fields: [
-        'FES bitmap metadata/pixels',
-        'retained identity',
-        'ordered frame maps',
-        'ANM state',
-        'selected wrapper identity',
-      ],
-      consumers: [{ domain: 7, modules: ['fes-images', 'fes-objects'] }],
-      lifetime:
-        'Each Draw entry owns a JS reference. FES retains its original allocation/reference/tree lifecycle. Pending prefetch records must settle through existing workers before import. No original D6 animation step or rasterizer is invoked by this projection.',
-      removePhase: 7,
-      operations: ['importSource', 'publish', 'beforeCall', 'afterCall'],
-    },
-  },
-  {
     name: 'renderer-surfaces-to-foreign-locks',
     domain: 8,
-    entry: 'StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining FES/media consumers',
+    entry: 'StageRenderer.surfaces → D3D LockRect/UnlockRect → remaining media/SDK consumers',
     modules: ['native-d3d', 'renderer', 'texture-memory'],
     projection: {
       direction: 'JS-to-PE on lock; explicit PE-to-JS commit on writable unlock',
       authority: 'StageRenderer.surfaces packed bytes; GPU targets are derived render resources',
       fields: ['surface identity', 'pitch', 'format', 'lock bytes', 'D3D resource handles'],
-      consumers: [
-        { domain: 7, modules: ['fes-images'], removePhase: 7 },
-        { domain: 8, modules: ['vmr9', 'texture-movie-renderer'], removePhase: 8 },
-      ],
+      consumers: [{ domain: 8, modules: ['vmr9', 'texture-movie-renderer'], removePhase: 8 }],
       lifetime:
-        'Guest virtual regions contain temporary FES/media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers are removed during phase 6.',
+        'Guest virtual regions contain temporary media-accessible pixel projections. Renderer snapshots preserve JS bytes once; locked surfaces reject checkpoints. Original D6 consumers were removed in phase 6 and D7 captures now use JS surfaces directly.',
       removePhase: 8,
       operations: [
         'LockRect',
@@ -852,28 +766,31 @@ const nonNativeGroups = [
     ],
   },
   {
-    name: 'fes-and-text-lifecycle',
+    name: 'default-fes-and-text-lifecycle',
     domain: 7,
     entry:
-      'createNativeFESTask → NativeFESObjectRuntime and registered FES type adapters; NativeTextRuntime lifecycle',
+      'Default World kind34 → FESCoordinator → typed collection, MOT, resource FIFO and JS family services',
     modules: [
-      'fes-objects',
-      'fes-images',
-      'fes-controls',
-      'fes-effects',
-      'fes-planes',
-      'fes-area',
-      'fes-log',
+      'fes-task',
+      'fes-coordinator',
+      'fes-object-collection',
+      'fes-resource-entries',
+      'fes-definitions',
+      'fes-common-commands',
+      'fes-image-control-commands',
+      'fes-image-driver',
+      'fes-plane-driver',
+      'fes-control-driver',
+      'fes-string-driver',
+      'fes-log-driver',
+      'fes-effect-driver',
+      'fes-particle-driver',
+      'emote-fes',
       'fes-data',
-      'fes-gallery',
-      'fes-particles',
-      'fes-text',
-      'text',
-      'text-task',
-      'text-log',
-      'text-legacy',
-      'control-task',
     ],
+    review: 'traced',
+    reason:
+      'The ordinary factory, service routing and fresh restore do not request an EXE feature. Explicit Windows/SDK/media consumers remain separately counted; kind61/EFK is an unfinished subsystem.',
   },
   {
     name: 'vm-and-shared-state-bridges',
@@ -891,50 +808,27 @@ const nonNativeGroups = [
     ],
   },
   {
-    name: 'js-m2-plane-prefix-to-fes',
-    domain: 7,
-    entry:
-      'M2PLANE may expose only a common plane/motion prefix to an original FES parent/child consumer',
-    modules: ['emote-fes'],
-    review: 'traced',
-    reason:
-      'M2 state, commands, model and GPU target are JS. constructPlane creates the existing D7 common plane only; it never constructs an M2 object or runs its driver.',
-    projection: {
-      direction: 'JS-to-PE',
-      authority: 'JS FESObject and M2Task',
-      fields: ['common plane motion/parent identity only; no M2 suffix, model or DLL pointer'],
-      consumers: [{ domain: 7, modules: ['fes-objects', 'fes-planes'] }],
-      lifetime:
-        'A remaining D7 consumer can lazily request the common prefix; ordinary M2PLANE execution needs no guest record.',
-      removePhase: 7,
-      operations: ['constructPlane', 'close'],
-    },
-  },
-  {
     name: 'js-image-data-to-exe-consumers',
-    domain: 7,
+    domain: 8,
     entry:
-      'JS image-data bytes → independent PE descriptor snapshots for remaining FES IMAGE and SDK JavaScript consumers; script image/text decoders use JS',
+      'JS image-data bytes → independent PE descriptor snapshots for SDK JavaScript consumers; script image/text decoders use JS',
     modules: ['data-buffer-projection'],
     projection: {
       direction: 'JS-to-PE',
       authority: 'NativeRuntime.imageDataBuffers',
       fields: ['immutable source bytes', 'size', 'capacity'],
-      consumers: [
-        { domain: 7, modules: ['fes-images', 'fes-objects'] },
-        { domain: 8, modules: ['sdk-javascript-task', 'engine-files'] },
-      ],
+      consumers: [{ domain: 8, modules: ['sdk-javascript-task', 'engine-files'] }],
       lifetime:
-        'No script image/text decoder needs this descriptor. Remaining D7 images and D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.',
+        'No script image/text decoder needs this descriptor. D8 MemoryFile/SDK JavaScript consumers own independent PE lifetimes; semantic transfers consume the JS reference explicitly.',
       removePhase: 8,
       operations: ['projectPointer', 'lendPointer', 'transferPointer'],
     },
   },
   {
     name: 'js-bitmap-to-exe-consumers',
-    domain: 7,
+    domain: 8,
     entry:
-      'JS bitmaps produce independent FES/foreign-task input copies; JS Draw and texture pages never use these copies',
+      'JS bitmaps produce independent foreign-task input copies; JS Draw and texture pages never use these copies',
     modules: [],
     files: ['oracle/bitmap-memory.mjs', 'oracle/bitmap-projection.mjs'],
     projection: {
@@ -948,11 +842,6 @@ const nonNativeGroups = [
         'independent bitmap/wrapper references',
       ],
       consumers: [
-        {
-          domain: 7,
-          modules: ['fes-images', 'fes-draw-projection', 'control-task'],
-          removePhase: 7,
-        },
         { domain: 8, modules: ['input-commands', 'sdk-javascript-task'], removePhase: 8 },
       ],
       lifetime:
@@ -963,23 +852,20 @@ const nonNativeGroups = [
   },
   {
     name: 'exe-owned-bitmap-derived-views',
-    domain: 7,
+    domain: 8,
     entry:
-      'Remaining FES/foreign-task producers expose explicit derived views of their PE-owned bitmap records',
-    modules: ['fes-images'],
+      'Remaining foreign-task producers expose explicit derived views of their PE-owned bitmap records',
+    modules: [],
     files: ['oracle/bitmap-projection.mjs'],
     projection: {
       direction: 'PE-to-JS-view',
       authority:
-        'Producer-owned FES/foreign-task buffers; ordinary script bitmaps and render targets stay JS-owned',
+        'Producer-owned foreign-task buffers; ordinary script bitmaps and render targets stay JS-owned',
       fields: [
         'derived RGBA and metadata at explicit import/publish boundaries',
         'consumer-owned pointer identity',
       ],
-      consumers: [
-        { domain: 7, modules: ['fes-images'] },
-        { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
-      ],
+      consumers: [{ domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 }],
       lifetime:
         'The consumer owns storage and checkpoint identity. Script-created bitmaps keep independent JS authority; capture/adoption is an explicit value transfer.',
       removePhase: 8,
@@ -989,78 +875,17 @@ const nonNativeGroups = [
   {
     name: 'js-anm-table-to-exe-view',
     domain: 8,
-    entry:
-      'Remaining FES/SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes',
+    entry: 'Remaining SDK consumer view initialization reads immutable JS-owned anmtable.csv bytes',
     modules: ['engine-files'],
     projection: {
       direction: 'JS-to-PE',
       authority: 'NativeImageFiles bytes and lookup entries',
       fields: ['immutable encoded table bytes'],
-      consumers: [
-        { domain: 7, modules: ['fes-images'], removePhase: 7 },
-        { domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 },
-      ],
+      consumers: [{ domain: 8, modules: ['sdk-javascript-task'], removePhase: 8 }],
       lifetime:
         'The original view builds its private map once from the frozen input. Scripts query JS entries; consumer map mutations never flow back.',
       removePhase: 8,
       operations: ['read'],
-    },
-  },
-  {
-    name: 'js-image-codec-to-exe-consumers',
-    domain: 7,
-    entry:
-      'FES image/task producer decodePointer/decodeBitmapPointer still use the existing bounded HG delta boundary',
-    modules: [],
-    files: ['oracle/hg3-delta.mjs'],
-    projection: {
-      direction: 'JS-to-PE',
-      authority: 'Encoded input bytes for each consumer-owned decoder',
-      fields: ['expanded bitmap bytes in consumer-owned buffers'],
-      consumers: [{ domain: 7, modules: ['fes-images', 'fes-task', 'data-buffer-projection'] }],
-      lifetime:
-        'Script-created images decode entirely in JS. Only the remaining original consumers use the HG kernel; no script bitmap is imported implicitly.',
-      removePhase: 7,
-      operations: ['installNativeHG3Delta'],
-    },
-  },
-  {
-    name: 'js-image-owner-to-exe-consumers',
-    domain: 7,
-    entry:
-      'FES IMAGEEX refex borrows independent 64-byte collections from JS image-owner handles; JS Draw has no PE collection',
-    modules: [],
-    files: ['oracle/image-owner.mjs', 'oracle/image-owner-projection.mjs'],
-    projection: {
-      direction: 'JS-to-PE',
-      authority: 'NativeImageOwners logical records and NativeImages bitmap-data',
-      fields: [
-        'bitmap pixels/metadata/attributes',
-        'collection geometry/format/flags',
-        'independent wrapper and retained owner references',
-      ],
-      consumers: [{ domain: 7, modules: ['fes-images'] }],
-      lifetime:
-        'JS task ownership uses handles. Independent PE vectors, wrappers and frame maps are built from JS values without calling image native handlers. External retained references can outlive JS release.',
-      removePhase: 7,
-      operations: ['prepare', 'sync', 'releaseModel'],
-    },
-  },
-  {
-    name: 'js-log-to-exe-fes-consumer',
-    domain: 7,
-    entry: 'D7 LOGSTRING/LOGSTRING8 read an independent display-log table projection',
-    modules: ['fes-log'],
-    files: ['oracle/text-log-projection.mjs'],
-    projection: {
-      direction: 'JS-to-PE',
-      authority: 'NativeDisplayLogs JS rows, blocks and strings',
-      fields: ['CSS wire tables', 'derived row second strings', 'consumer object identity'],
-      consumers: [{ domain: 7, modules: ['fes-log'] }],
-      lifetime:
-        'Only D7 input tables are materialized. FES remake mutates JS rows explicitly before projection; no implicit PE-to-JS refresh. JS scene/history-to-D5 display-log projection has been deleted.',
-      removePhase: 7,
-      operations: ['prepare', 'sync'],
     },
   },
   {
@@ -1080,7 +905,6 @@ const nonNativeGroups = [
         'explicit native resource byte inputs',
       ],
       consumers: [
-        { domain: 7, modules: ['fes-objects', 'fes-log'], removePhase: 7 },
         {
           domain: 8,
           modules: ['engine-process', 'windows-gdi', 'sdk-javascript-task'],
@@ -1091,39 +915,6 @@ const nonNativeGroups = [
         'Ordinary text and LOG obtain the World core without EXE initialization. The explicit engine view does not snapshot, restore or close JS writers. Its Windows handles remain with the remaining D8 consumer.',
       removePhase: 8,
       operations: ['borrow', 'Windows snapshot', 'Windows restore', 'close view'],
-    },
-  },
-  {
-    name: 'js-text-to-exe-fes-consumers',
-    domain: 7,
-    modules: [],
-    entry:
-      'D7 LOGSTRING children use generic plane prefixes and explicit JS text read/write commands',
-    files: ['oracle/fes-text-projection.mjs'],
-    projection: {
-      direction: 'JS-to-PE and explicit D7-to-JS semantic commands',
-      authority:
-        'JS text parser/configuration/source/cached query state; D7 owns the common plane and motion prefix for LOG children',
-      fields: [
-        'independent FES configuration bytes',
-        'cached remaining/page/line/end words',
-        'generic plane identity',
-      ],
-      consumers: [{ domain: 7, modules: ['fes-log', 'fes-objects'] }],
-      lifetime:
-        'No original text parser, text constructor or text driver runs. Fourteen semantic entries service LOG reads/writes; only LOG-owned common plane fields are read back. The generic plane destructor owns that prefix.',
-      removePhase: 7,
-      operations: [
-        'construct',
-        'bind',
-        'sync',
-        'pull',
-        'read configuration',
-        'replace source',
-        'set view/colors/page',
-        'read inline ID/end',
-        'consume endChanged',
-      ],
     },
   },
   {

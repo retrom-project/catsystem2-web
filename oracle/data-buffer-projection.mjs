@@ -1,34 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
-// JS buffer inputs for the remaining D7 images and D8 MemoryFile/SDK consumers.
+// Independent byte descriptors for explicit D8 MemoryFile/SDK consumers.
 import { NativeDataBuffers as JSDataBuffers } from '../src/native/data-buffer.mjs';
-import { installNativeHG3Delta, nativeHG3DecodeContext } from './hg3-delta.mjs';
 
 export const NATIVE_DATA_BUFFER_LAYOUTS = Object.freeze({
-  'nekopara-vol3-engine-2.6.1.76': Object.freeze({
-    load: 0x64b540,
-    release: 0x64b8d0,
-    heapAllocate: 0x6a49d0,
-    heapRelease: 0x6a4b00,
-    allocate: 0x628cf0,
-    clear: 0x629da0,
-    image: 0x675690,
-    imageRelease: 0x690050,
-    imageTo32: 0x68b4f0,
-    frameInfo: 0x68f780,
-    containerInfo: 0x68f810,
-  }),
-  'sdk-4.01-engine-2.6.1.74': Object.freeze({
-    load: 0x518150,
-    release: 0x518490,
-    heapAllocate: 0x575ce0,
-    heapRelease: 0x575e10,
-    allocate: 0x500320,
-    image: 0x54c870,
-    imageRelease: 0x5668f0,
-    imageTo32: 0x562050,
-    frameInfo: 0x566150,
-    containerInfo: 0x5661e0,
-  }),
+  'nekopara-vol3-engine-2.6.1.76': Object.freeze({ imageRelease: 0x690050 }),
+  'sdk-4.01-engine-2.6.1.74': Object.freeze({ imageRelease: 0x5668f0 }),
 });
 
 function length(value) {
@@ -50,7 +26,6 @@ export class NativeDataBuffers {
     this.ownsSource = !source;
     this.releaseSource = (pointer) => this.releaseProjection(pointer);
     this.source.released.add(this.releaseSource);
-    if (engine.module) this.detachHG3Delta = installNativeHG3Delta(engine);
     this.attachServices({ handles, read, diagnostic });
     const p = this.process;
     engine.registerWindows('USER32.dll', 'SetRectEmpty', {
@@ -253,68 +228,6 @@ export class NativeDataBuffers {
   async load(name, owner = null) {
     return this.handle(await this.loadPointer(name), { owner, source: name });
   }
-  async metadataPointer(
-    pointer,
-    selector = 0,
-    container = false,
-    initial = null,
-    { nullOutput = false } = {},
-  ) {
-    this.require(pointer);
-    const p = this.process,
-      output = nullOutput ? 0 : p.allocate(36, true);
-    try {
-      if (initial) {
-        if (initial.length !== 36) throw new RangeError('Native image metadata requires 36 bytes');
-        p.write(output, initial);
-      }
-      const success = await this.call(
-        container ? this.layout.containerInfo : this.layout.frameInfo,
-        container ? [pointer, output] : [pointer, output, selector >>> 0],
-      );
-      return { success: Boolean(success), bytes: output ? p.read(output, 36) : null };
-    } finally {
-      if (output) p.free(output);
-    }
-  }
-  async decodePointer(pointer, selector = 0) {
-    this.require(pointer);
-    // Returns an original refcounted bitmap wrapper, not another kcBuffer.
-    // Its consumer must release it through releaseBitmapPointer().
-    return this.call(
-      this.layout.image,
-      [pointer, selector >>> 0],
-      undefined,
-      nativeHG3DecodeContext(),
-    );
-  }
-  async decodeBitmapPointer(pointer, selector = 0) {
-    const wrapper = await this.decodePointer(pointer, selector);
-    if (!wrapper) return 0;
-    try {
-      const bitmap = this.process.load(wrapper);
-      if (this.process.load(bitmap + 24) === 3) await this.call(this.layout.imageTo32, [], bitmap);
-      return wrapper;
-    } catch (error) {
-      await this.releaseBitmapPointer(wrapper);
-      throw error;
-    }
-  }
-  async fileMetadata(name, initial = null, options = {}) {
-    if (typeof this.read !== 'function')
-      throw new Error('Native data-buffer mounted-resource service is unavailable');
-    const source = await this.read(name, 'image');
-    if (!source) return null;
-    const pointer = this.wrapPointer(0, 0, { borrowed: false });
-    try {
-      const size = Math.min(source.length, 1024),
-        address = this.allocatePointer(pointer, size);
-      this.process.write(address, source.subarray(0, size));
-      return await this.metadataPointer(pointer, 0, false, initial, options);
-    } finally {
-      this.releasePointer(pointer);
-    }
-  }
   releaseBitmapPointer(pointer) {
     if (pointer) return this.call(this.layout.imageRelease, [], pointer);
   }
@@ -335,6 +248,5 @@ export class NativeDataBuffers {
   close() {
     this.source.released.delete(this.releaseSource);
     for (const source of [...this.projected.keys()]) this.releaseProjection(source);
-    this.detachHG3Delta?.();
   }
 }

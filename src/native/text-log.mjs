@@ -462,7 +462,6 @@ export class NativeDisplayLogs {
     if (!a(0)) return done();
     const model = this.get(a(0));
     if (id === 0x2b9) {
-      await this.world.nativeEngine?.features.get('display-log-projection')?.release(a(0));
       this.world.runtime.handles.release(a(0), 'display-log');
       return done();
     }
@@ -513,9 +512,6 @@ export class NativeDisplayLogs {
       return done();
     }
   }
-  async materialize(handle) {
-    return (await this.world.getNativeFeature('display-log-projection')).prepare(handle);
-  }
   async lines(handle) {
     return this.get(handle).rows.map((r) => r.first.slice());
   }
@@ -531,9 +527,6 @@ export function installNativeDisplayLogs(world) {
     engine.registerFeature('display-logs', logs);
     return logs;
   });
-  world.registerNativeFeature('display-log-projection', (engine) =>
-    engine.createDisplayLogProjection(world),
-  );
   for (const id of NATIVE_DISPLAY_LOG_IDS)
     if (id < nativeABI(world.profile).tables.main.count)
       world.runtime.register('main', id, (args, machine, task) =>

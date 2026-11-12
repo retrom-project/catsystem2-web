@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from '../src/native/abi/index.mjs';
-// Remaining FES/foreign-task PE bitmap records. Script bitmap-data is JS-owned;
+// Explicit foreign-task PE bitmap records. Script bitmap-data is JS-owned;
 // copied inputs never become script authority. Only producer-owned PE buffers
 // expose derived views at explicit import/publish boundaries (phases 7/8/9).
 

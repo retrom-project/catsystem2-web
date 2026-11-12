@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Remaining FES/foreign tasks receive independent script bitmap copies.
+// Explicit D8 foreign tasks receive independent script bitmap copies.
 // Producer-owned PE images expose explicit derived views; ordinary Draw, Plane
 // and texture rendering use JS bytes and never this projection (phases 7/8/9).
 import { NativeBitmapMemory } from './bitmap-memory.mjs';

@@ -15,7 +15,7 @@ import { installNativeTaskMemory } from '../src/native/task-memory.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
-import { installNativeRasterKernels } from '../src/native/raster-projection.mjs';
+import { installNativeRasterKernels } from './raster-kernel-projection.mjs';
 export const NATIVE_M2_IDS = Object.freeze([
   ...Array.from({ length: 28 }, (_, i) => 906 + i),
   965,

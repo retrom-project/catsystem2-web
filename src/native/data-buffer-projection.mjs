@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-// The explicit EXE host provides the temporary image/font projection factory.
+// Only explicit D8 consumers request independent PE byte descriptors.
 export function createNativeDataProjection(engine, options) {
   if (typeof engine.createDataBufferProjection !== 'function')
-    throw new Error('Image/font projection requires the injected transitional EXE host');
+    throw new Error('D8 byte projection requires the injected transitional EXE host');
   return engine.createDataBufferProjection(options);
 }

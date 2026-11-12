@@ -6,6 +6,7 @@ import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
 import { imageOwnerFiles } from '../fixtures/image-files.mjs';
 import { imageOwnerFixture } from '../fixtures/image-owner-fixture.mjs';
 import { transitionalExe } from '../../web/transitional-entry.mjs';
+import { installFESProjectionOracle } from '../../oracle/fes-projection-world.mjs';
 const fixtures = await engineFixtureSet(),
   sdk = fixtures.find((f) => f.profile.startsWith('sdk-'));
 test(
@@ -17,7 +18,9 @@ test(
     );
     files['engine.exe'] = sdk.bytes;
     const make = async () => {
-      const w = await dataWorld(sdk.profile, files, { initialize: false });
+      const w = installFESProjectionOracle(
+        await dataWorld(sdk.profile, files, { initialize: false }),
+      );
       delete w.ensureNativeEngine;
       w.transitionalExe = transitionalExe;
       return w;
@@ -71,7 +74,7 @@ test(
             rgba,
             file + '/' + id.toString(16) + ' output pixels',
           );
-          await world.imageOwners.materialize(h);
+          await projection.prepare(h);
           const record = projection.refs.models.get(h),
             wp = world.nativeEngine.process;
           assert.deepEqual(

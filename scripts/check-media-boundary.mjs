@@ -24,16 +24,28 @@ export function validateMediaInventory(board) {
     throw Error('Media profile/VA selector remains');
   for (const name of [
     'js-bitmap-to-exe-consumers',
-    'js-image-owner-to-exe-consumers',
-    'js-log-to-exe-fes-consumer',
-    'js-text-to-exe-fes-consumers',
     'js-image-data-to-exe-consumers',
+    'js-text-to-exe-windows-consumer',
   ]) {
     const entry = board.nonNativeEntries.find((e) => e.name === name),
       p = entry?.projection;
-    if (!p?.authority || !p.consumers.length || p.removePhase <= 5 || entry.domain <= 5)
+    if (
+      !p?.authority ||
+      !p.consumers.length ||
+      p.consumers.some((consumer) => consumer.domain !== 8) ||
+      p.removePhase !== 8 ||
+      entry.domain !== 8
+    )
       throw Error('Media consumer projection lacks ownership/removal record: ' + name);
   }
+  const removed = new Set([
+    'js-image-owner-to-exe-consumers',
+    'js-log-to-exe-fes-consumer',
+    'js-text-to-exe-fes-consumers',
+    'js-image-codec-to-exe-consumers',
+  ]);
+  if (board.nonNativeEntries.some((entry) => removed.has(entry.name)))
+    throw Error('Media restored a removed FES consumer projection');
 }
 export function validateMediaSource(source, file) {
   if (Object.values(scanSource(source, file)).some(Boolean))

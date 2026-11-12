@@ -23,10 +23,8 @@ test('media modules reject direct and address-free EXE execution, including proj
 test('media inventory cannot hide EXE implementations, unresolved names or unowned projections', () => {
   const names = [
     'js-bitmap-to-exe-consumers',
-    'js-image-owner-to-exe-consumers',
-    'js-log-to-exe-fes-consumer',
-    'js-text-to-exe-fes-consumers',
     'js-image-data-to-exe-consumers',
+    'js-text-to-exe-windows-consumer',
   ];
   const board = {
     profiles: [{ entries: [{ domain: 5, implementation: 'pure-js', review: 'traced' }] }],
@@ -34,8 +32,8 @@ test('media inventory cannot hide EXE implementations, unresolved names or unown
     remainingProfileSelections: { profileIndexSites: [], addressSelections: [], versionGuards: [] },
     nonNativeEntries: names.map((name) => ({
       name,
-      domain: 7,
-      projection: { authority: 'JS', consumers: [{ domain: 7 }], removePhase: 7 },
+      domain: 8,
+      projection: { authority: 'JS', consumers: [{ domain: 8 }], removePhase: 8 },
     })),
   };
   validateMediaInventory(board);
@@ -50,6 +48,8 @@ test('media inventory cannot hide EXE implementations, unresolved names or unown
         executionSites: [],
       }),
     (b) => (b.nonNativeEntries[0].projection.removePhase = 5),
+    (b) => b.nonNativeEntries[0].projection.consumers.push({ domain: 7 }),
+    (b) => b.nonNativeEntries.push({ name: 'js-log-to-exe-fes-consumer' }),
     (b) => b.remainingProfileSelections.addressSelections.push({ domain: 5 }),
   ]) {
     const b = structuredClone(board);

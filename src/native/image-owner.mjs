@@ -55,19 +55,8 @@ export class NativeImageOwners {
   add(bitmap, owner, info) {
     return this.world.runtime.handles.add('image-owner', { bitmap, owner, info, layers: null });
   }
-  async projection() {
-    return this.world.getNativeFeature('image-owner-projection');
-  }
-  async materialize(handle) {
-    return (await this.projection()).prepare(handle);
-  }
-  pointer(handle) {
-    if (!handle) return 0;
-    return this.world.nativeEngine.features.get('image-owner-projection').pointer(handle);
-  }
   async release(handle) {
     const record = this.get(handle);
-    await this.world.nativeEngine?.features.get('image-owner-projection')?.releaseModel(handle);
     this.world.runtime.handles.release(handle, 'image-owner');
     const handles = new Set([
       record.bitmap,
@@ -278,15 +267,6 @@ export function installNativeImageOwners(world) {
   world.registerNativeFeature('image-owners', (engine) => {
     engine.registerFeature('image-owners', owners);
     return owners;
-  });
-  world.registerNativeFeature('image-owner-projection', async (engine) => {
-    await world.getNativeFeature('engine-files');
-    await world.getNativeFeature('data-buffers');
-    await world.getNativeFeature('retained-draw');
-    await world.getNativeFeature('graphics-platform');
-    if (typeof engine.createImageOwnerProjection !== 'function')
-      throw new Error('Image-owner projection requires the injected transitional EXE host');
-    return engine.createImageOwnerProjection(world);
   });
   for (const id of NATIVE_IMAGE_OWNER_IDS)
     world.runtime.register('main', id, (args, machine, task) =>

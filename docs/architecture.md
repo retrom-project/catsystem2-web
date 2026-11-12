@@ -65,7 +65,11 @@ DIFIMAGE 的 `refex` 与 Draw 分别持有 JS render-source 引用，外部 imag
 仍可绘制和恢复。普通对象删除先释放自身引用；资源 FIFO 清理再按实际 retained record
 移除对应 Draw 条目，拥有者 teardown 同样回收这些引用。
 EFKPLANE 在现有默认工厂中仍明确未支持，是第 7 阶段尚未完成的子系统。
-旧 FES 原处理器 facade 只保留在 `oracle/`，显式 D8 消费者与其投影仍单独计数。
+旧 FES 原处理器 facade 与 draw/text/LOG/screen/owner/HG 输入投影只保留在未发布的
+`oracle/` 取证组合中，生产引擎不再注册这些工厂。Draw 直接使用 World 的 JS retained
+服务。仍需 PE bitmap 的显式 D8 SDK 消息使用同一个 bitmap consumer view；普通 bitmap
+消息、Area 输入的实际像素、别名释放和新 World 恢复有独立回归。D8 的 view/device、
+Windows 文字、MemoryFile、共享 bitmap 和媒体投影继续按实际调用图计数。
 
 已实现的 typed STRING 驱动在两份冻结 ABI 中保留明确的定义边界：POS 定义写 XYZ，
 VRAM 定义写 XY 并清 Z，这两条路径不读取原临时向量未初始化的 W，保留目标既有 W

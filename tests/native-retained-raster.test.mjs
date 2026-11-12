@@ -43,7 +43,7 @@ for (const [profile, variable, affineTable] of [
         return feature;
       };
       new NativeGraphicsPlatform(engine, world);
-      new NativeRetainedDraw(engine, world);
+      world.retainedDraw = new NativeRetainedDraw(engine, world);
       try {
         assert.equal(
           createHash('sha256')

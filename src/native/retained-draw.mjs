@@ -57,19 +57,14 @@ export class NativeRetainedDraw {
     const buffers = this.world.runtime.imageDataBuffers;
     return this.sources.decode(buffers.data(buffers.pointer(handle)));
   }
-  async bind(draw, key, fields, context = {}) {
+  async bind(draw, key, fields) {
     const kind = fields.slice(0, 4).findIndex(Boolean);
     if (kind < 0) return false;
-    const projection = context.nativePointer
-        ? await this.world.getNativeFeature('fes-draw-projection')
-        : null,
-      inputToken = projection ? projection.identity(fields) : fields[kind];
+    const inputToken = fields[kind];
     let record = this.record(draw, key);
     if (!record || (kind !== 2 && (record.kind !== kind || record.inputToken !== inputToken))) {
       let source;
-      if (context.nativePointer) {
-        source = await projection.importSource(fields);
-      } else if (kind === 0) source = await this.fromBitmap(fields[0]);
+      if (kind === 0) source = await this.fromBitmap(fields[0]);
       else if (kind === 1) source = await this.fromData(fields[1]);
       else if (kind === 2) source = this.sources.retain(fields[2]);
       else source = this.fromOwner(fields[3]);
@@ -85,7 +80,6 @@ export class NativeRetainedDraw {
       };
       this.items.set(this.key(draw, key), record);
     }
-    if (projection && kind === 0) await projection.refreshBitmap(fields[0]);
     const source = this.sources.get(record.source);
     Object.assign(source, {
       position: fields.slice(4, 6).map(bitsFloat),
@@ -251,7 +245,6 @@ export class NativeRetainedDraw {
         this.advance(record.source, frame);
         if (this.needsPull(record)) await this.pull(draw, record);
       }
-    this.world.nativeEngine?.features.get('fes-draw-projection')?.publish();
   }
   attributes(source) {
     const output = source.animation?.output;

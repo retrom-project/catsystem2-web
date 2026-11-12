@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NativeFESTextProjection } from './fes-text-projection.mjs';
 // Script text commands and their deferred frame driver are owned by JS.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -623,7 +624,7 @@ export function nativeFESTextAdapter(bridge, _type) {
     construct: async (runtime, instance, object, pointer, args) => {
       const projection =
         runtime.engine.features.get('fes-text-projection') ??
-        runtime.engine.createFESTextProjection(runtime.world);
+        new NativeFESTextProjection(runtime.engine, runtime.world);
       await projection.construct(runtime, instance, object, pointer, args);
     },
     driver: async (_runtime, instance, object, options) => fes.drive(instance, object, options),
