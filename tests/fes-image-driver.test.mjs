@@ -37,7 +37,7 @@ for (const profile of profiles) {
       );
       setFESImageID(image, -1);
       await syncImages(api);
-      const pointer = image.imageResource.encodedPointer;
+      const pointer = image.imageEncodedPointer;
       assert.deepEqual(api.images.dataFor(api.instance, image), encoded);
       assert.equal(buffers.words(pointer)[3], 2, 'cache and IMAGE each retain the actual buffer');
       setFESImageFile(image, 'second');
@@ -61,7 +61,7 @@ for (const profile of profiles) {
       const restored = fresh.objects.objects.get(id).implementation,
         restoredImage = restored.instance.byKey.get('font');
       await syncImages(restored, { restoring: true });
-      assert.equal(restoredImage.imageResource.encodedPointer, pointer);
+      assert.equal(restoredImage.imageEncodedPointer, pointer);
       assert.deepEqual(restored.images.dataFor(restored.instance, restoredImage), encoded);
       assert.equal(fresh.runtime.imageDataBuffers.words(pointer)[3], 2);
       await restored.images.close(restoredImage);

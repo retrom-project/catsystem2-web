@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// FES image state owns resources; Draw owns retained aliases and animation.
+// Entries own image wrappers; objects own current references and encoded bytes.
+// Draw independently owns retained aliases and animation.
 import {
   createFESImageSelector,
   fesImageFrameID,
@@ -22,7 +23,8 @@ import { truncateFloat32 } from '../ppi/numeric.mjs';
 
 const f = Math.fround,
   types = new Set([1, 2, 6, 16, 17, 18, 19, 20, 22]),
-  modelTypes = new Set([...types, 11, 12, 25]),
+  wrapperTypes = new Set([...types, 11, 12]),
+  modelTypes = new Set([...wrapperTypes, 25]),
   tableTypes = new Set([16, 17, 18, 19, 20]),
   copySources = new Set([2, 6, 11, 12]),
   imageMetrics = [
@@ -62,6 +64,9 @@ export function initializeFESImage(object) {
     disp: false,
     displayValue: 0,
     displayDelta: 0,
+    imageEncodedPointer: 0,
+    imageAuxiliaryBitmap: 0,
+    imageResourceEntryID: null,
     file: '',
     fileSingle: false,
     dirty: false,
@@ -124,6 +129,7 @@ export class FESImages {
     Object.assign(this, { world, cacheFor, lookup });
     this.scratch = new WeakMap();
     this.tables = new WeakMap();
+    this.activeResources = new WeakMap();
   }
   supports(object) {
     return types.has(object.nativeType);
@@ -147,23 +153,86 @@ export class FESImages {
     return s;
   }
   resource(object) {
-    const r = object.imageResource;
+    const r = this.activeResources.get(object) ?? object.imageResource;
     if (!r) throw new Error(`FES image ${object.key} has not been initialized`);
     return r;
+  }
+  currentBitmap(object) {
+    return object.imageAuxiliaryBitmap || object.imageResource?.bitmap || 0;
+  }
+  makeResource(instance, entryID = null) {
+    return {
+      owner: instance.runtimeID,
+      entryID,
+      bitmap: 0,
+      source: 0,
+      binding: null,
+      closed: false,
+    };
+  }
+  async withResource(object, resource, operation) {
+    if (!resource || resource.closed) throw new Error('FES image entry has no live wrapper');
+    const previous = this.activeResources.get(object);
+    this.activeResources.set(object, resource);
+    try {
+      return await operation();
+    } finally {
+      if (previous) this.activeResources.set(object, previous);
+      else this.activeResources.delete(object);
+    }
+  }
+  async allocateEntry(instance, object, entry) {
+    if (!wrapperTypes.has(object.nativeType) || entry.savedType !== object.nativeType)
+      throw new TypeError('FES image entry allocation requires its current wrapper family');
+    if (entry.image) throw new Error('FES resource entry already has an image wrapper');
+    if (object.imageAuxiliaryBitmap) {
+      await this.world.graphics.images.release(object.imageAuxiliaryBitmap);
+      object.imageAuxiliaryBitmap = 0;
+    }
+    entry.image = this.makeResource(instance, entry.id);
+    object.imageResource = entry.image;
+    object.imageResourceEntryID = entry.id;
+    object.nativeImageHandle = 0;
+    object.nativeImageMetrics = null;
+    return entry.image;
+  }
+  async visitEntry(instance, object, entry, options = {}) {
+    if (!wrapperTypes.has(object.nativeType))
+      throw new TypeError('FES explicit image wrapper visit requires its current wrapper family');
+    return this.withResource(object, entry.image, () => this.update(instance, object, options));
+  }
+  validateEntry(instance, object, entry) {
+    const r = entry.image;
+    if (!r || r.closed || r.owner !== instance.runtimeID || r.entryID !== entry.id)
+      throw new Error('FES image checkpoint has an invalid resource wrapper');
+    if (r.bitmap) this.world.graphics.images.get(r.bitmap);
+    if (r.source) this.world.renderSources.get(r.source);
+    if (entry.savedType === 6) {
+      const child = this.world.objects.objects.get(entry.buttonTaskID);
+      if (!child || child.kind !== 6 || child.parent !== instance.runtimeID)
+        throw new Error('FES Button checkpoint has no owned kind6 entry task');
+    }
+    if (object?.imageResourceEntryID === entry.id) {
+      object.imageResource = r;
+      if (object.imageEncodedPointer)
+        this.world.runtime.imageDataBuffers.require(object.imageEncodedPointer);
+      if (object.imageAuxiliaryBitmap) this.world.graphics.images.get(object.imageAuxiliaryBitmap);
+    }
+  }
+  async refBitmap(instance, object, bitmapHandle) {
+    if (![1, 2].includes(object.nativeType))
+      throw new TypeError('FES bitmap refex requires CIMAGE or IMAGE');
+    const images = this.world.graphics.images;
+    if (object.imageAuxiliaryBitmap) await images.release(object.imageAuxiliaryBitmap);
+    object.imageAuxiliaryBitmap = 0;
+    object.imageAuxiliaryBitmap = bitmapHandle ? images.alias(bitmapHandle, instance.runtimeID) : 0;
+    object.dirty = true;
   }
   async initialize(instance, object) {
     if (!this.supports(object))
       throw new TypeError(`Unsupported FES image type ${object.nativeType}`);
     if (object.deleted) return this.close(object);
-    if (!object.imageResource)
-      object.imageResource = {
-        owner: instance.runtimeID,
-        bitmap: 0,
-        source: 0,
-        encodedPointer: 0,
-        binding: null,
-        closed: false,
-      };
+    if (!object.imageResource) object.imageResource = this.makeResource(instance);
     const r = this.resource(object);
     if (r.owner !== instance.runtimeID || r.closed)
       throw new Error(`FES image ${object.key} has a different or released owner`);
@@ -188,14 +257,13 @@ export class FESImages {
     return cache;
   }
   setEncodedData(object, pointer) {
-    const resource = this.resource(object),
-      buffers = this.world.runtime.imageDataBuffers;
+    const buffers = this.world.runtime.imageDataBuffers;
     if (pointer) buffers.retainPointer(pointer);
-    if (resource.encodedPointer) buffers.releasePointer(resource.encodedPointer);
-    resource.encodedPointer = pointer;
+    if (object.imageEncodedPointer) buffers.releasePointer(object.imageEncodedPointer);
+    object.imageEncodedPointer = pointer;
   }
   dataFor(_instance, object) {
-    const pointer = object.imageResource?.encodedPointer;
+    const pointer = object.imageEncodedPointer;
     return pointer ? this.world.runtime.imageDataBuffers.data(pointer) : null;
   }
   draw(instance) {
@@ -307,10 +375,12 @@ export class FESImages {
     if (bitmap !== undefined) {
       if (r.bitmap && r.bitmap !== bitmap) await images.release(r.bitmap);
       r.bitmap = bitmap;
-      object.nativeImageHandle = bitmap;
-      object.nativeImageMetrics = bitmap
-        ? Object.fromEntries(imageMetrics.map((k) => [k, images.get(bitmap).state[k]]))
-        : null;
+      if (r === object.imageResource && !object.imageAuxiliaryBitmap) {
+        object.nativeImageHandle = bitmap;
+        object.nativeImageMetrics = bitmap
+          ? Object.fromEntries(imageMetrics.map((k) => [k, images.get(bitmap).state[k]]))
+          : null;
+      }
     }
     if (source !== undefined) {
       if (r.source && r.source !== source) await this.world.renderSources.release(r.source);
@@ -429,7 +499,7 @@ export class FESImages {
         source = this.find(instance, reference);
       this.clearRequests(object);
       if (!source || !copySources.has(source.nativeType)) return 'preserve';
-      const sourceHandle = source.imageResource?.bitmap ?? source.nativeImageHandle;
+      const sourceHandle = this.currentBitmap(source);
       if (!sourceHandle) throw new Error('FES image copy/reference requires decoded source pixels');
       let h;
       if (copy) {
@@ -525,7 +595,17 @@ export class FESImages {
   async removeBinding(object) {
     const r = this.resource(object),
       b = r.binding;
-    if (b) await this.world.graphics.drawTasks.get(b.surface)?.remove(b.key);
+    if (b) {
+      const draw = this.world.graphics.drawTasks.get(b.surface),
+        record = draw && this.world.retainedDraw.record(draw, b.key);
+      if (
+        record &&
+        (b.source !== undefined
+          ? record.source === b.source
+          : record.kind === b.kind && record.input === b.input)
+      )
+        await draw.remove(b.key);
+    }
     r.binding = null;
   }
   async publish(instance, object, draw, sleeping) {
@@ -594,7 +674,13 @@ export class FESImages {
       0,
       s.clip,
     );
-    r.binding = { surface: draw.record.id, key, kind, input };
+    r.binding = {
+      surface: draw.record.id,
+      key,
+      kind,
+      input,
+      source: this.world.retainedDraw.record(draw, key).source,
+    };
   }
   async button(instance, object, reloaded, dirty, priorityChanged, draw, sleeping) {
     if (!reloaded && !dirty && !priorityChanged && this.resource(object).sleeping === sleeping)
@@ -659,13 +745,15 @@ export class FESImages {
   }
   async update(instance, object, { restoring = false } = {}) {
     if (object.deleted) return this.close(object);
-    if (restoring && !object.imageResource) return;
-    if (!object.imageResource) await this.initialize(instance, object);
+    if (restoring && !object.imageResource && !this.activeResources.has(object)) return;
+    if (!object.imageResource && !this.activeResources.has(object))
+      await this.initialize(instance, object);
     const r = this.resource(object);
     if (restoring) {
       if (r.bitmap) this.world.graphics.images.get(r.bitmap);
       if (r.source) this.world.renderSources.get(r.source);
-      if (r.encodedPointer) this.world.runtime.imageDataBuffers.require(r.encodedPointer);
+      if (object.imageEncodedPointer)
+        this.world.runtime.imageDataBuffers.require(object.imageEncodedPointer);
       return;
     }
     if (object.tablePending) {
@@ -806,7 +894,7 @@ export class FESImages {
     if (!r || r.closed) return;
     await this.removeBinding(object);
     await this.replace(object, 0, 0);
-    this.setEncodedData(object, 0);
+    await this.closeObject(object);
     if (object.nativeType === 6 && object.nativeInputTaskID != null) {
       const id = object.nativeInputTaskID,
         input = this.world.objects.objects.get(r.owner)?.implementation?.player?.nativeInput;
@@ -815,5 +903,56 @@ export class FESImages {
       object.nativeInputTaskID = null;
     }
     r.closed = true;
+  }
+  async closeObject(object) {
+    this.setEncodedData(object, 0);
+    if (object.imageAuxiliaryBitmap) {
+      await this.world.graphics.images.release(object.imageAuxiliaryBitmap);
+      object.imageAuxiliaryBitmap = 0;
+    }
+  }
+  async cleanupEntry(instance, entry) {
+    const r = entry.image;
+    if (r && !r.closed) {
+      const draw = this.draw(instance),
+        images = this.world.graphics.images;
+      let match = null;
+      if (draw && r.bitmap) {
+        const data = images.get(r.bitmap).dataHandle;
+        for (const item of draw.state.renderer.items.toSorted((a, b) => a.key - b.key)) {
+          const record = this.world.retainedDraw.record(draw, item.key),
+            source = record ? this.world.renderSources.get(record.source) : null,
+            handle = source?.bitmap || (!record ? item.image : 0);
+          if (handle && images.get(handle).dataHandle === data) {
+            match = item.key;
+            break;
+          }
+        }
+      }
+      if (match !== null) await draw.remove(match);
+      else if (r.binding) {
+        const record = draw && this.world.retainedDraw.record(draw, r.binding.key);
+        if (
+          record &&
+          (r.binding.source !== undefined
+            ? record.source === r.binding.source
+            : record.kind === r.binding.kind && record.input === r.binding.input)
+        )
+          await draw.remove(r.binding.key);
+      }
+      r.binding = null;
+      if (r.bitmap) await images.release(r.bitmap);
+      if (r.source) await this.world.renderSources.release(r.source);
+      r.bitmap = r.source = 0;
+      r.closed = true;
+    }
+    if (entry.buttonTaskID != null) {
+      const taskID = entry.buttonTaskID,
+        input = instance.player.nativeInput;
+      if (this.world.objects.objects.has(taskID))
+        await this.world.sendEngine(taskID, instance.runtimeID, 3);
+      if (input) input.state.buttons = input.state.buttons.filter(([, id]) => id !== taskID);
+      entry.buttonTaskID = null;
+    }
   }
 }

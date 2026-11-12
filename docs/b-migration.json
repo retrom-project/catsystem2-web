@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 167, "oracle": 146, "differential": 67 },
+    "counts": { "js": 168, "oracle": 146, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -58,6 +58,7 @@
         "tests/fes-particle-driver.test.mjs",
         "tests/fes-plane-driver.test.mjs",
         "tests/fes-resource-entries.test.mjs",
+        "tests/fes-resource-entry-driver.test.mjs",
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
         "tests/fes-string-table.test.mjs",
@@ -51983,7 +51984,7 @@
     },
     {
       "file": "src/native/fes-image-driver.mjs",
-      "sourceSha256": "5edbac5a39d22cd2a2e27b3b9f9369d7f7f41d845bc1293d9b2ed1a215a1ffb7",
+      "sourceSha256": "37c1456cbac0179c960c653cfc7b3e9c4187caf583d50f730b32d7e3eb288a91",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51993,7 +51994,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 631,
+          "line": 717,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 953,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",
@@ -52586,7 +52594,7 @@
     },
     {
       "file": "src/native/fes-particle-driver.mjs",
-      "sourceSha256": "1059de1ef28251f981c22a65224ba72789d7b62575f0701e0938be9216c87962",
+      "sourceSha256": "98c8617016f0c7e1f04607280f98cf2358662fccd435b4767fea6e42be374e4f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52596,7 +52604,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 89,
+          "line": 121,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",

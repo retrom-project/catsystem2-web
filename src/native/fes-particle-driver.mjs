@@ -19,6 +19,7 @@ export function initializeFESParticle(object) {
     running: false,
     attachment: null,
     attachmentDirty: false,
+    particleResourceEntryID: null,
   });
   return object;
 }
@@ -80,6 +81,37 @@ export class FESParticleDriver {
       name: 'FE Particle',
     });
     return (object.particleResource = { owner: instance.runtimeID, taskID, detached: false });
+  }
+  async allocateEntry(instance, object, entry) {
+    this.initialize(instance, object);
+    if (entry.particle) throw new Error('FES resource entry already has a particle task');
+    const taskID = await this.world.objects.create({
+      kind: 16,
+      parent: instance.runtimeID,
+      creator: instance.runtimeID,
+      name: 'FE Particle',
+    });
+    entry.particle = { owner: instance.runtimeID, taskID, detached: false };
+    object.particleResource = entry.particle;
+    object.particleResourceEntryID = entry.id;
+    return entry.particle;
+  }
+  validateEntry(instance, object, entry) {
+    const resource = entry.particle,
+      child = resource && this.world.objects.objects.get(resource.taskID);
+    if (
+      !child ||
+      child.kind !== 16 ||
+      child.parent !== instance.runtimeID ||
+      resource.owner !== instance.runtimeID
+    )
+      throw new Error('FES particle entry has no owned kind16 task');
+    if (object?.particleResourceEntryID === entry.id) object.particleResource = resource;
+  }
+  cleanupEntry(entry) {
+    // The explicitly cleared native entry never assigns the guard used by
+    // PARTICLE cleanup. Its saved child remains with the owning World task.
+    if (entry.particle) entry.particle.detached = true;
   }
   send(instance, object, message, l = 0, context = {}) {
     const resource = object.particleResource,
