@@ -101,7 +101,7 @@ texts accompany this distribution in `licenses/Apache-2.0.txt` and
 `licenses/jpeg-ijg.txt`.
 
 The legacy SKFE reader, numerical/matrix/generation algorithms and CPU
-manager/instance/renderer-cache state algorithms adapt
+manager/instance/renderer-cache state and Ribbon/Track geometry algorithms adapt
 Effekseer 1.23, copyright 2011 Effekseer Project,
 commit `5239bb1e416cbf55b4d3c8170594cbdc7815f263`, under the MIT license.
 The complete grant is retained in `licenses/effekseer-MIT.txt`. Selected public

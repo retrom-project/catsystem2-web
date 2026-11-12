@@ -166,6 +166,25 @@ nonfixed Ring numeric domains, final faded/vertex-multiplied native outputs,
 geometry, actual Draw or pixels. The natural `0x007F` math-only extension above
 does not broaden that cache evidence.
 
+`ribbon-track-geometry.mjs` exports `RibbonTrackGeometry`, an independent normal
+CPU mesh builder. `beginNode`, `beginGroup`, `append`, `endGroup` and `endNode`
+consume the caller's existing group/instance order and current matrix/color/UV
+data. They do not update the manager or draw RNG. Positions, UVs, RGBA colors,
+indices and group ranges use reused typed buffers. The output separately records
+the source reserved vertex/index range and actual write/segment cursors; multiple
+groups can leave the original zero-initialized tail. Consumers must retain that
+range and original quad indices `[3, 1, 0, 3, 0, 2]`, rather than compact or reorder
+it. Track preserves the integer midpoint and unnormalized averaged-axis rules.
+
+The CPU allocation budgets bound input and growth. They do not establish the
+original renderer's 2,000-quad GPU upload capacity or its overflow behavior.
+The builder neither projects nor owns materials, render targets or the original
+null-background discard. Its 50 focused cases include 24 exact public-source
+comparison groups, one nonfinite boundary and 25 interface/current-data/buffer
+cases. They read public/authored references without compiling C++ during tests.
+There is no original native geometry, GPU Draw or pixel acceptance from this
+CPU module, and no World/kind61/default-factory registration.
+
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their
 dependencies, and an authored nonempty sprite Effect/texture. The public manifest

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 186, "oracle": 148, "differential": 67 },
+    "counts": { "js": 187, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -40,6 +40,7 @@
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-render-state.test.mjs",
         "tests/effekseer-resources.test.mjs",
+        "tests/effekseer-ribbon-track-geometry.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
         "tests/emote-driver-identity.test.mjs",
@@ -2354,8 +2355,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 453,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 59, "8": 170, "9": 55 },
+    "runtimeFiles": 454,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 60, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48541,6 +48542,19 @@
     {
       "file": "src/effekseer/resources.mjs",
       "sourceSha256": "24aa152daa30c9e5623ddb634ef4d882884a2de60d9b22ffae1d8f1f06422fe5",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/ribbon-track-geometry.mjs",
+      "sourceSha256": "c746834d8172e04242ec946533975bb8d1fd166e041373c373501e42f9132c24",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
