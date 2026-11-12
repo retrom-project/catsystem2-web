@@ -35,6 +35,7 @@ import { FES_BUILTIN_VERBS } from '../fes/object.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../fes/types.mjs';
 import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesNarrowText } from '../fes/tokens.mjs';
 import { nativeABI } from './abi/index.mjs';
 
 const effectTypes = new Set([7, 8, 26, 27, 30, 31, 32]);
@@ -549,6 +550,24 @@ export class FESCoordinator {
       return this.imageCommands.command(verb, selection, args, context);
     if (FES_RESOURCE_COMMANDS.has(verb))
       return this.resourceCommands.command(verb, selection, args, context);
+    if (verb === 'str' || verb === 'apend' || verb === 'name') {
+      const hasTail = source.rawTail === undefined ? args.length > 0 : source.rawTail.length > 0;
+      if (verb === 'apend' && !hasTail) return 0;
+      const inputBytes = hasTail
+        ? this.strings.input(instance, null, args, context)
+        : new Uint8Array();
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (
+          !object ||
+          !this.strings.supports(object) ||
+          (verb === 'name' && object.nativeType !== 29)
+        )
+          continue;
+        await this.strings.command(instance, object, verb, args, { ...context, inputBytes });
+      }
+      return 0;
+    }
     if (verb === 'wipe' || (verb === 'draw' && lookup(first)?.nativeType === 4)) {
       await this.effects.areaCommand(verb, lookup(first), args, {
         referenceIndex: selection.index,
@@ -560,12 +579,15 @@ export class FESCoordinator {
     if (!FES_BUILTIN_VERBS.has(verb)) {
       const raw = instance.program.subcommands[verb];
       if (!raw) throw new Error('Unimplemented FES object command ' + verb);
-      const definition = motionDefinition(verb, raw);
+      const definition = motionDefinition(verb, { ...raw, words: raw.words.map(fesNarrowText) });
       for (let at = first; at < count; at++) {
         const object = lookup(at);
         if (!object) break;
-        await this.motions.subcommand(object, definition, args, (token, current) =>
-          instance.value(instance.soundArgument(token), current),
+        await this.motions.subcommand(
+          object,
+          definition,
+          args.map(fesNarrowText),
+          (token, current) => instance.value(instance.soundArgument(token), current),
         );
       }
       return 0;

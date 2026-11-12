@@ -2,13 +2,15 @@
 // FES getsndconfex/setsndconfex: game 783630/783FD0, SDK 61C6B0/61D050.
 // Tokens have already passed the FES string and language substitutions.
 import { nativeABI } from './abi/index.mjs';
-import { tokenizeFESLine } from '../fes/tokens.mjs';
+import { tokenizeFESLine, tokenizeFESByteLine } from '../fes/tokens.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 
 export function tokenizeNativeFESSoundConfiguration(line, profile) {
   if (!profiles.has(profile))
     throw new Error('FES tokenization requires its native engine profile');
-  return tokenizeFESLine(line, { quoted: nativeABI(profile).sound.allowQuotedFesNames });
+  return (line instanceof Uint8Array ? tokenizeFESByteLine : tokenizeFESLine)(line, {
+    quoted: nativeABI(profile).sound.allowQuotedFesNames,
+  });
 }
 
 export function expandNativeFESSoundConfigurationToken(token, { string, replace } = {}) {

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 183, "oracle": 148, "differential": 67 },
+    "counts": { "js": 184, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -74,6 +74,7 @@
         "tests/fes-resource-queries.test.mjs",
         "tests/fes-route-audit.test.mjs",
         "tests/fes-scheduling.test.mjs",
+        "tests/fes-source-bytes.test.mjs",
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
         "tests/fes-string-table.test.mjs",
@@ -2297,7 +2298,7 @@
       {
         "kind": "identity",
         "file": "src/native/fes-sound-config.mjs",
-        "line": 90,
+        "line": 92,
         "expression": "soundConfiguration.profile !== configuration?.profile",
         "domain": 7
       },
@@ -48940,7 +48941,7 @@
     },
     {
       "file": "src/fes/expression.mjs",
-      "sourceSha256": "943bca0012bc8b147d8bdb1ce1a25bcea0ae80a9cff8a6d359151f4acde08e8e",
+      "sourceSha256": "2d4ca97c76edc0c602695e5745e093e920183367edf63b05dddbcd9b179a3699",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48953,7 +48954,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "c5b5f8765c9b9e0371f13e838b85032d08089f29720b46ed27d7dbee49997e7a",
+      "sourceSha256": "8f45c590939d06c8fd47ae22531dfceb0bb3be69c4414391f10fc52f65092862",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48966,7 +48967,7 @@
     },
     {
       "file": "src/fes/object.mjs",
-      "sourceSha256": "baa44e2724844cdefee5931059d4970db9dd9e419aed9f8590c63fd664dbf8fc",
+      "sourceSha256": "51145a85b744145757aa4eb6284a04e2aaf68ebd81950ad9c10479a4816c932d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48979,7 +48980,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "23edda8b8340136e9b381ac621047bd9c94f900013b936305ce42abe49dc4f7d",
+      "sourceSha256": "10a7de8fee4ab11cf35a88df598580e15e2876f93c6dedc0d42079a30e16f0fb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48992,7 +48993,7 @@
     },
     {
       "file": "src/fes/program.mjs",
-      "sourceSha256": "25a5137a23bee4e1d1277c289d866d74d38992ec8dc96b78c9eaa7dd5056d84a",
+      "sourceSha256": "ebf2d1dedf291ba281ad8de03a14693eb50b3cb608eaf86b97d1cf4443a0e59c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49005,7 +49006,7 @@
     },
     {
       "file": "src/fes/source.mjs",
-      "sourceSha256": "7e945de487ff7b57be6365a57744fb3a4a46f826138bc75cc48259260b00d629",
+      "sourceSha256": "533c818e70c9e10587a8df6b3c114800ca5676341a0692a65c14efbd41621c2b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49018,7 +49019,7 @@
     },
     {
       "file": "src/fes/tokens.mjs",
-      "sourceSha256": "5b346d282e5104716d30b84e04c357f1c0acc12bbcc2ff5f4b0d47c0ee6e4590",
+      "sourceSha256": "7aeec4fe39e5f3bb6ed1e175832584e13ebc860735ec8b7b47ded3ce259024cb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49187,7 +49188,7 @@
     },
     {
       "file": "src/formats/scene.mjs",
-      "sourceSha256": "1b72da9f155f57c706cdaddcde4d91af8d9e18c3b54628fd40c9a2efd2c2b105",
+      "sourceSha256": "9ee8a1e2381af2c196dbf8226c6d3d4da7010230a54894b31510d6fab118a45a",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51488,7 +51489,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "295a791dc3b5b52621293e73004559fe7e23a37e6a27e39bb120d16f8ab51cc9",
+      "sourceSha256": "03f9d197c07eadd7c3f6a4b5cd5e073b99a1db4db56f7c29d496495a589c48df",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51498,28 +51499,21 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 326,
+          "line": 327,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 626,
+          "line": 648,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 635,
-          "method": "sendEngine",
-          "feature": null,
-          "review": "traced",
-          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
-        },
-        {
-          "line": 643,
+          "line": 657,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -51531,13 +51525,20 @@
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
+        },
+        {
+          "line": 687,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
       "review": "counted"
     },
     {
       "file": "src/native/fes-data.mjs",
-      "sourceSha256": "5e517ae61821fb18db19c486fbfe63b4e58401630a58808c6ab3ae0c36de7c9f",
+      "sourceSha256": "b60101c27abf0d120ef47c9dda5a412cb0087b1a4cd6cd7fd12c89d8f3e277bf",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51945,7 +51946,7 @@
     },
     {
       "file": "src/native/fes-sound-config.mjs",
-      "sourceSha256": "2f4cbb750bf92b0c872e3a596666ff1cffa567f03a17f13265c0bcf7b8317d66",
+      "sourceSha256": "26e2e48482637ddd2989a705ff052222054ef5e593fc9216f4bbc07ca64f1a8b",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51971,7 +51972,7 @@
     },
     {
       "file": "src/native/fes-sound.mjs",
-      "sourceSha256": "06f4b0c39e09418d4aa399fb3cb4bc1c9647d66d6fe0f785108d1981eb1570e6",
+      "sourceSha256": "be766147a2e6225823e70c3b478f9659c69b42f025630fbbfee9d9678a66f4d8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51981,7 +51982,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 256,
+          "line": 257,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
@@ -51992,7 +51993,7 @@
     },
     {
       "file": "src/native/fes-source.mjs",
-      "sourceSha256": "48f67186d6c3c5ccf1249941dfd6e318cef7f209b1fc01d5409cf9b2ef34dff8",
+      "sourceSha256": "993ae42a84444bae333fa9f87abca64739d29b7916a925b6340d86b1bc82140c",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52005,7 +52006,7 @@
     },
     {
       "file": "src/native/fes-string-driver.mjs",
-      "sourceSha256": "6056eaf9a780ad3439338210369683208f5ec5c14be98cf5f3ec03b4242e8ada",
+      "sourceSha256": "7d141be61c38bb646adbd96a23d7da37ea5a400c0b8af3a43b16b1ca8c3e8166",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55998,7 +55999,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "1a78f290fc2c53795c31b69ab587fedf5804420429966a9f9b8ff1505365935e",
+      "sourceSha256": "8014d54b77a2cc7c887254340eec6afb7fd1667daac07a953d3c7eb40ca93a26",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -56029,35 +56030,35 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 893,
+          "line": 891,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 915,
+          "line": 913,
           "method": "getNativeFeature",
           "feature": "renderer",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 923,
+          "line": 921,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1065,
+          "line": 1063,
           "method": "getNativeFeature",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 1066,
+          "line": 1064,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",

@@ -1,29 +1,35 @@
 // SPDX-License-Identifier: MPL-2.0
 // Plain-source preparation and one-pass macro emission are separate from
 // runtime parameter tokenization and raw command-tail extraction.
-import { tokenizeFESLine } from './tokens.mjs';
+import { tokenizeFESByteLine, fesByteView, fesViewBytes } from './tokens.mjs';
 
-export function splitFESLines(text) {
-  return text.split('\0', 1)[0].split(/\r\n|\r|\n/);
+export function splitFESLines(source) {
+  return fesByteView(source)
+    .split(/\r\n|\r|\n/)
+    .map(fesViewBytes);
 }
-export function uncommentFESSource(text) {
+export function uncommentFESSource(source) {
   // The native source cleaner is quote/escape blind and does not nest comments.
   // Delete comment bytes, retaining line breaks even across a block comment.
-  return text.replace(/\/\*[\s\S]*?(?:\*\/|$)|\/\/[^\r\n]*/g, (comment) =>
-    comment.replace(/[^\r\n]/g, ''),
+  return fesViewBytes(
+    fesByteView(source).replace(/\/\*[\s\S]*?(?:\*\/|$)|\/\/[^\r\n]*/g, (comment) =>
+      comment.replace(/[^\r\n]/g, ''),
+    ),
   );
 }
-export function fesRawTail(line, count) {
+export function fesRawTail(source, count) {
+  const line = fesByteView(source);
   let at = 0;
   while (count-- > 0) {
     at = line.indexOf(' ', at);
-    if (at < 0) return '';
+    if (at < 0) return new Uint8Array();
     at++;
   }
-  return line.slice(at);
+  return fesViewBytes(line.slice(at));
 }
-export function prepareFESSource(text, { tokens = tokenizeFESLine } = {}) {
-  const lines = splitFESLines(uncommentFESSource(text.split('\0', 1)[0]))
+export function prepareFESSource(source, { tokens = tokenizeFESByteLine } = {}) {
+  const lines = splitFESLines(uncommentFESSource(source))
+    .map(fesByteView)
     .map((line) => line.replaceAll('\t', ' ').replace(/ +/g, ' ').replace(/^ | $/g, ''))
     .filter(Boolean);
   for (let index = 0; index < lines.length; index++) {
@@ -42,8 +48,11 @@ export function prepareFESSource(text, { tokens = tokenizeFESLine } = {}) {
   }
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index],
-      words = tokens(line),
-      first = words[0]?.toLowerCase();
+      words = tokens(fesViewBytes(line)),
+      first =
+        words[0] === undefined
+          ? ''
+          : fesByteView(words[0]).replace(/[A-Z]/g, (c) => c.toLowerCase());
     const count =
       first === 'if' && words[2] !== undefined
         ? 2
@@ -61,13 +70,14 @@ export function prepareFESSource(text, { tokens = tokenizeFESLine } = {}) {
     lines[index] = line.slice(0, boundary);
     lines.splice(index + 1, 0, tail, 'endif');
   }
-  return lines;
+  return lines.map(fesViewBytes);
 }
 
 const rawLiterals = Object.freeze({ string: 'raw', character: 'raw' });
-export function replaceFESMacros(line, macros, literals = rawLiterals) {
+export function replaceFESMacros(source, macros, literals = rawLiterals) {
+  const line = fesByteView(source);
   if (!(macros instanceof Map)) throw new TypeError('FES macro dictionary must be a Map');
-  if (!macros.size) return line;
+  if (!macros.size) return fesViewBytes(line);
   if (
     !['raw', 'unescape-quote'].includes(literals.string) ||
     !['raw', 'wrap-raw'].includes(literals.character)
@@ -75,24 +85,62 @@ export function replaceFESMacros(line, macros, literals = rawLiterals) {
     throw new Error('Unknown FES macro literal emission policy');
   let output = '',
     at = 0;
+  const pair = (index) => {
+    const lead = line.charCodeAt(index),
+      trail = line.charCodeAt(index + 1);
+    return (
+      ((lead >= 0x81 && lead <= 0x9f) || (lead >= 0xe0 && lead <= 0xef)) &&
+      ((trail >= 0x40 && trail <= 0x7e) || (trail >= 0x80 && trail <= 0xfc))
+    );
+  };
   while (at < line.length && line.charCodeAt(at)) {
     const start = at,
       character = line[at];
-    if (character === '"' || character === "'") {
-      at++;
-      while (at < line.length && line[at] !== character) {
-        if (line[at] === '\\' && line[at + 1] === character) at++;
-        at++;
-      }
-      if (line[at] === character) at++;
-      const lexeme = line.slice(start, at);
-      output +=
-        character === '"' && literals.string === 'unescape-quote'
-          ? lexeme.replaceAll('\\"', '"')
-          : character === "'" && literals.character === 'wrap-raw'
-            ? "'" + lexeme + "'"
-            : lexeme;
+    if (character === '\x1a') break;
+    if (line.startsWith('//', at)) {
+      const end = line.indexOf('\r\n', at + 2);
+      if (end < 0) break;
+      at = end;
       continue;
+    }
+    if (line.startsWith('/*', at)) {
+      const end = line.indexOf('*/', at + 2);
+      if (end < 0) break;
+      at = end + 2;
+      continue;
+    }
+    if (line.startsWith('\\\r\n', at)) {
+      at += 3;
+      continue;
+    }
+    if (character === '"') {
+      at++;
+      let value = '';
+      while (at < line.length && line[at] !== '"') {
+        if (pair(at)) {
+          value += line.slice(at, at + 2);
+          at += 2;
+        } else {
+          if (line[at] === '\\' && line[at + 1] === '"') at++;
+          value += line[at++];
+        }
+      }
+      if (line[at] === '"') at++;
+      output += literals.string === 'unescape-quote' ? '"' + value + '"' : line.slice(start, at);
+      continue;
+    }
+    if (character === "'") {
+      let end = at + 1;
+      while (end < line.length && line[end] !== "'") {
+        if (line[end] === '\\' && (line[end + 1] === "'" || line[end + 1] === '\\')) end++;
+        end++;
+      }
+      if (line[end] === "'") {
+        at = end + 1;
+        const lexeme = line.slice(start, at);
+        output += literals.character === 'wrap-raw' ? "'" + lexeme + "'" : lexeme;
+        continue;
+      }
     }
     if (/[0-9]/.test(character) || (character === '.' && /[0-9]/.test(line[at + 1] ?? ''))) {
       const number = /^(?:0[xX][\da-fA-F]+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)[fFlLuU]*/.exec(
@@ -106,12 +154,13 @@ export function replaceFESMacros(line, macros, literals = rawLiterals) {
     }
     if (/[A-Za-z_]/.test(character)) {
       const word = /^[A-Za-z_][A-Za-z_\d]*/.exec(line.slice(at))[0];
-      output += macros.get(word) ?? word;
+      output += macros.has(word) ? fesByteView(macros.get(word)) : word;
       at += word.length;
     } else {
-      output += character;
-      at++;
+      const count = pair(at) ? 2 : 1;
+      output += line.slice(at, at + count);
+      at += count;
     }
   }
-  return output;
+  return fesViewBytes(output);
 }

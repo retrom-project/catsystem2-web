@@ -178,7 +178,7 @@ export function condition(line) {
   for (let i = start; i < line.length; i++) {
     if (line[i] === '(') depth++;
     if (line[i] === ')' && --depth === 0)
-      return [line.slice(start + 1, i), line.slice(i + 1).trim()];
+      return [line.slice(start + 1, i), line.slice(i + 1).replace(/^ +/, '')];
   }
   throw new Error(`Unclosed condition: ${line}`);
 }

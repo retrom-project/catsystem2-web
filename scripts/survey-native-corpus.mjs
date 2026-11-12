@@ -11,6 +11,7 @@ import { replaceFESMacros } from '../src/fes/source.mjs';
 import { NodeFile } from './node-files.mjs';
 import { commandBody } from './fes-audit.mjs';
 import { cstCommandBody } from '../src/cst-syntax.mjs';
+import { fesByteView } from '../src/fes/tokens.mjs';
 
 export async function inspectKCS(bytes, container) {
   const script = await readKCS(bytes),
@@ -56,9 +57,13 @@ export async function inspectKCS(bytes, container) {
   };
 }
 
-export function inspectFES({ text, prepared }, include) {
-  const program = parseProgram(text, { prepared, include }),
-    macros = new Map(program.macros);
+export function inspectFES({ bytes, text, prepared }, include) {
+  const program = parseProgram(bytes, { prepared, include }),
+    macros = new Map(
+      program.macros
+        .filter((row) => row.length > 1)
+        .map(([name, value]) => [fesByteView(name), value]),
+    );
   const commands = [],
     objectCommands = [];
   for (const source of Object.values(program.blocks).flat()) {

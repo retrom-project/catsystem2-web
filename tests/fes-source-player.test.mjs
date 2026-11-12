@@ -10,6 +10,7 @@ import { nativeABI } from '../src/native/abi/index.mjs';
 import { memoryGame, ascii, u32 } from './helpers.mjs';
 
 const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const textView = (bytes) => new TextDecoder().decode(bytes);
 function packed(text) {
   const bytes = new TextEncoder().encode(text + '\0'),
     body = deflateSync(bytes);
@@ -65,6 +66,8 @@ test('the FES player prepares plain source once and restores registered macros a
  B 7
  VALUE $str0
  SHOW str
+ MISSING
+ EMPTY $str7
 #START
  wait 1
  $0=VALUE
@@ -76,9 +79,11 @@ test('the FES player prepares plain source once and restores registered macros a
     const p = player(source, profile, { 0: '9' });
     await p.start('screen');
     assert.equal(p.root.byKey.get('label').defaultHandler, 'A');
-    assert.equal(p.root.expandMacros('A B'), 'B 7');
-    assert.equal(p.root.expandMacros('"A"'), '"A"');
-    assert.deepEqual(p.root.program.blocks.START, [
+    assert.equal(p.root.macros.has('MISSING'), false);
+    assert.deepEqual(p.root.macros.get('EMPTY'), new Uint8Array());
+    assert.equal(textView(p.root.expandMacros('A B')), 'B 7');
+    assert.equal(textView(p.root.expandMacros('"A"')), '"A"');
+    assert.deepEqual(p.root.program.blocks.START.map(textView), [
       'wait 1',
       '$0=VALUE',
       'if (1)',
@@ -105,21 +110,24 @@ test('the FES player prepares plain source once and restores registered macros a
     ]);
     assert.deepEqual(restored.captured, p.captured);
     assert.deepEqual(restored.snapshot(), p.snapshot());
-    assert.equal(p.root.program.blocks.START[3], 'label SHOW "A B"');
+    assert.equal(textView(p.root.program.blocks.START[3]), 'label SHOW "A B"');
   }
 });
 
 test('compressed FES indexes prepared source without normalizing spaces, comments or includes again', async () => {
   const source =
-    '#INCLUDE\r\nabsent.h\r\n#DEFINE\r\nSTRING label\r\n#START\r\nlabel str "A   B" // retained\r\nexit 0\r\n';
+    '#INCLUDE\r\nabsent.h\r\n#DEFINE\r\nSTRING label\r\n#START\r\nif (1) label str "A   B" // retained   \r\nexit 0\r\n';
   for (const profile of profiles) {
     const p = player(packed(source), profile);
     await p.start('screen');
     await p.step();
     assert.equal(p.root.finished, 0);
-    assert.equal(p.captured[0].input, '"A   B" // retained');
-    assert.equal(p.captured[0].source, 'label str "A   B" // retained');
-    assert.deepEqual(p.root.program.blocks.START, ['label str "A   B" // retained', 'exit 0']);
+    assert.equal(p.captured[0].input, '"A   B" // retained   ');
+    assert.equal(p.captured[0].source, 'label str "A   B" // retained   ');
+    assert.deepEqual(p.root.program.blocks.START.map(textView), [
+      'if (1) label str "A   B" // retained   ',
+      'exit 0',
+    ]);
   }
 });
 
@@ -127,20 +135,34 @@ test('section registration preserves raw header tokens, only the first macro val
   const program = parseProgram(
     '#MACRO\nA replacement extra\nB 17\n#DEFINE\nIMAGE A\n#OBJECT PRI\nA B\n#__proto__\nexit 1\n#constructor\nexit 2\n',
   );
-  assert.deepEqual(program.macros, [
-    ['A', 'replacement'],
-    ['B', '17'],
-  ]);
+  assert.deepEqual(
+    program.macros.map((row) => row.map(textView)),
+    [
+      ['A', 'replacement'],
+      ['B', '17'],
+    ],
+  );
   assert.deepEqual(program.definitions, [{ type: 'IMAGE', name: 'A', count: null }]);
-  assert.deepEqual(program.tables, [
-    {
-      header: '#OBJECT PRI',
-      columns: ['PRI'],
-      rows: [{ target: 'A', values: ['B'], source: 'A B' }],
-    },
-  ]);
-  assert.deepEqual(program.blocks.__proto__, ['exit 1']);
-  assert.deepEqual(program.blocks.constructor, ['exit 2']);
+  assert.deepEqual(
+    program.tables.map((table) => ({
+      header: textView(table.header),
+      columns: table.columns.map(textView),
+      rows: table.rows.map((row) => ({
+        target: textView(row.target),
+        values: row.values.map(textView),
+        source: textView(row.source),
+      })),
+    })),
+    [
+      {
+        header: '#OBJECT PRI',
+        columns: ['PRI'],
+        rows: [{ target: 'A', values: ['B'], source: 'A B' }],
+      },
+    ],
+  );
+  assert.deepEqual(program.blocks.__proto__.map(textView), ['exit 1']);
+  assert.deepEqual(program.blocks.constructor.map(textView), ['exit 2']);
 });
 
 test('data definitions and commands consume grouped parameter tokens without splitting them again', async () => {

@@ -13,6 +13,7 @@ import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
 import { NativeSteam } from '../src/native/steam.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { fesByteView, fesViewBytes } from '../src/fes/tokens.mjs';
 
 test('FES definitions accept an optional terminator after scalar and array names', () => {
   const program = parseProgram(`#DEFINE
@@ -38,13 +39,16 @@ test('repeated FES block headers append commands while repeated object headers r
   const source =
       '#DEFINE\nCIMAGE first\n#OBJECT PRI\nfirst 10\n#START\n$0=1\n#DEFINE\nCIMAGE second\n#OBJECT DISP\nsecond 1\n#START\n$0+=2\nnext WAIT\n#WAIT\n',
     program = parseProgram(source);
-  assert.deepEqual(program.blocks.START, ['$0=1', '$0+=2', 'next WAIT']);
+  assert.deepEqual(program.blocks.START.map(fesByteView), ['$0=1', '$0+=2', 'next WAIT']);
   assert.deepEqual(
     program.definitions.map((o) => o.name),
     ['first', 'second'],
   );
   assert.deepEqual(
-    program.tables.map((t) => [t.columns, t.rows.map(({ target, values }) => [target, values])]),
+    program.tables.map((t) => [
+      t.columns.map(fesByteView),
+      t.rows.map(({ target, values }) => [fesByteView(target), values.map(fesByteView)]),
+    ]),
     [
       [['PRI'], [['first', ['10']]]],
       [['DISP'], [['second', ['1']]]],
@@ -92,7 +96,7 @@ test('FES messagebox pauses decoding and writes only the original affirmative re
       calls = [],
       globals = { 21: 91, 22: 92, 23: 93 },
       player = await screen(
-        String.raw`#START
+        encodeCP932(String.raw`#START
 messagebox (20 + 1) 2 上書き\_確認 $str4
 $20=$21+4
 messagebox 22 2 題名 続けますか？
@@ -100,7 +104,7 @@ messagebox 23 9 既定 本文
 messagebox -1 0 通知 終了
 next WAIT
 #WAIT
-`,
+`),
         {
           globals,
           strings: { 4: '第一行\n第二行' },
@@ -194,12 +198,14 @@ test('FES achievement byte names keep CP932 tokens distinct from UTF8 replacemen
       achievement: (name) => calls.push(name),
     }),
     player = await screen(
-      '#START\nsteam_achievement 猫\nsteam_achievement ASCII\nsteam_achievement INJECTED\nnext WAIT\n#WAIT\n',
+      encodeCP932(
+        '#START\nsteam_achievement 猫\nsteam_achievement ASCII\nsteam_achievement INJECTED\nnext WAIT\n#WAIT\n',
+      ),
       {
         host: {
           steam,
           nativeFESArgumentBytes: (token) =>
-            token === 'INJECTED' ? new TextEncoder().encode('猫') : encodeCP932(token),
+            fesByteView(token) === 'INJECTED' ? new TextEncoder().encode('猫') : token.slice(),
         },
       },
     );
@@ -233,7 +239,8 @@ test('FES Steam uses one initialized session, original argument tokens and the a
         }),
         host = {
           steam: null,
-          nativeScriptReplace: (text) => text.replaceAll('STRING_TOKEN', 'REMAPPED_TOKEN'),
+          nativeFESScriptBytes: (bytes) =>
+            fesViewBytes(fesByteView(bytes).replaceAll('STRING_TOKEN', 'REMAPPED_TOKEN')),
           soundConfigTokens: (line) =>
             tokenizeNativeFESSoundConfiguration(line, 'nekopara-vol3-engine-2.6.1.76'),
           async initializeSteam() {
@@ -381,7 +388,7 @@ exit 0
   assert.equal(object.enable, false);
   await p.step();
   assert.deepEqual(
-    calls.map(({ verb, args }) => [verb, args]),
+    calls.map(({ verb, args }) => [verb, args.map(fesByteView)]),
     [
       ['crossfade', ['1', '24']],
       ['play', ['2', '1', '1']],
@@ -483,7 +490,7 @@ test('native sound handler frame returns suspend the real interpreter and retain
     selections = [];
   p.nativeSound = {
     async command(instance, object, verb, args, context) {
-      selections.push([object.key, verb, args, context.index]);
+      selections.push([object.key, verb, args.map(fesByteView), context.index]);
       return 3;
     },
   };
@@ -578,17 +585,20 @@ test('FES includes reject cycles while macro replacement is single-pass', () => 
   assert.throws(
     () =>
       parseProgram('#INCLUDE\na.h', {
-        include: () => ({ text: '#INCLUDE\na.h', prepared: false }),
+        include: () => ({ bytes: new TextEncoder().encode('#INCLUDE\na.h'), prepared: false }),
       }),
     /include cycle/,
   );
   assert.throws(() => parseProgram('#INCLUDE\nmissing.h'), /Unresolved FES include/);
   const program = parseProgram('#MACRO\nA B\nB A\n#START\n$1=A');
-  assert.deepEqual(program.macros, [
-    ['A', 'B'],
-    ['B', 'A'],
-  ]);
-  assert.deepEqual(program.blocks.START, ['$1=A']);
+  assert.deepEqual(
+    program.macros.map((row) => row.map(fesByteView)),
+    [
+      ['A', 'B'],
+      ['B', 'A'],
+    ],
+  );
+  assert.deepEqual(program.blocks.START.map(fesByteView), ['$1=A']);
 });
 
 test('FES expression mutations, indirect references and short circuiting retain C behavior', () => {

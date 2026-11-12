@@ -804,8 +804,14 @@ export class NativeFESObjectRuntime {
     const rows = object.nativeDefinitions || [];
     for (let index = object.nativeDefinitionAppliedCount || 0; index < rows.length; index++) {
       const row = rows[index];
-      const header = encodeCP932(row.header + '\0'),
-        source = encodeCP932(row.source + '\0'),
+      const terminated = (value) => {
+        const bytes = value instanceof Uint8Array ? value : encodeCP932(value),
+          output = new Uint8Array(bytes.length + 1);
+        output.set(bytes);
+        return output;
+      };
+      const header = terminated(row.header),
+        source = terminated(row.source),
         columns = p.allocate(264, true),
         record = p.allocate(896, true),
         name = p.allocate(64, true),
@@ -859,15 +865,21 @@ export class NativeFESObjectRuntime {
     const pointer = await this.create(instance, object),
       p = this.process,
       tokens = [object.baseName, verb, ...args],
-      encodeText = ['str', 'apend'].includes(verb),
-      prefix = encodeCP932(`${object.baseName} ${verb}${args.length ? ' ' : ''}`),
-      content = encodeText ? this.encode(object, args.join(' ')) : encodeCP932(args.join(' ')),
-      command = new Uint8Array(prefix.length + content.length + 1),
       objectName = encodeCP932(object.baseName + '\0');
-    // The original tail reader can start after any parameter. STRING8
-    // supplies its text bytes in the same command buffer it scans.
-    command.set(prefix);
-    command.set(content, prefix.length);
+    let command;
+    if (context.commandBytes instanceof Uint8Array) {
+      command = new Uint8Array(context.commandBytes.length + 1);
+      command.set(context.commandBytes);
+    } else {
+      // Direct authored native calls retain their explicit input adapter.
+      // Normal FES source supplies its exact executing bytes above.
+      const encodeText = ['str', 'apend'].includes(verb),
+        prefix = encodeCP932(`${object.baseName} ${verb}${args.length ? ' ' : ''}`),
+        content = encodeText ? this.encode(object, args.join(' ')) : encodeCP932(args.join(' '));
+      command = new Uint8Array(prefix.length + content.length + 1);
+      command.set(prefix);
+      command.set(content, prefix.length);
+    }
     if (command.length > 4096 || objectName.length > 128) {
       throw new RangeError('Native FES command or object name exceeds its source record');
     }

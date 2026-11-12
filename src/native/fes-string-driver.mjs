@@ -2,6 +2,7 @@
 // Typed FES text orchestration. D5 owns writers, parsing, glyphs and rendering.
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesSourceBytes, fesNarrowText } from '../fes/tokens.mjs';
 import { NativeFESTextLayout } from './fes-text-layout.mjs';
 import { textConfig, textPacket } from './text-config.mjs';
 import { initializeFESPlane } from './fes-object-factory.mjs';
@@ -184,9 +185,12 @@ export class FESStringDriver {
     await this.initialize(instance, object);
     await this.drive(instance, object, options);
   }
-  input(instance, object, args, context) {
-    const text = context.rawTail ?? args.join(' ');
-    let bytes = object.nativeType === 37 ? new TextEncoder().encode(text) : encodeCP932(text);
+  input(instance, _object, args, context) {
+    if (context.inputBytes instanceof Uint8Array) return context.inputBytes.slice();
+    const source = fesSourceBytes(context.rawTail ?? args.map(fesNarrowText).join(' '));
+    if (!source.length) return new Uint8Array();
+    if (typeof instance.argumentBytes === 'function') return instance.argumentBytes(source).slice();
+    let bytes = source.slice();
     const expand = instance.player.host?.nativeFESStringBytes;
     if (expand) bytes = expand(bytes);
     return this.world.configuration?.scriptReplacements?.apply(bytes) ?? bytes;
@@ -237,7 +241,7 @@ export class FESStringDriver {
         }
         break;
       case 'apend':
-        if (args.length) {
+        if (args.length || context.rawTail?.length) {
           s.source = join(s.source, this.input(instance, target, args, context));
           s.remaining = -1;
         }
@@ -312,6 +316,7 @@ export class FESStringDriver {
         break;
       case 'layout':
         if (!args.length) break;
+        args = [context.text ? context.text(0) : fesNarrowText(args[0]), ...args.slice(1)];
         if (layout) {
           const before = layout.profiles[args[0]],
             out = layout.apply(args[0], args.slice(1), evaluate, {

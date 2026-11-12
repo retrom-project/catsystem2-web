@@ -15,6 +15,7 @@ const oracle = JSON.parse(
   await readFile(new URL('./fixtures/fes-source-model.json', import.meta.url), 'utf8'),
 );
 const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const text = (bytes) => new TextDecoder().decode(bytes);
 
 test('source normalization preserves original quote-blind cleanup, literal parentheses and mechanical inline condition expansion', () => {
   for (const profile of profiles)
@@ -22,17 +23,17 @@ test('source normalization preserves original quote-blind cleanup, literal paren
       assert.deepEqual(
         prepareFESSource(sample.input, {
           tokens: (line) => tokenizeNativeFESSoundConfiguration(line, profile),
-        }),
+        }).map(text),
         sample.lines,
         `${profile}/${sample.label}`,
       );
-  assert.deepEqual(splitFESLines('one\rtwo\r\nthree\nfour\0ignored'), [
+  assert.deepEqual(splitFESLines('one\rtwo\r\nthree\nfour\0ignored').map(text), [
     'one',
     'two',
     'three',
     'four',
   ]);
-  assert.deepEqual(prepareFESSource('  one\t two  \n　fullwidth　\n'), [
+  assert.deepEqual(prepareFESSource('  one\t two  \n　fullwidth　\n').map(text), [
     'one two',
     '　fullwidth　',
   ]);
@@ -47,27 +48,27 @@ test('macro replacement matches both original literal emission strategies and do
   ]);
   for (const sample of oracle.macros)
     assert.equal(
-      replaceFESMacros(sample.input, macros, nativeABI(sample.profile).fes.macroLiterals),
+      text(replaceFESMacros(sample.input, macros, nativeABI(sample.profile).fes.macroLiterals)),
       sample.output,
       sample.profile + '/' + sample.input,
     );
   const once = replaceFESMacros('cmd A', macros);
-  assert.equal(once, 'cmd B');
-  assert.equal(replaceFESMacros(once, macros), 'cmd 7');
+  assert.equal(text(once), 'cmd B');
+  assert.equal(text(replaceFESMacros(once, macros)), 'cmd 7');
   assert.equal(
-    replaceFESMacros('"a\\"b"', new Map(), nativeABI(profiles[0]).fes.macroLiterals),
+    text(replaceFESMacros('"a\\"b"', new Map(), nativeABI(profiles[0]).fes.macroLiterals)),
     '"a\\"b"',
     'no macro table means no lexical reconstruction',
   );
-  assert.equal(replaceFESMacros('NAME NAME2', new Map([['NAME', '']])), ' NAME2');
+  assert.equal(text(replaceFESMacros('NAME NAME2', new Map([['NAME', '']]))), ' NAME2');
 });
 
 test('raw text tails retain quotes and spaces inserted after source preparation', () => {
   const line = prepareFESSource('obj str "a  b"')[0];
-  assert.equal(fesRawTail(line, 2), '"a b"');
+  assert.equal(text(fesRawTail(line, 2)), '"a b"');
   const replaced = replaceFESMacros('obj str WORD', new Map([['WORD', '  a  b']]));
-  assert.equal(fesRawTail(replaced, 2), '  a  b');
-  assert.equal(fesRawTail('obj str', 2), '');
+  assert.equal(text(fesRawTail(replaced, 2)), '  a  b');
+  assert.equal(text(fesRawTail('obj str', 2)), '');
   assert.deepEqual(tokenizeFESLine('command (1 + (2 * 3)) tail'), [
     'command',
     '(1 + (2 * 3))',

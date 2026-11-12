@@ -3,6 +3,7 @@ import { NativeFESTextProjection } from './fes-text-projection.mjs';
 // Script text commands and their deferred frame driver are owned by JS.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { fesNarrowText } from '../src/fes/tokens.mjs';
 import { NativeFESTextLayout } from '../src/native/fes-text-layout.mjs';
 import { textConfig, textPacket } from '../src/native/text-config.mjs';
 import { planeState } from './fes-plane-state-original.mjs';
@@ -124,12 +125,18 @@ export class NativeFESText {
   }
   input(instance, object, args, context) {
     const text = context.rawTail ?? args.join(' ');
-    let bytes = object.nativeType === 37 ? new TextEncoder().encode(text) : encodeCP932(text);
+    let bytes =
+      text instanceof Uint8Array
+        ? text.slice()
+        : object.nativeType === 37
+          ? new TextEncoder().encode(text)
+          : encodeCP932(text);
     const expand = instance.player.host.nativeFESStringBytes;
     if (expand) bytes = expand(bytes);
     return this.world.configuration?.scriptReplacements?.apply(bytes) ?? bytes;
   }
   async command(instance, object, verb, args = [], context = {}) {
+    args = args.map(fesNarrowText);
     const group = instance.objects.filter((o) => o.baseName === object.baseName),
       index = group.length === 1 ? 0 : (context.index ?? object.index ?? 0);
     if (index === -1 && object !== group.find((o) => !o.deleted)) return;

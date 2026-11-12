@@ -128,7 +128,7 @@ test('FES owns exact NUL-bounded body bytes for plain and compressed sources', a
         ...u32(0),
         ...compressed,
       ]);
-    for (const source of [input, packed]) {
+    for (const source of [input, Buffer.from(input), packed]) {
       const result = await readFES(source);
       assert.deepEqual(result.bytes, body);
       assert.equal(result.prepared, source === packed);

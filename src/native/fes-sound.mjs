@@ -4,6 +4,7 @@
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesNarrowText } from '../fes/tokens.mjs';
 import { NativeSoundPacket } from './sound.mjs';
 import { nativeLegacySoundIndex, nativeLegacySoundGroup } from './sound-values.mjs';
 import { lowerSoundName } from './sound-config.mjs';
@@ -598,9 +599,12 @@ export class NativeFESSound {
     if (!raw) throw new Error(`Unrecovered native FES sound command ${verb}`);
     const state = this.state(instance, object),
       target = this.target(instance, object),
-      definition = motionDefinition(verb, raw),
-      registers = motionRegisters(definition, args, target.state(), (expression, current) =>
-        instance.value(expression, current),
+      definition = motionDefinition(verb, { ...raw, words: raw.words.map(fesNarrowText) }),
+      registers = motionRegisters(
+        definition,
+        args.map(fesNarrowText),
+        target.state(),
+        (expression, current) => instance.value(expression, current),
       );
     return target
       .add(definition.file, { registers, group: 0, delay: state.get('motionDelay') })

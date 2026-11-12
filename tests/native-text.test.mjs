@@ -24,6 +24,11 @@ import { NativeGraphics, installNativeGraphics } from '../src/native/graphics.mj
 import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeTextWriter } from '../oracle/text.mjs';
+import { NativeFESText, nativeFESTextAdapter } from '../oracle/fes-text-original.mjs';
+import { registerNativeFESObjectType } from '../oracle/fes-objects-original.mjs';
+import { NativeGraphics as OriginalFESGraphics } from '../oracle/graphics-original.mjs';
+import { NativeFESTextProjection } from '../oracle/fes-text-projection.mjs';
+import { installNativeFESImages } from '../oracle/fes-images-original.mjs';
 import { installNativeText, nativeText } from '../src/native/text-task.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { ImageStore } from '../src/formats/hg3.mjs';
@@ -809,7 +814,19 @@ async function fixture(profile, bytes, source) {
   installNativeBitmapMemory(world);
   installNativeGraphics(world);
   installNativeText(world, { glyphs });
+  // This fixture observes original pointer consumers. Ordinary World FES is
+  // verified separately through its default JavaScript coordinator.
+  world.text.fes = new NativeFESText(world.text);
+  world.registerNativeFeature(
+    'fes-text-projection',
+    (engine) => new NativeFESTextProjection(engine, world),
+  );
+  for (const type of profile === 'sdk-4.01-engine-2.6.1.74' ? [21, 29] : [21, 29, 37])
+    registerNativeFESObjectType(world, type, (runtime) => nativeFESTextAdapter(runtime, type));
   installGraphicsOracle(world);
+  installNativeFESImages(world);
+  for (const method of ['initializeFES', 'syncFES', 'closeFES'])
+    world.graphics[method] = OriginalFESGraphics.prototype[method].bind(world.graphics);
   world.objects.register(34, () => ({
     imageCache: new Map(),
     message: () => 0,
@@ -850,7 +867,7 @@ for (const [profile, variable, types] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', ['STRING', 'NVSTRING']],
 ])
   test(
-    `${profile} original FES text commands, image fonts, reveal and a fresh process checkpoint`,
+    `${profile} explicit FES pointer consumers, image fonts, reveal and a fresh process checkpoint`,
     { skip: !process.env[variable] },
     async () => {
       const bytes = new Uint8Array(await readFile(process.env[variable]));

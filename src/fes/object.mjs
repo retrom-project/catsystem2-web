@@ -5,6 +5,7 @@ import { motionDefinition, motionRegisters } from '../motion/definitions.mjs';
 import { FES_OBJECT_TYPES } from './types.mjs';
 import { FES_TEXT_VERBS } from '../native/fes-string-driver.mjs';
 import { FES_M2_VERBS } from '../native/emote-fes.mjs';
+import { fesNarrowText } from './tokens.mjs';
 
 export class FESObject {
   constructor(type, baseName, index, handle) {
@@ -183,10 +184,12 @@ export function objectCommand(s, o, sub, args, context = {}) {
   if (isSound && player.nativeSound) {
     return nativeResult(player.nativeSound.command(s, o, sub, args, context));
   }
+  args = args.map(fesNarrowText);
   // Built-in object commands precede SUBCOMMAND lookup in native 769940.
   // These names have no built-in handler; they are defined by motion.h (or
   // another application header), so their exact KCS program must be executed.
-  const rawDefinition = !FES_BUILTIN_VERBS.has(sub) && s.program?.subcommands?.[sub];
+  const declaration = !FES_BUILTIN_VERBS.has(sub) && s.program?.subcommands?.[sub],
+    rawDefinition = declaration && { ...declaration, words: declaration.words.map(fesNarrowText) };
   if (rawDefinition) {
     if (player.nativeImages?.supports(o))
       return player.nativeImages.motion(s, o, motionDefinition(sub, rawDefinition), args);

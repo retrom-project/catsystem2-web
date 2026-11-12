@@ -4,8 +4,9 @@ import { readFES } from '../formats/scene.mjs';
 import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
 import { NativeFESSourceArena } from '../native/fes-source.mjs';
-import { tokenizeFESLine } from './tokens.mjs';
+import { tokenizeFESByteLine, fesSourceBytes } from './tokens.mjs';
 import { CGGallery } from '../gallery.mjs';
+import { decodeText } from '../binary.mjs';
 
 export class FESPlayer {
   constructor(game, images, host = {}, globals = {}, strings = {}) {
@@ -48,7 +49,8 @@ export class FESPlayer {
       .replace(/\$str(\d+)/g, (_, n) => this.strings[n] || '');
   }
   tokens(line) {
-    return this.host.fesTokens ? this.host.fesTokens(line) : tokenizeFESLine(line);
+    const bytes = fesSourceBytes(line);
+    return this.host.fesTokens ? this.host.fesTokens(bytes) : tokenizeFESByteLine(bytes);
   }
   async load(name, options) {
     const source = await readFES(
@@ -58,7 +60,7 @@ export class FESPlayer {
     );
     const includes = new Map();
     const loadIncludes = async (source) => {
-      for (const file of includeNames(source.text, {
+      for (const file of includeNames(source.bytes, {
         prepared: source.prepared,
         tokens: (line) => this.tokens(line),
       })) {
@@ -73,7 +75,7 @@ export class FESPlayer {
       }
     };
     await loadIncludes(source);
-    const program = parseProgram(source.text, {
+    const program = parseProgram(source.bytes, {
       prepared: source.prepared,
       tokens: (line) => this.tokens(line),
       include: (file) => includes.get(file),
@@ -84,9 +86,9 @@ export class FESPlayer {
       name.toLowerCase().replace(/\.fes$/, ''),
       program,
     );
-    program.source = [source, ...includes.values()].map(({ text }) => text).join('\n');
     if (!this.runtimeFactory) {
-      const tokens = new Set(this.expand(program.source).match(/[\w%-]+/g) || []);
+      const text = program.sources.map(({ bytes }) => decodeText(bytes)).join('\n'),
+        tokens = new Set(this.expand(text).match(/[\w%-]+/g) || []);
       const names = [...tokens].filter((t) =>
         this.game.resolveCategory
           ? this.game.resolveCategory(t, 'image') !== null
@@ -183,7 +185,11 @@ export class FESPlayer {
   }
   async refreshImages() {
     const tokens = new Set(
-      this.expand(this.instances.map((s) => s.program.source).join('\n')).match(/[\w%-]+/g) || [],
+      this.expand(
+        this.instances
+          .flatMap((s) => s.program.sources.map(({ bytes }) => decodeText(bytes)))
+          .join('\n'),
+      ).match(/[\w%-]+/g) || [],
     );
     await Promise.all(
       [...tokens]
@@ -633,6 +639,11 @@ export class FESPlayer {
     this.stringTable = structuredClone(state.stringTable);
     const instance = async (saved) => {
       if (!saved) return null;
+      if (saved.program.sourceKey)
+        (this.nativeSources || this.localSources).validateProgram(
+          saved.program.sourceKey,
+          saved.program,
+        );
       const s = new FESInstance(saved.name, structuredClone(saved.program), this, {
         nativeVariableContextKey: saved.nativeVariableContextKey,
         macros: saved.macros,

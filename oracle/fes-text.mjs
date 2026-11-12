@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { fesNarrowText } from '../src/fes/tokens.mjs';
 // Public FES object bridge. Native state lives once in the shared engine.
 export const FES_TEXT_VERBS = new Set(
   'str apend apendmark clear draw isdraw isdrawmark skip reset layout linecnt endpos userfontobj userfont insert getdiv'.split(
@@ -109,7 +110,7 @@ export function nativeFESTextAdapter(bridge, type) {
           ? 0x7694a0
           : 0x768d90,
     afterDefinition(runtime, instance, object, pointer, rows) {
-      const columns = new Set(rows.flatMap((row) => row.columns)),
+      const columns = new Set(rows.flatMap((row) => row.columns.map(fesNarrowText))),
         p = runtime.process;
       if (columns.has('POS'))
         [object.x, object.y, object.z] = [48, 52, 56].map((offset) =>

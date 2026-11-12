@@ -2554,15 +2554,16 @@
       "id": "fes.reference.co.apend",
       "domain": "fes-object-command",
       "names": ["apend"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/apend.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/fes/source.mjs; src/native/text-task.mjs",
       "evidence": [
-        "tests/fes-contracts.test.mjs",
-        "tests/native-text.test.mjs",
-        "docs/native-text.md"
+        "tests/fes-source-bytes.test.mjs",
+        "tests/fes-source-player.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-source.md"
       ],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "note": "Default JS coordinator copies exact source-tail bytes after one bank/SCRIPT expansion, skips null slots and admits only frozen STRING/NVSTRING/STRING8 types. Missing str tails clear without expansion; missing apend tails return. SDK74 has no default STRING8 factory. LOG and other types are frozen no-ops; manual applicability is not widened. Real D5 bytes, StageRenderer pixels and fresh World restoration are verified with EXE construction disabled.",
       "signatures": ["[obj] apend [str]"]
     },
     {
@@ -3497,15 +3498,16 @@
       "id": "fes.reference.co.str",
       "domain": "fes-object-command",
       "names": ["str"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/str.html",
-      "implementation": "src/native/fes-objects.mjs; src/native/fes-text.mjs; src/native/text-task.mjs",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-string-driver.mjs; src/fes/source.mjs; src/native/text-task.mjs",
       "evidence": [
-        "tests/fes-contracts.test.mjs",
-        "tests/native-text.test.mjs",
-        "docs/native-text.md"
+        "tests/fes-source-bytes.test.mjs",
+        "tests/fes-source-player.test.mjs",
+        "tests/browser/public.spec.mjs",
+        "docs/native-fes-source.md"
       ],
-      "note": "Original handler executes for STRING/STRING8/NVSTRING, including real group count and selected indices; writer parsing/reveal/layout and image-font paths are native. Complete applicable-type coverage (including log objects), remaining definition fields and browser pixel acceptance are not yet claimed.",
+      "note": "Default JS coordinator copies exact source-tail bytes after one bank/SCRIPT expansion, skips null slots and admits only frozen STRING/NVSTRING/STRING8 types. Missing str tails clear without expansion; missing apend tails return. SDK74 has no default STRING8 factory. LOG and other types are frozen no-ops; manual applicability is not widened. Real D5 bytes, StageRenderer pixels and fresh World restoration are verified with EXE construction disabled.",
       "signatures": ["[obj] str (str)"]
     },
     {

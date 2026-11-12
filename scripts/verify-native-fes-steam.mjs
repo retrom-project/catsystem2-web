@@ -102,7 +102,7 @@ try {
               return 7;
             },
             soundConfigTokens: (line) => tokenizeNativeFESSoundConfiguration(line, profile),
-            nativeScriptReplace: (value) => value,
+            nativeFESScriptBytes: (value) => value,
           },
           instance = new FESInstance('AuthoredSteam', parseProgram('#START\n'), {
             host,

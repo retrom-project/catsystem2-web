@@ -54,9 +54,12 @@ test('FES counting expands macros and includes while keeping object definitions'
   const report = inspectFES(
     {
       text: '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
+      bytes: new TextEncoder().encode(
+        '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
+      ),
       prepared: false,
     },
-    () => ({ text: '#MACRO\nACTION wait\n', prepared: false }),
+    () => ({ bytes: new TextEncoder().encode('#MACRO\nACTION wait\n'), prepared: false }),
   );
   assert.deepEqual(report.commands, ['wait']);
   assert.deepEqual(report.objectCommands, [{ type: 'TEXT', command: 'show' }]);

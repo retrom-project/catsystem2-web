@@ -31,7 +31,7 @@ import {
   syncFESGraphics,
   closeFESGraphics,
   setFESBaseImage,
-} from '../src/native/fes-graphics.mjs';
+} from './fes-graphics-original.mjs';
 import { NativeView } from '../src/native/view.mjs';
 import {
   NATIVE_MESH_IDS,

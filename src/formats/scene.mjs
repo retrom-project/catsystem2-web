@@ -65,7 +65,7 @@ export async function readFES(bytes) {
     prepared = b.magic('FES\0'),
     body = prepared ? await inflate(b.range(16, b.u32(4)), b.u32(8)) : bytes,
     end = body.indexOf(0),
-    source = body.slice(0, end < 0 ? body.length : end);
+    source = new Uint8Array(body.subarray(0, end < 0 ? body.length : end));
   // Execution owns these narrow bytes. The decoded text is a diagnostic view;
   // neither codec selection nor BOM handling may rewrite the source body.
   return { bytes: source, text: decodeText(source), prepared };

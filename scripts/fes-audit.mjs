@@ -9,6 +9,7 @@ import { FESInstance } from '../src/fes/instance.mjs';
 import { readFES, readScene } from '../src/formats/scene.mjs';
 import { condition } from '../src/fes/expression.mjs';
 import { cstCommandBody } from '../src/cst-syntax.mjs';
+import { fesByteView, fesNarrowText } from '../src/fes/tokens.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 export const registry = JSON.parse(
@@ -98,7 +99,8 @@ export function document() {
 }
 
 export function commandBody(source) {
-  while (/^if\s*\(/.test(source)) source = condition(source)[1];
+  if (source instanceof Uint8Array) source = fesByteView(source);
+  while (/^if *\(/.test(source)) source = condition(source)[1];
   return source;
 }
 
@@ -111,7 +113,7 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
   for (const name of (await readdir(directory)).filter((n) => /\.fes(?:\.txt)?$/i.test(n)).sort()) {
     try {
       const source = await readFES(new Uint8Array(await readFile(path.join(directory, name))));
-      const program = parseProgram(source.text, {
+      const program = parseProgram(source.bytes, {
         prepared: source.prepared,
         include: (file) => includes.get(file),
       });
@@ -129,7 +131,8 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
       const commands = {},
         objectCommands = {},
         columns = new Set();
-      for (const table of program.tables) for (const column of table.columns) columns.add(column);
+      for (const table of program.tables)
+        for (const column of table.columns) columns.add(fesNarrowText(column));
       for (const lines of Object.values(program.blocks))
         for (const source of lines) {
           const line = commandBody(instance.expandMacros(source));

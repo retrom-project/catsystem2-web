@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesSourceBytes, fesByteView, fesViewBytes } from '../fes/tokens.mjs';
 
 // FES native handlers can observe addresses of preprocessed command strings.
 // This world-owned segment is separate from the PE32 heap and VM handles.
@@ -27,8 +28,11 @@ export class NativeFESSourceArena {
     this.used += size;
     return address;
   }
-  allocateString(text) {
-    return this.allocate(encodeCP932(`${text}\0`));
+  allocateString(source) {
+    const bytes = fesSourceBytes(source),
+      terminated = new Uint8Array(bytes.length + 1);
+    terminated.set(bytes);
+    return this.allocate(terminated);
   }
   range(address, size) {
     if (!Number.isSafeInteger(address) || !Number.isSafeInteger(size) || size < 0)
@@ -62,35 +66,40 @@ export class NativeFESSourceArena {
     const key = `${owner ?? 'local'}:${name}`;
     const existing = this.programs.get(key);
     if (existing) {
-      if (existing.signature !== JSON.stringify(program.blocks))
-        throw new Error(`FES source program changed during its lifetime: ${name}`);
+      this.validateProgram(key, program);
       return key;
     }
     const blocks = Object.create(null);
     for (const [label, lines] of Object.entries(program.blocks))
-      blocks[label] = lines.map((text) => ({
-        text,
-        copies: new Map([[text, this.allocateString(text)]]),
+      blocks[label] = lines.map((line) => ({
+        bytes: fesSourceBytes(line).slice(),
+        copies: new Map([[fesByteView(line), this.allocateString(line)]]),
         names: new Map(),
       }));
     this.programs.set(key, { signature: JSON.stringify(program.blocks), blocks });
     return key;
   }
-  context(key, label, index, { text, offset = 0, name }) {
+  validateProgram(key, program) {
+    if (this.programs.get(key)?.signature !== JSON.stringify(program.blocks))
+      throw new Error(`FES source program changed during its lifetime: ${key}`);
+  }
+  context(key, label, index, { bytes, offset = 0, name }) {
     const record = this.programs.get(key)?.blocks[label]?.[index];
     if (!record) throw new Error(`FES source command ${key}#${label}:${index + 1} is unavailable`);
     if (
-      typeof text !== 'string' ||
+      !(bytes instanceof Uint8Array) ||
       !Number.isInteger(offset) ||
       offset < 0 ||
-      offset > text.length ||
+      offset > bytes.length ||
       typeof name !== 'string'
     )
       throw new Error('Invalid FES executing source copy');
-    if (!record.copies.has(text)) record.copies.set(text, this.allocateString(text));
-    if (!record.names.has(name)) record.names.set(name, this.allocateString(name));
+    const identity = fesByteView(bytes);
+    if (!record.copies.has(identity)) record.copies.set(identity, this.allocateString(bytes));
+    // Object names retain their independent native narrow-string ABI.
+    if (!record.names.has(name)) record.names.set(name, this.allocate(encodeCP932(`${name}\0`)));
     return {
-      commandPointer: record.copies.get(text) + encodeCP932(text.slice(0, offset)).length,
+      commandPointer: record.copies.get(identity) + offset,
       objectNameAddress: record.names.get(name),
     };
   }
@@ -123,6 +132,39 @@ export class NativeFESSourceArena {
     restored.used = state.used;
     restored.blocks = structuredClone(state.blocks);
     restored.programs = new Map(structuredClone(state.programs));
+    const validateCopy = (address, bytes) => {
+      const actual = restored.read(address, bytes.length + 1);
+      if (actual[bytes.length] || bytes.some((byte, index) => actual[index] !== byte))
+        throw new Error('FES source arena checkpoint copy mismatch');
+    };
+    for (const [key, program] of restored.programs) {
+      if (typeof key !== 'string' || !program?.blocks || typeof program.signature !== 'string')
+        throw new Error('Invalid FES source arena checkpoint program');
+      const blocks = Object.create(null);
+      for (const [label, records] of Object.entries(program.blocks)) {
+        if (!Array.isArray(records)) throw new Error('Invalid FES source arena checkpoint lines');
+        blocks[label] = records.map((record) => {
+          if (
+            !(record.bytes instanceof Uint8Array) ||
+            record.bytes.includes(0) ||
+            !(record.copies instanceof Map) ||
+            !(record.names instanceof Map) ||
+            !record.copies.has(fesByteView(record.bytes))
+          )
+            throw new Error('Invalid FES source arena checkpoint record');
+          for (const [identity, address] of record.copies) {
+            if (typeof identity !== 'string') throw new Error('Invalid FES source copy identity');
+            validateCopy(address, fesViewBytes(identity));
+          }
+          for (const [name, address] of record.names) {
+            if (typeof name !== 'string') throw new Error('Invalid FES object-name identity');
+            validateCopy(address, encodeCP932(name));
+          }
+          return record.bytes;
+        });
+      }
+      restored.validateProgram(key, { blocks });
+    }
     Object.assign(this, restored);
   }
 }

@@ -3,6 +3,7 @@
 // object allocates a renderer or an original data/map object.
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesNarrowText } from '../fes/tokens.mjs';
 import { fesFileListPattern, fesFileListKey, fesFileListEntries } from './fes-file-list.mjs';
 import { readFESStringTable, fesStringTableCell } from './fes-string-table.mjs';
 
@@ -24,7 +25,7 @@ export class NativeFESData {
     for (; state.appliedDefinitions < definitions.length; state.appliedDefinitions++) {
       const row = definitions[state.appliedDefinitions],
         tokens = row.values,
-        column = row.columns.indexOf('FILE');
+        column = row.columns.findIndex((token) => fesNarrowText(token) === 'FILE');
       if (column < 0 || tokens[column] === undefined) continue;
       const file = instance.soundArgument(tokens[column]);
       state.rows = [];

@@ -499,6 +499,153 @@ test('FES dialog buttons produce the original Win32 result and Yes/No ignores Es
   }
 });
 
+for (const profile of [sdkProfile, gameProfile])
+  test(`${profile} default JS FES source bytes reach StageRenderer text pixels and restore in a fresh World`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const result = await page.evaluate(
+      async ({ profile, program }) => {
+        const { NativeWorld } = await import('/web/transitional-entry.mjs'),
+          { NativeConfiguration } = await import('/src/native/config.mjs'),
+          { MotionLibrary } = await import('/src/motion/library.mjs'),
+          { ParticleRandom } = await import('/src/ppi/random.mjs'),
+          { encodeCP932 } = await import('/src/kcs/strings.mjs'),
+          type = profile === 'nekopara-vol3-engine-2.6.1.76' ? 'STRING8' : 'STRING',
+          encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
+          payload = encode('猫'),
+          source = encode(
+            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
+          ),
+          glyphs = {
+            measure: (_font, text) => ({
+              width: text.length * 4,
+              height: 8,
+              ascent: 6,
+              descent: 2,
+              averageWidth: 4,
+              maximumWidth: 8,
+            }),
+            glyph: () => ({
+              width: 4,
+              height: 6,
+              originX: 0,
+              originY: 6,
+              advanceX: 4,
+              advanceY: 0,
+              alpha: new Uint8Array(24).fill(255),
+            }),
+          },
+          create = (withSource) => {
+            const files = new Map([
+                ['main.kcs', Uint8Array.from(program)],
+                ...(withSource ? [['screen.fes', source]] : []),
+              ]),
+              game = {
+                width: 128,
+                height: 96,
+                read: async (name) => files.get(name) ?? null,
+                has: (name) => files.has(name),
+                lookup: () => null,
+                resolveCategory(name, category) {
+                  const file = name.includes('.') ? name : `${name}.${category}`;
+                  return files.has(file) ? file : null;
+                },
+                readCategory(name, category) {
+                  const file = this.resolveCategory(name, category);
+                  return file === null ? null : this.read(file);
+                },
+                require: async (name) => {
+                  if (!files.has(name)) throw new Error(`Unexpected source read ${name}`);
+                  return files.get(name);
+                },
+                requireCategory(name, category) {
+                  return this.require(name.includes('.') ? name : `${name}.${category}`);
+                },
+              },
+              random = new ParticleRandom(),
+              configuration = new NativeConfiguration({ profile }),
+              world = new NativeWorld({
+                profile,
+                game,
+                random,
+                images: {},
+                configuration,
+                motionLibrary: new MotionLibrary(game, { profile, random }),
+                storage: { read: async () => null, write: async () => true },
+                host: { nativeTextGlyphs: () => glyphs },
+              }),
+              canvas = new OffscreenCanvas(128, 96),
+              renderer = {
+                canvas,
+                ctx: canvas.getContext('2d'),
+                begin() {
+                  this.ctx.reset();
+                },
+              };
+            configuration.fields.texture.size.set([128, 128]);
+            configuration.fields.texture.grid.set([1, 1]);
+            configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
+            configuration.fields.texture.bppY.set([0, 1]);
+            world.ensureNativeEngine = () => {
+              throw new Error('Default FES text requested the EXE');
+            };
+            world.stageRenderer.attach(renderer);
+            return world;
+          },
+          world = create(true),
+          fresh = create(false),
+          render = async (owner) => {
+            await owner.stageRenderer.render(owner.graphics.stage, {});
+            return [...owner.stageRenderer.gpu.pixels()];
+          };
+        try {
+          await world.initialize('main.kcs');
+          const parent = world.objects.objects.get(world.main.id),
+            id = await world.objects.create({ kind: 34, parent: parent.id }),
+            surface = await world.objects.create({ kind: 15, parent: parent.id }),
+            task = world.objects.objects.get(id).implementation;
+          await world.sendEngine(surface, parent.id, 279, 128, 96);
+          await world.sendEngine(surface, parent.id, 283);
+          world.runtime.variableBank(parent).initialize(64);
+          world.runtime.stringBank(parent);
+          await task.initialize(parent.context.variableBank);
+          await world.sendEngine(id, parent.id, 334, 0, surface);
+          await task.loadSource('screen');
+          await task.tick();
+          const object = task.player.root.byKey.get('label'),
+            writer = await world.graphics.get(object.nativeTaskID).writer(),
+            before = await render(world),
+            saved = world.snapshot();
+          await fresh.restore(saved);
+          const restored = fresh.objects.objects
+              .get(id)
+              .implementation.player.root.byKey.get('label'),
+            after = await render(fresh);
+          return {
+            bytes: [...object.nativeTextState.source],
+            parser: [...writer.parser.source],
+            payload: [...payload],
+            restored: [...restored.nativeTextState.source],
+            whitePixels: before.filter((value, index) => index % 4 === 0 && value === 255).length,
+            samePixels: before.every((value, index) => value === after[index]),
+            exe: Boolean(world.nativeEngine || fresh.nativeEngine),
+          };
+        } finally {
+          await fresh.close({ flushFiles: false });
+          await world.close({ flushFiles: false });
+        }
+      },
+      { profile, program: [...kcsProgram([[37, 240], [43, 0x47, 4], [59]])] },
+    );
+    expect(result.bytes).toEqual(result.payload);
+    expect(result.parser).toEqual(result.payload);
+    expect(result.restored).toEqual(result.payload);
+    expect(result.whitePixels).toBeGreaterThan(0);
+    expect(result.samePixels).toBe(true);
+    expect(result.exe).toBe(false);
+  });
+
 test('native movie decoding, audible PCM, loop completion and fresh decoder restoration use real browser media', async ({
   page,
 }) => {

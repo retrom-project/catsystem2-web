@@ -8,7 +8,13 @@ import { expandNativeFESSoundConfigurationToken } from '../native/fes-sound-conf
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_FES_SAVE_COMMANDS } from '../native/save-slots.mjs';
 import { replaceFESMacros, fesRawTail } from './source.mjs';
-import { tokenizeFESLine } from './tokens.mjs';
+import {
+  tokenizeFESByteLine,
+  fesSourceBytes,
+  fesByteView,
+  fesViewBytes,
+  fesNarrowText,
+} from './tokens.mjs';
 const nativeArgumentDecoder = new TextDecoder('shift_jis');
 
 export class FESInstance {
@@ -67,13 +73,12 @@ export class FESInstance {
       declaredGroups: Object.create(null),
     });
     this.byKey = new Map();
-    this.macros = new Map(
-      macros ??
-        program.macros.map(([name, value]) => [
-          this.soundArgument(name),
-          this.soundArgument(value),
-        ]),
-    );
+    this.macros = new Map(macros);
+    if (!macros)
+      for (const [name, value] of program.macros) {
+        const key = fesByteView(this.argumentBytes(name));
+        if (value !== undefined) this.macros.set(key, this.argumentBytes(value).slice());
+      }
     this.nativeDictionary = new NativeDictionary();
     this.keyNames = new Set();
     if (player.runtimeFactory) this.runtime = player.runtimeFactory(this);
@@ -141,6 +146,7 @@ export class FESInstance {
   }
   elements(name) {
     if (this.runtime) return this.runtime.elements(name);
+    name = fesNarrowText(name);
     if (name === '@') return this.eventObject ? [this.eventObject] : [];
     if (this.byKey.has(name)) return this.byKey.get(name).deleted ? [] : [this.byKey.get(name)];
     const match = /^(\w+)\[(.*)\]$/.exec(name);
@@ -155,6 +161,7 @@ export class FESInstance {
   }
   selectionIndex(name) {
     if (this.runtime) return this.runtime.reference(name).index;
+    name = fesNarrowText(name);
     if (name === '@') return this.eventIndex ?? this.eventObject?.index ?? 0;
     const match = /^(\w+)\[(.*)\]$/.exec(name);
     return match ? this.value(match[2]) : -1;
@@ -187,7 +194,8 @@ export class FESInstance {
     this.locals[n] = v | 0;
   }
   tokens(line) {
-    return this.player.tokens ? this.player.tokens(line) : tokenizeFESLine(line);
+    const bytes = fesSourceBytes(line);
+    return this.player.tokens ? this.player.tokens(bytes) : tokenizeFESByteLine(bytes);
   }
   expandMacros(line) {
     return replaceFESMacros(line, this.macros, this.player.host.fesMacroLiterals?.());
@@ -226,12 +234,13 @@ export class FESInstance {
     }[name];
   }
   value(text, currentValue) {
+    text = fesNarrowText(text);
     const context =
       currentValue === undefined ? this : Object.assign(Object.create(this), { currentValue });
     return evaluate(text.replace(/%$/, ''), context);
   }
   text(token = '') {
-    return token
+    return fesNarrowText(token)
       .replace(/\$str(\d+)/g, (_, n) => this.player.strings[n] || '')
       .replace(/\\_/g, ' ')
       .replace(/\\n/g, '\n');
@@ -656,8 +665,8 @@ export class FESInstance {
   skip(lines, pc, stopAtElse) {
     let depth = 0;
     for (; pc < lines.length; pc++) {
-      const line = this.expandMacros(lines[pc]);
-      if (/^if\s*\(/.test(line) && !condition(line)[1]) depth++;
+      const line = fesByteView(this.expandMacros(lines[pc]));
+      if (/^if *\(/.test(line) && !condition(line)[1]) depth++;
       else if (line === 'endif') {
         if (!depth) return pc + 1;
         depth--;
@@ -666,24 +675,26 @@ export class FESInstance {
     return pc;
   }
   execute(line, lines, pc, execution) {
+    let bytes = fesSourceBytes(line);
     if (!execution) {
-      line = this.expandMacros(line);
-      execution = { text: line, offset: 0 };
+      bytes = this.expandMacros(bytes);
+      execution = { bytes, offset: 0 };
     }
-    const words = this.tokens(line),
-      head = words[0],
+    line = fesByteView(bytes);
+    const words = this.tokens(bytes),
+      head = fesNarrowText(words[0]),
       args = words.slice(1),
       p = (i) => this.value(this.soundArgument(args[i] || '0'));
     const store = (i, v) => {
       if (args[i] !== undefined) this.setGlobal(p(i), v);
     };
-    if (/^if\s*\(/.test(line)) {
+    if (/^if *\(/.test(line)) {
       const [expr, rest] = condition(line),
         truth = this.value(expr) !== 0;
       return rest
         ? truth
-          ? this.execute(rest, lines, pc, {
-              text: execution.text,
+          ? this.execute(fesViewBytes(rest), lines, pc, {
+              bytes: execution.bytes,
               offset: execution.offset + line.length - rest.length,
             })
           : {}
@@ -708,12 +719,12 @@ export class FESInstance {
       return { action: 'flush' };
     }
     if (NATIVE_FES_SAVE_COMMANDS.includes(head) && typeof host.nativeSaveCommand === 'function') {
-      this.player.enqueue(Promise.resolve(host.nativeSaveCommand(head, line, this)));
+      this.player.enqueue(Promise.resolve(host.nativeSaveCommand(head, bytes, this)));
       return { action: 'flush' };
     }
     if (this.player.nativeEffects?.commands.has(head)) {
       this.player.enqueue(
-        this.player.nativeEffects.commandLine(head, line, this).then((value) => {
+        this.player.nativeEffects.commandLine(head, bytes, this).then((value) => {
           this.deferredCommandReturn = value;
         }),
       );
@@ -835,7 +846,7 @@ export class FESInstance {
       }
       case 'strvar': {
         // SDK 4.01 select.fes uses indexed string copying, rather than printf.
-        if (args[0] === 'get') {
+        if (fesNarrowText(args[0]) === 'get') {
           this.player.strings[p(1)] = this.player.strings[p(2)] ?? '';
           break;
         }
@@ -996,7 +1007,7 @@ export class FESInstance {
       case 'messagebox': {
         if (typeof host.messageBox !== 'function')
           throw new Error('FES messagebox requires its browser dialog service');
-        const tokens = host.soundConfigTokens ? host.soundConfigTokens(line).slice(1) : args;
+        const tokens = host.soundConfigTokens ? host.soundConfigTokens(bytes).slice(1) : args;
         if (tokens.length < 4)
           throw new Error('FES messagebox requires a variable, type, title and text');
         const index = this.value(this.soundArgument(tokens[0])),
@@ -1100,13 +1111,13 @@ export class FESInstance {
         store(0, Number(this.cgGallery?.registry.hasReference(this.text(args[1]), true) ?? false));
         break;
       case 'cgreg_t': {
-        const block = /^[\\$\\\\0-9]/.test(args[1]) ? p(1) : this.text(args[1]);
+        const block = /^[\\$\\\\0-9]/.test(fesNarrowText(args[1])) ? p(1) : this.text(args[1]);
         store(0, Number(this.cgGallery?.seen(block, p(2)) ?? false));
         break;
       }
       case 'cgregnum':
       case 'cgregmax': {
-        const block = /^[\\$\\\\0-9]/.test(args[0]) ? p(0) : this.text(args[0]);
+        const block = /^[\\$\\\\0-9]/.test(fesNarrowText(args[0])) ? p(0) : this.text(args[0]);
         store(1, this.cgGallery?.variants(block, p(2), head === 'cgregnum').length ?? 0);
         break;
       }
@@ -1115,7 +1126,7 @@ export class FESInstance {
         break;
       case 'cgreg_getlist': {
         if (!this.cgGallery || p(0) === -1) break;
-        const block = /^[$0-9]/.test(args[2]) ? p(2) : this.text(args[2]);
+        const block = /^[$0-9]/.test(fesNarrowText(args[2])) ? p(2) : this.text(args[2]);
         this.player.strings[p(0)] = this.cgGallery.get(block, p(3), p(4));
         break;
       }
@@ -1127,14 +1138,14 @@ export class FESInstance {
         );
         break;
       case 'xchgcursor':
-        this.player.cursorOverButton = args[0] === 'btndown';
+        this.player.cursorOverButton = fesNarrowText(args[0]) === 'btndown';
         break;
       case 'keyskip':
         this.keySkipEnabled = true;
         this.keySkipControlOnly = false;
         this.keySkipContinuous = false;
         for (let i = 0; i < args.length; i++) {
-          const option = args[i].toLowerCase();
+          const option = fesNarrowText(args[i]).replace(/[A-Z]/g, (c) => c.toLowerCase());
           if (option === 'on') this.keySkipEnabled = true;
           else if (option === 'off') this.keySkipEnabled = false;
           else if (option === 'ctrl') this.keySkipControlOnly = true;
@@ -1150,8 +1161,13 @@ export class FESInstance {
       case 'debug':
         this.player.debugLog({
           kind: head,
-          value: head === 'debug' ? p(0) : this.text(args[0] || ''),
-          expression: args[0] || '',
+          value:
+            head === 'debug'
+              ? p(0)
+              : head === 'dbgstru8'
+                ? new TextDecoder().decode(this.argumentBytes(args[0] ?? new Uint8Array()))
+                : this.text(args[0] || ''),
+          expression: fesNarrowText(args[0]),
           file: this.name,
           label: this.executingLabel || this.label,
           line: this.executingLine || 0,
@@ -1177,7 +1193,7 @@ export class FESInstance {
         if (args.length) {
           const parameter =
             typeof host.soundConfigTokens === 'function'
-              ? host.soundConfigTokens(line)[1]
+              ? host.soundConfigTokens(bytes)[1]
               : args[0];
           if (typeof this.player.host.postWindowMessage !== 'function')
             throw new Error('FES wndmenu requires the native window message host');
@@ -1198,7 +1214,7 @@ export class FESInstance {
         break;
       case 'steam_achievement': {
         const tokens =
-          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(line) : words;
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(bytes) : words;
         if (
           tokens[1] !== undefined &&
           this.player.host.steam !== null &&
@@ -1223,7 +1239,7 @@ export class FESInstance {
         break;
       case 'steam_enablescreenshot': {
         const tokens =
-          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(line) : words;
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(bytes) : words;
         if (this.player.host.steam !== null && this.player.host.steam !== undefined) {
           if (typeof this.player.host.steam.enableScreenshot !== 'function')
             throw new Error('FES Steam provider has no screenshot operation');
@@ -1243,7 +1259,7 @@ export class FESInstance {
         break;
       default: {
         if (this.runtime) {
-          const selection = this.runtime.reference(head);
+          const selection = this.runtime.reference(words[0]);
           const source = this.program.sourceKey
             ? (this.player.nativeSources || this.player.localSources).context(
                 this.program.sourceKey,
@@ -1254,9 +1270,10 @@ export class FESInstance {
             : {};
           this.player.enqueue(
             this.runtime
-              .command(args[0], selection, args.slice(1), {
+              .command(fesNarrowText(args[0]), selection, args.slice(1), {
                 ...source,
-                rawTail: fesRawTail(line, 2),
+                commandBytes: bytes,
+                rawTail: fesRawTail(bytes, 2),
               })
               .then((value) => {
                 this.deferredCommandReturn = value;
@@ -1271,7 +1288,8 @@ export class FESInstance {
             Object.hasOwn(this.declaredGroups, head.replace(/\[.*$/, ''))
           )
             return {};
-          if (objectVerbs.has(args[0])) this.player.unresolvedTargets.add(`${this.name}: ${line}`);
+          if (objectVerbs.has(fesNarrowText(args[0])))
+            this.player.unresolvedTargets.add(`${this.name}: ${line}`);
           else this.diagnostic(`unsupported command ${line}`);
         }
         const source = this.program.sourceKey
@@ -1288,10 +1306,11 @@ export class FESInstance {
             : 0,
           index = groupCount === 1 ? 0 : selectedIndex;
         const results = objects.map((o) =>
-          objectCommand(this, o, args[0], args.slice(1), {
+          objectCommand(this, o, fesNarrowText(args[0]), args.slice(1), {
             ...source,
+            commandBytes: bytes,
             index,
-            rawTail: fesRawTail(line, 2),
+            rawTail: fesRawTail(bytes, 2),
           }),
         );
         if (results.some((result) => result && typeof result.then === 'function')) {
@@ -1310,22 +1329,7 @@ export class FESInstance {
     return {};
   }
   soundArgument(a) {
-    if (typeof this.player.host.nativeFESArgumentBytes === 'function')
-      return nativeArgumentDecoder.decode(this.argumentBytes(a));
-    return expandNativeFESSoundConfigurationToken(a, {
-      string: (index) => this.player.strings[index],
-      replace: (value) => {
-        if (typeof this.player.host.nativeScriptReplace === 'function') {
-          const result = this.player.host.nativeScriptReplace(value, this);
-          if (typeof result !== 'string')
-            throw new Error('FES SCRIPT replacement must return text synchronously');
-          return result;
-        }
-        return value
-          .replace(/%LANG_M%/g, this.player.languageMain || this.player.language)
-          .replace(/%LANG%/g, this.player.language);
-      },
-    });
+    return nativeArgumentDecoder.decode(this.argumentBytes(a));
   }
   argumentBytes(a) {
     if (typeof this.player.host.nativeFESArgumentBytes === 'function') {
@@ -1334,6 +1338,22 @@ export class FESInstance {
         throw new Error('FES native argument service must return bytes synchronously');
       return result;
     }
-    return encodeCP932(this.soundArgument(a));
+    const source = a instanceof Uint8Array ? a : encodeCP932(String(a ?? '')),
+      expanded = expandNativeFESSoundConfigurationToken(fesByteView(source), {
+        string: (index) => fesByteView(encodeCP932(this.player.strings[index] ?? '')),
+        replace: (value) =>
+          value
+            .replace(/%LANG_M%/g, () =>
+              fesByteView(encodeCP932(this.player.languageMain || this.player.language)),
+            )
+            .replace(/%LANG%/g, () => fesByteView(encodeCP932(this.player.language))),
+      });
+    let bytes = fesViewBytes(expanded);
+    if (typeof this.player.host.nativeFESScriptBytes === 'function') {
+      bytes = this.player.host.nativeFESScriptBytes(bytes, this);
+      if (!(bytes instanceof Uint8Array))
+        throw new Error('FES SCRIPT replacement must return bytes synchronously');
+    }
+    return bytes;
   }
 }

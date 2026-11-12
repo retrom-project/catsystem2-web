@@ -751,16 +751,14 @@ export class NativeWorld {
         this.steam = world.steam;
         return result;
       },
-      nativeScriptReplace(text) {
-        return new TextDecoder('shift_jis').decode(
-          world.configuration.scriptReplacements.apply(encodeCP932(text)),
-        );
+      nativeFESScriptBytes(bytes) {
+        return world.configuration.scriptReplacements.apply(bytes);
       },
       nativeFESArgumentBytes(token) {
         const bank = record.context?.stringBank
             ? world.runtime.handles.get(record.context.stringBank, 'string-bank')
             : null,
-          source = encodeCP932(token);
+          source = token instanceof Uint8Array ? token : encodeCP932(token);
         return world.configuration.scriptReplacements.apply(
           bank ? bank.expandBytes(source) : source,
         );
