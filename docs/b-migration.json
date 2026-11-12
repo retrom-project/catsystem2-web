@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 245, "oracle": 148, "differential": 67 },
+    "counts": { "js": 246, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -191,6 +191,7 @@
         "tests/native-id-stability.test.mjs",
         "tests/native-image.test.mjs",
         "tests/native-input-bindings.test.mjs",
+        "tests/native-input-route-context.test.mjs",
         "tests/native-input.test.mjs",
         "tests/native-js-startup.test.mjs",
         "tests/native-motion-persistence.test.mjs",
@@ -53345,7 +53346,7 @@
     },
     {
       "file": "src/native/input.mjs",
-      "sourceSha256": "49e6c745a0196aeb327ee0ebbdf0ff2459eb309245d6afc077e59b8fc035d11f",
+      "sourceSha256": "69e39a98ee6e17e068838ee9429a463a8c6f01f3ed66f2d32b2b560511bea4ae",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53355,14 +53356,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 796,
+          "line": 808,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 801,
+          "line": 813,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",

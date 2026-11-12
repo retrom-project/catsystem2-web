@@ -33,6 +33,12 @@ Press, release, repeat, hover, pointer activation and drag retain their separate
 selection rules. A routed receiver's zero result consumes the event; an absent
 route does not supply a fabricated result.
 
+Press, repeat and release borrow the current `tick` call's explicit context
+through `route` and the Graph sender. This passes the live frame executor into
+FES callbacks without storing an entry in device pulses, key state or snapshots.
+Direct callers that omit context retain the four-argument dispatcher boundary.
+The separate pointer-activation and drag routes are outside this change.
+
 [Bindings](../src/native/input-bindings.mjs) hold the shared physical device's
 80 × 4 sampled and live source masks. Each logical key has one repeat word shared
 by all slots. Press updates both masks, release updates the live mask, and frame

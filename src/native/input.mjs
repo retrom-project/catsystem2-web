@@ -260,7 +260,7 @@ export class NativeInput {
       }
     }
   }
-  async route(index, down, source, repeat = false) {
+  async route(index, down, source, repeat = false, context) {
     if (this.dragging) return false;
     const point = this.virtualPoint(...(this.routePoint ?? [this.x, this.y]));
     this.source = source >>> 0;
@@ -280,7 +280,7 @@ export class NativeInput {
       if (down && (!(record.mask & source) || (source & 2 && !this.hit(record, true, point))))
         continue;
       if (!down && captured && record.owner !== captured) continue;
-      if (this.consumed(await this.send(record, 4, index, Number(!!down)))) {
+      if (this.consumed(await this.send(record, 4, index, Number(!!down), context))) {
         if (down && !repeat) this.captures[index] = record.owner;
         result = true;
         break;
@@ -423,7 +423,7 @@ export class NativeInput {
           this.dragging = false;
           const oldSource = this.previous[at];
           this.handled[at] = Number(
-            await this.route(index, false, oldSource === 16 ? 2 : oldSource),
+            await this.route(index, false, oldSource === 16 ? 2 : oldSource, false, context),
           );
           this.previous[at] = 0;
           this.captures[index] = 0;
@@ -435,7 +435,13 @@ export class NativeInput {
           this.dragY = this.y;
           this.dragging = false;
           this.handled[at] = Number(
-            await this.route(index, true, this.previous[at] === 16 ? 2 : this.previous[at]),
+            await this.route(
+              index,
+              true,
+              this.previous[at] === 16 ? 2 : this.previous[at],
+              false,
+              context,
+            ),
           );
           delivered = true;
         } else if (
@@ -446,7 +452,13 @@ export class NativeInput {
         ) {
           this.held[at] = 0x80000000;
           this.handled[at] = Number(
-            await this.route(index, true, this.previous[at] === 16 ? 2 : this.previous[at], true),
+            await this.route(
+              index,
+              true,
+              this.previous[at] === 16 ? 2 : this.previous[at],
+              true,
+              context,
+            ),
           );
           delivered = true;
         }
