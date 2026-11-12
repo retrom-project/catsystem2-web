@@ -119,7 +119,10 @@ export function fesDefinitionTuple(value, index, evaluate) {
 
 // This deliberately follows the original byte scanner: space or '[' ends the
 // name; space or ']' ends the index expression. It is not a Unicode regexp.
-export function parseFESObjectReference(token, { evaluate, count, expandName } = {}) {
+export function parseFESObjectReference(
+  token,
+  { evaluate, count, expandName, allowEmptyName = false } = {},
+) {
   if (typeof evaluate !== 'function' || typeof count !== 'function')
     throw new Error('FES object reference requires expression and collection services');
   const source = bytes(token);
@@ -135,7 +138,7 @@ export function parseFESObjectReference(token, { evaluate, count, expandName } =
     expression = decoder.decode(source.subarray(end + 1, close));
   }
   const nameBytes = expand(source.subarray(0, end), expandName);
-  if (!nameBytes.length) throw new Error('FES object reference name is empty');
+  if (!nameBytes.length && !allowEmptyName) throw new Error('FES object reference name is empty');
   let index = evaluate(expression) | 0;
   if (index === -1 && count(nameBytes) <= 1) index = 0;
   return { name: decoder.decode(nameBytes), nameBytes: nameBytes.slice(), index };
@@ -238,11 +241,12 @@ export class FESDefinitionModel {
       applySpecial,
     });
   }
-  reference(token) {
+  reference(token, { allowEmptyName = false } = {}) {
     return parseFESObjectReference(token, {
       evaluate: (source) => this.instance.value(source),
       count: (name) => this.collection.count(name),
       expandName: this.expandName,
+      allowEmptyName,
     });
   }
   compile(columns) {

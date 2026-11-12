@@ -10,6 +10,7 @@ import { installJSControlTasks } from './control-task-js.mjs';
 import { installNativeAreaEffects } from './area-effect.mjs';
 import { installNativeScreenEffects } from './screen-effect.mjs';
 import { FESObjectCollection } from './fes-object-collection.mjs';
+import { readFESButtonAttachment, setFESButtonAttachment } from './fes-button-navigation.mjs';
 import { FESResourceEntries } from './fes-resource-entries.mjs';
 import { createFESTypedObject } from './fes-object-factory.mjs';
 import { FESDefinitionModel } from './fes-definitions.mjs';
@@ -262,7 +263,7 @@ export class FESCoordinator {
     }
     return this.top;
   }
-  reference(token) {
+  reference(token, options) {
     if (
       (token === '@' || (token instanceof Uint8Array && token.length === 1 && token[0] === 64)) &&
       this.instance.eventObject
@@ -275,7 +276,7 @@ export class FESCoordinator {
           : this.collection.reference(object)),
       };
     }
-    return this.definitions.reference(this.instance.argumentBytes(token));
+    return this.definitions.reference(this.instance.argumentBytes(token), options);
   }
   elements(token) {
     const ref = this.reference(token),
@@ -658,6 +659,28 @@ export class FESCoordinator {
         selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
       first = selection.index === -1 ? 0 : selection.index,
       lookup = (index) => collection.lookup(selection.nameBytes, index);
+    if (verb === 'attach') {
+      const operand = args[0] === undefined ? null : nativeDataString(context.bytes(0)),
+        reference =
+          operand === null
+            ? null
+            : readFESButtonAttachment(
+                operand,
+                () =>
+                  operand.length === 1 && operand[0] === 64 && instance.eventObject
+                    ? this.reference(operand, { allowEmptyName: true })
+                    : this.definitions.reference(operand, { allowEmptyName: true }),
+                (message) => instance.diagnostic(message),
+              );
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (!object) break;
+        if (object.nativeType === 6) setFESButtonAttachment(object, reference);
+        else if (object.nativeType === 23)
+          throw new Error('FES PARTICLE attach requires its distinct original target/NULL gates');
+      }
+      return 0;
+    }
     if (verb === 'layout' && args.length) {
       const mode = context.text(0);
       context.layoutMode = mode;

@@ -3,6 +3,7 @@
 // Each FES BUTTON owns a real base-plane task; the low button is independent.
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { navigateFESButton, fesButtonCursorPoint } from './fes-button-navigation.mjs';
 const packet = (words) => new NativeGraphicsPacket(words);
 const valid = (object) => object?.type === 'BUTTON' && !object.deleted && object.enable;
 export class FESInput {
@@ -294,8 +295,62 @@ export class FESInput {
       if (live()) throw error;
     }
   }
-  async move(direction) {
+  async moveCurrentButton(direction, context) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return true;
+    const outcome = navigateFESButton(instance, this.state.focus, direction);
+    if (outcome.controlChanged) {
+      try {
+        await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+      } catch (error) {
+        if (live()) throw error;
+      }
+      return true;
+    }
+    if (!outcome.button) return false;
+    this.state.focus = this.referenceFor(outcome.button);
+    const reference = this.state.focus;
+    try {
+      await player.nativeEvent(
+        outcome.button.key,
+        ['PUSH_UP', 'PUSH_DOWN', 'PUSH_LEFT', 'PUSH_RIGHT'][direction],
+      );
+      if (!live()) return true;
+      const object = this.referenceObject(reference);
+      if (!object || ![1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25].includes(object.nativeType))
+        return false;
+      const point = fesButtonCursorPoint(instance, object),
+        top = this.world.engineMessages.closestTop(this.record),
+        inputID = top?.implementation.input;
+      if (this.world.objects.objects.get(inputID)?.kind !== 11)
+        throw new Error('FES direction requires its owning Top Input task');
+      await this.world.engineMessages.dispatch(
+        inputID,
+        this.record.id,
+        138,
+        1,
+        ((point[0] & 65535) | ((point[1] & 65535) << 16)) >>> 0,
+        { ...context, flags: 0 },
+      );
+      if (live()) await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+      return true;
+    } catch (error) {
+      if (live()) throw error;
+      return true;
+    }
+  }
+  async move(direction, context = {}) {
     let current = this.referenceObject(this.state.focus);
+    if (this.instance.runtime && valid(current))
+      return this.moveCurrentButton({ up: 0, down: 1, left: 2, right: 3 }[direction], context);
     if (!valid(current)) {
       const hovered = this.state.buttons.find(
         ([key, id]) =>
@@ -388,6 +443,8 @@ export class FESInput {
         return 0;
       }
       case 9: {
+        const player = this.player,
+          instance = this.instance;
         this.state.source = this.input.source;
         this.instance.inputSource = this.state.source;
         if (this.state.sleeping) {
@@ -400,12 +457,22 @@ export class FESInput {
         let handled = false;
         if (l === 0 || l === 1) handled = await this.event(key, l ? 'PUSH_R' : 'PUSH_L');
         else if (l >= 4 && l <= 7)
-          handled = await this.move(['up', 'down', 'left', 'right'][l - 4]);
+          handled = await this.move(['up', 'down', 'left', 'right'][l - 4], context);
         else if (l >= 8 && l <= 11)
           handled = await this.event(key, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][l - 8]);
         else
           for (const object of this.instance.objects.filter(valid))
             if (object.hotkey === l) handled = (await this.event(object.key, 'PUSH_L')) || handled;
+        if (
+          l >= 4 &&
+          l <= 7 &&
+          (this.player !== player ||
+            this.instance !== instance ||
+            instance.runtime?.closed ||
+            this.record.state === 'releasing' ||
+            this.world.objects.objects.get(this.record.id) !== this.record)
+        )
+          return 0;
         await this.propagation(sender, handled);
         await this.sync();
         return 0;

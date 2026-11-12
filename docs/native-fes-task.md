@@ -350,3 +350,48 @@ index and differs from the separate NULL/resetactive branch. Empty-reference
 consumer tests inject a typed FIFO value; they do not claim that an authored
 source command has produced it. BUTTON attach/navigation and the other input
 frontends remain separate incomplete work.
+
+BUTTON `attach` stores one current owned narrow-byte name/index reference on raw6.
+The pure constructor initializes it to NULL; same-key first-wins declarations
+retain it. Image `copy` clones bitmap content, not the BUTTON tail. A collection
+checkpoint saves this semantic reference once and fresh construction restores it
+without parsing the command or choosing its target again. An absent operand,
+empty original name or unclosed index clears it; malformed numeric expressions
+still fail. A nonempty source name that expands empty in the reference reader
+remains a non-NULL empty reference with its supplied index. The whole wrapper
+reads its optional argument once, visits increasing holder indices, stops at the
+first hole and skips unrelated types. Raw23's separate attachment protocol remains
+explicitly unsupported at this entry; the particle service's other operations do
+not authorize that original target/NULL branch.
+
+For an existing enabled current BUTTON, the default World input route now uses
+the original directional reader: same-block searches preserve the first matching
+cell (including disabled-cell masking), lower-before-upper cross scans, and the
+original horizontal `(cross,y)` argument slots. Attachment is attempted once
+between local search and linked-block continuation. Raw13/14/15 controls use their
+current orientation and inclusive bounds, step by exactly signed int32 +/-1 and
+call the existing setter with notify1. SCROLL's value getter consumes its pending
+flag even when an axis/bound prevents a new value. Target enable is not a gate.
+The control-changed result is distinct from finding a new button: it retains the
+active reference, skips the direction event and Input138, then traverses the
+existing resources. Linked blocks select the first key-ordered enabled BUTTON
+with strictly smaller float32 squared XY distance, starting at exactly100000000.
+An empty cyclic link chain and undefined block reads remain explicit diagnostics.
+
+A found button is copied into the existing active reference before event11..14,
+then the caller uses the actual owning Top Input's canonical138, w1/flags0. Both
+frozen ABIs write `_PUSH_UP_`, `_PUSH_DOWN_`, `_PUSH_LEFT_`, `_PUSH_RIGHT_` through
+this event helper; their complete two-level tables dispatch neither default nor
+object labels for these four events. In particular `PUSH_*` is not an extra FES
+label callback or a FOCUS/UNFOCUS pair. The current `nativeEvent` field authority
+is reused. Earlier research wording suggesting a direction label was incorrect;
+the proposed config_open-in-direction-label close test is inapplicable and is not
+behavior coverage. Stack liveness is checked after actual awaits before Input138
+and further work; no continuation is saved. Native Input owns cursor warping and
+region activity, rather than direct pointer/Graph assignments in the reader.
+
+This bounded leaf does not complete no-active/default initial selection, the
+NULL/resetactive private branch, automove/react, other keyboard/input frontends or
+the raw23 attachment protocol. The no-active, disabled-current and non-BUTTON-current branches still enter the
+older input path and remain unverified; its approximate routine is not evidence
+for this reader. The direct JS-source input API also retains its separate path.

@@ -118,6 +118,7 @@ export function initializeFESImage(object) {
     Object.assign(object, {
       buttonType: 0,
       buttonLock: 0,
+      buttonAttachment: null,
       lockedPosition: null,
       fullInput: false,
       fullInputChanged: false,
