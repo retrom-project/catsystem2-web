@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 206, "oracle": 148, "differential": 67 },
+    "counts": { "js": 207, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -94,6 +94,7 @@
         "tests/fes-source-player.test.mjs",
         "tests/fes-string-redeclare.test.mjs",
         "tests/fes-string-table.test.mjs",
+        "tests/fes-system-voice-default.test.mjs",
         "tests/fes-text-commands.test.mjs",
         "tests/fes-text-fonts.test.mjs",
         "tests/fes-text-log-driver.test.mjs",
@@ -2341,7 +2342,7 @@
       {
         "kind": "identity",
         "file": "src/native/sound-config.mjs",
-        "line": 322,
+        "line": 343,
         "expression": "snapshot.profile !== this.profile",
         "domain": 8
       }
@@ -2374,8 +2375,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 466,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 71, "8": 171, "9": 55 },
+    "runtimeFiles": 467,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 72, "8": 171, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -49106,7 +49107,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "d408c75fdeb163d8bfb04c42c788cbd425606221b8da1532d4a644866cdc7128",
+      "sourceSha256": "c61bc8d45911020b691b43848c20ad27955f47b11737bdd95484fcfcccf2f6f7",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51641,7 +51642,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "1b79063efbfd6651199ddb31b19e5762cde099e74c6844a41a677e0eceaf67ed",
+      "sourceSha256": "d2311b20ef641de9864271c67ab38ae1748a7cdbf4b66b55a732e3baea6e3e6f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51651,35 +51652,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 353,
+          "line": 357,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 756,
+          "line": 760,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 765,
+          "line": 769,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 773,
+          "line": 777,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 795,
+          "line": 799,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -52211,6 +52212,19 @@
     {
       "file": "src/native/fes-string-table.mjs",
       "sourceSha256": "5ecc1dc3641c837a947dd7033ff0746c7f049813ea2bdeed4c1a5d486fec8a48",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-system-voice.mjs",
+      "sourceSha256": "7b82274355bcc7209032fa9e8aabedcad2595655d066a436a2ec7113674dd162",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54667,7 +54681,7 @@
     },
     {
       "file": "src/native/sound-config.mjs",
-      "sourceSha256": "4e3cd80669f93cb1da52d6737b688244d4f43042c80e15309947ffda4d2382a3",
+      "sourceSha256": "985e4419fe300d7d1ad507be0b4b5adaa32efca360f1ffbaeace9566badc6ace",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58445,6 +58459,7 @@
         "src/native/fes-resource-entries.mjs",
         "src/native/fes-shell-errors.mjs",
         "src/native/fes-string-driver.mjs",
+        "src/native/fes-system-voice.mjs",
         "src/native/fes-task.mjs",
         "src/native/fes-tone-table.mjs"
       ],

@@ -2115,11 +2115,11 @@
       "id": "fes.reference.cn.sysvoice",
       "domain": "fes-command",
       "names": ["sysvoice"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/sysvoice.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-coordinator.mjs; src/native/fes-system-voice.mjs",
+      "evidence": ["tests/fes-system-voice-default.test.mjs", "docs/native-fes-system-voice.md"],
+      "note": "Both frozen normal handlers select from the current48 name-byte/nonzero-flag slots, retain supplied candidate order/duplicates and use one shared integer MT draw for a nonempty list. The ordinary World factory preserves byte expansion/evaluation/output order, bounded bank writes and fresh current-state restore; selection creates no audio channel or wait. The existing synchronous Host debug-output mapping does not claim native debug-window installation/visibility equivalence, which remains D8 work.",
       "signatures": ["sysvoice [var]"]
     },
     {
@@ -2219,11 +2219,11 @@
       "id": "fes-extension.sysvoiceex",
       "domain": "fes-extension",
       "names": ["sysvoiceex"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/download",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Observed engine extension; native system-voice selection and channel lifetime require recovery.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-coordinator.mjs; src/native/fes-system-voice.mjs; src/native/sound-config.mjs",
+      "evidence": ["tests/fes-system-voice-default.test.mjs", "docs/native-fes-system-voice.md"],
+      "note": "Despite extension catalog classification, both frozen ABIs install this normal command. The default World selects current-tree IDs with readiness gating, raw comma components/empty zero, first-match/miss-retained paths or strict-one PART preorder, repeated weighting and shared integer MT. It does not play or wait for sound. Current loaded-without-MASTER branches are tested through the existing service restore after valid startup; invalid-tree startup and native debug-window visibility remain explicit D8 gaps.",
       "signatures": []
     },
     {

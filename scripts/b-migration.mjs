@@ -801,6 +801,7 @@ const nonNativeGroups = [
       'fes-common-commands',
       'fes-image-control-commands',
       'fes-tone-table',
+      'fes-system-voice',
       'fes-platform-frontends',
       'fes-fonts',
       'fes-shell-errors',

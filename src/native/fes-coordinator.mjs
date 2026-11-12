@@ -42,6 +42,7 @@ import { nativeABI } from './abi/index.mjs';
 import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
 import { readNativeResource } from './resource-file.mjs';
 import { FESPlatformFrontends } from './fes-platform-frontends.mjs';
+import { fesSystemVoiceCommand } from './fes-system-voice.mjs';
 
 const effectTypes = new Set([7, 8, 26, 27, 30, 31, 32]);
 const screenVerbs = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
@@ -319,6 +320,9 @@ export class FESCoordinator {
   }
   get closed() {
     return this.platform.closed;
+  }
+  systemVoiceCommand(name, args) {
+    return fesSystemVoiceCommand(this, name, args);
   }
   writeString(index, bytes) {
     const record = this.world.objects.objects.get(this.instance.runtimeID),

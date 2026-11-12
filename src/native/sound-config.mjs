@@ -233,6 +233,27 @@ export class NativeSoundConfiguration {
     throw new Error(`Unknown native sound selector ${by}`);
   }
 
+  systemVoiceAtIDPath(ids) {
+    const missing = this.abi.sound.missingIdPathFields.includes('sysplay') ? -1 : 1;
+    let nodes = this.parts,
+      value = missing;
+    for (const id of ids) {
+      const node = nodes.find((node) => node.id === (id | 0));
+      value = node ? node.current.sysplay : missing;
+      if (node) nodes = node.children;
+    }
+    return value;
+  }
+
+  systemVoiceCandidates() {
+    const ids = [];
+    visit(this.parts, (node) => {
+      if (node.current.sysplay === 1) ids.push(node.id);
+      return false;
+    });
+    return ids;
+  }
+
   get(field, selector = {}) {
     const node = this.find(selector);
     if (!node) {

@@ -715,6 +715,8 @@ export class FESInstance {
     const host = this.player.host;
     if (this.runtime && FES_PLATFORM_COMMANDS.includes(head))
       return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
+    if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
+      return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
       this.player.enqueue(
         this.runtime.screenCommand(head, args).then((value) => {
