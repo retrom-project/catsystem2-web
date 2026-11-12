@@ -91,8 +91,12 @@ against retained outputs from the fixed public source, built with contraction
 and fast-math disabled. Those reference values are not original game outputs.
 Separate local original-function calibration has 116 calls and 1,266 exact
 float32 outputs under the recorded synthetic oracle FPCW `0x037F` configuration.
-This does not establish the real frame thread's complete floating environment;
-successful D3D device creation has a separate single-precision API contract.
+The same 116 fixed inputs also match bit for bit after the existing renderer
+consumer-view constructor naturally creates a device: FPCW changes to `0x007F`
+on the same recorded TID/TEB, with device flags `0x24` and no harness control-word
+write. These are reused published inputs in a second configuration, not a new
+blind holdout or a title-frame capture. Manager and cache evidence below retain
+their own recorded configuration limits.
 GetScale/GetRotation and unsampled parameter domains retain their source-reference
 scope. No pixel tolerance, playback integration or browser support follows from
 these independent algorithms.
@@ -109,8 +113,9 @@ StopEffect primitive does not implement the separate observed FES stop-verb quir
 
 `instance-transform.mjs` supplies motion/parent-binding/generation/absolute-force
 state and reused calculation scratch. Renderer initialization and cache-update
-operations remain required callbacks. The automatic renderer-state/composition
-adapter is not registered or included here. The manager's data visitor can
+operations remain required callbacks. The opt-in CPU composition adapter below
+supplies them when explicitly selected; it is not registered with World. The
+manager's data visitor can
 refresh a stale calculation sequence at zero delta, without advancing age or
 sampling another random value; it is not a GPU renderer.
 
@@ -129,6 +134,37 @@ Topology, counters, CRT words and sampled current matrices/positions match
 exactly under that oracle's recorded FPCW `0x037F` configuration. These are CPU
 state observations, not original renderer-cache, pixel, native fresh-process
 restore or real frame-thread floating-environment acceptance.
+
+`render-state.mjs` implements the five old renderer-cache families, sampled
+colors and scalar parameters, UV animation, fade evaluation and reused CPU
+output data. Ribbon easing retains its pending cache until the required matrix
+calculation; Track samples and render indices belong to its group. Rendering
+reads current data without sampling another random value. Model and distortion
+nodes still evaluate simulation and cache state; their observed null-loader or
+null-background branches do not become modern model or distortion rendering.
+
+`createEffekseerInstanceOperations()` from `instance-operations.mjs` explicitly
+combines the existing transform and cache operations for an independent manager.
+`createEffekseerColorVisitor()` supplies reused per-type CPU outputs, with
+unavailable-service metadata for those original model/distortion branches.
+Callers consume each reused output immediately or copy it for observation.
+There is no geometry builder, GPU submission, frame update or task registration
+in that visitor. `snapshotRendererState` and `restoreRendererState` clone and
+validate finite current data without initialization, Play, RNG or recalculation.
+They use the existing project checkpoint serialization, including signed zero;
+sequence metadata preserves the uint32 bits of signed or unsigned counters.
+
+Cache/composition tests add 51 cases: 32 direct cases, eight retained public-source
+comparison groups and 11 mounted-resource/current-state/fresh-restore cases.
+The latter compare complete JS CPU state and future updates with a fresh resource
+and thread owner. They establish no native fresh-process or rendered-pixel result.
+Separate local original-76 observations cover 15 cases, 286 frames and 1,727
+parameter records: 1,683 complete guarded GetUV calls, 1,463 instance caches and
+44 Track group caches (some records exercise both calls and caches). Those
+observations retain the synthetic FPCW `0x037F` configuration and do not establish
+nonfixed Ring numeric domains, final faded/vertex-multiplied native outputs,
+geometry, actual Draw or pixels. The natural `0x007F` math-only extension above
+does not broaden that cache evidence.
 
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their

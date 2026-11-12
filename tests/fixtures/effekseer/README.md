@@ -39,3 +39,10 @@ as source references and read the retained JSON without a compiler, native
 executable or provider. The algorithm attribution is in
 `../../../licenses/effekseer-MIT.txt`; authored inputs and expected-value
 fixtures use this project's MPL-2.0 license.
+
+`render-state-reference.json` retains eight comparison groups from that fixed
+MIT source: initialization/update colors and random counts, the deferred Ribbon
+cache, Ring color conversion, Track integer-time evaluation, fade and UV values.
+Inputs and expected float32 words are public/authored data, not private game
+captures. Ordinary Node tests read the JSON without a compiler or original
+executable. These cache references do not establish geometry or pixel output.
