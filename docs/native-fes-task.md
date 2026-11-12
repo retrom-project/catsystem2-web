@@ -566,6 +566,28 @@ output is not established by this evidence. This implementation records null
 until a real complete Input125 writer runs; it neither captures in parentAssigned
 nor borrows a later valid Input to fill the original constructor's output. A
 fresh World restores null/known savedMouse and pending copiedXY once, with no
-query, source replay or re-selection. restoremove/btnsimulate/automoveex remain
-separate leaves; restoremove cannot consume an unknown point. The ordinary337
-close guard is the independently committed C6b dependency, not part of this leaf.
+query, source replay or re-selection. The separate restoremove reader below
+uses this same field; btnsimulate/automoveex remain separate leaves. The
+ordinary337 close guard is the independently committed C6b dependency.
+
+Normal restoremove is parameterless in both frozen wrappers77BDC0/615620. Extra
+operands cause no argument getter, bank/SCRIPT expansion or numeric evaluation.
+The wrapper queues only an operation (Game10/SDK13) in the same FIFO and returns0;
+it does not read or copy a saved point while parsing. An earlier queued automove
+can therefore establish the point before the restore record reaches its reader.
+
+The full62A6A3/501E23 consumers check the current autocur word first, then read
+saved Y and X low16 values and join the existing137 flags0/w4 tail. There is no
+Input125 query, savedMouse assignment, active/default update or mouse refresh.
+The actual Input137/138 configuration, foreground, drag and interpolation path
+stays authoritative. Its already issued effects are not rolled back; same-owner
+close cancellation suppresses later FIFO work, while live errors still propagate.
+
+A gated-off record consumes without reading an unknown/null saved point. A
+gated-on unknown read is explicitly diagnosed, retaining the original ctor's
+unproved initial-output boundary; no constructor/parentAssigned query, default0,
+player.mouse borrowing or startup recapture is introduced. Fresh World restores
+unknown/known savedMouse and operation-only pending records once; consuming a
+known restore reads the then-current field, never a producer snapshot, and does
+not overwrite it. These are the registered74/76 normal default paths; other
+automatic-input commands remain separate.

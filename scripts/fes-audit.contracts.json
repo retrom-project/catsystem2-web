@@ -1915,11 +1915,11 @@
       "id": "fes.reference.cn.restoremove",
       "domain": "fes-command",
       "names": ["restoremove"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/restoremove.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes; src/native/fes-coordinator.mjs; src/native/fes-input.mjs",
+      "evidence": ["tests/fes-restoremove-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Frozen SDK74/Game76 restoremove ignores operands and queues only its operation (Game10/SDK13), returning0. At dequeue current autocur gates reading the existing savedMouse; no125 or saved overwrite occurs. Known Y/X low16 values enter the actual Input137 flags0/w4 tail and unchanged138 path. Gate0 unknown is a no-op; gate1 unknown is diagnosed without fabrication or recapture. Default337/FIFO, actual Input, close/live errors and fresh unknown/known/pending records are covered.",
       "signatures": ["restoremove"]
     },
     {

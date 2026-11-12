@@ -431,6 +431,10 @@ export class FESCoordinator {
     }
     return 0;
   }
+  restoreMove() {
+    this.pendingRecords.push({ operation: 'restore-move' });
+    return 0;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
@@ -442,6 +446,8 @@ export class FESCoordinator {
       else if (record.operation === 'react') await this.instance.player.nativeInput.consumeReact();
       else if (record.operation === 'auto-move')
         await this.instance.player.nativeInput.consumeAutoMove(record);
+      else if (record.operation === 'restore-move')
+        await this.instance.player.nativeInput.consumeRestoreMove();
       else if (record.operation === 'active-lock')
         this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')

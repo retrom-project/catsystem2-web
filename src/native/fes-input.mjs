@@ -349,6 +349,40 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumeRestoreMove() {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live() || !this.world.fesConfiguration.get('autocur')) return;
+    const point = this.state.savedMouse;
+    if (point === null)
+      throw new Error('FES restoremove requires a known complete saved mouse point');
+    // The original consumer reads Y then X here, not when the record is queued.
+    const y = point[1] & 65535,
+      x = point[0] & 65535,
+      top = this.world.engineMessages.closestTop(this.record),
+      inputID = top?.implementation.input;
+    if (this.world.objects.objects.get(inputID)?.kind !== 11)
+      throw new Error('FES restoremove requires its owning Top Input task');
+    try {
+      await this.world.engineMessages.dispatch(
+        inputID,
+        this.record.id,
+        137,
+        4,
+        (x | (y << 16)) >>> 0,
+        { flags: 0 },
+      );
+    } catch (error) {
+      if (live()) throw error;
+    }
+  }
   async consumeReact() {
     const player = this.player,
       instance = this.instance,
