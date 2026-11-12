@@ -1489,11 +1489,11 @@
       "id": "fes.reference.cn.clipboard",
       "domain": "fes-command",
       "names": ["clipboard"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/clipboard.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-platform-frontends.mjs; src/native/clipboard-browser.mjs",
+      "evidence": ["tests/fes-platform-default.test.mjs", "docs/fes-platform-frontends.md"],
+      "note": "Both frozen normal handlers reach the ordinary World/kind34 coordinator FIFO: one existing operand is expanded once, CF_TEXT preserves its narrow bytes and literal backslash-n, and open/empty/write/finally-close honor owner cancellation without resuming script effects. Browser clipboard permissions and complete OS behavior remain D8 host acceptance; authored transports do not establish real permission success.",
       "signatures": ["clipboard [str]"]
     },
     {
@@ -1511,11 +1511,11 @@
       "id": "fes.reference.cn.config_open",
       "domain": "fes-command",
       "names": ["config_open"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/config_open.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-platform-frontends.mjs; src/native/window-browser.mjs",
+      "evidence": ["tests/fes-platform-default.test.mjs", "docs/fes-platform-frontends.md"],
+      "note": "Both frozen normal handlers queue and await the existing owner-scoped Host configuration action without reading operands or writing script results. The actual BrowserHost modal applies its working copy to active settings and cancels on owner close. Complete native PropertySheet pages, help/export visibility and platform reinitialization remain D8 work; the existing browser controls do not claim page or visual equivalence.",
       "signatures": ["config_open"]
     },
     {
@@ -1669,11 +1669,15 @@
       "id": "fes.reference.cn.fontcom",
       "domain": "fes-command",
       "names": ["fontcom"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/fontcom.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-platform-frontends.mjs; src/native/fes-fonts.mjs; src/native/font-catalog.mjs; src/native/world.mjs",
+      "evidence": [
+        "tests/fes-fontcom-default.test.mjs",
+        "tests/native-default-font.test.mjs",
+        "docs/fes-platform-frontends.md"
+      ],
+      "note": "Both frozen normal handlers implement case-sensitive init/count/get/search/default through the real default factory, two-pass owned catalog and current enumeration checkpoint. Raw search tails bypass bank/SCRIPT expansion; missing tails preserve output after index evaluation. Default reads true default Settings only. Full host OS font discovery and a JS-owned default Settings tree remain D8 dependencies; active layout font is a separate source.",
       "signatures": ["fontcom [com] (p1) (p2) ..."]
     },
     {
@@ -1830,11 +1834,11 @@
       "id": "fes.reference.cn.opensite",
       "domain": "fes-command",
       "names": ["opensite"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/opensite.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/fes/instance.mjs; src/native/fes-platform-frontends.mjs; src/native/fes-shell-errors.mjs; src/native/window-browser.mjs",
+      "evidence": ["tests/fes-platform-default.test.mjs", "docs/fes-platform-frontends.md"],
+      "note": "Both frozen normal handlers expand the first and optional second operand once and queue exact first://second bytes in the ordinary coordinator FIFO. Real unsigned ShellExecute results select the proven localized error modal; owner close prevents new UI and script continuation. BrowserNativeWindow explicitly rejects external open until its D8 platform action is implemented; authored results do not establish real external launch behavior.",
       "signatures": ["opensite [url1] [url2]"]
     },
     {

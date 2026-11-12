@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { FES_PLATFORM_COMMANDS } from '../native/fes-platform-frontends.mjs';
 // Adapted from CatSystemKit FESInstance (OWCramer).
 import { evaluate, assign, condition } from './expression.mjs';
 import { FESObject, objectCommand, objectVerbs } from './object.mjs';
@@ -622,6 +623,7 @@ export class FESInstance {
     return true;
   }
   run(stack) {
+    if (this.runtime?.closed) return false;
     let budget = 20000;
     let jumped = false;
     while (stack.length) {
@@ -675,6 +677,7 @@ export class FESInstance {
     return pc;
   }
   execute(line, lines, pc, execution) {
+    if (this.runtime?.closed) throw new Error('FES runtime owner is closed');
     let bytes = fesSourceBytes(line);
     if (!execution) {
       bytes = this.expandMacros(bytes);
@@ -710,6 +713,8 @@ export class FESInstance {
       return {};
     }
     const host = this.player.host;
+    if (this.runtime && FES_PLATFORM_COMMANDS.includes(head))
+      return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
       this.player.enqueue(
         this.runtime.screenCommand(head, args).then((value) => {

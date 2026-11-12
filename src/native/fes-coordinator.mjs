@@ -41,6 +41,7 @@ import { fesRawTail } from '../fes/source.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
 import { readNativeResource } from './resource-file.mjs';
+import { FESPlatformFrontends } from './fes-platform-frontends.mjs';
 
 const effectTypes = new Set([7, 8, 26, 27, 30, 31, 32]);
 const screenVerbs = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
@@ -71,6 +72,7 @@ export class FESCoordinator {
       pendingRecords: [],
       configurationDirty: false,
     });
+    this.platform = new FESPlatformFrontends(this);
     this.targets = new Map();
     this.ownedTaskIDs = new Set();
     this.collection = new FESObjectCollection({
@@ -315,6 +317,9 @@ export class FESCoordinator {
     if (type === 33) return this.world.m2FES.applyDefinition(this.instance, object, record, index);
     return false;
   }
+  get closed() {
+    return this.platform.closed;
+  }
   writeString(index, bytes) {
     const record = this.world.objects.objects.get(this.instance.runtimeID),
       handle = record?.context.stringBank;
@@ -322,6 +327,7 @@ export class FESCoordinator {
     this.world.runtime.handles.get(handle, 'string-bank').setBytes(index, bytes);
   }
   beforeStep() {
+    if (this.closed) return;
     for (const entry of this.resources.entries) {
       const object = this.collection.lookup(entry.nameBytes, entry.index);
       if (object?.nativeType === 4) object.beforeCount = object.currentCount;
@@ -340,9 +346,10 @@ export class FESCoordinator {
       });
   }
   async flushRecords() {
-    while (this.pendingRecords.length) {
+    while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
-      if (record.operation === 'draw-upload')
+      if (this.platform.supports(record)) await this.platform.consume(record);
+      else if (record.operation === 'draw-upload')
         await this.world.sendEngine(
           this.instance.player.surface,
           this.instance.runtimeID,
@@ -808,6 +815,7 @@ export class FESCoordinator {
   }
   snapshot() {
     return {
+      platform: this.platform.snapshot(),
       collection: this.collection.snapshot(),
       resources: this.resources.snapshot(),
       top: this.top ? this.serializeObject(this.top) : null,
@@ -842,6 +850,7 @@ export class FESCoordinator {
     this.bindMotionGraph();
     this.effects.restore(state.effects);
     this.pendingRecords = clone(state.pendingRecords);
+    this.platform.restore(state.platform);
     this.ownedTaskIDs = new Set(state.ownedTaskIDs);
     this.configurationDirty = state.configurationDirty;
     await this.resources.restore(state.resources);
@@ -858,6 +867,8 @@ export class FESCoordinator {
       await this.motions.restore(this.collection.graph.get(handle), saved);
   }
   async close() {
+    await this.platform.close();
+    this.pendingRecords.length = 0;
     await this.collection.close();
     await this.resources.close();
     this.effects.model.entries.clear();

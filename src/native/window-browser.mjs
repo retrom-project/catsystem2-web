@@ -86,6 +86,7 @@ export class BrowserNativeWindow {
   constructor(engine) {
     this.engine = engine;
     this.dialog = null;
+    this.dialogOwner = null;
   }
   async show(
     title,
@@ -95,6 +96,7 @@ export class BrowserNativeWindow {
       closeLabel = confirm ? 'Cancel' : 'Close',
       focusFirst = false,
       dismiss = true,
+      owner = null,
     } = {},
   ) {
     if (this.dialog) throw new Error('A native window dialog is already open');
@@ -110,6 +112,7 @@ export class BrowserNativeWindow {
     buttons.append(close);
     document.body.append(dialog);
     this.dialog = dialog;
+    this.dialogOwner = owner;
     let answer = false,
       settle;
     const result = new Promise((resolve) => {
@@ -130,6 +133,7 @@ export class BrowserNativeWindow {
       'close',
       () => {
         this.dialog = null;
+        this.dialogOwner = null;
         this.cancel = null;
         dialog.remove();
         settle(answer);
@@ -147,6 +151,7 @@ export class BrowserNativeWindow {
       return await result;
     } catch (error) {
       this.dialog = null;
+      this.dialogOwner = null;
       this.cancel = null;
       dialog.remove();
       throw error;
@@ -223,14 +228,15 @@ export class BrowserNativeWindow {
       refresh();
     });
   }
-  configuration(world, system = false, volume = false) {
+  configuration(world, system = false, volume = false, owner = null) {
     const controls = [],
       config = world.configuration,
       service = world.fesConfiguration;
     return this.show(
       volume ? 'Audio output' : system ? 'System configuration' : 'Game configuration',
       (body, buttons, finish) => {
-        const error = element('p');
+        const dialog = this.dialog,
+          error = element('p');
         error.setAttribute('role', 'alert');
         for (const [title, items] of fields) {
           if (volume && title !== 'Audio') continue;
@@ -314,6 +320,7 @@ export class BrowserNativeWindow {
                 );
               if (value !== previous) await draft.set(name, value);
             }
+            if (this.dialog !== dialog) return;
             config.restore(copy.snapshot());
             for (const event of pending) await service.emit?.(event);
             config.deriveVolumes();
@@ -326,9 +333,10 @@ export class BrowserNativeWindow {
           }
         };
       },
+      { owner },
     );
   }
-  async messageBox({ caption, message, buttons = 0 }) {
+  async messageBox({ caption, message, buttons = 0, owner = null }) {
     if (![0, 1, 4].includes(buttons)) throw new Error('Unreviewed FES message box button flags');
     const yesNo = buttons === 4,
       accepted = await this.show(
@@ -347,11 +355,16 @@ export class BrowserNativeWindow {
           closeLabel: yesNo ? 'No' : buttons ? 'Cancel' : 'OK',
           focusFirst: true,
           dismiss: !yesNo,
+          owner,
         },
       );
     return yesNo ? (accepted ? 6 : 7) : !buttons || accepted ? 1 : 2;
   }
   async perform(action, world) {
+    if (['fes-configuration', 'fes-message-box'].includes(action.type) && action.owner != null) {
+      const owner = world.objects.objects.get(action.owner);
+      if (!owner || owner.state === 'releasing') return false;
+    }
     switch (action.type) {
       case 'confirm-title':
       case 'confirm-close':
@@ -361,6 +374,10 @@ export class BrowserNativeWindow {
         return this.messageBox(action);
       case 'save-directory':
         return this.files(world);
+      case 'fes-configuration':
+        return this.configuration(world, true, false, action.owner);
+      case 'fes-owner-close':
+        return this.close(action.owner);
       case 'game-configuration':
         return this.configuration(world);
       case 'system-configuration':
@@ -418,7 +435,9 @@ export class BrowserNativeWindow {
         throw new Error(`Unknown browser window action ${action.type}`);
     }
   }
-  close() {
+  close(owner = null) {
+    if (owner !== null && this.dialogOwner !== owner) return false;
     this.cancel?.();
+    return true;
   }
 }

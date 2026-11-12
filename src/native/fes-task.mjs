@@ -141,12 +141,17 @@ export function createNativeFESTask(world, record) {
       return true;
     },
     async tick() {
-      if (this.sleepValue || !this.player?.root) return;
+      const player = this.player,
+        live = () =>
+          this.player === player && record.state !== 'releasing' && !player?.root?.runtime?.closed;
+      if (this.sleepValue || !player?.root || !live()) return;
       this.variableBank()?.selectContext(this.variableContextKey());
       await input.tick();
-      await this.player.step();
+      if (!live()) return;
+      await player.step();
+      if (!live()) return;
       await this.syncObjects();
-      if (this.player.root.finished !== null) record.exitCode = this.player.root.finished;
+      if (live() && player.root.finished !== null) record.exitCode = player.root.finished;
     },
     async syncObjects() {
       await world.graphics.syncFES(record, this.player);
