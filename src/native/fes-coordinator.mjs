@@ -372,6 +372,10 @@ export class FESCoordinator {
     this.pendingRecords.push({ operation: 'active-reference', reference: null });
     return 0;
   }
+  react() {
+    this.pendingRecords.push({ operation: 'react' });
+    return -3;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
@@ -380,6 +384,7 @@ export class FESCoordinator {
         this.instance.defaultButton = record.reference.nameBytes.length ? record.reference : null;
       else if (record.operation === 'active-reference')
         await this.instance.player.nativeInput.consumeActiveReference(record.reference);
+      else if (record.operation === 'react') await this.instance.player.nativeInput.consumeReact();
       else if (record.operation === 'draw-upload')
         await this.world.sendEngine(
           this.instance.player.surface,

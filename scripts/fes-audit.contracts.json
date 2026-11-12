@@ -1882,11 +1882,11 @@
       "id": "fes.reference.cn.react",
       "domain": "fes-command",
       "names": ["react"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/react.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "evidence": ["tests/fes-react-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Frozen SDK74/Game76 normal react ignores operands, queues the existing FIFO and returns -3. Its consumer gates on a nonempty active name, updates mouse, sends owning Top Input93 flags1 (w0/l1), then uses the current name/index for FOCUS. Both default paths cover ordering, unchanged references, late query-time rebinding, close/error and fresh restore.",
       "signatures": ["react"]
     },
     {

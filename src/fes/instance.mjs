@@ -719,6 +719,7 @@ export class FESInstance {
       return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
     if (this.runtime && head === 'resetactive')
       return this.nativeCommandReturn(this.runtime.resetActive());
+    if (this.runtime && head === 'react') return this.nativeCommandReturn(this.runtime.react());
     if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
       return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {

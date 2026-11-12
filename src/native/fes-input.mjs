@@ -301,6 +301,33 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumeReact() {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live() || !this.state.focus?.nameBytes.length) return;
+    try {
+      await this.updateMouse();
+      if (!live()) return;
+      const top = this.world.engineMessages.closestTop(this.record),
+        inputID = top?.implementation.input;
+      if (this.world.objects.objects.get(inputID)?.kind !== 11)
+        throw new Error('FES react requires its owning Top Input task');
+      await this.world.engineMessages.dispatch(inputID, this.record.id, 93, 0, 1, { flags: 1 });
+      if (!live()) return;
+      // The native consumer reads the current name/index after the Input query.
+      const object = this.referenceObject(this.state.focus);
+      if (object) await instance.dispatchEvent(object, 'FOCUS');
+    } catch (error) {
+      if (live()) throw error;
+    }
+  }
   async moveDirection(direction, context) {
     const player = this.player,
       instance = this.instance,

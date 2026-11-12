@@ -470,6 +470,26 @@ or turn that rejection into success. The resetactive registry row remains
 partial with this scope recorded. The manual signature text `reset_frame` is
 preserved as a manual/frozen mismatch, without adding a new alias.
 
-This bounded leaf does not complete automove/react, other keyboard/input frontends
+Normal `react` is parameterless in both frozen versions and ignores additional
+operands without a bank, SCRIPT or numeric getter. It appends a `react` operation
+to the same private FIFO and returns native -3, so preceding return0 records are
+consumed before it. The operation stores no captured reference or duplicate state.
+At dequeue, only a nonempty current active name admits work; it does not probe
+current type, enable, DISPLAY or the default reference. NULL and a non-NULL empty
+name/index7 both skip work while preserving their distinct existing values.
+
+The admitted consumer updates mouse, sends canonical93 to its owning Top Input
+with flags1, w0 and l1, then reads the current active name/index for FOCUS. Game's
+literal93 and SDK's literal91 retain their existing ABI translation. This does
+not write either active/default reference, issue UNFOCUS or warp, deduplicate
+repeated calls, or directly mutate a Graph region. The current reference is read
+after both real asynchronous query boundaries; a second legitimate caller may
+change it while a query waits. The existing same-player/root/runtime/owner guards
+cancel subsequent work or a canceled rejection after owner close, while live
+errors propagate. A settled fresh World restores the one existing reference and
+FIFO without replaying completed FOCUS. The normal `react` row is implemented for
+these frozen profiles; its parameterless manual signature is unchanged.
+
+This bounded leaf does not complete automove, other keyboard/input frontends
 or the raw23 attachment protocol. The direct JS-source input API retains its
 separate path.
