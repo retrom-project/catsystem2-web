@@ -169,8 +169,17 @@ test('FES layout matches all 492 original authored records, including profile an
     for (const row of cases) {
       const layout = new NativeFESTextLayout({ profile, type }),
         expected = new Uint32Array(512);
-      layout.apply(row.mode, row.args, Number, {
-        font: 'Authored',
+      let args = row.args;
+      if (row.mode === 'font' || row.mode === 'fontind') {
+        // These original records authored a whole command from the ASCII
+        // operands; the current layout API receives that one complete tail.
+        const start = row.mode === 'fontind' ? 1 : 0,
+          text = row.args.slice(start).join(' '),
+          face = text ? new TextEncoder().encode(text) : undefined;
+        args = start ? [row.args[0], face] : [face];
+      }
+      layout.apply(row.mode, args, Number, {
+        fontBytes: () => new TextEncoder().encode('Authored'),
         weight: 400,
         frame: profile.startsWith('sdk-') ? 0 : 9,
       });

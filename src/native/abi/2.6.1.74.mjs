@@ -9,6 +9,7 @@ export default {
     freeTypeCharacterEncoding: 'cp932',
     freeTypeVersion: '2.4.8',
     settingsCharacterBytes: 1,
+    fesNVFontWritesName: true,
     pathBytes: 260,
     recordingPrefix: {
       units: 'bytes',

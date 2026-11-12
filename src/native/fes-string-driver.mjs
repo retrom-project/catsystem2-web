@@ -2,7 +2,11 @@
 // Typed FES text orchestration. D5 owns writers, parsing, glyphs and rendering.
 import { nativeABI } from './abi/index.mjs';
 import { fesSourceBytes, fesNarrowText } from '../fes/tokens.mjs';
-import { NativeFESTextLayout } from './fes-text-layout.mjs';
+import {
+  NativeFESTextLayout,
+  fesConfigurationFontBytes,
+  fesNativeFontFace,
+} from './fes-text-layout.mjs';
 import { textConfig, textPacket } from './text-config.mjs';
 import { initializeFESPlane } from './fes-object-factory.mjs';
 import { markFESObjectDirty } from './fes-common-model.mjs';
@@ -90,6 +94,7 @@ function createTextState(object, profile, configuration) {
     fontDirty: false,
     fontSource: null,
     fontMap: [],
+    ...(object.nativeType === 29 ? { nvFontDefault: true } : {}),
     section: false,
     redraw: false,
     division: 0,
@@ -158,6 +163,30 @@ export class FESStringDriver {
     state.layout = layout.snapshot();
     scratch.layout = layout;
     scratch.layoutState = state.layout;
+  }
+  setFont(object, value, index) {
+    const state = this.state(object),
+      layout = this.layout(object);
+    if (layout) {
+      layout.setFont(value, index);
+      layout.word(layout.abi.dirty, 1);
+      this.saveLayout(object, layout);
+    } else {
+      const abi = nativeABI(this.world.profile),
+        size = abi.layouts.textCores.cp932.configSize,
+        offsets = [24, 24 + size + 16],
+        view = new DataView(state.nv.buffer);
+      if (abi.text.fesNVFontWritesName) {
+        const face = fesNativeFontFace(this.world.profile, value);
+        if (face.length > abi.text.fesLayouts[21].fontBytes)
+          throw new RangeError('FES font name exceeds the native font record');
+        for (const offset of offsets) state.nv.set(face, offset + 128);
+      } else if (fesSourceBytes(value).length >= 1024)
+        throw new RangeError('FES font name exceeds the original temporary');
+      for (const offset of offsets) view.setInt32(offset + size - 4, index | 0, true);
+      state.nvFontDefault = false;
+    }
+    state.dirty = true;
   }
   validate(instance, object) {
     this.state(object);
@@ -317,12 +346,15 @@ export class FESStringDriver {
             { fes: true },
           );
           layout.bytes.set(cfg, 764);
+          for (let at = -1; at <= 2; at++) layout.word(layout.abi.flags + at, 1);
           this.saveLayout(target, layout);
-        } else
+        } else {
           s.nv = textPacket(this.world.profile, 'nv', this.world.configuration).slice(
             4,
             4 + nativeABI(this.world.profile).layouts.textCores.nv.configSize,
           );
+          s.nvFontDefault = true;
+        }
         s.dirty = true;
         break;
       case 'layout':
@@ -333,7 +365,8 @@ export class FESStringDriver {
         ];
         if (layout) {
           const out = layout.apply(args[0], args.slice(1), evaluate, {
-            font: this.world.configuration?.fields?.font?.name,
+            fontBytes: () =>
+              fesConfigurationFontBytes(this.world.profile, this.world.configuration),
             weight: this.world.configuration?.fields?.font?.weight ? 700 : 400,
             frame: this.world.configuration?.blocks?.[1]
               ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)
@@ -446,10 +479,14 @@ export class FESStringDriver {
         );
         return;
       case 'font':
-      case 'fontind':
-        s.fontIndex = args[0] === 'fontind' ? p(1) : 0;
-        both(size - 4, s.fontIndex);
+      case 'fontind': {
+        const index = args[0] === 'fontind' ? p(1) : 0;
+        let face = args[args[0] === 'fontind' ? 2 : 1];
+        if (face === undefined)
+          face = fesConfigurationFontBytes(this.world.profile, this.world.configuration);
+        this.setFont(object, face, index);
         break;
+      }
       default:
         return { recognized: false, applied: false };
     }

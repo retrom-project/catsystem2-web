@@ -2,7 +2,7 @@
 // Bridge to existing D5 JS text state/driver; construction is supplied by the
 // integrating FES collection and never calls its old PE object factory.
 import { nativeABI } from './abi/index.mjs';
-import { FES_TEXT_LAYOUT_MODES } from './fes-text-layout.mjs';
+import { FES_TEXT_LAYOUT_MODES, fesConfigurationFontBytes } from './fes-text-layout.mjs';
 import { textConfig } from './text-config.mjs';
 import { markFESObjectDirty } from './fes-common-model.mjs';
 
@@ -113,7 +113,7 @@ export class FESLogTextService {
       s = this.text.state(child),
       layout = this.text.layout(child),
       defaults = {
-        font: this.world.configuration.fields.font.name,
+        fontBytes: () => fesConfigurationFontBytes(this.world.profile, this.world.configuration),
         weight: this.world.configuration.fields.font.weight ? 700 : 400,
         frame: this.world.configuration.blocks[1]
           ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)
@@ -127,8 +127,7 @@ export class FESLogTextService {
     const child = this.child(handle),
       s = this.text.state(child),
       layout = this.text.layout(child);
-    // The existing JS D5 layout owns its serialized text configuration. Only
-    // that config is reset, exactly as NativeFESText's reset command does;
+    // Reset the same text defaults and selection flags as a standalone STRING.
     // LOG's semantic state and six palettes are unaffected.
     layout.bytes.set(
       textConfig(
@@ -139,6 +138,7 @@ export class FESLogTextService {
       ),
       764,
     );
+    for (let at = -1; at <= 2; at++) layout.word(layout.abi.flags + at, 1);
     s.layout = layout.snapshot();
     s.dirty = true;
   }

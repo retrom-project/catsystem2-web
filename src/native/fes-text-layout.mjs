@@ -5,6 +5,43 @@ import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesSourceBytes } from '../fes/tokens.mjs';
 
+const fontDecoder = new TextDecoder('shift_jis');
+export function fesConfigurationFontBytes(profile, configuration) {
+  const abi = nativeABI(profile),
+    data = configuration?.fields?.data,
+    length = abi.text.configurationLayout.fontBytes;
+  if (!(data instanceof Uint8Array) || data.length < length)
+    throw new Error('FES font requires its current Settings font block');
+  const face = data.subarray(0, length);
+  if (abi.text.settingsCharacterBytes === 1) {
+    const end = face.indexOf(0);
+    if (end < 0) throw new RangeError('FES current font has no bounded terminator');
+    return new Uint8Array(face.subarray(0, end));
+  }
+  const view = new DataView(face.buffer, face.byteOffset, face.byteLength);
+  let text = '';
+  for (let at = 0; at < face.length; at += 2) {
+    const code = view.getUint16(at, true);
+    if (!code) return new Uint8Array(encodeCP932(text));
+    text += String.fromCharCode(code);
+  }
+  throw new RangeError('FES current font has no bounded terminator');
+}
+export function fesNativeFontFace(profile, value) {
+  const source = fesSourceBytes(value);
+  if (nativeABI(profile).text.settingsCharacterBytes === 1) {
+    const face = new Uint8Array(source.length + 1);
+    face.set(source);
+    return face;
+  }
+  // Both Game STRING setters use the fixed CP932 converter, including STRING8.
+  const text = fontDecoder.decode(source),
+    face = new Uint8Array((text.length + 1) * 2),
+    view = new DataView(face.buffer);
+  for (let at = 0; at < text.length; at++) view.setUint16(at * 2, text.charCodeAt(at), true);
+  return face;
+}
+
 export const FES_TEXT_LAYOUT_MODES = Object.freeze(
   'view color vcolor acolor vacolor pcolor vpcolor margin move ruby frame font fontind fontind_sub shadow size rsize indent weight d_prof c_prof prof shift shift_sub scrolltype wipewidth fontfix profmode profmode_sub prof_enable prof_enable_sub c_prof_sub prof_sub escape'.split(
     ' ',
@@ -55,16 +92,8 @@ export class NativeFESTextLayout {
     }
     return result;
   }
-  setFont(name, index) {
-    const bytes =
-      this.definition.text.settingsCharacterBytes === 1
-        ? encodeCP932(`${name}\0`)
-        : new Uint8Array(
-            Uint16Array.from(
-              { length: String(name).length + 1 },
-              (_, i) => String(name).charCodeAt(i) || 0,
-            ).buffer,
-          );
+  setFont(value, index) {
+    const bytes = fesNativeFontFace(this.profile, value);
     if (bytes.length > this.abi.fontBytes)
       throw new RangeError('FES font name exceeds the native font record');
     // The original setter writes the terminator, retaining bytes after it.
@@ -134,8 +163,10 @@ export class NativeFESTextLayout {
       }
       case 'font':
       case 'fontind': {
-        const name = args.slice(mode === 'fontind' ? 1 : 0).join(' ') || defaults.font || '';
-        this.setFont(name, mode === 'fontind' ? p(0) : 0);
+        let face = args[mode === 'fontind' ? 1 : 0];
+        if (face === undefined) face = defaults.fontBytes?.();
+        if (face === undefined) throw new Error('FES font requires its complete narrow face bytes');
+        this.setFont(face, mode === 'fontind' ? p(0) : 0);
         dirty();
         break;
       }

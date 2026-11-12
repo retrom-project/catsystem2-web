@@ -481,15 +481,23 @@ export class FESLogModel {
       return { recognized: true, applied: true };
     }
     if (!this.service.supportsLayout(mode)) return { recognized: false, applied: false };
+    if (mode === 'fontind_sub' && o.nativeType !== 38) return { recognized: true, applied: false };
     let applied = false;
     const limit = Math.min(this.max(), o.slots?.length ?? 0);
     for (let index = 0; index < limit; index++) {
       const slot = o.slots[index];
-      if (slot.main !== null)
+      if (slot.main !== null && mode !== 'fontind_sub')
         applied = (await this.service.layout(slot.main, mode, args, evaluate)).applied || applied;
-      if (slot.secondary !== null && mode !== 'prof')
+      if (slot.secondary !== null && mode !== 'prof' && mode !== 'fontind')
         applied =
-          (await this.service.layout(slot.secondary, mode, args, evaluate)).applied || applied;
+          (
+            await this.service.layout(
+              slot.secondary,
+              mode === 'fontind_sub' ? 'fontind' : mode,
+              args,
+              evaluate,
+            )
+          ).applied || applied;
     }
     return { recognized: true, applied };
   }

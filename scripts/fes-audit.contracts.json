@@ -3026,14 +3026,15 @@
       "names": ["layout"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/layout.html",
-      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-text-layout.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-text-service.mjs; src/native/text-task.mjs",
+      "implementation": "src/native/fes-coordinator.mjs; src/native/fes-text-layout.mjs; src/native/fes-string-driver.mjs; src/native/fes-log-model.mjs; src/native/fes-log-text-service.mjs; src/native/text-task.mjs",
       "evidence": [
         "tests/native-text.test.mjs",
         "tests/fes-text-profiles.test.mjs",
+        "tests/fes-text-fonts.test.mjs",
         "tests/browser/public.spec.mjs",
         "docs/native-fes-task.md"
       ],
-      "note": "prof/d_prof preserve the entire executing raw tail with no bank/SCRIPT expansion, once-only category evaluation, mixed groups/holes, original STRING/LOG main-child gates and fresh default-World restoration. Other layout text arguments and remaining whole-handler/type coverage are still partial.",
+      "note": "prof/d_prof and font/fontind preserve complete executing raw tails with no bank/SCRIPT expansion, once-only numeric evaluation, mixed groups/holes and fresh default-World restoration. Font omission reads the current JS Settings byte block; frozen CP932 conversion, NV copy/discard and LOG main/secondary gates remain version-specific, including Game-only fontind_sub. Other layout modes and the separate FES task message19 conditional-default/FIFO consumer are still partial.",
       "signatures": ["[obj] layout [mode] (p1) (p2) ..."]
     },
     {

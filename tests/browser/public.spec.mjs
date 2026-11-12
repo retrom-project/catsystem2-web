@@ -516,7 +516,7 @@ for (const profile of [sdkProfile, gameProfile])
           encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
           payload = encode('猫'),
           source = encode(
-            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫 EXTRA\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n#DROP\nlabel delete\nbreak\n`,
+            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout font Byte Face EXTRA\nlabel layout prof 2 猫 EXTRA\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n#DROP\nlabel delete\nbreak\n`,
           ),
           glyphs = {
             measure: (_font, text) => ({
@@ -640,6 +640,11 @@ for (const profile of [sdkProfile, gameProfile])
             restored = freshTask.player.root.byKey.get('label');
           await freshTask.syncObjects();
           const after = await render(fresh);
+          const fontFace = (textWriter) =>
+              new TextDecoder(type === 'STRING8' ? 'utf-16le' : 'shift_jis')
+                .decode(textWriter.config.subarray(128, type === 'STRING8' ? 256 : 160))
+                .split('\0')[0],
+            restoredFontFace = fontFace(await fresh.graphics.get(oldTaskID).writer());
           await task.player.notify('DROP');
           await world.sendEngine(
             id,
@@ -686,6 +691,8 @@ for (const profile of [sdkProfile, gameProfile])
             bytes: [...object.nativeTextState.source],
             parser: [...writer.parser.source],
             payload: [...payload],
+            fontFace: fontFace(writer),
+            restoredFontFace,
             restored: [...restored.nativeTextState.source],
             whitePixels: before.filter((value, index) => index % 4 === 0 && value === 255).length,
             samePixels: before.every((value, index) => value === after[index]),
@@ -728,6 +735,8 @@ for (const profile of [sdkProfile, gameProfile])
     );
     expect(result.bytes).toEqual(result.payload);
     expect(result.parser).toEqual(result.payload);
+    expect(result.fontFace).toBe('Byte Face EXTRA');
+    expect(result.restoredFontFace).toBe('Byte Face EXTRA');
     expect(result.restored).toEqual(result.payload);
     expect(result.whitePixels).toBeGreaterThan(0);
     expect(result.samePixels).toBe(true);

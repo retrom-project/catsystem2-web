@@ -23,6 +23,7 @@ import { initializeFESDifTail, setFESDifImageFile } from './fes-dif-image.mjs';
 import { FESPlaneDriver } from './fes-plane-driver.mjs';
 import { FESControlDriver } from './fes-control-driver.mjs';
 import { FESStringDriver, initializeFESString, FES_TEXT_VERBS } from './fes-string-driver.mjs';
+import { fesConfigurationFontBytes } from './fes-text-layout.mjs';
 import { FESLogDriver, initializeFESLogObject, FES_LOG_VERBS } from './fes-log-driver.mjs';
 import {
   FESParticleDriver,
@@ -573,6 +574,27 @@ export class FESCoordinator {
     if (verb === 'layout' && args.length) {
       const mode = context.text(0);
       context.layoutMode = mode;
+      if (['font', 'fontind', 'fontind_sub'].includes(mode)) {
+        if (!nativeABI(world.profile).text.layoutModes.includes(mode)) return 0;
+        if (!(source.commandBytes instanceof Uint8Array))
+          throw new TypeError('FES layout font requires its exact executing command bytes');
+        const indexed = mode !== 'font',
+          tail = fesRawTail(source.commandBytes, indexed ? 4 : 3),
+          index = indexed && args[1] !== undefined ? context.argument(1) : 0,
+          bytes = tail.length
+            ? new Uint8Array(tail)
+            : fesConfigurationFontBytes(world.profile, world.configuration),
+          parameters = indexed ? [index, bytes] : [bytes];
+        for (let at = first; at < count; at++) {
+          const object = lookup(at);
+          if (!object) continue;
+          if (mode !== 'fontind_sub' && this.strings.supports(object))
+            this.strings.setFont(object, bytes, index);
+          else if (this.logs.supports(object))
+            await this.logs.model(instance, object).layout(mode, parameters, Number);
+        }
+        return 0;
+      }
       if (mode === 'prof' || mode === 'd_prof') {
         if (!(source.commandBytes instanceof Uint8Array))
           throw new TypeError('FES layout profile requires its exact executing command bytes');

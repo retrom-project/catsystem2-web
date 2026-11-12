@@ -4,7 +4,7 @@ import { NativeFESTextProjection } from './fes-text-projection.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { fesNarrowText } from '../src/fes/tokens.mjs';
-import { NativeFESTextLayout } from '../src/native/fes-text-layout.mjs';
+import { NativeFESTextLayout, fesConfigurationFontBytes } from '../src/native/fes-text-layout.mjs';
 import { textConfig, textPacket } from '../src/native/text-config.mjs';
 import { planeState } from './fes-plane-state-original.mjs';
 import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
@@ -240,7 +240,8 @@ export class NativeFESText {
           if (layout) {
             const before = layout.profiles[args[0]],
               out = layout.apply(args[0], args.slice(1), (n) => instance.value(n), {
-                font: this.world.configuration?.fields?.font?.name,
+                fontBytes: () =>
+                  fesConfigurationFontBytes(this.world.profile, this.world.configuration),
                 weight: this.world.configuration?.fields?.font?.weight ? 700 : 400,
                 frame: this.world.configuration?.blocks?.[1]
                   ? new DataView(this.world.configuration.blocks[1].buffer).getUint32(0, true)

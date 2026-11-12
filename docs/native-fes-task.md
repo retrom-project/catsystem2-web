@@ -96,6 +96,19 @@ groups, interior and trailing holes, explicit indexes, and a fresh World without
 source reads or EXE construction. Other text whole-command gates remain separate
 phase-7 work.
 
+The `font`, `fontind` and applicable `fontind_sub` layout wrappers preserve the
+complete executing raw tail, including literal bank/SCRIPT syntax and prepared
+spacing. Only an absent tail reads the current Settings font block from the
+World's sole `configuration.fields.data`; `fontcom.default` has a different
+owner. SDK setters copy narrow face bytes, while both Game STRING setters use
+the original fixed-CP932 conversion to their wide face fields, including
+STRING8. Game NV retains its two old faces and updates the indices; SDK NV
+copies both faces. LOG `fontind` visits main rows, and the Game-only
+`fontind_sub` visits LOGSTRING8 secondary rows. These gates, actual D5 packets,
+owned bytes and fresh restoration are covered without an EXE constructor.
+The FES task's separate message19 conditional-default refresh over saved
+resource-entry types remains an independent phase-7 consumer gap.
+
 The text controller also owns the complete `clear`, `apendmark`, `skip`, `reset`,
 `isdraw`, `isdrawmark`, `insert`, `linecnt` and `endpos` selection wrappers. The
 first six skip holes; `insert` and `linecnt` stop at the first missing slot.
