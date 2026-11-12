@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 208, "oracle": 148, "differential": 67 },
+    "counts": { "js": 209, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -200,6 +200,7 @@
         "tests/native-sse.test.mjs",
         "tests/native-standard.test.mjs",
         "tests/native-string-bank.test.mjs",
+        "tests/native-table-registration.test.mjs",
         "tests/native-token.test.mjs",
         "tests/native-unicode-calculations.test.mjs",
         "tests/native-view-rectangles.test.mjs",
@@ -2376,8 +2377,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 467,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 72, "8": 171, "9": 55 },
+    "runtimeFiles": 469,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 72, "8": 173, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -49627,8 +49628,34 @@
       "review": "counted"
     },
     {
+      "file": "src/native/abi/semantics.mjs",
+      "sourceSha256": "1015612f4f63ad051c970cc045ffa2a3b0ed9ccf1ae369cc8a87874f597c38bb",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/abi/signature.mjs",
       "sourceSha256": "a140fdde2f83c1c528776582107ba72ef95a7ca5e66115e55fb48b6b95de1602",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/abi/tables.mjs",
+      "sourceSha256": "1bcc10d2ae27b59f852a904b22e8c236373220aef51e4054d87b87a07f88e253",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
