@@ -240,6 +240,7 @@ export default {
     requiredRenderer: true,
   },
   capabilities: {
+    effekseerTask: true,
     cubeFlipGridHeightProduct: true,
     bitmapColorQuery: true,
     nameTableAliases: true,

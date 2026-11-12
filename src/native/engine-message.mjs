@@ -598,6 +598,7 @@ export class NativeEngineMessages {
     const result = await record.implementation.message(
       [packet[1], packet[2], packet[3], packet[4]],
       context,
+      output,
     );
     if (typeof result === 'number')
       output.value = nativeEngineWord(result, `Task ${record.id} message ${packet[2]}`);

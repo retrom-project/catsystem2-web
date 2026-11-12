@@ -88,6 +88,8 @@ test('World births one frame CRT word at seed1 without consuming MT', async () =
     assert.equal(w.effekseer.frameExecutor, executor);
     assert.deepEqual(w.effekseer.snapshot(), {
       crt: { threads: [{ id: 'frame', state: 1, calls: 0, seedCalls: 0 }] },
+      resources: null,
+      loads: null,
     });
     assert.throws(() => w.effekseer.createExecutor('frame'), /already exists/);
     assert.deepEqual(w.random.snapshot(), random);
@@ -437,7 +439,7 @@ test('settled World checkpoint stores one CRT authority and fresh restore contin
     });
     w.withExecutor(forced, (e) => w.effekseer.nextInt(e));
     const saved = await deserializeCheckpoint(await serializeCheckpoint(w.snapshot()));
-    assert.deepEqual(Object.keys(saved.effekseer), ['crt']);
+    assert.deepEqual(Object.keys(saved.effekseer), ['crt', 'resources', 'loads']);
     assert.deepEqual(saved.effekseer.crt.threads, [
       { id: 'forced-B', state: 2745024, calls: 1, seedCalls: 0 },
       { id: 'frame', state: 3357800067, calls: 2, seedCalls: 0 },

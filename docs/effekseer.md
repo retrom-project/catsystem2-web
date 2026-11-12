@@ -2,8 +2,10 @@
 
 Phase 7 implements a JS reader, resource owner, independent CPU state algorithms
 and typed geometry builders for legacy SKFE Effects.
-It does not yet connect EFKPLANE commands, complete particle playback, drawing
-or task checkpoints. FES raw type 36 remains explicitly unsupported.
+The default registered76 kind61 factory now owns real CPU playback, mounted
+resources and settled task/World checkpoints. Actual task drawing requires the
+unimplemented GPU adapter and reports an explicit error. FES raw type36 remains
+explicitly unsupported; this is not complete EFKPLANE support.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
 
@@ -145,8 +147,9 @@ frame entry fully exits, so awaiting it preserves the snapshot/close safe point.
 Settled checkpoints store the current CRT words once and restore without replay.
 While a native process exists or is loading, the gateway rejects sampling before
 manager callbacks because the actual native-owner binding remains unverified.
-The kind61 task/factory and FES type36 playback are still unconnected; this gateway
-does not establish EFKPLANE runtime support.
+The default76 kind61 CPU task uses this gateway per actual Play/Update. FES
+type36 remains unconnected; neither the gateway nor CPU task establishes complete
+EFKPLANE rendering support.
 
 Integer tests include 20,480 comparisons with an independent BigInt recurrence; local original
 oracle evidence separately compares 320 return values and 320 PTD state words.
@@ -193,7 +196,8 @@ StopEffect primitive does not implement the separate observed FES stop-verb quir
 `instance-transform.mjs` supplies motion/parent-binding/generation/absolute-force
 state and reused calculation scratch. Renderer initialization and cache-update
 operations remain required callbacks. The opt-in CPU composition adapter below
-supplies them when explicitly selected; it is not registered with World. The
+supplies them when explicitly selected; the default kind61 CPU task now installs
+these same required operations with its actual manager. The
 manager's data visitor can
 refresh a stale calculation sequence at zero delta, without advancing age or
 sampling another random value; it is not a GPU renderer.
@@ -203,8 +207,9 @@ pool order, sampled operation data, matrices, pending flags and counters.
 Fresh restore validates graph ownership and references before publishing it. It
 adopts the references already restored by the aggregate resource owner; it does
 not Play, resample, recalculate or retain them again. Existing checkpoint
-serialization preserves typed arrays and signed zero. No World checkpoint hook
-or checkpoint-format change is introduced by these independent state APIs.
+serialization preserves typed arrays and signed zero. The kind61 CPU task now
+connects these APIs to the current World checkpoint, with no additional format
+generation or compatibility reader.
 
 Lifecycle and transform tests add 25 focused cases. Separate local original
 no-GPU manager comparisons cover 12 cases and 154 current-state observations,
@@ -333,4 +338,60 @@ Node tests cover complete real-file decoding, truncation and layout failures,
 parameter variants, Japanese paths, archive patch search, nonempty decoded PNG
 pixels, shared ownership, concurrent loads and fresh resource restore. They do
 not establish native float/pixel tolerances, playback timing, browser rendering,
-full task restoration or frame-rate acceptance. Those remain required for EFKPLANE.
+complete rendered-task restoration or frame-rate acceptance. The CPU task and
+true fresh-World checks below do not substitute for those EFKPLANE requirements.
+
+## Default kind61 CPU task
+
+The registered ABI capability enables the default kind61 factory for76 and keeps
+it unavailable for74. Unknown registrations cannot borrow this capability by
+name. Each task owns a real2000-capacity ManagerLifecycle and the existing instance
+operations, camera and Ring current-state owner. Its World exclusively owns the
+mounted source cache and EffectLoads. This leaf does not enable FES raw36 or
+install its resource driver, and actual nonempty draw raises an unsupported GPU
+adapter error; a blank frame is not accepted as successful playback.
+
+Messages569/570 release current FILE ownership before replacement/unload; earlier
+Play drawsets keep their own logical-load references. Each571 creates another
+handle and keeps older instances alive.572 stops only the latest handle while
+current Effect is non-NULL.573 writes the existing result container before Stop,
+including when Stop suspends or fails. Other original unwritten branches retain
+the established UNWRITTEN sentinel. The common receiver protocol passes its same
+result container as an optional third message argument; existing receivers and
+the direct four-word/queued return contract keep their behavior.
+
+The three position words are one authority shared by constructor/51/57/571.
+Constructor and57 calculate the rotated/transformed eye in that slot;51 replaces
+it without changing old instances or recalculating the previous camera.55/66
+only relay56/67 to children.57 uses the original1.57f projection constant and
+current view aspect;59/63 are observed ignored overrides. The relocated camera
+methods retain the fixed old approximate normalization. Two public/authored
+whole-method reference outputs preserve exact float32 bits. Earlier local26
+whole-method calls/312floats do not constitute an original whole57 calibration.
+
+The optional beforeDrawChildren hook performs CPU Update1 before children only
+on ordinary ready success. Actual LOST0x88760868 skips Update; NOTRESET0x88760869
+calls OnLost and sets pending; the next pending branch calls OnReset, clears it
+and skips Update. The original pending branch precedes another cooperative query.
+The CPU-only loss/reset methods retain the same Ring owner and have no physical
+handles to release/reconstruct. Physical adapter callbacks and actual GPU restore
+remain required later work. Render/query does not advance time or randomness.
+
+Snapshots save source/load identities and aggregate references once, then adopt
+task current manager/vector/camera/pending/Ring/plane state without Play, retain,
+seed or elapsed replay. Fresh World validates all task/current/drawset reference
+counts after restoring the source and logical-load owners. Physical readiness,
+GPU generations, executor entries, pending FILE Promises and fault stacks are not
+saved. A pending FILE prevents World checkpoint/close; explicit task teardown
+waits for that operation and releases its late load rather than publishing an
+orphan. Cleanup continues after an error and reports the failure.
+
+Focused Node checks use the actual default factory, mounted public/authored data,
+real managers, existing executor and device owners, and true fresh World. They
+exercise opaque-entry guards, queue consumption, delayed GC and shared logical
+texture identities. A temporary host disposal failure and Stop wrapper test
+cleanup/result ordering; they do not replace the manager under test or claim
+native/GPU failure observations. No EXE is opened by this CPU path. The existing
+mixed-native CRT guard remains unchanged. Actual D6 registration/display producer,
+default FES36, shared GPU target/state and nonempty rendered-World/2000-particle
+acceptance remain separate required closures.

@@ -16,6 +16,8 @@ export function validateABI(abi) {
   if (!['Shift_JIS', 'UTF-8'].includes(abi.xmlEncoding) || !Number.isInteger(abi.sound?.banks))
     throw new Error(`Invalid ABI services ${abi.id}`);
   validateBehavior(abi);
+  if (typeof abi.capabilities?.effekseerTask !== 'boolean')
+    throw new Error(`Invalid Effekseer task capability ${abi.id}`);
   for (const table of ['main', 'generic', 'particle-v1', 'particle-v2']) {
     const definition = abi.tables?.[table];
     if (

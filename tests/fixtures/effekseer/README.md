@@ -112,3 +112,10 @@ zero-submit visitor and cleanup failures are authored protocol/fault inputs, not
 claims of a discovered FES file flag or successful unknown operation. These Node
 checks require no browser, Wine, C++ compiler or `.local` research data and do not
 themselves count as GPU pixels or full task/World acceptance.
+
+`camera-reference.json` contains two public/authored camera input vectors and
+previously calibrated exact whole-method output words. It contains no private
+Effect/game files, original code, addresses or runtime dependencies. These
+mathematical inputs are CC0; the expected numeric observations are used only for
+method relocation regression, not a full task-message57 or pixel equivalence
+claim. The source algorithms retain the fixed Effekseer MIT attribution.

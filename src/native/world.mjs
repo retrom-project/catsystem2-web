@@ -93,9 +93,13 @@ import { installNativeRenderSources } from './render-sources.mjs';
 import { NativeSaveSlots } from './save-slots.mjs';
 import { installNativeUnicodeOutput } from './unicode-output.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { encodeNativeCP932, decodeNativeCP932 } from './cp932.mjs';
 import { NativeSystemClock } from './clock.mjs';
 import { initializeNativeStartupInputs, initializeNativeStartupSound } from './startup-inputs.mjs';
 import { NativeDispatchContext } from './dispatch-context.mjs';
+import { createEffekseerTask } from '../effekseer/task.mjs';
+import { binaryIdentity } from '../identity.mjs';
+import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 import { EffekseerWorld, EFFEKSEER_FRAME_EXECUTOR } from '../effekseer/world.mjs';
 
 // The world owns the task graph. A KCS program is attached to a native script
@@ -139,6 +143,14 @@ export class NativeWorld {
     this.effekseer = new EffekseerWorld({
       dispatch: this.dispatchContext,
       hasNativeProcess: () => !!(this.nativeEngine || this.nativeEngineLoading),
+      resourceServices: () => ({
+        resolveCategory: (name, category) => nativeCategoryFilename(this.game, name, category),
+        readNative: (name, mode) => readNativeResource(this, name, mode),
+        roundTripCP932: (name) => decodeNativeCP932(encodeNativeCP932(name)),
+        identify: binaryIdentity,
+        disposeTexture: (frame) => this.getNativeGPU?.()?.releaseTextureFrame(frame),
+        onWarning: (detail) => this.host.nativeDiagnostic?.(detail),
+      }),
     });
     this.stageRenderer = new StageRenderer();
     this.clock = new NativeSystemClock({
@@ -377,6 +389,10 @@ export class NativeWorld {
     this.objects.register(12, (record) => this.script(record));
     this.objects.register(34, (record) => this.fes(record));
     installNativeGraphics(this);
+    if (nativeABI(this.profile).capabilities.effekseerTask)
+      this.objects.register(61, (record, _objects, options) =>
+        createEffekseerTask(this, record, options),
+      );
     this.runtime.services.importImageFrame = (frame, owner) => {
       const images = this.graphics.images,
         handle = images.create(frame.width, frame.height, owner),
@@ -1015,7 +1031,6 @@ export class NativeWorld {
     if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
-    this.effekseer.restore(state.effekseer);
     this.clock.restore(state.clock);
     this.calculations.matrix.set(state.calculations.matrix);
     this.tileGame.restore(state.tileGame);
@@ -1045,10 +1060,12 @@ export class NativeWorld {
       const engine = await this.ensureNativeEngine();
       engine.restore(state.nativeEngine);
     }
+    await this.effekseer.restore(state.effekseer);
     if (state.m2) await this.m2.restore(state.m2);
     this.restoring = true;
     try {
       await this.objects.restore(state.objects);
+      this.effekseer.validateReferences();
     } finally {
       this.restoring = false;
     }
@@ -1083,6 +1100,7 @@ export class NativeWorld {
     if (this.running || this.frameSettled)
       throw new Error('Native world close requires a settled frame');
     this.dispatchContext.assertSettled();
+    this.effekseer.assertSettled();
     const errors = [],
       attempt = async (operation) => {
         try {
