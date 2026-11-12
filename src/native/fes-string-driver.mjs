@@ -96,7 +96,9 @@ function createTextState(object, profile, configuration) {
     fontDirty: false,
     fontSource: null,
     fontMap: [],
-    ...(object.nativeType === 29 ? { nvFontDefault: true } : {}),
+    ...(object.nativeType === 29
+      ? { nvFixedDefault: true, nvFontDefault: true, nvWeightDefault: true, nvShadowDefault: true }
+      : {}),
     section: false,
     redraw: false,
     division: 0,
@@ -353,6 +355,7 @@ export class FESStringDriver {
         } else {
           s.nv = nvConfiguration(this.world.profile, this.world.configuration);
           s.nvFontDefault = true;
+          s.nvFixedDefault = s.nvWeightDefault = s.nvShadowDefault = true;
         }
         s.dirty = true;
         break;
@@ -470,13 +473,17 @@ export class FESStringDriver {
       case 'shadow':
         both(size - 20, p(1));
         both(size - 16, p(2));
+        s.nvShadowDefault = false;
         break;
-      case 'weight':
+      case 'weight': {
+        const value = p(1, -1);
         both(
           size - 24,
-          p(1, -1) === -1 ? (this.world.configuration?.fields?.font?.weight ? 700 : 400) : p(1),
+          value === -1 ? (this.world.configuration.fields.font.weight ? 700 : 400) : value,
         );
+        s.nvWeightDefault = value === -1;
         return;
+      }
       case 'font':
       case 'fontind': {
         const index = args[0] === 'fontind' ? p(1) : 0;
@@ -626,7 +633,57 @@ export class FESStringDriver {
     if (object.nativeType === 29 && has('DIV')) this.setDivision(object, get('DIV'));
     return true;
   }
-  async drive(instance, object, { configurationDirty = false } = {}) {
+  configurationChanged(object) {
+    const state = this.state(object),
+      layout = this.layout(object),
+      abi = nativeABI(this.world.profile),
+      font = this.world.configuration.fields.font,
+      face = () => {
+        const width = abi.text.settingsCharacterBytes,
+          bytes = this.world.configuration.fields.data.subarray(
+            0,
+            abi.text.configurationLayout.fontBytes,
+          ),
+          view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        for (let end = 0; end < bytes.length; end += width) {
+          if ((width === 1 ? bytes[end] : view.getUint16(end, true)) !== 0) continue;
+          const count = end + width,
+            capacity = (layout?.abi ?? abi.text.fesLayouts[21]).fontBytes;
+          if (count > capacity)
+            throw new RangeError('FES current font exceeds the configuration callback face record');
+          return new Uint8Array(bytes.subarray(0, count));
+        }
+        throw new RangeError('FES current font has no bounded terminator');
+      },
+      fixed = font.prop ? font.fix : 1,
+      weight = font.weight ? 700 : 400;
+    if (layout) {
+      layout.word(layout.abi.dirty, 1);
+      if (layout.word(layout.abi.flags - 1)) layout.word(layout.abi.fix, fixed);
+      if (layout.word(layout.abi.flags)) layout.bytes.set(face(), 892);
+      if (layout.word(layout.abi.flags + 1)) layout.word(layout.abi.weight, weight);
+      if (layout.word(layout.abi.flags + 2)) {
+        layout.word(layout.abi.shadow, font.rightdown);
+        layout.word(layout.abi.shadow + 1, font.around);
+      }
+      this.saveLayout(object, layout);
+    } else {
+      const size = abi.layouts.textCores.cp932.configSize,
+        view = new DataView(state.nv.buffer, state.nv.byteOffset, state.nv.byteLength),
+        value = state.nvFontDefault ? face() : null;
+      for (const offset of [24, 24 + size + 16]) {
+        if (state.nvFixedDefault) view.setUint32(offset + size - 12, fixed, true);
+        if (value) state.nv.set(value, offset + 128);
+        if (state.nvWeightDefault) view.setUint32(offset + size - 24, weight, true);
+        if (state.nvShadowDefault) {
+          view.setUint32(offset + size - 20, font.rightdown, true);
+          view.setUint32(offset + size - 16, font.around, true);
+        }
+      }
+    }
+    state.dirty = true;
+  }
+  async drive(instance, object) {
     const s = this.state(object),
       task = this.validate(instance, object);
     const runtime = await this.world.text.runtime(),
@@ -646,16 +703,6 @@ export class FESStringDriver {
       object.sizeDirty = false;
     }
     let layout = this.layout(object);
-    if (configurationDirty && layout) {
-      const defaults = textConfig(this.world.profile, mode, this.world.configuration, {
-          fes: true,
-        }),
-        cfg = layout.config();
-      cfg.set(defaults.subarray(128), 128);
-      layout.bytes.set(cfg, 764);
-      this.saveLayout(object, layout);
-      s.dirty = true;
-    }
     if (layout && layout.revision !== s.revision) {
       s.dirty = true;
       s.revision = layout.revision;

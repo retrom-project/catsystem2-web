@@ -29,7 +29,7 @@ numbers.
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 3                  | Set the private `_EXITCODE_` to -1 and send sound-bank message 210 before the base destruction request; actual resource release remains deferred.                                                                                                     |
 | 9, 10, 64, 65      | Use the receiving FES's native button/low-button mapping and its Top's input task. Original scroll/slider tasks own their separate button children.                                                                                                   |
-| 19                 | Run original object configuration callbacks, notify `MES_CHANGECONFIG`, update sound configuration state and invalidate original text fonts.                                                                                                          |
+| 19                 | Run ABI-defined image callbacks/notification, then saved-entry/current-key conditional defaults; the supported domain is described below.                                                                                                             |
 | 25, 26             | Read/write the inherited CP932 context name through sender memory; leave the result word untouched.                                                                                                                                                   |
 | 27, 28             | Original scroll/slider child tasks update the matching value, execute SCRL_P and deliver FOCUS/UNFOCUS.                                                                                                                                               |
 | 176, 177           | Write the inherited global/string-bank handle through `lParam`; leave the result word untouched.                                                                                                                                                      |
@@ -46,6 +46,80 @@ numbers.
 | 348, 349           | Read/clear the interpreter's `result` word.                                                                                                                                                                                                           |
 | 350                | Insert image data in this FES's filename cache; retain the shared 20-byte data-buffer descriptor only for a new key.                                                                                                                                  |
 | 351, 352           | Read/write the interpreter's own CP932 string-to-word dictionary, distinct from private variable names and the string bank.                                                                                                                           |
+
+The configuration event uses the registered ABI's
+`fes.configurationMessage` stages. The reviewed Game receiver visits the current
+object-key map first, calls each live image configuration callback, notifies
+`MES_CHANGECONFIG`, then traverses its saved resource FIFO. The reviewed SDK
+receiver enters that FIFO directly, with neither the live-map stage nor that
+notification. This event does not select a private variable context by itself.
+World preference-persistence dirty remains a separate flag.
+
+The event captures its current player/runtime/owner only on the call stack.
+After notification and each awaited sound callback, it checks the same player,
+closed runtime, and releasing/removed owner before continuing the FIFO. The sound
+185 callback checks that same call's predicate after its query and before new
+pending-play writes. Already issued queries and pre-close dirty writes are not
+rolled back. A failed in-flight request is canceled only after that owner loses
+liveness; live request failures still propagate. No predicate, cancellation
+state, queue or continuation is added to the checkpoint.
+
+The Game live-map callback applies to IMAGE, BUTTON, PANEL, SAVEPANEL, BGTABLE,
+BGTABLE2, CHTABLE, CHTABLE2, CHTABLE3 and IMGWND. Other recovered constructible
+families have a proven empty callback; NUMIMG has no object. The map uses its
+original current key order, independently of the resource FIFO and lifetime
+handle order. Each image owns narrow `fileSourceBytes` (SOURCE) and `fileBytes`
+(CURRENT), once each. The existing BGTABLE/BGTABLE2 CURRENT bytes remain the same
+authority. Its `file` string is a non-enumerable CP932-derived view.
+
+A FILE definition or admitted `load` argument performs its existing bank/SCRIPT
+expansion once and writes original narrow bytes to SOURCE. A CGL selection uses
+the already selected exact bytes. No target-class encoding is applied. The
+callback starts CURRENT from saved SOURCE, replaces `%LANG%` with the selected UI
+prefix (or valid default), then replaces `%LANG_M%` with the main prefix (or valid
+default). A missing selected/default row leaves that marker unchanged. Only the
+Settings wide prefix crosses its defined CP932 conversion boundary. A table
+selector writes CURRENT alone; a configuration event never reselects a table,
+re-expands FILE, or reads the source resource again. Checkpoints save these two
+semantic fields once and restore without replay.
+
+The image comparison supports the verified normal C-locale initialization and
+creation flow of this frozen Game ABI. It folds each original ASCII byte A..Z,
+including bytes inside CP932 sequences, and sets image-changed only when that
+comparison differs. It still updates CURRENT for a case-only change and never
+clears an earlier change request. Normal JS startup/FES APIs have no locale
+mutation/import path and do not borrow an unknown native CRT flag. Non-C or
+unverified locale consumers remain unsupported and require their own reviewed
+route before entering this callback; this is not a general CRT locale model.
+Overlong filename/prefix results beyond the defined 256-byte CString fields
+remain explicit unsafe-boundary diagnostics.
+
+The FIFO dispatches by each entry's saved raw type, then resolves its current
+name/index. Missing current objects are skipped; duplicate entries retain their
+order. SOUND/SNDTABLE use their existing common sound service. STRING,
+NVSTRING, and Game STRING8 mark their current text configuration dirty and
+independently refresh only the enabled fixed-pitch, face, weight and shadow
+defaults. The face copies the current Settings CString in its native encoding:
+SDK narrow bytes or Game UTF16 units, without a CP932 round trip for Game.
+Callback copying preserves destination padding and diagnoses unterminated or
+oversized faces. Font index, wipe, proportional, dimensions, colors and text
+history are preserved.
+
+STRING/STRING8 keep these default flags in their existing layout state.
+NVSTRING keeps its four known flags once in the existing nativeTextState;
+constructor/full reset enable them, and recovered setters retain their original
+flag/dirty rules. In particular NV weight enables its default only for -1 and
+does not itself set dirty. This event preserves NV's proportional values from
+the separate constructor/reset contract. Existing null-writer guards, known
+cursor handling and independently retained old D5 child pixels remain in force.
+
+Saved non-text/non-sound entries have a proven FIFO default no-op even when the
+current key names text. Same concrete type/ABI rebinding and SOUND/SNDTABLE
+rebinding use their recovered callback. Other cross-layout fixed callbacks
+remain explicit unrecovered diagnostics rather than dispatching by current type
+or copying unknown layouts. The STRING-to-CIMAGE case crosses its target's
+defined allocation before any default flag can guard it. These unsafe or
+unrecovered rebindings remain outside the supported event domain.
 
 The `result` script command stores a signed 32-bit expression and yields through
 the native -3 processing path. Private context contents and names live once in

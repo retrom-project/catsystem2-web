@@ -6,6 +6,7 @@ import { FESInput } from './fes-input.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeDictionary } from './dictionary.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export function createNativeFESTask(world, record) {
   const implementation = world.base(record);
@@ -244,14 +245,25 @@ export function createNativeFESTask(world, record) {
       if (message === 19) {
         if (!this.player?.root)
           throw new Error('Native FES configuration notification requires a loaded interpreter');
-        const instance = this.player.root;
-        await this.player.notify('MES_CHANGECONFIG');
-        instance.runtime.configurationDirty = true;
-        for (const object of instance.objects) {
-          object.dirty = true;
-          if ([9, 10].includes(object.nativeType))
-            await world.fesSound.configurationChanged(instance, object);
+        const player = this.player,
+          instance = player.root,
+          stages = nativeABI(world.profile).fes.configurationMessage,
+          live = () =>
+            this.player === player &&
+            record.state !== 'releasing' &&
+            !instance.runtime.closed &&
+            world.objects.objects.get(record.id) === record;
+        if (!live()) return NATIVE_UNWRITTEN_WORD;
+        if (stages.liveObjects) instance.runtime.configurationWillChange();
+        if (stages.notification) {
+          try {
+            await player.notify(stages.notification);
+          } catch (error) {
+            if (live()) throw error;
+          }
         }
+        if (!live()) return NATIVE_UNWRITTEN_WORD;
+        await instance.runtime.configurationChanged();
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 176 || message === 177) {

@@ -203,7 +203,7 @@ export class FESPanelImages extends FESDifImages {
   }
   async panelMetadata(instance, object, selector, container = false) {
     const s = this.workspace(object),
-      pointer = await this.cache(instance).data(this.expand(instance, object.file));
+      pointer = await this.cache(instance).data(this.filename(instance, object));
     if (!pointer) return null;
     s.metadata.fill(0);
     const result = nativeImageMetadata(
@@ -239,7 +239,7 @@ export class FESPanelImages extends FESDifImages {
     const images = this.world.graphics.images;
     if (part.kind === 0)
       return {
-        bitmap: await this.cache(instance).load(this.expand(instance, object.file), id),
+        bitmap: await this.cache(instance).load(this.filename(instance, object), id),
         owned: true,
         position: [0, 0],
       };
@@ -250,7 +250,7 @@ export class FESPanelImages extends FESDifImages {
       const number = decimalDigit(part.number, part.divisor),
         selector = part.directSelector ? number >>> 0 : fesImageFrameID(source, number);
       return {
-        bitmap: await this.cache(instance).load(this.expand(instance, source.file), selector),
+        bitmap: await this.cache(instance).load(this.filename(instance, source), selector),
         owned: true,
       };
     }

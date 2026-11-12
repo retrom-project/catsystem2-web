@@ -17,6 +17,7 @@ import { FESMotionDriver, createFESMotionTarget } from './fes-motion-driver.mjs'
 import { FESCommonCommands, FES_COMMON_COMMANDS } from './fes-common-commands.mjs';
 import { FESResourceCommands, FES_RESOURCE_COMMANDS } from './fes-resource-commands.mjs';
 import { initializeFESImage, setFESImageFile } from './fes-image-driver.mjs';
+import { initializeFESImageFilename, setFESImageSourceFilename } from './fes-image-filename.mjs';
 import { FESPanelImages } from './fes-panel-driver.mjs';
 import { initializeFESPanelTail, setFESPanelFile } from './fes-panel-model.mjs';
 import { initializeFESDifTail, setFESDifImageFile } from './fes-dif-image.mjs';
@@ -71,7 +72,6 @@ export class FESCoordinator {
       cache,
       top: null,
       pendingRecords: [],
-      configurationDirty: false,
     });
     this.platform = new FESPlatformFrontends(this);
     this.targets = new Map();
@@ -170,6 +170,7 @@ export class FESCoordinator {
       collection: this.collection,
       images: this.images,
       setImageFile: (object, name, bytes) => this.setImageFile(object, name, bytes),
+      imageFileBytes: nativeABI(world.profile).fes.configurationMessage.liveObjects,
       loadSound: (object, file, crossfade, frames) =>
         world.fesSound.state(instance, object).load(file, crossfade, frames),
       soundLoadParameters: nativeABI(world.profile).sound.fesLoadParameters,
@@ -205,7 +206,10 @@ export class FESCoordinator {
   }
   construct(identity) {
     const object = createFESTypedObject(identity, {
-      initializeImage: initializeFESImage,
+      initializeImage: (object) => {
+        initializeFESImage(object);
+        initializeFESImageFilename(object, this.world.profile);
+      },
       initializeSpecial: (object) => {
         const type = object.nativeType;
         if (type === 11 || type === 12) initializeFESPanelTail(object);
@@ -287,6 +291,11 @@ export class FESCoordinator {
     return target;
   }
   setImageFile(object, name, bytes) {
+    if (Object.hasOwn(object, 'fileSourceBytes')) {
+      setFESImageSourceFilename(this.world, object, bytes);
+      if (object.nativeType === 11 || object.nativeType === 12) object.sizeDirty = true;
+      return;
+    }
     if (object.nativeType === 11 || object.nativeType === 12) setFESPanelFile(object, name);
     else if (object.nativeType === 25) setFESDifImageFile(object, name);
     else setFESImageFile(object, name, bytes);
@@ -406,7 +415,6 @@ export class FESCoordinator {
     }
     await this.resources.appendPending(this.collection);
     await this.resources.traverse();
-    this.configurationDirty = false;
   }
   async allocateEntry(entry, object) {
     const type = object.nativeType;
@@ -456,7 +464,7 @@ export class FESCoordinator {
   async visitEntry(entry, object) {
     const { instance, world } = this,
       type = object.nativeType,
-      options = { configurationDirty: world.configurationDirty || this.configurationDirty };
+      options = { configurationDirty: world.configurationDirty };
     if (imageEntryTypes.has(type)) await this.images.visitEntry(instance, object, entry, options);
     else if (type === 25) {
       await this.images.update(instance, object, options);
@@ -491,6 +499,47 @@ export class FESCoordinator {
     else if (effectTypes.has(type)) await this.effects.update(object, options);
     else if (![0, 34, 35].includes(type))
       throw new Error('Unimplemented FES resource driver raw' + type);
+  }
+  configurationWillChange() {
+    for (const object of this.collection.ordered())
+      if (object.nativeType !== 1 && imageEntryTypes.has(object.nativeType))
+        this.images.configurationChanged(object);
+  }
+  async configurationChanged() {
+    const player = this.instance.player,
+      owner = this.world.objects.objects.get(this.instance.runtimeID),
+      live = () =>
+        !this.closed &&
+        owner?.state !== 'releasing' &&
+        owner?.implementation?.player === player &&
+        this.world.objects.objects.get(this.instance.runtimeID) === owner;
+    for (const entry of this.resources.entries) {
+      if (!live()) return;
+      const type = entry.savedType;
+      if (
+        !soundTypes.has(type) &&
+        type !== 21 &&
+        type !== 29 &&
+        !(type === 37 && nativeABI(this.world.profile).capabilities.utf8Text)
+      )
+        continue;
+      const object = this.collection.lookup(entry.nameBytes, entry.index);
+      if (!object) continue;
+      if (soundTypes.has(type)) {
+        if (!soundTypes.has(object.nativeType))
+          throw new Error(
+            `Unrecovered FES configuration callback raw${type} on raw${object.nativeType}`,
+          );
+        await this.world.fesSound.configurationChanged(this.instance, object, live);
+        if (!live()) return;
+      } else {
+        if (object.nativeType !== type)
+          throw new Error(
+            `Unrecovered FES configuration callback raw${type} on raw${object.nativeType}`,
+          );
+        this.strings.configurationChanged(object);
+      }
+    }
   }
   async requestDestroy(id) {
     if (id != null && this.world.objects.objects.has(id))
@@ -829,7 +878,6 @@ export class FESCoordinator {
         .map(([handle, target]) => [handle, target.snapshot()]),
       pendingRecords: clone(this.pendingRecords),
       ownedTaskIDs: [...this.ownedTaskIDs],
-      configurationDirty: this.configurationDirty,
     };
   }
   async restore(state) {
@@ -856,7 +904,6 @@ export class FESCoordinator {
     this.pendingRecords = clone(state.pendingRecords);
     this.platform.restore(state.platform);
     this.ownedTaskIDs = new Set(state.ownedTaskIDs);
-    this.configurationDirty = state.configurationDirty;
     await this.resources.restore(state.resources);
     for (const object of this.instance.objects)
       if (soundTypes.has(object.nativeType)) {

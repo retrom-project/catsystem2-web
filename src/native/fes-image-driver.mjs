@@ -21,6 +21,7 @@ import { MOTION_ABI } from '../motion/abi.mjs';
 import { floatBits } from '../kcs.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { nativeDataString } from './data-text.mjs';
+import { refreshFESImageFilename } from './fes-image-filename.mjs';
 
 const f = Math.fround,
   filenameDecoder = new TextDecoder('shift_jis'),
@@ -126,7 +127,11 @@ export function initializeFESImage(object) {
 }
 
 export function setFESImageFile(object, name, source) {
-  if (object.nativeType === 16 || object.nativeType === 17) {
+  if (
+    Object.hasOwn(object, 'fileSourceBytes') ||
+    object.nativeType === 16 ||
+    object.nativeType === 17
+  ) {
     if (!(source instanceof Uint8Array))
       throw new TypeError('BGTABLE current FILE requires its original expanded bytes');
     const bytes = nativeDataString(source);
@@ -284,6 +289,14 @@ export class FESImages {
   find(instance, reference) {
     if (!reference) return null;
     return this.lookup(instance, reference);
+  }
+  configurationChanged(object) {
+    refreshFESImageFilename(this.world, object);
+  }
+  filename(instance, object) {
+    return Object.hasOwn(object, 'fileSourceBytes')
+      ? object.file
+      : this.expand(instance, object.file);
   }
   expand(instance, name) {
     return instance.player.expand ? instance.player.expand(name) : name;
@@ -515,7 +528,7 @@ export class FESImages {
       return true;
     }
     if (object.nativeType === 22) {
-      const file = this.expand(instance, object.file);
+      const file = this.filename(instance, object);
       this.clearRequests(object);
       const pointer = await this.cache(instance).data(file);
       if (!pointer) return false;
@@ -559,7 +572,7 @@ export class FESImages {
       await this.replace(object, h);
       return true;
     }
-    const name = this.expand(instance, object.file);
+    const name = this.filename(instance, object);
     this.clearRequests(object);
     if (object.idIndex >>> 0 === 0xffffffff) {
       const pointer = await this.cache(instance).data(name);
@@ -911,7 +924,11 @@ export class FESImages {
   selectTable(object, selectors) {
     const result = this.table(object)?.select(selectors) ?? null;
     if (result === null) return false;
-    if (object.nativeType === 16 || object.nativeType === 17)
+    if (
+      Object.hasOwn(object, 'fileSourceBytes') ||
+      object.nativeType === 16 ||
+      object.nativeType === 17
+    )
       setFESImageFile(object, undefined, result);
     else object.file = filenameDecoder.decode(result);
     object.imageChanged = true;

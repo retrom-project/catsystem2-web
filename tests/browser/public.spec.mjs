@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
-import { kcsProgram } from '../helpers.mjs';
+import { hg3, kcsProgram } from '../helpers.mjs';
 
 const sdkProfile = 'sdk-4.01-engine-2.6.1.74',
   gameProfile = 'nekopara-vol3-engine-2.6.1.76';
@@ -758,6 +758,288 @@ for (const profile of [sdkProfile, gameProfile])
       'FES image entry has no live wrapper',
       'FES image entry has no live wrapper',
     ]);
+    expect(result.exe).toBe(false);
+  });
+
+for (const profile of [sdkProfile, gameProfile])
+  test(`${profile} default FES message19 preserves ABI order and exact StageRenderer pixels through fresh restore`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const result = await page.evaluate(
+      async ({ profile, program, images }) => {
+        const { NativeWorld } = await import('/web/transitional-entry.mjs'),
+          { NativeConfiguration } = await import('/src/native/config.mjs'),
+          { MotionLibrary } = await import('/src/motion/library.mjs'),
+          { ParticleRandom } = await import('/src/ppi/random.mjs'),
+          isGame = profile === 'nekopara-vol3-engine-2.6.1.76',
+          source = new TextEncoder().encode(
+            '#DEFINE\nIMAGE z\nIMAGE a\nSTRING text\n#OBJECT FILE POS PRI DISP\nz ' +
+              (isGame ? 'tile_%LANG%' : 'tile_old') +
+              ' 6,4 60000 1\na ' +
+              (isGame ? 'tile_%LANG%' : 'tile_old') +
+              ' 3,4 60001 1\n#OBJECT SIZE VRAM\ntext 24,16 64,32\n#START\nnext IDLE\n#IDLE\n#MES_CHANGECONFIG\nz load tile_notify\ntext layout fontind 11 NotificationFace\nbreak\n',
+          ),
+          glyphs = {
+            measure: (_font, text) => ({
+              width: text.length * 4,
+              height: 8,
+              ascent: 6,
+              descent: 2,
+              averageWidth: 4,
+              maximumWidth: 8,
+            }),
+            glyph: () => ({
+              width: 4,
+              height: 6,
+              originX: 0,
+              originY: 6,
+              advanceX: 4,
+              advanceY: 0,
+              alpha: new Uint8Array(24).fill(255),
+            }),
+          },
+          create = (withSource) => {
+            const files = new Map([
+                ['main.kcs', Uint8Array.from(program)],
+                ...(withSource
+                  ? [
+                      ['screen.fes', source],
+                      ...images.map(([name, bytes]) => [name, Uint8Array.from(bytes)]),
+                    ]
+                  : []),
+              ]),
+              reads = [],
+              game = {
+                width: 128,
+                height: 96,
+                read: async (name) => {
+                  reads.push(name);
+                  if (!withSource && name !== 'main.kcs')
+                    throw new Error('message19 restore replayed ' + name);
+                  return files.get(name) ?? null;
+                },
+                has: (name) => files.has(name),
+                lookup: () => null,
+                resolveCategory(name, category) {
+                  const file = name.includes('.')
+                    ? name
+                    : `${name}.${category === 'image' ? 'hg3' : category}`;
+                  return files.has(file) ? file : null;
+                },
+                readCategory(name, category) {
+                  const file = this.resolveCategory(name, category);
+                  return file === null ? null : this.read(file);
+                },
+                async require(name) {
+                  const bytes = await this.read(name);
+                  if (bytes === null) throw new Error('Unexpected message19 read ' + name);
+                  return bytes;
+                },
+                requireCategory(name, category) {
+                  return this.require(
+                    name.includes('.')
+                      ? name
+                      : `${name}.${category === 'image' ? 'hg3' : category}`,
+                  );
+                },
+              },
+              random = new ParticleRandom(),
+              configuration = new NativeConfiguration({ profile });
+            Object.assign(configuration.screen, {
+              width: 128,
+              height: 96,
+              virtualWidth: 128,
+              virtualHeight: 96,
+              currentWidth: 128,
+              currentHeight: 96,
+            });
+            const world = new NativeWorld({
+                profile,
+                game,
+                random,
+                configuration,
+                images: {},
+                motionLibrary: new MotionLibrary(game, { profile, random }),
+                storage: { read: async () => null, write: async () => true },
+                host: { nativeTextGlyphs: () => glyphs },
+              }),
+              canvas = new OffscreenCanvas(128, 96),
+              renderer = {
+                canvas,
+                ctx: canvas.getContext('2d'),
+                begin() {
+                  this.ctx.reset();
+                },
+              };
+            configuration.fields.texture.size.set([128, 128]);
+            configuration.fields.texture.grid.set([1, 1]);
+            configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
+            configuration.fields.texture.bppY.set([0, 1]);
+            world.ensureNativeEngine = () => {
+              throw new Error('Default message19 requested the EXE');
+            };
+            world.stageRenderer.attach(renderer);
+            return { world, reads };
+          },
+          original = create(true),
+          fresh = create(false),
+          render = async (world) => {
+            await world.stageRenderer.render(world.graphics.stage, {});
+            // The Stage FBO preserves native top-down row coordinates.
+            return world.stageRenderer.gpu.pixels();
+          },
+          expected = (a, z) => {
+            const pixels = new Uint8Array(128 * 96 * 4);
+            for (let at = 3; at < pixels.length; at += 4) pixels[at] = 255;
+            pixels.set([a, 34, 51, 255], (4 * 128 + 3) * 4);
+            pixels.set([z, 34, 51, 255], (4 * 128 + 6) * 4);
+            return pixels;
+          },
+          same = (a, b) => a.length === b.length && a.every((value, at) => value === b[at]),
+          trace = (world, task) => {
+            const calls = [],
+              image = world.imagesFES.configurationChanged.bind(world.imagesFES),
+              text = world.text.fes.configurationChanged.bind(world.text.fes),
+              notify = task.player.notify.bind(task.player);
+            world.imagesFES.configurationChanged = (object) => {
+              calls.push(['image', object.key]);
+              return image(object);
+            };
+            world.text.fes.configurationChanged = (object) => {
+              calls.push(['text', object.key]);
+              return text(object);
+            };
+            task.player.notify = (label, ...args) => {
+              calls.push(['notify', label]);
+              return notify(label, ...args);
+            };
+            return calls;
+          },
+          face = (writer) =>
+            new TextDecoder(isGame ? 'utf-16le' : 'shift_jis')
+              .decode(writer.config.subarray(128, isGame ? 192 : 160))
+              .split('\0')[0];
+        try {
+          const world = original.world;
+          if (isGame)
+            Object.assign(world.configuration.language, {
+              entries: [{ prefix: 'old', name: 'old', code: 1041 }],
+              default: 0,
+              ui: 0,
+              main: 0,
+            });
+          await world.initialize('main.kcs');
+          const parent = world.objects.objects.get(world.main.id),
+            id = await world.objects.create({ kind: 34, parent: parent.id }),
+            surface = await world.objects.create({ kind: 15, parent: parent.id }),
+            task = world.objects.objects.get(id).implementation;
+          await world.sendEngine(surface, parent.id, 279, 128, 96);
+          await world.sendEngine(surface, parent.id, 283);
+          await world.sendEngine(
+            world.graphics.drawTasks.get(surface).state.basePlane,
+            parent.id,
+            47,
+            0,
+            1,
+            { flags: 1 },
+          );
+          world.runtime.variableBank(parent).initialize(64);
+          world.runtime.stringBank(parent);
+          await task.initialize(parent.context.variableBank);
+          await world.sendEngine(id, parent.id, 334, 0, surface);
+          await task.loadSource('screen');
+          await task.tick();
+          const before = await render(world),
+            calls = trace(world, task);
+          world.configuration.fields.font.name = 'CurrentFace';
+          if (isGame) world.configuration.language.entries[0].prefix = 'new';
+          await world.sendEngine(id, parent.id, 19);
+          await task.syncObjects();
+          const pixels = await render(world),
+            root = task.player.root,
+            text = root.collection.lookup('text', 0),
+            writer = await world.graphics.get(text.nativeTaskID).writer(),
+            filenames = ['a', 'z'].map((name) => root.collection.lookup(name, 0).file),
+            sources = ['a', 'z'].map((name) => root.collection.lookup(name, 0).fileSourceBytes);
+          await fresh.world.restore(world.snapshot());
+          const restoredTask = fresh.world.objects.objects.get(id).implementation;
+          await restoredTask.syncObjects();
+          const restored = await render(fresh.world),
+            freshCalls = trace(fresh.world, restoredTask);
+          await fresh.world.sendEngine(id, fresh.world.main.id, 19);
+          await restoredTask.syncObjects();
+          const repeated = await render(fresh.world),
+            freshText = restoredTask.player.root.collection.lookup('text', 0),
+            freshWriter = await fresh.world.graphics.get(freshText.nativeTaskID).writer();
+          return {
+            calls,
+            freshCalls,
+            filenames,
+            sources: sources.map((bytes) => (bytes ? [...bytes] : null)),
+            exactInitial: same(before, expected(17, 17)),
+            exactEvent: same(pixels, expected(isGame ? 68 : 17, isGame ? 119 : 17)),
+            exactRestore: same(pixels, restored),
+            exactRepeat: same(pixels, repeated),
+            nativeD5Config: same(writer.config, world.text.fes.layout(text).config()),
+            restoredD5Config: same(
+              freshWriter.config,
+              fresh.world.text.fes.layout(freshText).config(),
+            ),
+            faces: [face(writer), face(freshWriter)],
+            vram: [
+              world.graphics.get(text.nativeTaskID).text.vram,
+              fresh.world.graphics.get(freshText.nativeTaskID).text.vram,
+            ],
+            restoreReads: fresh.reads,
+            exe: Boolean(world.nativeEngine || fresh.world.nativeEngine),
+          };
+        } finally {
+          await fresh.world.close({ flushFiles: false });
+          await original.world.close({ flushFiles: false });
+        }
+      },
+      {
+        profile,
+        program: [...kcsProgram([[37, 240], [43, 0x47, 4], [59]])],
+        images: [17, 68, 119].map((n, at) => [
+          `tile_${['old', 'new', 'notify'][at]}.hg3`,
+          [...hg3(1, 1, Uint8Array.of(n, 34, 51, 255))],
+        ]),
+      },
+    );
+    const game = profile === gameProfile,
+      expectedCalls = game
+        ? [
+            ['image', 'a'],
+            ['image', 'z'],
+            ['notify', 'MES_CHANGECONFIG'],
+            ['text', 'text'],
+          ]
+        : [['text', 'text']];
+    expect(result.calls).toEqual(expectedCalls);
+    expect(result.freshCalls).toEqual(expectedCalls);
+    expect(result.filenames).toEqual(game ? ['tile_new', 'tile_notify'] : ['tile_old', 'tile_old']);
+    expect(result.sources).toEqual(
+      game
+        ? ['tile_%LANG%', 'tile_notify'].map((name) => [...new TextEncoder().encode(name)])
+        : [null, null],
+    );
+    expect(result.exactInitial, JSON.stringify(result)).toBe(true);
+    expect(result.exactEvent, JSON.stringify(result)).toBe(true);
+    expect(result.exactRestore, JSON.stringify(result)).toBe(true);
+    expect(result.exactRepeat, JSON.stringify(result)).toBe(true);
+    expect(result.nativeD5Config).toBe(true);
+    expect(result.restoredD5Config).toBe(true);
+    expect(result.faces).toEqual([
+      game ? 'NotificationFace' : 'CurrentFace',
+      game ? 'NotificationFace' : 'CurrentFace',
+    ]);
+    expect(result.vram).toEqual([
+      [64, 32],
+      [64, 32],
+    ]);
+    expect(result.restoreReads).toEqual(['main.kcs']);
     expect(result.exe).toBe(false);
   });
 

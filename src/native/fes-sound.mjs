@@ -314,13 +314,21 @@ export class NativeFESSound {
     if (tree.get('mute', { by: 'filename', query: state.filename })) volume = 0;
     return percent(state.get('volume'), volume);
   }
-  async configurationChanged(instance, object) {
+  async configurationChanged(instance, object, live) {
+    if (!live()) return;
     const state = this.state(instance, object);
     // FES MSG19: 7487A0 marks the object dirty; it does not reset its MOT.
     state.set('dirty', 1);
     if (state.get('systemVoice')) return;
     const eligible = state.get('forcePlay') | this.playFlag(state);
-    const busy = await this.send(instance, 185, state.get('bank'), 0);
+    let busy;
+    try {
+      busy = await this.send(instance, 185, state.get('bank'), 0);
+    } catch (error) {
+      if (live()) throw error;
+      return;
+    }
+    if (!live()) return;
     if (!busy || !eligible) state.set('pendingPlay', 1); // 74C740
   }
   async destructionRequested(instance, object) {

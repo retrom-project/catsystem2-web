@@ -2,6 +2,7 @@
 // Whole-selection resource commands retain their original token-read positions.
 import { setFESImageID } from './fes-image-model.mjs';
 import { setFESControlFile } from './fes-control-model.mjs';
+import { fesNarrowText } from '../fes/tokens.mjs';
 
 export const FES_RESOURCE_COMMANDS = new Set([
   'load',
@@ -60,10 +61,16 @@ export class FESResourceCommands {
         continue;
       }
       // Even ignored classes read FILE and ID, once for each live element.
-      const file = text(0);
+      const source =
+          this.imageFileBytes && imageTypes.has(type) && context.bytes
+            ? args[0] === undefined
+              ? new Uint8Array()
+              : context.bytes(0)
+            : undefined,
+        file = source === undefined ? text(0) : fesNarrowText(source);
       if (args[1] !== undefined) imageID = value(1);
       if (imageTypes.has(type)) {
-        this.setImageFile(object, file);
+        this.setImageFile(object, file, source);
         setFESImageID(object, imageID);
       } else if (type >= 13 && type <= 15) setFESControlFile(object, file);
       else if (type === 9) {
