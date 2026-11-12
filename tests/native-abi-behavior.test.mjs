@@ -122,7 +122,8 @@ test('reviewed ABI services expose independent capabilities and serializable lay
 
 const sdkGoldens = {
   'control/canonical': 'e3230052a1bee7ac07b825ae89fcab481b31a07e31a07afd603c186caa08211e',
-  'control/raw': 'e6056586a5a8531955e8171fa7e060eaecc6f688a4c2625eaf358d008b7bc6b0',
+  // Stage7 corrects only the independently verified kind34 inverse (331→326).
+  'control/raw': 'b21fd23310916477247949f10f8ec54a280232a3681e2bb3c01a81b820120c29',
   'screen/canonical': '9abb84a23c969ed05acf4b228aa5d45e8d382a6548e1c276bd1e70165cd76b07',
   'screen/raw': '7a87eba2e58a8dcf328bd71216772670c52abd1a77bffba6297286729851076c',
   'area/canonical': '7e52f3e717f6eb5c7f7bd06712112cdd43f881826e76c048084ffaeaecff77d8',

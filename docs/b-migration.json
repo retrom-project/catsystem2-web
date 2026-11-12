@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 173, "oracle": 147, "differential": 67 },
+    "counts": { "js": 175, "oracle": 147, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -42,6 +42,7 @@
         "tests/emote.test.mjs",
         "tests/exe-baseline-relocation.test.mjs",
         "tests/fes-bitmap.test.mjs",
+        "tests/fes-boundary.test.mjs",
         "tests/fes-common-commands.test.mjs",
         "tests/fes-common-model.test.mjs",
         "tests/fes-contracts.test.mjs",
@@ -63,6 +64,7 @@
         "tests/fes-plane-driver.test.mjs",
         "tests/fes-resource-entries.test.mjs",
         "tests/fes-resource-entry-driver.test.mjs",
+        "tests/fes-route-audit.test.mjs",
         "tests/fes-scheduling.test.mjs",
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
@@ -2320,13 +2322,13 @@
     "remainingExeVASelectionSites": 104,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1806,
+      "pure-js": 1854,
       "original-handler": 34,
       "exe-region": 2,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 321,
+      "unknown": 273,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -2339,10 +2341,10 @@
       "9": 37,
       "unassigned": 117
     },
-    "nativeNeedsReview": 349,
+    "nativeNeedsReview": 301,
     "runtimeFiles": 443,
     "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 49, "8": 170, "9": 55 },
-    "fileNeedsReview": 80,
+    "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
     "nonNativeGroups": 22,
@@ -11396,8 +11398,37 @@
           "id": 447,
           "hexID": "0x1bf",
           "semanticName": null,
+          "fesRoute": {
+            "id": 447,
+            "label": "fes.start",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [331, 332],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11405,10 +11436,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11416,8 +11447,37 @@
           "id": 448,
           "hexID": "0x1c0",
           "semanticName": null,
+          "fesRoute": {
+            "id": 448,
+            "label": "fes.update",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [333],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11425,10 +11485,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11436,8 +11496,37 @@
           "id": 449,
           "hexID": "0x1c1",
           "semanticName": null,
+          "fesRoute": {
+            "id": 449,
+            "label": "fes.bindSurface",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [334],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11445,10 +11534,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11456,8 +11545,37 @@
           "id": 450,
           "hexID": "0x1c2",
           "semanticName": null,
+          "fesRoute": {
+            "id": 450,
+            "label": "fes.jump",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [335],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11465,10 +11583,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11476,8 +11594,37 @@
           "id": 451,
           "hexID": "0x1c3",
           "semanticName": null,
+          "fesRoute": {
+            "id": 451,
+            "label": "fes.setSaveObject",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [336],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11485,10 +11632,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11496,8 +11643,37 @@
           "id": 452,
           "hexID": "0x1c4",
           "semanticName": null,
+          "fesRoute": {
+            "id": 452,
+            "label": "fes.exitCode",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [23],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11505,10 +11681,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11516,8 +11692,30 @@
           "id": 453,
           "hexID": "0x1c5",
           "semanticName": null,
+          "fesRoute": {
+            "id": 453,
+            "label": "fes.setCurrentExitCode",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [],
+            "control": 2,
+            "receiver": "current JS task record or caller VM bytes",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": []
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11525,10 +11723,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -11536,8 +11734,30 @@
           "id": 454,
           "hexID": "0x1c6",
           "semanticName": null,
+          "fesRoute": {
+            "id": 454,
+            "label": "fes.contextName",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [],
+            "control": 2,
+            "receiver": "current JS task record or caller VM bytes",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": []
+          },
+          "metadataNotes": [
+            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
+          ],
           "catalogStatus": "unknown",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -11545,10 +11765,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -14899,8 +15119,34 @@
           "id": 630,
           "hexID": "0x276",
           "semanticName": "fes.notifyObject",
+          "fesRoute": {
+            "id": 630,
+            "label": "fes.notifyObject",
+            "module": "src/native/fes.mjs",
+            "words": 4,
+            "messages": [337],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -14908,9 +15154,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -14918,8 +15165,34 @@
           "id": 631,
           "hexID": "0x277",
           "semanticName": "fes.createObject",
+          "fesRoute": {
+            "id": 631,
+            "label": "fes.createObject",
+            "module": "src/native/fes.mjs",
+            "words": 4,
+            "messages": [338],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -14927,9 +15200,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -14937,8 +15211,34 @@
           "id": 632,
           "hexID": "0x278",
           "semanticName": "fes.initializeObjects",
+          "fesRoute": {
+            "id": 632,
+            "label": "fes.initializeObjects",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [339],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -14946,9 +15246,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15160,8 +15461,34 @@
           "id": 645,
           "hexID": "0x285",
           "semanticName": "fes.setLocal",
+          "fesRoute": {
+            "id": 645,
+            "label": "fes.setLocal",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [340],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15169,9 +15496,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15179,8 +15507,34 @@
           "id": 646,
           "hexID": "0x286",
           "semanticName": "fes.getLocal",
+          "fesRoute": {
+            "id": 646,
+            "label": "fes.getLocal",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [341],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15188,9 +15542,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15198,8 +15553,34 @@
           "id": 647,
           "hexID": "0x287",
           "semanticName": "fes.sleep",
+          "fesRoute": {
+            "id": 647,
+            "label": "fes.sleep",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [342],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15207,9 +15588,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15237,8 +15619,34 @@
           "id": 649,
           "hexID": "0x289",
           "semanticName": "fes.saveLocalBank",
+          "fesRoute": {
+            "id": 649,
+            "label": "fes.saveLocalBank",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [343, 343],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15246,9 +15654,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15256,8 +15665,34 @@
           "id": 650,
           "hexID": "0x28a",
           "semanticName": "fes.loadLocalBank",
+          "fesRoute": {
+            "id": 650,
+            "label": "fes.loadLocalBank",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [344],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15265,9 +15700,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15537,8 +15973,34 @@
           "id": 664,
           "hexID": "0x298",
           "semanticName": "fes.setNamedLocal",
+          "fesRoute": {
+            "id": 664,
+            "label": "fes.setNamedLocal",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [345],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15546,9 +16008,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15556,8 +16019,34 @@
           "id": 665,
           "hexID": "0x299",
           "semanticName": "fes.copyPrivateFromCaller",
+          "fesRoute": {
+            "id": 665,
+            "label": "fes.copyPrivateFromCaller",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [346],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15565,9 +16054,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15575,8 +16065,34 @@
           "id": 666,
           "hexID": "0x29a",
           "semanticName": "fes.copyPrivateToCaller",
+          "fesRoute": {
+            "id": 666,
+            "label": "fes.copyPrivateToCaller",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [347],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15584,9 +16100,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15594,8 +16111,34 @@
           "id": 667,
           "hexID": "0x29b",
           "semanticName": "fes.result",
+          "fesRoute": {
+            "id": 667,
+            "label": "fes.result",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [348],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15603,9 +16146,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -15613,8 +16157,34 @@
           "id": 668,
           "hexID": "0x29c",
           "semanticName": "fes.clearResult",
+          "fesRoute": {
+            "id": 668,
+            "label": "fes.clearResult",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [349],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -15622,9 +16192,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -16849,8 +17420,34 @@
           "id": 738,
           "hexID": "0x2e2",
           "semanticName": "fes.setObjectImageData",
+          "fesRoute": {
+            "id": 738,
+            "label": "fes.setObjectImageData",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [350],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -16858,9 +17455,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -19415,8 +20013,34 @@
           "id": 882,
           "hexID": "0x372",
           "semanticName": "fes.setNamed",
+          "fesRoute": {
+            "id": 882,
+            "label": "fes.setNamed",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [352],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -19424,9 +20048,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -19434,8 +20059,34 @@
           "id": 883,
           "hexID": "0x373",
           "semanticName": "fes.getNamed",
+          "fesRoute": {
+            "id": 883,
+            "label": "fes.getNamed",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [351],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -19443,9 +20094,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33373,8 +34025,34 @@
           "id": 447,
           "hexID": "0x1bf",
           "semanticName": "fes.start",
+          "fesRoute": {
+            "id": 447,
+            "label": "fes.start",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [331, 332],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33382,9 +34060,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33392,8 +34071,34 @@
           "id": 448,
           "hexID": "0x1c0",
           "semanticName": "fes.update",
+          "fesRoute": {
+            "id": 448,
+            "label": "fes.update",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [333],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33401,9 +34106,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33411,8 +34117,34 @@
           "id": 449,
           "hexID": "0x1c1",
           "semanticName": "fes.bindSurface",
+          "fesRoute": {
+            "id": 449,
+            "label": "fes.bindSurface",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [334],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33420,9 +34152,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33430,8 +34163,34 @@
           "id": 450,
           "hexID": "0x1c2",
           "semanticName": "fes.jump",
+          "fesRoute": {
+            "id": 450,
+            "label": "fes.jump",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [335],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33439,9 +34198,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33449,8 +34209,34 @@
           "id": 451,
           "hexID": "0x1c3",
           "semanticName": "fes.setSaveObject",
+          "fesRoute": {
+            "id": 451,
+            "label": "fes.setSaveObject",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [336],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33458,9 +34244,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33468,8 +34255,34 @@
           "id": 452,
           "hexID": "0x1c4",
           "semanticName": "fes.exitCode",
+          "fesRoute": {
+            "id": 452,
+            "label": "fes.exitCode",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [23],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33477,9 +34290,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33487,8 +34301,27 @@
           "id": 453,
           "hexID": "0x1c5",
           "semanticName": "fes.setCurrentExitCode",
+          "fesRoute": {
+            "id": 453,
+            "label": "fes.setCurrentExitCode",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [],
+            "control": 2,
+            "receiver": "current JS task record or caller VM bytes",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": []
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33496,9 +34329,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -33506,8 +34340,27 @@
           "id": 454,
           "hexID": "0x1c6",
           "semanticName": "fes.contextName",
+          "fesRoute": {
+            "id": 454,
+            "label": "fes.contextName",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [],
+            "control": 2,
+            "receiver": "current JS task record or caller VM bytes",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": []
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -33515,9 +34368,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -36868,8 +37722,34 @@
           "id": 630,
           "hexID": "0x276",
           "semanticName": "fes.notifyObject",
+          "fesRoute": {
+            "id": 630,
+            "label": "fes.notifyObject",
+            "module": "src/native/fes.mjs",
+            "words": 4,
+            "messages": [337],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -36877,9 +37757,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -36887,8 +37768,34 @@
           "id": 631,
           "hexID": "0x277",
           "semanticName": "fes.createObject",
+          "fesRoute": {
+            "id": 631,
+            "label": "fes.createObject",
+            "module": "src/native/fes.mjs",
+            "words": 4,
+            "messages": [338],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -36896,9 +37803,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -36906,8 +37814,34 @@
           "id": 632,
           "hexID": "0x278",
           "semanticName": "fes.initializeObjects",
+          "fesRoute": {
+            "id": 632,
+            "label": "fes.initializeObjects",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [339],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -36915,9 +37849,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37129,8 +38064,34 @@
           "id": 645,
           "hexID": "0x285",
           "semanticName": "fes.setLocal",
+          "fesRoute": {
+            "id": 645,
+            "label": "fes.setLocal",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [340],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37138,9 +38099,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37148,8 +38110,34 @@
           "id": 646,
           "hexID": "0x286",
           "semanticName": "fes.getLocal",
+          "fesRoute": {
+            "id": 646,
+            "label": "fes.getLocal",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [341],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37157,9 +38145,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37167,8 +38156,34 @@
           "id": 647,
           "hexID": "0x287",
           "semanticName": "fes.sleep",
+          "fesRoute": {
+            "id": 647,
+            "label": "fes.sleep",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [342],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37176,9 +38191,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37206,8 +38222,34 @@
           "id": 649,
           "hexID": "0x289",
           "semanticName": "fes.saveLocalBank",
+          "fesRoute": {
+            "id": 649,
+            "label": "fes.saveLocalBank",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [343, 343],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37215,9 +38257,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37225,8 +38268,34 @@
           "id": 650,
           "hexID": "0x28a",
           "semanticName": "fes.loadLocalBank",
+          "fesRoute": {
+            "id": 650,
+            "label": "fes.loadLocalBank",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [344],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37234,9 +38303,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37506,8 +38576,34 @@
           "id": 664,
           "hexID": "0x298",
           "semanticName": "fes.setNamedLocal",
+          "fesRoute": {
+            "id": 664,
+            "label": "fes.setNamedLocal",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [345],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37515,9 +38611,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37525,8 +38622,34 @@
           "id": 665,
           "hexID": "0x299",
           "semanticName": "fes.copyPrivateFromCaller",
+          "fesRoute": {
+            "id": 665,
+            "label": "fes.copyPrivateFromCaller",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [346],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37534,9 +38657,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37544,8 +38668,34 @@
           "id": 666,
           "hexID": "0x29a",
           "semanticName": "fes.copyPrivateToCaller",
+          "fesRoute": {
+            "id": 666,
+            "label": "fes.copyPrivateToCaller",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [347],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37553,9 +38703,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37563,8 +38714,34 @@
           "id": 667,
           "hexID": "0x29b",
           "semanticName": "fes.result",
+          "fesRoute": {
+            "id": 667,
+            "label": "fes.result",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [348],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37572,9 +38749,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -37582,8 +38760,34 @@
           "id": 668,
           "hexID": "0x29c",
           "semanticName": "fes.clearResult",
+          "fesRoute": {
+            "id": 668,
+            "label": "fes.clearResult",
+            "module": "src/native/fes.mjs",
+            "words": 1,
+            "messages": [349],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -37591,9 +38795,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -38818,8 +40023,34 @@
           "id": 738,
           "hexID": "0x2e2",
           "semanticName": "fes.setObjectImageData",
+          "fesRoute": {
+            "id": 738,
+            "label": "fes.setObjectImageData",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [350],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -38827,9 +40058,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -41384,8 +42616,34 @@
           "id": 882,
           "hexID": "0x372",
           "semanticName": "fes.setNamed",
+          "fesRoute": {
+            "id": 882,
+            "label": "fes.setNamed",
+            "module": "src/native/fes.mjs",
+            "words": 3,
+            "messages": [352],
+            "control": 2,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -41393,9 +42651,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -41403,8 +42662,34 @@
           "id": 883,
           "hexID": "0x373",
           "semanticName": "fes.getNamed",
+          "fesRoute": {
+            "id": 883,
+            "label": "fes.getNamed",
+            "module": "src/native/fes.mjs",
+            "words": 2,
+            "messages": [351],
+            "control": 1,
+            "receiver": "default kind34 → createNativeFESTask → FESPlayer/FESCoordinator and World JS services",
+            "evidence": [
+              "src/native/fes.mjs:nativeFES/persistFESBank",
+              "src/native/fes-task.mjs:createNativeFESTask",
+              "src/native/abi/messages.mjs:mapABIMessage",
+              "tests/fes-route-audit.test.mjs",
+              "tests/native-fes-task.test.mjs",
+              "tests/default-fes-world.test.mjs",
+              "docs/b-phase7-route-audit.md"
+            ],
+            "consumerRoutes": [
+              {
+                "domain": 8,
+                "condition": "An explicitly addressed foreign task is SDK JavaScript kind55; its separately registered receiver remains a D8 consumer",
+                "module": "src/native/sdk-javascript-task.mjs",
+                "removePhase": 8
+              }
+            ]
+          },
           "catalogStatus": "recovered",
-          "implementation": "unknown",
+          "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
           "route": "NativeWorld/registered-handler",
@@ -41412,9 +42697,10 @@
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
+          "review": "traced",
+          "reviewReasons": [],
+          "reviewEvidence": [
+            "Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported."
           ]
         },
         {
@@ -48035,7 +49321,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "61ce47ff5871def9612a9c7ff03879979dfe84ab5dd70aa6b034f4cf0eb58f9c",
+      "sourceSha256": "5e3b2a13cb24cba911555b87e63bedadcbc50efb604d20bae4116536b9a81502",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50081,11 +51367,11 @@
           "line": 86,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-control-model.mjs",
@@ -50115,39 +51401,39 @@
           "line": 302,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
           "line": 599,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
           "line": 608,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
           "line": 616,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
           "line": 638,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-data.mjs",
@@ -50203,11 +51489,11 @@
           "line": 59,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-effect-model.mjs",
@@ -50289,18 +51575,18 @@
           "line": 717,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
           "line": 945,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-image-model.mjs",
@@ -50512,11 +51798,11 @@
           "line": 121,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-plane-driver.mjs",
@@ -50585,11 +51871,11 @@
           "line": 256,
           "method": "sendNativeEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "The bound Top sound receiver is the World-owned JS NativeSoundTask. Audible host output remains D8; no FES object or sound state is projected."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-source.mjs",
@@ -50645,32 +51931,32 @@
           "line": 76,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
           "line": 93,
           "method": "sendNativeEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
           "line": 106,
           "method": "sendEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
           "line": 403,
           "method": "getNativeFeature",
           "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "Only an explicit context.nativePointer sender maps its D8 task pointer to the same JS private bank. Ordinary nativeFES copies carry nativeVariableContextKey directly; source checking enforces the guard."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/fes-text-layout.mjs",
@@ -50713,18 +51999,18 @@
           "line": 64,
           "method": "sendNativeEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "Each installed FES wrapper has its own message/VM-output review in FES_ROUTE_AUDIT; default kind34 is JS, explicit foreign kind55 remains D8."
         },
         {
           "line": 122,
           "method": "sendNativeEngine",
           "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+          "review": "traced",
+          "reason": "Each installed FES wrapper has its own message/VM-output review in FES_ROUTE_AUDIT; default kind34 is JS, explicit foreign kind55 remains D8."
         }
       ],
-      "review": "needs-review"
+      "review": "counted"
     },
     {
       "file": "src/native/file-path.mjs",

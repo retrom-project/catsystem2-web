@@ -6,6 +6,7 @@ import { nativeTestGroups } from './test-native.mjs';
 import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
 import { NATIVE_IMAGE_OWNER_JS_IDS } from '../src/native/image-owner.mjs';
 import { reviewedRenderRoute, reviewRenderIndirect } from './render-route-audit.mjs';
+import { reviewedFESRoute, reviewFESIndirect } from './fes-route-audit.mjs';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -412,6 +413,10 @@ function classify(file, id, callback, features, modules) {
     if (modules.get(file).executionSites.length)
       throw new Error('Reviewed render wrapper gained an execution site: ' + file);
     implementation = 'pure-js';
+  } else if (reviewedFESRoute(file, id)) {
+    if (modules.get(file).executionSites.length)
+      throw new Error('Reviewed FES wrapper gained an execution site: ' + file);
+    implementation = 'pure-js';
   } else if (messageModules.has(name)) {
     implementation = 'unknown';
     reasons.push(
@@ -567,12 +572,17 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
           '正常角度已差分验证；|角度|>=2^63 时 FSINCOS 的空栈 pop 可读取原 oracle 已弹出的跨调用寄存器残值。JS 采用新进程规范 FP 状态的零残值；该超范围历史影响未复现。',
         );
       const renderRoute = table === 'main' && reviewedRenderRoute(implementationFile, entry.id);
+      const fesRoute = table === 'main' && reviewedFESRoute(implementationFile, entry.id);
       const semanticName = renderRoute?.semanticName ?? entry.name;
-      if (!semanticName)
+      if (!semanticName && !fesRoute)
         reasons.push('catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。');
       if (renderRoute)
         reviewEvidence.push(
           '6.7 independently traced the installed wrapper, JS receiver and foreign consumer branches; catalog labels are preserved separately when corrected.',
+        );
+      if (fesRoute)
+        reviewEvidence.push(
+          'Stage7 traces each installed FES wrapper, canonical packet and default JS receiver; the registered raw SDK/game message difference remains in ABI data. This route review does not fill unknown structured signature metadata or claim every interpreter command is supported.',
         );
       if (
         (table === 'generic' && [39, 40].includes(entry.id)) ||
@@ -605,6 +615,18 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         hexID: `0x${entry.id.toString(16)}`,
         semanticName,
         ...(renderRoute ? { catalogSemanticName: entry.name, renderRoute } : {}),
+        ...(fesRoute
+          ? {
+              fesRoute,
+              ...(!semanticName
+                ? {
+                    metadataNotes: [
+                      'This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged.',
+                    ],
+                  }
+                : {}),
+            }
+          : {}),
         catalogStatus: entry.status,
         implementation,
         module: implementationFile,
@@ -1268,12 +1290,13 @@ async function build() {
     executionSites: facts.executionSites,
     executionSiteCounts: tally(facts.executionSites, 'method'),
     indirectSites: facts.indirectSites.map((site) => {
-      const reason = reviewRenderIndirect(facts.file, site);
+      const reason = reviewRenderIndirect(facts.file, site) ?? reviewFESIndirect(facts.file, site);
       return reason ? { ...site, review: 'traced', reason } : site;
     }),
     review:
-      facts.indirectSites.some((site) => !reviewRenderIndirect(facts.file, site)) ||
-      facts.executionSites.some((site) => site.review === 'needs-review')
+      facts.indirectSites.some(
+        (site) => !reviewRenderIndirect(facts.file, site) && !reviewFESIndirect(facts.file, site),
+      ) || facts.executionSites.some((site) => site.review === 'needs-review')
         ? 'needs-review'
         : 'counted',
   }));

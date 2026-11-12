@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node scripts/check-no-exe-addresses.mjs && node scripts/check-native-entry.mjs && node scripts/check-calculation-boundary.mjs && node scripts/check-data-boundary.mjs && node scripts/check-media-boundary.mjs && node scripts/check-render-boundary.mjs && node scripts/check-plugin-boundary.mjs && node scripts/test-native.mjs --check-plan && eslint . && prettier --check .",
+    "check": "node scripts/check-no-exe-addresses.mjs && node scripts/check-native-entry.mjs && node scripts/check-calculation-boundary.mjs && node scripts/check-data-boundary.mjs && node scripts/check-media-boundary.mjs && node scripts/check-render-boundary.mjs && node scripts/check-plugin-boundary.mjs && node scripts/check-fes-boundary.mjs && node scripts/test-native.mjs --check-plan && eslint . && prettier --check .",
     "format": "prettier --write .",
     "test:browser": "playwright test",
     "test:game": "playwright test --config playwright.game.config.mjs",
