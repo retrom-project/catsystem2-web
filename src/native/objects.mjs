@@ -292,6 +292,15 @@ export class NativeObjects {
           await record.implementation.drawTick?.(record.effectiveFrame, context);
         return;
       }
+      if (record.implementation.beforeDrawChildren) {
+        await record.implementation.beforeDrawChildren(record.effectiveFrame, context);
+        if (
+          this.objects.get(record.id) !== record ||
+          record.state !== 'active' ||
+          record.destroyRequested
+        )
+          return;
+      }
       await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
       if (this.objects.has(record.id))
         await record.implementation.drawTick?.(record.effectiveFrame, context);

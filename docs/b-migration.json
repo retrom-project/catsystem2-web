@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 224, "oracle": 148, "differential": 67 },
+    "counts": { "js": 225, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -134,6 +134,7 @@
         "tests/native-arguments.test.mjs",
         "tests/native-audio-pcm.test.mjs",
         "tests/native-bank.test.mjs",
+        "tests/native-before-draw-children.test.mjs",
         "tests/native-bitmap-upload.test.mjs",
         "tests/native-calculations.test.mjs",
         "tests/native-calendar.test.mjs",
@@ -53765,7 +53766,7 @@
     },
     {
       "file": "src/native/objects.mjs",
-      "sourceSha256": "e6830b6f78cd9da54f1eccca0bcad051a614968b8ee1b01b13e5e38b6702494e",
+      "sourceSha256": "9f052a8cd4147d1961cc3053c3f53b3136c7a189abb94a8a27ade999c54e9d2a",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
