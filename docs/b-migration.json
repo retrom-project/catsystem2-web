@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 170, "oracle": 146, "differential": 67 },
+    "counts": { "js": 172, "oracle": 146, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -30,6 +30,8 @@
         "tests/control-render.test.mjs",
         "tests/data-boundary.test.mjs",
         "tests/default-fes-world.test.mjs",
+        "tests/effekseer-reader.test.mjs",
+        "tests/effekseer-resources.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
         "tests/emote-driver-identity.test.mjs",
@@ -2417,8 +2419,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 450,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 61, "8": 165, "9": 55 },
+    "runtimeFiles": 452,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 63, "8": 165, "9": 55 },
     "fileNeedsReview": 88,
     "exeDependencyFiles": 67,
     "exeDependencies": { "addresses": 586, "calls": 91, "references": 6 },
@@ -48081,6 +48083,32 @@
     {
       "file": "src/cst-syntax.mjs",
       "sourceSha256": "1fdf5fd5a25890d2115cf3ec3b665dc5edc774140a51261069cb6dc8722da3d7",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/effect-reader.mjs",
+      "sourceSha256": "d6a1ca03423c1bd761e8d6c6cacb268042f06a9421450509b04d95d1d7886bab",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/resources.mjs",
+      "sourceSha256": "24aa152daa30c9e5623ddb634ef4d882884a2de60d9b22ffae1d8f1f06422fe5",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

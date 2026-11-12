@@ -99,3 +99,12 @@ conversion contract. The inverse DCT and quantizer scaling adapt IJG
 is based in part on the work of the Independent JPEG Group. The license
 texts accompany this distribution in `licenses/Apache-2.0.txt` and
 `licenses/jpeg-ijg.txt`.
+
+The legacy SKFE reader adapts Effekseer 1.23, copyright 2011 Effekseer Project,
+commit `5239bb1e416cbf55b4d3c8170594cbdc7815f263`, under the MIT license.
+The complete grant is retained in `licenses/effekseer-MIT.txt`. Selected public
+Effects and their dependencies in `tests/fixtures/effekseer/public-1.23` are
+CC0 sample assets from that same commit; the original sample notice is retained
+in `licenses/effekseer-samples-CC0.txt` and each artifact has source and SHA-256
+in the adjacent manifest. Authored fixtures use this project’s MPL-2.0 license.
+These fixtures contain no private game data and are excluded from the player build.

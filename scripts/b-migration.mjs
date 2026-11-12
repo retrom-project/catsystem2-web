@@ -100,6 +100,7 @@ const ownedModules = {
   6: 'area-effect area-effect-geometry area-effect-pixels area-effect-commands cursor divided-model draw-commands draw-task retained-animation effect-commands graphics graphics-process graphics-render graphics-task mesh particle-bounds particle-commands particle-projection particle-textures particles plane-model-command plane-models raster-kernel renderer render-sources retained-draw screen-capture screen-effect screen-effect-render screen-effect-geometry screen-effect-pixels texture-layout texture-memory view',
 };
 function domain(file) {
+  if (file.startsWith('src/effekseer/')) return 7;
   if (file === 'oracle/fes-screen-effect-projection.mjs') return 7;
   if (file === 'oracle/graphics-consumer-projection.mjs') return 7;
   if (file === 'oracle/renderer-consumer-projection.mjs') return 8;
