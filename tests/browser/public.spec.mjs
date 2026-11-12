@@ -516,7 +516,7 @@ for (const profile of [sdkProfile, gameProfile])
           encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
           payload = encode('猫'),
           source = encode(
-            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
+            `#DEFINE\n${type} label\n#OBJECT SIZE POS PRI DISP\nlabel 48,16 4,4 60001 1\n#START\nlabel layout size 4\nlabel layout color 255 255 255\nlabel layout shadow 0 0\nlabel layout prof 2 猫 EXTRA\nlabel str 猫\nlabel draw\nlabel skip\nnext IDLE\n#IDLE\n`,
           ),
           glyphs = {
             measure: (_font, text) => ({
@@ -658,6 +658,7 @@ for (const profile of [sdkProfile, gameProfile])
                 value === restored.nativeTextState.end[index],
             ),
             profile: writer.parser.profiles[2].has(type === 'STRING8' ? 0x732b : 0x944c),
+            profileTail: writer.parser.profiles[2].has(65),
             restoredProfile: (await fresh.graphics.get(oldTaskID).writer()).parser.profiles[2].has(
               type === 'STRING8' ? 0x732b : 0x944c,
             ),
@@ -683,6 +684,7 @@ for (const profile of [sdkProfile, gameProfile])
     expect(result.cursorKnown).toBe(true);
     expect(result.sameEnd).toBe(true);
     expect(result.profile).toBe(true);
+    expect(result.profileTail).toBe(true);
     expect(result.restoredProfile).toBe(true);
     expect(result.exe).toBe(false);
   });

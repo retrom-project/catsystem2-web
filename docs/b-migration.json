@@ -51550,7 +51550,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "dc3313743768d7ea9a9af0adc1ad6069df5c2183abd41bc64e2e4f4d19270197",
+      "sourceSha256": "5b6d836aeb93711cf1ea81a733c3ea5c03114e0d48e80abf455148f3a6a0106e",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51560,35 +51560,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 344,
+          "line": 345,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 723,
+          "line": 727,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 732,
+          "line": 736,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 740,
+          "line": 744,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 762,
+          "line": 766,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -52067,7 +52067,7 @@
     },
     {
       "file": "src/native/fes-string-driver.mjs",
-      "sourceSha256": "f727955951d60beaa84a2f141433f8507219335373afa47f062c6b643a39a698",
+      "sourceSha256": "2c3620869f1e7f04f83cc3cf8030c03ebb991a5032f17789139f85d9480d9736",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

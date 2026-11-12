@@ -3033,7 +3033,7 @@
         "tests/browser/public.spec.mjs",
         "docs/native-fes-task.md"
       ],
-      "note": "prof/d_prof preserve one expanded byte parameter, once-only category evaluation, mixed groups/holes, the original STRING/LOG main-child gates and fresh default-World restoration. Other layout text arguments and remaining whole-handler/type coverage are still partial; no complete layout compatibility claim.",
+      "note": "prof/d_prof preserve the entire executing raw tail with no bank/SCRIPT expansion, once-only category evaluation, mixed groups/holes, original STRING/LOG main-child gates and fresh default-World restoration. Other layout text arguments and remaining whole-handler/type coverage are still partial.",
       "signatures": ["[obj] layout [mode] (p1) (p2) ..."]
     },
     {

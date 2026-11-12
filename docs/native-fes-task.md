@@ -99,19 +99,23 @@ default World mixed groups, pending D5 clears, canonical LOG child aliases and
 fresh restore are covered. `draw`, `layout` and remaining whole handlers retain
 their separate audit requirements.
 
-The `layout prof` and `layout d_prof` wrappers read the category expression and
-one expanded byte parameter once before visiting their selected group. They skip
-holes and preserve their separate class gates: `d_prof` admits STRING/STRING8;
-`prof` also visits LOG's original main-child subset. NVSTRING remains inapplicable.
-Extra tokens are not joined into the profile parameter. Pending profiles own only
-`{index, bytes}`; repeated commands append those bytes once and keep the last
-category. Checkpoints retain the current pending bytes without expansion replay.
-FES drivers and D5 message16 pass exact bytes to `profileEncoded`, including
-CP932, UTF8 and dual-valid inputs shared across different text classes. The
-existing explicit JavaScript `writer.profile(category, text)` is a Unicode API
-with its writer's encoding; FES does not use it. Direct JavaScript-authored FES
-source/layout strings follow the UTF8 source convention. Other layout text
-arguments and complete whole-handler coverage remain separate phase-7 work.
+The `layout prof` and `layout d_prof` wrappers read the category expression once
+and retain the entire raw tail of the actual executing command after four ASCII
+space delimiters. The complete frozen getters `766590`/`602210` return the rest
+of that line; they do not return one token or expand string-bank/SCRIPT syntax.
+Subsequent text, internal spaces and trailing bytes remain in the profile. Normal
+FES preprocessing still applies before execution; prepared FES bodies retain their
+already prepared bytes. Both wrappers skip holes and preserve their separate class
+gates: `d_prof` admits STRING/STRING8; `prof` also visits LOG's original main-child
+subset. NVSTRING remains inapplicable. Pending profiles own only `{index, bytes}`;
+repeated commands append those complete tails once and keep the last category.
+Checkpoints retain the current pending bytes without expansion replay. FES drivers
+and D5 message16 pass exact bytes to `profileEncoded`, including CP932, UTF8 and
+dual-valid input shared across different text classes. The existing explicit
+JavaScript `writer.profile(category, text)` is a Unicode API with its writer's
+encoding; FES does not use it. Direct JavaScript-authored FES source/layout strings
+follow the UTF8 source convention. Other layout text arguments and complete
+whole-handler coverage remain separate phase-7 work.
 
 Repeated declarations through message338 keep the resource-request FIFO's
 multiplicity and the current object's first flag. After the first driver pass,

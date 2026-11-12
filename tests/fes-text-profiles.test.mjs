@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { deflateSync } from 'node:zlib';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { NativeFESTextLayout } from '../src/native/fes-text-layout.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { hg3 } from './helpers.mjs';
+import { hg3, u32 } from './helpers.mjs';
 import { append, files } from './fixtures/fes-log-model.mjs';
 
 const utf8 = (text) => new TextEncoder().encode(text),
@@ -39,12 +40,12 @@ function captureProfiles(world, objects) {
   return calls;
 }
 
-test('layout profile owns exact byte copies, appends once, preserves each index read and treats direct JS strings as UTF8', () => {
+test('semantic profile setter owns its explicit complete bytes value, appends once and treats direct JS strings as UTF8', () => {
   for (const profile of profiles) {
     const layout = new NativeFESTextLayout({ profile, type: 21 }),
       source = Buffer.from([0x81, 0x80, 65, 0, 66]);
     let reads = 0;
-    layout.apply('prof', ['index', source, 'ignored'], () => ++reads);
+    layout.apply('prof', ['index', source], () => ++reads);
     source.fill(0);
     assert.equal(reads, 1);
     assert.equal(layout.profiles.prof.index, 1);
@@ -61,13 +62,69 @@ test('layout profile owns exact byte copies, appends once, preserves each index 
 });
 
 for (const profile of profiles) {
-  test(`${profile}: default layout profiles keep shared raw bytes across mixed targets, holes, single-token boundaries and fresh restore`, async () => {
+  test(`${profile}: prepared FES profile tails retain internal and trailing spaces through default decoding and fresh restore`, async () => {
+    const line = utf8('text layout prof ++$10 ABC  $str1 X EXTRA  '),
+      tail = utf8('ABC  $str1 X EXTRA  '),
+      body = join(
+        utf8('#DEFINE\nSTRING text\n#OBJECT SIZE\ntext 24,16\n#START\nnext IDLE\n#IDLE\n#QUERY\n'),
+        line,
+        utf8('\nbreak\n'),
+      ),
+      compressed = deflateSync(body),
+      world = await defaultFESWorld(profile, {
+        'screen.fes': join(
+          utf8('FES\0'),
+          Uint8Array.from([...u32(compressed.length), ...u32(body.length), ...u32(0)]),
+          compressed,
+        ),
+      });
+    let fresh;
+    try {
+      const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id));
+      bank.setBytes(1, utf8('changed bank value'));
+      world.configuration.scriptReplacements.add(utf8('X'), utf8('XX'));
+      const h = await loadDefaultFES(world);
+      await h.task.syncObjects();
+      const object = h.instance.collection.lookup('text', 0);
+      h.instance.setGlobal(10, 0);
+      assert.deepEqual(h.instance.program.blocks.QUERY[0], line);
+      await h.task.player.notify('QUERY');
+      assert.equal(h.instance.global(10), 1);
+      assert.deepEqual(object.nativeTextState.layout.profiles.prof, { index: 1, bytes: tail });
+      const saved = world.snapshot();
+      fresh = await defaultFESWorld(profile, {}, { initialize: false });
+      const read = fresh.game.read.bind(fresh.game);
+      fresh.game.read = (name) => {
+        if (name !== 'case.kcs') throw new Error(`prepared profile restore read ${name}`);
+        return read(name);
+      };
+      await fresh.restore(saved);
+      const task = fresh.objects.objects.get(h.id).implementation,
+        restored = task.player.root.collection.lookup('text', 0),
+        calls = captureProfiles(fresh, [restored]);
+      assert.deepEqual(task.player.root.program.blocks.QUERY[0], line);
+      assert.deepEqual(restored.nativeTextState.layout.profiles.prof, { index: 1, bytes: tail });
+      await task.syncObjects();
+      assert.deepEqual(
+        calls.map((call) => call.bytes),
+        [tail],
+      );
+      assert.equal(task.player.root.global(10), 1);
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+
+  test(`${profile}: default layout profiles keep shared raw bytes across mixed targets, holes, raw-tail boundaries and fresh restore`, async () => {
     const lines = [
         '#DEFINE\nSTRING mixed[5]\n#OBJECT SIZE\nmixed 24,16\n#START\nnext IDLE\n#IDLE\n',
         ...corpora.map((bytes, i) =>
           join(utf8(`#RAW${i}\nmixed layout prof ++$10 `), bytes, utf8(' IGNORED\nbreak\n')),
         ),
-        '#BANK\nmixed layout prof ++$10 $str1\nbreak\n#DROP\nmixed layout d_prof ++$10 $str1\nbreak\n#NONE\nmixed[2] layout prof ++$10 $str1\nbreak\n#MISSING\nmixed[0] layout prof ++$10\nbreak\n',
+        '#BANK\nmixed layout prof ++$10 $str1 X\nbreak\n#DROP\nmixed layout d_prof ++$10 $str1 X\nbreak\n#NONE\nmixed[2] layout prof ++$10 $str1\nbreak\n#MISSING\nmixed[0] layout prof ++$10\nbreak\n',
       ],
       world = await defaultFESWorld(profile, {
         'screen.fes': join(...lines.map((line) => (typeof line === 'string' ? utf8(line) : line))),
@@ -100,12 +157,13 @@ for (const profile of profiles) {
         reads.push(new Uint8Array(bytes));
         return expand(bytes);
       };
-      for (const [i, bytes] of corpora.entries()) {
+      for (const [i, sourceBytes] of corpora.entries()) {
+        const bytes = join(sourceBytes, utf8(' IGNORED'));
         instance.setGlobal(10, 0);
         reads.length = calls.length = 0;
         await h.task.player.notify(`RAW${i}`);
         assert.equal(instance.global(10), 1);
-        assert.equal(reads.filter((value) => Buffer.from(value).equals(bytes)).length, 1);
+        assert.equal(reads.filter((value) => Buffer.from(value).equals(sourceBytes)).length, 0);
         for (const object of objects)
           assert.deepEqual(object.nativeTextState.layout.profiles.prof, { index: 1, bytes });
         assert.equal(collection.lookup('mixed', 2).nativeTextState.layout, undefined);
@@ -123,12 +181,15 @@ for (const profile of profiles) {
       for (const object of objects)
         assert.deepEqual(object.nativeTextState.layout.profiles.prof, {
           index: 2,
-          bytes: join(corpora[0], corpora[1]),
+          bytes: join(corpora[0], utf8(' IGNORED'), corpora[1], utf8(' IGNORED')),
         });
       await h.task.syncObjects();
       assert.deepEqual(
         calls.map((call) => call.bytes),
-        [join(corpora[0], corpora[1]), join(corpora[0], corpora[1])],
+        [
+          join(corpora[0], utf8(' IGNORED'), corpora[1], utf8(' IGNORED')),
+          join(corpora[0], utf8(' IGNORED'), corpora[1], utf8(' IGNORED')),
+        ],
       );
       assert.ok(calls.every((call) => call.index === 2));
       const target = objects[1],
@@ -153,14 +214,14 @@ for (const profile of profiles) {
       reads.length = calls.length = 0;
       await h.task.player.notify('NONE');
       assert.equal(instance.global(10), 1);
-      assert.equal(reads.filter((value) => Buffer.from(value).equals(utf8('$str1'))).length, 1);
+      assert.equal(reads.filter((value) => Buffer.from(value).equals(utf8('$str1'))).length, 0);
       assert.equal(calls.length, 0);
       instance.setGlobal(10, 0);
       reads.length = 0;
       await h.task.player.notify('BANK');
-      const expected = join(bankBytes, utf8('X'));
+      const expected = utf8('$str1 X');
       assert.equal(instance.global(10), 1);
-      assert.equal(reads.filter((value) => Buffer.from(value).equals(utf8('$str1'))).length, 1);
+      assert.equal(reads.filter((value) => Buffer.from(value).equals(utf8('$str1'))).length, 0);
       for (const object of objects)
         assert.deepEqual(object.nativeTextState.layout.profiles.prof.bytes, expected);
       const saved = world.snapshot();
@@ -205,7 +266,7 @@ for (const profile of profiles) {
 
   for (const type of profile === profiles[0] ? ['LOGSTRING'] : ['LOGSTRING', 'LOGSTRING8'])
     test(`${profile}: default ${type} prof owns exact bytes only in its original main-child subset`, async () => {
-      const bytes = join(encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5)),
+      const bytes = join(encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5), utf8(' $str1 X EXTRA')),
         world = await defaultFESWorld(profile, {
           ...files,
           'screen.fes': join(
@@ -220,6 +281,7 @@ for (const profile of profiles) {
           'area.hg3': regions(),
         });
       try {
+        world.configuration.scriptReplacements.add(utf8('X'), utf8('XX'));
         const h = await loadDefaultFES(world);
         await h.task.syncObjects();
         await h.task.syncObjects();

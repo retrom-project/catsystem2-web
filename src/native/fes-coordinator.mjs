@@ -36,6 +36,7 @@ import { FES_OBJECT_DEFINITION_ORDER } from '../fes/types.mjs';
 import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesNarrowText } from '../fes/tokens.mjs';
+import { fesRawTail } from '../fes/source.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
 import { readNativeResource } from './resource-file.mjs';
@@ -573,8 +574,11 @@ export class FESCoordinator {
       const mode = context.text(0);
       context.layoutMode = mode;
       if (mode === 'prof' || mode === 'd_prof') {
+        if (!(source.commandBytes instanceof Uint8Array))
+          throw new TypeError('FES layout profile requires its exact executing command bytes');
+        const tail = fesRawTail(source.commandBytes, 4);
         const index = args[1] === undefined ? 0 : context.argument(1),
-          bytes = args[2] === undefined ? undefined : new Uint8Array(context.bytes(2));
+          bytes = tail.length ? new Uint8Array(tail) : undefined;
         for (let at = first; at < count; at++) {
           const object = lookup(at);
           if (!object) continue;

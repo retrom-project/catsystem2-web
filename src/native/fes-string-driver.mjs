@@ -331,21 +331,6 @@ export class FESStringDriver {
           context.layoutMode ?? (context.text ? context.text(0) : fesNarrowText(args[0])),
           ...args.slice(1),
         ];
-        if (layout && (args[0] === 'prof' || args[0] === 'd_prof')) {
-          this.setProfile(
-            target,
-            args[0],
-            value(1),
-            args[2] === undefined
-              ? undefined
-              : context.bytes
-                ? context.bytes(2)
-                : instance.argumentBytes
-                  ? instance.argumentBytes(fesSourceBytes(args[2]))
-                  : fesSourceBytes(args[2]),
-          );
-          break;
-        }
         if (layout) {
           const out = layout.apply(args[0], args.slice(1), evaluate, {
             font: this.world.configuration?.fields?.font?.name,
