@@ -610,8 +610,10 @@ export class FESInstance {
   }
   async flushNativeRecords() {
     if (!this.nativeQueuePending) return;
-    await this.runtime?.flushRecords();
+    // Consume this caller's native -3 request before yielding. A return0
+    // notification must not borrow it while this drain awaits its owner.
     this.nativeQueuePending = false;
+    await this.runtime?.flushRecords();
   }
   invoke(label, parameters = []) {
     if (!this.program.blocks[label]) return false;

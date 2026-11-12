@@ -450,13 +450,25 @@ gate. Already issued145 effects survive an owner-close cancellation; pending
 work after a real UNFOCUS Host wait or145 await stops under the existing same-
 player/root/runtime/owner checks. Live errors still propagate.
 
-A separate ordinary notification entering while a config_open Host wait owns a
-platform drain currently exposes shared nativeQueuePending reentrancy. Its real
-JS reproduction is retained as a separate unresolved boundary; these NULL caller
-and typed object-frontend cancellation tests do not complete that concurrency
-domain. The resetactive registry row remains partial. The recorded manual
-signature text `reset_frame` is preserved as a manual/frozen mismatch, without
-adding a new alias.
+Each native -3 request is consumed before awaiting its existing private FIFO
+drain. While that drain waits for config_open, a second ordinary notification's
+JavaScript async pause with native return0 cannot borrow the first request. Its
+new records stay pending until a genuine native -3 or the existing frame drain
+consumes them. The actual task tick,337 notification and Game19 configuration
+notification paths preserve this distinction; SDK19 retains its separate ABI
+behavior. Existing notification continuations remain on their call stacks, with
+no added queue, state copy or persistent continuation. A genuine new -3 can still
+consume nonplatform work inside the event; a global drain mutex would break that
+behavior. An issued flush request remains consumed on live failure, while
+unconsumed records remain owned by the existing FIFO. Owner cancellation stops
+subsequent work and live errors still propagate.
+
+A second modal platform action while one is in flight remains an explicit
+rejection at the existing single-action/single-dialog Host boundary. This does
+not establish arbitrary original-engine modal concurrency, add a window queue,
+or turn that rejection into success. The resetactive registry row remains
+partial with this scope recorded. The manual signature text `reset_frame` is
+preserved as a manual/frozen mismatch, without adding a new alias.
 
 This bounded leaf does not complete automove/react, other keyboard/input frontends
 or the raw23 attachment protocol. The direct JS-source input API retains its

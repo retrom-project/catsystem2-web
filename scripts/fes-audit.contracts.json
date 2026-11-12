@@ -1908,7 +1908,7 @@
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/resetactive.html",
       "implementation": "src/fes",
       "evidence": ["tests/fes-input-resetactive-default.test.mjs"],
-      "note": "Frozen SDK74/Game76 default normal resetactive queues a NULL active-reference record, ignores operands, and uses the existing mouse/UNFOCUS/clear/Input145 consumer with fresh/close coverage. Concurrent notification during a Host-owned platform drain remains unresolved. Recorded manual signature reset_frame is retained as a manual/frozen mismatch; no alias is added.",
+      "note": "Frozen SDK74/Game76 normal resetactive keeps NULL distinct from empty-name/index7. Its existing FIFO consumes each native -3 request before awaiting: ordinary return0 notifications retain pending work, with real tick/337/19, close/error/fresh coverage. A simultaneous second modal remains an explicit single-dialog Host rejection; arbitrary original modal concurrency is not claimed. Recorded reset_frame signature is retained without an alias.",
       "signatures": ["reset_frame"]
     },
     {
