@@ -20,6 +20,68 @@ const pixels = Uint8Array.from([
   11, 22, 33, 255, 44, 55, 66, 0, 77, 88, 99, 255, 110, 121, 132, 128,
 ]);
 for (const profile of profiles) {
+  test(`${profile} image-font bytes follow the held frame-map data and survive FILE changes and World restore`, async () => {
+    const encoded = frames(),
+      world = await imageWorld(profile, { 'first.hg3': encoded, 'second.hg3': asset() });
+    let fresh;
+    try {
+      const { api, id } = await setupImages(world),
+        image = imageObject(api, 2, 'font', { renderID: 4, fileSingle: true }),
+        buffers = world.runtime.imageDataBuffers;
+      setFESImageFile(image, 'first');
+      await syncImages(api);
+      assert.equal(
+        api.images.dataFor(api.instance, image),
+        null,
+        'ordinary bitmap load does not assign the encoded getter',
+      );
+      setFESImageID(image, -1);
+      await syncImages(api);
+      const pointer = image.imageResource.encodedPointer;
+      assert.deepEqual(api.images.dataFor(api.instance, image), encoded);
+      assert.equal(buffers.words(pointer)[3], 2, 'cache and IMAGE each retain the actual buffer');
+      setFESImageFile(image, 'second');
+      assert.deepEqual(
+        api.images.dataFor(api.instance, image),
+        encoded,
+        'FILE alone does not replace held bytes',
+      );
+      setFESImageID(image, 0);
+      await syncImages(api);
+      assert.deepEqual(
+        api.images.dataFor(api.instance, image),
+        encoded,
+        'ordinary reload preserves the encoded getter',
+      );
+      fresh = await imageWorld(profile, {}, false);
+      await fresh.restore(structuredClone(world.snapshot()));
+      fresh.game.readCategory = () => {
+        throw new Error('held image-font getter attempted I/O');
+      };
+      const restored = fresh.objects.objects.get(id).implementation,
+        restoredImage = restored.instance.byKey.get('font');
+      await syncImages(restored, { restoring: true });
+      assert.equal(restoredImage.imageResource.encodedPointer, pointer);
+      assert.deepEqual(restored.images.dataFor(restored.instance, restoredImage), encoded);
+      assert.equal(fresh.runtime.imageDataBuffers.words(pointer)[3], 2);
+      await restored.images.close(restoredImage);
+      assert.equal(fresh.runtime.imageDataBuffers.words(pointer)[3], 1);
+      restored.cache.close();
+      assert.equal(fresh.runtime.imageDataBuffers.owns(pointer), false);
+      setFESImageID(image, -1);
+      setFESImageFile(image, 'missing');
+      await syncImages(api);
+      assert.equal(
+        api.images.dataFor(api.instance, image),
+        null,
+        'frame-map miss clears the encoded getter',
+      );
+      assert.equal(buffers.words(pointer)[3], 1);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
   test(`${profile} pending BUTTON restore does not allocate or initialize resources`, async () => {
     const world = await imageWorld(profile);
     let fresh;

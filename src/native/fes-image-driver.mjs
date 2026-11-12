@@ -160,6 +160,7 @@ export class FESImages {
         owner: instance.runtimeID,
         bitmap: 0,
         source: 0,
+        encodedPointer: 0,
         binding: null,
         closed: false,
       };
@@ -185,6 +186,17 @@ export class FESImages {
     const cache = this.cacheFor(instance);
     if (!cache?.data || !cache?.load) throw new Error('FES image has no owning encoded-byte cache');
     return cache;
+  }
+  setEncodedData(object, pointer) {
+    const resource = this.resource(object),
+      buffers = this.world.runtime.imageDataBuffers;
+    if (pointer) buffers.retainPointer(pointer);
+    if (resource.encodedPointer) buffers.releasePointer(resource.encodedPointer);
+    resource.encodedPointer = pointer;
+  }
+  dataFor(_instance, object) {
+    const pointer = object.imageResource?.encodedPointer;
+    return pointer ? this.world.runtime.imageDataBuffers.data(pointer) : null;
   }
   draw(instance) {
     const id = instance.player.surface;
@@ -443,10 +455,11 @@ export class FESImages {
     const name = this.expand(instance, object.file);
     this.clearRequests(object);
     if (object.idIndex >>> 0 === 0xffffffff) {
-      const pointer = await this.cache(instance).data(name),
-        source = pointer
-          ? await this.world.renderSources.decode(this.world.runtime.imageDataBuffers.data(pointer))
-          : 0;
+      const pointer = await this.cache(instance).data(name);
+      this.setEncodedData(object, pointer);
+      const source = pointer
+        ? await this.world.renderSources.decode(this.world.runtime.imageDataBuffers.data(pointer))
+        : 0;
       if (source) {
         const state = this.world.renderSources.get(source);
         for (const h of [state.bitmap, ...state.frames.map((frame) => frame.bitmap)])
@@ -652,6 +665,7 @@ export class FESImages {
     if (restoring) {
       if (r.bitmap) this.world.graphics.images.get(r.bitmap);
       if (r.source) this.world.renderSources.get(r.source);
+      if (r.encodedPointer) this.world.runtime.imageDataBuffers.require(r.encodedPointer);
       return;
     }
     if (object.tablePending) {
@@ -792,6 +806,7 @@ export class FESImages {
     if (!r || r.closed) return;
     await this.removeBinding(object);
     await this.replace(object, 0, 0);
+    this.setEncodedData(object, 0);
     if (object.nativeType === 6 && object.nativeInputTaskID != null) {
       const id = object.nativeInputTaskID,
         input = this.world.objects.objects.get(r.owner)?.implementation?.player?.nativeInput;
