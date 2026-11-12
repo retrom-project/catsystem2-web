@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { NativeGraphicsDevice } from '../native/graphics-device.mjs';
 // Effekseer normal shader adaptation: copyright (c) 2011 Effekseer Project,
 // MIT grant in ../../licenses/effekseer-MIT.txt; fixed official1.23 source.
 import { PARTICLE_BLEND_FACTORS } from '../ppi/abi.mjs';
@@ -351,7 +352,7 @@ export function particleRenderState(blendMode = 0, renderStates = [], samplerSta
 }
 
 export class ParticlesGL {
-  constructor(width, height) {
+  constructor(width, height, device) {
     this.canvas = new OffscreenCanvas(width, height);
     this.gl = this.canvas.getContext('webgl2', {
       alpha: false,
@@ -363,6 +364,24 @@ export class ParticlesGL {
     });
     const gl = this.gl;
     if (!gl) throw new Error('Particle rendering requires WebGL2');
+    this.initializeResources(width, height);
+    this.attachGraphicsDevice(device ?? new NativeGraphicsDevice());
+    this.contextLost = (event) => {
+      event.preventDefault();
+      this.noticeLoss();
+    };
+    this.contextRestored = () => {
+      if (this.closed) return;
+      this.devicePort.restored();
+      // The restored event alone does not make resources ready. The shared
+      // owner records reconstruction failure and remains not-reset.
+      this.devicePort.rebuild().catch(() => {});
+    };
+    this.canvas.addEventListener('webglcontextlost', this.contextLost);
+    this.canvas.addEventListener('webglcontextrestored', this.contextRestored);
+  }
+  initializeResources(width, height) {
+    const gl = this.gl;
     this.anisotropy =
       gl.getExtension('EXT_texture_filter_anisotropic') ||
       gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
@@ -373,12 +392,22 @@ export class ParticlesGL {
       const s = gl.createShader(type);
       gl.shaderSource(s, source);
       gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        const message = gl.getShaderInfoLog(s);
+        gl.deleteShader(s);
+        throw new Error(message);
+      }
       return s;
     };
     this.program = gl.createProgram();
-    gl.attachShader(this.program, shader(gl.VERTEX_SHADER, vertexSource));
-    gl.attachShader(this.program, shader(gl.FRAGMENT_SHADER, fragmentSource));
+    for (const [type, source] of [
+      [gl.VERTEX_SHADER, vertexSource],
+      [gl.FRAGMENT_SHADER, fragmentSource],
+    ]) {
+      const compiled = shader(type, source);
+      gl.attachShader(this.program, compiled);
+      gl.deleteShader(compiled);
+    }
     gl.linkProgram(this.program);
     if (!gl.getProgramParameter(this.program, gl.LINK_STATUS))
       throw new Error(gl.getProgramInfoLog(this.program));
@@ -424,7 +453,10 @@ export class ParticlesGL {
     );
     this.buffer = gl.createBuffer();
     this.effekseerIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.effekseerIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 0, gl.STREAM_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, 0, gl.STREAM_DRAW);
     for (const [index, size, offset] of [
       [0, 4, 0],
       [1, 4, 16],
@@ -475,6 +507,7 @@ export class ParticlesGL {
       height,
       texture: this.targetTexture,
       framebuffer: this.framebuffer,
+      contentValid: false,
     };
     this.primaryDepthStencil = {
       owner: this,
@@ -482,6 +515,7 @@ export class ParticlesGL {
       height,
       format: 75,
       renderbuffer: this.depthStencil,
+      validMask: 0,
     };
     this.primaryTarget.depthStencil = this.primaryDepthStencil;
     this.primaryTarget.attachmentsChecked = true;
@@ -489,10 +523,143 @@ export class ParticlesGL {
     this.nativeDepth = new Set();
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
+  attachGraphicsDevice(device) {
+    if (this.graphicsDevice === device) return device;
+    if (this.graphicsDevice) throw new Error('GPU already has a shared graphics owner');
+    this.graphicsDevice = device;
+    this.devicePort = device.attach({
+      kind: 'webgl',
+      validate: () => this.resourcesReady(),
+      rebuild: () => this.rebuildResources(),
+    });
+    return device;
+  }
+  noticeLoss() {
+    if (this.closed) return;
+    this.invalidateContents();
+    this.drawing = false;
+    this.activeTarget = null;
+    this.nativeBatch = null;
+    if (this.graphicsDevice.status !== 'lost') this.devicePort.lost();
+  }
+  requireDevice() {
+    if (this.gl.isContextLost?.()) this.noticeLoss();
+    this.graphicsDevice?.requireReady();
+    if (this.closed) throw new Error('Graphics backend is closed');
+  }
+  resourcesReady() {
+    const gl = this.gl;
+    return (
+      !this.closed &&
+      !gl.isContextLost() &&
+      gl.isProgram(this.program) &&
+      gl.getProgramParameter(this.program, gl.LINK_STATUS) &&
+      gl.isBuffer(this.buffer) &&
+      gl.isBuffer(this.effekseerIndexBuffer) &&
+      gl.isTexture(this.targetTexture) &&
+      gl.isFramebuffer(this.framebuffer) &&
+      gl.isRenderbuffer(this.depthStencil) &&
+      [...this.textures.values()].every((t) => gl.isTexture(t)) &&
+      [...this.nativeTargets].every(
+        (t) => gl.isTexture(t.texture) && gl.isFramebuffer(t.framebuffer),
+      ) &&
+      [...this.nativeDepth].every((d) => gl.isTexture(d.texture)) &&
+      (!this.depthProgram || gl.isProgram(this.depthProgram.program)) &&
+      (!this.blendProgram || gl.isProgram(this.blendProgram.program))
+    );
+  }
+  invalidateContents() {
+    for (const target of [this.primaryTarget, ...this.nativeTargets]) target.contentValid = false;
+    for (const depth of [this.primaryDepthStencil, ...this.nativeDepth]) depth.validMask = 0;
+  }
+  rebuildResources() {
+    if (this.closed) throw new Error('Graphics backend is closed');
+    const primary = this.primaryTarget,
+      primaryDepth = this.primaryDepthStencil,
+      targets = [...this.nativeTargets],
+      depths = [...this.nativeDepth],
+      next = Object.create(ParticlesGL.prototype);
+    // Build handles in a temporary transaction, not a second device/cache.
+    // Current objects are changed only after every required resource validates.
+    Object.assign(next, { gl: this.gl, canvas: this.canvas });
+    try {
+      next.initializeResources(primary.width, primary.height);
+      next.textureBudget = this.textureBudget;
+      const rebuiltDepth = new Map(
+        depths.map((d) => [d, next.allocateDepthStencil(d.width, d.height, d.format)]),
+      );
+      const rebuiltTargets = new Map(
+        targets.map((t) => {
+          const fresh = next.allocateRenderTarget(t.width, t.height);
+          this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fresh.framebuffer);
+          next.attachDepthStencil(
+            fresh,
+            t.depthStencil === primaryDepth
+              ? next.primaryDepthStencil
+              : (rebuiltDepth.get(t.depthStencil) ?? null),
+          );
+          return [t, fresh];
+        }),
+      );
+      for (const frame of this.textures.keys()) next.managedTexture(frame);
+      next.depthProgram = this.depthProgram ? next.depthStateProgram() : null;
+      next.blendProgram = this.blendProgram ? next.surfaceBlendProgram() : null;
+      if (!next.resourcesReady()) throw new Error('Graphics resources are not reconstructed');
+      Object.assign(primaryDepth, next.primaryDepthStencil, { owner: this, validMask: 0 });
+      Object.assign(primary, next.primaryTarget, {
+        owner: this,
+        contentValid: false,
+        depthStencil: primaryDepth,
+      });
+      for (const [depth, fresh] of rebuiltDepth)
+        Object.assign(depth, fresh, { owner: this, validMask: 0 });
+      for (const [target, fresh] of rebuiltTargets) {
+        const depthStencil = target.depthStencil;
+        Object.assign(target, fresh, { owner: this, contentValid: false, depthStencil });
+      }
+      Object.assign(this, next, {
+        primaryTarget: primary,
+        primaryDepthStencil: primaryDepth,
+        nativeTargets: new Set(targets),
+        nativeDepth: new Set(depths),
+      });
+      this.drawing = false;
+      this.activeTarget = null;
+      this.nativeBatch = null;
+    } catch (error) {
+      next.releaseResources();
+      throw error;
+    } finally {
+      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+    }
+  }
+  requireTargetContent(target) {
+    this.requireDevice();
+    if (target.owner !== this || target.destroyed)
+      throw new Error('Native target belongs to a different or closed graphics device');
+    if (target.contentValid !== true) throw new Error('Native target content is undefined');
+  }
+  requireDepthContent(depth, mask) {
+    this.requireDevice();
+    // An absent attachment or no requested read has no contents to validate.
+    if (depth == null || mask === 0) return;
+    const components = depth.format === 75 ? 6 : depth.format === 77 || depth.format === 80 ? 2 : 0;
+    if (!components) throw new Error('Native depth/stencil content is undefined for its format');
+    const read = mask & components;
+    if (!read) return;
+    const valid = depth.validMask;
+    if (!Number.isInteger(valid) || valid < 0 || valid > 6 || valid & 1 || (valid & read) !== read)
+      throw new Error('Native depth/stencil content is undefined');
+  }
+
   get target() {
     return this.activeTarget ?? this.primaryTarget;
   }
   createRenderTarget(width, height, rgba) {
+    this.requireDevice();
+    return this.allocateRenderTarget(width, height, rgba);
+  }
+  allocateRenderTarget(width, height, rgba) {
     const gl = this.gl,
       target = {
         owner: this,
@@ -500,6 +667,7 @@ export class ParticlesGL {
         height,
         texture: gl.createTexture(),
         framebuffer: gl.createFramebuffer(),
+        contentValid: rgba != null,
       };
     gl.bindTexture(gl.TEXTURE_2D, target.texture);
     gl.texImage2D(
@@ -524,10 +692,14 @@ export class ParticlesGL {
     return target;
   }
   createDepthStencil(width, height, format = 75) {
+    this.requireDevice();
+    return this.allocateDepthStencil(width, height, format);
+  }
+  allocateDepthStencil(width, height, format) {
     if (![75, 77, 80].includes(format))
       throw new Error(`Native depth/stencil format ${format} needs its precision backend`);
     const gl = this.gl,
-      depth = { owner: this, width, height, format, texture: gl.createTexture() };
+      depth = { owner: this, width, height, format, texture: gl.createTexture(), validMask: 0 };
     gl.bindTexture(gl.TEXTURE_2D, depth.texture);
     if (format === 75)
       gl.texImage2D(
@@ -598,6 +770,7 @@ export class ParticlesGL {
     }
   }
   enterRenderTarget(target, depthStencil) {
+    this.requireDevice();
     if (
       target.owner !== this ||
       target.destroyed ||
@@ -610,8 +783,15 @@ export class ParticlesGL {
       previous = this.activeTarget,
       previousTarget = this.target,
       previousDepth = previousTarget.depthStencil,
-      drawing = this.drawing;
+      drawing = this.drawing,
+      generation = this.graphicsDevice?.generation;
     const restore = () => {
+      if (
+        this.closed ||
+        this.graphicsDevice?.generation !== generation ||
+        this.graphicsDevice?.ready === false
+      )
+        return;
       this.activeTarget = previous;
       this.drawing = drawing;
       const restoreGL = () => {
@@ -642,22 +822,45 @@ export class ParticlesGL {
     }
   }
   beginNativeBatch() {
+    this.requireDevice();
     if (this.nativeBatch) throw new Error('Native GPU render batches cannot overlap');
-    const batch = { restore: null };
+    const batch = { restore: null, generation: this.graphicsDevice?.generation };
     this.nativeBatch = batch;
     let closed = false;
     return () => {
       if (closed) return;
       closed = true;
-      if (this.nativeBatch !== batch) throw new Error('Native GPU render batch ownership changed');
+      if (this.nativeBatch !== batch) {
+        if (
+          this.closed ||
+          this.graphicsDevice?.generation !== batch.generation ||
+          this.graphicsDevice?.ready === false
+        )
+          return;
+        throw new Error('Native GPU render batch ownership changed');
+      }
       this.nativeBatch = null;
       batch.restore?.();
     };
   }
   uploadRenderTarget(target, frame, rectangle = [0, 0, target.width, target.height]) {
+    this.requireDevice();
     if (target.owner !== this || frame.width !== target.width || frame.height !== target.height)
       throw new Error('Native render-target upload dimensions differ');
     const [x, y, width, height] = rectangle;
+    if (
+      target.destroyed ||
+      !frame.rgba ||
+      frame.rgba.byteLength !== target.width * target.height * 4 ||
+      !rectangle.every(Number.isInteger) ||
+      x < 0 ||
+      y < 0 ||
+      width < 0 ||
+      height < 0 ||
+      x + width > target.width ||
+      y + height > target.height
+    )
+      throw new RangeError('Native render-target upload area or source is invalid');
     if (!width || !height) return;
     const gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, target.texture);
@@ -680,6 +883,8 @@ export class ParticlesGL {
     } finally {
       gl.pixelStorei(gl.UNPACK_ROW_LENGTH, 0);
     }
+    if (x === 0 && y === 0 && width === target.width && height === target.height)
+      target.contentValid = true;
   }
   destroyRenderTarget(target) {
     if (this.nativeTargets.delete(target)) {
@@ -694,7 +899,7 @@ export class ParticlesGL {
       this.gl.deleteTexture(depth.texture);
     }
   }
-  blendTargets(target, next, previous, alpha) {
+  surfaceBlendProgram() {
     const gl = this.gl;
     if (!this.blendProgram) {
       const program = gl.createProgram();
@@ -741,6 +946,13 @@ export class ParticlesGL {
         ),
       };
     }
+    return this.blendProgram;
+  }
+  blendTargets(target, next, previous, alpha) {
+    this.requireTargetContent(next);
+    if (previous) this.requireTargetContent(previous);
+    const gl = this.gl;
+    this.surfaceBlendProgram();
     if (target === next || target === previous)
       throw new Error('Surface blend inputs must be distinct from its output');
     this.withRenderTarget(target, () => {
@@ -770,6 +982,7 @@ export class ParticlesGL {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       const error = gl.getError();
       if (error) throw new Error(`Surface blend failed: 0x${error.toString(16)}`);
+      target.contentValid = true;
       // The fixed-function shader also has a sampler at unit 1. Leaving a
       // model target there would form a feedback loop on its next redraw,
       // even when that shader's destination-copy branch is disabled.
@@ -820,6 +1033,7 @@ export class ParticlesGL {
     return this.depthProgram;
   }
   snapshotDepthStencil(depth) {
+    this.requireDepthContent(depth, depth.format === 75 ? 6 : 2);
     if (depth.owner !== this) throw new Error('Native depth surface belongs to another device');
     if (depth.renderbuffer) return this.snapshotRenderbufferDepth(depth);
     const gl = this.gl,
@@ -913,6 +1127,7 @@ export class ParticlesGL {
       );
       gl.bindFramebuffer(gl.READ_FRAMEBUFFER, read);
       gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, draw);
+      texture.validMask = depth.format === 75 ? 6 : 2;
       return this.snapshotDepthStencil(texture);
     } finally {
       this.destroyRenderTarget(target);
@@ -925,6 +1140,7 @@ export class ParticlesGL {
     }
   }
   restoreDepthStencil(depth, state) {
+    this.requireDevice();
     if (
       depth.owner !== this ||
       state.width !== depth.width ||
@@ -981,6 +1197,7 @@ export class ParticlesGL {
         },
         { depthStencil: depth },
       );
+      depth.validMask = depth.format === 75 ? 6 : 2;
     } finally {
       this.destroyRenderTarget(input);
       this.destroyRenderTarget(output);
@@ -996,11 +1213,16 @@ export class ParticlesGL {
     this.gl.deleteTexture(texture);
   }
   texture(frame) {
+    this.requireDevice();
     if (frame.nativeTarget) {
+      this.requireTargetContent(frame.nativeTarget);
       if (frame.nativeTarget.owner !== this)
         throw new Error('Native texture belongs to a different graphics device');
       return frame.nativeTarget.texture;
     }
+    return this.managedTexture(frame);
+  }
+  managedTexture(frame) {
     let texture = this.textures.get(frame);
     if (texture) {
       this.textures.delete(frame);
@@ -1078,6 +1300,7 @@ export class ParticlesGL {
     this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STREAM_DRAW, 0, count);
   }
   beginFrame(destination = 0xff000000, { preserve = false } = {}) {
+    this.requireDevice();
     if (this.drawing) throw new Error('Particle graphics frame is already open');
     this.drawing = true;
     this.activeTarget = null;
@@ -1107,9 +1330,11 @@ export class ParticlesGL {
     gl.clearDepth(1);
     gl.clearStencil(0);
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+    this.primaryDepthStencil.validMask = 6;
     if (typeof destination === 'number') {
       gl.clearColor(...colorVector(destination));
       gl.clear(gl.COLOR_BUFFER_BIT);
+      this.primaryTarget.contentValid = true;
       return;
     }
     gl.uniform1i(this.uniform.backgroundPass, 1);
@@ -1129,6 +1354,7 @@ export class ParticlesGL {
       ].map(([x, y, u, v]) => ({ x, y, z: 0, w: 1, color: 0xffffffff, u, v })),
     );
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    this.primaryTarget.contentValid = true;
   }
   clear({
     flags,
@@ -1138,6 +1364,7 @@ export class ParticlesGL {
     rectangles = [],
     opaqueTarget = this.frameOpaqueTarget ?? false,
   }) {
+    this.requireDevice();
     if (!this.drawing) throw new Error('beginFrame must precede native clear');
     const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.target.framebuffer);
@@ -1161,6 +1388,18 @@ export class ParticlesGL {
       gl.disable(gl.SCISSOR_TEST);
       gl.clear(mask);
     }
+    const full =
+      !rectangles.length ||
+      rectangles.some(
+        ([x1, y1, x2, y2]) =>
+          x1 <= 0 && y1 <= 0 && x2 >= this.target.width && y2 >= this.target.height,
+      );
+    if (full) {
+      if (flags & 1) this.target.contentValid = true;
+      const depth = this.target.depthStencil;
+      if (depth && this.target.width >= depth.width && this.target.height >= depth.height)
+        depth.validMask |= flags & 6;
+    }
   }
   drawGeometry(
     geometry,
@@ -1179,6 +1418,7 @@ export class ParticlesGL {
       effekseer = null,
     } = {},
   ) {
+    this.requireDevice();
     if (!this.drawing) throw new Error('beginFrame must precede particle drawGeometry');
     context ||= this.frameContext;
     if (effekseer) this.validateEffekseerPacket(effekseer, state, geometry, lineViewport);
@@ -1198,6 +1438,11 @@ export class ParticlesGL {
             state?.states || renderStates,
             state?.samplers || samplerStates,
           );
+    this.requireDepthContent(
+      this.target.depthStencil,
+      (s.get(7) && ![1, 8].includes(s.get(23)) ? 2 : 0) | (s.get(52) ? 4 : 0),
+    );
+    if (s.get(27) || s.get(194)) this.requireTargetContent(this.target);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.target.framebuffer);
     gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
@@ -1749,6 +1994,7 @@ export class ParticlesGL {
     }
   }
   drawPresentation(target) {
+    this.requireTargetContent(target);
     const gl = this.gl,
       w = this.canvas.width,
       h = this.canvas.height;
@@ -1797,6 +2043,7 @@ export class ParticlesGL {
     }
   }
   pixels(target = this.primaryTarget) {
+    this.requireTargetContent(target);
     const gl = this.gl,
       previous = gl.getParameter(gl.FRAMEBUFFER_BINDING),
       bytes = new Uint8Array(target.width * target.height * 4);
@@ -1805,18 +2052,26 @@ export class ParticlesGL {
     gl.bindFramebuffer(gl.FRAMEBUFFER, previous);
     return bytes;
   }
-  close() {
+  releaseResources() {
     const gl = this.gl;
-    for (const target of [...this.nativeTargets]) this.destroyRenderTarget(target);
-    for (const depth of [...this.nativeDepth]) this.destroyDepthStencil(depth);
+    for (const target of [...(this.nativeTargets ?? [])]) this.destroyRenderTarget(target);
+    for (const depth of [...(this.nativeDepth ?? [])]) this.destroyDepthStencil(depth);
     if (this.depthProgram) gl.deleteProgram(this.depthProgram.program);
     if (this.blendProgram) gl.deleteProgram(this.blendProgram.program);
-    for (const texture of this.ownedTextures) gl.deleteTexture(texture);
-    gl.deleteFramebuffer(this.framebuffer);
-    gl.deleteRenderbuffer(this.depthStencil);
-    gl.deleteBuffer(this.buffer);
-    gl.deleteBuffer(this.effekseerIndexBuffer);
-    gl.deleteProgram(this.program);
-    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    for (const texture of this.ownedTextures ?? []) gl.deleteTexture(texture);
+    if (this.framebuffer) gl.deleteFramebuffer(this.framebuffer);
+    if (this.depthStencil) gl.deleteRenderbuffer(this.depthStencil);
+    if (this.buffer) gl.deleteBuffer(this.buffer);
+    if (this.effekseerIndexBuffer) gl.deleteBuffer(this.effekseerIndexBuffer);
+    if (this.program) gl.deleteProgram(this.program);
+  }
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    this.canvas.removeEventListener('webglcontextlost', this.contextLost);
+    this.canvas.removeEventListener('webglcontextrestored', this.contextRestored);
+    this.devicePort?.retire();
+    this.releaseResources();
+    this.gl.getExtension('WEBGL_lose_context')?.loseContext();
   }
 }

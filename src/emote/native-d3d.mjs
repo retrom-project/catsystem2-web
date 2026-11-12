@@ -1258,6 +1258,11 @@ export class EmoteD3D9 {
     return 0;
   }
   syncSurface(pointer, surface) {
+    const target =
+      pointer === this.backbuffer
+        ? this.gpu?.primaryTarget
+        : this.gpuTargets.get(surface.pointer ?? pointer);
+    if (target) this.gpu.requireTargetContent(target);
     if (!surface.dirty) return;
     if (!this.gpu) throw new Error('Native D3D render-target readback requires its shared GPU');
     this.storePixels(surface, this.gpu.pixels(this.gpuTarget(pointer)));

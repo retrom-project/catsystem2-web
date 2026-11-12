@@ -2,6 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { StageRenderer } from '../../src/render/stage.mjs';
+import { ParticlesGL } from '../../src/render/particles-gl.mjs';
+import { NativeGraphicsDevice } from '../../src/native/graphics-device.mjs';
 import { EmoteD3D9 } from '../../src/emote/native-d3d.mjs';
 import { PE32Process } from '../../src/ppi/pe32.mjs';
 import { loadUnicorn } from '../../src/ppi/backend.mjs';
@@ -49,12 +51,23 @@ test('renderer surface ownership preserves the DLL lock/copy/restore contract', 
       const texture = device.objects.get(process.load(out)),
         target = { width: 2, height: 2 },
         rgba = Uint8Array.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+      const logicalDevice = new NativeGraphicsDevice();
+      logicalDevice.createLogical();
+      // CPU readback provider only: the owned RGBA array defines this whole
+      // target. Borrow the actual content guard, without claiming a GPU reset.
       device.gpu = {
+        graphicsDevice: logicalDevice,
+        requireDevice: () => logicalDevice.requireReady(),
+        requireTargetContent: ParticlesGL.prototype.requireTargetContent,
         pixels(value) {
           assert.equal(value, target);
           return rgba;
         },
       };
+      Object.assign(target, {
+        owner: device.gpu,
+        contentValid: rgba.length === target.width * target.height * 4,
+      });
       device.gpuTargets.set(texture.pointer, target);
       texture.dirty = true;
       try {
@@ -65,6 +78,7 @@ test('renderer surface ownership preserves the DLL lock/copy/restore contract', 
         assert.equal(texture.dirty, false);
         assert.equal(device.surfaceData(texture.pointer), null);
       } finally {
+        logicalDevice.close();
         device.gpu = null;
         device.gpuTargets.clear();
       }

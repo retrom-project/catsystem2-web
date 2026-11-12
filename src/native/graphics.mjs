@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
+import { NativeGraphicsDevice } from './graphics-device.mjs';
 // Native task graphics own graph state; construction alone does not load a
 // graph. Message contracts come from 5DF010/5E0920 and renderer graph setters.
 import { Stage } from '../stage.mjs';
@@ -104,6 +105,16 @@ export class NativeGraphics {
     });
     this.view.changed = () => this.synchronizeView();
     Object.defineProperty(this.stage, 'nativeGraphics', { value: this });
+    this.device = world.stageRenderer?.graphicsDevice ?? new NativeGraphicsDevice();
+    world.stageRenderer?.bindGraphicsDevice?.(this.device);
+  }
+  createLogicalDevice() {
+    return this.device.createLogical();
+  }
+  attachGPU(gpu) {
+    if (typeof gpu?.attachGraphicsDevice !== 'function')
+      throw new TypeError('Host GPU requires the shared graphics lifecycle operation');
+    return gpu.attachGraphicsDevice(this.device);
   }
   get(id) {
     return this.tasks.get(id >>> 0) || null;

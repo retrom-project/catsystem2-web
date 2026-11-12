@@ -12,6 +12,7 @@ const material = (blend = 1, filter = 0, wrap = 1) => ({
 });
 function recorder() {
   const calls = [],
+    queries = [],
     uniforms = new Map(),
     enabled = new Set(),
     state = { viewport: [0, 0, 64, 48], depthRange: [0, 1], framebuffer: null },
@@ -62,7 +63,15 @@ function recorder() {
       });
     },
   };
-  const target = { COLOR_BUFFER_BIT: 0x4000, DEPTH_BUFFER_BIT: 0x0100, STENCIL_BUFFER_BIT: 0x0400 };
+  const target = {
+    COLOR_BUFFER_BIT: 0x4000,
+    DEPTH_BUFFER_BIT: 0x0100,
+    STENCIL_BUFFER_BIT: 0x0400,
+    isContextLost: () => {
+      queries.push('isContextLost');
+      return false;
+    },
+  };
   gl = new Proxy(target, {
     get(object, key) {
       if (Object.hasOwn(object, key)) return object[key];
@@ -79,7 +88,7 @@ function recorder() {
       };
     },
   });
-  return { gl, calls, uniforms, state, buffers, enabled };
+  return { gl, calls, queries, uniforms, state, buffers, enabled };
 }
 function setup() {
   const r = recorder(),
@@ -110,6 +119,18 @@ function setup() {
     frameOpaqueTarget: false,
     anisotropy: null,
   });
+  // Authored recorder surfaces represent already-produced content, not lost storage.
+  for (const target of [gpu.primaryTarget, gpu.activeTarget]) {
+    target.owner = gpu;
+    target.contentValid = true;
+    Object.assign(target.depthStencil, {
+      owner: gpu,
+      width: target.width,
+      height: target.height,
+      format: 75,
+      validMask: 6,
+    });
+  }
   gpu.texture = (frame) => {
     r.calls.push({ method: 'textureLookup', args: [frame] });
     return frame;

@@ -6,6 +6,7 @@ export default defineConfig({
     'native-task-dump.spec.mjs',
     'emote-js.spec.mjs',
     'effekseer-gpu.spec.mjs',
+    'graphics-device.spec.mjs',
   ],
   fullyParallel: false,
   workers: 1,

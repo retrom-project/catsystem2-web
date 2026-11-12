@@ -28,6 +28,7 @@ export class StageRenderer {
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
+    this.graphicsDevice?.close();
     this.gpu?.close();
     this.effects = new WeakMap();
     if (this.plane) this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
@@ -56,7 +57,14 @@ export class StageRenderer {
     this.emote = emote;
     this.plane = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
     this.mask = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
-    this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height);
+    this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height, this.graphicsDevice);
+    this.bindGraphicsDevice(this.gpu.graphicsDevice);
+  }
+  bindGraphicsDevice(device) {
+    if (this.graphicsDevice && this.graphicsDevice !== device)
+      throw new Error('Stage renderer already has a shared graphics owner');
+    this.graphicsDevice = device;
+    if (this.gpu) this.gpu.attachGraphicsDevice(device);
   }
   async withPluginTarget(device, callback) {
     if (!this.gpu || device.gpu !== this.gpu)
