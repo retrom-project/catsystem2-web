@@ -533,3 +533,10 @@ reference registry, modal queue or versioned checkpoint reader.
 This bounded leaf does not complete automove, other keyboard/input frontends
 or the raw23 attachment protocol. The direct JS-source input API retains its
 separate path.
+
+Message337 captures its current player/root and task identity for the call. After
+notification, resource synchronization and input synchronization each settle, it
+checks that same owner/runtime is still live before starting the next operation.
+Closing or replacing that owner ends the call with its original unwritten result;
+already completed effects remain. Live errors still propagate. This adds no
+queue, persistent continuation or scheduler state and preserves executorEntry.

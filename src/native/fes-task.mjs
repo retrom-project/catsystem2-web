@@ -329,6 +329,14 @@ export function createNativeFESTask(world, record) {
       }
       if (message === 337) {
         if (!this.player) throw new Error('FES notification requires a loaded interpreter');
+        const player = this.player,
+          root = player.root,
+          live = () =>
+            this.player === player &&
+            player.root === root &&
+            !root?.runtime?.closed &&
+            record.state !== 'releasing' &&
+            world.objects.objects.get(record.id) === record;
         const memory =
           context.payload ||
           context.machine ||
@@ -336,14 +344,17 @@ export function createNativeFESTask(world, record) {
         if (!memory) throw new Error('FES notification requires sender memory');
         const name = wParam ? memory.string(wParam) : null,
           index = name === null ? 0 : memory.load(wParam + 32);
-        await this.player.notify(memory.string(lParam), name, index);
+        await player.notify(memory.string(lParam), name, index);
+        if (!live()) return NATIVE_UNWRITTEN_WORD;
         if (!input.state.sleeping) {
-          await world.graphics.syncFES(record, this.player, {
+          await world.graphics.syncFES(record, player, {
             resourcesOnly: true,
             executorEntry: context.executorEntry,
           });
+          if (!live()) return NATIVE_UNWRITTEN_WORD;
           await input.sync();
-          await world.graphics.flushFESRedraw(this.player.root);
+          if (!live()) return NATIVE_UNWRITTEN_WORD;
+          await world.graphics.flushFESRedraw(root);
         }
         return NATIVE_UNWRITTEN_WORD;
       }

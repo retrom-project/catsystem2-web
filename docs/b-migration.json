@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 239, "oracle": 148, "differential": 67 },
+    "counts": { "js": 240, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -100,6 +100,7 @@
         "tests/fes-motion-driver.test.mjs",
         "tests/fes-motion-model.test.mjs",
         "tests/fes-notification-flush-default.test.mjs",
+        "tests/fes-notification-liveness-default.test.mjs",
         "tests/fes-nv-proportional.test.mjs",
         "tests/fes-object-collection.test.mjs",
         "tests/fes-panel-driver.test.mjs",
@@ -52433,7 +52434,7 @@
     },
     {
       "file": "src/native/fes-task.mjs",
-      "sourceSha256": "f5db432f81548190917432dc2f72ddd6a057d591cafa61cc7142b5a22b70b007",
+      "sourceSha256": "5723c3d17a57a2ff4824152fcee6e89533e2c70cee0db04aa1fae807c0352bba",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52464,7 +52465,7 @@
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 423,
+          "line": 434,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "traced",
