@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 177, "oracle": 148, "differential": 67 },
+    "counts": { "js": 179, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -30,6 +30,8 @@
         "tests/control-render.test.mjs",
         "tests/data-boundary.test.mjs",
         "tests/default-fes-world.test.mjs",
+        "tests/effekseer-crt-random.test.mjs",
+        "tests/effekseer-crt-threads.test.mjs",
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-resources.test.mjs",
         "tests/emote-animation.test.mjs",
@@ -2345,8 +2347,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 444,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 50, "8": 170, "9": 55 },
+    "runtimeFiles": 446,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 52, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48389,6 +48391,32 @@
     {
       "file": "src/cst-syntax.mjs",
       "sourceSha256": "1fdf5fd5a25890d2115cf3ec3b665dc5edc774140a51261069cb6dc8722da3d7",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/crt-random.mjs",
+      "sourceSha256": "83800cc8dcc60b61fbbef9e32c4478b08f5ca108b9cef3f23bb83f26a3ebc6cb",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/crt-threads.mjs",
+      "sourceSha256": "5133dde33c517091353e2d41f0faf16b237eb9a169f766273e500988ca6411b4",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

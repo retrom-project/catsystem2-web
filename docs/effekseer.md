@@ -55,6 +55,24 @@ identities and restores the IDs/references. It neither plays nor replays an Effe
 A failed restore closes its incomplete resource owner. `close()` is idempotent.
 This is a resource checkpoint component, not a complete EFK task checkpoint.
 
+`src/effekseer/crt-random.mjs` implements the unsigned MSVC CRT recurrence in
+`LogicalThreadCRT`. `crt-threads.mjs` exports `LogicalCRTThreads`, whose callers
+must explicitly create and select a logical thread. Separate managers on that
+thread share one stream in call order; an unknown thread fails instead of
+creating a fallback. A newly created thread starts at seed 1. This does not
+establish the seed at the first actual EFK Play after other engine consumers.
+Snapshots retain every current state word and diagnostic draw/reseed counter;
+fresh restore neither draws nor reseeds.
+
+These are independent data APIs. They are not registered with World or remaining
+native consumers. That later binding must share one authoritative CRT state with
+the actual logical thread, rather than keep independently advancing JS and guest
+copies. No EFKPLANE runtime capability follows from these modules. Integer tests
+include 20,480 comparisons with an independent BigInt recurrence; local original
+oracle evidence separately compares 320 return values and 320 PTD state words.
+That observation uses authored seeds on its synthetic thread, not a real first
+Play or a complete external-caller map.
+
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their
 dependencies, and an authored nonempty sprite Effect/texture. The public manifest
