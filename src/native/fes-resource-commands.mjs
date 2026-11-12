@@ -3,7 +3,18 @@
 import { setFESImageID } from './fes-image-model.mjs';
 import { setFESControlFile } from './fes-control-model.mjs';
 
-export const FES_RESOURCE_COMMANDS = new Set(['load', 'attr', 'strid', 'redraw']);
+export const FES_RESOURCE_COMMANDS = new Set([
+  'load',
+  'loadlist',
+  'loadlist2',
+  'attr',
+  'strid',
+  'redraw',
+]);
+const listModes = Object.freeze({
+  loadlist: { seenOnly: false, numericSource: 'last-read' },
+  loadlist2: { seenOnly: true, numericSource: 'group' },
+});
 const imageTypes = new Set([2, 6, 11, 12, 22]);
 const attributeTypes = new Set([1, 2, 6, 16, 17, 18, 19, 20, 25]);
 
@@ -13,6 +24,7 @@ export class FESResourceCommands {
   }
   async command(verb, selection, args = [], context = {}) {
     if (!FES_RESOURCE_COMMANDS.has(verb)) throw new Error('Unknown FES resource command ' + verb);
+    if (Object.hasOwn(listModes, verb)) return this.loadList(verb, selection, args, context);
     if (verb !== 'load') return this.query(verb, selection, args, context);
     const name = selection.nameBytes ?? selection.name,
       first = selection.index === -1 ? 0 : selection.index,
@@ -64,6 +76,38 @@ export class FESResourceCommands {
         if (!this.loadEFK) throw new Error('Unimplemented FES EFKPLANE load');
         this.loadEFK(object, file);
       }
+    }
+    return 0;
+  }
+  loadList(verb, selection, args, context) {
+    if (selection.index === -1) return 0;
+    const object = this.collection.lookup(selection.nameBytes ?? selection.name, selection.index),
+      gallery = this.instance.cgGallery;
+    if (!object || !gallery) return 0;
+    const text = (i) => (context.text ? context.text(i) : this.instance.soundArgument(args[i])),
+      evaluate = (token) =>
+        context.evaluateExpanded
+          ? context.evaluateExpanded(token) | 0
+          : this.instance.value(token) | 0;
+    let scratch;
+    const number = (i, fallback = 0) => {
+      if (args[i] === undefined) return fallback;
+      scratch = text(i);
+      return evaluate(scratch);
+    };
+    number(0);
+    if (args[1] === undefined) return 0;
+    const group = text(1),
+      variant = number(2),
+      section = number(3),
+      mode = listModes[verb],
+      block = /^[$0-9]/.test(group)
+        ? evaluate(mode.numericSource === 'group' ? group : scratch)
+        : group,
+      selected = gallery.variants(block, section, mode.seenOnly)[variant >>> 0];
+    if (selected !== undefined && imageTypes.has(object.nativeType)) {
+      this.setImageFile(object, selected);
+      setFESImageID(object, section);
     }
     return 0;
   }

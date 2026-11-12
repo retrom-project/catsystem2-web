@@ -224,6 +224,21 @@ export class CGGallery {
   get(block, variant, section = 0, seenOnly = true) {
     return this.variants(block, section, seenOnly)[variant] ?? '';
   }
+  snapshot() {
+    return {
+      list: structuredClone(this.list),
+      registry: this.registry.write(),
+      storage: structuredClone(this.storage),
+      // Retained resource input for the explicit original gallery consumer.
+      listBytes: this.listBytes?.slice(),
+    };
+  }
+  static restore(state) {
+    const gallery = new CGGallery(structuredClone(state.list), new CGRegistry(state.registry));
+    gallery.storage = structuredClone(state.storage);
+    gallery.listBytes = state.listBytes?.slice();
+    return gallery;
+  }
 }
 
 // cgreg_init destroys the previous per-instance registry and reads the current

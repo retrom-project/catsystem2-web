@@ -3055,9 +3055,9 @@
       "names": ["loadlist"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/loadlist.html",
-      "implementation": "src/native/fes-gallery.mjs; src/native/fes-objects.mjs",
-      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
-      "note": "The original IMAGE command uses the current CGL and can load unseen entries. The numeric and named lookup routes, exact authored image pixels and fresh World are tested across the pair of list verbs; other accepted receiver types still need coverage.",
+      "implementation": "src/native/fes-resource-commands.mjs",
+      "evidence": ["tests/fes-gallery-commands.test.mjs", "tests/gallery-contracts.test.mjs"],
+      "note": "Frozen 74/76 JS commands use the owning CGGallery with exact explicit-index/list/parameter/type gates, all-vs-registered variants, defined miss/empty behavior and current semantic checkpoint. Both original handlers verify filename/ID vectors; default World pixels and source-free gallery restore pass. Manual difference: first numeric argument is evaluated but ignored and the final section also becomes frame ID; numeric loadlist uses the last token scratch while loadlist2 uses the group token. These original ABI behaviors are retained without a manual extension.",
       "signatures": ["[obj] loadlist [tid] [tno] [no] [id]"]
     },
     {
@@ -3066,9 +3066,9 @@
       "names": ["loadlist2"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/loadlist2.html",
-      "implementation": "src/native/fes-gallery.mjs; src/native/fes-objects.mjs",
-      "evidence": ["tests/native-fes-images.test.mjs", "docs/native-fes-images.md"],
-      "note": "Both original IMAGE handlers resolve only registered entries and preserve the image on a miss. Authored pixel and fresh-World tests cover both profiles; the fixed SDK CG viewer declares IMAGE. Other accepted receiver types still need coverage.",
+      "implementation": "src/native/fes-resource-commands.mjs",
+      "evidence": ["tests/fes-gallery-commands.test.mjs", "tests/gallery-contracts.test.mjs"],
+      "note": "Frozen 74/76 JS commands use the owning CGGallery with exact explicit-index/list/parameter/type gates, all-vs-registered variants, defined miss/empty behavior and current semantic checkpoint. Both original handlers verify filename/ID vectors; default World pixels and source-free gallery restore pass. Manual difference: first numeric argument is evaluated but ignored and the final section also becomes frame ID; numeric loadlist uses the last token scratch while loadlist2 uses the group token. These original ABI behaviors are retained without a manual extension.",
       "signatures": ["[obj] loadlist2 [tid] [tno] [no] [id]"]
     },
     {

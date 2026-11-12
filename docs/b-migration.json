@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 177, "oracle": 147, "differential": 67 },
+    "counts": { "js": 177, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -206,6 +206,7 @@
         "tests/fes-dif-image.test.mjs",
         "tests/fes-effect-driver.test.mjs",
         "tests/fes-effect-model.test.mjs",
+        "tests/fes-gallery-commands.test.mjs",
         "tests/frame-profile-counters.test.mjs",
         "tests/hg2.test.mjs",
         "tests/native-area-task-lifecycle.test.mjs",
@@ -48855,7 +48856,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "3cd71a5e2fb878eec16b3271a42b7059a1640a30352f85de6a6c9eaf0dfe386b",
+      "sourceSha256": "c5b5f8765c9b9e0371f13e838b85032d08089f29720b46ed27d7dbee49997e7a",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48881,7 +48882,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "f9f10c031265db835420041ac6cd9f72635f83037033c19d879ba312ce942b3d",
+      "sourceSha256": "23edda8b8340136e9b381ac621047bd9c94f900013b936305ce42abe49dc4f7d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49102,7 +49103,7 @@
     },
     {
       "file": "src/gallery.mjs",
-      "sourceSha256": "dc3891790740f35803e72ea303f6a8d2451763b19c57378e307ff425bc0699f0",
+      "sourceSha256": "4719478c9e89ac4d74069488214bcebef223673311f27890e3127c57d9dd5d88",
       "domain": 4,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51390,7 +51391,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "39f3efc0a883739c6191df8d615c349abb31994f92d0c734d6654584a5511ff6",
+      "sourceSha256": "295a791dc3b5b52621293e73004559fe7e23a37e6a27e39bb120d16f8ab51cc9",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51407,28 +51408,28 @@
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 625,
+          "line": 626,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 634,
+          "line": 635,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 642,
+          "line": 643,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 664,
+          "line": 665,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -51821,7 +51822,7 @@
     },
     {
       "file": "src/native/fes-resource-commands.mjs",
-      "sourceSha256": "6157f8ce2937c7d76a5569d986fe45a21ddc8339e3a4d3dc25a79d7984606fe5",
+      "sourceSha256": "991f9fc8ef629fcb38017b76ed9d42bfb0c7933f589539ed76f9aa5d3cb90d20",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

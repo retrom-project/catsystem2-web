@@ -5,6 +5,7 @@ import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
 import { NativeFESSourceArena } from '../native/fes-source.mjs';
 import { tokenizeFESLine } from './tokens.mjs';
+import { CGGallery } from '../gallery.mjs';
 
 export class FESPlayer {
   constructor(game, images, host = {}, globals = {}, strings = {}) {
@@ -582,7 +583,7 @@ export class FESPlayer {
             exitCode: s.exitCode,
             childTaskID: s.childTaskID,
             kcsTaskID: s.kcsTaskID,
-            galleryDescriptor: s.galleryDescriptor,
+            cgGallery: s.cgGallery?.snapshot() ?? null,
             finished: s.finished,
             suspended: s.suspended,
             waitFrames: s.waitFrames,
@@ -671,13 +672,7 @@ export class FESPlayer {
       ])
         s[key] = structuredClone(saved[key]);
       if (!s.program.blocks[s.label]) throw new Error('Save refers to missing FES block');
-      if (saved.galleryDescriptor) {
-        const { file, entry, list } = saved.galleryDescriptor;
-        if (typeof this.host.openGallery !== 'function')
-          throw new Error('CG gallery storage is unavailable');
-        s.galleryDescriptor = structuredClone(saved.galleryDescriptor);
-        s.cgGallery = await this.host.openGallery(file, entry, list);
-      }
+      s.cgGallery = saved.cgGallery ? CGGallery.restore(saved.cgGallery) : null;
       if (!s.runtime)
         for (const o of saved.objects) {
           const { motionState, ...fields } = o,

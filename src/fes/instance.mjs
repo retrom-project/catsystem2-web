@@ -1083,12 +1083,12 @@ export class FESInstance {
         if (typeof host.openGallery !== 'function')
           throw new Error('CG gallery storage is unavailable');
         this.cgGallery = null;
-        this.galleryDescriptor = {
+        const descriptor = {
           file: this.text(args[0]),
           entry: p(1),
           list: this.text(args[2]),
         };
-        const { file, entry, list } = this.galleryDescriptor;
+        const { file, entry, list } = descriptor;
         this.player.enqueue(
           Promise.resolve(host.openGallery(file, entry, list)).then((gallery) => {
             this.cgGallery = gallery;

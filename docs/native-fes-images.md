@@ -407,3 +407,9 @@ transcripts for the additional raw boundaries. Both registered Worlds select,
 decode and draw actual pixels, then restore without image/table resource files.
 Malformed cyclic/out-of-range trees, embedded CSV NUL and an unterminated fixed
 prefix fail explicitly; arbitrary original out-of-bounds reads are not emulated.
+
+## Default gallery image selection
+
+The default `loadlist` / `loadlist2` commands query the owning FES instance's existing JS `CGGallery`. They require an explicit selected index and an initialized gallery, evaluate parameters at the original positions, and only write IMAGE2/BUTTON6/PANEL11/SAVEPANEL12/IMGWND22. Missing variants preserve FILE/ID; a present empty variant clears FILE. `loadlist2` filters through that same gallery's current registration tree.
+
+Both frozen ABIs evaluate but ignore the first numeric argument and reuse the final section argument as frame ID. Numeric `loadlist` evaluates the last expanded numeric token buffer again; `loadlist2` evaluates the group token. These are retained original behaviors, separately recorded from the manual. The current checkpoint owns the parsed gallery/list input, registration bytes and persistence destination. Restore reconstructs this JS state without reopening CGL or saved registration files; an explicit later `cgreg_init` still reads a fresh registry. The former development-only gallery descriptor is removed in place. `tests/fes-gallery-commands.test.mjs` covers both original command vectors and normal JS factory pixels/fresh World behavior.

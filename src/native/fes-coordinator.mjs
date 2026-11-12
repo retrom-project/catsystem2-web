@@ -521,6 +521,7 @@ export class FESCoordinator {
       argument: (i) => instance.value(instance.soundArgument(args[i])) | 0,
       text: (i) => instance.soundArgument(args[i]),
       evaluate: (token) => instance.value(instance.soundArgument(token)),
+      evaluateExpanded: (token) => instance.value(token),
     };
   }
   async screenCommand(verb, args) {
