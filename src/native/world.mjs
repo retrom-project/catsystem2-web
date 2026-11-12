@@ -38,25 +38,10 @@ import { installFESCoordinator } from './fes-coordinator.mjs';
 import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
 import { requireTransitionalHost } from './transitional-exe.mjs';
-import { checkNativeDirectXStartup } from './engine-system-information.mjs';
-import { initializeNativeDesktop } from './engine-desktop.mjs';
-import { initializeNativeStartupInstance } from './engine-startup-instance.mjs';
-import { initializeNativeWindowClass } from './engine-window-class.mjs';
-import { initializeNativeStartupMenu, refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
-import { initializeNativeAccelerators } from './engine-startup-accelerators.mjs';
-import {
-  initializeNativeApplicationWindow,
-  NATIVE_APPLICATION_SERVICES_MESSAGE,
-} from './engine-startup-application.mjs';
+import { refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
+import { NATIVE_APPLICATION_SERVICES_MESSAGE } from './engine-startup-application.mjs';
 import { runNativeWindowPump } from './engine-window-pump.mjs';
-import {
-  createNativeStartupWindow,
-  initializeNativeWindowOwner,
-  setNativeWindowCaption,
-} from './engine-startup-window.mjs';
-import { readNativeStartupPreferences } from './engine-preferences.mjs';
-import { readNativeStartupSoundConfiguration } from './engine-startup-sound.mjs';
-import { loadNativeGameStartupLanguage } from './engine-language.mjs';
+import { setNativeWindowCaption } from './engine-startup-window.mjs';
 import { installNativeMatrices } from './matrix.mjs';
 import { installNativeText } from './text-task.mjs';
 import { NativeGlobalStrings } from './global-strings.mjs';
@@ -109,6 +94,7 @@ import { NativeSaveSlots } from './save-slots.mjs';
 import { installNativeUnicodeOutput } from './unicode-output.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeSystemClock } from './clock.mjs';
+import { initializeNativeStartupInputs, initializeNativeStartupSound } from './startup-inputs.mjs';
 import { NativeDispatchContext } from './dispatch-context.mjs';
 import { EffekseerWorld, EFFEKSEER_FRAME_EXECUTOR } from '../effekseer/world.mjs';
 
@@ -130,6 +116,7 @@ export class NativeWorld {
     steam = null,
     factories = {},
     bootstrapOwner = null,
+    startupDocument,
     transitionalExe = null,
     installM2 = installNativeM2,
     particleRegistry,
@@ -145,6 +132,7 @@ export class NativeWorld {
       random,
       motionLibrary,
       bootstrapOwner,
+      startupDocument,
       transitionalExe,
     });
     this.dispatchContext = new NativeDispatchContext();
@@ -917,63 +905,14 @@ export class NativeWorld {
 
   async initialize(name) {
     await this.imageFiles.initialize();
-    if (this.bootstrapOwner) {
-      const engine = await this.ensureNativeEngine();
-      engine.features
-        .get('random-memory')
-        .initialize({ fromClock: this.bootstrapOwner.seedFromClock });
-      await readNativeStartupPreferences(
-        engine,
-        (name) => this.storage.readSaved?.(name),
-        (detail) => this.host.nativeDiagnostic?.(detail),
-      );
-      // The game WinMain reads setup.xml before checking the EXE resources;
-      // the SDK does its resource check before loading game defaults.
-      if (
-        nativeABI(this.profile).startup.resourceCheck === 'after-preferences' &&
-        engine.executableResources
-      ) {
-        await loadNativeGameStartupLanguage(engine);
-        await engine.executableResources.initialize();
-      }
-    }
+    await initializeNativeStartupInputs(this);
     if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
-    if (this.bootstrapOwner) {
-      await checkNativeDirectXStartup(this.nativeEngine);
-      await (await this.getNativeFeature('renderer')).initializeCapabilities();
-      await initializeNativeStartupInstance(this.nativeEngine);
-      await initializeNativeDesktop(this.nativeEngine);
-      await initializeNativeWindowClass(this.nativeEngine);
-      await initializeNativeStartupMenu(this.nativeEngine);
-      await initializeNativeWindowOwner(this.nativeEngine);
-      await createNativeStartupWindow(this.nativeEngine);
-      await initializeNativeAccelerators(this.nativeEngine);
-      await (await this.getNativeFeature('input-device')).pointer();
-      await setNativeWindowCaption(this.nativeEngine);
-      await initializeNativeApplicationWindow(this.nativeEngine);
-      this.startupScript = name;
-      try {
-        await this.processWindowMessages();
-        if (!this.main || this.quitRequested)
-          throw new Error('Original application startup did not reach the Script entry');
-      } finally {
-        delete this.startupScript;
-      }
-      for (const { message, wParam, lParam } of this.windowMessages.splice(0))
-        this.window.post(message, wParam, lParam);
-    } else await this.initializeApplicationServices(name);
+    await this.initializeApplicationServices(name);
     await this.tick();
     return this.main;
   }
   async initializeApplicationServices(name) {
-    if (this.bootstrapOwner)
-      await readNativeStartupSoundConfiguration(
-        this.nativeEngine,
-        this.soundConfiguration,
-        (name) => this.storage.readSaved?.(name),
-        (detail) => this.host.nativeDiagnostic?.(detail),
-        { startupWindow: true },
-      );
+    await initializeNativeStartupSound(this);
     this.graphics.initializeTextures();
     await this.globalStrings.initialize();
     this.refreshTitle();

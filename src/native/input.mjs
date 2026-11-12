@@ -89,10 +89,7 @@ export class NativeInput {
     this.textRequest = 0;
     this.cursorVisible = true;
     this.cursorEnabled = 1;
-    this.cursorAutoHide = configuration ? readWord(configuration.blocks[2], 4) : 0;
-    this.cursorHideFrames = configuration
-      ? Math.imul(60, readWord(configuration.blocks[2], 5)) >>> 0
-      : 0;
+    this.configureCursor();
     this.idleFrames = 0;
     this.cursorBlocked = 0;
     this.forceCursor = false;
@@ -100,6 +97,12 @@ export class NativeInput {
     this.pointerActivation = false;
     this.warp = null;
     this.mouseState = new Uint8Array(32);
+  }
+  configureCursor() {
+    this.cursorAutoHide = this.configuration ? readWord(this.configuration.blocks[2], 4) : 0;
+    this.cursorHideFrames = this.configuration
+      ? Math.imul(60, readWord(this.configuration.blocks[2], 5)) >>> 0
+      : 0;
   }
   // Priorities are signed. Equal priorities retain list order; changing a
   // priority removes and appends the record before the stable native sort.

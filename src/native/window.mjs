@@ -105,8 +105,31 @@ export class NativeWindow {
     return this.world.host.nativeWindowAction({ type, ...detail }, this.world);
   }
   async sendEvent(event, w = 0, l = 0, options) {
-    if (this.world.root === undefined || !this.world.objects.objects.has(this.world.root)) return 0;
-    return (await this.world.getNativeFeature('window-events')).send(event, w, l, options);
+    const world = this.world;
+    if (world.root === undefined || !world.objects.objects.has(world.root)) return 0;
+    if (world.bootstrapOwner) {
+      // JS startup does not construct the original window/Settings/random
+      // owners. A supplied transitional host must not silently create only
+      // part of that old startup and then enter its application event helper.
+      const engine = world.nativeEngine,
+        refs = engine?.refs,
+        random = engine?.features.get('random-memory');
+      if (
+        !this.opened ||
+        !refs?.nativeOwner ||
+        !refs.owner ||
+        !refs.settings ||
+        !refs.randomOwner ||
+        refs.applicationWindowHook !== this.handle ||
+        random?.engine !== engine ||
+        random?.random !== world.random ||
+        random?.closed
+      )
+        throw new Error(
+          `Unmigrated ${world.profile} operation window-events requires initialized original application, Settings and random owners; ordinary JS startup does not provide them`,
+        );
+    }
+    return (await world.getNativeFeature('window-events')).send(event, w, l, options);
   }
   async broadcast() {
     const world = this.world;

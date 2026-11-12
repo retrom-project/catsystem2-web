@@ -156,6 +156,7 @@ export class CatSystem2 {
       images: this.images,
       host: this.host,
       profile: this.nativeProfile,
+      startupDocument: startup,
       bootstrapOwner: {
         executableResources: true,
         embeddedJavaScript: nativeABI(this.nativeProfile).capabilities.embeddedJavaScript,

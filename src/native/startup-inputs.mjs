@@ -1,0 +1,83 @@
+// SPDX-License-Identifier: MPL-2.0
+// Fresh application startup fills the same owners used by scripts and snapshots.
+import { nativeABI } from './abi/index.mjs';
+import { applyNativePreferences } from './preferences.mjs';
+import { applyNativeSoundPreferences, nativeSoundConfigurationFilename } from './sound-config.mjs';
+import { parseNativeXML } from './xml.mjs';
+import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
+import { checkNativeStartupResources } from './startup-resources.mjs';
+
+export function nativeStartupSeed(clock) {
+  // Match GetLocalTime: one clock sample, current timezone/DST, no weekday.
+  const now = Math.trunc(clock.utcNow()),
+    local = nativeFileTime(now - new Date(now).getTimezoneOffset() * 60000),
+    words = nativeSystemTime(local);
+  if (!words) throw new Error('Application startup requires a valid local clock');
+  return words.reduce((sum, word, index) => (index === 2 ? sum : (sum + word) >>> 0), 0);
+}
+
+export async function initializeNativeStartupInputs(world) {
+  // Explicit data-only Worlds already supply their initialized owners.
+  if (!world.bootstrapOwner) return;
+  const { configuration, storage, profile, host } = world,
+    abi = nativeABI(profile),
+    diagnostic = (detail) => host.nativeDiagnostic?.(detail);
+  if (abi.startup.resourceCheck !== 'after-preferences')
+    await checkNativeStartupResources(world.game, profile);
+  const seed = nativeStartupSeed(world.clock);
+  if (world.bootstrapOwner?.seedFromClock) {
+    // The existing integer/real MT streams are the only MT state authorities.
+    world.random.real.seed(seed);
+    world.random.integer.seed(seed);
+  }
+  const file = world.preferencesName,
+    saved = (await storage.readSaved?.(file)) ?? null;
+  if (saved && !applyNativePreferences(configuration, saved))
+    diagnostic({ type: 'preferences-invalid', file });
+  // WinMain recomputes effective volumes even if setup is missing or invalid.
+  configuration.deriveVolumes();
+  // The primary Input owner exists before setup; its task is created below.
+  world.input.configureCursor();
+  const screen = configuration.screen;
+  world.graphics.view.configure({
+    virtualWidth: screen.virtualWidth,
+    virtualHeight: screen.virtualHeight,
+    clientWidth: screen.currentWidth,
+    clientHeight: screen.currentHeight,
+    drawingRectangle: [0, 0, screen.currentWidth, screen.currentHeight],
+  });
+  if (abi.startup.resourceCheck === 'after-preferences')
+    await checkNativeStartupResources(world.game, profile);
+}
+
+export async function initializeNativeStartupSound(world) {
+  if (!world.bootstrapOwner) return;
+  const { soundConfiguration: sound, storage, profile, host } = world,
+    abi = nativeABI(profile),
+    diagnostic = (detail) => host.nativeDiagnostic?.(detail);
+  // A resource document and the user's same-named saved tree are separate inputs.
+  sound.filename = nativeSoundConfigurationFilename(world.startupDocument);
+  sound.loaded = false;
+  sound.master = null;
+  sound.parts = [];
+  sound.groups.clear();
+  sound.dirty = false;
+  if (!sound.filename) return;
+  const bytes = await world.runtime.read(sound.filename, 'config');
+  if (bytes === null || bytes === undefined) return;
+  // The original reports an opened, malformed resource as loaded but unparsed.
+  sound.loaded = true;
+  let document;
+  try {
+    document = parseNativeXML(bytes, abi.xmlEncoding);
+  } catch {
+    diagnostic({ type: 'sound-configuration-invalid', file: sound.filename });
+    return;
+  }
+  sound.load(document);
+  // The original reaches saved preferences only after the resource XML and
+  // its MASTER/PART tree have loaded successfully (7186FC -> 718E2F).
+  const preferences = (await storage.readSaved?.(sound.filename)) ?? null;
+  if (preferences && !applyNativeSoundPreferences(sound, preferences))
+    diagnostic({ type: 'preferences-invalid', file: sound.filename });
+}

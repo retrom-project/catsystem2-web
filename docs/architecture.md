@@ -45,6 +45,27 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
 main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列。FES、CST、运动、
 声音和插件属于这些任务的服务，界面入口和流程由原系统脚本决定。
 
+普通 `CatSystem2.initialize` 使用现有 JS owner 完成 startup/gamedef、保存的 setup、
+音量派生、视图、语言和应用服务初始化，创建真实 root/Input/Sound/Script 并执行首帧；
+这条路径不自动打开 `transitionalExe`。SOUNDCONFIG 经 config 资源挂载读取，其同名用户
+偏好另由 NativeFileStorage 读取。只有挂载资源存在、XML 解析及声音树加载成功后，才读取
+同名保存偏好；缺失或损坏的资源不会触碰该用户文件，保存偏好读取异常也不会抢先覆盖
+资源失败。新启动从 World 时钟只采样一次，按本地时间七字段
+（不含星期）初始化同一 integer/real MT；显式 seed 保留。fresh checkpoint restore 使用
+保存的当前 Config/Sound/MT/CRT 状态，不重读可变启动偏好，也不重播播种或首帧。
+
+EXE 在这条路径仅供 ABI 版本和命名资源数据检查。固定包装器缺失 V_CODE/DATA 时跳过
+原比较；存在时仍需实现解密与 startup v_code 验证，当前在首帧前抛出
+`UnsupportedStartupResource`，不会执行原程序或默默接受。KEY_CODE/KEY 只参与该解密，
+V_CODE2/DATA 的原私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer；
+加密 KIF 的 `__key__.dat` 仍由输入边界独立拒绝。V_CODE 迁移、浏览器菜单/accelerator
+和剩余按命令触发的 D8 服务仍待完成，不能据此称完整游戏启动或第 7 阶段已完成。
+显式 lazy 原消费者继续需要过渡宿主。真实 window.sendEvent 还要求既有的原 application
+窗口、Settings 和随机数 owner；普通 JS 启动缺少这些 owner 时，在 feature/open 前报错，
+即使调用方注入了过渡宿主也不自动运行部分旧启动。显式研究 oracle 路径保持独立。
+W1 的 mixed CRT guard 和未知 ABI/native 拒绝规则保持不变。这里不以缺少 canvas 推断
+GPU ready，也不引入第二设备生命周期状态。
+
 文字 writer、字体缓存及其生命周期由 `World.text` 中的单一 JavaScript runtime 拥有。
 普通文字任务和 LOG 使用 `world.text.runtime()`，不会为取得文字服务构造 EXE 后端。
 World checkpoint 的 `text` 字段保存并恢复这份状态；任务只保存 writer 身份和自己的图形状态。
