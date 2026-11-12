@@ -2,7 +2,7 @@
 
 Phase 7 implements a JS reader, resource owner and independent algorithm modules
 for legacy SKFE Effects.
-It does not yet implement EFKPLANE commands, particle simulation, geometry,
+It does not yet connect EFKPLANE commands, complete particle playback, geometry,
 drawing or task checkpoints. FES raw type 36 remains explicitly unsupported.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
@@ -96,6 +96,39 @@ successful D3D device creation has a separate single-precision API contract.
 GetScale/GetRotation and unsampled parameter domains retain their source-reference
 scope. No pixel tolerance, playback integration or browser support follows from
 these independent algorithms.
+
+`manager-lifecycle.mjs` owns per-manager handles, all retained Play instances,
+groups/containers, FIFO non-root capacity and delayed removal queues. Its
+`EffekseerManagerLifecycle` constructor requires resources, explicit logical
+threads and three instance operations: `initializeGroup`, `initializeInstance`
+and `calculateInstance`. It supplies no identity-matrix or color fallback for a
+missing implementation. `play(assetID, position, threadID)` and
+`update(threadID, delta)` choose the caller's stream explicitly; repeated Play
+keeps earlier handles alive, and `stop(handle)` marks only that handle. This
+StopEffect primitive does not implement the separate observed FES stop-verb quirk.
+
+`instance-transform.mjs` supplies motion/parent-binding/generation/absolute-force
+state and reused calculation scratch. Renderer initialization and cache-update
+operations remain required callbacks. The automatic renderer-state/composition
+adapter is not registered or included here. The manager's data visitor can
+refresh a stale calculation sequence at zero delta, without advancing age or
+sampling another random value; it is not a GPU renderer.
+
+Manager snapshots retain the whole current graph, live and removing instances,
+pool order, sampled operation data, matrices, pending flags and counters.
+Fresh restore validates graph ownership and references before publishing it. It
+adopts the references already restored by the aggregate resource owner; it does
+not Play, resample, recalculate or retain them again. Existing checkpoint
+serialization preserves typed arrays and signed zero. No World checkpoint hook
+or checkpoint-format change is introduced by these independent state APIs.
+
+Lifecycle and transform tests add 25 focused cases. Separate local original
+no-GPU manager comparisons cover 12 cases and 154 current-state observations,
+including repeated Play/StopEffect, pool starvation, root expiry and delayed GC.
+Topology, counters, CRT words and sampled current matrices/positions match
+exactly under that oracle's recorded FPCW `0x037F` configuration. These are CPU
+state observations, not original renderer-cache, pixel, native fresh-process
+restore or real frame-thread floating-environment acceptance.
 
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 181, "oracle": 148, "differential": 67 },
+    "counts": { "js": 183, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -33,6 +33,8 @@
         "tests/effekseer-crt-random.test.mjs",
         "tests/effekseer-crt-threads.test.mjs",
         "tests/effekseer-generation.test.mjs",
+        "tests/effekseer-instance-transform.test.mjs",
+        "tests/effekseer-manager-lifecycle.test.mjs",
         "tests/effekseer-numerical.test.mjs",
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-resources.test.mjs",
@@ -2349,8 +2351,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 449,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 55, "8": 170, "9": 55 },
+    "runtimeFiles": 451,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 57, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48445,6 +48447,32 @@
     {
       "file": "src/effekseer/generation.mjs",
       "sourceSha256": "10221e0cd7de7acea4e9c9bd9a8adb7988722aaa75097532fbd71515776ddcfe",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/instance-transform.mjs",
+      "sourceSha256": "7908180f1f7a04812a437cbb504b4f467f3b01512d96cfc5b31141099b75e9e2",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/manager-lifecycle.mjs",
+      "sourceSha256": "c4355d9d202fbb0e8c6122c61db7bed8cf50c54e2da1ff49b49cb183faaf7379",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
