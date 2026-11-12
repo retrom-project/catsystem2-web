@@ -76,6 +76,7 @@ export class FESPlaneDriver {
     if (typeof cacheFor !== 'function')
       throw new TypeError('FES plane requires the owning task image cache');
     Object.assign(this, { world, cacheFor });
+    this.activeTasks = new WeakMap();
   }
   supports(object) {
     return object.nativeType === 3 || object.nativeType === 4;
@@ -91,17 +92,13 @@ export class FESPlaneDriver {
     for (let index = 0; index < values.length; index++) packet.store(index * 4, values[index]);
     return packet;
   }
+  taskID(object) {
+    return this.activeTasks.has(object) ? this.activeTasks.get(object) : object.nativeTaskID;
+  }
   send(instance, object, message, w = 0, l = 0, payload = null, flags = 1) {
-    if (object.nativeTaskID == null) return;
-    return this.world.graphics.send(
-      object.nativeTaskID,
-      instance.runtimeID,
-      message,
-      w,
-      l,
-      payload,
-      flags,
-    );
+    const taskID = this.taskID(object);
+    if (taskID == null) return;
+    return this.world.graphics.send(taskID, instance.runtimeID, message, w, l, payload, flags);
   }
   async metadata(instance, object, reference) {
     if (!reference) throw new Error('FES plane metadata request has no resource reference');
@@ -124,7 +121,21 @@ export class FESPlaneDriver {
     object.height = metadata.getInt32(12, true);
     // The original SIZE2 source remains active for every later size rebuild.
   }
-  async update(instance, object, { restoring = false } = {}) {
+  async update(instance, object, options = {}) {
+    const had = this.activeTasks.has(object),
+      previous = this.activeTasks.get(object);
+    this.activeTasks.set(
+      object,
+      Object.hasOwn(options, 'previousTaskID') ? options.previousTaskID : object.nativeTaskID,
+    );
+    try {
+      return await this.drive(instance, object, options);
+    } finally {
+      if (had) this.activeTasks.set(object, previous);
+      else this.activeTasks.delete(object);
+    }
+  }
+  async drive(instance, object, { restoring = false } = {}) {
     if (object.deleted) return this.close(object);
     this.initialize(instance, object);
     if (restoring) return;
@@ -132,14 +143,15 @@ export class FESPlaneDriver {
       sleeping = !!instance.player.nativeInput?.state.sleeping;
     if (object.sizeDirty) {
       if (object.nativeType === 3) await this.size(instance, object);
-      if (object.nativeTaskID != null)
-        await this.world.objects.destroy(object.nativeTaskID, instance.runtimeID);
+      if (this.taskID(object) != null)
+        await this.world.objects.destroy(this.taskID(object), instance.runtimeID);
       object.nativeTaskID = await this.world.objects.create({
         kind: 2,
         parent: instance.runtimeID,
         creator: instance.runtimeID,
         name: 'FE Plane',
       });
+      this.activeTasks.set(object, object.nativeTaskID);
       await this.send(instance, object, 84, 0, object.planeType, null, 0);
       if (object.nativeType === 4) await this.size(instance, object);
       await this.send(

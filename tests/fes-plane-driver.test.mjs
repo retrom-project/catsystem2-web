@@ -297,3 +297,37 @@ for (const profile of profiles) {
     }
   });
 }
+
+for (const profile of profiles)
+  test(`${profile} an entry previous child is independent of the current plane getter`, async () => {
+    const h = await fixture(profile, [
+      plane('p', 4, { sizeDirty: true, dirty: true, width: 4, height: 3 }),
+    ]);
+    try {
+      const { world, driver, instance, object } = h;
+      await driver.update(instance, object, { previousTaskID: null });
+      const previous = object.nativeTaskID;
+      const other = await world.objects.create({
+        kind: 2,
+        parent: instance.runtimeID,
+        creator: instance.runtimeID,
+        name: 'another entry child',
+      });
+      object.nativeTaskID = other;
+      object.x = 27;
+      object.dirty = true;
+      await driver.update(instance, object, { previousTaskID: previous });
+      assert.equal(graphState(world, previous).pos[0], 27);
+      assert.equal(world.graphics.get(other).graph, null);
+      assert.equal(object.nativeTaskID, other);
+      object.sizeDirty = object.dirty = true;
+      await driver.update(instance, object, { previousTaskID: previous });
+      assert.equal(world.objects.objects.get(previous).destroyRequested, true);
+      assert.equal(world.objects.objects.get(other).destroyRequested, undefined);
+      assert.notEqual(object.nativeTaskID, previous);
+      assert.notEqual(object.nativeTaskID, other);
+      assert.equal(graphState(world, object.nativeTaskID).pos[0], 27);
+    } finally {
+      await h.world.close();
+    }
+  });
