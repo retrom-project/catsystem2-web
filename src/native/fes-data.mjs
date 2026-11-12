@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // STRTABLE byte cells and FILELIST indexed entries are JS-owned. Neither
 // object allocates a renderer or an original data/map object.
-import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesFileListPattern, fesFileListKey, fesFileListEntries } from './fes-file-list.mjs';
@@ -115,37 +114,18 @@ export class NativeFESData {
       if (status !== -1) this.setGlobal(instance, status, Number(found));
       return 0;
     }
-    return (await this.world.getNativeFeature('fes-objects')).command(
-      instance,
-      object,
-      verb,
-      args,
-      {
-        ...context,
-        setStringBytes: (index, bytes) => {
-          const record = this.world.objects.objects.get(instance.runtimeID),
-            bank = this.world.runtime.handles.get(record.context.stringBank, 'string-bank');
-          bank.setBytes(index, bytes);
-        },
-      },
-    );
+    throw new Error(`Unimplemented FES ${object.type} command ${verb}`);
   }
-  async close(object) {
-    if (object.nativeObjectPointer == null) return;
-    await (await this.world.getNativeFeature('fes-objects')).destroy(object.nativeObjectPointer);
-    object.nativeObjectPointer = null;
+  async loadStringTable(_instance, object, file) {
+    const state = (object.nativeDataState ??= { appliedDefinitions: 0, rows: [] });
+    state.rows = [];
+    const bytes = await this.world.runtime.read(file, 'config');
+    if (bytes?.length) state.rows = readFESStringTable(bytes);
+    return state;
   }
+  async close() {}
 }
 
 export function installNativeFESData(world) {
   world.dataFES = new NativeFESData(world);
-  for (const type of [34, 35])
-    registerNativeFESObjectType(world, type, (runtime) => ({
-      size: 44,
-      construct: (runtime, instance, object, pointer, args) =>
-        runtime.constructBase(instance, object, pointer, args),
-      verbs: new Set(runtime.table.keys()),
-      vramOffset: null,
-      syncObject() {},
-    }));
 }

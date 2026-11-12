@@ -3,7 +3,7 @@
 import { SaveSlotFiles } from './save-slot-files.mjs';
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
-import { NativeFESObjectRuntime } from '../../src/native/fes-objects.mjs';
+import { NativeFESObjectRuntime } from '../../oracle/fes-objects-original.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeStringBank } from '../../src/native/string-bank.mjs';
 import { NativeSaveSlots as OracleSaveSlots } from '../../oracle/save-slots.mjs';

@@ -112,7 +112,9 @@ export class FESCommonCommands {
     index |= 0;
     const { collection, instance } = this,
       value = (at, fallback = 0) =>
-        args[at] === undefined ? fallback : instance.value(args[at]) | 0,
+        args[at] === undefined
+          ? fallback
+          : (context.argument ? context.argument(at) : instance.value(args[at])) | 0,
       end = index === -1 ? collection.count(name) : index + 1,
       start = index === -1 ? 0 : index,
       lookup = (at) => collection.lookup(name, at);

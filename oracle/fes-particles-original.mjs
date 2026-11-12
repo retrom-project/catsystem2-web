@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-import { mapABIMessage } from './abi/messages.mjs';
-import { registerNativeFESObjectType } from './fes-objects.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
 
 class NativeFESParticles {
   constructor(world) {

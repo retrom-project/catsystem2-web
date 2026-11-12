@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES control objects keep their own native records; their child tasks own the
 // input planes and renderer descriptors created by the original drivers.
-import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
-import { motionRegisters } from '../motion/definitions.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { motionRegisters } from '../src/motion/definitions.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 const ABI = {
   game: {
     13: {

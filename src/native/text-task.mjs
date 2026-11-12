@@ -10,18 +10,9 @@ import { NativeTextRuntime } from './text.mjs';
 import { NativeTextWindows } from './text-windows.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
-import { NativeFESText, nativeFESTextAdapter } from './fes-text.mjs';
-import { registerNativeFESObjectType } from './fes-objects.mjs';
 import { nativeReply } from '../kcs.mjs';
 import { installNativeLegacyText } from './text-legacy.mjs';
 import { installNativeDisplayLogs } from './text-log.mjs';
-import { NativeFESLog, nativeFESLogAdapter } from './fes-log.mjs';
-import { installNativeControls } from './control-task.mjs';
-import { installNativeFESImages } from './fes-images.mjs';
-import { installNativeFESData } from './fes-data.mjs';
-import { installNativeFESEffects } from './fes-effects.mjs';
-import { installNativeFESPlanes } from './fes-planes.mjs';
-import { installNativeFESArea } from './fes-area.mjs';
 
 export class NativeTextService {
   constructor(world, { glyphs = new CanvasTextGlyphs() } = {}) {
@@ -38,8 +29,8 @@ export class NativeTextService {
       { profile: world.profile, textWindows: windows },
       { world, glyphs },
     );
-    this.fes = new NativeFESText(this);
-    this.log = new NativeFESLog(world);
+    this.fes = null;
+    this.log = null;
   }
   async runtime() {
     await (this.ready ??= this.core.ready());
@@ -591,26 +582,10 @@ export function installNativeText(world, { glyphs } = {}) {
   installNativeEngineFiles(world);
   installNativeLegacyText(world);
   installNativeDisplayLogs(world);
-  installNativeControls(world);
-  installNativeFESImages(world);
-  installNativeFESData(world);
-  installNativeFESEffects(world);
-  installNativeFESPlanes(world);
-  installNativeFESArea(world);
-  world.registerNativeFeature('fes-text-projection', (engine) =>
-    engine.createFESTextProjection(world),
-  );
   world.registerNativeFeature('text', async (engine) => {
     const core = await world.text.runtime();
     return engine.createTextConsumerView(core);
   });
-  registerNativeFESObjectType(world, 21, (bridge) => nativeFESTextAdapter(bridge, 21));
-  registerNativeFESObjectType(world, 29, (bridge) => nativeFESTextAdapter(bridge, 29));
-  registerNativeFESObjectType(world, 24, (bridge) => nativeFESLogAdapter(bridge, 24));
-  if (nativeABI(world.profile).capabilities.utf8Text)
-    registerNativeFESObjectType(world, 37, (bridge) => nativeFESTextAdapter(bridge, 37));
-  if (nativeABI(world.profile).capabilities.utf8Text)
-    registerNativeFESObjectType(world, 38, (bridge) => nativeFESLogAdapter(bridge, 38));
   const service = new NativeTextService(world, { glyphs });
   world.text = service;
   for (const kind of [48, 49, 63]) world.objects.register(kind, (record) => service.create(record));

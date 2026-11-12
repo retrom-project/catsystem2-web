@@ -246,7 +246,7 @@ export class FESObjectCollection {
         .map(({ name, index }) => ({ nameBytes: name.bytes.slice(), name: name.text, index })),
     };
   }
-  restore(snapshot) {
+  restore(snapshot, { extraObjects = [] } = {}) {
     if (this.objects.length || this.groups.size || this.pending.length)
       throw new Error('FES collection restoration requires a fresh collection');
     const groups = new Map(),
@@ -297,7 +297,7 @@ export class FESObjectCollection {
       objects.push(object);
       byKey.set(object.key, object);
     }
-    const graph = new FESObjectGraph({ ...snapshot.graph, objects }),
+    const graph = new FESObjectGraph({ ...snapshot.graph, objects: [...objects, ...extraObjects] }),
       pending = snapshot.pending.map((record) => {
         const name = this.name(record.nameBytes),
           index = signed(record.index, 'saved pending index');

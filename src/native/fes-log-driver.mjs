@@ -84,7 +84,8 @@ export class FESLogDriver {
         const child = this.resolveChild(instance, handle);
         if (!child || child.deleted || child.parentHandle != null)
           throw new Error('LOG checkpoint generated STRING is absent or has a PARENT');
-        this.strings.validate(instance, child);
+        this.strings.state(child);
+        if (child.nativeTaskID != null) this.strings.validate(instance, child);
       }
     }
   }

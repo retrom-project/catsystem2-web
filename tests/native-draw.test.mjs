@@ -8,6 +8,11 @@ import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { floatBits } from '../src/kcs.mjs';
+import {
+  defaultFESWorld,
+  loadDefaultFES,
+  drawPixels as fesPixels,
+} from './fixtures/default-fes-world.mjs';
 
 async function drawPixels(world, id) {
   const bitmap = world.graphics.surface(id).bitmap;
@@ -190,54 +195,33 @@ test('rotated draw entries use the original fixed-point samples, alpha and desti
 });
 
 test('FES retained surfaces create real visible VRAM planes and retain separate plane opacity', async () => {
-  const world = fixture(),
-    id = await surface(world),
-    draw = world.graphics.drawTasks.get(id);
-  world.objects.register(34, () => ({
-    message() {
-      throw new Error('Unexpected test-owner message');
-    },
-  }));
-  const owner = await world.objects.create({ kind: 34 }),
-    record = world.objects.objects.get(owner);
-  record.implementation.surface = id;
-  const { FESInstance } = await import('../src/fes/instance.mjs'),
-    { parseProgram } = await import('../src/fes/program.mjs');
-  const player = {
-    frameCount: 0,
-    host: {},
-    strings: {},
-    metadata: new Map(),
-    picture: () => null,
-    expand: (v) => v,
-    unsupported: () => {},
-    unresolvedTargets: new Set(),
-  };
-  player.root = new FESInstance(
-    'authored',
-    parseProgram(
-      '#DEFINE\nPLANE panel\nCIMAGE red\n#OBJECT SIZE PRI DISP VRAM\npanel 8,6 5000 1 0,0\n#OBJECT SIZE COLOR DISP PL PRI\nred 2,2 4294901760 1 panel 10\n#START\n',
-    ),
-    player,
-  );
-  player.root.runtimeID = owner;
-  player.root.byKey.get('panel').alpha = 128;
-  world.graphics.bindFES(id, player);
-  await world.graphics.syncFES(record, player);
-  await draw.render();
-  const plane = world.graphics.get(player.root.byKey.get('panel').nativeTaskID);
-  assert.equal(plane.record.kind, 2);
-  assert.equal(plane.record.parent, owner);
-  assert.equal(plane.state.shown, true);
-  assert.equal(plane.graph.vram, true);
-  assert.equal(new DataView(plane.graph.kx2.buffer).getUint32(0x70, true) >>> 24, 128);
-  assert.deepEqual([...(await drawPixels(world, id)).subarray(0, 4)], [255, 0, 0, 255]);
-  assert.equal(
-    draw.state.renderer.items[0].key,
-    (owner | (player.root.byKey.get('red').handle << 16)) >>> 0,
-  );
-  await world.graphics.closeFES(record, player);
-  assert.equal(draw.state.renderer.items.length, 0);
+  const source =
+      '#DEFINE\nPLANE panel\nCIMAGE red\n#OBJECT SIZE PRI DISP VRAM BLEND\npanel 8,6 5000 1 0,0 128\n#OBJECT SIZE COLOR DISP PL PRI\nred 2,2 4294901760 1 panel 10\n#START\nnext WAIT\n#WAIT\n',
+    world = await defaultFESWorld('nekopara-vol3-engine-2.6.1.76', {
+      'screen.fes': new TextEncoder().encode(source),
+    });
+  try {
+    const h = await loadDefaultFES(world);
+    await h.task.tick();
+    const panel = h.instance.byKey.get('panel'),
+      red = h.instance.byKey.get('red'),
+      plane = world.graphics.get(panel.nativeTaskID);
+    assert.equal(plane.record.kind, 2);
+    assert.equal(plane.record.parent, h.id);
+    assert.equal(plane.state.shown, true);
+    assert.equal(plane.graph.vram, true);
+    assert.equal(new DataView(plane.graph.kx2.buffer).getUint32(0x70, true) >>> 24, 128);
+    assert.deepEqual([...(await fesPixels(world, h.surface)).subarray(0, 4)], [255, 0, 0, 255]);
+    assert.equal(
+      h.draw.state.renderer.items[0].key,
+      (world.nativeTaskID(h.id) | (red.renderID << 16)) >>> 0,
+    );
+    await world.objects.release(h.id);
+    assert.equal(h.draw.state.renderer.items.length, 0);
+    assert.equal(world.nativeEngine, undefined);
+  } finally {
+    await world.close();
+  }
 });
 
 test('base-image capture is a deep bitmap copy, survives entry reset and controls the real base plane', async () => {
@@ -317,61 +301,43 @@ test('base-image crop copies raw pixels and resets source canvas, anchor and cli
   assert.notEqual(world.graphics.vramHandle, 0);
 });
 
-test('FES baseimg captures the selected plane VRAM region rather than its screen transform', async () => {
-  const world = fixture(),
-    id = await surface(world),
-    draw = world.graphics.drawTasks.get(id);
-  world.objects.register(34, () => ({
-    message() {
-      return 0;
-    },
-  }));
-  const owner = await world.objects.create({ kind: 34 }),
-    record = world.objects.objects.get(owner);
-  record.implementation.surface = id;
-  const { FESInstance } = await import('../src/fes/instance.mjs'),
-    { FESPlayer } = await import('../src/fes/player.mjs'),
-    { parseProgram } = await import('../src/fes/program.mjs');
-  const player = new FESPlayer(world.game, {});
-  player.root = new FESInstance(
-    'capture',
-    parseProgram(
-      '#DEFINE\nPLANE panel\nCIMAGE color\n#OBJECT SIZE PRI DISP VRAM\npanel 2,2 5000 1 3,2\n#OBJECT SIZE COLOR DISP PL PRI\ncolor 2,2 4279312947 1 panel 10\n#START\nbaseimg panel\n#WAIT\n',
-    ),
-    player,
-  );
-  player.root.runtimeID = owner;
-  const panel = player.root.byKey.get('panel');
-  panel.x = 20;
-  panel.y = 30;
-  panel.rotation = 90;
-  panel.scaleX = 2;
-  panel.alpha = 100;
-  world.graphics.bindFES(id, player);
-  await world.graphics.syncFES(record, player);
-  player.root.execute('baseimg panel');
-  await player.flush();
-  const captured = world.graphics.images.get(draw.state.baseImage);
-  assert.deepEqual([captured.width, captured.height], [2, 2]);
-  assert.deepEqual([...(await captured.pixels())], Array(4).fill([17, 34, 51, 255]).flat());
-  await captured.fill(0, 0, 2, 2, 0xff0000ff);
-  await world.graphics.images
-    .get(player.root.byKey.get('color').nativeImageHandle)
-    .fill(0, 0, 2, 2, 0xffff0000);
-  assert.deepEqual([...(await captured.pixels()).subarray(0, 4)], [0, 0, 255, 255]);
-  await draw.render();
-  await world.graphics.fill(0, 0, 8, 6, 0);
-  player.root.execute('force_redraw');
-  assert.equal(player.root.forceRedrawPending, true);
-  assert.deepEqual(
-    [...(await world.graphics.images.get(world.graphics.vramHandle).pixels()).subarray(0, 4)],
-    [0, 0, 0, 0],
-  );
-  // Native notification 337 flushes this request after synchronizing objects.
-  await world.graphics.flushFESRedraw(player.root);
-  assert.equal(player.root.forceRedrawPending, false);
-  assert.deepEqual(
-    [...(await world.graphics.images.get(world.graphics.vramHandle).pixels()).subarray(0, 4)],
-    [0, 0, 255, 255],
-  );
+test('FES baseimg copies the original physical VRAM rows independently of the plane screen transform', async () => {
+  const source =
+      '#DEFINE\nPLANE panel\nCIMAGE color\n#OBJECT SIZE PRI DISP VRAM POS BLEND\npanel 2,2 5000 1 3,2 20,30 100\n#OBJECT SIZE COLOR DISP POS PRI\ncolor 2,2 4279312947 1 3,92 10\n#START\nnext WAIT\n#WAIT\n#CAPTURE\nbaseimg panel\nbreak\n#REDRAW\nforce_redraw\nbreak\n',
+    world = await defaultFESWorld('nekopara-vol3-engine-2.6.1.76', {
+      'screen.fes': new TextEncoder().encode(source),
+    });
+  try {
+    const h = await loadDefaultFES(world);
+    await h.task.tick();
+    const panel = h.instance.byKey.get('panel');
+    panel.rotation = 90;
+    panel.scaleX = 2;
+    panel.dirty = true;
+    await h.task.player.notify('CAPTURE');
+    const captured = world.graphics.images.get(h.draw.state.baseImage);
+    assert.deepEqual([captured.width, captured.height], [2, 2]);
+    assert.deepEqual([...(await captured.pixels())], Array(4).fill([17, 34, 51, 255]).flat());
+    await captured.fill(0, 0, 2, 2, 0xff0000ff);
+    const color = h.instance.byKey.get('color');
+    await world.graphics.images.get(color.imageResource.bitmap).fill(0, 0, 2, 2, 0xffff0000);
+    assert.deepEqual([...(await captured.pixels()).subarray(0, 4)], [0, 0, 255, 255]);
+    await h.draw.render();
+    await world.graphics.fill(0, 0, 128, 96, 0);
+    await h.task.player.notify('REDRAW');
+    assert.equal(h.instance.forceRedrawPending, true);
+    assert.deepEqual(
+      [...(await world.graphics.images.get(world.graphics.vramHandle).pixels()).subarray(0, 4)],
+      [0, 0, 0, 0],
+    );
+    await world.graphics.flushFESRedraw(h.instance);
+    assert.equal(h.instance.forceRedrawPending, false);
+    assert.deepEqual(
+      [...(await world.graphics.images.get(world.graphics.vramHandle).pixels()).subarray(0, 4)],
+      [0, 0, 255, 255],
+    );
+    assert.equal(world.nativeEngine, undefined);
+  } finally {
+    await world.close();
+  }
 });

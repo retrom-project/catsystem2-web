@@ -18,6 +18,7 @@ import {
 import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_FES_IDS, nativeFES } from './fes.mjs';
 import { createNativeFESTask } from './fes-task.mjs';
+import { installNativeTaskMemory } from './task-memory.mjs';
 import { createNativeScriptTask, installNativeScripts } from './script-task.mjs';
 import { installNativeSDKJavaScriptTasks } from './sdk-javascript-task.mjs';
 import { installNativeGraphics } from './graphics.mjs';
@@ -33,6 +34,7 @@ import { installNativeParticles } from './particles.mjs';
 import { NativeFESConfiguration } from './fes-config.mjs';
 import { serializeNativePreferences } from './preferences.mjs';
 import { NativeFESSound } from './fes-sound.mjs';
+import { installFESCoordinator } from './fes-coordinator.mjs';
 import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
 import { requireTransitionalHost } from './transitional-exe.mjs';
@@ -443,7 +445,9 @@ export class NativeWorld {
     installNativeParticles(this, { registry: particleRegistry });
     installNativeMatrices(this);
     installNativeText(this, { glyphs: host.nativeTextGlyphs?.() });
+    installNativeTaskMemory(this);
     installM2(this);
+    installFESCoordinator(this);
     for (const [kind, factory] of Object.entries(factories))
       this.objects.register(Number(kind), factory);
   }

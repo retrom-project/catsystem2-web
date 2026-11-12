@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original CPU image objects and frame drivers. FES owns the source wrapper;
 // retained renderer entries borrow its decoded pixels through native messages.
-import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
-import { registerNativeFESObjectType } from './fes-objects.mjs';
-import { runNativeFESObjectMotion } from './fes-controls.mjs';
-import { nativeRectangleDefinitions } from './windows-rectangles.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
+import { runNativeFESObjectMotion } from './fes-controls-original.mjs';
+import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const ABI = {
   game: {

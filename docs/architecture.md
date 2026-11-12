@@ -50,7 +50,15 @@ main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列�
 World checkpoint 的 `text` 字段保存并恢复这份状态；任务只保存 writer 身份和自己的图形状态。
 仍需原 Windows/GDI 服务的显式 D8 消费者通过 `text-consumer-view` 借用同一 runtime，
 只在自己的 checkpoint 保存 Windows 句柄，不重复保存、恢复或关闭 writer。
-FES 对象的旧前缀消费在第 7 阶段默认入口迁移完成前仍保留并计入盘点。
+默认 FES kind34 任务通过 `FESCoordinator` 拥有 typed 对象集合、MOT、资源 FIFO 和
+生命周期。定义、命令、输入及 frame driver 使用实际 World 图像、文字、控件、粒子、
+声音和 M2 服务；取得这些服务不构造 EXE 后端。资源条目每轮按当前名字和索引重新查找
+对象，并按其当前类型分派；重复初始化的资源、子任务和延后清理历史分别保存。
+LOG 生成的 STRING 经同一 pending FIFO 在后续分配轮次创建真实任务，普通 LOG 删除
+保留这些集合成员。当前 checkpoint 保存程序与语义状态，FES 恢复不重读定义或回放资源
+初始化；KCS/MOT 及 M2 自身的已有资源恢复契约继续适用。
+EFKPLANE 在现有默认工厂中仍明确未支持，是第 7 阶段尚未完成的子系统。
+旧 FES 原处理器 facade 只保留在 `oracle/`，显式 D8 消费者与其投影仍单独计数。
 
 已实现的 typed STRING 驱动在两份冻结 ABI 中保留明确的定义边界：POS 定义写 XYZ，
 VRAM 定义写 XY 并清 Z，这两条路径不读取原临时向量未初始化的 W，保留目标既有 W

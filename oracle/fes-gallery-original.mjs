@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 // The original loadlist commands read a kcCGList from the FES interpreter.
 // Bind the current instance's list and registration bytes for that call.
 const layouts = {

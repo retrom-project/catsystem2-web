@@ -326,11 +326,11 @@ export class NativeFESSound {
     const bank = this.state(instance, object).get('bank');
     if (bank !== -1) await this.send(instance, 210, bank, 0);
   }
-  async update(instance, object, { configurationDirty = false } = {}) {
+  async update(instance, object, { configurationDirty = false, advanceMotion = true } = {}) {
     const state = this.state(instance, object),
       target = this.targets.get(object);
     if (target) {
-      target.update(this.world.frame);
+      if (advanceMotion) target.update(this.world.frame);
       state.state.motion = target.snapshot();
     }
     let bank = state.get('bank'),
@@ -435,8 +435,13 @@ export class NativeFESSound {
   command(instance, object, verb, args, context = {}) {
     const state = this.state(instance, object),
       value = (i, fallback = 0) =>
-        args[i] === undefined ? fallback : instance.value(args[i], fallback),
-      text = (i) => instance.text(args[i] ?? '');
+        args[i] === undefined
+          ? fallback
+          : context.argument
+            ? context.argument(i)
+            : instance.value(args[i], fallback),
+      text = (i) =>
+        args[i] === undefined ? '' : context.text ? context.text(i) : instance.text(args[i]);
     const isTable = object.type === 'SNDTABLE';
     if (!nativeABI(this.world.profile).sound.fesExtensions && gameExtensions.has(verb))
       return this.subcommand(instance, object, verb, args);

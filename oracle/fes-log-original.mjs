@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 // LOGSTRING owns layout/display slots and creates STRING children. Its first
 // fields after the 44-byte base are not the plane/KX2 record.
 

@@ -2,14 +2,14 @@
 // Reviewed FES object constructors, built-in command handlers and frame drivers
 // execute from the mounted engine image. Only script storage/variable access,
 // file metadata and native task message transport cross into the host.
-import { nativeABI } from './abi/index.mjs';
-import { mapABIMessage } from './abi/messages.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
-import { planeState } from './fes-graphics.mjs';
-import { MOTION_ABI } from '../motion/abi.mjs';
-import { objectMotionState } from '../motion/target.mjs';
-import { tokenizeNativeFESSoundConfiguration } from './fes-sound-config.mjs';
-import { withNativeFESGallery } from './fes-gallery.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { planeState } from './fes-plane-state-original.mjs';
+import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { objectMotionState } from '../src/motion/target.mjs';
+import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
+import { withNativeFESGallery } from './fes-gallery-original.mjs';
 
 export class NativeFESObjectRuntime {
   constructor(engine, world) {

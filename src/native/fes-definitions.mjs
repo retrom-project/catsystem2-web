@@ -355,7 +355,9 @@ export class FESDefinitionModel {
       }
       return;
     }
-    if (type === 3 || type === 4) {
+    if (type === 33 && (await this.applySpecial?.(object, record, index)) !== true)
+      throw new Error('FES M2 definition requires its JavaScript family applier');
+    if (type === 3 || type === 4 || type === 33) {
       if (has('POS') && (get('POS')[0] !== undefined || get('POS')[1] !== undefined)) {
         const value = get('POS');
         vector(
@@ -381,7 +383,11 @@ export class FESDefinitionModel {
       }
       if (has('SIZE')) {
         const value = get('SIZE');
-        setFESGraphicalSize(object, value[0], value[1] ?? 0);
+        if (type === 33) {
+          object.width = value[0] | 0;
+          object.height = (value[1] ?? 0) | 0;
+          object.sizeDirty = true;
+        } else setFESGraphicalSize(object, value[0], value[1] ?? 0);
       }
       if (has('POS2'))
         resource(instance, object, 'positionReference', get('POS2'), 'positionPending');

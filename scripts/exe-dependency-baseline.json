@@ -71,11 +71,6 @@
       "calls": 0,
       "references": 0
     },
-    "src/native/control-task.mjs": {
-      "addresses": 12,
-      "calls": 2,
-      "references": 0
-    },
     "src/native/engine-configuration-event.mjs": {
       "addresses": 0,
       "calls": 1,
@@ -178,51 +173,6 @@
     },
     "src/native/engine-workers.mjs": {
       "addresses": 27,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-area.mjs": {
-      "addresses": 10,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-controls.mjs": {
-      "addresses": 42,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-effects.mjs": {
-      "addresses": 24,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-gallery.mjs": {
-      "addresses": 8,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-images.mjs": {
-      "addresses": 90,
-      "calls": 3,
-      "references": 0
-    },
-    "src/native/fes-log.mjs": {
-      "addresses": 33,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-objects.mjs": {
-      "addresses": 62,
-      "calls": 3,
-      "references": 0
-    },
-    "src/native/fes-particles.mjs": {
-      "addresses": 4,
-      "calls": 0,
-      "references": 0
-    },
-    "src/native/fes-planes.mjs": {
-      "addresses": 14,
       "calls": 0,
       "references": 0
     },

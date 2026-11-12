@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { FESPlayer } from '../fes/player.mjs';
+import { FESCoordinator } from './fes-coordinator.mjs';
+import { FESImageCache } from './fes-image-cache.mjs';
 import { FESInput } from './fes-input.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -8,6 +10,7 @@ import { NativeDictionary } from './dictionary.mjs';
 export function createNativeFESTask(world, record) {
   const implementation = world.base(record);
   const input = new FESInput(record, world),
+    imageCacheModel = new FESImageCache(world, record.id),
     baseMessage = implementation.message;
   Object.assign(implementation, {
     input,
@@ -18,38 +21,30 @@ export function createNativeFESTask(world, record) {
     stringsInherited: false,
     nativeDictionary: null,
     resultValue: 0,
-    imageCache: new Map(),
-    imageKey(name) {
-      return world.game.nativeResources ? world.game.nativeResources.resolve(name, 'image') : name;
+    imageCacheModel,
+    cacheImage(name, pointer) {
+      imageCacheModel.insert(name, pointer);
     },
-    async cacheImage(name, pointer) {
-      if (!pointer) return;
-      const key = this.imageKey(name);
-      if (this.imageCache.has(key)) return;
-      const buffers = await world.getNativeFeature('data-buffers');
-      buffers.retainPointer(pointer);
-      this.imageCache.set(key, pointer);
+    imageData(name) {
+      return imageCacheModel.data(name);
     },
-    async imageData(name) {
-      const key = this.imageKey(name);
-      if (this.imageCache.has(key)) return this.imageCache.get(key);
-      const bytes = world.game.readCategory
-        ? await world.game.readCategory(name, 'image')
-        : await world.game.read(name);
-      if (bytes === null) return 0;
-      const buffers = await world.getNativeFeature('data-buffers'),
-        pointer = buffers.createPointer(bytes);
-      this.imageCache.set(key, pointer);
-      return pointer;
+    loadImage(name, selector) {
+      return imageCacheModel.load(name, selector);
     },
-    async loadImage(name, selector) {
-      const pointer = await this.imageData(name);
-      if (!pointer) return 0;
-      const buffers = await world.getNativeFeature('data-buffers'),
-        bitmap = await buffers.decodePointer(pointer, selector);
-      return bitmap
-        ? world.graphics.images.importNative(bitmap, record.id, { rowOrder: 'bottom-up' })
-        : 0;
+    configurePlayer() {
+      const player = this.player;
+      player.motionLibrary = world.motionLibrary;
+      player.nativeSources = world.fesSources;
+      player.nativeOwner = record.id;
+      player.runtimeFactory = (instance) => new FESCoordinator(world, instance, imageCacheModel);
+      player.nativeSound = world.fesSound;
+      player.nativeSoundTaskID = this.soundTaskID;
+      player.nativeImages = world.imagesFES;
+      player.nativeControls = world.controlsFES;
+      player.nativeText = world.text.fes;
+      player.nativeLog = world.text.log;
+      player.nativeInput = input;
+      this.bindVariableContext();
     },
     variableContextKey() {
       return (record.context.fesVariableContextKey ??= `fes:${record.id}`);
@@ -94,26 +89,11 @@ export function createNativeFESTask(world, record) {
         runtime.bankView(record.context.variableBank),
         runtime.bankView(record.context.stringBank, 'string-bank'),
       );
-      this.player.motionLibrary = world.motionLibrary;
-      this.player.nativeSources = world.fesSources;
-      this.player.nativeOwner = record.id;
-      this.player.nativeSound = world.fesSound;
       this.soundTaskID = nativeEngineWord(
         await world.sendNativeEngine(0, record.id, world.engineMessages.layout.rootStart + 3),
         'FES initialization sound-task query',
       );
-      this.player.nativeSoundTaskID = this.soundTaskID;
-      this.player.nativeControls = world.controlsFES;
-      this.player.nativeImages = world.imagesFES;
-      this.player.nativeData = world.dataFES;
-      this.player.nativeEffects = world.effectsFES;
-      this.player.nativePlanes = world.planesFES;
-      this.player.nativeObjectAllocates = (type) => world.planesFES.allocates(type);
-      this.player.nativeArea = world.areaFES;
-      this.player.nativeInput = input;
-      this.player.nativeText = world.text.fes;
-      this.player.nativeLog = world.text.log;
-      this.player.nativeM2 = world.m2FES;
+      this.configurePlayer();
       this.variableBank()?.registerContext(this.variableContextKey());
       this.bindVariableContext();
       world.applyFESLanguage(this.player);
@@ -164,21 +144,11 @@ export function createNativeFESTask(world, record) {
       if (this.sleepValue || !this.player?.root) return;
       this.variableBank()?.selectContext(this.variableContextKey());
       await input.tick();
-      if (world.nativeEngine?.module)
-        await (
-          await world.getNativeFeature('fes-objects')
-        ).planeAssociationPhase(this.player.root, true);
       await this.player.step();
       await this.syncObjects();
       if (this.player.root.finished !== null) record.exitCode = this.player.root.finished;
     },
     async syncObjects() {
-      for (const instance of this.player.instances)
-        for (const object of instance.objects)
-          if (!object.deleted && ['SOUND', 'SNDTABLE'].includes(object.type))
-            await world.fesSound.update(instance, object, {
-              configurationDirty: world.configurationDirty,
-            });
       await world.graphics.syncFES(record, this.player);
       await input.sync();
     },
@@ -194,7 +164,7 @@ export function createNativeFESTask(world, record) {
         saveObject: this.player?.saveObject,
         nativeDictionary: this.player?.root ? null : (this.nativeDictionary?.snapshot() ?? null),
         resultValue: this.player?.root?.resultValue ?? this.resultValue,
-        imageCache: [...this.imageCache],
+        imageCache: imageCacheModel.snapshot(),
       };
     },
     async restore(state) {
@@ -202,7 +172,7 @@ export function createNativeFESTask(world, record) {
       this.soundTaskID = state.soundTaskID;
       this.sleepValue = state.sleepValue;
       this.stringsInherited = state.stringsInherited;
-      this.imageCache = new Map(state.imageCache);
+      imageCacheModel.entries = new Map(state.imageCache);
       input.restore(state.input);
       if (!state.player) return;
       const runtime = world.runtime;
@@ -213,22 +183,7 @@ export function createNativeFESTask(world, record) {
         runtime.bankView(record.context.variableBank),
         runtime.bankView(record.context.stringBank, 'string-bank'),
       );
-      this.player.motionLibrary = world.motionLibrary;
-      this.player.nativeSources = world.fesSources;
-      this.player.nativeOwner = record.id;
-      this.player.nativeSound = world.fesSound;
-      this.player.nativeSoundTaskID = this.soundTaskID;
-      this.player.nativeControls = world.controlsFES;
-      this.player.nativeImages = world.imagesFES;
-      this.player.nativeData = world.dataFES;
-      this.player.nativeEffects = world.effectsFES;
-      this.player.nativePlanes = world.planesFES;
-      this.player.nativeObjectAllocates = (type) => world.planesFES.allocates(type);
-      this.player.nativeArea = world.areaFES;
-      this.player.nativeText = world.text.fes;
-      this.player.nativeLog = world.text.log;
-      this.player.nativeM2 = world.m2FES;
-      this.bindVariableContext();
+      this.configurePlayer();
       await this.player.restore(state.player);
       this.nativeDictionary =
         this.player.root?.nativeDictionary ||
@@ -236,10 +191,6 @@ export function createNativeFESTask(world, record) {
           ? new NativeDictionary()
           : new NativeDictionary().restore(state.nativeDictionary));
       this.resultValue = state.resultValue;
-      for (const instance of this.player.instances)
-        for (const object of instance.objects)
-          if (!object.deleted && ['SOUND', 'SNDTABLE'].includes(object.type))
-            await world.fesSound.restore(instance, object);
       this.player.saveObject = state.saveObject;
       if (this.player.root) {
         this.player.root.runtimeID = record.id;
@@ -259,24 +210,15 @@ export function createNativeFESTask(world, record) {
       this.variableBank()?.unregisterContext(this.variableContextKey());
       for (const instance of this.player?.instances || []) {
         if (instance.kcsTaskID != null) await world.objects.release(instance.kcsTaskID);
-        for (const object of instance.objects)
-          if (!object.deleted && ['SOUND', 'SNDTABLE'].includes(object.type))
-            await world.fesSound.close(instance, object);
       }
       world.host.nativeFESClosed?.(record, world);
       await world.graphics.closeFES(record, this.player);
-      await world.nativeEngine?.features.get('fes-objects')?.releaseOwnerObjects(record.id);
-      world.nativeEngine?.features.get('fes-objects')?.releaseOwnerImages(record.id);
       await input.close();
       this.player = null;
     },
     async close() {
       await this.closeInterpreter();
-      if (this.imageCache.size) {
-        const buffers = await world.getNativeFeature('data-buffers');
-        for (const pointer of this.imageCache.values()) buffers.releasePointer(pointer);
-        this.imageCache.clear();
-      }
+      imageCacheModel.close();
     },
     async message(words, context = {}) {
       const [, message, wParam, lParam] = words;
@@ -297,21 +239,13 @@ export function createNativeFESTask(world, record) {
       if (message === 19) {
         if (!this.player?.root)
           throw new Error('Native FES configuration notification requires a loaded interpreter');
-        const instance = this.player.root,
-          nativeObjects = instance.objects.filter((object) => object.nativeObjectPointer != null);
-        if (nativeObjects.length) {
-          const runtime = await world.getNativeFeature('fes-objects');
-          for (const object of nativeObjects)
-            await runtime.configurationChanged(instance, object, { virtual: true });
-        }
+        const instance = this.player.root;
         await this.player.notify('MES_CHANGECONFIG');
+        instance.runtime.configurationDirty = true;
         for (const object of instance.objects) {
+          object.dirty = true;
           if ([9, 10].includes(object.nativeType))
             await world.fesSound.configurationChanged(instance, object);
-          if ([21, 29, 37].includes(object.nativeType))
-            await (
-              await world.getNativeFeature('fes-objects')
-            ).configurationChanged(instance, object);
         }
         return NATIVE_UNWRITTEN_WORD;
       }
@@ -387,7 +321,8 @@ export function createNativeFESTask(world, record) {
           index = name === null ? 0 : memory.load(wParam + 32);
         await this.player.notify(memory.string(lParam), name, index);
         if (!input.state.sleeping) {
-          await this.syncObjects();
+          await world.graphics.syncFES(record, this.player, { resourcesOnly: true });
+          await input.sync();
           await world.graphics.flushFESRedraw(this.player.root);
         }
         return NATIVE_UNWRITTEN_WORD;
@@ -402,9 +337,7 @@ export function createNativeFESTask(world, record) {
         if (!memory) throw new Error('FES object initialization requires sender memory');
         if (message === 338)
           this.player.root.createObjects(lParam, memory.string(wParam), memory.load(wParam + 32));
-        else this.player.root.applyObjects(memory.string(wParam), memory.string(lParam));
-        await world.graphics.syncFES(record, this.player);
-        await input.sync();
+        else await this.player.root.applyObjects(memory.string(wParam), memory.string(lParam));
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 340) {
@@ -499,7 +432,7 @@ export function createNativeFESTask(world, record) {
       if (message === 350) {
         if (lParam) {
           const memory = world.engineMessages.memory(words[0], context),
-            buffers = await world.getNativeFeature('data-buffers'),
+            buffers = world.runtime.imageDataBuffers,
             pointer = context.nativePointer ? lParam : buffers.pointer(lParam);
           await this.cacheImage(memory.string(wParam), pointer);
         }

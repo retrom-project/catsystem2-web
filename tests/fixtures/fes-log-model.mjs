@@ -5,6 +5,7 @@ import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { FESObjectGraph } from '../../src/native/fes-object-graph.mjs';
 import { FESLogModel, initializeFESLog } from '../../src/native/fes-log-model.mjs';
 import { FESLogTextService } from '../../src/native/fes-log-text-service.mjs';
+import { initializeFESString } from '../../src/native/fes-string-driver.mjs';
 
 export const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
 export const bytes = (text) => encodeCP932(text);
@@ -289,6 +290,7 @@ export async function realFixture(
           vramY: 0,
           vramZ: 0,
         };
+        initializeFESString(child, world);
         graph.register(child);
         objects.push(child);
         instance.byKey.set(child.key, child);

@@ -3,7 +3,7 @@
 // frame driver. The SDK's actual task is a SimplePlane without a model driver.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { registerNativeFESObjectType } from '../src/native/fes-objects.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
 
 export const FES_M2_VERBS = new Set(
   'load play time color m2eff m2att m2fspeed m2prmscale m2body m2iner m2enable_blink m2enable_lip m2splay m2draw m2enable_eff'.split(

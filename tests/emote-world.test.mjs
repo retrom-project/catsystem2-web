@@ -6,7 +6,7 @@ import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { FESPlayer } from '../src/fes/player.mjs';
+import { loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
@@ -218,10 +218,12 @@ test('JS M2PLANE binds common motion and owns model commands without a guest rec
     });
   try {
     await world.initialize('main.kcs');
-    const player = new FESPlayer(world.game, world.images);
-    player.nativeM2 = world.m2FES;
-    await player.start('panel');
-    player.root.runtimeID = world.root;
+    world.ensureNativeEngine = () => {
+      throw new Error('FES M2 attempted the EXE');
+    };
+    const { id: owner, task: fes } = await loadDefaultFES(world, 'panel'),
+      player = fes.player;
+    await fes.tick();
     const object = player.root.byKey.get('actor');
     await world.m2FES.update(player.root, object);
     const task = world.graphics.get(object.nativeTaskID);
@@ -247,7 +249,7 @@ test('JS M2PLANE binds common motion and owns model commands without a guest rec
     await world.m2FES.command(player.root, object, 'load', [input.programs[1]]);
     await world.m2FES.update(player.root, object);
     assert.equal(task.program, input.programs[1]);
-    await world.m2FES.close(object);
+    await world.objects.release(owner);
     await world.tick();
     assert.equal(world.m2.tasks.size, 0);
     assert.equal(world.m2.documents.size, 0);

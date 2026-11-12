@@ -3,7 +3,7 @@
 import { MotionTarget, objectMotionState, applyObjectMotionState } from '../motion/target.mjs';
 import { motionDefinition, motionRegisters } from '../motion/definitions.mjs';
 import { FES_OBJECT_TYPES } from './types.mjs';
-import { FES_TEXT_VERBS } from '../native/fes-text.mjs';
+import { FES_TEXT_VERBS } from '../native/fes-string-driver.mjs';
 import { FES_M2_VERBS } from '../native/emote-fes.mjs';
 
 export class FESObject {

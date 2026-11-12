@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES DRAW / WIPE allocation, packet construction and completion remain in
 // 628D60/500390 and 62DA50/504E50, with the original CPU-area child tasks.
-import { registerNativeFESObjectType } from './fes-objects.mjs';
-import { installNativeAreaEffects } from './area-effect.mjs';
-import { installNativeFESImageCaches } from './fes-images.mjs';
-import { runNativeFESObjectMotion } from './fes-controls.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
+import { installNativeAreaEffects } from '../src/native/area-effect.mjs';
+import { installNativeFESImageCaches } from './fes-images-original.mjs';
+import { runNativeFESObjectMotion } from './fes-controls-original.mjs';
 
 export class NativeFESArea {
   constructor(world) {

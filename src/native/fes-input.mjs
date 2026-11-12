@@ -110,6 +110,9 @@ export class FESInput {
         region.enabled = enabled;
       }
     }
+    // Canonical FES resource entries own all Button allocations and delayed
+    // cleanup. This map only borrows the latest child selected by each key.
+    if (this.instance.runtime) return;
     const current = new Set(
       this.instance.objects
         .filter((object) => object.type === 'BUTTON' && !object.deleted)
@@ -157,6 +160,13 @@ export class FESInput {
       else region.alpha = null;
       pair[2] = signature;
     }
+  }
+  registerObject(object, taskID) {
+    const pair = [object.key, taskID];
+    this.state.buttons = this.state.buttons.filter(([key]) => key !== object.key);
+    this.state.buttons.push(pair);
+    object.nativeInputTaskID = taskID;
+    return pair;
   }
   async initializeObject(object) {
     let pair = this.state.buttons.find(([key]) => key === object.key);
@@ -259,8 +269,8 @@ export class FESInput {
   async warp(object) {
     const rect = this.instance.rect(object);
     if (!rect) return;
-    const x = (rect.x + (object.keyPosition?.x ?? 0)) | 0,
-      y = (rect.y + (object.keyPosition?.y ?? 0)) | 0;
+    const x = (rect.x + (object.auxiliaryWidth | 0)) | 0,
+      y = (rect.y + (object.auxiliaryHeight | 0)) | 0;
     this.input.pointer(x, y);
     this.player.mouse = { x, y };
     for (const region of this.input.regions) region.active = false;

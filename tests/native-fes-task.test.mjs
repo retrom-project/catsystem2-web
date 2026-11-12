@@ -333,22 +333,16 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
     await world.initialize('main.kcs');
     const id = await world.objects.create({ kind: 34, parent: world.main.id }),
       task = world.objects.objects.get(id).implementation,
-      references = new Map([
-        [4096, 1],
-        [8192, 1],
-      ]),
-      buffers = {
-        pointer: (handle) => ({ 10: 4096, 11: 8192 })[handle],
-        retainPointer: (pointer) => references.set(pointer, references.get(pointer) + 1),
-        releasePointer: (pointer) => references.set(pointer, references.get(pointer) - 1),
-      };
-    world.getNativeFeature = async (name) => {
-      assert.equal(name, 'data-buffers');
-      return buffers;
+      buffers = world.runtime.imageDataBuffers,
+      first = buffers.createPointer(Uint8Array.of(1, 2, 3)),
+      second = buffers.createPointer(Uint8Array.of(4, 5)),
+      handles = [buffers.handle(first), buffers.handle(second)];
+    world.ensureNativeEngine = () => {
+      throw new Error('FES cache tried to create a PE engine');
     };
     try {
       world.main.machine.writeString('AuthoredCachedImage', 64);
-      for (const handle of [10, 10, 11])
+      for (const handle of [handles[0], handles[0], handles[1]])
         await nativeFES(
           0x2e2,
           [world.nativeTaskID(id), 64, handle],
@@ -356,23 +350,13 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
           world.main,
           world,
         );
-      assert.deepEqual(
-        [...references],
-        [
-          [4096, 2],
-          [8192, 1],
-        ],
-      );
-      assert.equal(await task.imageData('AuthoredCachedImage'), 4096);
-      assert.deepEqual(task.snapshot().imageCache, [['AuthoredCachedImage', 4096]]);
+      assert.equal(buffers.words(first)[3], 2);
+      assert.equal(buffers.words(second)[3], 1);
+      assert.equal(await task.imageData('AuthoredCachedImage'), first);
+      assert.deepEqual(task.snapshot().imageCache, [['AuthoredCachedImage', first]]);
       await world.objects.release(id);
-      assert.deepEqual(
-        [...references],
-        [
-          [4096, 1],
-          [8192, 1],
-        ],
-      );
+      assert.equal(buffers.words(first)[3], 1);
+      assert.equal(buffers.words(second)[3], 1);
     } finally {
       await world.close();
     }

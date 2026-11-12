@@ -84,19 +84,29 @@ export class FESPlayer {
       program,
     );
     program.source = [source, ...includes.values()].map(({ text }) => text).join('\n');
-    const tokens = new Set(this.expand(program.source).match(/[\w%-]+/g) || []);
-    const names = [...tokens].filter((t) =>
-      this.game.resolveCategory
-        ? this.game.resolveCategory(t, 'image') !== null
-        : this.game.has(`${t}.hg3`),
+    if (!this.runtimeFactory) {
+      const tokens = new Set(this.expand(program.source).match(/[\w%-]+/g) || []);
+      const names = [...tokens].filter((t) =>
+        this.game.resolveCategory
+          ? this.game.resolveCategory(t, 'image') !== null
+          : this.game.has(`${t}.hg3`),
+      );
+      await Promise.all(
+        names.map(async (name) =>
+          this.metadata.set(name.toLowerCase(), await this.images.load(name)),
+        ),
+      );
+    }
+    const instance = new FESInstance(
+      name.toLowerCase().replace(/\.fes$/, ''),
+      program,
+      this,
+      options,
     );
-    await Promise.all(
-      names.map(async (n) => {
-        this.metadata.set(n.toLowerCase(), await this.images.load(n));
-      }),
-    );
-    return new FESInstance(name.toLowerCase().replace(/\.fes$/, ''), program, this, options);
+    await instance.runtime?.initialize();
+    return instance;
   }
+
   async start(name) {
     this.root = await this.load(name);
     this.focused = null;
@@ -118,21 +128,7 @@ export class FESPlayer {
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
-      if (this.nativeImages)
-        for (const object of s.objects)
-          if (this.nativeImages.supports(object)) await this.nativeImages.advance(s, object);
-      if (this.nativeControls)
-        for (const object of s.objects)
-          if (this.nativeControls.supports(object)) await this.nativeControls.advance(s, object);
-      if (this.nativeEffects)
-        for (const object of s.objects)
-          if (this.nativeEffects.supports(object)) await this.nativeEffects.advance(s, object);
-      if (this.nativePlanes)
-        for (const object of s.objects)
-          if (this.nativePlanes.supports(object)) await this.nativePlanes.advance(s, object);
-      if (this.nativeArea)
-        for (const object of s.objects)
-          if (this.nativeArea.supports(object)) await this.nativeArea.advance(s, object);
+      s.runtime?.beforeStep();
       const tick = async () => {
         if (s.waitSound !== null) {
           const object = s.byKey.get(s.waitSound);
@@ -169,7 +165,7 @@ export class FESPlayer {
       s.pushDown = 0;
       s.pushLeft = 0;
       s.pushRight = 0;
-      for (const o of s.objects) o.advance(this.frameCount);
+      if (!s.runtime) for (const o of s.objects) o.advance(this.frameCount);
     }
     if (this.focused && !this.instances.includes(this.focused.s)) this.focused = null;
   }
@@ -574,6 +570,8 @@ export class FESPlayer {
       s
         ? {
             name: s.name,
+            program: s.program,
+            runtime: s.runtime?.snapshot() ?? null,
             label: s.label,
             ...(this.nativeVariableContext
               ? { nativeVariableContextKey: s.nativeVariableContextKey }
@@ -605,7 +603,9 @@ export class FESPlayer {
             dynamicDefinitions: s.dynamicDefinitions,
             macros: [...s.macros],
             nativeDictionary: s.nativeDictionary.snapshot(),
-            objects: s.objects.map((o) => ({ ...o, motionState: o.motionTarget?.snapshot() })),
+            objects: s.runtime
+              ? null
+              : s.objects.map((o) => ({ ...o, motionState: o.motionTarget?.snapshot() })),
           }
         : null;
     return structuredClone({
@@ -627,13 +627,14 @@ export class FESPlayer {
     this.stringTable = structuredClone(state.stringTable);
     const instance = async (saved) => {
       if (!saved) return null;
-      const s = await this.load(saved.name, {
+      const s = new FESInstance(saved.name, structuredClone(saved.program), this, {
         nativeVariableContextKey: saved.nativeVariableContextKey,
         macros: saved.macros,
+        restoring: true,
       });
       s.nativeDictionary.restore(saved.nativeDictionary);
-      for (const definition of saved.dynamicDefinitions)
-        s.createObjects(definition.typeIndex, definition.name, definition.count);
+      s.dynamicDefinitions = structuredClone(saved.dynamicDefinitions);
+      if (s.runtime) await s.runtime.restore(saved.runtime);
       for (const key of [
         'label',
         'locals',
@@ -670,16 +671,17 @@ export class FESPlayer {
         s.galleryDescriptor = structuredClone(saved.galleryDescriptor);
         s.cgGallery = await this.host.openGallery(file, entry, list);
       }
-      for (const o of saved.objects) {
-        const target = s.byKey.get(o.key);
-        if (!target || target.type !== o.type) throw new Error('Save FES object mismatch');
-        const { motionState, ...fields } = o;
-        Object.assign(target, structuredClone(fields));
-        if (motionState) {
-          if (!this.motionLibrary) throw new Error('Restoring FES motion requires its MOT library');
-          await target.attachMotion(this.motionLibrary).restore(motionState);
+      if (!s.runtime)
+        for (const o of saved.objects) {
+          const { motionState, ...fields } = o,
+            target = s.add(o.type, o.baseName, o.index);
+          Object.assign(target, structuredClone(fields));
+          if (motionState) {
+            if (!this.motionLibrary)
+              throw new Error('Restoring FES motion requires its MOT library');
+            await target.attachMotion(this.motionLibrary).restore(motionState);
+          }
         }
-      }
       return s;
     };
     this.root = await instance(state.root);

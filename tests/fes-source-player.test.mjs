@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
-import { NativeFESText } from '../src/native/fes-text.mjs';
+import { FESStringDriver } from '../src/native/fes-string-driver.mjs';
 import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { memoryGame, ascii, u32 } from './helpers.mjs';
@@ -36,7 +36,10 @@ function player(source, profile, strings = {}) {
       {},
       strings,
     ),
-    text = new NativeFESText({ world: {} });
+    text = new FESStringDriver(
+      {},
+      { cacheFor: () => null, lookup: () => null, imageDataFor: () => null },
+    );
   p.captured = [];
   p.nativeText = {
     supports: (object) => text.supports(object),

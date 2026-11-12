@@ -593,6 +593,26 @@ export class FESPanelImages extends FESDifImages {
     object.priorityChanged = false;
     r.sleeping = sleeping;
   }
+  async closeObject(object) {
+    if (isPanel(object)) {
+      const panel = state(object);
+      for (const handle of panel.ownedBitmaps) await this.world.graphics.images.release(handle);
+      panel.ownedBitmaps.clear();
+      for (const part of panel.parts.values())
+        if (part.ownBitmap) {
+          part.bitmap = 0;
+          part.ownBitmap = false;
+        }
+    }
+    await super.closeObject(object);
+  }
+  async cleanupEntry(instance, entry) {
+    if (entry.image?.panelGlyphBitmap) {
+      await this.world.graphics.images.release(entry.image.panelGlyphBitmap);
+      entry.image.panelGlyphBitmap = 0;
+    }
+    await super.cleanupEntry(instance, entry);
+  }
   async close(object) {
     if (isPanel(object) && object.imageResource && !object.imageResource.closed) {
       const images = this.world.graphics.images,

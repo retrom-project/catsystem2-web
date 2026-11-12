@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // CPLANE / PLANE use the original FES records and complete frame drivers.
 // Their child SimplePlane task is allocated by the original first-frame path.
-import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
-import { registerNativeFESObjectType } from './fes-objects.mjs';
-import { runNativeFESObjectMotion } from './fes-controls.mjs';
-import { installNativeFESImageCaches } from './fes-images.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
+import { runNativeFESObjectMotion } from './fes-controls-original.mjs';
+import { installNativeFESImageCaches } from './fes-images-original.mjs';
 
 const ABI = {
   game: {

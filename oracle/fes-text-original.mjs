@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Script text commands and their deferred frame driver are owned by JS.
-import { nativeABI } from './abi/index.mjs';
-import { encodeCP932 } from '../kcs/strings.mjs';
-import { NativeFESTextLayout } from './fes-text-layout.mjs';
-import { textConfig, textPacket } from './text-config.mjs';
-import { planeState } from './fes-graphics.mjs';
-import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { NativeFESTextLayout } from '../src/native/fes-text-layout.mjs';
+import { textConfig, textPacket } from '../src/native/text-config.mjs';
+import { planeState } from './fes-plane-state-original.mjs';
+import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
 export const FES_TEXT_VERBS = new Set(
   'str apend apendmark clear draw isdraw isdrawmark skip reset layout linecnt endpos userfontobj userfont insert getdiv'.split(
     ' ',

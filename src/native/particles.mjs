@@ -5,7 +5,6 @@ import { NativeParticleProjection } from './particle-projection.mjs';
 import { NativeParticleTextures } from './particle-textures.mjs';
 import { nativeParticleBounds } from './particle-bounds.mjs';
 import { NATIVE_PARTICLE_COMMANDS, installNativeParticleCommands } from './particle-commands.mjs';
-import { installNativeFESParticles } from './fes-particles.mjs';
 
 export const NATIVE_PARTICLE_IDS = Object.freeze(NATIVE_PARTICLE_COMMANDS.map(({ id }) => id));
 
@@ -195,7 +194,6 @@ export function installNativeParticles(world, options) {
   const particles = new NativeParticles(world, options);
   world.particles = particles;
   world.objects.register(16, (record) => particles.create(record));
-  if (world.game.names?.('exe').length) installNativeFESParticles(world);
   installNativeParticleCommands(world);
   return particles;
 }

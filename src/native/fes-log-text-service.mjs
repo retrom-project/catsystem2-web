@@ -31,8 +31,8 @@ export class FESLogTextService {
     const existing = this.findChild(specification.name, 0);
     if (existing && !existing.deleted) return this.child(existing.handle).handle;
     const child = await this.createChild(specification);
-    if (!child || child.nativeTaskID == null || child.handle == null)
-      throw new Error('Generated LOG STRING requires distinct FES handle and real World text task');
+    if (!child || child.handle == null)
+      throw new Error('Generated LOG STRING requires its canonical FES handle');
     if (child.parentHandle != null)
       throw new Error('Generated LOG STRING must not acquire a PARENT link to the LOG');
     return child.handle;

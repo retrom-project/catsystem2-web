@@ -272,4 +272,13 @@ export class FESDifImages extends FESImages {
     object.priorityChanged = false;
     r.sleeping = sleeping;
   }
+  async closeObject(object) {
+    if (object.nativeType === 25 && object.imageResource) {
+      const resource = object.imageResource;
+      if (resource.source) await this.world.renderSources.release(resource.source);
+      if (resource.bitmap) await this.world.graphics.images.release(resource.bitmap);
+      resource.source = resource.bitmap = 0;
+    }
+    await super.closeObject(object);
+  }
 }

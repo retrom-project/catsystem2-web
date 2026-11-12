@@ -12,7 +12,12 @@ import { tokenizeFESLine } from './tokens.mjs';
 const nativeArgumentDecoder = new TextDecoder('shift_jis');
 
 export class FESInstance {
-  constructor(name, program, player, { nativeVariableContextKey = null, macros = null } = {}) {
+  constructor(
+    name,
+    program,
+    player,
+    { nativeVariableContextKey = null, macros = null, restoring = false } = {},
+  ) {
     Object.assign(this, {
       name,
       program,
@@ -69,6 +74,8 @@ export class FESInstance {
     );
     this.nativeDictionary = new NativeDictionary();
     this.keyNames = new Set();
+    if (player.runtimeFactory) this.runtime = player.runtimeFactory(this);
+    if (restoring || this.runtime) return;
     for (const d of program.definitions) {
       this.declaredGroups[d.name] = d.count ?? 1;
       if (player.nativeObjectAllocates?.(d.type) === false) continue;
@@ -96,6 +103,7 @@ export class FESInstance {
     return o;
   }
   createObjects(typeIndex, name, count) {
+    if (this.runtime) return this.runtime.createObjects(typeIndex, name, count);
     const type = FES_OBJECT_DEFINITION_ORDER[typeIndex];
     if (!type)
       throw new Error(`FES ${this.name}: unknown native object factory index ${typeIndex}`);
@@ -112,6 +120,10 @@ export class FESInstance {
     return true;
   }
   applyObjects(columnHeader, row) {
+    if (this.runtime) {
+      const [target, ...values] = this.tokens(row);
+      return this.runtime.definitions.row(this.tokens(columnHeader).slice(1), target, values);
+    }
     const columns = this.tokens(columnHeader).slice(1),
       [target, ...values] = this.tokens(row),
       objects = this.elements(this.soundArgument(target));
@@ -126,6 +138,7 @@ export class FESInstance {
     );
   }
   elements(name) {
+    if (this.runtime) return this.runtime.elements(name);
     if (name === '@') return this.eventObject ? [this.eventObject] : [];
     if (this.byKey.has(name)) return this.byKey.get(name).deleted ? [] : [this.byKey.get(name)];
     const match = /^(\w+)\[(.*)\]$/.exec(name);
@@ -139,6 +152,7 @@ export class FESInstance {
     return this.objects.filter((o) => !o.deleted && o.baseName === name);
   }
   selectionIndex(name) {
+    if (this.runtime) return this.runtime.reference(name).index;
     if (name === '@') return this.eventIndex ?? this.eventObject?.index ?? 0;
     const match = /^(\w+)\[(.*)\]$/.exec(name);
     return match ? this.value(match[2]) : -1;
@@ -177,6 +191,7 @@ export class FESInstance {
     return replaceFESMacros(line, this.macros, this.player.host.fesMacroLiterals?.());
   }
   objectHandle(name, index) {
+    if (this.runtime) return this.collection.lookup(name, index ?? 0)?.handle;
     return (
       this.byKey.get(index === undefined ? name : `${name}[${index}]`)?.handle ??
       (index === 0 ? this.byKey.get(name)?.handle : undefined)
@@ -668,6 +683,14 @@ export class FESInstance {
       return {};
     }
     const host = this.player.host;
+    if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
+      this.player.enqueue(
+        this.runtime.screenCommand(head, args).then((value) => {
+          this.deferredCommandReturn = value;
+        }),
+      );
+      return { action: 'flush' };
+    }
     if (NATIVE_FES_SAVE_COMMANDS.includes(head) && typeof host.nativeSaveCommand === 'function') {
       this.player.enqueue(Promise.resolve(host.nativeSaveCommand(head, line, this)));
       return { action: 'flush' };
@@ -1201,6 +1224,28 @@ export class FESInstance {
         this.diagnostic(`unimplemented FES command ${head}`);
         break;
       default: {
+        if (this.runtime) {
+          const selection = this.runtime.reference(head);
+          const source = this.program.sourceKey
+            ? (this.player.nativeSources || this.player.localSources).context(
+                this.program.sourceKey,
+                this.executingLabel || this.label,
+                (this.executingLine || pc) - 1,
+                { ...execution, name: selection.name },
+              )
+            : {};
+          this.player.enqueue(
+            this.runtime
+              .command(args[0], selection, args.slice(1), {
+                ...source,
+                rawTail: fesRawTail(line, 2),
+              })
+              .then((value) => {
+                this.deferredCommandReturn = value;
+              }),
+          );
+          return { action: 'flush' };
+        }
         const objects = this.elements(head);
         if (!objects.length) {
           if (

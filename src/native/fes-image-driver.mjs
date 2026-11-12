@@ -14,7 +14,7 @@ import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { FESImageTable } from './fes-image-table-model.mjs';
 import { composeFESWindow } from './fes-window-image.mjs';
 import { copyFESBitmapRectangle } from './fes-bitmap.mjs';
-import { bitmapBlur, bitmapColor, bitmapTransfer } from './bitmap-pixels.mjs';
+import { bitmapBlur, bitmapTransfer } from './bitmap-pixels.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { nativeCategoryFilename } from './resource-file.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
@@ -776,14 +776,6 @@ export class FESImages {
     let reloaded = false;
     if (needPixels) {
       const result = await this.reload(instance, object);
-      if (
-        result === true &&
-        object.nativeType !== 1 &&
-        object.nativeType !== 22 &&
-        object.filterMode &&
-        r.bitmap
-      )
-        await bitmapColor(this.world.graphics.images.get(r.bitmap), 'filter', object.filterMode);
       if (result === 'preserve') {
         object.sizeDirty = object.dirty = false;
         return;

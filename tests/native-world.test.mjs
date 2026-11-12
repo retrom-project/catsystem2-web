@@ -477,7 +477,7 @@ test('FES named words and sleep notifications continue after a fresh-world resto
   const files = {
       'main.kcs': kcs([[37, 16], [43, 0xd1, 4], [37, 64], [43, 0x47, 4], [59]]),
       'named.fes': new TextEncoder().encode(
-        '#START\nnext HOLD\n#HOLD\nnext HOLD\n#_FES_SLEEP_\n\\3=\\3+1\nreturn\n#_FES_WAKE_\n\\4=\\4+1\nreturn\n',
+        '#START\nnext HOLD\n#HOLD\nnext HOLD\n#_FES_SLEEP_\n\\3=\\3+1\nbreak\n#_FES_WAKE_\n\\4=\\4+1\nbreak\n',
       ),
     },
     first = world(files);

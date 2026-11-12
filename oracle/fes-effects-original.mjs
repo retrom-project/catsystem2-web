@@ -2,12 +2,15 @@
 // These five base FES objects create native screen-effect tasks in the original
 // allocation phase. Their complete resource-list frame driver owns activation,
 // completion, object deletion and the subsequent child-task cleanup pass.
-import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
-import { registerNativeFESObjectType } from './fes-objects.mjs';
-import { installNativeScreenEffects, NATIVE_SCREEN_EFFECT_KINDS } from './screen-effect.mjs';
-import { runNativeFESObjectMotion } from './fes-controls.mjs';
-import { installNativeFESImageCaches } from './fes-images.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { registerNativeFESObjectType } from './fes-objects-original.mjs';
+import {
+  installNativeScreenEffects,
+  NATIVE_SCREEN_EFFECT_KINDS,
+} from '../src/native/screen-effect.mjs';
+import { runNativeFESObjectMotion } from './fes-controls-original.mjs';
+import { installNativeFESImageCaches } from './fes-images-original.mjs';
 
 export const NATIVE_FES_EFFECT_COMMANDS = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
 const ABI = {

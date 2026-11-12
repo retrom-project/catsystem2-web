@@ -247,77 +247,8 @@ export class NativeGraphics {
   closeFES(record, player) {
     return closeFESGraphics(this, record, player);
   }
-  async setFESSleep(record, player, value) {
-    if (!player?.root) return;
-    const input = player.nativeInput || record.implementation?.input;
-    if (!input?.state || typeof input.sync !== 'function')
-      throw new Error(`FES ${player.root.name} sleep requires its native input mapping`);
-    player.nativeInput = input;
-    await player.notify(value ? '_FES_SLEEP_' : '_FES_WAKE_');
-    await this.syncFES(record, player);
-    input.state.sleeping = Boolean(value);
-    // The temporary mask does not modify script-owned disp/enable values.
-    await input.sync();
-    await this.syncFES(record, player);
-    const owner = record.id,
-      surfaceID =
-        record.implementation?.surface ??
-        [...this.fesSurfaces].find(([, players]) => players.get(owner) === player)?.[0],
-      draw = surfaceID == null ? null : this.drawTasks.get(surfaceID);
-    const retained = new Set([
-      'CIMAGE',
-      'IMAGE',
-      'BUTTON',
-      'PANEL',
-      'SAVEPANEL',
-      'BGTABLE',
-      'BGTABLE2',
-      'CHTABLE',
-      'CHTABLE2',
-      'CHTABLE3',
-      'IMGWND',
-      'DIFIMAGE',
-    ]);
-    for (const object of player.root.objects) {
-      if (object.deleted) continue;
-      if (retained.has(object.type) && draw?.state.renderer)
-        await draw.message([
-          owner,
-          287,
-          (owner | (object.handle << 16)) >>> 0,
-          Number(!value && object.disp),
-        ]);
-      if (object.nativeTaskID == null) continue;
-      const taskID = object.nativeTaskID,
-        display = Number(!value && object.disp),
-        enable = Number(!value && object.enable);
-      if (
-        [
-          'PLANE',
-          'CPLANE',
-          'M2PLANE',
-          'EFKPLANE',
-          'STRING',
-          'STRING8',
-          'NVSTRING',
-          'DRAW',
-        ].includes(object.type)
-      )
-        await this.send(taskID, owner, 47, 0, display);
-      else if (object.type === 'WIPE') {
-        if (value) await this.send(taskID, owner, 258, 0, 0);
-      } else if (['SCROLL', 'SCROLL2', 'SLIDER'].includes(object.type)) {
-        const [enabledMessage, shownMessage] =
-          object.type === 'SCROLL'
-            ? [355, 354]
-            : object.type === 'SCROLL2'
-              ? [369, 373]
-              : [361, 360];
-        await this.send(taskID, owner, enabledMessage, 0, enable);
-        await this.send(taskID, owner, shownMessage, 0, display);
-      }
-    }
-    if (!value && draw?.state.renderer) await draw.message([owner, 292, 0, 0]);
+  async setFESSleep(_record, player, value) {
+    if (player?.root) await player.root.runtime.setSleeping(value);
   }
   baseImage(instance, object) {
     return setFESBaseImage(this, instance, object);

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
-import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import assert from 'node:assert/strict';
 import { FESInput } from '../src/native/fes-input.mjs';
 import { NativeInput } from '../src/native/input.mjs';
@@ -9,7 +8,7 @@ import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { memoryGame } from './helpers.mjs';
-import { nativeDraw } from '../src/native/draw-task.mjs';
+import { defaultFESWorld, loadDefaultFES, drawPixels } from './fixtures/default-fes-world.mjs';
 
 async function fixture(source) {
   const objects = new NativeObjects(),
@@ -198,44 +197,36 @@ test('sendbtn controls the native propagation result when an input event has no 
 });
 
 test('FES sleep hides retained entries and plane tasks while preserving authored display and input state', async () => {
-  const { world, player, input, record, owner } = await fixture(
-    '#DEFINE\nBUTTON a\nCIMAGE red\nPLANE panel\n#OBJECT POS SIZE ENABLE DISP\na 0,0 2,2 1 1\n#OBJECT SIZE COLOR DISP\nred 2,2 4294901760 1\n#OBJECT SIZE DISP\npanel 2,2 1\n#START\nnext WAIT\n#WAIT\n#_FES_SLEEP_\n$1=7\n#_FES_WAKE_\n$1=9\n',
-  );
-  const id = await world.objects.create({ kind: 15 });
-  await nativeDraw(0x100, [id, 8, 6], null, { id: owner }, world);
-  await nativeDraw(0x104, [id, 0, 0], null, { id: owner }, world);
-  record.implementation.surface = id;
-  world.graphics.bindFES(id, player);
-  await world.graphics.syncFES(record, player);
-  const renderer = world.graphics.drawTasks.get(id),
-    panel = player.root.byKey.get('panel'),
-    buttonID = input.state.buttons[0][1];
-  await renderer.render();
-  assert.deepEqual(
-    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
-    [255, 0, 0, 255],
-  );
-  await world.graphics.setFESSleep(record, player, 1);
-  await renderer.render();
-  assert.equal(player.globals[1], 7);
-  assert.equal(player.root.byKey.get('red').disp, true);
-  assert.equal(player.root.byKey.get('a').enable, true);
-  assert.equal(world.input.get(buttonID).enabled, false);
-  assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, false);
-  assert.equal(input.snapshot().sleeping, true);
-  assert.deepEqual(
-    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
-    [0, 0, 0, 0],
-  );
-  await world.graphics.setFESSleep(record, player, 0);
-  await renderer.render();
-  assert.equal(player.globals[1], 9);
-  assert.equal(world.input.get(buttonID).enabled, true);
-  assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, true);
-  assert.deepEqual(
-    [...flipBitmapRows(await world.graphics.surface(id).bitmap.pixels(), 8, 6).subarray(0, 4)],
-    [255, 0, 0, 255],
-  );
+  const source =
+      '#DEFINE\nBUTTON a\nCIMAGE red\nPLANE panel\n#OBJECT POS SIZE ENABLE DISP PRI\na 0,0 2,2 1 1 100\n#OBJECT SIZE COLOR DISP PRI\nred 2,2 4294901760 1 60000\n#OBJECT SIZE DISP\npanel 2,2 1\n#START\nnext WAIT\n#WAIT\n#_FES_SLEEP_\n$1=7\nbreak\n#_FES_WAKE_\n$1=9\nbreak\n',
+    world = await defaultFESWorld('nekopara-vol3-engine-2.6.1.76', {
+      'screen.fes': new TextEncoder().encode(source),
+    });
+  try {
+    const h = await loadDefaultFES(world);
+    await h.task.tick();
+    const { player, input } = h.task,
+      panel = h.instance.byKey.get('panel'),
+      buttonID = input.state.buttons[0][1];
+    assert.deepEqual([...(await drawPixels(world, h.surface)).subarray(0, 4)], [255, 0, 0, 255]);
+    const record = world.objects.objects.get(h.id);
+    await world.graphics.setFESSleep(record, player, 1);
+    assert.equal(player.globals[1], 7);
+    assert.equal(h.instance.byKey.get('red').disp, true);
+    assert.equal(h.instance.byKey.get('a').enable, true);
+    assert.equal(world.inputFor(h.id).get(buttonID).enabled, false);
+    assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, false);
+    assert.equal(input.snapshot().sleeping, true);
+    assert.deepEqual([...(await drawPixels(world, h.surface)).subarray(0, 4)], [0, 0, 0, 0]);
+    await world.graphics.setFESSleep(record, player, 0);
+    assert.equal(player.globals[1], 9);
+    assert.equal(world.inputFor(h.id).get(buttonID).enabled, true);
+    assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, true);
+    assert.deepEqual([...(await drawPixels(world, h.surface)).subarray(0, 4)], [255, 0, 0, 255]);
+    assert.equal(world.nativeEngine, undefined);
+  } finally {
+    await world.close();
+  }
 });
 
 test('FES mouse variables use its Top input outside-window gate and virtual coordinate outputs', async () => {
