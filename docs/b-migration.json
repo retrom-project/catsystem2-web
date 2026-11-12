@@ -49187,7 +49187,7 @@
     },
     {
       "file": "src/formats/scene.mjs",
-      "sourceSha256": "9b726fcbf41edd88fd2e1d26925941267624a760c4a16881abb0a7672a2b7e2c",
+      "sourceSha256": "1b72da9f155f57c706cdaddcde4d91af8d9e18c3b54628fd40c9a2efd2c2b105",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

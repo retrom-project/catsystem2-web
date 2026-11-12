@@ -3,7 +3,14 @@
 `src/fes/source.mjs` owns source processing in the default `parseProgram` and
 `FESPlayer` pipeline. `src/fes/tokens.mjs` supplies the raw parameter helper,
 shared with the sound-configuration adapter. `readFES` returns the current
-`{ text, prepared }` decoder contract so compressed source is not prepared again.
+`{ bytes, text, prepared }` decoder contract. `bytes` owns the exact uncompressed
+body up to its first NUL, including any BOM or undecodable narrow bytes. `text`
+is a derived diagnostic view; decoding it must not choose or rewrite execution
+bytes. The prepared flag keeps compressed source from being prepared again.
+
+The byte-preserving decoder is implemented. The parser and executing-copy
+consumers are being migrated to this body; their existing text consumption does
+not yet establish byte-preserving execution.
 
 The original engine uses four distinct operations:
 

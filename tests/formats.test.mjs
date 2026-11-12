@@ -108,8 +108,34 @@ test('FES recognizes both original UTF-8 and CP932 script text', async () => {
         ...packed,
       ]),
     ),
-    { text: '#START\nstrvar 1 日本語', prepared: true },
+    { bytes: text.slice(0, -1), text: '#START\nstrvar 1 日本語', prepared: true },
   );
+});
+test('FES owns exact NUL-bounded body bytes for plain and compressed sources', async () => {
+  for (const tail of [
+    new TextEncoder().encode('日本語'),
+    new Uint8Array([0x93, 0xfa, 0x96, 0x7b]),
+    new Uint8Array([0xc2, 0xa5]), // Valid UTF8 and CP932, with different decoded views.
+    new Uint8Array([0x81, 0xff, 0x80]), // Opaque bytes, without replacement-character repair.
+  ]) {
+    const body = new Uint8Array([0xef, 0xbb, 0xbf, ...ascii('#START\r\nx str '), ...tail]),
+      input = new Uint8Array([...body, 0, ...ascii('ignored')]),
+      compressed = deflateSync(input),
+      packed = new Uint8Array([
+        ...ascii('FES\0'),
+        ...u32(compressed.length),
+        ...u32(input.length),
+        ...u32(0),
+        ...compressed,
+      ]);
+    for (const source of [input, packed]) {
+      const result = await readFES(source);
+      assert.deepEqual(result.bytes, body);
+      assert.equal(result.prepared, source === packed);
+      result.bytes[0] = 0;
+      assert.notEqual(source[0], 0, 'the decoder owns its source copy');
+    }
+  }
 });
 test('HG3 reconstructs known RGBA pixels, including vertical order and horizontal/vertical deltas', async () => {
   const pixels = new Uint8Array([

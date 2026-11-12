@@ -61,9 +61,12 @@ export function readTranslation(bytes) {
 }
 
 export async function readFES(bytes) {
-  const b = new Binary(bytes, 'FES');
-  if (!b.magic('FES\0')) return { text: decodeText(bytes), prepared: false };
-  const body = await inflate(b.range(16, b.u32(4)), b.u32(8));
-  const end = body.indexOf(0);
-  return { text: decodeText(end < 0 ? body : body.subarray(0, end)), prepared: true };
+  const b = new Binary(bytes, 'FES'),
+    prepared = b.magic('FES\0'),
+    body = prepared ? await inflate(b.range(16, b.u32(4)), b.u32(8)) : bytes,
+    end = body.indexOf(0),
+    source = body.slice(0, end < 0 ? body.length : end);
+  // Execution owns these narrow bytes. The decoded text is a diagnostic view;
+  // neither codec selection nor BOM handling may rewrite the source body.
+  return { bytes: source, text: decodeText(source), prepared };
 }
