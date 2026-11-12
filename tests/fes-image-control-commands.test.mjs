@@ -307,7 +307,7 @@ test('selection loop bounds retain evaluation position and unknown/services erro
   await f.command('settbl', ['0', '3']);
   assert.deepEqual(order, ['count', 'value', 'value']);
   await assert.rejects(f.command('not-a-builtin'), /Unknown image\/control/);
-  assert.equal(FES_IMAGE_CONTROL_COMMANDS.size, 34);
+  assert.equal(FES_IMAGE_CONTROL_COMMANDS.size, 36);
   const g = fixture();
   g.create(10);
   g.commands.soundSetID = null;

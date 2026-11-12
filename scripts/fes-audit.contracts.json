@@ -2923,11 +2923,15 @@
       "id": "fes.reference.co.gettonetbl",
       "domain": "fes-object-command",
       "names": ["gettonetbl"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/gettonetbl.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/native/fes-image-control-commands.mjs; src/native/fes-tone-table.mjs; src/native/fes-coordinator.mjs",
+      "evidence": [
+        "tests/fes-tone-table.test.mjs",
+        "tests/fixtures/fes-tone-table.json",
+        "tests/fes-tone-table-default.test.mjs"
+      ],
+      "note": "Frozen SDK74/Game76 ordinary World kind34 raw16/BGTABLE and raw17/BGTABLE2 query current exact FILE bytes through owned maps; missing key/owner outputs100/100/100. Whole optional outputs expand/evaluate once before bounds, stop at first null, retain R/G/B alias and later-object overwrite order. Definition/selector bytes own independent storage; fresh World restores maps/current FILE without tone/CSV/FES reread or selector replay. Query does not automatically tint pixels.",
       "signatures": ["[obj] gettonetbl (r) (g) (b)"]
     },
     {
@@ -3578,11 +3582,15 @@
       "id": "fes.reference.co.tonetable",
       "domain": "fes-object-command",
       "names": ["tonetable"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/tonetable.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/native/fes-image-control-commands.mjs; src/native/fes-tone-table.mjs; src/native/fes-image-driver.mjs; src/native/fes-definitions.mjs",
+      "evidence": [
+        "tests/fes-tone-table.test.mjs",
+        "tests/fixtures/fes-tone-table.json",
+        "tests/fes-tone-table-default.test.mjs"
+      ],
+      "note": "The unversioned manual spells this command tonetable; both frozen SDK74/Game76 tables install tonetbl only. That frozen raw16/raw17 default command is implemented with clear-before-open, existing flags0x13/search mode3, empty-file success, independent byte-key maps, exact FILE definition/selection authority, and source-independent fresh restore/close. The documented spelling is not an evidenced frozen alias and is not invented; manual applicability remains partial. Other tone/CST rows are not implied complete.",
       "signatures": ["[obj] tonetable [table]"]
     },
     {

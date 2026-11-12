@@ -37,6 +37,8 @@ import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesNarrowText } from '../fes/tokens.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
+import { readNativeResource } from './resource-file.mjs';
 
 const effectTypes = new Set([7, 8, 26, 27, 30, 31, 32]);
 const screenVerbs = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
@@ -115,7 +117,7 @@ export class FESCoordinator {
       expandToken: (value) => instance.argumentBytes(value),
       expandName: (value) => instance.player.host.nativeFESStringBytes?.(value) ?? value,
       report: (message) => instance.diagnostic(message),
-      setImageFile: (object, name) => this.setImageFile(object, name),
+      setImageFile: (object, name, bytes) => this.setImageFile(object, name, bytes),
       loadImageTable: (s, o, file) => this.images.loadTable(s, o, file),
       applySpecial: (object, record, index) => this.applySpecial(object, record, index),
     });
@@ -140,6 +142,10 @@ export class FESCoordinator {
       writeString: (index, bytes) => this.writeString(index, bytes),
       motions: this.motions,
       images: this.images,
+      loadToneTable: (object, filename) =>
+        replaceFESToneTable(object, filename, (bytes, mode) =>
+          readNativeResource(world, decoder.decode(bytes), mode),
+        ),
       strings: this.strings,
       logModel: (object) => this.logs.model(instance, object),
       soundSetID: (object, id) =>
@@ -275,10 +281,10 @@ export class FESCoordinator {
     }
     return target;
   }
-  setImageFile(object, name) {
+  setImageFile(object, name, bytes) {
     if (object.nativeType === 11 || object.nativeType === 12) setFESPanelFile(object, name);
     else if (object.nativeType === 25) setFESDifImageFile(object, name);
-    else setFESImageFile(object, name);
+    else setFESImageFile(object, name, bytes);
   }
   async applySpecial(object, record, index) {
     const type = object.nativeType,
@@ -532,6 +538,7 @@ export class FESCoordinator {
       ...context,
       argument: (i) => instance.value(instance.soundArgument(args[i])) | 0,
       text: (i) => instance.soundArgument(args[i]),
+      bytes: (i) => instance.argumentBytes(args[i]),
       evaluate: (token) => instance.value(instance.soundArgument(token)),
       evaluateExpanded: (token) => instance.value(token),
     };
@@ -552,15 +559,16 @@ export class FESCoordinator {
         ...source,
         index: selection.index,
         referenceAddress: source.objectNameAddress,
-      }),
-      count = selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
-      first = selection.index === -1 ? 0 : selection.index,
-      lookup = (index) => collection.lookup(selection.nameBytes, index);
+      });
     if (FES_COMMON_COMMANDS.has(verb)) return this.common.command(verb, selection, args, context);
     if (FES_IMAGE_CONTROL_COMMANDS.has(verb))
       return this.imageCommands.command(verb, selection, args, context);
     if (FES_RESOURCE_COMMANDS.has(verb))
       return this.resourceCommands.command(verb, selection, args, context);
+    const count =
+        selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
+      first = selection.index === -1 ? 0 : selection.index,
+      lookup = (index) => collection.lookup(selection.nameBytes, index);
     if (verb === 'getdiv') {
       let division = 0;
       for (let at = first; at < count; at++) {
@@ -735,6 +743,7 @@ export class FESCoordinator {
       await this.world.sendEngine(instance.player.surface, instance.runtimeID, 292);
   }
   async closeObject(object) {
+    if (object.nativeType === 16 || object.nativeType === 17) clearFESToneTable(object);
     this.targetFor(object, false)?.clear();
     this.targets.delete(object.handle);
     if (this.images.supports(object)) await this.images.closeObject(object);

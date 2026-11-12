@@ -77,7 +77,12 @@ export async function imageWorld(profile, files = {}, initialize = true) {
         };
       },
       restore(state) {
-        instance.objects = structuredClone(state.objects);
+        instance.objects = state.objects.map((saved) =>
+          Object.assign(
+            initializeFESImage({ nativeType: saved.nativeType }),
+            structuredClone(saved),
+          ),
+        );
         instance.byKey = new Map(instance.objects.map((o) => [o.key, o]));
         player.surface = api.surface = state.surface;
         input.restore(state.input);

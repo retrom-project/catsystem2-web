@@ -175,8 +175,10 @@ export function readFESDefinitionRecord(
     }
     const field = fieldNames.get(code);
     if (field === undefined) continue; // Explicit header-code default branch.
-    if (['FILE', 'DEFAULT', 'TABLE', 'GROUP'].includes(field)) fields.set(field, string(source));
-    else if (
+    if (['FILE', 'DEFAULT', 'TABLE', 'GROUP'].includes(field)) {
+      fields.set(field, string(source));
+      if (field === 'FILE') record.fileBytes = new Uint8Array(source);
+    } else if (
       ['PL', 'PARENT', 'KEY_U', 'KEY_D', 'KEY_L', 'KEY_R', 'POS2', 'SIZE2'].includes(field)
     ) {
       let value = reference(source);
@@ -304,7 +306,7 @@ export class FESDefinitionModel {
       if (type !== 1 && has('FILE')) {
         if (typeof this.setImageFile !== 'function')
           throw new Error('FES definition FILE requires its pure image setter');
-        this.setImageFile(object, get('FILE'));
+        this.setImageFile(object, get('FILE'), record.fileBytes);
       }
       if (has('POS') && (get('POS')[0] !== undefined || get('POS')[1] !== undefined))
         setFESGraphicalPosition(instance, object, get('POS'));

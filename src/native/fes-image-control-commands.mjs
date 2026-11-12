@@ -18,6 +18,7 @@ import {
 import { nativeDataString } from './data-text.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { buildNativeFESMotion } from './fes-motion.mjs';
+import { readFESToneRGB } from './fes-tone-table.mjs';
 
 // Object branches only: a coordinator must not use these gates to skip
 // argument evaluation, selection traversal, or the native first-target branch.
@@ -32,6 +33,8 @@ export const FES_IMAGE_CONTROL_TYPE_GATES = Object.freeze(
       ['pos2', [1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 21, 22, 25, 29, 37]],
       ['color', [1, 2, 3, 4, 6, 11, 12, 21, 22, 24, 29, 33, 36, 37, 38]],
       ['tone', [1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25, 33]],
+      ['tonetbl', [16, 17]],
+      ['gettonetbl', [16, 17]],
       ['coordmode', [1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25]],
       ['blur', [1, 2, 6, 11, 12, 16, 17, 18, 19, 20, 22, 25]],
       ['setanm', [2, 6]],
@@ -136,6 +139,29 @@ export class FESImageControlCommands {
           throw new Error(`FES command requires its images.${method} JavaScript service`);
         return this.images[method].bind(this.images);
       };
+    if (verb === 'tonetbl') {
+      if (args[0] === undefined) return 0;
+      const filename = context.bytes ? context.bytes(0) : instance.argumentBytes(args[0]),
+        limits = bounds();
+      await visit(limits, true, async (object) => {
+        if (object.nativeType === 16 || object.nativeType === 17)
+          await this.required('loadToneTable')(object, filename);
+      });
+      return 0;
+    }
+    if (verb === 'gettonetbl') {
+      const outputs = [0, 1, 2].map((at) => value(at, -1)),
+        limits = bounds();
+      await visit(limits, true, async (object) => {
+        if (object.nativeType !== 16 && object.nativeType !== 17) return;
+        if (!(object.fileBytes instanceof Uint8Array))
+          throw new Error('BGTABLE current FILE bytes are missing');
+        const rgb = readFESToneRGB(object.toneTable, object.fileBytes);
+        for (let at = 0; at < 3; at++)
+          if (outputs[at] !== -1) this.writeGlobal(outputs[at], rgb[at] | 0);
+      });
+      return 0;
+    }
     if (verb === 'setid') {
       const id = value(0),
         limits = bounds();

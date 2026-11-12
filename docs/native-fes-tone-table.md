@@ -2,9 +2,9 @@
 
 `fes-tone-table.mjs` provides the byte parser, exact file/group queries and
 per-object replacement lifecycle for BGTABLE/raw16 and BGTABLE2/raw17 in both
-frozen engine profiles. The default FES factory, command consumers and FILE
-checkpoint integration are not connected yet; a standalone service test does
-not complete those entry paths.
+frozen engine profiles. The ordinary World kind34 factory connects the service
+through FESCoordinator's whole `tonetbl` and `gettonetbl` commands, definitions,
+image selection, destruction and fresh checkpoint restoration.
 
 The service stores two current maps: group key to three uint32 values, and file
 key to group key. Both use first insertion wins. Keys are exact C-string bytes,
@@ -48,3 +48,29 @@ are shipped in the fixture. The original binary identities are:
 `tests/fes-tone-table.test.mjs` checks these exact results and byte ownership,
 clear-before-read, empty/missing resources and source-independent state copies.
 Original abnormal resource reads and memory errors remain outside this contract.
+
+For these two raw types, `fileBytes` is the only current FILE checkpoint value.
+The existing CP932 `file` resource view is a nonenumerable read-only getter.
+Definitions preserve the already expanded token bytes; image-table selection
+stores its one actual returned byte result. Both boundaries make independent
+plain Uint8Array copies. Neither decoded/re-encoded text, a repeated selection
+nor a resolved bitmap path substitutes for the current query key. A fresh World
+reinstalls the view and current maps/bytes without reopening FES/CSV/tone files
+or replaying a selector. The existing scheduler may load its saved KCS program
+metadata; it does not replay its top-level instructions.
+
+Whole `tonetbl` expands the present filename once before reading group bounds.
+Each eligible owner opens independently through the existing mode3 reader,
+after releasing its prior map. Whole `gettonetbl` expands/evaluates each present
+output address once before traversal. Both stop at the first null slot, visit
+unsupported live types as no-ops and retain the initial group bound. Requested
+globals are written R/G/B, so aliases and later eligible objects overwrite
+earlier outputs. A missing setter argument does not clear state.
+
+`tests/fes-tone-table-default.test.mjs` runs the actual default factory in both
+profiles, verifies exact FILE ownership and command ordering, and restores the
+current query state without source replay. Public authored HG3 pixels also
+remain unchanged after a tone-table query and a fresh World. The web manual's
+`tonetable` spelling is not installed as an alias: both frozen ABIs use
+`tonetbl`. The registry retains that documented/frozen applicability difference
+as partial rather than inventing another command or claiming CST completeness.

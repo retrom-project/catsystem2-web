@@ -20,8 +20,10 @@ import { nativeCategoryFilename } from './resource-file.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
 import { floatBits } from '../kcs.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
+import { nativeDataString } from './data-text.mjs';
 
 const f = Math.fround,
+  filenameDecoder = new TextDecoder('shift_jis'),
   types = new Set([1, 2, 6, 16, 17, 18, 19, 20, 22]),
   wrapperTypes = new Set([...types, 11, 12]),
   modelTypes = new Set([...wrapperTypes, 25]),
@@ -98,6 +100,17 @@ export function initializeFESImage(object) {
     tablePending: false,
     baseOption: new Uint8Array(),
   });
+  if (object.nativeType === 16 || object.nativeType === 17) {
+    object.fileBytes = new Uint8Array();
+    object.toneTable = null;
+    Object.defineProperty(object, 'file', {
+      configurable: true,
+      enumerable: false,
+      get() {
+        return filenameDecoder.decode(this.fileBytes);
+      },
+    });
+  }
   if (object.nativeType !== 1 && object.nativeType !== 25)
     Object.assign(object, createFESImageSelector());
   if (object.nativeType === 6)
@@ -112,7 +125,20 @@ export function initializeFESImage(object) {
   return object;
 }
 
-export function setFESImageFile(object, name) {
+export function setFESImageFile(object, name, source) {
+  if (object.nativeType === 16 || object.nativeType === 17) {
+    if (!(source instanceof Uint8Array))
+      throw new TypeError('BGTABLE current FILE requires its original expanded bytes');
+    const bytes = nativeDataString(source);
+    if (
+      bytes.length !== object.fileBytes.length ||
+      bytes.some((byte, at) => byte !== object.fileBytes[at])
+    ) {
+      object.fileBytes = new Uint8Array(bytes);
+      object.imageChanged = true;
+    }
+    return;
+  }
   name = String(name);
   if (object.file !== name) {
     object.file = name;
@@ -874,7 +900,9 @@ export class FESImages {
   selectTable(object, selectors) {
     const result = this.table(object)?.select(selectors) ?? null;
     if (result === null) return false;
-    object.file = new TextDecoder('shift_jis').decode(result);
+    if (object.nativeType === 16 || object.nativeType === 17)
+      setFESImageFile(object, undefined, result);
+    else object.file = filenameDecoder.decode(result);
     object.imageChanged = true;
     return true;
   }
