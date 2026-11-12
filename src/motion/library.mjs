@@ -34,7 +34,8 @@ export class MotionLibrary {
     const bytes = this.game.readCategory
       ? await this.game.readCategory(name, 'mot')
       : await this.game.read(`${key}.kcs`);
-    if (!bytes) return null;
+    // The original MOT manager returns zero before parsing a zero-size file.
+    if (!bytes || bytes.byteLength === 0) return null;
     const script = await readKCS(bytes);
     script.name = key;
     script.recordName = `${key.replaceAll('\\', '/').split('/').at(-1)}.kcs`;

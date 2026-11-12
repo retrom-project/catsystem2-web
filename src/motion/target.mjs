@@ -17,8 +17,10 @@ export class MotionTarget {
   state() {
     return this.readState();
   }
-  async add(file, options = {}, { refreshBase = true } = {}) {
-    const script = await this.library.load(file);
+  async add(file, options = {}, { refreshBase = true, allowMissing = false } = {}) {
+    const script = await (allowMissing ? this.library.optional(file) : this.library.load(file));
+    // A failed resource read never reaches the original record initialization.
+    if (allowMissing && script === null) return 0;
     // Native object vtable[1] refreshes the base when there is no active motion.
     if (!this.manager.busy()) {
       this.manager.clear();

@@ -761,6 +761,156 @@ for (const profile of [sdkProfile, gameProfile])
     expect(result.exe).toBe(false);
   });
 
+for (const profile of [sdkProfile, gameProfile])
+  test(`${profile} default FES missing MOT keeps exact StageRenderer pixels and fresh state`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const result = await page.evaluate(
+      async ({ profile, program }) => {
+        const { NativeWorld } = await import('/web/transitional-entry.mjs'),
+          { NativeConfiguration } = await import('/src/native/config.mjs'),
+          { MotionLibrary } = await import('/src/motion/library.mjs'),
+          { ParticleRandom } = await import('/src/ppi/random.mjs'),
+          create = (mode) => {
+            const files = new Map([['main.kcs', Uint8Array.from(program)]]),
+              reads = [],
+              game = {
+                width: 128,
+                height: 96,
+                read: async (name) => files.get(name) ?? null,
+                has: (name) => files.has(name),
+                lookup: () => null,
+                resolveCategory(name, category) {
+                  const file = name.includes('.')
+                    ? name
+                    : `${name}.${category === 'mot' ? 'kcs' : category}`;
+                  return files.has(file) ? file : null;
+                },
+                readCategory(name, category) {
+                  if (category === 'mot') reads.push(name);
+                  const file = this.resolveCategory(name, category);
+                  return file === null ? null : this.read(file);
+                },
+                require: async (name) => {
+                  if (!files.has(name)) throw new Error(`Unexpected MOT fixture read ${name}`);
+                  return files.get(name);
+                },
+              },
+              random = new ParticleRandom(),
+              configuration = new NativeConfiguration({ profile }),
+              world = new NativeWorld({
+                profile,
+                game,
+                random,
+                configuration,
+                images: {},
+                motionLibrary: new MotionLibrary(game, { profile, random }),
+                storage: { read: async () => null, write: async () => true },
+                host: {},
+              }),
+              canvas = new OffscreenCanvas(128, 96),
+              renderer = {
+                canvas,
+                ctx: canvas.getContext('2d'),
+                begin() {
+                  this.ctx.reset();
+                },
+              };
+            if (mode)
+              files.set(
+                'screen.fes',
+                new TextEncoder().encode(
+                  `#DEFINE\nCPLANE tint\n#OBJECT SIZE POS COLOR PRI DISP\ntint 8,8 4,4 ${mode === 'missing' ? '0xff804020' : '0x80804020'} 60001 1\n#START\n${mode === 'missing' ? 'tint delay 3\ntint blend 128\ntint pos 4 4\ntint ismot 10\n' : ''}next IDLE\n#IDLE\n`,
+                ),
+              );
+            configuration.fields.texture.size.set([128, 128]);
+            configuration.fields.texture.grid.set([1, 1]);
+            configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
+            configuration.fields.texture.bppY.set([0, 1]);
+            world.ensureNativeEngine = () => {
+              throw new Error('Missing MOT attempted EXE loading');
+            };
+            world.stageRenderer.attach(renderer);
+            return { world, reads };
+          },
+          open = async (owner) => {
+            await owner.initialize('main.kcs');
+            const parent = owner.objects.objects.get(owner.main.id),
+              id = await owner.objects.create({ kind: 34, parent: parent.id }),
+              surface = await owner.objects.create({ kind: 15, parent: parent.id }),
+              task = owner.objects.objects.get(id).implementation;
+            await owner.sendEngine(surface, parent.id, 279, 128, 96);
+            await owner.sendEngine(surface, parent.id, 283);
+            owner.runtime.variableBank(parent).initialize(64);
+            owner.runtime.stringBank(parent);
+            await task.initialize(parent.context.variableBank);
+            await owner.sendEngine(id, parent.id, 334, 0, surface);
+            await task.loadSource('screen');
+            await task.tick();
+            return { id, task };
+          },
+          render = async (owner) => {
+            await owner.stageRenderer.render(owner.graphics.stage, {});
+            return [...owner.stageRenderer.gpu.pixels()];
+          },
+          original = create('missing'),
+          baseline = create('defined'),
+          restored = create(null);
+        try {
+          const h = await open(original.world);
+          await open(baseline.world);
+          const object = h.task.player.root.collection.lookup('tint', 0),
+            target = h.task.player.root.runtime.targetFor(object, false),
+            pixels = await render(original.world),
+            expected = await render(baseline.world);
+          await restored.world.restore(original.world.snapshot());
+          const freshTask = restored.world.objects.objects.get(h.id).implementation,
+            freshObject = freshTask.player.root.collection.lookup('tint', 0),
+            freshTarget = freshTask.player.root.runtime.targetFor(freshObject, false);
+          await freshTask.syncObjects();
+          const freshPixels = await render(restored.world);
+          return {
+            reads: original.reads,
+            restoreReads: restored.reads,
+            visible: pixels.some((value, at) => at % 4 !== 3 && value !== 0),
+            exact: pixels.every((value, at) => value === expected[at] && value === freshPixels[at]),
+            fields: [
+              object.alpha,
+              object.x,
+              object.y,
+              object.motionDelay,
+              h.task.player.root.global(10),
+            ],
+            freshFields: [
+              freshObject.alpha,
+              freshObject.x,
+              freshObject.y,
+              freshObject.motionDelay,
+              freshTask.player.root.global(10),
+            ],
+            records: [target.manager.records.size, freshTarget.manager.records.size],
+            handles: [target.manager.nextHandle, freshTarget.manager.nextHandle],
+            exe: [original, baseline, restored].some(({ world }) => Boolean(world.nativeEngine)),
+          };
+        } finally {
+          for (const { world } of [restored, baseline, original])
+            await world.close({ flushFiles: false });
+        }
+      },
+      { profile, program: [...kcsProgram([[37, 240], [43, 0x47, 4], [59]])] },
+    );
+    expect(result.reads).toEqual(['pColor', 'pPos']);
+    expect(result.restoreReads).toEqual([]);
+    expect(result.visible).toBe(true);
+    expect(result.exact).toBe(true);
+    expect(result.fields).toEqual([128, 4, 4, 3, 0]);
+    expect(result.freshFields).toEqual(result.fields);
+    expect(result.records).toEqual([0, 0]);
+    expect(result.handles).toEqual([1, 1]);
+    expect(result.exe).toBe(false);
+  });
+
 test('native movie decoding, audible PCM, loop completion and fresh decoder restoration use real browser media', async ({
   page,
 }) => {

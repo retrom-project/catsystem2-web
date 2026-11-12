@@ -41,7 +41,7 @@ export class FESMotionDriver {
     return this.prepare(object).add(
       file,
       { ...options, delay: object.motionDelay >>> 0 },
-      { refreshBase: false },
+      { refreshBase: false, allowMissing: true },
     );
   }
   subcommand(object, definition, args, evaluate) {
@@ -50,7 +50,7 @@ export class FESMotionDriver {
     return target.add(
       definition.file,
       { registers, group: 0, delay: object.motionDelay >>> 0 },
-      { refreshBase: false },
+      { refreshBase: false, allowMissing: true },
     );
   }
   update(object, frame) {

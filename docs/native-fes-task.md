@@ -109,6 +109,22 @@ owned bytes and fresh restoration are covered without an EXE constructor.
 The FES task's separate message19 conditional-default refresh over saved
 resource-entry types remains an independent phase-7 consumer gap.
 
+FES motion admission preserves the original failed-resource return. On a cache
+miss, an absent or zero-length MOT file returns0 before creating a VM or motion
+record. The object snapshot and command effects that precede loading still
+occur: for example, `blend` has already set alpha and `pos` has already set its
+coordinates. A failed request retains the existing records, next handle, last
+frame, delay and random state; it is not cached, so a later request can load a
+newly available file. Existing successful cache entries remain usable without
+reopening their files. Both builtin commands and authored SUBCOMMANDs use this
+same admission boundary. Nonempty malformed KCS and I/O errors remain explicit;
+required script loads outside this FES boundary keep their existing contract.
+Default World tests cover both frozen ABIs, delayed real KCS execution and fresh
+restoration of empty and active MOT targets. Actual StageRenderer pixels after
+missing `pColor`/`pPos` match the equivalent explicitly defined object and remain
+identical after fresh restoration. No builtin MOT or missing-resource stub is
+synthesized.
+
 The text controller also owns the complete `clear`, `apendmark`, `skip`, `reset`,
 `isdraw`, `isdrawmark`, `insert`, `linecnt` and `endpos` selection wrappers. The
 first six skip holes; `insert` and `linecnt` stop at the first missing slot.
