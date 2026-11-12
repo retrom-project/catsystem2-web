@@ -137,3 +137,9 @@ font references and fresh-process checkpoints.
 The GDI host boundary is tested independently; unsupported outline/matrix
 formats remain explicit diagnostics. Actual Windows font rasterization and
 visual game screenshot acceptance are separate from CPU/state equality.
+
+## Default FES text queries
+
+`strid` reads the single World text writer's parsed ID map. STRING21 and STRING8 on ABI76 use the string query; LOG24 and LOGSTRING8 on ABI76 use the current viewport ring slot's generated main STRING. NVSTRING29 is excluded by the original handler. Whole-selection traversal skips holes and retains the original shared -1 argument caches across mixed classes. Missing writers or IDs return the original defined zero.
+
+`redraw` only marks NVSTRING29. Its deferred resource driver sends canonical506 (NV operation17) after configuration and before section/source updates. The pending flag is owned by the current FES checkpoint; fresh World restore reuses the existing JS writer without resource replay. Two frozen-ABI default entrance tests, including real LOG children and pending redraw restoration, live in `tests/fes-resource-queries.test.mjs`. No PE text constructor or implicit text feature is involved.

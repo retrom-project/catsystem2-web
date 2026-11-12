@@ -75,6 +75,11 @@ export class FESLogDriver {
     if (has('DISP')) await model.display(get('DISP'));
     return true;
   }
+  async stringID(instance, object, row, id) {
+    const slot = this.model(instance, object).slot(row | 0),
+      child = slot?.main == null ? null : this.resolveChild(instance, slot.main);
+    return child ? this.strings.stringID(instance, child, id) : 0;
+  }
   validate(instance, object) {
     this.model(instance, object);
     if (object.logHandle) this.world.displayLogs.get(object.logHandle);

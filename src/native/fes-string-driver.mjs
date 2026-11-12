@@ -90,6 +90,7 @@ function createTextState(object, profile, configuration) {
     fontSource: null,
     fontMap: [],
     section: false,
+    redraw: false,
     division: 0,
     speed: 10,
     revision: -1,
@@ -189,6 +190,14 @@ export class FESStringDriver {
     const expand = instance.player.host?.nativeFESStringBytes;
     if (expand) bytes = expand(bytes);
     return this.world.configuration?.scriptReplacements?.apply(bytes) ?? bytes;
+  }
+  async stringID(instance, object, id) {
+    if (object.nativeType !== 21 && object.nativeType !== 37)
+      throw new TypeError('FES strid requires STRING or STRING8');
+    if (object.nativeTaskID == null) return 0;
+    const writer = await this.validate(instance, object).writer(),
+      entry = writer?.parser.scanner?.ids.find(([key]) => (key | 0) === (id | 0));
+    return entry?.[1] ?? 0;
   }
   async command(instance, object, verb, args = [], context = {}) {
     const target = object,
@@ -657,6 +666,10 @@ export class FESStringDriver {
           layoutChanged = true;
         }
       if (layoutChanged) this.saveLayout(object, layout);
+    }
+    if (mode === 'nv' && s.redraw) {
+      await send(17);
+      s.redraw = false;
     }
     if (mode === 'nv' && s.section) {
       await send(14);

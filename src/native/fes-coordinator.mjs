@@ -151,6 +151,19 @@ export class FESCoordinator {
         world.fesSound.state(instance, object).load(file, crossfade, frames),
       soundLoadParameters: nativeABI(world.profile).sound.fesLoadParameters,
       loadM2: (object, file) => world.m2FES.setFile(object, file),
+      bitmap: (object) => {
+        const handle =
+          object.nativeType === 25
+            ? object.imageResource?.source &&
+              world.renderSources.get(object.imageResource.source).bitmap
+            : this.images.currentBitmap(object);
+        return handle ? world.graphics.images.get(handle) : null;
+      },
+      stringID: (object, id) => this.strings.stringID(instance, object, id),
+      logStringID: (object, row, id) => this.logs.stringID(instance, object, row, id),
+      redraw: (object) => {
+        this.strings.state(object).redraw = true;
+      },
     });
     this.resources = new FESResourceEntries({
       resolve: (name, index) => this.collection.lookup(name, index),

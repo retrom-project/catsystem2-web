@@ -3,8 +3,9 @@
 import { setFESImageID } from './fes-image-model.mjs';
 import { setFESControlFile } from './fes-control-model.mjs';
 
-export const FES_RESOURCE_COMMANDS = new Set(['load']);
+export const FES_RESOURCE_COMMANDS = new Set(['load', 'attr', 'strid', 'redraw']);
 const imageTypes = new Set([2, 6, 11, 12, 22]);
+const attributeTypes = new Set([1, 2, 6, 16, 17, 18, 19, 20, 25]);
 
 export class FESResourceCommands {
   constructor(instance, services) {
@@ -12,6 +13,7 @@ export class FESResourceCommands {
   }
   async command(verb, selection, args = [], context = {}) {
     if (!FES_RESOURCE_COMMANDS.has(verb)) throw new Error('Unknown FES resource command ' + verb);
+    if (verb !== 'load') return this.query(verb, selection, args, context);
     const name = selection.nameBytes ?? selection.name,
       first = selection.index === -1 ? 0 : selection.index,
       end = selection.index === -1 ? this.collection.count(name) : first + 1,
@@ -62,6 +64,62 @@ export class FESResourceCommands {
         if (!this.loadEFK) throw new Error('Unimplemented FES EFKPLANE load');
         this.loadEFK(object, file);
       }
+    }
+    return 0;
+  }
+  async query(verb, selection, args, context) {
+    const name = selection.nameBytes ?? selection.name,
+      first = selection.index === -1 ? 0 : selection.index,
+      value = (i, fallback = -1) =>
+        args[i] === undefined
+          ? fallback
+          : typeof args[i] === 'number'
+            ? args[i] | 0
+            : context.argument
+              ? context.argument(i) | 0
+              : this.instance.value(args[i]) | 0;
+    if (verb === 'attr') {
+      if (!args.length) return 0;
+      const id = value(0) & 65535,
+        outputs = Array.from({ length: 5 }, (_, i) => value(i + 1)),
+        end = selection.index === -1 ? this.collection.count(name) : first + 1;
+      for (let at = first; at < end; at++) {
+        const object = this.collection.lookup(name, at);
+        if (!object) break;
+        if (!attributeTypes.has(object.nativeType)) continue;
+        const attribute = this.bitmap(object)?.state.attributes.find((entry) => entry.id === id);
+        if (!attribute) continue;
+        const values = [...attribute.rect, attribute.color];
+        outputs.forEach((index, i) => {
+          if (index !== -1) this.instance.setGlobal(index, values[i]);
+        });
+      }
+      return 0;
+    }
+    const end = selection.index === -1 ? this.collection.count(name) : first + 1;
+    let row = -1,
+      id = -1,
+      output = -1;
+    for (let at = first; at < end; at++) {
+      const object = this.collection.lookup(name, at);
+      if (!object) continue;
+      const type = object.nativeType;
+      if (verb === 'redraw') {
+        if (type === 29) this.redraw(object);
+        continue;
+      }
+      let result;
+      if (type === 21 || type === 37) {
+        if (id === -1) id = value(0);
+        if (output === -1) output = value(1);
+        result = await this.stringID(object, id);
+      } else if (type === 24 || type === 38) {
+        if (row === -1) row = value(0);
+        if (id === -1) id = value(1);
+        if (output === -1) output = value(2);
+        result = await this.logStringID(object, row, id);
+      } else continue;
+      if (output !== -1) this.instance.setGlobal(output, result);
     }
     return 0;
   }

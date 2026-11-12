@@ -2602,11 +2602,11 @@
       "id": "fes.reference.co.attr",
       "domain": "fes-object-command",
       "names": ["attr"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/attr.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "implementation": "src/native/fes-resource-commands.mjs",
+      "evidence": ["tests/fes-resource-queries.test.mjs"],
+      "note": "Frozen 74/76 attr evaluates ID and five optional output indices once before null-stop traversal. It queries current JS bitmap metadata for raw1/2/6/16–20 and retained DIFIMAGE25; other classes are original no-ops. Two-ABI default IMAGE and externally released DIF owner, complete outputs and fresh World restoration are covered.",
       "signatures": ["[obj] attr [id] (x) (y) (w) (h) (c)"]
     },
     {
