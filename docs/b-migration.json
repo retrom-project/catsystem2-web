@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 218, "oracle": 148, "differential": 67 },
+    "counts": { "js": 220, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -50,8 +50,10 @@
         "tests/effekseer-ring-current-state.test.mjs",
         "tests/effekseer-sprite-ring-geometry.test.mjs",
         "tests/effekseer-standard-batch.test.mjs",
+        "tests/effekseer-texture-decoder.test.mjs",
         "tests/effekseer-texture-level0-holdout.test.mjs",
         "tests/effekseer-texture-level0.test.mjs",
+        "tests/effekseer-texture-resources.test.mjs",
         "tests/effekseer-world-executor.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
@@ -2386,8 +2388,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 474,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 76, "8": 174, "9": 55 },
+    "runtimeFiles": 475,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 77, "8": 174, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48624,7 +48626,7 @@
     },
     {
       "file": "src/effekseer/resources.mjs",
-      "sourceSha256": "24aa152daa30c9e5623ddb634ef4d882884a2de60d9b22ffae1d8f1f06422fe5",
+      "sourceSha256": "e3c50848a6c81fbe129ad1212ec641c87073636600b77eac7485d9971008b0bf",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48690,6 +48692,19 @@
     {
       "file": "src/effekseer/standard-batch.mjs",
       "sourceSha256": "4e128fab69157f973ed9de4f587fa8d0686110529b3d83f13e923fe68801e173",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/texture-decoder.mjs",
+      "sourceSha256": "886ef881bc7aa7c692486ec41db6f9c196eb8248b0971b49aa774d802ee19446",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -57005,7 +57020,7 @@
     },
     {
       "file": "src/render/stage.mjs",
-      "sourceSha256": "2cb76fed9985313b424b92eceaf926ab4547aa068a0968c076df1233be2a600b",
+      "sourceSha256": "f278f46bc2d24d6ced56cf9693a0affbfca104285f3e5b424c5a5f7b908727ab",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

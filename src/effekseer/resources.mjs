@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // EFK category loading reuses the owning World's mounted-file and ACP services.
 import { readEffekseerEffect } from './effect-reader.mjs';
+import { EFFEKSEER_LEVEL0_PROFILE } from './texture-level0.mjs';
+import { decodeEffekseerTexture, isEffekseerTextureProfile } from './texture-decoder.mjs';
 
 // 6A7600 remembers separator index zero as its initial sentinel as well.
 export function effekseerTextureBasename(path) {
@@ -13,14 +15,53 @@ const validateName = (name) => {
     throw new TypeError('Invalid Effekseer resource name');
   return name;
 };
+const dimension = (value) =>
+  Number.isSafeInteger(value) &&
+  value >= 1 &&
+  value <= EFFEKSEER_LEVEL0_PROFILE.maxWidth &&
+  (value & (value - 1)) === 0;
+const framePixels = (frame) => {
+  if (
+    !frame ||
+    !dimension(frame.width) ||
+    !dimension(frame.height) ||
+    !(frame.rgba instanceof Uint8Array || frame.rgba instanceof Uint8ClampedArray) ||
+    frame.rgba.length !== frame.width * frame.height * 4
+  )
+    throw new Error('Effekseer texture decoder returned an invalid level0 frame');
+  return frame.rgba;
+};
+const storageIdentity = (texture) =>
+  texture.missing
+    ? null
+    : {
+        profile: { ...EFFEKSEER_LEVEL0_PROFILE },
+        width: texture.frame.width,
+        height: texture.frame.height,
+        rgbaSHA256: texture.rgbaSHA256,
+      };
+const validStorage = (storage) =>
+  storage !== null &&
+  typeof storage === 'object' &&
+  Object.keys(storage).length === 4 &&
+  isEffekseerTextureProfile(storage.profile) &&
+  dimension(storage.width) &&
+  dimension(storage.height) &&
+  typeof storage.rgbaSHA256 === 'string' &&
+  /^[a-f0-9]{64}$/.test(storage.rgbaSHA256);
+const sameStorage = (a, b) =>
+  a === null || b === null
+    ? a === b
+    : a.width === b.width && a.height === b.height && a.rgbaSHA256 === b.rgbaSHA256;
 const textureIdentities = (textures) =>
   Object.fromEntries(
     Object.entries(textures).map(([kind, bindings]) => [
       kind,
-      bindings.map(({ resolved, sha256, missing }) => ({
-        resolved,
-        sha256,
-        missing: !!missing,
+      bindings.map((texture) => ({
+        resolved: texture.resolved,
+        sha256: texture.sha256,
+        missing: !!texture.missing,
+        storage: storageIdentity(texture),
       })),
     ]),
   );
@@ -30,7 +71,7 @@ export class EffekseerResources {
     readNative,
     roundTripCP932,
     identify,
-    decodeTexture,
+    decodeTexture = decodeEffekseerTexture,
     disposeTexture = () => {},
     onWarning,
     readerLimits,
@@ -86,25 +127,33 @@ export class EffekseerResources {
     const key = `${source.resolved}\0${source.sha256}`;
     let texture = this.textures.get(key);
     if (!texture) {
-      texture = { ...source, key, references: 0, frame: null, pending: null };
+      texture = { ...source, key, references: 0, frame: null, rgbaSHA256: null, pending: null };
       this.textures.set(key, texture);
       texture.pending = Promise.resolve()
         .then(async () => {
           texture.frame = await this.decodeTexture(source.bytes, {
             identity: `${source.resolved}@sha256:${source.sha256}`,
+            profile: EFFEKSEER_LEVEL0_PROFILE,
           });
-          if (this.closed) {
-            if (texture.frame) this.disposeTexture(texture.frame);
-            texture.frame = null;
-            throw new Error('Effekseer resources closed during texture load');
-          }
-          if (!texture.frame)
-            throw new Error(`Effekseer texture decoder returned no frame: ${source.resolved}`);
+          this.assertOpen();
+          const rgbaSHA256 = await this.identify(framePixels(texture.frame));
+          this.assertOpen();
+          if (typeof rgbaSHA256 !== 'string' || !/^[a-f0-9]{64}$/.test(rgbaSHA256))
+            throw new Error('Effekseer level0 storage identity is not SHA-256');
+          texture.rgbaSHA256 = rgbaSHA256;
           return texture;
         })
         .catch((error) => {
-          this.textures.delete(key);
+          if (this.textures.get(key) === texture) this.textures.delete(key);
+          try {
+            this.disposeFrame(texture);
+          } catch (cleanup) {
+            throw new AggregateError([error, cleanup], error.message + '; texture cleanup failed');
+          }
           throw error;
+        })
+        .finally(() => {
+          texture.pending = null;
         });
     }
     texture.references++;
@@ -117,13 +166,19 @@ export class EffekseerResources {
     }
   }
   releaseTexture(texture) {
-    if (texture.missing) return;
+    if (texture.missing || this.closed) return;
     if (this.textures.get(texture.key) !== texture || texture.references <= 0)
       throw new Error('Effekseer texture reference is invalid');
     if (--texture.references === 0) {
       this.textures.delete(texture.key);
-      this.disposeTexture(texture.frame);
+      this.disposeFrame(texture);
     }
+  }
+  disposeFrame(texture) {
+    const frame = texture.frame;
+    texture.frame = null;
+    texture.rgbaSHA256 = null;
+    if (frame) this.disposeTexture(frame);
   }
   async load(name) {
     this.assertOpen();
@@ -159,15 +214,22 @@ export class EffekseerResources {
               for (const path of asset.effect.dependencies[kind])
                 asset.textures[kind].push(await this.texture(path));
           } catch (error) {
+            const errors = [error];
             for (const texture of Object.values(asset.textures).flat())
-              this.releaseTexture(texture);
-            throw error;
+              try {
+                this.releaseTexture(texture);
+              } catch (cleanup) {
+                errors.push(cleanup);
+              }
+            throw errors.length === 1
+              ? error
+              : new AggregateError(errors, error.message + '; Effect cleanup failed');
           }
           return asset;
         })
         .catch((error) => {
-          this.assets.delete(key);
-          this.byID.delete(asset.id);
+          if (this.assets.get(key) === asset) this.assets.delete(key);
+          if (this.byID.get(asset.id) === asset) this.byID.delete(asset.id);
           throw error;
         });
     }
@@ -191,12 +253,23 @@ export class EffekseerResources {
     if (--asset.references === 0) {
       this.assets.delete(asset.key);
       this.byID.delete(id);
-      for (const texture of Object.values(asset.textures).flat()) this.releaseTexture(texture);
+      const errors = [];
+      for (const texture of Object.values(asset.textures).flat())
+        try {
+          this.releaseTexture(texture);
+        } catch (error) {
+          errors.push(error);
+        }
+      if (errors.length)
+        throw new AggregateError(errors, 'Effekseer Effect release cleanup failed');
     }
   }
   snapshot() {
     this.assertOpen();
-    if ([...this.assets.values()].some((asset) => !asset.references))
+    if (
+      [...this.assets.values()].some((asset) => !asset.references) ||
+      [...this.textures.values()].some((texture) => texture.pending)
+    )
       throw new Error('Effekseer resource snapshot requires settled loads');
     return {
       nextID: this.nextID,
@@ -245,11 +318,14 @@ export class EffekseerResources {
         for (const texture of saved.textures[kind])
           if (
             !texture ||
+            Object.keys(texture).length !== 4 ||
             typeof texture.missing !== 'boolean' ||
             !(typeof texture.resolved === 'string' || texture.resolved === null) ||
             (texture.missing
-              ? texture.sha256 !== null
-              : typeof texture.resolved !== 'string' || !/^[a-f0-9]{64}$/.test(texture.sha256))
+              ? texture.sha256 !== null || texture.storage !== null
+              : typeof texture.resolved !== 'string' ||
+                !/^[a-f0-9]{64}$/.test(texture.sha256) ||
+                !validStorage(texture.storage))
           )
             throw new Error('Invalid Effekseer texture checkpoint');
       }
@@ -266,10 +342,11 @@ export class EffekseerResources {
         for (const kind of ['color', 'normal', 'distortion'])
           if (
             loadedTextures[kind].length !== saved.textures[kind].length ||
-            loadedTextures[kind].some((texture, i) =>
-              ['resolved', 'sha256', 'missing'].some(
-                (key) => texture[key] !== saved.textures[kind][i][key],
-              ),
+            loadedTextures[kind].some(
+              (texture, i) =>
+                ['resolved', 'sha256', 'missing'].some(
+                  (key) => texture[key] !== saved.textures[kind][i][key],
+                ) || !sameStorage(texture.storage, saved.textures[kind][i].storage),
             )
           )
             throw new Error(`Effekseer texture identity changed: ${saved.sourceName}`);
@@ -280,17 +357,28 @@ export class EffekseerResources {
       }
       this.nextID = state.nextID;
     } catch (error) {
-      this.close();
+      try {
+        this.close();
+      } catch (cleanup) {
+        throw new AggregateError([error, cleanup], error.message + '; restore cleanup failed');
+      }
       throw error;
     }
   }
   close() {
     if (this.closed) return;
     this.closed = true;
-    for (const texture of this.textures.values())
-      if (texture.frame) this.disposeTexture(texture.frame);
+    const textures = [...this.textures.values()],
+      errors = [];
     this.textures.clear();
     this.assets.clear();
     this.byID.clear();
+    for (const texture of textures)
+      try {
+        this.disposeFrame(texture);
+      } catch (error) {
+        errors.push(error);
+      }
+    if (errors.length) throw new AggregateError(errors, 'Effekseer resource cleanup failed');
   }
 }

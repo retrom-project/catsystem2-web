@@ -6,7 +6,7 @@ import { binaryIdentity } from '../src/identity.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { nativeCategoryFilename, readNativeResource } from '../src/native/resource-file.mjs';
 import { encodeNativeCP932, decodeNativeCP932 } from '../src/native/cp932.mjs';
-import { PNG } from '../src/formats/png.mjs';
+import { decodeEffekseerTexture } from '../src/effekseer/texture-decoder.mjs';
 import { EffekseerResources, effekseerTextureBasename } from '../src/effekseer/resources.mjs';
 import { authoredEffect } from './fixtures/effekseer/authored-effect.mjs';
 const text = (s) => new TextEncoder().encode(s);
@@ -74,10 +74,9 @@ async function setup({
     },
     roundTripCP932: (name) => decodeNativeCP932(encodeNativeCP932(name)),
     identify: binaryIdentity,
-    decodeTexture: async (bytes) => {
+    decodeTexture: async (bytes, options) => {
       decodes++;
-      const png = new PNG(bytes);
-      return { width: png.width, height: png.height, rgba: await png.decode() };
+      return decodeEffekseerTexture(bytes, options);
     },
     disposeTexture: (frame) => disposed.push(frame),
     onWarning: (warning) => warnings.push(warning),

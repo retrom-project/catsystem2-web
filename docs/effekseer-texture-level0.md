@@ -13,7 +13,7 @@ data. No source buffer is modified, cached, premultiplied or canvas processed.
 The exported fixed profile declares texture caps 5, maximum width/height/aspect
 4096, format 21, managed pool 1, usage 0 and one level. A different profile is
 an explicit unsupported operation. Source dimensions follow the existing PNG
-decoder's finite domain, with at most 64 million decoded pixels. The separate
+decoder's finite domain, with at most `64*1024*1024` decoded pixels. The separate
 `effekseerLevel0Dimensions` helper rounds each default dimension upward to a
 power of two and then applies the fixed size limits. An unchanged size copies
 all source bytes directly. A changed size runs integrated Triangle filtering
@@ -32,13 +32,14 @@ calls. This covers the fixed format/profile path, source alpha boundaries,
 unchanged POT copies and the recorded NPOT cases. It is not a native hardware,
 GPU, general image-format, sRGB, color-key, diffusion or mip-chain result.
 
-Later resource integration must apply this conversion after the existing
-decoder and before upload, recording the converted physical storage dimensions
-and bytes. The immutable source name/content digest and per-successful-load
-logical texture token remain owned by their existing resource/load services.
-They must not be replaced with a POT-sized identity or merged because physical
-storage can be shared. The resource owner must also decide its frame metadata,
-release and restore fingerprints as one contract. This module adds no resource
+`src/effekseer/texture-decoder.mjs` supplies the bounded PNG8/color6 default
+decoder for `EffekseerResources`: existing PNG decode followed by this unchanged
+converter. Other source layouts/codecs and unknown device profiles are explicit
+errors. Resources project the converted physical profile, actual frame dimensions
+and RGBA digest in their current snapshot while keeping source identity and
+per-successful-load logical tokens separate. Shared physical storage must not
+merge logical entries. See `docs/effekseer.md` for the same resource owner's
+release and restore contract. This pure conversion module adds no resource
 state, cache, asynchronous job or checkpoint fields. Default World loading,
 nonempty GPU drawing, mip-capable hardware and unverified source-format
 selection remain separate work.

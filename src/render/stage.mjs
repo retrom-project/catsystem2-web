@@ -65,6 +65,9 @@ export class StageRenderer {
       depth = target.stageSurface ? this.surfaceDepth(target.stageSurface) : this.screenDepth();
     return device.withStageTarget(target, callback, depth);
   }
+  releaseTextureFrame(frame) {
+    if (!this.disposed) this.gpu?.releaseTextureFrame(frame);
+  }
   drawEffekseer(packet, frame, { state, context, scissor, opaqueTarget } = {}) {
     if (!this.gpu?.drawing)
       throw new Error('Effekseer drawing requires an open StageRenderer frame');

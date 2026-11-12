@@ -85,6 +85,8 @@ export async function setupMounted() {
       },
       roundTripCP932: (name) => decodeNativeCP932(encodeNativeCP932(name)),
       identify: binaryIdentity,
+      // Independent algorithm fixture: injected generic PNG decode, not the
+      // proved default source-format/level0 loader (RGB layouts remain unverified).
       decodeTexture: async (bytes) => {
         const png = new PNG(bytes);
         return { width: png.width, height: png.height, rgba: await png.decode() };

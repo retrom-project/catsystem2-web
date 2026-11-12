@@ -61,9 +61,16 @@ model, sound or background-distortion renderer.
 
 `src/effekseer/resources.mjs` exports `EffekseerResources`. Its injected services
 reuse the existing mounted VFS, category configuration, CP932 conversion,
-SHA-256 identity and texture decoder. `resolveCategory`, `readNative`,
-`roundTripCP932`, `identify` and `decodeTexture` are required. `disposeTexture`,
-`onWarning` and `readerLimits` are optional. Resource reads use mode 3, leaving
+SHA-256 identity. `resolveCategory`, `readNative`, `roundTripCP932` and `identify`
+are required. The default `decodeTexture` is the EFK-specific PNG8/color6 decoder
+followed by the selected legacy level0 converter. It returns owned physical
+RGBA8 pixels; unknown image layouts/profiles are explicit errors. It does not
+use the general RasterImage/canvas fallback. Decoder injection remains available
+for isolated algorithms or error/wait tests; its success does not establish the
+default loader's source-format capability. Existing generic RGB-PNG algorithm
+fixtures retain that explicit injection while their native format mapping is
+unverified. `disposeTexture`, `onWarning` and `readerLimits` are optional.
+Resource reads use mode 3, leaving
 archive qualification and patch priority to the existing file services.
 
 `efk` and `efktex` are **category names**, not forced filename extensions. The
@@ -82,10 +89,25 @@ malformed Effects and decoder failures throw. `retain(id)` and `release(id)`
 keep Effects and shared texture frames alive across separate owners; a frame is
 disposed after its final reference. No manager, RNG, canvas or GPU is constructed.
 `snapshot()` requires settled loads and records live IDs, references, Effect
-identities and each texture binding's identity or missing state. `restore(state)`
-requires a fresh resource owner, reopens the mounted resources, verifies those
-identities and restores the IDs/references. It neither plays nor replays an Effect.
+identities and each texture binding's source/missing state and derived physical
+`storage` projection. A missing binding has `storage: null`; a successful binding
+records the selected device `profile`, actual frame `width`/`height`, and
+`rgbaSHA256`. The existing identify service hashes the converted pixels once;
+the immutable frame owns those pixels, and snapshot dimensions read that frame.
+There is no second writable dimensions record, pixel copy, cache or texture-ID
+table. Renderers borrow this physical frame as immutable data. Source SHA and
+per-successful-load logical tokens keep their separate existing authorities.
+`restore(state)` requires a fresh resource owner, reopens the mounted resources,
+regenerates and verifies source and physical storage identities, and restores
+the IDs/references before the logical-token owner rebinds its saved tokens.
+It neither plays nor replays an Effect.
 A failed restore closes its incomplete resource owner. `close()` is idempotent.
+Pending decode/hash operations cannot be checkpointed. Owner-close checks cover
+both awaits, including synchronous provider reentry. Cleanup retires a frame
+before invoking the disposal sink, so errors, concurrent failed loads and late
+completion cannot dispose it twice or poison a later cache retry. The shared
+StageRenderer's `releaseTextureFrame` delegates to its current GPU and does
+nothing before GPU creation or after StageRenderer disposal.
 This is a resource checkpoint component, not a complete EFK task checkpoint.
 
 `src/effekseer/crt-random.mjs` implements the unsigned MSVC CRT recurrence in

@@ -13,7 +13,6 @@ import { LogicalCRTThreads } from '../src/effekseer/crt-threads.mjs';
 import { EffekseerMeshBatch } from '../src/effekseer/mesh-batch.mjs';
 import { EffekseerStandardBatch } from '../src/effekseer/standard-batch.mjs';
 import { EffekseerPackedMesh } from '../src/effekseer/mesh-packet.mjs';
-import { PNG } from '../src/formats/png.mjs';
 import { setup as setupDevice } from './fixtures/effekseer/gpu-seam.mjs';
 import { batchEffect, I } from './fixtures/effekseer/batch-authored.mjs';
 const image = await readFile(new URL('./fixtures/effekseer/authored-spark.png', import.meta.url));
@@ -31,10 +30,6 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
             ? image
             : null,
       identify: (b) => createHash('sha256').update(b).digest('hex'),
-      decodeTexture: async (b) => {
-        const png = new PNG(b);
-        return { width: png.width, height: png.height, rgba: await png.decode() };
-      },
     }),
     loads = new EffekseerEffectLoads({ resources }),
     threads = new LogicalCRTThreads();

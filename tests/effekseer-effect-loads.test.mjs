@@ -8,7 +8,7 @@ import { EffekseerEffectLoads } from '../src/effekseer/effect-loads.mjs';
 import { EffekseerManagerLifecycle } from '../src/effekseer/manager-lifecycle.mjs';
 import { createEffekseerInstanceOperations } from '../src/effekseer/instance-operations.mjs';
 import { LogicalCRTThreads } from '../src/effekseer/crt-threads.mjs';
-import { PNG } from '../src/formats/png.mjs';
+import { decodeEffekseerTexture } from '../src/effekseer/texture-decoder.mjs';
 import { authoredEffect } from './fixtures/effekseer/authored-effect.mjs';
 
 const image = await readFile(new URL('./fixtures/effekseer/authored-spark.png', import.meta.url));
@@ -32,11 +32,10 @@ async function setup({
       },
       roundTripCP932: (name) => name,
       identify: (data) => createHash('sha256').update(data).digest('hex'),
-      decodeTexture: async (data) => {
+      decodeTexture: async (data, options) => {
         counts.decode++;
         if (failDecode) throw new Error('Authored decoder error');
-        const png = new PNG(data);
-        return { width: png.width, height: png.height, rgba: await png.decode() };
+        return decodeEffekseerTexture(data, options);
       },
       disposeTexture: () => counts.dispose++,
     });
