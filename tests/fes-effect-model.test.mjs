@@ -37,7 +37,7 @@ test('command defaults, signed duration and unsigned32-to-f32 ranges are explici
   assert.deepEqual(parsed.flags, [0xfffffffe, 7]);
   assert.equal(fesScreenEffectOptions(27, ['5', 'mask', '7', '9'], numbers).mask, 'mask');
   assert.equal(fesEffectClock({ effectiveFrame: 40, pausedFrames: 7 }), 33);
-  assert.throws(() => fesScreenEffectOptions(30, [], numbers), /outside this model/);
+  assert.throws(() => fesScreenEffectOptions(29, [], numbers), /outside this model/);
 });
 
 test('plane counts use live identities, a signed one-step delta, and retain unresolved deltas', () => {

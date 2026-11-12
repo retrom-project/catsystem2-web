@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 163, "oracle": 143, "differential": 67 },
+    "counts": { "js": 163, "oracle": 144, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -189,6 +189,7 @@
         "tests/control-model.test.mjs",
         "tests/emote-document.test.mjs",
         "tests/execution.test.mjs",
+        "tests/fes-effect-driver.test.mjs",
         "tests/fes-effect-model.test.mjs",
         "tests/frame-profile-counters.test.mjs",
         "tests/hg2.test.mjs",
@@ -2733,9 +2734,9 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 449,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 60, "8": 164, "9": 55 },
-    "fileNeedsReview": 98,
+    "runtimeFiles": 450,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 61, "8": 164, "9": 55 },
+    "fileNeedsReview": 99,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
@@ -51726,8 +51727,29 @@
       "review": "counted"
     },
     {
+      "file": "src/native/fes-effect-driver.mjs",
+      "sourceSha256": "7d0eff0342784822ce313881232f58f8567dfee51e549858f0bdc462fdcecc8c",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendEngine"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [
+        {
+          "line": 59,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        }
+      ],
+      "review": "needs-review"
+    },
+    {
       "file": "src/native/fes-effect-model.mjs",
-      "sourceSha256": "eae343092ad22ea350a203ae43bbb24214068fa0591371fff7d7620ebe12093d",
+      "sourceSha256": "254866f7f12a71254eb5694adc81800cfbe726005ca1b0fae33160f62c08fba8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

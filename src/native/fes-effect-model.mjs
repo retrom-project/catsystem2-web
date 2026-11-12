@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES state only. Canonical task services own the D6 algorithms and rendering.
-// Supported FES types: DRAW7, WIPE8, RDRAW26, RWIPE27, RWMOS31, RFMOS32.
+// Supported FES types: DRAW7, WIPE8, RDRAW26, RWIPE27, WBREAK30, RWMOS31, RFMOS32.
 const definitions = new Map([
   [7, { name: '__drawobj__', taskName: 'FE Draw', area: true }],
   [8, { name: '__wipeobj__', taskName: 'FE Wipe', area: true }],
   [26, { name: '__rdrawobj__', taskName: 'FE RDraw', kind: 38, init: 384, start: 385 }],
   [27, { name: '__rwipeobj__', taskName: 'FE RWipe', kind: 39, init: 387, start: 388 }],
+  [30, { name: '__wbreakobj__', taskName: 'FE WBreak', kind: 52, init: 521, start: 522 }],
   [31, { name: '__rwmosobj__', taskName: 'FE RWMos', kind: 50, init: 516, start: 518 }],
   [32, { name: '__rfmosobj__', taskName: 'FE RWMos', kind: 51, init: 519, start: 520 }],
 ]);
 const screenCommands = new Map([
   ['rdraw', 26],
   ['rwipe', 27],
+  ['wbreak', 30],
   ['rwmos', 31],
   ['rfmos', 32],
 ]);
@@ -71,6 +73,15 @@ export function fesScreenEffectOptions(type, args, { evaluate, text = String } =
   if (type === 27) {
     if (args[1] !== undefined) result.mask = text(args[1]);
     range = 2;
+  } else if (type === 30) {
+    result.shardSize = [32, 32];
+    result.shardSpeed = [300, 300];
+    for (let index = 0; index < 2; index++)
+      if (args[1 + index] !== undefined) result.shardSize[index] = number(1 + index) >>> 0;
+    for (let index = 0; index < 2; index++)
+      if (args[3 + index] !== undefined)
+        result.shardSpeed[index] = unsignedFloat(number(3 + index));
+    range = 5;
   } else if (type === 31 || type === 32) {
     if (args[1] !== undefined) result.level = number(1) >>> 0;
     if (args[2] !== undefined) result.flags[0] = number(2) >>> 0;
@@ -126,6 +137,7 @@ export class FESEffectModel {
       mask: '',
       level: 16,
       flags: [0, 0],
+      ...(type === 30 ? { shardSize: [32, 32], shardSpeed: [300, 300] } : {}),
       ...options,
       phase: 'unallocated',
       remaining: 0,
@@ -321,9 +333,11 @@ export class FESEffectModel {
         ? [...range, effect.duration]
         : effect.type === 27
           ? [...range, effect.duration, mask, 0]
-          : effect.type === 31
-            ? [...range, effect.duration, effect.level, effect.flags[0]]
-            : [...range, effect.duration, effect.level, effect.flags[0], effect.flags[1]];
+          : effect.type === 30
+            ? [...range, effect.duration, ...effect.shardSize, ...effect.shardSpeed.map(bits)]
+            : effect.type === 31
+              ? [...range, effect.duration, effect.level, effect.flags[0]]
+              : [...range, effect.duration, effect.level, effect.flags[0], effect.flags[1]];
     // Both mosaic range words are explicit by the approved deterministic policy.
     this.setPacket(effect, words);
     effect.taskKind = definition.kind;
@@ -390,7 +404,7 @@ export class FESEffectModel {
   async cleanupEntry(effect) {
     if (!this.entries.has(effect.identity)) return;
     // Original normal cleanup: mosaic31/32 deliberately does not send child3.
-    if (effect.taskId && [7, 8, 26, 27].includes(effect.type)) await this.send(effect, 3);
+    if (effect.taskId && [7, 8, 26, 27, 30].includes(effect.type)) await this.send(effect, 3);
     for (const handle of effect.ownedBitmaps) await this.need('releaseBitmap')(handle);
     effect.ownedBitmaps = [];
     this.packets.delete(effect.identity);
