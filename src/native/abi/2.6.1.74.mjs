@@ -227,6 +227,11 @@ export default {
     taskDumpTopWriter: true,
   },
   startup: {
+    verification: {
+      cipher: 'blowfish-le32',
+      codeEncoding: 'cp932',
+      comparison: 'open-cs2-literal',
+    },
     resourceCheck: 'before-defaults',
     accelerators: 'ansi-resource',
   },

@@ -161,6 +161,7 @@ export class CatSystem2 {
         executableResources: true,
         embeddedJavaScript: nativeABI(this.nativeProfile).capabilities.embeddedJavaScript,
         seedFromClock: this.randomSeed === undefined,
+        explicitSeed: this.randomSeed,
         glyphs: new CanvasTextGlyphs({
           family: (name) => this.renderer.fonts.get(name.toLowerCase()),
         }),

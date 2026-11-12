@@ -164,6 +164,10 @@ function validateBehavior(abi) {
     !['raw', 'wrap-raw'].includes(fes?.macroLiterals?.character) ||
     !graphics ||
     !startup ||
+    !['before-defaults', 'after-preferences'].includes(startup.resourceCheck) ||
+    startup.verification?.cipher !== 'blowfish-le32' ||
+    !['cp932', 'utf8'].includes(startup.verification?.codeEncoding) ||
+    !['decrypted-c-string', 'open-cs2-literal'].includes(startup.verification?.comparison) ||
     floatingPoint?.precisionBits !== 24 ||
     floatingPoint?.rounding !== 'nearest' ||
     floatingPoint?.x87ControlWord !== 0x7f ||

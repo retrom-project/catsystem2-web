@@ -50,16 +50,23 @@ main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列�
 这条路径不自动打开 `transitionalExe`。SOUNDCONFIG 经 config 资源挂载读取，其同名用户
 偏好另由 NativeFileStorage 读取。只有挂载资源存在、XML 解析及声音树加载成功后，才读取
 同名保存偏好；缺失或损坏的资源不会触碰该用户文件，保存偏好读取异常也不会抢先覆盖
-资源失败。新启动从 World 时钟只采样一次，按本地时间七字段
-（不含星期）初始化同一 integer/real MT；显式 seed 保留。fresh checkpoint restore 使用
-保存的当前 Config/Sound/MT/CRT 状态，不重读可变启动偏好，也不重播播种或首帧。
+资源失败。新启动分别在 MT owner 构造和 author 检查后从 World 时钟采样，按本地时间
+七字段（不含星期）播种同一 integer/real MT。显式 seed 只覆盖构造位置：74 的构造在
+资源检查后，76 的构造在之前；76 后续 author 的 clock reset 会覆盖 explicit seed。
+fresh checkpoint restore 使用保存的当前 Config/Sound/MT/CRT 状态，不重读启动资源或
+凭据元数据，不重播播种、author 32 次整数抽样或首帧。
 
-EXE 在这条路径仅供 ABI 版本和命名资源数据检查。固定包装器缺失 V_CODE/DATA 时跳过
-原比较；存在时仍需实现解密与 startup v_code 验证，当前在首帧前抛出
-`UnsupportedStartupResource`，不会执行原程序或默默接受。KEY_CODE/KEY 只参与该解密，
-V_CODE2/DATA 的原私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer；
-加密 KIF 的 `__key__.dat` 仍由输入边界独立拒绝。V_CODE 迁移、浏览器菜单/accelerator
-和剩余按命令触发的 D8 服务仍待完成，不能据此称完整游戏启动或第 7 阶段已完成。
+EXE 在这条路径仅供 ABI 版本和命名资源数据读取。普通启动用 JS Blowfish 读取
+KEY_CODE/KEY、V_CODE/DATA 与 V_CODE2/DATA；V_CODE 缺失跳过比较，存在则按注册 ABI
+比较原始 C 字节串（74 的固定 wrapper 先覆盖为公开 open_cs2；76 使用解密结果）。
+非 8 倍数资源保留原零输出行为，资源错误不作为校验成功。author 先计算公开后缀 CRC、
+重 seed、从唯一整数 MT 读取 32 次并 clock reset，再由现有 NativeFileStorage 的
+saved-record/GameFiles lookup 证明 cs2_debug_key.dat 缺失；存在凭据时明确要求尚未实施
+的 VC3 验证，不读取凭据、不信任可写 authorMode。V_CODE2 的真实资源错误仍传播，其原
+私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer，因此不新增影子字段。
+细节与原不安全输入的诊断见 [启动资源契约](native-startup-resources.md)。加密 KIF 的
+`__key__.dat` 仍由输入边界独立拒绝。完整 author 验证、浏览器菜单/accelerator 和剩余按
+命令触发的 D8 服务仍待完成，不能据此称完整游戏启动或第 7 阶段已完成。
 显式 lazy 原消费者继续需要过渡宿主。真实 window.sendEvent 还要求既有的原 application
 窗口、Settings 和随机数 owner；普通 JS 启动缺少这些 owner 时，在 feature/open 前报错，
 即使调用方注入了过渡宿主也不自动运行部分旧启动。显式研究 oracle 路径保持独立。

@@ -260,6 +260,11 @@ export default {
     taskDumpTopWriter: false,
   },
   startup: {
+    verification: {
+      cipher: 'blowfish-le32',
+      codeEncoding: 'utf8',
+      comparison: 'decrypted-c-string',
+    },
     resourceCheck: 'after-preferences',
     accelerators: 'winmain-region',
   },

@@ -1,0 +1,85 @@
+{
+  "scope": "Authored public bytes; polynomial long division with per-byte complement from complete static Game5D9840 / SDK4B5F10; no original execution",
+  "records": [
+    {
+      "code": "open_cs2",
+      "encoding": "utf8",
+      "sourceHex": "6f70656e5f63733240402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 2195260160
+    },
+    {
+      "code": "open_cs2",
+      "encoding": "cp932",
+      "sourceHex": "6f70656e5f63733240402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 2195260160
+    },
+    {
+      "code": "",
+      "encoding": "utf8",
+      "sourceHex": "40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3770404759
+    },
+    {
+      "code": "",
+      "encoding": "cp932",
+      "sourceHex": "40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3770404759
+    },
+    {
+      "code": " VC1 ",
+      "encoding": "utf8",
+      "sourceHex": "205643312040402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 2883438730
+    },
+    {
+      "code": " VC1 ",
+      "encoding": "cp932",
+      "sourceHex": "205643312040402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 2883438730
+    },
+    {
+      "code": "猫",
+      "encoding": "utf8",
+      "sourceHex": "e78cab40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3827329836
+    },
+    {
+      "code": "猫",
+      "encoding": "cp932",
+      "sourceHex": "944c40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3544168101
+    },
+    {
+      "code": "A",
+      "encoding": "utf8",
+      "sourceHex": "4140402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3940030971
+    },
+    {
+      "code": "A",
+      "encoding": "cp932",
+      "sourceHex": "4140402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3940030971
+    }
+  ],
+  "rawByteRecords": [
+    {
+      "encoding": "cp932",
+      "codeHex": "fa40",
+      "sourceHex": "fa4040402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3953347062
+    },
+    {
+      "encoding": "cp932",
+      "codeHex": "eeef",
+      "sourceHex": "eeef40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3303223617
+    },
+    {
+      "encoding": "utf8",
+      "codeHex": "e78cab",
+      "sourceHex": "e78cab40402d2d6373322d64656275672d6b65792d2d4040",
+      "crc": 3827329836
+    }
+  ]
+}

@@ -398,7 +398,7 @@ export function startupVersionImage(version, resources = []) {
     };
   for (const resource of [...resources, { type: 16, name: 1, bytes: fixed }]) {
     const node = add(add(root, resource.type), resource.name);
-    node.children.push({ key: 1041, bytes: resource.bytes });
+    node.children.push({ key: 1041, bytes: resource.bytes, dataRVA: resource.dataRVA });
   }
   let cursor = 0;
   const allocate = (size) => {
@@ -427,7 +427,7 @@ export function startupVersionImage(version, resources = []) {
           const data = allocate(16),
             payload = allocate(child.bytes.length);
           u32(at + 4, data);
-          u32(base + data, 4096 + payload);
+          u32(base + data, child.dataRVA ?? 4096 + payload);
           u32(base + data + 4, child.bytes.length);
           bytes.set(child.bytes, base + payload);
         }

@@ -13,7 +13,7 @@ key longer than 72 bytes uses only its first 72 bytes. A 56-byte modern-library
 limit is not imposed. An empty effective key diagnoses the original undefined
 zero-length schedule; key lengths above 511 and non-byte inputs are rejected.
 This primitive does not XOR KEY_CODE bytes or stop at the first NUL. Those
-resource-to-effective-key operations belong to its future startup caller.
+resource-to-effective-key operations belong to its startup resource caller.
 
 `cipher.decryptInto(source, destination)` reads each 8-byte block as two LE32
 words and writes the two LE32 result words independently. There is no IV, CBC
@@ -35,10 +35,10 @@ V_CODE resource load/size errors or C-string comparison, nor write private
 Settings slots. Those remain separate consumers.
 
 The 16-round structure and every one of the 1,042 initialization words were
-checked against the original Game static cipher/table, using the public
-designer-provided pi data as the product source. This was static evidence,
-with zero original execution. SDK lower-level equivalence remains unknown:
-there is no consumer/ABI enablement for either profile in this leaf.
+checked against both original static cipher/tables, using the public
+designer-provided pi data as the product source. The SDK lower-level layout,
+16-round core and key schedule were independently checked before enabling its
+startup resource consumer. This is static evidence, with zero original execution.
 
 Normal Node tests load small factual records from
 `tests/fixtures/startup-blowfish/vectors.json`: 34 official known answers and
@@ -48,3 +48,8 @@ multiple independent blocks, NUL tails and padding-like data. The C reference's
 unsigned-word/character portability adjustments retain its rounds and key loop.
 Normal tests need no compiler, executable, key resource or local research data.
 Licensing and exact public sources are in `licenses/startup-blowfish.txt`.
+
+Ordinary startup now consumes this primitive for the explicitly registered 74/76
+resource wrappers. Both complete 1042-word tables and SDK lower-level layout
+were checked. Resource/author order and remaining credential work are described
+in [startup resources](native-startup-resources.md).

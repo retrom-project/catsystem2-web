@@ -49,6 +49,12 @@ export class NativeFileStorage {
     await this.platformStore.put(this.platformKey(name), { bytes: bytes.slice() }, {});
     return true;
   }
+  has(name) {
+    // Same saved-file / mounted-input namespace as read(), without reading
+    // file contents or mistaking a missing timestamp for file absence.
+    const key = path(name);
+    return !!this.store.get(key) || !!this.game.lookup(key);
+  }
   async read(name) {
     const key = path(name),
       saved = this.store.get(key);

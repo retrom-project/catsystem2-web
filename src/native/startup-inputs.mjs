@@ -4,17 +4,8 @@ import { nativeABI } from './abi/index.mjs';
 import { applyNativePreferences } from './preferences.mjs';
 import { applyNativeSoundPreferences, nativeSoundConfigurationFilename } from './sound-config.mjs';
 import { parseNativeXML } from './xml.mjs';
-import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
+import { nativeStartupSeed, seedNativeStartupRandom } from './startup-author.mjs';
 import { checkNativeStartupResources } from './startup-resources.mjs';
-
-export function nativeStartupSeed(clock) {
-  // Match GetLocalTime: one clock sample, current timezone/DST, no weekday.
-  const now = Math.trunc(clock.utcNow()),
-    local = nativeFileTime(now - new Date(now).getTimezoneOffset() * 60000),
-    words = nativeSystemTime(local);
-  if (!words) throw new Error('Application startup requires a valid local clock');
-  return words.reduce((sum, word, index) => (index === 2 ? sum : (sum + word) >>> 0), 0);
-}
 
 export async function initializeNativeStartupInputs(world) {
   // Explicit data-only Worlds already supply their initialized owners.
@@ -22,14 +13,12 @@ export async function initializeNativeStartupInputs(world) {
   const { configuration, storage, profile, host } = world,
     abi = nativeABI(profile),
     diagnostic = (detail) => host.nativeDiagnostic?.(detail);
-  if (abi.startup.resourceCheck !== 'after-preferences')
-    await checkNativeStartupResources(world.game, profile);
-  const seed = nativeStartupSeed(world.clock);
-  if (world.bootstrapOwner?.seedFromClock) {
-    // The existing integer/real MT streams are the only MT state authorities.
-    world.random.real.seed(seed);
-    world.random.integer.seed(seed);
-  }
+  if (abi.startup.resourceCheck !== 'after-preferences') await checkNativeStartupResources(world);
+  // This constructor position differs between the registered ABIs. Explicit
+  // input overrides only this constructor, never the subsequent author reset.
+  seedNativeStartupRandom(world.random, nativeStartupSeed(world.clock));
+  if (!world.bootstrapOwner.seedFromClock)
+    seedNativeStartupRandom(world.random, world.bootstrapOwner.explicitSeed);
   const file = world.preferencesName,
     saved = (await storage.readSaved?.(file)) ?? null;
   if (saved && !applyNativePreferences(configuration, saved))
@@ -46,8 +35,7 @@ export async function initializeNativeStartupInputs(world) {
     clientHeight: screen.currentHeight,
     drawingRectangle: [0, 0, screen.currentWidth, screen.currentHeight],
   });
-  if (abi.startup.resourceCheck === 'after-preferences')
-    await checkNativeStartupResources(world.game, profile);
+  if (abi.startup.resourceCheck === 'after-preferences') await checkNativeStartupResources(world);
 }
 
 export async function initializeNativeStartupSound(world) {

@@ -9,6 +9,7 @@ import { NativeFileStorage } from '../src/native/storage.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
+import { nativeStartupSeed } from '../src/native/startup-author.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -20,11 +21,12 @@ import {
 } from './fixtures/ordinary-startup.mjs';
 
 for (const profile of startupProfiles) {
-  test(`ordinary CatSystem2.initialize creates actual JS application tasks and first tick: ${profile}`, async () => {
+  test(`ordinary CatSystem2.initialize creates actual JS application tasks and first tick: ${profile}`, async (t) => {
     const environment = startupEnvironment();
     let player,
       opens = 0;
     try {
+      t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 13, 2, 3, 4, 567));
       const game = await ordinaryStartupGame(profile);
       await saveStartupPreferences(game, {
         'setup.xml': startupXML(
@@ -71,7 +73,11 @@ for (const profile of startupProfiles) {
       assert.equal(world.soundConfiguration.master.current.volume, 33);
       assert.equal(world.soundConfiguration.parts[0].head, 'bgm');
       assert.equal(world.soundConfiguration.dirty, false);
-      assert.deepEqual(world.random.snapshot(), new ParticleRandom(123).snapshot());
+      const expectedSeed =
+        nativeABI(profile).startup.resourceCheck === 'before-defaults'
+          ? 123
+          : nativeStartupSeed({ utcNow: Date.now });
+      assert.deepEqual(world.random.snapshot(), new ParticleRandom(expectedSeed).snapshot());
       assert.equal(
         document.title,
         profile.startsWith('sdk-') ? 'Authored SDK title' : 'Authored game title',
@@ -185,22 +191,23 @@ for (const profile of startupProfiles) {
   }
 
   for (const explicit of [false, true]) {
-    test(`fresh startup samples one clock and ${explicit ? 'preserves explicit' : 'uses seven local fields for'} MT seed: ${profile}`, async (t) => {
+    test(`fresh startup samples constructor/author clocks and applies ${explicit ? 'explicit input at its ABI position' : 'seven local fields'} MT seed: ${profile}`, async (t) => {
       const environment = startupEnvironment();
       let player;
       try {
         const now = Date.UTC(2026, 10, 13, 2, 3, 4, 567),
           date = new Date(now),
-          expected = explicit
-            ? 77
-            : date.getFullYear() +
-              date.getMonth() +
-              1 +
-              date.getDate() +
-              date.getHours() +
-              date.getMinutes() +
-              date.getSeconds() +
-              date.getMilliseconds();
+          expected =
+            explicit && nativeABI(profile).startup.resourceCheck === 'before-defaults'
+              ? 77
+              : date.getFullYear() +
+                date.getMonth() +
+                1 +
+                date.getDate() +
+                date.getHours() +
+                date.getMinutes() +
+                date.getSeconds() +
+                date.getMilliseconds();
         t.mock.method(Date, 'now', () => now);
         let clockSamples = 0;
         const original = NativeSystemClock.prototype.utcNow;
@@ -212,7 +219,7 @@ for (const profile of startupProfiles) {
           randomSeed: explicit ? 77 : undefined,
         });
         await player.initialize();
-        assert.equal(clockSamples, 1);
+        assert.equal(clockSamples, 2);
         assert.deepEqual(player.random.snapshot(), new ParticleRandom(expected).snapshot());
         assert.deepEqual(player.world.effekseer.threads.snapshot().threads, [
           { id: 'frame', state: 1, calls: 0, seedCalls: 0 },
@@ -327,13 +334,14 @@ for (const profile of startupProfiles) {
     }
   });
 
-  test(`present required V_CODE fails explicitly before root/first tick or PE execution: ${profile}`, async () => {
+  test(`mismatched V_CODE fails before root/first tick or PE execution: ${profile}`, async () => {
     const environment = startupEnvironment();
     let player,
       opens = 0;
     try {
       const game = await ordinaryStartupGame(profile, {
         files: {
+          'startup.xml': startupXML(profile, '<APP><v_code>mismatch</v_code></APP>'),
           'authored.exe': startupVersionImage(nativeABI(profile).engineVersion, [
             { type: 'V_CODE', name: 'DATA', bytes: new Uint8Array([1, 2, 3, 4]) },
           ]),
@@ -347,15 +355,7 @@ for (const profile of startupProfiles) {
           },
         },
       });
-      await assert.rejects(
-        player.initialize(),
-        (error) =>
-          error.name === 'UnsupportedStartupResource' &&
-          error.details.profile === profile &&
-          error.details.file === 'authored.exe' &&
-          error.details.type === 'V_CODE' &&
-          error.details.resourceName === 'DATA',
-      );
+      await assert.rejects(player.initialize(), /does not match startup v_code/);
       assert.equal(opens, 0);
       assert.equal(player.world.root, undefined);
       assert.equal(player.world.frame, 0);
@@ -389,7 +389,7 @@ for (const profile of startupProfiles) {
 }
 
 test('startup resource lookup bounds named directories and matches the exact required resource', async () => {
-  const { hasNativeStartupResource } = await import('../src/native/startup-resources.mjs');
+  const { findNativeStartupResource } = await import('../src/native/startup-resources.mjs');
   const version = '2.6.1.76',
     plain = startupVersionImage(version),
     wrong = startupVersionImage(version, [
@@ -398,13 +398,13 @@ test('startup resource lookup bounds named directories and matches the exact req
     required = startupVersionImage(version, [
       { type: 'V_CODE', name: 'DATA', bytes: new Uint8Array() },
     ]);
-  assert.equal(hasNativeStartupResource(plain, 'V_CODE', 'DATA'), false);
-  assert.equal(hasNativeStartupResource(wrong, 'V_CODE', 'DATA'), false);
-  assert.equal(hasNativeStartupResource(required, 'V_CODE', 'DATA'), true);
+  assert.equal(findNativeStartupResource(plain, 'V_CODE', 'DATA'), null);
+  assert.equal(findNativeStartupResource(wrong, 'V_CODE', 'DATA'), null);
+  assert.equal(findNativeStartupResource(required, 'V_CODE', 'DATA').size, 0);
   const malformed = required.slice();
   new DataView(malformed.buffer).setUint32(268, 16, true);
   assert.throws(
-    () => hasNativeStartupResource(malformed, 'V_CODE', 'DATA'),
+    () => findNativeStartupResource(malformed, 'V_CODE', 'DATA'),
     /Invalid PE startup resource offset/,
   );
 });
