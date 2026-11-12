@@ -63,6 +63,7 @@ function observe(h, pause = null) {
   const calls = [],
     files = [],
     gate = deferred(),
+    entered = deferred(),
     read = h.world.game.read.bind(h.world.game),
     graphics = h.world.graphics,
     sync = graphics.syncFES.bind(graphics),
@@ -78,6 +79,7 @@ function observe(h, pause = null) {
     const result = await sync(...args);
     if (pause === 'syncFES' && !reached) {
       reached = true;
+      entered.resolve();
       await gate.promise;
     }
     return result;
@@ -87,6 +89,7 @@ function observe(h, pause = null) {
     const result = await inputSync(...args);
     if (pause === 'input.sync' && !reached) {
       reached = true;
+      entered.resolve();
       await gate.promise;
     }
     return result;
@@ -95,7 +98,7 @@ function observe(h, pause = null) {
     calls.push('redraw');
     return redraw(...args);
   };
-  return { calls, files, gate, reached: () => reached };
+  return { calls, files, gate, entered: entered.promise };
 }
 for (const profile of profiles) {
   test(`${profile}: ordinary337 real config_open Host cancel on owner close returns unwritten without later resource/input/redraw work`, async (t) => {
@@ -131,7 +134,7 @@ for (const profile of profiles) {
         seen = observe(h, stage);
       try {
         const request = notify(h, 'FILE');
-        await until(seen.reached);
+        await seen.entered;
         assert.ok(seen.files.includes('pending.hg3'));
         assert.equal(h.instance.global(32), 1);
         await h.world.objects.release(h.id);
