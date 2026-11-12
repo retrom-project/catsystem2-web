@@ -56,3 +56,12 @@ contraction/fast-math disabled. Normal tests read the JSON without C++, original
 binaries or local research files. These are CPU source references, not native
 geometry or pixel captures; their authored fixture grant is MPL-2.0, and the
 algorithm MIT grant remains in the existing license file.
+
+`sprite-ring-cases.json` and `sprite-ring-reference.json` retain authored inputs
+and 38 exact whole-template comparison groups for the fixed public 1.23 Sprite
+and Ring algorithms. They cover all four billboard modes, Ring single-instance
+local/deferred output, bulk world output, partial reservations and the independent
+paired-versus-sequential addition cancellation case. Float values are retained
+as float32 words. Like the Ribbon/Track reference, these are public-source CPU
+outputs read by ordinary Node tests, not private native geometry or GPU pixels.
+The test fixtures use MPL-2.0 and translated algorithm code retains the MIT grant.

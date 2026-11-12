@@ -1,9 +1,9 @@
 # Effekseer legacy resources
 
-Phase 7 implements a JS reader, resource owner and independent algorithm modules
-for legacy SKFE Effects.
-It does not yet connect EFKPLANE commands, complete particle playback, geometry,
-drawing or task checkpoints. FES raw type 36 remains explicitly unsupported.
+Phase 7 implements a JS reader, resource owner, independent CPU state algorithms
+and typed geometry builders for legacy SKFE Effects.
+It does not yet connect EFKPLANE commands, complete particle playback, drawing
+or task checkpoints. FES raw type 36 remains explicitly unsupported.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
 
@@ -184,6 +184,23 @@ comparison groups, one nonfinite boundary and 25 interface/current-data/buffer
 cases. They read public/authored references without compiling C++ during tests.
 There is no original native geometry, GPU Draw or pixel acceptance from this
 CPU module, and no World/kind61/default-factory registration.
+
+`sprite-ring-geometry.mjs` exports `SpriteRingGeometry`. `beginNode`, `append`
+and `endNode` produce reused typed buffers for all four old billboard modes.
+Sprite Fixed uses the source's sequential vector transform; billboard Sprite
+and Ring bulk transforms retain the DX9 paired multiply/add tree. A retained
+cancellation reference distinguishes these two arithmetic orders.
+
+Ring with source count one retains local positions and a copied
+`deferredMatrix43`, with both `flushBefore` and `flushAfter`. Its consumer must
+apply that source camera-constant/flush boundary. Source count greater than one
+uses the CPU bulk transform, even if fewer instances are submitted. Ring's
+recurrence and reserved zero tails are retained. The module samples no RNG,
+advances no simulation and owns no shader, material, target or projection.
+Its 65 cases include 38 exact public-source comparison groups, three nonfinite
+boundaries and 24 interface/current-data/buffer cases. These are source/CPU
+geometry checks; actual native vertex output, shared GPU state, pixels, original
+capacity behavior, draw-graph placement and frame-rate acceptance remain open.
 
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their
