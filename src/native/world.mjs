@@ -97,6 +97,7 @@ import { installNativeScreenCapture } from './screen-capture.mjs';
 import { installNativeBitmapMemory } from './bitmap-memory.mjs';
 import { installNativeImageCommands } from './image-commands.mjs';
 import { installNativeConfigurationQueries } from './configuration-query.mjs';
+import { nativeDataString } from './data-text.mjs';
 import { installNativeScalarMath } from './scalar-math.mjs';
 import { installNativeInputCommands } from './input-commands.mjs';
 import { installNativeRegistry } from './registry.mjs';
@@ -595,6 +596,25 @@ export class NativeWorld {
           throw error;
         });
     return this.nativeEngineLoading;
+  }
+  nativeDefaultFontBytes() {
+    const provider = this.host.nativeDefaultFontBytes;
+    let bytes;
+    if (provider !== undefined) {
+      if (typeof provider !== 'function')
+        throw new TypeError('Default font provider must be a synchronous byte reader');
+      bytes = provider.call(this.host, this);
+    } else {
+      const engine = this.nativeEngine,
+        view = engine?.configurationMemory,
+        settings = engine?.refs?.defaultSettings;
+      if (typeof view?.defaultFontBytes !== 'function' || !settings)
+        throw new Error('Default Settings font data view is unavailable');
+      bytes = view.defaultFontBytes(settings);
+    }
+    if (!(bytes instanceof Uint8Array))
+      throw new TypeError('Default font provider must return synchronous CP932 bytes');
+    return new Uint8Array(nativeDataString(bytes));
   }
   getNativeGPU() {
     return this.stageRenderer?.gpu ?? this.host.nativeGPU?.(this);

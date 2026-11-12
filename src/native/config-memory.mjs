@@ -2,6 +2,7 @@
 // Settings is an interior pointer into Engine, never a second allocation.
 import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { encodeNativeCP932 } from './cp932.mjs';
 
 export const NATIVE_CONFIGURATION_MEMORY_LAYOUTS = Object.freeze(
   Object.fromEntries(
@@ -81,6 +82,25 @@ export class NativeConfigurationMemory {
         new Uint8Array(c.variableRanges.global.buffer, c.variableRanges.global.byteOffset, 64),
       ],
     ];
+  }
+  defaultFontBytes(settings) {
+    if (!Number.isInteger(settings) || settings <= 0 || settings > 0xffffffff)
+      throw new Error('Default Settings font requires its existing native Settings reference');
+    const { settingsCharacterBytes: unit, configurationLayout } = this.abi.text,
+      at = settings + this.layout.font - this.layout.settingsOffset,
+      bytes = this.process.read(at, configurationLayout.fontBytes);
+    if (unit === 1) {
+      const end = bytes.indexOf(0);
+      if (end < 0) throw new Error('Default Settings font is not terminated in its native field');
+      return new Uint8Array(bytes.subarray(0, end));
+    }
+    let end = 0;
+    while (end + 1 < bytes.length && (bytes[end] || bytes[end + 1])) end += 2;
+    if (end + 1 >= bytes.length)
+      throw new Error('Default Settings font is not terminated in its native field');
+    return encodeNativeCP932(
+      new TextDecoder('utf-16le', { ignoreBOM: true }).decode(bytes.subarray(0, end)),
+    );
   }
   getScalar(name) {
     return name.startsWith('sound.')
