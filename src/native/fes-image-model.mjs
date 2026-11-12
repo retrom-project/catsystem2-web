@@ -27,8 +27,9 @@ export function setFESImageID(state, value) {
   state.imageChanged = true;
   state.idIndex = value;
 }
-export function fesImageFrameID(state) {
-  return state.usesIDTable ? (state.ids[state.idIndex >>> 0] ?? 0) : state.idIndex >>> 0;
+export function fesImageFrameID(state, index = state.idIndex) {
+  index >>>= 0;
+  return state.usesIDTable ? (index <= 31 ? (state.ids[index] ?? 0) : 0) : index;
 }
 
 const imageParents = new Set([1, 2]),
