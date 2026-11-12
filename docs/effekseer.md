@@ -287,9 +287,14 @@ boundaries and 24 interface/current-data/buffer cases. These are source/CPU
 geometry checks; actual native vertex output, shared GPU state, pixels, original
 capacity behavior, draw-graph placement and frame-rate acceptance remain open.
 
-`mesh-batch.mjs` exports the independent `EffekseerMeshBatch` composition. It
-consumes a live manager, the shared logical Effect-load owner, current device view,
-StageRenderer and explicit camera/projection/viewport/pipeline operations. It uses
+`mesh-batch.mjs` exports the CPU `EffekseerMeshBatch` composition. Each default
+kind61 Task now owns one current batch, borrowing that Task's sole Ring state,
+shared logical Effect-load owner and current camera/projection getters. Its
+constructor requires no stage, device, manager, MT or CRT owner. Actual drawing
+requires an explicit temporary backend: current stage/device, its state scope,
+viewport getter and pipeline operation. Those inputs are cleared on exit and
+never saved. This ownership slice does not connect the Task callback to a GPU;
+its eligible actual draw still reports the unimplemented GPU adapter. It uses
 one StandardRenderer byte cache across nodes and drawsets, comparing all nine
 material fields including logical texture identity. The decoded frame passed to
 the GPU remains separate from that identity. Normal vertices use the original
@@ -314,16 +319,19 @@ The device scope still restores its twelve states and five bindings. The adapter
 retains the original error, reports cleanup failures, rejects future draw/snapshot
 after failure and never draws a partial cache from finally.
 
-Settled checkpoints contain only the logical ring cursor and current Ring matrix;
-transient vertices, shader/material stack and fault are not saved. A fresh owner
-restores those values without Play, Update, RNG or historical replay. Resource,
+The current Task checkpoint saves its Ring matrix once at the outer Task and
+its settled batch cursor once through MeshBatch. MeshBatch neither creates,
+closes, snapshots nor restores its borrowed Ring. Standalone callers likewise
+own and restore their Ring separately. Transient vertices, backend references,
+shader/material stack and fault are not saved. A fresh Task restores each current
+owner once without Play, Update, MT/CRT sampling or historical replay. Resource,
 logical-load, manager, caller, graphics readiness and current target ownership must
-be restored by their respective owners before task publication. This module does
-not register kind61/default FES type36, add ABI capabilities or install World/D6
-hooks. Correct legacy texture conversion remains the resource owner's contract;
-this mesh composition does not turn source decoding into a complete old D3DX
-resize/filter/mipmap/format implementation. Those task/World/texture and complete
-frame-rate requirements remain open.
+be restored by their respective owners before task publication. This ownership
+change adds no kind61/default FES registration, ABI capability or D6 hook beyond
+the existing CPU path. Actual callback submission, physical GPU bindings and
+pixel/lifecycle integration remain the next GPU slice. Legacy texture conversion
+stays the resource owner's contract; this mesh composition establishes no new
+D3DX resize/filter/mipmap/format domain or complete frame-rate acceptance.
 
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their

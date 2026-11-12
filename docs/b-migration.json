@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 247, "oracle": 148, "differential": 67 },
+    "counts": { "js": 248, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -53,6 +53,7 @@
         "tests/effekseer-sprite-ring-geometry.test.mjs",
         "tests/effekseer-standard-batch.test.mjs",
         "tests/effekseer-task-aspect.test.mjs",
+        "tests/effekseer-task-batch.test.mjs",
         "tests/effekseer-task.test.mjs",
         "tests/effekseer-texture-decoder.test.mjs",
         "tests/effekseer-texture-level0-holdout.test.mjs",
@@ -48614,7 +48615,7 @@
     },
     {
       "file": "src/effekseer/mesh-batch.mjs",
-      "sourceSha256": "f16fa3cf1f1698b3dd7e5303a9659cbd936fc53ab176b3d0bc4b86d467a51df4",
+      "sourceSha256": "8a9315265eb55ec9b336178269763d41695096172fe3317785e76d28bebcceb7",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48744,7 +48745,7 @@
     },
     {
       "file": "src/effekseer/task.mjs",
-      "sourceSha256": "3fd07ddaf8b5246e0f9f132edb12eee2a6682cf1df2f80e844601f1b86610b98",
+      "sourceSha256": "a11dc41b1ad58b8f0aa8164d4eb946111abdcb80bea1f74e7c473d5955fa46c8",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

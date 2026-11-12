@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2011 Effekseer Project. See ../../licenses/effekseer-MIT.txt.
 // Fixed1.23 normal renderer Begin/reserve/Rendering/End ordering, including the
-// verified original76 zero-submission Ring End guard. No World/task owner.
+// verified original76 zero-submission Ring End guard. CPU state borrows its
+// owning Task's Ring; backend operations are temporary draw inputs.
 import { EffekseerStandardBatch } from './standard-batch.mjs';
 import { EffekseerPackedMesh } from './mesh-packet.mjs';
 import { EffekseerRingCurrentState } from './ring-current-state.mjs';
-import { EffekseerDeviceScope } from './materials.mjs';
 import { SpriteRingGeometry } from './sprite-ring-geometry.mjs';
 import { RibbonTrackGeometry } from './ribbon-track-geometry.mjs';
 import { createEffekseerColorVisitor } from './instance-operations.mjs';
@@ -14,42 +14,17 @@ const resetResult = (r) => {
   for (const key of Object.keys(r)) r[key] = key === 'suppressedByCurrentEffect' ? false : 0;
 };
 export class EffekseerMeshBatch {
-  constructor({
-    stage,
-    loads,
-    device,
-    bindNormalPipeline,
-    getCamera,
-    getProjection,
-    getViewport,
-    trace = null,
-  } = {}) {
-    for (const [name, fn] of Object.entries({
-      bindNormalPipeline,
-      getCamera,
-      getProjection,
-      getViewport,
-    }))
+  constructor({ loads, ring, getCamera, getProjection, trace = null } = {}) {
+    for (const [name, fn] of Object.entries({ getCamera, getProjection }))
       if (typeof fn !== 'function') throw new TypeError('Effekseer mesh batch requires ' + name);
-    if (
-      typeof stage?.drawEffekseer !== 'function' ||
-      typeof loads?.get !== 'function' ||
-      typeof loads?.bindingFor !== 'function' ||
-      !device?.state
-    )
-      throw new TypeError('Effekseer mesh batch requires the shared stage/load/device owners');
+    if (typeof loads?.get !== 'function' || typeof loads?.bindingFor !== 'function')
+      throw new TypeError('Effekseer mesh batch requires its shared load owner');
+    if (!(ring instanceof EffekseerRingCurrentState))
+      throw new TypeError('Effekseer mesh batch requires its owning Ring current state');
+    ring.assertOpen();
     if (trace !== null && typeof trace !== 'function') throw new TypeError('Invalid batch trace');
-    Object.assign(this, {
-      stage,
-      loads,
-      device,
-      bindNormalPipeline,
-      getCamera,
-      getProjection,
-      getViewport,
-    });
-    this.scope = new EffekseerDeviceScope(device);
-    this.ring = new EffekseerRingCurrentState();
+    Object.assign(this, { loads, ring, getCamera, getProjection });
+    this.backend = null;
     this.spriteRing = new SpriteRingGeometry();
     this.ribbonTrack = new RibbonTrackGeometry();
     this.packed = new EffekseerPackedMesh();
@@ -74,7 +49,7 @@ export class EffekseerMeshBatch {
       stride: 24,
       bytes: null,
     };
-    this.pipeline = { device, frame: null, textureToken: null };
+    this.pipeline = { device: null, frame: null, textureToken: null };
     this.batch = new EffekseerStandardBatch({
       camera: getCamera,
       projection: getProjection,
@@ -83,7 +58,7 @@ export class EffekseerMeshBatch {
         const state = packet.state,
           binding = this.loads.bindingFor(state.texture);
         if (state.culling !== 2) throw new Error('Normal mesh batch requires fixed Double culling');
-        this.scope.applyValues(
+        this.backend.scope.applyValues(
           state.depthTest,
           state.depthWrite,
           state.alphaBlend,
@@ -92,15 +67,16 @@ export class EffekseerMeshBatch {
         );
         this.pipeline.textureToken = state.texture;
         this.pipeline.frame = binding?.frame ?? null;
-        const value = this.bindNormalPipeline(this.pipeline);
+        const value = this.backend.bindNormalPipeline(this.pipeline);
         if (typeof value?.then === 'function')
           throw new Error('Effekseer pipeline must be synchronous');
       },
       draw: (packet) => {
-        const packed = this.packed.prepareBatch(packet, { viewport: this.getViewport() });
-        this.stage.drawEffekseer(packed, this.pipeline.frame, {
-          state: this.device.state,
-          context: this.device.context,
+        const backend = this.backend,
+          packed = this.packed.prepareBatch(packet, { viewport: backend.getViewport() });
+        backend.stage.drawEffekseer(packed, this.pipeline.frame, {
+          state: backend.device.state,
+          context: backend.device.context,
         });
         this.result.drawCalls++;
         this.result.vertexCount += packed.vertexCount;
@@ -129,6 +105,7 @@ export class EffekseerMeshBatch {
     };
   }
   assertReady() {
+    this.ring.assertOpen();
     if (this.closed || this.drawing || this.fault)
       throw new Error('Effekseer mesh batch is closed, drawing or faulted', { cause: this.fault });
   }
@@ -264,7 +241,7 @@ export class EffekseerMeshBatch {
     this.visitors.set(manager, visitor);
     return visitor;
   }
-  draw(manager, { hasCurrentEffect, depthStencilEnabled } = {}) {
+  draw(manager, { hasCurrentEffect, depthStencilEnabled, backend } = {}) {
     this.assertReady();
     if (
       typeof manager?.draw !== 'function' ||
@@ -277,13 +254,28 @@ export class EffekseerMeshBatch {
       this.result.suppressedByCurrentEffect = true;
       return this.result;
     }
+    if (
+      typeof backend?.stage?.drawEffekseer !== 'function' ||
+      typeof backend?.bindNormalPipeline !== 'function' ||
+      typeof backend?.getViewport !== 'function' ||
+      !backend?.device?.state ||
+      backend?.scope?.device !== backend.device
+    )
+      throw new TypeError('Effekseer drawing requires an explicit current backend');
+    const scope = backend.scope;
+    for (const name of ['begin', 'applyValues', 'clearCurrentDepth', 'end'])
+      if (typeof scope[name] !== 'function')
+        throw new TypeError('Effekseer drawing backend scope requires ' + name);
+    if (scope.active || scope.closed) throw new Error('Effekseer backend scope is unavailable');
+    this.backend = backend;
+    this.pipeline.device = backend.device;
     this.drawing = true;
     this.fresh = false;
     let failure = null;
     try {
-      this.scope.begin();
+      scope.begin();
       this.batch.begin();
-      this.scope.clearCurrentDepth(depthStencilEnabled);
+      scope.clearCurrentDepth(depthStencilEnabled);
       manager.draw(this.visitorFor(manager));
       this.batch.end();
     } catch (error) {
@@ -294,7 +286,7 @@ export class EffekseerMeshBatch {
         try {
           if (this.batch.active) this.batch.abort();
         } finally {
-          if (this.scope.active) this.scope.end();
+          if (scope.active) scope.end();
         }
       } catch (cleanup) {
         this.fault = failure
@@ -306,8 +298,10 @@ export class EffekseerMeshBatch {
         this.current.node = null;
         this.current.bytes = null;
         // These are borrowed submission arguments, not retained load references.
+        this.pipeline.device = null;
         this.pipeline.frame = null;
         this.pipeline.textureToken = null;
+        this.backend = null;
         this.drawing = false;
       }
     }
@@ -316,16 +310,15 @@ export class EffekseerMeshBatch {
   }
   snapshot() {
     this.assertReady();
-    return { batch: this.batch.snapshot(), ring: this.ring.snapshot() };
+    return { batch: this.batch.snapshot() };
   }
   restore(saved) {
     this.assertReady();
     if (!this.fresh) throw new Error('Effekseer mesh batch restore requires fresh owner');
     try {
-      if (!saved || Object.keys(saved).length !== 2)
+      if (!saved || Object.keys(saved).length !== 1)
         throw new Error('Invalid Effekseer mesh batch checkpoint');
       this.batch.restore(saved.batch);
-      this.ring.restore(saved.ring);
       this.fresh = false;
       return this;
     } catch (error) {
@@ -337,8 +330,6 @@ export class EffekseerMeshBatch {
     if (this.closed) return;
     if (this.drawing) throw new Error('Cannot close a drawing Effekseer batch');
     this.batch.close();
-    this.ring.close();
-    this.scope.close();
     this.closed = true;
   }
 }

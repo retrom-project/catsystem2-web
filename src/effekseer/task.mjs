@@ -5,6 +5,7 @@ import { NATIVE_UNWRITTEN_WORD } from '../native/engine-message.mjs';
 import { EffekseerManagerLifecycle } from './manager-lifecycle.mjs';
 import { createEffekseerInstanceOperations } from './instance-operations.mjs';
 import { EffekseerRingCurrentState } from './ring-current-state.mjs';
+import { EffekseerMeshBatch } from './mesh-batch.mjs';
 import { rotationX43, multiply43, transformVector43 } from './math43.mjs';
 import { identity44, perspectiveFovRH, lookAtRH } from './camera.mjs';
 
@@ -48,6 +49,12 @@ class EffekseerTask {
     this.camera = identity44();
     this.projection = identity44();
     this.ring = new EffekseerRingCurrentState();
+    this.meshBatch = new EffekseerMeshBatch({
+      loads: this.loads,
+      ring: this.ring,
+      getCamera: () => this.camera,
+      getProjection: () => this.projection,
+    });
     this.pendingReset = false;
     this.pending = 0;
     this.closed = false;
@@ -214,6 +221,7 @@ class EffekseerTask {
       pendingReset: this.pendingReset,
       manager: this.manager.snapshot(),
       ring: this.ring.snapshot(),
+      meshBatch: this.meshBatch.snapshot(),
       plane: this.plane.snapshot(),
     };
   }
@@ -235,6 +243,7 @@ class EffekseerTask {
     if (saved.currentEffect !== null) this.loads.get(saved.currentEffect);
     this.manager.restore(saved.manager);
     this.ring.restore(saved.ring);
+    this.meshBatch.restore(saved.meshBatch);
     this.plane.restore(saved.plane);
     this.currentEffect = saved.currentEffect;
     this.lastHandle = saved.lastHandle;
@@ -263,6 +272,7 @@ class EffekseerTask {
     for (const operation of [
       () => current !== null && this.loads.release(current),
       () => this.manager.close(),
+      () => this.meshBatch.close(),
       () => this.ring.close(),
       () => this.plane?.close(),
     ]) {

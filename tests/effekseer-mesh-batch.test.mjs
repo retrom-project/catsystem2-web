@@ -13,6 +13,8 @@ import { LogicalCRTThreads } from '../src/effekseer/crt-threads.mjs';
 import { EffekseerMeshBatch } from '../src/effekseer/mesh-batch.mjs';
 import { EffekseerStandardBatch } from '../src/effekseer/standard-batch.mjs';
 import { EffekseerPackedMesh } from '../src/effekseer/mesh-packet.mjs';
+import { EffekseerRingCurrentState } from '../src/effekseer/ring-current-state.mjs';
+import { EffekseerDeviceScope } from '../src/effekseer/materials.mjs';
 import { setup as setupDevice } from './fixtures/effekseer/gpu-seam.mjs';
 import { batchEffect, I } from './fixtures/effekseer/batch-authored.mjs';
 const image = await readFile(new URL('./fixtures/effekseer/authored-spark.png', import.meta.url));
@@ -44,6 +46,8 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
       instanceOperations: createEffekseerInstanceOperations(),
     }),
     device = setupDevice(),
+    ring = new EffekseerRingCurrentState(),
+    backends = [],
     packets = [],
     submit = device.stage.drawEffekseer;
   device.stage.drawEffekseer = function (p, frame, options) {
@@ -60,11 +64,16 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
   };
   const makePass = () =>
       new EffekseerMeshBatch({
-        stage: device.stage,
         loads,
-        device: device.view,
+        ring,
         getCamera: () => I,
         getProjection: () => I,
+      }),
+    makeBackend = () => {
+      const backend = {
+        stage: device.stage,
+        device: device.view,
+        scope: new EffekseerDeviceScope(device.view),
         getViewport: () => device.viewport,
         bindNormalPipeline({ device, frame, textureToken }) {
           device.setBinding('vertexShader', 'EFKnormalVS');
@@ -72,10 +81,15 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
           device.setBinding('vertexDeclaration', 'EFKnormalDecl');
           device.setBinding('texture0', textureToken);
         },
-      }),
+      };
+      backends.push(backend);
+      return backend;
+    },
+    flags = { ...drawFlags, backend: makeBackend() },
     pass = makePass();
   if (saved) {
     manager.restore(saved.manager);
+    ring.restore(saved.ring);
     pass.restore(saved.pass);
   }
   return {
@@ -86,8 +100,11 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
     manager,
     device,
     pass,
+    ring,
+    drawFlags: flags,
     packets,
     makePass,
+    makeBackend,
     async play(name = 'effect', position = [0, 0, 0.5]) {
       const load = await loads.load(name),
         handle = manager.play(load.id, position, 'authored.caller');
@@ -103,12 +120,15 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
         loads: loads.snapshot(),
         threads: threads.snapshot(),
         manager: manager.snapshot(),
+        ring: ring.snapshot(),
         pass: pass.snapshot(),
       });
     },
     close() {
       pass.close();
       manager.close();
+      for (const backend of backends) backend.scope.close();
+      ring.close();
       loads.close();
       resources.close();
       threads.close();
@@ -130,7 +150,7 @@ test('two real manager nodes coalesce into one byte/GPU-recorder submission', as
     const random = s.threads.snapshot(),
       prior = devicePrior(s),
       ages = [...s.manager.instances.values()].map((i) => [i.id, i.age]),
-      r = { ...s.pass.draw(s.manager, drawFlags) };
+      r = { ...s.pass.draw(s.manager, s.drawFlags) };
     assert.equal(r.instances, 2);
     assert.equal(r.drawCalls, 1);
     assert.equal(r.vertexCount, 8);
@@ -156,7 +176,7 @@ test('distinct FILE tokens force two submissions even with one shared decoded te
     s.tick();
     assert.equal(a.load.textures.color[0].frame, b.load.textures.color[0].frame);
     assert.notEqual(a.load.textures.color[0].token, b.load.textures.color[0].token);
-    const r = s.pass.draw(s.manager, drawFlags);
+    const r = s.pass.draw(s.manager, s.drawFlags);
     assert.equal(r.drawCalls, 2);
     assert.deepEqual(
       s.packets.map((p) => p.token),
@@ -178,7 +198,7 @@ test('positive single Ring executes reset/deferred full-matrix/flush before a la
   try {
     await s.play();
     s.tick();
-    const r = s.pass.draw(s.manager, drawFlags);
+    const r = s.pass.draw(s.manager, s.drawFlags);
     assert.equal(r.drawCalls, 3);
     assert.equal(s.packets.length, 3);
     assert.deepEqual(
@@ -202,7 +222,7 @@ test('count1 Ribbon and Track leave current batch material/reservation unchanged
     try {
       await s.play();
       s.tick();
-      const r = s.pass.draw(s.manager, drawFlags);
+      const r = s.pass.draw(s.manager, s.drawFlags);
       assert.equal(r.instances, 3);
       assert.equal(r.drawCalls, 1);
       assert.equal(r.reservedVertices, 8);
@@ -217,7 +237,7 @@ test('zero-submission single Ring protocol retains reserved zero tail and prior 
   try {
     await s.play();
     s.tick();
-    s.pass.draw(s.manager, drawFlags);
+    s.pass.draw(s.manager, s.drawFlags);
     const matrix = s.pass.ring.snapshot();
     s.packets.length = 0;
     // Authored renderer-protocol suppression, not a claimed SKFE9/FES input.
@@ -231,7 +251,7 @@ test('zero-submission single Ring protocol retains reserved zero tail and prior 
             },
           }),
       },
-      r = s.pass.draw(suppressed, drawFlags);
+      r = s.pass.draw(suppressed, s.drawFlags);
     assert.equal(r.drawCalls, 2);
     assert.deepEqual(
       s.packets.map((p) => p.indices.length),
@@ -251,7 +271,7 @@ test('null-background single Ring still updates current matrix and color state w
     await s.play();
     s.tick();
     const before = s.threads.snapshot(),
-      r = s.pass.draw(s.manager, drawFlags);
+      r = s.pass.draw(s.manager, s.drawFlags);
     assert.equal(r.distortionNodes, 1);
     assert.equal(r.instances, 1);
     assert.equal(r.drawCalls, 0);
@@ -291,7 +311,7 @@ test('fresh settled full-current restore reproduces nonempty batch order and lat
   try {
     await a.play();
     a.tick(4);
-    a.pass.draw(a.manager, drawFlags);
+    a.pass.draw(a.manager, a.drawFlags);
     const saved = a.snapshot();
     b = await setup({ files: a.data, saved });
     assert.deepEqual(b.snapshot(), saved);
@@ -299,8 +319,8 @@ test('fresh settled full-current restore reproduces nonempty batch order and lat
       a.packets.length = 0;
       b.packets.length = 0;
       const random = a.threads.snapshot();
-      a.pass.draw(a.manager, drawFlags);
-      b.pass.draw(b.manager, drawFlags);
+      a.pass.draw(a.manager, a.drawFlags);
+      b.pass.draw(b.manager, b.drawFlags);
       assert.ok(a.packets.length);
       assert.deepEqual(b.packets, a.packets);
       assert.deepEqual(a.threads.snapshot(), random);
@@ -367,7 +387,7 @@ test('fault after old flush never submits partial new cache and restores12states
             },
           }),
       };
-    assert.throws(() => s.pass.draw(injected, drawFlags), /Authored node failure/);
+    assert.throws(() => s.pass.draw(injected, s.drawFlags), /Authored node failure/);
     assert.equal(s.packets.length, 1);
     assert.equal(s.pass.batch.cursor, 96);
     assert.equal(s.pass.batch.byteLength, 0);
@@ -375,18 +395,19 @@ test('fault after old flush never submits partial new cache and restores12states
     deviceSame(s, prior);
     assert.deepEqual(s.threads.snapshot(), random);
     assert.throws(() => s.pass.snapshot(), /faulted/);
-    assert.throws(() => s.pass.draw(s.manager, drawFlags), /faulted/);
+    assert.throws(() => s.pass.draw(s.manager, s.drawFlags), /faulted/);
     // A failed cleanup remains visible; an earlier draw failure is retained too.
     for (const withPriorFailure of [false, true]) {
       const other = s.makePass(),
-        end = other.scope.end.bind(other.scope);
-      other.scope.end = () => {
+        backend = s.makeBackend(),
+        end = backend.scope.end.bind(backend.scope);
+      backend.scope.end = () => {
         end();
         throw new Error('Authored cleanup failure');
       };
       try {
         assert.throws(
-          () => other.draw(withPriorFailure ? injected : s.manager, drawFlags),
+          () => other.draw(withPriorFailure ? injected : s.manager, { ...s.drawFlags, backend }),
           (error) =>
             withPriorFailure
               ? error instanceof AggregateError &&
@@ -414,7 +435,7 @@ test('unsafe2001 combined quads error after preparation while an earlier real fl
     const prior = devicePrior(s),
       random = s.threads.snapshot();
     assert.throws(
-      () => s.pass.draw(s.manager, drawFlags),
+      () => s.pass.draw(s.manager, s.drawFlags),
       (error) => error.code === 'EFFEKSEER_UNSAFE_INDEX_DOMAIN',
     );
     assert.equal(s.packets.length, 1);
@@ -434,7 +455,7 @@ test('3334 Ring request follows original byte precheck, retaining prior and late
   try {
     await s.play();
     s.tick();
-    const r = s.pass.draw(s.manager, drawFlags);
+    const r = s.pass.draw(s.manager, s.drawFlags);
     assert.equal(r.drawCalls, 2);
     assert.deepEqual(
       s.packets.map((p) => p.indices.length),
@@ -486,7 +507,7 @@ test('real manager2000 live sprites reach one legal12000-index GL-recorder call 
     s.tick();
     const random = s.threads.snapshot(),
       prior = devicePrior(s),
-      r = s.pass.draw(s.manager, drawFlags);
+      r = s.pass.draw(s.manager, s.drawFlags);
     assert.equal(r.instances, 2000);
     assert.equal(r.drawCalls, 1);
     assert.equal(r.vertexCount, 8000);
@@ -501,7 +522,7 @@ test('real manager2000 live sprites reach one legal12000-index GL-recorder call 
       geometry = s.pass.spriteRing.positions,
       cache = s.pass.batch.bytes,
       data = s.pass.byteData;
-    s.pass.draw(s.manager, drawFlags);
+    s.pass.draw(s.manager, s.drawFlags);
     assert.equal(s.pass.packed.vertices, packed);
     assert.equal(s.pass.spriteRing.positions, geometry);
     assert.equal(s.pass.batch.bytes, cache);
