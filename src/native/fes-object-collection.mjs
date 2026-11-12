@@ -97,6 +97,11 @@ export class FESObjectCollection {
   lookup(name, index = 0) {
     return this.entries.get(this.name(name).token)?.get(index | 0) ?? null;
   }
+  reference(object) {
+    const identity = this.identities.get(object);
+    if (!identity) throw new Error('FES reference requires a current collection object');
+    return { nameBytes: new Uint8Array(identity.nameBytes), index: identity.index };
+  }
   create(type, name, count, { scalar = false, parent = null, enqueue = true } = {}) {
     type = nativeType(type);
     count = signed(count, 'object count');

@@ -42,6 +42,7 @@ import { fesRawTail } from '../fes/source.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
 import { readNativeResource } from './resource-file.mjs';
+import { nativeDataString } from './data-text.mjs';
 import { FESPlatformFrontends } from './fes-platform-frontends.mjs';
 import { fesSystemVoiceCommand } from './fes-system-voice.mjs';
 
@@ -262,12 +263,16 @@ export class FESCoordinator {
     return this.top;
   }
   reference(token) {
-    if (token === '@' && this.instance.eventObject) {
+    if (
+      (token === '@' || (token instanceof Uint8Array && token.length === 1 && token[0] === 64)) &&
+      this.instance.eventObject
+    ) {
       const object = this.instance.eventObject;
       return {
         name: object.baseName,
-        nameBytes: encodeCP932(object.baseName),
-        index: object.index ?? 0,
+        ...(object === this.top
+          ? { nameBytes: new TextEncoder().encode('_TOPOBJ_'), index: 0 }
+          : this.collection.reference(object)),
       };
     }
     return this.definitions.reference(this.instance.argumentBytes(token));
@@ -362,6 +367,10 @@ export class FESCoordinator {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
       if (this.platform.supports(record)) await this.platform.consume(record);
+      else if (record.operation === 'default-reference')
+        this.instance.defaultButton = record.reference.nameBytes.length ? record.reference : null;
+      else if (record.operation === 'active-reference')
+        await this.instance.player.nativeInput.consumeActiveReference(record.reference);
       else if (record.operation === 'draw-upload')
         await this.world.sendEngine(
           this.instance.player.surface,
@@ -622,6 +631,24 @@ export class FESCoordinator {
         index: selection.index,
         referenceAddress: source.objectNameAddress,
       });
+    if (verb === 'noact' || verb === 'setact') {
+      if (selection.index === -1) return 0;
+      if (args[0] !== undefined) {
+        const bytes = nativeDataString(context.bytes(0));
+        // The original numeric helper returns0 before parsing an empty C-string.
+        if (bytes.length) context.evaluateExpanded(fesNarrowText(bytes));
+      }
+      const object = collection.lookup(selection.nameBytes, selection.index);
+      if (object?.nativeType === 6)
+        this.pendingRecords.push({
+          operation: verb === 'noact' ? 'default-reference' : 'active-reference',
+          reference: {
+            nameBytes: new Uint8Array(nativeDataString(selection.nameBytes)),
+            index: selection.index | 0,
+          },
+        });
+      return 0;
+    }
     if (FES_COMMON_COMMANDS.has(verb)) return this.common.command(verb, selection, args, context);
     if (FES_IMAGE_CONTROL_COMMANDS.has(verb))
       return this.imageCommands.command(verb, selection, args, context);

@@ -443,7 +443,10 @@ for (const [profile, variable] of [
         assert.equal(region.priority, 150);
         world.inputFor(id).pointer(24, 12);
         await world.inputFor(id).hover();
-        assert.equal(task.input.state.focus, 'button');
+        assert.deepEqual(task.input.state.focus, {
+          nameBytes: new TextEncoder().encode('button'),
+          index: 0,
+        });
         await world.inputFor(id).route(0, true, 2);
         // Plane registration sets its original change word to one. The first
         // press therefore also reaches the low button; subsequent presses use

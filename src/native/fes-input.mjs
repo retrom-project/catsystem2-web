@@ -2,6 +2,7 @@
 // Native FES input/task mapping: 628D60, 629E00, 62C480, 65C750.
 // Each FES BUTTON owns a real base-plane task; the low button is independent.
 import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 const packet = (words) => new NativeGraphicsPacket(words);
 const valid = (object) => object?.type === 'BUTTON' && !object.deleted && object.enable;
 export class FESInput {
@@ -28,25 +29,61 @@ export class FESInput {
   get instance() {
     return this.player?.root;
   }
+  referenceFor(object) {
+    if (this.instance.collection) return this.instance.collection.reference(object);
+    // The direct JS-authored FESPlayer API retains its explicit CP932 name boundary.
+    return { nameBytes: new Uint8Array(encodeCP932(object.baseName)), index: object.index ?? 0 };
+  }
+  referenceObject(reference) {
+    if (!reference?.nameBytes.length || !this.instance) return null;
+    if (this.instance.collection)
+      return this.instance.collection.lookup(reference.nameBytes, reference.index);
+    const name = new TextDecoder('shift_jis').decode(reference.nameBytes);
+    return (
+      this.instance.objects.find(
+        (object) => object.baseName === name && (object.index ?? 0) === reference.index,
+      ) ?? null
+    );
+  }
+  get focused() {
+    const object = this.referenceObject(this.state.focus);
+    return object ? { s: this.instance, o: object } : null;
+  }
+  setFocusTarget(target) {
+    if (target && target.s !== this.instance) throw new Error('FES focus has a different owner');
+    this.state.focus = target ? this.referenceFor(target.o) : null;
+  }
   bounds(object) {
     const id = this.state.buttons.find(([key]) => key === object.key)?.[1],
       region = id == null ? null : this.input.get(id);
     return region ? [...region.bounds] : null;
   }
   async updateMouse() {
+    const player = this.player,
+      instance = this.instance,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !instance?.runtime?.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return;
+    const input = this.input;
     // 62D9A0 queries 152 (outside-window), then 125 (virtual coordinates).
-    const outside = await this.input.message(152);
+    const outside = await input.message(152);
+    if (!live()) return;
     if (!Number.isInteger(outside))
       throw new Error('FES mouse gate requires native input message 152');
-    if (outside) this.player.mouse = { x: -2147483648, y: -2147483648 };
+    if (outside) player.mouse = { x: -2147483648, y: -2147483648 };
     else {
       const coordinates = new Map();
-      await this.input.message(125, 0, 4, {
+      await input.message(125, 0, 4, {
         payload: { store: (address, value) => coordinates.set(address, value | 0) },
       });
+      if (!live()) return;
       if (!coordinates.has(0) || !coordinates.has(4))
         throw new Error('FES virtual coordinates require both native input message 125 outputs');
-      this.player.mouse = { x: coordinates.get(0), y: coordinates.get(4) };
+      player.mouse = { x: coordinates.get(0), y: coordinates.get(4) };
     }
   }
   depth() {
@@ -71,8 +108,8 @@ export class FESInput {
       this.instance.skipPressed = control;
       this.instance.clickL = control ? -1 : 0;
     }
-    if (this.state.focus && !valid(this.instance.byKey.get(this.state.focus)))
-      this.state.focus = null;
+    const focused = this.referenceObject(this.state.focus);
+    if (focused?.nativeType === 6 && !focused.enable) this.state.focus = null;
     await this.sync();
   }
   async initializeLowButton() {
@@ -199,15 +236,66 @@ export class FESInput {
     return handled;
   }
   async focus(key) {
-    if (this.state.focus === key) return;
-    const old = this.state.focus;
-    this.state.focus = key;
-    if (old) await this.event(old, 'UNFOCUS');
-    if (key) await this.event(key, 'FOCUS');
-    this.player.focused = key ? { s: this.instance, o: this.instance.byKey.get(key) } : null;
+    const current = this.referenceObject(this.state.focus),
+      target = key == null ? null : this.instance.byKey.get(key),
+      reference = target ? this.referenceFor(target) : null,
+      old = this.state.focus;
+    if (
+      reference === null
+        ? old === null
+        : old &&
+          old.index === reference.index &&
+          old.nameBytes.length === reference.nameBytes.length &&
+          old.nameBytes.every((byte, at) => byte === reference.nameBytes[at])
+    )
+      return;
+    this.state.focus = reference;
+    if (current) await this.event(current.key, 'UNFOCUS');
+    if (target) await this.event(target.key, 'FOCUS');
+  }
+  async consumeActiveReference(reference) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return;
+    const top = this.world.engineMessages.closestTop(this.record),
+      inputID = top?.implementation.input;
+    if (this.world.objects.objects.get(inputID)?.kind !== 11)
+      throw new Error('FES setact requires its owning Top Input task');
+    const input = (active) =>
+        this.world.engineMessages.dispatch(inputID, this.record.id, 93, 0, active, { flags: 1 }),
+      event = (ref, name) => {
+        const object = this.referenceObject(ref);
+        return object ? instance.dispatchEvent(object, name) : false;
+      };
+    try {
+      await this.updateMouse();
+      if (!live()) return;
+      const old = this.state.focus;
+      if (old?.nameBytes.length) {
+        await input(0);
+        if (!live()) return;
+        await event(old, 'UNFOCUS');
+        if (!live()) return;
+      }
+      this.state.focus = reference;
+      if (reference.nameBytes.length) {
+        await input(1);
+        if (!live()) return;
+        await event(reference, 'FOCUS');
+      }
+    } catch (error) {
+      if (live()) throw error;
+    }
   }
   async move(direction) {
-    let current = this.instance.byKey.get(this.state.focus);
+    let current = this.referenceObject(this.state.focus);
     if (!valid(current)) {
       const hovered = this.state.buttons.find(
         ([key, id]) =>
@@ -215,7 +303,9 @@ export class FESInput {
       );
       current = hovered
         ? this.instance.byKey.get(hovered[0])
-        : this.instance.byKey.get(this.instance.defaultButton);
+        : this.instance.runtime
+          ? this.referenceObject(this.instance.defaultButton)
+          : this.instance.byKey.get(this.instance.defaultButton);
       if (!valid(current)) return false;
       await this.focus(current.key);
       await this.warp(current);
@@ -292,7 +382,8 @@ export class FESInput {
         const pair = this.state.buttons.find(([, id]) => w != null && id === w >>> 0);
         if (l) {
           await this.focus(pair?.[0] ?? null);
-        } else if (pair?.[0] === this.state.focus) await this.focus(null);
+        } else if (pair?.[0] === this.referenceObject(this.state.focus)?.key)
+          await this.focus(null);
         await this.sync();
         return 0;
       }
@@ -303,7 +394,7 @@ export class FESInput {
           await this.propagation(sender, false);
           return 0;
         }
-        const focused = this.instance.byKey.get(this.state.focus),
+        const focused = this.referenceObject(this.state.focus),
           key = valid(focused) ? focused.key : null;
         this.state.pressed = key;
         let handled = false;

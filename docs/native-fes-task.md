@@ -310,3 +310,43 @@ claiming complete FES compatibility.
 
 Primary references are the official [object definitions](https://cs2.suki.jp/manual/fes/code/h_object.html).
 Original executable captures and trace data stay in ignored local storage.
+
+## Object noact/setact references
+
+The ordinary default runtime installs these two commands only on the object route.
+A real multi-object index -1 returns before fetching its optional operand; a
+singleton omission has already normalized to0. Otherwise parameter2 (the first
+operand after the verb) is fetched/expanded once and numerically evaluated before
+current lookup. A present empty C-string evaluates0 at this command's reviewed
+numeric-helper boundary; the generic expression API is unchanged. Missing and
+non-BUTTON targets then return0 without a record; disabled raw6 still queues.
+
+The existing pending-record FIFO stores an owned narrow name/index reference,
+with the collection's existing31-byte name domain and no new encoding or
+truncation. The original record has name32 plus index4; overflow beyond that
+existing domain is not reproduced. noact copies the default reference at drain;
+an empty queued name clears it, including index0. setact refreshes mouse, sends
+canonical Input93/flags1 for the nonempty old name, dispatches current UNFOCUS,
+copies the queued active reference, then sends Input93 and current FOCUS for the
+nonempty new name. It does not deduplicate, warp, assign Graph activity or add a
+flush. Missing current event objects skip only their label. Event-produced records
+stay in the same FIFO. Input routing and its actual immediate children retain
+their existing unhandled-control/unwritten-output rules. The frozen original
+queue IDs are Game7/11 versus SDK10/14; the JS FIFO uses semantic operations.
+
+Default and active references each have one current semantic pair and one existing
+snapshot owner: the instance defaultButton and Input.state.focus respectively.
+Player.focused is a current-lookup view, and restore does not overwrite the active
+pair to initialize that view. Existing UI consumers use these same values. Tick
+clears an active name/index only when current lookup finds raw6 and it is disabled;
+missing or rebound nonraw6 references remain stored. This cleanup adds no event.
+
+Mouse queries and active-reference consumption use call-stack-only player/root/
+runtime/owner liveness checks around their real awaits. After owner cancellation,
+no later query, reference copy or focus leg runs; an already issued query is not
+rolled back and live failures still propagate. No continuation state or second
+queue is checkpointed. A non-NULL empty active reference preserves its supplied
+index and differs from the separate NULL/resetactive branch. Empty-reference
+consumer tests inject a typed FIFO value; they do not claim that an authored
+source command has produced it. BUTTON attach/navigation and the other input
+frontends remain separate incomplete work.

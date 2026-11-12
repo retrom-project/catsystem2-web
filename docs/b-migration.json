@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 217, "oracle": 148, "differential": 67 },
+    "counts": { "js": 218, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -79,6 +79,7 @@
         "tests/fes-image-driver.test.mjs",
         "tests/fes-image-model.test.mjs",
         "tests/fes-image-table-model.test.mjs",
+        "tests/fes-input-actions-default.test.mjs",
         "tests/fes-log-model.test.mjs",
         "tests/fes-log-world.test.mjs",
         "tests/fes-missing-motion.test.mjs",
@@ -49182,7 +49183,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "10a7de8fee4ab11cf35a88df598580e15e2876f93c6dedc0d42079a30e16f0fb",
+      "sourceSha256": "5026e01a66e081ebe5bc3f277d6b483299f5036b874c32498d4ced4dff30380b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51730,7 +51731,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "756bd916a2a66ecefef31a7541b8fa072bae58a7841cc5fac11258c28a9d6db1",
+      "sourceSha256": "8a039ea0fa45fee29f4aeaa04b493a2bb1d41c7f8e44e98d0c20c4d0da5cb886",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51740,35 +51741,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 366,
+          "line": 375,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 809,
+          "line": 836,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 818,
+          "line": 845,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 826,
+          "line": 853,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 848,
+          "line": 875,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -51984,7 +51985,7 @@
     },
     {
       "file": "src/native/fes-input.mjs",
-      "sourceSha256": "2928b1cb567940df3f3fa33fbf7089fd9baf14d1b613d3d0d83f095dfdf17486",
+      "sourceSha256": "4808f1d458ab412e5f2fa02233e926669c799b03227fc62e593460c6b42007bc",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52088,7 +52089,7 @@
     },
     {
       "file": "src/native/fes-object-collection.mjs",
-      "sourceSha256": "c81ef4566fa66216908bda24ed2a2f5dbd86ff334a1363a7e16ae56ff5bd5e62",
+      "sourceSha256": "7f6cb8c6d6c4b1b2ee01d02606e32334c692f95006bc4493b814429421645318",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

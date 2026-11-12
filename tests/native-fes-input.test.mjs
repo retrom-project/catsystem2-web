@@ -108,7 +108,7 @@ test('native FES hover, press and release preserve the object task mapping and d
   );
   world.input.pointer(15, 25);
   await world.input.hover();
-  assert.equal(input.state.focus, 'a[0]');
+  assert.deepEqual(input.state.focus, { nameBytes: new TextEncoder().encode('a'), index: 0 });
   assert.equal(player.globals[1], 10);
   world.input.source = 2;
   const a0 = input.state.buttons[0][1],
@@ -119,7 +119,7 @@ test('native FES hover, press and release preserve the object task mapping and d
   await input.message([a1, 64, a1, 1]);
   await world.graphics.send(a0, 1, 4, 0, 0);
   assert.equal(player.globals[3], 30);
-  assert.equal(input.state.focus, 'a[1]');
+  assert.deepEqual(input.state.focus, { nameBytes: new TextEncoder().encode('a'), index: 1 });
   assert.equal(player.globals[4], 40);
 });
 
@@ -141,9 +141,9 @@ test('native KEYBLOCK input searches adjacent cells and does not invent geometri
     '#KEYBLOCK\n0 2,2 -1,-1,-1,-1\n#DEFINE\nBUTTON a[3]\n#OBJECT POS SIZE ENABLE DISP KEYBLOCK\na[0] 10,10 20,20 1 1 0,0,0\na[1] 40,10 20,20 0 1 0,1,0\na[2] 40,40 20,20 1 1 0,1,1\n#START\na[0] noact\nnext WAIT\n#WAIT\n',
   );
   await input.move('right');
-  assert.equal(input.state.focus, 'a[0]');
+  assert.deepEqual(input.state.focus, { nameBytes: new TextEncoder().encode('a'), index: 0 });
   await input.move('right');
-  assert.equal(input.state.focus, 'a[2]');
+  assert.deepEqual(input.state.focus, { nameBytes: new TextEncoder().encode('a'), index: 2 });
   assert.deepEqual(player.mouse, { x: 40, y: 40 });
   assert.deepEqual([world.input.x, world.input.y], [40, 40]);
   assert.equal(player.root.pushRight, player.root.byKey.get('a[0]').handle);
@@ -161,7 +161,7 @@ test('FES task messages resolve native button numbers in the receiving Top names
     return value === nativeID ? id : null;
   };
   await input.message([nativeID, 64, nativeID, 1], { nativeSenderWorldID: id });
-  assert.equal(input.state.focus, 'a');
+  assert.deepEqual(input.state.focus, { nameBytes: new TextEncoder().encode('a'), index: 0 });
   assert.equal(player.globals[1], 7);
   await input.message([nativeID, 65, nativeID, 0], { nativeSenderWorldID: id });
   assert.equal(player.globals[2], 9);

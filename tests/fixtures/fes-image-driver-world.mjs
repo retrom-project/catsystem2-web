@@ -122,6 +122,8 @@ export function imageObject(api, type, key, fields = {}) {
   const object = initializeFESImage({
     nativeType: type,
     key,
+    baseName: key,
+    index: null,
     type: type === 6 ? 'BUTTON' : type === 1 ? 'CIMAGE' : 'IMAGE',
     handle: 0x1001 + api.instance.objects.length,
     enable: true,

@@ -36,6 +36,13 @@ export class FESPlayer {
     this.unresolvedTargets = new Set();
     this.localSources = new NativeFESSourceArena();
   }
+  get focused() {
+    return this.nativeInput ? this.nativeInput.focused : this.focusTarget;
+  }
+  set focused(target) {
+    if (this.nativeInput) this.nativeInput.setFocusTarget(target);
+    else this.focusTarget = target;
+  }
   get instances() {
     return this.root ? [this.root] : [];
   }
@@ -112,7 +119,7 @@ export class FESPlayer {
 
   async start(name) {
     this.root = await this.load(name);
-    this.focused = null;
+    if (!this.nativeInput) this.focused = null;
   }
   enqueue(promise) {
     if (!promise || typeof promise.then !== 'function') return;
@@ -454,7 +461,12 @@ export class FESPlayer {
     const current = all.find((c) => c.o === this.focused?.o);
     if (!current) {
       const first =
-        all.find((c) => c.o.key === c.s.defaultButton) ||
+        all.find((c) =>
+          c.s.runtime
+            ? c.s.defaultButton &&
+              c.s.collection.lookup(c.s.defaultButton.nameBytes, c.s.defaultButton.index) === c.o
+            : c.o.key === c.s.defaultButton,
+        ) ||
         all.toSorted(
           (a, b) => Math.floor(a.rect.y / 24) - Math.floor(b.rect.y / 24) || a.rect.x - b.rect.x,
         )[0];
@@ -597,7 +609,7 @@ export class FESPlayer {
             waitSound: s.waitSound,
             waitObjects: s.waitObjects,
             frameOrigin: s.frameOrigin,
-            defaultButton: s.defaultButton,
+            defaultButton: structuredClone(s.defaultButton),
             transitionUntil: s.transitionUntil,
             keySkipEnabled: s.keySkipEnabled,
             keySkipControlOnly: s.keySkipControlOnly,
@@ -698,7 +710,7 @@ export class FESPlayer {
       return s;
     };
     this.root = await instance(state.root);
-    this.focused = null;
+    if (!this.nativeInput) this.focused = null;
     this.dragging = null;
   }
 }
