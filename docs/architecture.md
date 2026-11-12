@@ -61,6 +61,9 @@ LOG 生成的 STRING 经同一 pending FIFO 在后续分配轮次创建真实任
 再同帧继续解码；资源 FIFO 在本轮脚本结束后遍历。`baseimg` 图片记录保留命令当时的
 bitmap，PLANE 记录在消费时绘制并复制物理矩形，均不会提前发布待处理资源修改。
 checkpoint 保存待消费的语义记录与解码状态，新 World 继续使用已恢复的 JS 对象和图像。
+DIFIMAGE 的 `refex` 与 Draw 分别持有 JS render-source 引用，外部 image-owner 释放后
+仍可绘制和恢复。普通对象删除先释放自身引用；资源 FIFO 清理再按实际 retained record
+移除对应 Draw 条目，拥有者 teardown 同样回收这些引用。
 EFKPLANE 在现有默认工厂中仍明确未支持，是第 7 阶段尚未完成的子系统。
 旧 FES 原处理器 facade 只保留在 `oracle/`，显式 D8 消费者与其投影仍单独计数。
 

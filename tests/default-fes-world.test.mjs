@@ -16,6 +16,62 @@ import { append } from './fixtures/fes-log-model.mjs';
 const bytes = (value) => new TextEncoder().encode(value),
   pixel = Uint8Array.from([22, 33, 44, 255, 55, 66, 77, 255, 88, 99, 111, 255, 122, 133, 144, 255]);
 for (const profile of profiles) {
+  test(`${profile} ordinary DIFIMAGE refex owns external pixels through release, deletion and fresh World restore`, async () => {
+    const source =
+        '#DEFINE\nDIFIMAGE face\n#OBJECT POS PRI DISP\nface 3,4 60000 1\n#START\nnext IDLE\n#IDLE\n#BIND\nface refex $0\nbreak\n#DROP\nface delete\nbreak\n',
+      world = await defaultFESWorld(profile, {
+        'screen.fes': bytes(source),
+        'pixel.hg3': hg3(2, 2, pixel),
+      });
+    let fresh;
+    try {
+      const h = await loadDefaultFES(world);
+      await h.task.tick();
+      const task = world.main,
+        machine = task.machine;
+      machine.writeString('pixel.hg3', 256);
+      const handle = (await world.runtime.native('main', 0x2c6, [256], machine, task)).value,
+        bitmap = world.imageOwners.get(handle).bitmap;
+      assert.ok(handle);
+      h.instance.setGlobal(0, handle);
+      await h.task.player.notify('BIND');
+      await h.task.syncObjects();
+      const face = h.instance.byKey.get('face'),
+        retained = face.imageResource.source,
+        expected = new Uint8ClampedArray(128 * 96 * 4);
+      for (let row = 0; row < 2; row++)
+        expected.set(pixel.subarray((1 - row) * 8, (2 - row) * 8), ((4 + row) * 128 + 3) * 4);
+      assert.deepEqual(await drawPixels(world, h.surface), expected);
+      assert.equal(world.renderSources.get(retained).refs, 2);
+      await world.runtime.native('main', 0x2c7, [handle], machine, task);
+      assert.equal(world.runtime.handles.records.has(handle), false);
+      assert.equal(world.runtime.handles.records.has(bitmap), false);
+      assert.deepEqual(await drawPixels(world, h.surface), expected);
+      fresh = await defaultFESWorld(profile, {}, { initialize: false });
+      await fresh.restore(structuredClone(world.snapshot()));
+      assert.deepEqual(await drawPixels(fresh, h.surface), expected);
+      assert.equal(
+        fresh.objects.objects.get(h.id).implementation.player.root.byKey.get('face').imageResource
+          .source,
+        retained,
+      );
+      await h.task.player.notify('DROP');
+      assert.equal(h.instance.byKey.has('face'), false);
+      assert.deepEqual(await drawPixels(world, h.surface), expected);
+      await h.task.syncObjects();
+      assert.deepEqual(await drawPixels(world, h.surface), new Uint8ClampedArray(expected.length));
+      assert.equal(world.runtime.handles.records.has(retained), false);
+      await fresh.objects.release(h.id);
+      assert.deepEqual(await drawPixels(fresh, h.surface), new Uint8ClampedArray(expected.length));
+      assert.equal(fresh.runtime.handles.records.has(retained), false);
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+
   test(`${profile} default LOG queues generated STRING resources and SAVEPANEL/image fonts avoid the EXE`, async () => {
     const file = new NativeGlobalFile(),
       flags = new Uint32Array(1024);

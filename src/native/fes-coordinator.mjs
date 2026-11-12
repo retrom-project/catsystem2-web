@@ -480,7 +480,7 @@ export class FESCoordinator {
     const draw = this.world.graphics.drawTasks.get(this.instance.player.surface);
     if (!draw?.state.renderer) return;
     for (const item of [...draw.state.renderer.items].sort((a, b) => a.key - b.key))
-      if (item.source === source) {
+      if (this.world.retainedDraw.record(draw, item.key)?.source === source) {
         await draw.remove(item.key);
         break;
       }

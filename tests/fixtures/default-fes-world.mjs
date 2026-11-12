@@ -27,6 +27,8 @@ export async function defaultFESWorld(profile, files = {}, options = {}) {
   world.game.width = world.graphics.stage.width = 128;
   world.game.height = world.graphics.stage.height = 96;
   world.game.resolveCategory = (name, category) => {
+    const virtual = /^@cat\/([^/]+)\/(.*)$/.exec(name);
+    if (virtual) [, category, name] = virtual;
     const extensions = {
       image: ['hg3', 'hg2'],
       fes: ['fes'],
