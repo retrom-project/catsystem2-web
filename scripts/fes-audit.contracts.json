@@ -1786,11 +1786,11 @@
       "id": "fes.reference.cn.lockactive",
       "domain": "fes-command",
       "names": ["lockactive"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/lockactive.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "evidence": ["tests/fes-lockactive-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Both frozen profiles read optional operand1 once (missing/empty0), queue its int32 and return -3. The sole FES owner scalar drives canonical64 hover through real Graph7/8: matched entries zero active to empty/index0 before callbacks, then leave reads the latest lock to retain current state or clear empty/index-1 and pressed validity. Unknown IDs use their separate clear/retain path. Default/fresh, actual Input tick, callback reentry and close/error are covered.",
       "signatures": ["lockactive [lock]"]
     },
     {

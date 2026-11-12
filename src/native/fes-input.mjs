@@ -19,6 +19,7 @@ export class FESInput {
       buttons: [],
       focus: null,
       pressed: null,
+      activeLock: 0,
       source: 0,
       sleeping: false,
       control: false,
@@ -328,6 +329,47 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumeHover(taskID, entered, context) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live() || this.state.sleeping) return 0;
+    try {
+      await this.updateMouse();
+      if (!live()) return 0;
+      const entry = runtime.resources.entries.find(
+        (entry) => entry.savedType === 6 && taskID != null && entry.buttonTaskID === taskID,
+      );
+      if (entry) {
+        const reference = { nameBytes: new Uint8Array(entry.nameBytes), index: entry.index | 0 };
+        // Both native branches zero all36 active-reference bytes before the event.
+        this.state.focus = { nameBytes: new Uint8Array(), index: 0 };
+        if (entered) this.state.focus = reference;
+        const object = this.referenceObject(reference);
+        if (object) await instance.dispatchEvent(object, entered ? 'FOCUS' : 'UNFOCUS');
+        if (!live()) return 0;
+        if (entered) {
+          await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+          return 0;
+        }
+      }
+      // Read after UNFOCUS: its real script may have changed both lock and reference.
+      if (!this.state.activeLock) {
+        this.state.focus = { nameBytes: new Uint8Array(), index: -1 };
+        this.state.pressed = null;
+      }
+      await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+    } catch (error) {
+      if (live()) throw error;
+    }
+    return 0;
+  }
   async moveDirection(direction, context) {
     const player = this.player,
       instance = this.instance,
@@ -515,6 +557,7 @@ export class FESInput {
       (this.world.resolveTaskID ? this.world.resolveTaskID(sender, this.record.id) : sender);
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
+    if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
     await this.updateMouse();
     switch (message) {
       case 64: {

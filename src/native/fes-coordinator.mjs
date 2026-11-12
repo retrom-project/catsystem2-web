@@ -376,6 +376,20 @@ export class FESCoordinator {
     this.pendingRecords.push({ operation: 'react' });
     return -3;
   }
+  lockActive(args) {
+    let value = 0;
+    if (args[0] !== undefined) {
+      const source = nativeDataString(args[0]);
+      if (source.length >= 1024)
+        throw new RangeError('FES lockactive token exceeds its 1024-byte temporary');
+      const bytes = nativeDataString(this.instance.argumentBytes(source));
+      if (bytes.length >= 1024)
+        throw new RangeError('FES lockactive operand exceeds its 1024-byte temporary');
+      if (bytes.length) value = this.instance.value(fesNarrowText(bytes)) | 0;
+    }
+    this.pendingRecords.push({ operation: 'active-lock', value });
+    return -3;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
@@ -385,6 +399,8 @@ export class FESCoordinator {
       else if (record.operation === 'active-reference')
         await this.instance.player.nativeInput.consumeActiveReference(record.reference);
       else if (record.operation === 'react') await this.instance.player.nativeInput.consumeReact();
+      else if (record.operation === 'active-lock')
+        this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')
         await this.world.sendEngine(
           this.instance.player.surface,

@@ -70,7 +70,7 @@ export async function loadDefaultFES(world, name = 'screen') {
   world.runtime.variableBank(parent).initialize(64);
   world.runtime.stringBank(parent);
   await task.initialize(parent.context.variableBank);
-  await world.sendEngine(id, owner, 334, 0, surface);
+  await world.sendEngine(id, owner, 334, 0, world.nativeTaskID(surface));
   if (!(await task.loadSource(name)))
     throw new Error('FES fixture failed its ordinary source message');
   return {

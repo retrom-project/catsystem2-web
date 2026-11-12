@@ -490,6 +490,40 @@ errors propagate. A settled fresh World restores the one existing reference and
 FIFO without replaying completed FOCUS. The normal `react` row is implemented for
 these frozen profiles; its parameterless manual signature is unchanged.
 
+Normal `lockactive` reads optional operand1 through the same byte-first bank and
+SCRIPT getter exactly once. Missing or expanded-empty means0; other operands are
+ignored. The int32 result is queued on the existing FIFO and returns native -3.
+The only new owner field is `FESInput.state.activeLock`, initialized to0 and saved
+once by the existing input checkpoint. Its full signed word is retained rather
+than replaced by a boolean. Current checkpoint format changes in place.
+
+Its real reader is canonical64 hover from Graph7/8, reached by NativeInput hover
+and tick. Graph forwards its native task ID; the FES route resolves that ID to
+the World task before searching saved raw6 resource entries in original order.
+The helper borrows the first matching entry's stored name/index and buttonTaskID,
+without using a current-key button projection or another identity registry.
+The matched path zeroes the36-byte active reference to empty-name/index0 before
+either callback. Enter assigns that entry reference and fires FOCUS even with a
+nonzero lock. Leave fires the entry target's UNFOCUS, then reads the latest lock:
+a nonzero word preserves the current post-callback pair; zero clears the name,
+writes active.index=-1, and invalidates the existing pressed reference. This can
+preserve a pair rebound by the callback, but does not promise retention of the
+pre-zero pair. An unknown button ID bypasses the matched zero/callback: nonzero
+lock retains the old pair, while zero clears to empty/index-1. The pressed null
+value represents the original invalid-index sentinel; the native release reader
+ignores its old name when index is-1. General press/release policy is unchanged.
+
+These hover writes retain NULL, empty/index0 and empty/index-1 as their existing
+semantic values and do not call resetactive/Input145, UNFOCUS a different old
+reference or warp. Mouse refresh precedes the saved-entry lookup; the resources
+are traversed after the callback and post-lock decision. Real UNFOCUS Host waits
+may admit an existing nonmodal -3 request changing lock/reference before the
+post-await read. Same-player/root/runtime/record guards cancel later work or a
+canceled rejection after owner close; live errors propagate. A fresh settled
+World retains the scalar/pair without replaying callbacks. Source and tests use
+the current existing queue and reference authorities without a second flag,
+reference registry, modal queue or versioned checkpoint reader.
+
 This bounded leaf does not complete automove, other keyboard/input frontends
 or the raw23 attachment protocol. The direct JS-source input API retains its
 separate path.
