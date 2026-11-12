@@ -12,6 +12,7 @@ import { installNativeScreenEffects } from './screen-effect.mjs';
 import { FESObjectCollection } from './fes-object-collection.mjs';
 import {
   readFESButtonAttachment,
+  fesButtonCursorPoint,
   setFESButtonAttachment,
   validateFESButtonInitialHandle,
 } from './fes-button-navigation.mjs';
@@ -403,6 +404,33 @@ export class FESCoordinator {
     this.pendingRecords.push({ operation: 'active-lock', value });
     return -3;
   }
+  autoMove(args) {
+    if (args[0] === undefined) return 0;
+    const operand = nativeDataString(this.instance.argumentBytes(args[0]));
+    let end = 0;
+    while (end < operand.length && operand[end] !== 32 && operand[end] !== 91) end++;
+    // The original reference reader rejects an empty pre-expansion name.
+    if (!end) return 0;
+    if (operand[end] === 91) {
+      let close = end + 1;
+      while (close < operand.length && operand[close] !== 32 && operand[close] !== 93) close++;
+      if (close - end > 511)
+        throw new RangeError('FES object index exceeds its512-byte destination');
+      if (operand[close] !== 93) {
+        this.instance.diagnostic('FES automove object reference has no closing bracket');
+        return 0;
+      }
+    }
+    // The token getter has already run bank/SCRIPT. Only the distinct original
+    // reference-name bank and numeric-index stages belong here, not another getter.
+    const reference = this.definitions.reference(operand, { allowEmptyName: true }),
+      object = this.collection.lookup(reference.nameBytes, reference.index);
+    if (object && [1, 2, 6, 11, 12, 22].includes(object.nativeType)) {
+      const [x, y] = fesButtonCursorPoint(this.instance, object);
+      this.pendingRecords.push({ operation: 'auto-move', x, y });
+    }
+    return 0;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
@@ -412,6 +440,8 @@ export class FESCoordinator {
       else if (record.operation === 'active-reference')
         await this.instance.player.nativeInput.consumeActiveReference(record.reference);
       else if (record.operation === 'react') await this.instance.player.nativeInput.consumeReact();
+      else if (record.operation === 'auto-move')
+        await this.instance.player.nativeInput.consumeAutoMove(record);
       else if (record.operation === 'active-lock')
         this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')

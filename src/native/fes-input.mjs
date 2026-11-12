@@ -20,6 +20,7 @@ export class FESInput {
       focus: null,
       pressed: null,
       activeLock: 0,
+      savedMouse: null,
       source: 0,
       sleeping: false,
       control: false,
@@ -298,6 +299,52 @@ export class FESInput {
         if (!live()) return;
         await event(reference, 'FOCUS');
       }
+    } catch (error) {
+      if (live()) throw error;
+    }
+  }
+  async consumeAutoMove({ x, y }) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live() || !this.world.fesConfiguration.get('autocur')) return;
+    const top = this.world.engineMessages.closestTop(this.record),
+      inputID = top?.implementation.input;
+    if (this.world.objects.objects.get(inputID)?.kind !== 11)
+      throw new Error('FES automove requires its owning Top Input task');
+    const point = new Int32Array(2);
+    let written = 0;
+    try {
+      await this.world.engineMessages.dispatch(inputID, this.record.id, 125, 0, 4, {
+        flags: 0,
+        payload: {
+          store: (address, value) => {
+            if (address !== 0 && address !== 4)
+              throw new RangeError('FES automove output is outside its two initialized words');
+            point[address >>> 2] = value | 0;
+            written |= address === 0 ? 1 : 2;
+            // The constructor's original output is not known. Only an actual
+            // complete Input writer establishes this owner's saved point.
+            if (written === 3) this.state.savedMouse = Array.from(point);
+          },
+        },
+      });
+      if (!live()) return;
+      if (written !== 3) throw new Error('FES automove requires both native Input125 outputs');
+      await this.world.engineMessages.dispatch(
+        inputID,
+        this.record.id,
+        137,
+        4,
+        ((x & 65535) | ((y & 65535) << 16)) >>> 0,
+        { flags: 0 },
+      );
     } catch (error) {
       if (live()) throw error;
     }
@@ -646,6 +693,16 @@ export class FESInput {
     return structuredClone(this.state);
   }
   restore(state) {
+    const point = state.savedMouse;
+    if (
+      point !== null &&
+      (!Array.isArray(point) ||
+        point.length !== 2 ||
+        point.some(
+          (value) => !Number.isInteger(value) || value < -2147483648 || value > 2147483647,
+        ))
+    )
+      throw new Error('FES saved mouse point must be unknown or two initialized int32 words');
     this.state = structuredClone(state);
     if (this.player) this.player.nativeInput = this;
   }

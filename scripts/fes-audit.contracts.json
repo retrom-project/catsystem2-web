@@ -1379,11 +1379,11 @@
       "id": "fes.reference.cn.automove",
       "domain": "fes-command",
       "names": ["automove"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/automove.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "implementation": "src/fes; src/native/fes-coordinator.mjs; src/native/fes-input.mjs",
+      "evidence": ["tests/fes-automove-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Both frozen profiles read required operand1 through bank/SCRIPT once, then the distinct reference-name bank/index parser; current raw1/2/6/11/12/22 copy the proven cursor point into the existing FIFO and return0. Dequeue reads current autocur, uses owning Input125 flags0 to establish the sole savedMouse, then Input137 flags0/w4 with separately masked low16 XY; real138/drag/warp/tick behavior remains authoritative. Default, gate reentry, close/error and fresh restore cover unknown/known saved state without constructor recapture. Other automatic-move commands remain separate.",
       "signatures": ["automove [obj]"]
     },
     {

@@ -540,3 +540,32 @@ checks that same owner/runtime is still live before starting the next operation.
 Closing or replacing that owner ends the call with its original unwritten result;
 already completed effects remain. Live errors still propagate. This adds no
 queue, persistent continuation or scheduler state and preserves executorEntry.
+
+The normal automove frontend is the frozen77BBE0/615440 chain. Missing operand1
+returns0 without a getter; a present operand runs its bank/SCRIPT getter once,
+then the original separate name-bank/index parser. Empty raw names and failed
+references do not queue; undefined empty-index outputs remain explicit errors.
+Only current raw1/2/6/11/12/22 proceed, independently of DISPLAY/ENABLE. The
+proven virtual point slot, KEYPOS and exposing PL offset produce copied int32XY
+in the existing FIFO (Game action9/SDK12); the wrapper returns0, with no focus,
+active/default reference or immediate pointer assignment.
+
+At dequeue the current autocur word gates actual owning Top Input125 flags0.
+Only its two actual output writes establish FESInput.state.savedMouse; the
+subsequent Input137 flags0/w4 packs each queued coordinate's low16 bits. The
+existing Input137 autocur recheck and138 foreground/drag/warp/tick behavior are
+retained. Already issued query/move effects survive cancellation or failure;
+owner-close stops later work, and live errors propagate. Partial or absent125
+outputs are explicit errors, never fabricated zeroes. Local collection of this
+call's outputs is transient; there is one checkpointed saved point, separate
+from player.mouse and script _MOUSE_X_/_MOUSE_Y_.
+
+The original constructors628400/4FFA10 issue125 before their InputID+1A0 is
+written by the later initialization query. Their complete defined initial saved
+output is not established by this evidence. This implementation records null
+until a real complete Input125 writer runs; it neither captures in parentAssigned
+nor borrows a later valid Input to fill the original constructor's output. A
+fresh World restores null/known savedMouse and pending copiedXY once, with no
+query, source replay or re-selection. restoremove/btnsimulate/automoveex remain
+separate leaves; restoremove cannot consume an unknown point. The ordinary337
+close guard is the independently committed C6b dependency, not part of this leaf.
