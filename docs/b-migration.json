@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 205, "oracle": 148, "differential": 67 },
+    "counts": { "js": 206, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -33,6 +33,7 @@
         "tests/effekseer-cpu.test.mjs",
         "tests/effekseer-crt-random.test.mjs",
         "tests/effekseer-crt-threads.test.mjs",
+        "tests/effekseer-effect-loads.test.mjs",
         "tests/effekseer-generation.test.mjs",
         "tests/effekseer-gpu-seam.test.mjs",
         "tests/effekseer-instance-transform.test.mjs",
@@ -2373,8 +2374,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 465,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 70, "8": 171, "9": 55 },
+    "runtimeFiles": 466,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 71, "8": 171, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48443,6 +48444,19 @@
     {
       "file": "src/effekseer/crt-threads.mjs",
       "sourceSha256": "5133dde33c517091353e2d41f0faf16b237eb9a169f766273e500988ca6411b4",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/effect-loads.mjs",
+      "sourceSha256": "760401fa53e87cad735842d7e0566e72cda2ef7125f502372a5b62c422fcf0d0",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
