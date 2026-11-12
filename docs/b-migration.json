@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 161, "oracle": 143, "differential": 67 },
+    "counts": { "js": 162, "oracle": 143, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -45,6 +45,7 @@
         "tests/fes-definitions.test.mjs",
         "tests/fes-file-list.test.mjs",
         "tests/fes-image-cache.test.mjs",
+        "tests/fes-image-driver.test.mjs",
         "tests/fes-image-model.test.mjs",
         "tests/fes-image-table-model.test.mjs",
         "tests/fes-log-model.test.mjs",
@@ -2731,9 +2732,9 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 447,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 58, "8": 164, "9": 55 },
-    "fileNeedsReview": 96,
+    "runtimeFiles": 448,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 59, "8": 164, "9": 55 },
+    "fileNeedsReview": 97,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
     "nonNativeGroups": 29,
@@ -51909,6 +51910,27 @@
       "executionSiteCounts": {},
       "indirectSites": [],
       "review": "counted"
+    },
+    {
+      "file": "src/native/fes-image-driver.mjs",
+      "sourceSha256": "438953e0fef62205994955a34ce70157ee74314948673fde7615be26f6762f62",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": ["sendEngine"],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [
+        {
+          "line": 618,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        }
+      ],
+      "review": "needs-review"
     },
     {
       "file": "src/native/fes-image-model.mjs",
