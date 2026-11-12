@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 193, "oracle": 148, "differential": 67 },
+    "counts": { "js": 194, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -36,6 +36,7 @@
         "tests/effekseer-generation.test.mjs",
         "tests/effekseer-instance-transform.test.mjs",
         "tests/effekseer-manager-lifecycle.test.mjs",
+        "tests/effekseer-mesh-packet.test.mjs",
         "tests/effekseer-numerical.test.mjs",
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-render-state.test.mjs",
@@ -2361,8 +2362,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 456,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 62, "8": 170, "9": 55 },
+    "runtimeFiles": 459,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 65, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48507,8 +48508,34 @@
       "review": "counted"
     },
     {
+      "file": "src/effekseer/materials.mjs",
+      "sourceSha256": "a04c194a738d3c8df44585b123d5cd5da1f34f43d4667ff426752cc39ffe7237",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/effekseer/math43.mjs",
       "sourceSha256": "8d74c50077a1a81ca04e219315b259211dd74755277160bb19436f17df04093a",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/mesh-packet.mjs",
+      "sourceSha256": "5328acbd3cad51a297b035865f6e76078a81878c7f634f6fb72a093121cafcd5",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48561,6 +48588,19 @@
     {
       "file": "src/effekseer/ribbon-track-geometry.mjs",
       "sourceSha256": "c746834d8172e04242ec946533975bb8d1fd166e041373c373501e42f9132c24",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/shared-device-view.mjs",
+      "sourceSha256": "e80c48c6abe0f4cfe69810efe7b6c5713315496ece13aaa60845cead572032ab",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

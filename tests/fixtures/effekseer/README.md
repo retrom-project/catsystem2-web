@@ -65,3 +65,13 @@ paired-versus-sequential addition cancellation case. Float values are retained
 as float32 words. Like the Ribbon/Track reference, these are public-source CPU
 outputs read by ordinary Node tests, not private native geometry or GPU pixels.
 The test fixtures use MPL-2.0 and translated algorithm code retains the MIT grant.
+
+`matrix44-cases.json` and `matrix44-reference.json` retain six authored input
+and exact public-template comparison groups for the fixed 1.23 Matrix44 product.
+They are source-reference CPU data, not private native matrix captures. These
+fixtures use MPL-2.0; the translated algorithm retains the Effekseer MIT grant.
+`gpu-unorm-reference.json` records three measured 126/127/128 D3DCOLOR vertex
+normalization boundaries from the authored fixed-profile D3D reference harness.
+This input/output data is dedicated to CC0-1.0. Ordinary Node tests consume these
+JSON files without a compiler, private shader bytecode, original executable or
+local research files. The observations do not establish a complete GPU backend.

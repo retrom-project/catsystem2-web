@@ -7,6 +7,16 @@ or task checkpoints. FES raw type 36 remains explicitly unsupported.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
 
+`mesh-packet.mjs` provides reusable typed vertex/index packets, exact quad order
+and explicit camera/projection/viewport inputs. `materials.mjs` requires current
+shared-device operations and retains the old 12-state/5-binding restore set,
+sampler inheritance and depth-only clear. `shared-device-view.mjs` maps those
+operations onto an injected current context; it owns no device or target state.
+These independent interfaces are not mounted in StageRenderer or World. Their
+2,000-quad default upload bound does not define the original reserve/flush policy.
+The 21 packet tests include six public-source matrix comparison groups and three
+observed D3DCOLOR normalization boundaries; they do not establish task drawing.
+
 `src/effekseer/effect-reader.mjs` adapts the structures from official Effekseer
 1.23, commit `5239bb1e416cbf55b4d3c8170594cbdc7815f263`. Its implemented layouts
 cover legacy versions 0–9: UTF-16 dependency paths, common generation/lifetime
