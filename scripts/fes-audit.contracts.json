@@ -3034,8 +3034,8 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/load.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "evidence": ["tests/fes-resource-commands.test.mjs"],
+      "note": "Default JS load preserves whole-selection null-stop, per-live-object token reads, five distinct image-table selectors, IMAGE/PANEL/IMGWND frame selection, control FILE reload, M2 and the frozen ABI SOUND parameter difference. Actual IMAGE/BGTABLE Draw pixels and fresh World restore have two-ABI coverage; list-resource commands and remaining object-command integration are audited separately. EFK remains unsupported until its stage7 subsystem is implemented.",
       "signatures": ["[obj] load [file] (id)"]
     },
     {
@@ -3045,8 +3045,8 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/load_s.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "evidence": ["tests/fes-resource-commands.test.mjs"],
+      "note": "Default JS load preserves whole-selection null-stop, per-live-object token reads, five distinct image-table selectors, IMAGE/PANEL/IMGWND frame selection, control FILE reload, M2 and the frozen ABI SOUND parameter difference. Actual IMAGE/BGTABLE Draw pixels and fresh World restore have two-ABI coverage; list-resource commands and remaining object-command integration are audited separately. EFK remains unsupported until its stage7 subsystem is implemented.",
       "signatures": ["[obj] load [file]"]
     },
     {

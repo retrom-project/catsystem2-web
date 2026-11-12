@@ -15,6 +15,7 @@ import { createFESTypedObject } from './fes-object-factory.mjs';
 import { FESDefinitionModel } from './fes-definitions.mjs';
 import { FESMotionDriver, createFESMotionTarget } from './fes-motion-driver.mjs';
 import { FESCommonCommands, FES_COMMON_COMMANDS } from './fes-common-commands.mjs';
+import { FESResourceCommands, FES_RESOURCE_COMMANDS } from './fes-resource-commands.mjs';
 import { initializeFESImage, setFESImageFile } from './fes-image-driver.mjs';
 import { FESPanelImages } from './fes-panel-driver.mjs';
 import { initializeFESPanelTail, setFESPanelFile } from './fes-panel-model.mjs';
@@ -34,6 +35,7 @@ import { FES_BUILTIN_VERBS } from '../fes/object.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../fes/types.mjs';
 import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 const effectTypes = new Set([7, 8, 26, 27, 30, 31, 32]);
 const screenVerbs = new Set(['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos']);
@@ -140,6 +142,15 @@ export class FESCoordinator {
         decoder.decode(
           instance.player.host.nativeFESStringBytes?.(encodeCP932(text)) ?? encodeCP932(text),
         ),
+    });
+    this.resourceCommands = new FESResourceCommands(instance, {
+      collection: this.collection,
+      images: this.images,
+      setImageFile: (object, name) => this.setImageFile(object, name),
+      loadSound: (object, file, crossfade, frames) =>
+        world.fesSound.state(instance, object).load(file, crossfade, frames),
+      soundLoadParameters: nativeABI(world.profile).sound.fesLoadParameters,
+      loadM2: (object, file) => world.m2FES.setFile(object, file),
     });
     this.resources = new FESResourceEntries({
       resolve: (name, index) => this.collection.lookup(name, index),
@@ -522,6 +533,8 @@ export class FESCoordinator {
     if (FES_COMMON_COMMANDS.has(verb)) return this.common.command(verb, selection, args, context);
     if (FES_IMAGE_CONTROL_COMMANDS.has(verb))
       return this.imageCommands.command(verb, selection, args, context);
+    if (FES_RESOURCE_COMMANDS.has(verb))
+      return this.resourceCommands.command(verb, selection, args, context);
     if (verb === 'wipe' || (verb === 'draw' && lookup(first)?.nativeType === 4)) {
       await this.effects.areaCommand(verb, lookup(first), args, {
         referenceIndex: selection.index,

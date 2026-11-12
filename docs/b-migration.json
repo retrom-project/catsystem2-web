@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 175, "oracle": 147, "differential": 67 },
+    "counts": { "js": 176, "oracle": 147, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -62,6 +62,7 @@
         "tests/fes-panel-driver.test.mjs",
         "tests/fes-particle-driver.test.mjs",
         "tests/fes-plane-driver.test.mjs",
+        "tests/fes-resource-commands.test.mjs",
         "tests/fes-resource-entries.test.mjs",
         "tests/fes-resource-entry-driver.test.mjs",
         "tests/fes-route-audit.test.mjs",
@@ -2342,8 +2343,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 443,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 49, "8": 170, "9": 55 },
+    "runtimeFiles": 444,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 50, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -51388,7 +51389,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "5ef8ba3bc1443f9ed9fc43f17057591337dff4ac2fd2382ef2a82fb7a827e63b",
+      "sourceSha256": "c64ac873173b0de4081328333cd8e3d34d2faeaee6bf8117844daa267b621f28",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51398,35 +51399,35 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 302,
+          "line": 313,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 599,
+          "line": 612,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 608,
+          "line": 621,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 616,
+          "line": 629,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 638,
+          "line": 651,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -51807,6 +51808,19 @@
     {
       "file": "src/native/fes-plane-driver.mjs",
       "sourceSha256": "902d1ae579bbc2bf510154d2ea8fce8963bbda1a2928d8713b3f4cfb89c31a04",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-resource-commands.mjs",
+      "sourceSha256": "57ef3864ac2e34d7fbbc3987cceab700d3fcd7d4172b35d52e96ab06d3a09723",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -58100,6 +58114,7 @@
         "src/native/fes-object-collection.mjs",
         "src/native/fes-particle-driver.mjs",
         "src/native/fes-plane-driver.mjs",
+        "src/native/fes-resource-commands.mjs",
         "src/native/fes-resource-entries.mjs",
         "src/native/fes-string-driver.mjs",
         "src/native/fes-task.mjs"

@@ -800,6 +800,7 @@ const nonNativeGroups = [
       'fes-definitions',
       'fes-common-commands',
       'fes-image-control-commands',
+      'fes-resource-commands',
       'fes-image-driver',
       'fes-plane-driver',
       'fes-control-driver',
