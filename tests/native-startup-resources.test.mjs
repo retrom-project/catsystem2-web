@@ -252,7 +252,7 @@ for (const profile of startupProfiles) {
     });
 
   for (const location of ['loose', 'saved'])
-    test(`existing ${location} credential rejects for required VC3 without reading any content: ${profile}`, async (t) => {
+    test(`existing ${location} invalid64byte credential reports false author after one read: ${profile}`, async (t) => {
       let credentialReads = 0;
       await run(t, profile, {
         files: location === 'loose' ? { 'cs2_debug_key.dat': new Uint8Array(64) } : {},
@@ -265,9 +265,8 @@ for (const profile of startupProfiles) {
             return read.call(this, name);
           });
         },
-        reject: /Unimplemented startup author credential verification \(VC3\)/,
       });
-      assert.equal(credentialReads, 0);
+      assert.equal(credentialReads, 1);
     });
 
   test(`startup v_code original unsafe field boundary is explicit: ${profile}`, (t) =>
@@ -379,7 +378,7 @@ for (const profile of startupProfiles)
         assert.equal(name.endsWith('.exe'), false, 'Restore must not reread cipher resources');
         return require(name, ...args);
       });
-      t.mock.method(NativeFileStorage.prototype, 'has', () => {
+      t.mock.method(NativeFileStorage.prototype, 'size', () => {
         throw new Error('Restore must not recheck credentials');
       });
       t.mock.method(NativeSystemClock.prototype, 'utcNow', () => {

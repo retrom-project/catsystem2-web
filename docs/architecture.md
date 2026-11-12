@@ -61,11 +61,13 @@ KEY_CODE/KEY、V_CODE/DATA 与 V_CODE2/DATA；V_CODE 缺失跳过比较，存在
 比较原始 C 字节串（74 的固定 wrapper 先覆盖为公开 open_cs2；76 使用解密结果）。
 非 8 倍数资源保留原零输出行为，资源错误不作为校验成功。author 先计算公开后缀 CRC、
 重 seed、从唯一整数 MT 读取 32 次并 clock reset，再由现有 NativeFileStorage 的
-saved-record/GameFiles lookup 证明 cs2_debug_key.dat 缺失；存在凭据时明确要求尚未实施
-的 VC3 验证，不读取凭据、不信任可写 authorMode。V_CODE2 的真实资源错误仍传播，其原
+saved-record/GameFiles lookup 查询 cs2_debug_key.dat 长度。只有实际 64 字节的文件会被
+读取：用本次前 16 词构成完整二进制 64 字节 LE32 key 解密，再与本次后 16 词逐词比较。
+缺失、长度不符或普通读取失败返回 false；配置中的 authorMode 由结果更新，不能作为绕过
+输入。有效凭据只跳过 V_CODE 比较；KEY/V_CODE/V_CODE2 的真实资源错误仍传播，其原
 私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer，因此不新增影子字段。
 细节与原不安全输入的诊断见 [启动资源契约](native-startup-resources.md)。加密 KIF 的
-`__key__.dat` 仍由输入边界独立拒绝。完整 author 验证、浏览器菜单/accelerator 和剩余按
+`__key__.dat` 仍由输入边界独立拒绝。浏览器菜单/accelerator 和剩余按
 命令触发的 D8 服务仍待完成，不能据此称完整游戏启动或第 7 阶段已完成。
 显式 lazy 原消费者继续需要过渡宿主。真实 window.sendEvent 还要求既有的原 application
 窗口、Settings 和随机数 owner；普通 JS 启动缺少这些 owner 时，在 feature/open 前报错，

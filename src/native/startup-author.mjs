@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
-// Fresh startup's no-credential branch; an existing credential requires VC3.
+// Fresh startup author verification uses the existing random/file/config owners.
 import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
 import { findNativeXML, nativeXMLTextBytes } from './xml.mjs';
+import { StartupBlowfish } from './startup-blowfish.mjs';
 
 const DEBUG_SUFFIX = new TextEncoder().encode('@@--cs2-debug-key--@@');
 const CREDENTIAL = 'cs2_debug_key.dat';
@@ -45,17 +46,42 @@ export async function checkNativeStartupAuthor(world, code) {
       crc = ~crc >>> 0;
     }
   seedNativeStartupRandom(world.random, crc);
-  // One canonical integer stream, not 16 draws from each MT stream. VC3 will
-  // consume these words as key/expected data; absence still performs all draws.
-  for (let i = 0; i < 32; i++) world.random.integer.nextUint32();
+  const words = new Uint32Array(32);
+  for (let i = 0; i < words.length; i++) words[i] = world.random.integer.nextUint32();
   seedNativeStartupRandom(world.random, nativeStartupSeed(world.clock));
-  if (typeof world.storage.has !== 'function')
-    throw new Error('Startup author requires native file metadata');
-  if (await world.storage.has(CREDENTIAL)) {
-    const error = new Error('Unimplemented startup author credential verification (VC3)');
-    error.name = 'UnsupportedStartupAuthorCredential';
-    throw error;
+  if (typeof world.storage.size !== 'function')
+    throw new Error('Startup author requires native file length metadata');
+  const size = await world.storage.size(CREDENTIAL);
+  if (size !== null && (!Number.isSafeInteger(size) || size < 0))
+    throw new Error('Startup author received invalid file length metadata');
+  let author = false;
+  if (size === 64) {
+    let input;
+    // Only ordinary file read failures follow the original false result.
+    // Cipher errors and malformed provider results are outside this catch.
+    try {
+      input = await world.storage.read(CREDENTIAL);
+    } catch {
+      input = null;
+    }
+    if (input !== null && !(input instanceof Uint8Array))
+      throw new TypeError('Startup author file read requires bytes or null');
+    if (input?.length === 64) {
+      const key = new Uint8Array(64),
+        keyView = new DataView(key.buffer),
+        plain = new Uint8Array(64);
+      for (let i = 0; i < 16; i++) keyView.setUint32(i * 4, words[i], true);
+      // The key is all64 binary bytes, including NUL; no CString/56byte cap.
+      new StartupBlowfish(key).decryptInto(input, plain);
+      const decoded = new DataView(plain.buffer);
+      author = true;
+      for (let i = 0; i < 16; i++)
+        if (decoded.getUint32(i * 4, true) !== words[i + 16]) {
+          author = false;
+          break;
+        }
+    }
   }
-  world.configuration.authorMode = 0;
-  return false;
+  world.configuration.authorMode = author ? 1 : 0;
+  return author;
 }

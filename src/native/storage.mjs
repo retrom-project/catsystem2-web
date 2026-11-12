@@ -55,6 +55,18 @@ export class NativeFileStorage {
     const key = path(name);
     return !!this.store.get(key) || !!this.game.lookup(key);
   }
+  size(name) {
+    // Same saved-first lookup as read/has. A missing timestamp says nothing
+    // about existence; null alone represents an absent file.
+    const key = path(name),
+      saved = this.store.get(key),
+      hit = saved ? null : this.game.lookup(key);
+    if (!saved && !hit) return null;
+    const size = saved ? saved.data.bytes.length : hit.size;
+    if (!Number.isSafeInteger(size) || size < 0)
+      throw new Error('Native file metadata has an invalid length');
+    return size;
+  }
   async read(name) {
     const key = path(name),
       saved = this.store.get(key);
