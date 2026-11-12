@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 204, "oracle": 148, "differential": 67 },
+    "counts": { "js": 205, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -46,6 +46,7 @@
         "tests/effekseer-ribbon-track-geometry.test.mjs",
         "tests/effekseer-ring-current-state.test.mjs",
         "tests/effekseer-sprite-ring-geometry.test.mjs",
+        "tests/effekseer-standard-batch.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
         "tests/emote-driver-identity.test.mjs",
@@ -2372,8 +2373,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 464,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 69, "8": 171, "9": 55 },
+    "runtimeFiles": 465,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 70, "8": 171, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48637,6 +48638,19 @@
     {
       "file": "src/effekseer/sprite-ring-geometry.mjs",
       "sourceSha256": "272eb0e0679de70888438ce42cd616b98f78a7d24886bc64c594a32ef566edac",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/effekseer/standard-batch.mjs",
+      "sourceSha256": "1b6a0c9799b1bb18b7036483c4e5b0f3beae149353635831b7e6b62019e5a646",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

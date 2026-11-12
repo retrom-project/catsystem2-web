@@ -89,3 +89,14 @@ simulation or the original shared batch program.
 with the independent backend. Its immediate per-node submission is deliberately
 not installed as the original renderer; native reserve/flush and persistent
 Ring lifetime still require their task-owned integration.
+
+`batch-cases.json` and `batch-source-reference.json` contain 21 authored operation
+sequences and outputs from the unmodified fixed 1.23 StandardRenderer template.
+The reference backend records byte reservations, fixed ring-lock behavior,
+state transitions and requested draw counts; it executes no original binary,
+D3D API or GPU. Two unsafe-IB cases retain the source's oversized draw request in
+the reference data. JS tests separately assert the explicit unsupported-domain
+policy at that draw boundary while preserving known preceding/finally effects.
+These public/authored source-reference fixtures use MPL-2.0, require only Node
+and JSON during ordinary tests, and retain the existing Effekseer MIT algorithm
+attribution. Reference C++/compilers and local research are not test dependencies.

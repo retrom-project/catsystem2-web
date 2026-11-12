@@ -19,6 +19,18 @@ GPU backend; World and EFK tasks do not yet mount them. See
 The 21 packet tests include six public-source matrix comparison groups and three
 observed D3DCOLOR normalization boundaries; they do not establish task drawing.
 
+`standard-batch.mjs` independently implements the old nine-field material
+comparison, byte reservations and zero extension, physical VB precheck, ring
+cursor and flush order. Required synchronous submission operations retain known
+prepare/finish effects even when the fixed IB safety policy rejects a draw.
+Normal requests beyond 320,000 VB bytes follow the original clear/no-submit
+branch first; fitting requests needing more than 12,000 indices raise an explicit
+unsupported/unsafe-domain error. This deliberate policy does not infer portable
+out-of-storage behavior from a driver's success code. The component only permits
+settled-boundary cursor snapshots, with no temporary vertex history. It is not yet
+connected to World or the typed GPU adapter; 2,000-quad GPU/60-fps integration is
+a separate obligation.
+
 `ring-current-state.mjs` owns the complete persistent 16-word Ring matrix for
 one renderer. It initializes once to identity, replaces only the 12 Matrix43
 components on a submitted single Ring, and snapshots/restores the current words

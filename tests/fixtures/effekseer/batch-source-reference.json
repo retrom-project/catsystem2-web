@@ -1,0 +1,2218 @@
+{
+  "cases": [
+    {
+      "index": 0,
+      "reserveOffsets": [],
+      "events": [],
+      "draws": [],
+      "finalCursor": 0,
+      "name": "empty-reset",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 1,
+      "reserveOffsets": [0, 96],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 288, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [3, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 3,
+          "offset": 0,
+          "bytes": 288,
+          "hashFNV32": 3030728317,
+          "nonzeroBytes": 48,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        }
+      ],
+      "finalCursor": 288,
+      "name": "same-state-coalesces",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 2,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 11]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 12]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 2694640805,
+          "nonzeroBytes": 96,
+          "firstBytes": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 386181829,
+          "nonzeroBytes": 96,
+          "firstBytes": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "texture-change-flushes-old",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 3,
+      "reserveOffsets": [0, 192],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 288, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [3, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 3,
+          "offset": 0,
+          "bytes": 288,
+          "hashFNV32": 205588901,
+          "nonzeroBytes": 96,
+          "firstBytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      ],
+      "finalCursor": 288,
+      "name": "zero-reservation-prefix",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 4,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock-false",
+          "values": [320064]
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 4095030181,
+          "nonzeroBytes": 96,
+          "firstBytes": [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+        }
+      ],
+      "finalCursor": 96,
+      "name": "byte-threshold-flush-before3334",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 5,
+      "reserveOffsets": [0],
+      "events": [
+        {
+          "kind": "lock-false",
+          "values": [320064]
+        }
+      ],
+      "draws": [],
+      "finalCursor": 0,
+      "name": "VB3334-precheck-before-IB-policy",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 6,
+      "reserveOffsets": [0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 192096, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [2001, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 2001,
+          "offset": 0,
+          "bytes": 192096,
+          "hashFNV32": 1235667781,
+          "nonzeroBytes": 24,
+          "firstBytes": [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        }
+      ],
+      "finalCursor": 192096,
+      "name": "unsafe2001-policy-at-DIP",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 7,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [0, 0, 8192]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [3333, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 2694640805,
+          "nonzeroBytes": 96,
+          "firstBytes": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        },
+        {
+          "quads": 3333,
+          "offset": 0,
+          "bytes": 319968,
+          "hashFNV32": 2905653573,
+          "nonzeroBytes": 24,
+          "firstBytes": [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        }
+      ],
+      "finalCursor": 319968,
+      "name": "valid-old-before-unsafe3333",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 8,
+      "reserveOffsets": [0],
+      "events": [],
+      "draws": [],
+      "finalCursor": 0,
+      "name": "distortion-no-background-before-lock",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 9,
+      "reserveOffsets": [0, 0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 192, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [2, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [288, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 12]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 2984415141,
+          "nonzeroBytes": 96,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 2,
+          "offset": 4,
+          "bytes": 192,
+          "hashFNV32": 492330437,
+          "nonzeroBytes": 192,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        },
+        {
+          "quads": 1,
+          "offset": 12,
+          "bytes": 96,
+          "hashFNV32": 2694640805,
+          "nonzeroBytes": 96,
+          "firstBytes": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        }
+      ],
+      "finalCursor": 384,
+      "name": "single-Ring-reset-boundaries",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 10,
+      "reserveOffsets": [0, 0, 0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96000, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1000, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96000, 96000, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1000, 4000]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [192000, 96000, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1000, 8000]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [0, 0, 8192]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1000, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1000,
+          "offset": 0,
+          "bytes": 96000,
+          "hashFNV32": 2136207069,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1000,
+          "offset": 4000,
+          "bytes": 96000,
+          "hashFNV32": 2433335013,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        },
+        {
+          "quads": 1000,
+          "offset": 8000,
+          "bytes": 96000,
+          "hashFNV32": 833256477,
+          "nonzeroBytes": 24,
+          "firstBytes": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        },
+        {
+          "quads": 1000,
+          "offset": 0,
+          "bytes": 96000,
+          "hashFNV32": 2188140069,
+          "nonzeroBytes": 24,
+          "firstBytes": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+        }
+      ],
+      "finalCursor": 96000,
+      "name": "normal-ring-cursor-wrap",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 11,
+      "reserveOffsets": [0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 192000, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [2000, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 2000,
+          "offset": 0,
+          "bytes": 192000,
+          "hashFNV32": 2904341213,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        }
+      ],
+      "finalCursor": 192000,
+      "name": "valid2000-one-submit",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 12,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [1, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-depthTest",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 13,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 1, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-depthWrite",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 14,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        }
+      ],
+      "finalCursor": 96,
+      "name": "state-change-distortion",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 15,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-distortionIntensity",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 16,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 3, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-alphaBlend",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 17,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 0, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-culling",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 18,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 1, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-filter",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 19,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 1, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-wrap",
+      "scope": "source template reference, not native/API pixels"
+    },
+    {
+      "index": 20,
+      "reserveOffsets": [0, 0],
+      "events": [
+        {
+          "kind": "lock",
+          "values": [0, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 0]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 0]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        },
+        {
+          "kind": "lock",
+          "values": [96, 96, 4096]
+        },
+        {
+          "kind": "unlock",
+          "values": []
+        },
+        {
+          "kind": "push",
+          "values": []
+        },
+        {
+          "kind": "begin-shader",
+          "values": []
+        },
+        {
+          "kind": "textures",
+          "values": [1, 99]
+        },
+        {
+          "kind": "constants",
+          "values": []
+        },
+        {
+          "kind": "material",
+          "values": [0, 0, 2, 1, 0, 0, 0]
+        },
+        {
+          "kind": "vertex-buffer",
+          "values": [24]
+        },
+        {
+          "kind": "index-buffer",
+          "values": []
+        },
+        {
+          "kind": "layout",
+          "values": []
+        },
+        {
+          "kind": "draw",
+          "values": [1, 4]
+        },
+        {
+          "kind": "end-shader",
+          "values": []
+        },
+        {
+          "kind": "pop",
+          "values": []
+        }
+      ],
+      "draws": [
+        {
+          "quads": 1,
+          "offset": 0,
+          "bytes": 96,
+          "hashFNV32": 333511261,
+          "nonzeroBytes": 24,
+          "firstBytes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+          "quads": 1,
+          "offset": 4,
+          "bytes": 96,
+          "hashFNV32": 3120354917,
+          "nonzeroBytes": 24,
+          "firstBytes": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        }
+      ],
+      "finalCursor": 192,
+      "name": "state-change-texture",
+      "scope": "source template reference, not native/API pixels"
+    }
+  ]
+}
