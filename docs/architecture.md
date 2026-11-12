@@ -64,6 +64,9 @@ checkpoint 保存待消费的语义记录与解码状态，新 World 继续使�
 DIFIMAGE 的 `refex` 与 Draw 分别持有 JS render-source 引用，外部 image-owner 释放后
 仍可绘制和恢复。普通对象删除先释放自身引用；资源 FIFO 清理再按实际 retained record
 移除对应 Draw 条目，拥有者 teardown 同样回收这些引用。
+Effekseer 的独立 typed GPU 后端接受显式几何、相机及共享设备状态，复用 StageRenderer 的
+当前 target/depth 和纹理。其普通 shader 像素与材质恢复有固定 profile 的独立验证，
+详见 [GPU 后端边界](effekseer-gpu.md)；它尚未接入真实 task/World、共享 CRT 或原 batch 生命周期。
 EFKPLANE 在现有默认工厂中仍明确未支持，是第 7 阶段尚未完成的子系统。
 旧 FES 原处理器 facade 与 draw/text/LOG/screen/owner/HG 输入投影只保留在未发布的
 `oracle/` 取证组合中，生产引擎不再注册这些工厂。Draw 直接使用 World 的 JS retained

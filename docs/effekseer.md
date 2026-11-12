@@ -12,7 +12,9 @@ and explicit camera/projection/viewport inputs. `materials.mjs` requires current
 shared-device operations and retains the old 12-state/5-binding restore set,
 sampler inheritance and depth-only clear. `shared-device-view.mjs` maps those
 operations onto an injected current context; it owns no device or target state.
-These independent interfaces are not mounted in StageRenderer or World. Their
+StageRenderer exposes these independent interfaces through its existing shared
+GPU backend; World and EFK tasks do not yet mount them. See
+[the GPU backend contract](effekseer-gpu.md) for the calibrated profile and limits. Their
 2,000-quad default upload bound does not define the original reserve/flush policy.
 The 21 packet tests include six public-source matrix comparison groups and three
 observed D3DCOLOR normalization boundaries; they do not establish task drawing.

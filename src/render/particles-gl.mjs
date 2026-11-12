@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+// Effekseer normal shader adaptation: copyright (c) 2011 Effekseer Project,
+// MIT grant in ../../licenses/effekseer-MIT.txt; fixed official1.23 source.
 import { PARTICLE_BLEND_FACTORS } from '../ppi/abi.mjs';
 import { bitsFloat } from '../kcs/vm.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
@@ -10,9 +12,22 @@ layout(location=1) in vec4 diffuse;
 layout(location=2) in vec2 texcoord;
 uniform vec2 resolution;
 uniform bool backgroundPass;
+uniform bool effekseerPass;
+uniform mat4 effekseerCamera;
+uniform mat4 effekseerProjection;
+uniform vec2 effekseerViewportSize;
 out vec4 vertexColor;
 out vec2 uv;
 void main(){
+  if(effekseerPass&&!backgroundPass){
+    vec4 cameraPos=effekseerCamera*vec4(position.xyz,1.0);
+    cameraPos/=cameraPos.w;
+    vec4 projected=effekseerProjection*cameraPos;
+    // Current draw FBO retains native top-down Y. D3D integer centers map to
+    // GL half-integer centers; clip Z changes from [0,w] to [-w,w].
+    gl_Position=vec4(projected.x+projected.w/effekseerViewportSize.x,-projected.y+projected.w/effekseerViewportSize.y,2.0*projected.z-projected.w,projected.w);
+    vertexColor=diffuse;uv=texcoord;gl_PointSize=1.0;return;
+  }
   float clipW=backgroundPass?1.0:1.0/position.w;
   vec2 xy=position.xy+(backgroundPass?vec2(0.0):vec2(0.5));
   gl_Position=vec4((xy/resolution*vec2(2.0,2.0)-vec2(1.0))*clipW,(position.z*2.0-1.0)*clipW,clipW);
@@ -25,6 +40,8 @@ in vec4 vertexColor;
 in vec2 uv;
 uniform sampler2D image;
 uniform bool backgroundPass;
+uniform bool effekseerPass;
+uniform bool effekseerTextured;
 uniform ivec2 addressMode;
 uniform ivec2 filters;
 uniform vec4 borderColor;
@@ -119,13 +136,17 @@ vec4 textureOperation(int mode,vec4 a,vec4 b,vec4 c,vec4 tex){
 }
 void main(){
   if(backgroundPass){color=texture(image,uv);return;}
-  vec4 tex=sampleImage();
-  color=textureOperation(textureOperations.x,textureArgument(textureColorArgs.x,tex),textureArgument(textureColorArgs.y,tex),textureArgument(textureColorArgs.z,tex),tex);
-  if(textureOperations.x!=1)color.a=textureOperation(textureOperations.y,textureArgument(textureAlphaArgs.x,tex),textureArgument(textureAlphaArgs.y,tex),textureArgument(textureAlphaArgs.z,tex),tex).a;
-  if(followingColorOperation==1)color.rgb*=color.a;
-  else if(followingColorOperation==2)color.rgb=1.0-color.rgb;
+  if(effekseerPass){
+    color=vertexColor;if(effekseerTextured)color*=sampleImage();
+  }else{
+    vec4 tex=sampleImage();
+    color=textureOperation(textureOperations.x,textureArgument(textureColorArgs.x,tex),textureArgument(textureColorArgs.y,tex),textureArgument(textureColorArgs.z,tex),tex);
+    if(textureOperations.x!=1)color.a=textureOperation(textureOperations.y,textureArgument(textureAlphaArgs.x,tex),textureArgument(textureAlphaArgs.y,tex),textureArgument(textureAlphaArgs.z,tex),tex).a;
+    if(followingColorOperation==1)color.rgb*=color.a;
+    else if(followingColorOperation==2)color.rgb=1.0-color.rgb;
+  }
   color=clamp(color,0.0,1.0);
-  if(alphaTest){float a=floor(color.a*255.0+0.5);bool pass=alphaFunction==8||(alphaFunction==2&&a<alphaReference)||(alphaFunction==3&&a==alphaReference)||(alphaFunction==4&&a<=alphaReference)||(alphaFunction==5&&a>alphaReference)||(alphaFunction==6&&a!=alphaReference)||(alphaFunction==7&&a>=alphaReference);if(!pass)discard;}
+  if(alphaTest){float a=effekseerPass?color.a:floor(color.a*255.0+0.5);bool pass=alphaFunction==8||(alphaFunction==2&&a<alphaReference)||(alphaFunction==3&&a==alphaReference)||(alphaFunction==4&&a<=alphaReference)||(alphaFunction==5&&a>alphaReference)||(alphaFunction==6&&a!=alphaReference)||(alphaFunction==7&&a>=alphaReference);if(!pass)discard;}
   if(lineAntialias){vec2 delta=lineSegment.zw-lineSegment.xy;float len=length(delta);vec2 axis=delta/len,p=gl_FragCoord.xy-0.5-lineSegment.xy;float along=dot(p,axis),distance=abs(p.x*axis.y-p.y*axis.x);color.a*=clamp(1.0-distance,0.0,1.0)*clamp(along+0.5,0.0,1.0)*clamp(len-along+0.5,0.0,1.0);}
   if(fogEnabled){
     float depth=abs(gl_FragCoord.z),f=0.0;
@@ -366,6 +387,11 @@ export class ParticlesGL {
       [
         'resolution',
         'backgroundPass',
+        'effekseerPass',
+        'effekseerTextured',
+        'effekseerCamera',
+        'effekseerProjection',
+        'effekseerViewportSize',
         'image',
         'addressMode',
         'filters',
@@ -397,6 +423,7 @@ export class ParticlesGL {
       ].map((n) => [n, gl.getUniformLocation(this.program, n)]),
     );
     this.buffer = gl.createBuffer();
+    this.effekseerIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     for (const [index, size, offset] of [
       [0, 4, 0],
@@ -1149,10 +1176,12 @@ export class ParticlesGL {
       scissor,
       opaqueTarget = this.frameOpaqueTarget ?? false,
       lineViewport = null,
+      effekseer = null,
     } = {},
   ) {
     if (!this.drawing) throw new Error('beginFrame must precede particle drawGeometry');
     context ||= this.frameContext;
+    if (effekseer) this.validateEffekseerPacket(effekseer, state, geometry, lineViewport);
     if (context && !state)
       state = advanceD3DContext(context, {
         blendMode,
@@ -1162,15 +1191,34 @@ export class ParticlesGL {
         samplerStates,
       });
     const gl = this.gl,
-      { states: s, samplers: t } = particleRenderState(
-        blendMode,
-        state?.states || renderStates,
-        state?.samplers || samplerStates,
-      );
+      { states: s, samplers: t } = effekseer
+        ? state
+        : particleRenderState(
+            blendMode,
+            state?.states || renderStates,
+            state?.samplers || samplerStates,
+          );
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.target.framebuffer);
     gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     gl.uniform1i(this.uniform.backgroundPass, 0);
+    gl.uniform1i(this.uniform.effekseerPass, Number(Boolean(effekseer)));
+    if (effekseer) {
+      gl.uniform1i(this.uniform.effekseerTextured, Number(Boolean(frame)));
+      gl.uniformMatrix4fv(this.uniform.effekseerCamera, false, effekseer.camera);
+      gl.uniformMatrix4fv(this.uniform.effekseerProjection, false, effekseer.projection);
+      gl.uniform2f(
+        this.uniform.effekseerViewportSize,
+        effekseer.viewport[2],
+        effekseer.viewport[3],
+      );
+      if (!frame)
+        frame = this.effekseerWhite ??= {
+          width: 1,
+          height: 1,
+          rgba: new Uint8Array([255, 255, 255, 255]),
+        };
+    }
     gl.bindTexture(gl.TEXTURE_2D, this.texture(frame));
     const anisotropic = t.get(5) === 3 || t.get(6) === 3;
     const nativeAnisotropy = anisotropic && this.anisotropy && t.get(1) !== 4 && t.get(2) !== 4;
@@ -1208,51 +1256,55 @@ export class ParticlesGL {
     gl.uniform2i(this.uniform.filters, t.get(6), t.get(5));
     gl.uniform4fv(this.uniform.borderColor, colorVector(t.get(4)));
     gl.uniform1i(this.uniform.srgbTexture, Number(Boolean(t.get(11))));
-    const textureStage = state?.stages?.get(0),
-      colorOperation = textureStage?.get(1) ?? 4,
-      alphaOperation = textureStage?.get(4) ?? 4,
-      colorArgs = [
-        textureStage?.get(2) ?? 2,
-        textureStage?.get(3) ?? 0,
-        textureStage?.get(26) ?? 1,
-      ],
-      alphaArgs = [
-        textureStage?.get(5) ?? 2,
-        textureStage?.get(6) ?? 0,
-        textureStage?.get(27) ?? 1,
-      ];
-    for (const operation of [colorOperation, alphaOperation])
-      if (operation < 1 || operation > 26 || [17, 22, 23].includes(operation))
-        throw new Error(`D3D texture operation ${operation} requires dependent texture sampling`);
-    for (const argument of [...colorArgs, ...alphaArgs])
-      if (argument & ~63 || (argument & 15) > 6)
-        throw new Error(`Invalid D3D texture-stage argument ${argument}`);
-    let following = 0;
-    for (const [stage, states] of state?.stages || []) {
-      if (!stage || states.get(1) === undefined || states.get(1) === 1) continue;
-      if (
-        stage === 1 &&
-        (states.get(4) ?? 1) === 1 &&
-        states.get(1) === 4 &&
-        states.get(2) === 33 &&
-        states.get(3) === 1
-      )
-        following = 1; // CURRENT alpha-replicate * CURRENT.
-      else if (
-        stage === 1 &&
-        (states.get(4) ?? 1) === 1 &&
-        states.get(1) === 2 &&
-        states.get(2) === 17
-      )
-        following = 2; // Complement CURRENT; no additional texture source.
-      else throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
+    // Programmable normal EFK PS replaces texture-stage operations. Keep the
+    // inherited stages untouched; ordinary draws still validate/use them.
+    if (!effekseer) {
+      const textureStage = state?.stages?.get(0),
+        colorOperation = textureStage?.get(1) ?? 4,
+        alphaOperation = textureStage?.get(4) ?? 4,
+        colorArgs = [
+          textureStage?.get(2) ?? 2,
+          textureStage?.get(3) ?? 0,
+          textureStage?.get(26) ?? 1,
+        ],
+        alphaArgs = [
+          textureStage?.get(5) ?? 2,
+          textureStage?.get(6) ?? 0,
+          textureStage?.get(27) ?? 1,
+        ];
+      for (const operation of [colorOperation, alphaOperation])
+        if (operation < 1 || operation > 26 || [17, 22, 23].includes(operation))
+          throw new Error(`D3D texture operation ${operation} requires dependent texture sampling`);
+      for (const argument of [...colorArgs, ...alphaArgs])
+        if (argument & ~63 || (argument & 15) > 6)
+          throw new Error(`Invalid D3D texture-stage argument ${argument}`);
+      let following = 0;
+      for (const [stage, states] of state?.stages || []) {
+        if (!stage || states.get(1) === undefined || states.get(1) === 1) continue;
+        if (
+          stage === 1 &&
+          (states.get(4) ?? 1) === 1 &&
+          states.get(1) === 4 &&
+          states.get(2) === 33 &&
+          states.get(3) === 1
+        )
+          following = 1; // CURRENT alpha-replicate * CURRENT.
+        else if (
+          stage === 1 &&
+          (states.get(4) ?? 1) === 1 &&
+          states.get(1) === 2 &&
+          states.get(2) === 17
+        )
+          following = 2; // Complement CURRENT; no additional texture source.
+        else throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
+      }
+      gl.uniform1i(this.uniform.followingColorOperation, following);
+      gl.uniform2i(this.uniform.textureOperations, colorOperation, alphaOperation);
+      gl.uniform3i(this.uniform.textureColorArgs, ...colorArgs);
+      gl.uniform3i(this.uniform.textureAlphaArgs, ...alphaArgs);
+      gl.uniform4fv(this.uniform.textureFactor, colorVector(s.get(60)));
+      gl.uniform4fv(this.uniform.textureConstant, colorVector(textureStage?.get(32) ?? 0xffffffff));
     }
-    gl.uniform1i(this.uniform.followingColorOperation, following);
-    gl.uniform2i(this.uniform.textureOperations, colorOperation, alphaOperation);
-    gl.uniform3i(this.uniform.textureColorArgs, ...colorArgs);
-    gl.uniform3i(this.uniform.textureAlphaArgs, ...alphaArgs);
-    gl.uniform4fv(this.uniform.textureFactor, colorVector(s.get(60)));
-    gl.uniform4fv(this.uniform.textureConstant, colorVector(textureStage?.get(32) ?? 0xffffffff));
     gl.uniform1i(this.uniform.srgbWrite, Number(Boolean(s.get(194))));
     gl.uniform1i(this.uniform.blending, Number(Boolean(s.get(27))));
     gl.uniform4i(
@@ -1277,7 +1329,10 @@ export class ParticlesGL {
     gl.uniform1i(this.uniform.lineAntialias, 0);
     gl.uniform1i(this.uniform.alphaTest, Number(Boolean(s.get(15))));
     gl.uniform1i(this.uniform.alphaFunction, s.get(25));
-    gl.uniform1f(this.uniform.alphaReference, s.get(24) & 255);
+    gl.uniform1f(
+      this.uniform.alphaReference,
+      effekseer ? Math.fround((s.get(24) & 255) / 255) : s.get(24) & 255,
+    );
     const capability = (key, enabled) => (enabled ? gl.enable(key) : gl.disable(key)),
       comparison = [
         null,
@@ -1381,6 +1436,10 @@ export class ParticlesGL {
       units = bitsFloat(s.get(195)) * 2 ** 24;
     capability(gl.POLYGON_OFFSET_FILL, Boolean(factor || units));
     gl.polygonOffset(factor, units);
+    if (effekseer) {
+      this.submitEffekseer(effekseer, Boolean(s.get(194)));
+      return;
+    }
     const submit = (primitive, vertices) => {
       if (s.get(194)) {
         // WebGL has no switchable FRAMEBUFFER_SRGB capability. Copy the native
@@ -1543,6 +1602,102 @@ export class ParticlesGL {
       }
     }
   }
+  validateEffekseerPacket(packet, state, geometry, lineViewport) {
+    if (geometry !== null || lineViewport)
+      throw new Error('Effekseer typed upload requires its own indexed path');
+    if (!(state?.states instanceof Map) || !(state?.samplers instanceof Map))
+      throw new Error('Effekseer drawing requires current shared device state');
+    for (const key of stateDefaults.keys())
+      if (!state.states.has(key))
+        throw new Error('Effekseer shared render state ' + key + ' is missing');
+    for (const key of [1, 2, 4, 5, 6, 10, 11])
+      if (!state.samplers.has(key))
+        throw new Error('Effekseer shared sampler state ' + key + ' is missing');
+    if (state.states.get(28))
+      throw new Error('Unverified inherited Effekseer fog-enabled shader branch');
+    if (state.states.get(8) !== 3)
+      throw new Error('Unverified inherited Effekseer non-solid fill branch');
+    if (state.states.get(9) !== 2)
+      throw new Error('Effekseer Renderer.Begin Gouraud state is required');
+    if (
+      !packet.effekseer ||
+      !(packet.vertices instanceof Float32Array) ||
+      !(packet.indices instanceof Uint16Array) ||
+      !Number.isInteger(packet.vertexCount) ||
+      packet.vertexCount < 0 ||
+      packet.vertexCount > 8000 ||
+      packet.vertexCount % 4 ||
+      packet.indexCount !== (packet.vertexCount / 4) * 6 ||
+      packet.vertices.length < packet.vertexCount * 10 ||
+      packet.indices.length < packet.indexCount
+    )
+      throw new Error('Invalid or unverified Effekseer typed upload range');
+    for (const [values, count] of [
+      [packet.camera, 16],
+      [packet.projection, 16],
+      [packet.viewport, 6],
+    ]) {
+      if (
+        !(values instanceof Float32Array) ||
+        values.length !== count ||
+        !values.every(Number.isFinite)
+      )
+        throw new Error('Invalid Effekseer current matrix or viewport');
+    }
+    if (
+      packet.viewport[2] <= 0 ||
+      packet.viewport[3] <= 0 ||
+      packet.viewport[4] < 0 ||
+      packet.viewport[5] > 1 ||
+      packet.viewport[4] > packet.viewport[5]
+    )
+      throw new Error('Invalid Effekseer current viewport extent or depth range');
+    for (let i = 0; i < packet.vertexCount * 10; i++)
+      if (!Number.isFinite(packet.vertices[i]))
+        throw new Error('Invalid Effekseer nonfinite typed vertex');
+    const order = [3, 1, 0, 3, 0, 2];
+    for (let i = 0; i < packet.indexCount; i++)
+      if (packet.indices[i] !== Math.floor(i / 6) * 4 + order[i % 6])
+        throw new Error('Effekseer original quad order changed');
+  }
+  submitEffekseer(packet, srgbWrite) {
+    const gl = this.gl,
+      viewport = gl.getParameter(gl.VIEWPORT),
+      depthRange = gl.getParameter(gl.DEPTH_RANGE);
+    try {
+      gl.viewport(packet.viewport[0], packet.viewport[1], packet.viewport[2], packet.viewport[3]);
+      gl.depthRange(packet.viewport[4], packet.viewport[5]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, packet.vertices, gl.STREAM_DRAW, 0, packet.vertexCount * 10);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.effekseerIndexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, packet.indices, gl.STREAM_DRAW, 0, packet.indexCount);
+      if (srgbWrite) {
+        // Existing GPU-only destination handling and original triangle order.
+        // No vertex objects, CPU projection or pixel readback.
+        for (let offset = 0; offset < packet.indexCount; offset += 3) {
+          gl.activeTexture(gl.TEXTURE1);
+          gl.bindTexture(gl.TEXTURE_2D, this.destination);
+          gl.copyTexImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            0,
+            0,
+            this.target.width,
+            this.target.height,
+            0,
+          );
+          this.textureParameters();
+          gl.activeTexture(gl.TEXTURE0);
+          gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, offset * 2);
+        }
+      } else if (packet.indexCount)
+        gl.drawElements(gl.TRIANGLES, packet.indexCount, gl.UNSIGNED_SHORT, 0);
+    } finally {
+      gl.viewport(...viewport);
+      gl.depthRange(...depthRange);
+    }
+  }
   endFrame() {
     if (!this.drawing) throw new Error('Particle graphics frame is not open');
     this.drawPresentation(this.primaryTarget);
@@ -1660,6 +1815,7 @@ export class ParticlesGL {
     gl.deleteFramebuffer(this.framebuffer);
     gl.deleteRenderbuffer(this.depthStencil);
     gl.deleteBuffer(this.buffer);
+    gl.deleteBuffer(this.effekseerIndexBuffer);
     gl.deleteProgram(this.program);
     gl.getExtension('WEBGL_lose_context')?.loseContext();
   }

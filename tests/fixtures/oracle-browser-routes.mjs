@@ -8,6 +8,10 @@ export async function routeGraphicsOracle(page) {
       .filter((file) => /^(?:m2|ppi)-.*\.mjs$/.test(file))
       .map((file) => 'oracle/' + file),
     'oracle/area-geometry-projection.mjs',
+    'oracle/raster-kernel-projection.mjs',
+    ...['gallery', 'graphics', 'objects', 'plane-state'].map(
+      (name) => `oracle/fes-${name}-original.mjs`,
+    ),
     ...[
       'graphics',
       'graphics-process',

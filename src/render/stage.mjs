@@ -65,6 +65,18 @@ export class StageRenderer {
       depth = target.stageSurface ? this.surfaceDepth(target.stageSurface) : this.screenDepth();
     return device.withStageTarget(target, callback, depth);
   }
+  drawEffekseer(packet, frame, { state, context, scissor, opaqueTarget } = {}) {
+    if (!this.gpu?.drawing)
+      throw new Error('Effekseer drawing requires an open StageRenderer frame');
+    if (!state) throw new Error('Effekseer drawing requires current shared device material state');
+    return this.gpu.drawGeometry(null, frame, {
+      state,
+      context,
+      scissor,
+      opaqueTarget,
+      effekseer: packet,
+    });
+  }
   drawEmote(geometry, { matrix, viewport, opaqueTarget = false } = {}) {
     if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
     if (geometry.commands.some((command) => command.maskWrite))

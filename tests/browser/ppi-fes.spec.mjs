@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { hg3, kcsProgram } from '../helpers.mjs';
 import { nativeParticleFixture } from '../fixtures/ppi-native-fixture.mjs';
+import { MOTION_ABI } from '../../src/motion/abi.mjs';
 
 const source = `#DEFINE
 CPLANE carrier
@@ -48,6 +49,18 @@ for (const [profile, variable] of [
       ['main.kcs', kcsProgram([[37, 1024], [43, 0xd1, 4], [43, 0x41, 0], [59]])],
       ['particles.fes', encodeCP932(source)],
       ['weather.kcs', kcsProgram([[59]])],
+      // pColor is an external MOT script. This authored version consumes the
+      // FES blend register through the normal loader and KX2 state application.
+      [
+        'pcolor.kcs',
+        kcsProgram([
+          [37, [0x13, 0x80000000 + MOTION_ABI.registers]],
+          [43, 17, 4], // MOT roundInteger(R0)
+          [38, [0x11, 0x80000000 + MOTION_ABI.color + 3]],
+          [43, 38, 0], // MOT end
+          [59],
+        ]),
+      ],
       ['authored.ppi', nativeParticleFixture({ color: 0xff00d5f0 })],
       ['quad.hg3', hg3(4, 4, new Uint8Array(4 * 4 * 4).fill(255))],
     ]);
@@ -114,7 +127,9 @@ for (const [profile, variable] of [
           interpreter(world).surface = surface;
           await interpreter(world).load('particles', world.main);
           const instance = interpreter(world).player.root,
-            ids = [0, 1].map((index) => instance.byKey.get(`effect[${index}]`).nativeTaskID),
+            ids = [0, 1].map(
+              (index) => instance.byKey.get(`effect[${index}]`).particleResource.taskID,
+            ),
             task = (current, index) => current.particles.get(ids[index]);
           assert.ok(ids[0] !== ids[1], 'A group should own two distinct particle tasks');
           for (const [index, id] of ids.entries()) {

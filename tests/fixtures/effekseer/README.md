@@ -24,7 +24,7 @@ JS
 
 It has a root and one sprite node, three generated particles, nonzero PVA motion
 and opaque orange color. `authored-spark.png` is an authored 2×2 RGBA texture with
-rows `ff4000ff ff8000ff` and `ffc000ff ffff00ff`. All authored files use this
+rows `ff4000ff ff8000ff` and `ffc000ff ffff00ff`. These existing authored effect/texture files use this
 project's MPL-2.0 license. These are parser/resource fixtures; their existence
 does not establish EFK simulation or drawing support. They are not private game
 assets and are excluded from the standalone build.
@@ -66,12 +66,26 @@ as float32 words. Like the Ribbon/Track reference, these are public-source CPU
 outputs read by ordinary Node tests, not private native geometry or GPU pixels.
 The test fixtures use MPL-2.0 and translated algorithm code retains the MIT grant.
 
-`matrix44-cases.json` and `matrix44-reference.json` retain six authored input
-and exact public-template comparison groups for the fixed 1.23 Matrix44 product.
-They are source-reference CPU data, not private native matrix captures. These
-fixtures use MPL-2.0; the translated algorithm retains the Effekseer MIT grant.
-`gpu-unorm-reference.json` records three measured 126/127/128 D3DCOLOR vertex
-normalization boundaries from the authored fixed-profile D3D reference harness.
-This input/output data is dedicated to CC0-1.0. Ordinary Node tests consume these
-JSON files without a compiler, private shader bytecode, original executable or
-local research files. The observations do not establish a complete GPU backend.
+`matrix44-cases.json` and `matrix44-reference.json` retain six exact float32
+Matrix44 products from fixed official1.23 MIT source. Tests read these public
+expected words without building C++. Inputs/expected JSON use MPL-2.0; the
+algorithm source retains the existing Effekseer MIT attribution.
+
+`gpu-unorm-reference.json` retains independently observed D3DCOLOR vertex
+alpha126/127/128 float32 words in the pinned Wine8/llvmpipe profile. These
+observations differ from simply rounding byte/255 and calibrate the typed GPU
+input. Its calculated comparison-reference bit is labeled separately from
+actual shader FP32 output.
+
+`gpu-profile-reference.json` retains seven authored programmable normal shader/
+D3D9 API input/output cases as compressed RGBA8. The profile, public shader
+source commit, nonempty counts and zero RGBA tolerance are explicit. The data
+contains no original EXE/DLL or shader bytecode and requires no Wine or native
+compiler to run. The new GPU golden and UNORM input/output data are dedicated
+to CC0-1.0. These GPU observations do not establish original manager/geometry
+simulation or the original shared batch program.
+
+`mesh-pass.mjs` is a test fixture that composes actual CPU state and geometry
+with the independent backend. Its immediate per-node submission is deliberately
+not installed as the original renderer; native reserve/flush and persistent
+Ring lifetime still require their task-owned integration.
