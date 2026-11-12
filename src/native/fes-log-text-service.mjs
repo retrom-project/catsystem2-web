@@ -4,6 +4,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { FES_TEXT_LAYOUT_MODES } from './fes-text-layout.mjs';
 import { textConfig } from './text-config.mjs';
+import { markFESObjectDirty } from './fes-common-model.mjs';
 
 export class FESLogTextService {
   constructor({ world, instance, createChild, resolveChild, findChild }) {
@@ -49,15 +50,19 @@ export class FESLogTextService {
     layout.apply('view', [width, height]);
     s.layout = layout.snapshot();
     s.dirty = true;
+    markFESObjectDirty(this.instance, child);
   }
   priority(handle, value) {
-    this.child(handle).pri = value | 0;
+    const child = this.child(handle);
+    child.pri = value | 0;
+    markFESObjectDirty(this.instance, child);
   }
   position(handle, x, y) {
     const child = this.child(handle);
     child.x = Math.fround(x);
     child.y = Math.fround(y);
     child.z = 0;
+    markFESObjectDirty(this.instance, child);
   }
   source(handle, bytes) {
     const s = this.text.state(this.child(handle));
@@ -80,7 +85,10 @@ export class FESLogTextService {
     s.dirty = true;
   }
   display(handle, value) {
-    this.child(handle).disp = !!value;
+    const child = this.child(handle);
+    child.disp = !!value;
+    child.displayValue = Number(!!value);
+    markFESObjectDirty(this.instance, child);
   }
   draw(handle, page) {
     const s = this.text.state(this.child(handle));

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 163, "oracle": 146, "differential": 67 },
+    "counts": { "js": 164, "oracle": 146, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -58,6 +58,7 @@
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
         "tests/fes-string-table.test.mjs",
+        "tests/fes-text-log-driver.test.mjs",
         "tests/fes-window-image.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -2743,8 +2744,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 349,
-    "runtimeFiles": 452,
-    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 62, "8": 165, "9": 55 },
+    "runtimeFiles": 454,
+    "fileDomains": { "3": 32, "4": 48, "5": 44, "6": 46, "7": 64, "8": 165, "9": 55 },
     "fileNeedsReview": 99,
     "exeDependencyFiles": 77,
     "exeDependencies": { "addresses": 885, "calls": 99, "references": 6 },
@@ -52184,6 +52185,19 @@
       "review": "counted"
     },
     {
+      "file": "src/native/fes-log-driver.mjs",
+      "sourceSha256": "ed86f90c3e78737c894162376f32dceb5fa0b3da654b2172a515a8ccfef2438c",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/fes-log-model.mjs",
       "sourceSha256": "061f998c169a29fc362d9b77eb1799c44df2f0f95f29e4e221c867ecc70fc50f",
       "domain": 7,
@@ -52198,7 +52212,7 @@
     },
     {
       "file": "src/native/fes-log-text-service.mjs",
-      "sourceSha256": "fb154eab8ac9570cbe3d4331d3172683afab6a05acb7ff0128feef4e0f959778",
+      "sourceSha256": "3922e4c0decf37b86de442e1a63961d8dfffa279ed85503c6a2d9c9edffa8672",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52682,6 +52696,19 @@
     {
       "file": "src/native/fes-source.mjs",
       "sourceSha256": "48f67186d6c3c5ccf1249941dfd6e318cef7f209b1fc01d5409cf9b2ef34dff8",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-string-driver.mjs",
+      "sourceSha256": "36e3a3d8380b364ce5d2be5a404f64e6e6f9f79ac28eb221115c62bf15487163",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

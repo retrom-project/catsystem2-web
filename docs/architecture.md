@@ -52,6 +52,17 @@ World checkpoint 的 `text` 字段保存并恢复这份状态；任务只保存 
 只在自己的 checkpoint 保存 Windows 句柄，不重复保存、恢复或关闭 writer。
 FES 对象的旧前缀消费在第 7 阶段默认入口迁移完成前仍保留并计入盘点。
 
+已实现的 typed STRING 驱动在两份冻结 ABI 中保留明确的定义边界：POS 定义写 XYZ，
+VRAM 定义写 XY 并清 Z，这两条路径不读取原临时向量未初始化的 W，保留目标既有 W
+（构造默认 1）；BASE 定义明确写 W=0。该规则仅适用于已核证的 STRING 定义路径，
+显式四分量操作和 MOT 回写仍遵循各自规则。POS2/SIZE2 读取 encoded stdinfo rectangle，
+不以透明像素包围盒代替资源元数据。
+
+FES sound 的 452-byte 字段缓冲和 36-byte 表记录由 JavaScript 独有，通过已核证的命名字段
+访问。表的 initialized mask 区分已写字段与无定义残尾；未初始化读取会显式报错。
+这些缓冲不含 PE 指针或映像，不是隐藏的原进程状态；它们与 D8 声音协议包分别归属，
+不会因统一 FES 调度再复制一份权威状态或 checkpoint。
+
 原 EXE 的已恢复处理器、解析器、图像/字体代码与 DLL/PPI 共享 PE32 地址空间。
 `NativeEngineProcess` 管理指纹、已审查切点和平台边界。KCS 的数据、栈、共享区和扩展块
 映射到这一进程，避免每次 native 调用复制出相互失联的内存。浏览器拥有的变量、字符串、
