@@ -390,8 +390,48 @@ behavior coverage. Stack liveness is checked after actual awaits before Input138
 and further work; no continuation is saved. Native Input owns cursor warping and
 region activity, rather than direct pointer/Graph assignments in the reader.
 
-This bounded leaf does not complete no-active/default initial selection, the
-NULL/resetactive private branch, automove/react, other keyboard/input frontends or
-the raw23 attachment protocol. The no-active, disabled-current and non-BUTTON-current branches still enter the
-older input path and remain unverified; its approximate routine is not evidence
-for this reader. The direct JS-source input API also retains its separate path.
+The ordinary direction caller also restores its initial selection. Only an
+absent current map object triggers another actual Top Input125 query into two
+initially zero words, followed by the resource FIFO mouse-hit helper. This query
+still occurs if the earlier outside-window152 gate set FES mouse variables to
+INT_MIN. The helper ignores Input regions, priority, display and enable. It visits
+saved raw6 entries in allocation order, resolves their initial ordinary object
+identity, and tests its virtual integer position plus raw width/height using
+signed int32 addition and right/bottom-exclusive rectangles. The helper's
+SetRectEmpty prolog does not query a host cursor. TYPE0 accepts a rectangle hit;
+nonzero TYPE accepts only a nonzero packed-color alpha byte. The current object
+wrapper supplies this bitmap, with an auxiliary bitmap taking precedence. Pixel
+queries retain bitmap offsets and physical bottom-up rows. RGB24 packed color
+has alpha0 even though the separate alpha-only query would return255. A NULL
+wrapper accepts; a wrapper with a NULL bitmap buffer is an explicit native unsafe
+boundary; a real bitmap without sampled pixels returns color0. Typed-consumer
+coverage of NULL/empty wrappers does not establish a normal FES source producer.
+
+Only a raw6 resource entry saves `initialHandle`, copied from the actual allocated
+ordinary object's existing semantic handle before any allocation await. This is
+a weak identity in the collection's existing non-reusing graph, owned once by
+the existing entry checkpoint. Current-key resource driving and this initial
+identity are separate: deleting and recreating the same key does not rebind the
+mouse helper. A structurally valid stale handle restores unchanged, without
+registration or resource replay; an actual helper read of that deleted identity
+diagnoses the native freed-object domain. Missing-key resource cleanup discards
+the entry normally. There is no second object, geometry copy or handle registry.
+
+No-hit fallback accepts a default only when its current map object is raw6 and
+its DWORD enable is nonzero, as do the frozen Game758140 and SDK5F62D0 probes.
+Display and priority are not gates; collection lookup already excludes deleted
+map objects. This differs from noact's admission of disabled targets and the
+mouse helper's unfiltered first hit. A valid default is copied directly, skipping
+navigation from its cell, then uses the existing direction-variable/Input138
+leg. A missing or disabled default after no hit propagates without changing the
+active reference. Existing disabled or non-BUTTON current objects skip the mouse
+helper; if no valid default exists they consume the direction without a new
+reference, direction variable, Input138 or propagation. An enabled current button
+whose reader finds nothing retains its reference and propagates. The attached-
+control changed result keeps its separate behavior above. Actual125 and pixels
+awaits preserve the same player/root/runtime/owner checks: close cancels further
+writes and routing, including in-flight rejection, while live failures propagate.
+
+This bounded leaf does not complete the NULL/resetactive private branch,
+automove/react, other keyboard/input frontends or the raw23 attachment protocol.
+The direct JS-source input API retains its separate path.

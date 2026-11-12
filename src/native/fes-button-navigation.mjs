@@ -1,9 +1,61 @@
 // SPDX-License-Identifier: MPL-2.0
-// BUTTON's current attachment and its sole directional reader. All references
+// BUTTON's attachment, directional reader and initial mouse-hit helper. References
 // and controls belong to the existing FES collection; this module owns no state.
 import { fesPositionQuery, fesCoordinateParent, fesPlanePosition } from './fes-image-model.mjs';
 import { setFESControlValue } from './fes-control-model.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
+import { bitmapSample } from './bitmap-pixels.mjs';
+
+export function validateFESButtonInitialHandle(entry) {
+  const handle = entry.initialHandle;
+  if (!Number.isInteger(handle) || (handle !== 0 && (handle < 0x1001 || handle > 0xfffffffe)))
+    throw new Error('FES BUTTON resource has no valid initial semantic handle');
+}
+
+export async function findFESInitialButton(instance, world, point, live) {
+  if (typeof live !== 'function' || !instance.runtime?.resources || !instance.collection?.graph)
+    throw new TypeError('FES initial hit requires its owning runtime, graph and call liveness');
+  const entries = instance.runtime.resources.entries,
+    reference = (entry) => ({ nameBytes: new Uint8Array(entry.nameBytes), index: entry.index | 0 });
+  try {
+    for (let at = 0; at < entries.length; at++) {
+      if (!live()) return null;
+      const entry = entries[at];
+      if (entry.savedType !== 6) continue;
+      validateFESButtonInitialHandle(entry);
+      if (entry.initialHandle === 0) continue;
+      const object = instance.collection.graph.get(entry.initialHandle);
+      if (!object)
+        throw new Error('FES mouse-hit reads a deleted initial BUTTON before resource cleanup');
+      if (object.nativeType !== 6)
+        throw new Error('FES mouse-hit initial identity is not a BUTTON');
+      const position = fesPositionQuery(instance, object, 'image'),
+        left = position[0],
+        top = position[1],
+        right = (left + (object.width | 0)) | 0,
+        bottom = (top + (object.height | 0)) | 0;
+      if (!(point[0] >= left && point[0] < right && point[1] >= top && point[1] < bottom)) continue;
+      if (!object.buttonType) return reference(entry);
+      if (!object.imageAuxiliaryBitmap && !object.imageResource) return reference(entry);
+      const handle = world.imagesFES.currentBitmap(object);
+      if (!handle) throw new Error('FES mouse-hit alpha wrapper has a NULL bitmap buffer');
+      const bitmap = world.graphics.images.get(handle),
+        bpp = bitmap.state.bpp,
+        color =
+          bpp === 2 || bpp === 3 || bpp === 4
+            ? await bitmapSample(bitmap, (point[0] - left) | 0, (point[1] - top) | 0, true)
+            : 0;
+      if (!live()) return null;
+      if (entries[at] !== entry || instance.collection.graph.get(entry.initialHandle) !== object)
+        throw new Error('FES mouse-hit initial identity changed during its pixel query');
+      if (color >>> 24) return reference(entry);
+    }
+    return null;
+  } catch (error) {
+    if (live()) throw error;
+    return null;
+  }
+}
 
 export function setFESButtonAttachment(object, reference) {
   if (object.nativeType !== 6) throw new TypeError('FES attachment requires a BUTTON');

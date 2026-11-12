@@ -10,7 +10,11 @@ import { installJSControlTasks } from './control-task-js.mjs';
 import { installNativeAreaEffects } from './area-effect.mjs';
 import { installNativeScreenEffects } from './screen-effect.mjs';
 import { FESObjectCollection } from './fes-object-collection.mjs';
-import { readFESButtonAttachment, setFESButtonAttachment } from './fes-button-navigation.mjs';
+import {
+  readFESButtonAttachment,
+  setFESButtonAttachment,
+  validateFESButtonInitialHandle,
+} from './fes-button-navigation.mjs';
 import { FESResourceEntries } from './fes-resource-entries.mjs';
 import { createFESTypedObject } from './fes-object-factory.mjs';
 import { FESDefinitionModel } from './fes-definitions.mjs';
@@ -428,6 +432,7 @@ export class FESCoordinator {
   }
   async allocateEntry(entry, object) {
     const type = object.nativeType;
+    if (type === 6) entry.initialHandle = object.handle;
     if (imageEntryTypes.has(type)) {
       await this.images.allocateEntry(this.instance, object, entry);
       if (type === 6) {
@@ -573,6 +578,7 @@ export class FESCoordinator {
     // Explicit zeroed raw23 guard and missing mosaic/LOG cleanup branches.
   }
   validateEntry(entry, object) {
+    if (entry.savedType === 6) validateFESButtonInitialHandle(entry);
     if (entry.savedType === 23) this.particles.validateEntry(this.instance, object, entry);
     if (imageEntryTypes.has(entry.savedType))
       this.images.validateEntry(this.instance, object, entry);
