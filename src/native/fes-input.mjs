@@ -410,6 +410,44 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumePush(sender, keyIndex, context) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return 0;
+    try {
+      await this.updateMouse();
+      if (!live()) return 0;
+      this.state.source = this.input.source;
+      instance.inputSource = this.state.source;
+      if (this.state.sleeping) {
+        await this.propagation(sender, false);
+        return 0;
+      }
+      const focused = this.referenceObject(this.state.focus),
+        key = valid(focused) ? focused.key : null;
+      this.state.pressed = key;
+      const handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
+      if (!live()) return 0;
+      await player.flush();
+      if (!live()) return 0;
+      await this.propagation(sender, handled);
+      if (!live()) return 0;
+      await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+      if (!live()) return 0;
+      await this.sync();
+      return 0;
+    } catch (error) {
+      if (live()) throw error;
+      return 0;
+    }
+  }
   async consumeHover(taskID, entered, context) {
     const player = this.player,
       instance = this.instance,
@@ -639,6 +677,8 @@ export class FESInput {
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
+    if (message === 9 && this.instance.runtime && (l === 0 || l === 1))
+      return this.consumePush(sender, l, context);
     await this.updateMouse();
     switch (message) {
       case 64: {

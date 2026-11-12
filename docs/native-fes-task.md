@@ -591,3 +591,23 @@ unknown/known savedMouse and operation-only pending records once; consuming a
 known restore reads the then-current field, never a producer snapshot, and does
 not overwrite it. These are the registered74/76 normal default paths; other
 automatic-input commands remain separate.
+
+Normal Graph/FES message9 PUSH_L/R (key0/1) has its own synchronous resource
+tail. In the registered74/76 paths, it refreshes the mouse, invokes the actual
+PUSH callback, sends94 only when unhandled, traverses the current resource FIFO,
+and then synchronizes input before returning0. The traversal borrows the same
+live executor entry from the Input tick/Graph call; it does not wait for a later
+FES frame. FILE/Play authored in a Game PUSH callback therefore reach the real
+EFK task and manager within that invocation, rather than retaining a callback
+executor in pending state.
+
+This call captures its player/root/runtime/task identity and checks that owner
+after each asynchronous step. Closing an owner during a real Host wait cancels
+later resource/input work and canceled request rejection; live errors propagate.
+Already completed effects remain. It adds no queue, snapshot field or input
+authority; fresh restore uses the same resource entries and references.
+
+This bounded correction covers only normal default message9 key0/1. Direction
+4..7 keeps its existing resource traversal without another pass. Other key,
+release, scroll and TOUCH post-callback tails remain separate uncompleted
+boundaries; the direct JS-authored FES input API is unchanged.
