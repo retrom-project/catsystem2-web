@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 210, "oracle": 148, "differential": 67 },
+    "counts": { "js": 211, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -39,6 +39,7 @@
         "tests/effekseer-gpu-seam.test.mjs",
         "tests/effekseer-instance-transform.test.mjs",
         "tests/effekseer-manager-lifecycle.test.mjs",
+        "tests/effekseer-mesh-batch.test.mjs",
         "tests/effekseer-mesh-packet.test.mjs",
         "tests/effekseer-mesh-pass.test.mjs",
         "tests/effekseer-numerical.test.mjs",
@@ -2378,8 +2379,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 469,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 72, "8": 173, "9": 55 },
+    "runtimeFiles": 470,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 73, "8": 173, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48563,8 +48564,21 @@
       "review": "counted"
     },
     {
+      "file": "src/effekseer/mesh-batch.mjs",
+      "sourceSha256": "f16fa3cf1f1698b3dd7e5303a9659cbd936fc53ab176b3d0bc4b86d467a51df4",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/effekseer/mesh-packet.mjs",
-      "sourceSha256": "5328acbd3cad51a297b035865f6e76078a81878c7f634f6fb72a093121cafcd5",
+      "sourceSha256": "24a939885792b4ba6c122fce500a468664b1f66968f125d478fb53c000bec7ab",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48668,7 +48682,7 @@
     },
     {
       "file": "src/effekseer/standard-batch.mjs",
-      "sourceSha256": "1b6a0c9799b1bb18b7036483c4e5b0f3beae149353635831b7e6b62019e5a646",
+      "sourceSha256": "4e128fab69157f973ed9de4f587fa8d0686110529b3d83f13e923fe68801e173",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

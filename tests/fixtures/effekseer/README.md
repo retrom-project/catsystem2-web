@@ -100,3 +100,15 @@ policy at that draw boundary while preserving known preceding/finally effects.
 These public/authored source-reference fixtures use MPL-2.0, require only Node
 and JSON during ordinary tests, and retain the existing Effekseer MIT algorithm
 attribution. Reference C++/compilers and local research are not test dependencies.
+
+`batch-authored.mjs` creates small authored SKFE9 Sprite/Ribbon/Ring/Track inputs
+for the ordered byte-batch tests. Its code uses MPL-2.0; its newly generated effect
+data is dedicated to CC0-1.0. It contains no private game data or compiled native
+code. Ordinary tests use the actual JS resource/load/manager/current-state modules,
+byte reservations and shared StageRenderer GL recorder. Recorder assertions cover
+coalescing, logical texture boundaries, Ring reset/zero-submit protocol, fault
+cleanup, current restore and the legal 2,000-quad byte/index range. The explicit
+zero-submit visitor and cleanup failures are authored protocol/fault inputs, not
+claims of a discovered FES file flag or successful unknown operation. These Node
+checks require no browser, Wine, C++ compiler or `.local` research data and do not
+themselves count as GPU pixels or full task/World acceptance.

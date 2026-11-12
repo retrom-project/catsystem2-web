@@ -84,6 +84,69 @@ export class EffekseerPackedMesh {
     this.packet.indices = this.indices;
     this.bufferGrowths++;
   }
+  // The renderer's byte cache is canonical DX9 Vertex data: XYZ float32,
+  // little-endian D3DCOLOR_ARGB (BGRA bytes), then two float32 UV values.
+  // Material/reset and single-Ring matrix boundaries have already executed.
+  prepareBatch(batch, { viewport } = {}) {
+    const vertices = count(batch?.vertexCount, this.maxVertices, 'batch.vertexCount'),
+      indexCount = count(batch?.indexCount, (this.maxVertices / 4) * 6, 'batch.indexCount'),
+      bytes = batch?.bytes;
+    if (
+      vertices % 4 ||
+      indexCount !== (vertices / 4) * 6 ||
+      batch.byteLength !== vertices * 24 ||
+      !(bytes instanceof Uint8Array) ||
+      bytes.byteLength < batch.byteLength
+    )
+      fail('batch.storage', 'requires the complete legal normal byte-cache range');
+    floats(batch.camera, 16, 'batch.camera');
+    floats(batch.projection, 16, 'batch.projection');
+    floats(viewport, 6, 'batch.viewport');
+    if (
+      viewport[2] <= 0 ||
+      viewport[3] <= 0 ||
+      viewport[4] < 0 ||
+      viewport[5] > 1 ||
+      viewport[4] > viewport[5]
+    )
+      fail('batch.viewport', 'invalid inherited viewport/depth range');
+    if (bytes.buffer === this.vertices.buffer) fail('batch.alias', 'cache aliases packed output');
+    if (this.batchSource !== bytes) {
+      this.batchSource = bytes;
+      this.batchData = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    }
+    const data = this.batchData;
+    this.ensure(vertices);
+    this.camera.set(batch.camera);
+    this.projection.set(batch.projection);
+    this.viewport.set(viewport);
+    for (let i = 0; i < vertices; i++) {
+      const src = i * 24,
+        dst = i * 10;
+      for (let axis = 0; axis < 3; axis++) {
+        const value = data.getFloat32(src + axis * 4, true);
+        if (!Number.isFinite(value)) fail('batch.position', 'nonfinite float32');
+        this.vertices[dst + axis] = value;
+      }
+      this.vertices[dst + 3] = 1;
+      this.vertices[dst + 4] = f(bytes[src + 14] * f(1 / 255));
+      this.vertices[dst + 5] = f(bytes[src + 13] * f(1 / 255));
+      this.vertices[dst + 6] = f(bytes[src + 12] * f(1 / 255));
+      this.vertices[dst + 7] = f(bytes[src + 15] * f(1 / 255));
+      for (let axis = 0; axis < 2; axis++) {
+        const value = data.getFloat32(src + 16 + axis * 4, true);
+        if (!Number.isFinite(value)) fail('batch.UV', 'nonfinite float32');
+        this.vertices[dst + 8 + axis] = value;
+      }
+    }
+    for (let i = 0; i < indexCount; i++)
+      this.indices[i] = Math.floor(i / 6) * 4 + QUAD_ORDER[i % 6];
+    this.packet.vertexCount = vertices;
+    this.packet.indexCount = indexCount;
+    this.packet.flushBefore = false;
+    this.packet.flushAfter = false;
+    return this.packet;
+  }
   prepare(mesh, { camera, projection, viewport } = {}) {
     if (!['sprite', 'ribbon', 'ring', 'track'].includes(mesh?.kind))
       fail('kind', 'requires one implemented old normal renderer');

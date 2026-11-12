@@ -234,6 +234,44 @@ boundaries and 24 interface/current-data/buffer cases. These are source/CPU
 geometry checks; actual native vertex output, shared GPU state, pixels, original
 capacity behavior, draw-graph placement and frame-rate acceptance remain open.
 
+`mesh-batch.mjs` exports the independent `EffekseerMeshBatch` composition. It
+consumes a live manager, the shared logical Effect-load owner, current device view,
+StageRenderer and explicit camera/projection/viewport/pipeline operations. It uses
+one StandardRenderer byte cache across nodes and drawsets, comparing all nine
+material fields including logical texture identity. The decoded frame passed to
+the GPU remains separate from that identity. Normal vertices use the original
+24-byte XYZ/D3DCOLOR/UV layout before `EffekseerPackedMesh.prepareBatch` converts
+them into reused typed GPU buffers. The original quad order is preserved.
+
+Single Ring performs its real reset/reservation/deferred-matrix/flush sequence.
+Its full renderer-owned matrix persists across nodes and frames. A zero-submission
+Ring keeps its reserved zero range and skips the guarded End flush; it does not
+replace the current matrix with identity. Ribbon/Track count one returns before
+material/reservation work. The proved null-background branch retains simulation,
+color/group and Ring current-state work, reserves its distortion range and submits
+no normal substitute. Pool occupancy and global instance count remain separate:
+root instances count globally but are allocated outside the reserved instance pool.
+
+The composition uses the existing target/depth and state/binding scope. It does
+not allocate a canvas or read pixels during rendering. Render-only drawing does
+not advance RNG or living time. Normal End flushes the remaining valid byte cache;
+explicit fault cleanup uses `EffekseerStandardBatch.abort` to discard only pending
+unsubmitted bytes, preserving previous submissions/cursor/current-state effects.
+The device scope still restores its twelve states and five bindings. The adapter
+retains the original error, reports cleanup failures, rejects future draw/snapshot
+after failure and never draws a partial cache from finally.
+
+Settled checkpoints contain only the logical ring cursor and current Ring matrix;
+transient vertices, shader/material stack and fault are not saved. A fresh owner
+restores those values without Play, Update, RNG or historical replay. Resource,
+logical-load, manager, caller, graphics readiness and current target ownership must
+be restored by their respective owners before task publication. This module does
+not register kind61/default FES type36, add ABI capabilities or install World/D6
+hooks. Correct legacy texture conversion remains the resource owner's contract;
+this mesh composition does not turn source decoding into a complete old D3DX
+resize/filter/mipmap/format implementation. Those task/World/texture and complete
+frame-rate requirements remain open.
+
 The independent fixtures in `tests/fixtures/effekseer` include eight public
 Effects from the fixed upstream commit (50 nodes, versions 1, 7, 8 and 9), their
 dependencies, and an authored nonempty sprite Effect/texture. The public manifest

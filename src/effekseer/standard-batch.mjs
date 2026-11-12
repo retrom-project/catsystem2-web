@@ -274,6 +274,14 @@ export class EffekseerStandardBatch {
       this.active = false;
     }
   }
+  // Explicit fault cleanup only. Never submit a partly written reservation or
+  // undo an earlier flush/cursor/current-state side effect.
+  abort() {
+    this.assertActive();
+    this.byteLength = 0;
+    this.stateInvalid = true;
+    this.active = false;
+  }
   snapshot() {
     this.assertOpen();
     if (this.active || this.byteLength || !this.stateInvalid)
