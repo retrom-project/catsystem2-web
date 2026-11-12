@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 192, "oracle": 148, "differential": 67 },
+    "counts": { "js": 193, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -81,6 +81,7 @@
         "tests/fes-source-bytes.test.mjs",
         "tests/fes-source-model.test.mjs",
         "tests/fes-source-player.test.mjs",
+        "tests/fes-string-redeclare.test.mjs",
         "tests/fes-string-table.test.mjs",
         "tests/fes-text-commands.test.mjs",
         "tests/fes-text-log-driver.test.mjs",
@@ -14717,7 +14718,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14743,7 +14744,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14769,7 +14770,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14795,7 +14796,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14821,7 +14822,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14847,7 +14848,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14873,7 +14874,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14899,7 +14900,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14925,7 +14926,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14951,7 +14952,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -14977,7 +14978,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -16691,7 +16692,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -20128,7 +20129,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -24963,7 +24964,7 @@
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:585",
+          "registration": "src/native/text-task.mjs:589",
           "modules": [],
           "dependencies": []
         },
@@ -37320,7 +37321,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37346,7 +37347,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37372,7 +37373,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37398,7 +37399,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37424,7 +37425,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37450,7 +37451,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37476,7 +37477,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37502,7 +37503,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37528,7 +37529,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37554,7 +37555,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -37580,7 +37581,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -39294,7 +39295,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -42731,7 +42732,7 @@
           "module": "src/native/text-task.mjs",
           "domain": 5,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/text-task.mjs:593",
+          "registration": "src/native/text-task.mjs:597",
           "features": [],
           "dependencies": [],
           "docs": [
@@ -48348,7 +48349,7 @@
         },
         {
           "name": "text",
-          "registration": "src/native/text-task.mjs:585",
+          "registration": "src/native/text-task.mjs:589",
           "modules": [],
           "dependencies": []
         },
@@ -52066,7 +52067,7 @@
     },
     {
       "file": "src/native/fes-string-driver.mjs",
-      "sourceSha256": "d6f4f16cb16e13470d70735ab5432d433fef4490d9a693fc697bf0d175a4768c",
+      "sourceSha256": "f727955951d60beaa84a2f141433f8507219335373afa47f062c6b643a39a698",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55028,7 +55029,7 @@
     },
     {
       "file": "src/native/text-task.mjs",
-      "sourceSha256": "b74f01947d8f779841e84775a581c3106a0461228617400746c67bae03330170",
+      "sourceSha256": "7d79c741075ae201651da1c7eac55a653675e0af6ca44b3dfd007f9dc38cbf43",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55049,21 +55050,21 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 545,
+          "line": 549,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 606,
+          "line": 610,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 655,
+          "line": 659,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",

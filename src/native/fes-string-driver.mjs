@@ -86,6 +86,7 @@ function createTextState(object, profile, configuration) {
     remainingPage: 0,
     line: 0,
     end: [0, 0],
+    endKnown: false,
     fontDirty: false,
     fontSource: null,
     fontMap: [],
@@ -122,10 +123,21 @@ export class FESStringDriver {
         packet: new NativeGraphicsPacket(),
         metadata: new Uint8Array(36),
         rectangle: new Int32Array(4),
+        cursor: new Int32Array(2),
+        cursorWritten: 0,
         layout: null,
         layoutState: null,
       };
       s.view = new DataView(s.metadata.buffer);
+      s.cursorMemory = {
+        store: (address, value) => {
+          if (address !== 0 && address !== 4)
+            throw new RangeError('FES cursor output exceeds its two initialized words');
+          const index = address / 4;
+          s.cursor[index] = value | 0;
+          s.cursorWritten |= 1 << index;
+        },
+      };
       this.scratch.set(object, s);
     }
     return s;
@@ -598,10 +610,15 @@ export class FESStringDriver {
       task = this.validate(instance, object);
     const runtime = await this.world.text.runtime(),
       mode = object.nativeType === 29 ? 'nv' : object.nativeType === 37 ? 'utf8' : 'cp932',
-      first = mode === 'nv' ? 489 : mode === 'utf8' ? 469 : 449;
+      first = mode === 'nv' ? 489 : mode === 'utf8' ? 469 : 449,
+      scratch = this.workspace(object);
+    let cursorMask = 0;
     if (s.first && object.sizePending) {
       const rect = await this.reference(instance, object.sizeReference, object);
       this.setView(object, rect?.[2] ?? 0, rect?.[3] ?? 0);
+      scratch.cursor[0] = rect?.[mode === 'nv' ? 2 : 3] ?? 0;
+      scratch.cursor[1] = rect?.[mode === 'nv' ? 3 : 2] ?? 0;
+      cursorMask = 3;
     }
     if (object.sizeDirty) {
       this.setView(object, object.width, object.height);
@@ -622,11 +639,11 @@ export class FESStringDriver {
       s.dirty = true;
       s.revision = layout.revision;
     }
-    const send = (op, w = 0, l = 0, bytes = null) =>
-        task.message(
-          [instance.runtimeID, first + op, w, l],
-          bytes ? { payload: payload(bytes), nativeSenderWorldID: instance.runtimeID } : {},
-        ),
+    const send = (op, w = 0, l = 0, bytes = null, context = null) =>
+        task.message([instance.runtimeID, first + op, w, l], {
+          ...context,
+          ...(bytes ? { payload: payload(bytes), nativeSenderWorldID: instance.runtimeID } : {}),
+        }),
       packet = () => {
         const cfg = layout ? layout.config() : s.nv,
           b = new Uint8Array(mode === 'nv' ? runtime.bindings(mode).packetSize : cfg.length + 16),
@@ -649,7 +666,6 @@ export class FESStringDriver {
       s.line = 0;
       s.pendingClear = false;
     }
-    const writer = await task.writer();
     if (s.fontDirty) {
       let bytes = null;
       if (s.fontSource !== null) {
@@ -660,8 +676,18 @@ export class FESStringDriver {
         if (bytes !== null && !(bytes instanceof Uint8Array))
           throw new TypeError('FES image-font service must return held bytes or null');
       }
-      await writer.userFont(bytes);
-      for (const [char, selector] of s.fontMap) await writer.resourceMessage(10, char, selector);
+      await send(mode === 'nv' ? 10 : 9, 0, 0, null, { resourceBytes: bytes });
+      for (const [char, selector] of s.fontMap) {
+        if (mode === 'nv') {
+          scratch.cursor[0] = char;
+          scratch.cursor[1] = selector;
+          cursorMask = 3;
+        } else {
+          scratch.cursor[0] = selector;
+          cursorMask |= 1;
+        }
+        await send(mode === 'nv' ? 11 : 10, char, selector);
+      }
       s.fontDirty = false;
     }
     if (s.dirty) {
@@ -672,21 +698,26 @@ export class FESStringDriver {
       let layoutChanged = false;
       const abi = layout.abi;
       if (layout.word(abi.shift + 1)) {
-        await writer.shift(layout.word(abi.shift));
+        await send(15, 0, layout.word(abi.shift));
         layout.word(abi.shift + 1, 0);
         layoutChanged = true;
       }
-      for (let i = 0; i < 4; i++)
-        if (layout.word(abi.category + i)) {
-          await writer.resourceMessage(19, i, 0);
-          layout.word(abi.category + i, 0);
-          layoutChanged = true;
-        }
+      if (nativeABI(this.world.profile).text.resourceMessages.clearCategory)
+        for (let i = 0; i < 4; i++)
+          if (layout.word(abi.category + i)) {
+            await send(19, i);
+            layout.word(abi.category + i, 0);
+            layoutChanged = true;
+          }
       for (const kind of ['d_prof', 'prof'])
         if (layout.profiles[kind]) {
           const entry = layout.profiles[kind];
-          if (kind === 'prof') await writer.profileEncoded(entry.index, entry.bytes);
-          else await writer.category(entry.index, entry.bytes);
+          await send(
+            kind === 'prof' ? 16 : 13,
+            entry.index,
+            0,
+            join(entry.bytes, Uint8Array.of(0)),
+          );
           delete layout.profiles[kind];
           layoutChanged = true;
         }
@@ -706,6 +737,9 @@ export class FESStringDriver {
       object.x = f(rectangle?.[0] ?? 0);
       object.y = f(rectangle?.[1] ?? 0);
       object.z = 0;
+      scratch.cursor[0] = rectangle?.[1] ?? 0;
+      scratch.cursor[1] = rectangle?.[0] ?? 0;
+      cursorMask = 3;
       markFESObjectDirty(instance, object);
     }
     if (mode === 'nv' && s.secondaryPending) {
@@ -718,16 +752,16 @@ export class FESStringDriver {
       if (s.source.length) await send(3, 0, 0, join(s.source, Uint8Array.of(0)));
       s.oldLength = s.source.length;
       s.fullSource = false;
-      if (mode !== 'nv') s.line = await writer.lineCount();
+      if (mode !== 'nv') s.line = await send(14);
     } else if (s.oldLength !== s.source.length) {
       await send(3, 0, 0, join(s.source.subarray(s.oldLength), Uint8Array.of(0)));
       s.oldLength = s.source.length;
-      if (mode !== 'nv') s.line = await writer.lineCount();
+      if (mode !== 'nv') s.line = await send(14);
     }
 
     if (object.dirty) {
       await this.graphics(instance, object);
-      await writer.speed(s.speed);
+      await send(mode === 'nv' ? 13 : 12, 0, s.speed);
       object.dirty = false;
     } else {
       const sleeping = !!instance.player.nativeInput?.state.sleeping;
@@ -740,12 +774,19 @@ export class FESStringDriver {
       s.pagePending = false;
     }
     if (s.remaining !== 0) {
-      s.remaining = await writer.remaining();
-      if (mode !== 'nv') s.remainingPage = await writer.remaining(task.text.pageLimit);
+      s.remaining = await send(mode === 'nv' ? 6 : 5);
+      if (mode !== 'nv') s.remainingPage = await send(17);
     }
-    const end = await writer.endPosition();
-    if (end.some((n, i) => n !== s.end[i])) s.endChanged = true;
-    s.end = end;
+    scratch.cursorWritten = 0;
+    await send(mode === 'nv' ? 12 : 11, 0, 4, null, { payload: scratch.cursorMemory });
+    if (scratch.cursorWritten === 3 || (scratch.cursorWritten === 0 && cursorMask === 3)) {
+      for (let i = 0; i < 2; i++) {
+        if (scratch.cursor[i] !== s.end[i]) s.endChanged = true;
+        s.end[i] = scratch.cursor[i];
+      }
+      s.endKnown = scratch.cursorWritten === 3;
+    } else if (scratch.cursorWritten !== 0 || cursorMask !== 0 || !s.endKnown)
+      throw new Error('FES text cursor query left outputs unwritten without a complete known end');
     if (s.finish) {
       await send(mode === 'nv' ? 7 : 6);
       s.finish = false;

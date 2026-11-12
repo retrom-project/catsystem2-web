@@ -495,6 +495,10 @@ export class NativeNVTextTask extends NativeTextTask {
       if (!writer) throw new Error('Native NV remaining query requires an initialized writer');
       return writer.remaining();
     }
+    if (!writer && (operation === 14 || operation === 17))
+      throw new Error(
+        `Native NV ${operation === 14 ? 'section' : 'redraw'} requires an initialized writer`,
+      );
     if (!writer) return 0;
     switch (operation) {
       case 3:

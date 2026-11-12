@@ -500,7 +500,7 @@ test('FES dialog buttons produce the original Win32 result and Yes/No ignores Es
 });
 
 for (const profile of [sdkProfile, gameProfile])
-  test(`${profile} default JS FES source bytes reach StageRenderer text pixels and restore in a fresh World`, async ({
+  test(`${profile} default JS FES source bytes reach StageRenderer text pixels and survive post-first redeclaration and fresh restore`, async ({
     page,
   }) => {
     await page.goto('/');
@@ -511,6 +511,7 @@ for (const profile of [sdkProfile, gameProfile])
           { MotionLibrary } = await import('/src/motion/library.mjs'),
           { ParticleRandom } = await import('/src/ppi/random.mjs'),
           { encodeCP932 } = await import('/src/kcs/strings.mjs'),
+          { FES_OBJECT_DEFINITION_ORDER } = await import('/src/fes/types.mjs'),
           type = profile === 'nekopara-vol3-engine-2.6.1.76' ? 'STRING8' : 'STRING',
           encode = type === 'STRING8' ? (text) => new TextEncoder().encode(text) : encodeCP932,
           payload = encode('猫'),
@@ -613,15 +614,31 @@ for (const profile of [sdkProfile, gameProfile])
           await world.sendEngine(id, parent.id, 334, 0, surface);
           await task.loadSource('screen');
           await task.tick();
+          await task.tick();
           const object = task.player.root.byKey.get('label'),
-            writer = await world.graphics.get(object.nativeTaskID).writer(),
+            oldTaskID = object.nativeTaskID,
+            writer = await world.graphics.get(oldTaskID).writer(),
             before = await render(world),
+            oldEnd = [...object.nativeTextState.end],
+            declaration = new Uint8Array(36),
+            declarationView = new DataView(declaration.buffer);
+          declaration.set(new TextEncoder().encode('label'));
+          declarationView.setUint32(32, 1, true);
+          await world.sendEngine(id, parent.id, 338, 0, FES_OBJECT_DEFINITION_ORDER.indexOf(type), {
+            payload: {
+              string: (at) =>
+                new TextDecoder().decode(declaration.subarray(at, declaration.indexOf(0, at))),
+              load: (at) => declarationView.getUint32(at, true),
+            },
+          });
+          await task.syncObjects();
+          const rebound = await render(world),
             saved = world.snapshot();
           await fresh.restore(saved);
-          const restored = fresh.objects.objects
-              .get(id)
-              .implementation.player.root.byKey.get('label'),
-            after = await render(fresh);
+          const freshTask = fresh.objects.objects.get(id).implementation,
+            restored = freshTask.player.root.byKey.get('label');
+          await freshTask.syncObjects();
+          const after = await render(fresh);
           return {
             bytes: [...object.nativeTextState.source],
             parser: [...writer.parser.source],
@@ -629,10 +646,21 @@ for (const profile of [sdkProfile, gameProfile])
             restored: [...restored.nativeTextState.source],
             whitePixels: before.filter((value, index) => index % 4 === 0 && value === 255).length,
             samePixels: before.every((value, index) => value === after[index]),
+            sameReboundPixels: before.every((value, index) => value === rebound[index]),
+            newTask: object.nativeTaskID !== oldTaskID,
+            nullWriter: world.graphics.get(object.nativeTaskID).text.writer === null,
+            restoredNullWriter: fresh.graphics.get(restored.nativeTaskID).text.writer === null,
+            oldWriterRetained: fresh.graphics.get(oldTaskID).text.writer === writer.pointer,
+            cursorKnown: object.nativeTextState.endKnown && restored.nativeTextState.endKnown,
+            sameEnd: oldEnd.every(
+              (value, index) =>
+                value === object.nativeTextState.end[index] &&
+                value === restored.nativeTextState.end[index],
+            ),
             profile: writer.parser.profiles[2].has(type === 'STRING8' ? 0x732b : 0x944c),
-            restoredProfile: (
-              await fresh.graphics.get(restored.nativeTaskID).writer()
-            ).parser.profiles[2].has(type === 'STRING8' ? 0x732b : 0x944c),
+            restoredProfile: (await fresh.graphics.get(oldTaskID).writer()).parser.profiles[2].has(
+              type === 'STRING8' ? 0x732b : 0x944c,
+            ),
             exe: Boolean(world.nativeEngine || fresh.nativeEngine),
           };
         } finally {
@@ -647,6 +675,13 @@ for (const profile of [sdkProfile, gameProfile])
     expect(result.restored).toEqual(result.payload);
     expect(result.whitePixels).toBeGreaterThan(0);
     expect(result.samePixels).toBe(true);
+    expect(result.sameReboundPixels).toBe(true);
+    expect(result.newTask).toBe(true);
+    expect(result.nullWriter).toBe(true);
+    expect(result.restoredNullWriter).toBe(true);
+    expect(result.oldWriterRetained).toBe(true);
+    expect(result.cursorKnown).toBe(true);
+    expect(result.sameEnd).toBe(true);
     expect(result.profile).toBe(true);
     expect(result.restoredProfile).toBe(true);
     expect(result.exe).toBe(false);

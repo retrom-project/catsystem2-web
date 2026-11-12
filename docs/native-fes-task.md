@@ -113,6 +113,39 @@ with its writer's encoding; FES does not use it. Direct JavaScript-authored FES
 source/layout strings follow the UTF8 source convention. Other layout text
 arguments and complete whole-handler coverage remain separate phase-7 work.
 
+Repeated declarations through message338 keep the resource-request FIFO's
+multiplicity and the current object's first flag. After the first driver pass,
+a newly allocated STRING/NVSTRING/STRING8 child can therefore have a null writer
+while the independently owned old child keeps its real writer, graph and pixels.
+The FES driver sends configuration, fonts, profiles, shift, speed and queries
+through the D5 receiver so that each original null guard remains effective.
+Remaining queries, NV section and NV redraw require an initialized writer and
+report that boundary explicitly. SDK74 does not emit the game's category-clear
+operation19; its existing ABI capability gates that driver branch without
+forwarding an unsupported text operation to Graph.
+
+The original cursor receiver can leave both caller outputs unwritten for a null
+writer. The JavaScript driver records an `endKnown` flag in the existing text
+state and checkpoint. Only a complete actual writer query sets it true. Each
+invocation also tracks explicitly initialized temporary cursor components:
+plain/UTF8 SIZE2 writes height/width, NV SIZE2 writes width/height, POS2 writes
+Y/X, and the last font mapping writes only X=selector for plain/UTF8 or both
+character/selector for NV. A real cursor query overrides these producers. If
+other producers supply a complete pair, that current pair becomes `end` and
+clears `endKnown`. A query that writes nothing with no other producer may reuse
+the cached end only when it is known from an actual writer query. Partial outputs
+or an unknown cached end are diagnostics; constructor zeros never imply a known
+cursor. This narrow rule replaces the original unwritten-local domain and is
+not a bit-exact promise for uninitialized stack bytes. There is no second writer
+history; the two-word cursor workspace is reused and is not checkpoint authority.
+
+`tests/fes-string-redeclare.test.mjs` covers real default kind34 loading, actual
+message338 redeclaration, owned old/new text children, D5 pixels, current-output
+producers and fresh World restoration without EXE construction or source replay.
+The focused public text cases also compare actual StageRenderer pixels before
+and after redeclaration and after fresh restoration. The separate layout text
+argument and whole-command audit requirements above remain open.
+
 `verify-native-fes-initialization.mjs` independently runs both original
 allocation functions with authored enumeration and task-factory boundaries.
 It checks 27 game and 24 SDK object types, empty wrappers, the exact eager child
