@@ -30,6 +30,8 @@ export class PNG {
       };
     if (!b.magic('\x89PNG\r\n\x1a\n')) throw new Error('Invalid PNG signature');
     this.data = [];
+    // Metadata projection only: callers decide whether to interpret color chunks.
+    this.colorChunks = [];
     let ended = false,
       hasHeader = false;
     for (let at = 8; at < bytes.length; ) {
@@ -39,6 +41,15 @@ export class PNG {
         validCRC = crc32(b.range(at + 4, size + 4)) === be(at + 8 + size);
       if (!/^[A-Za-z]{4}$/.test(type)) throw new Error('PNG invalid chunk type');
       if (!hasHeader && type !== 'IHDR') throw new Error('PNG header must be first');
+      if (type === 'gAMA' || type === 'sRGB')
+        this.colorChunks.push({
+          type,
+          size,
+          validCRC,
+          afterPalette: !!this.palette,
+          afterData: this.data.length !== 0,
+          value: type === 'gAMA' && size === 4 ? be(at + 8) : null,
+        });
       if (!validCRC) {
         if (type[0] === type[0].toUpperCase()) throw new Error(`PNG invalid ${type} checksum`);
         at += size + 12;

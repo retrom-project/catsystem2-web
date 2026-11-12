@@ -66,7 +66,7 @@ test('level0 rejects dimensions and device modes outside its declared domain', (
       () =>
         effekseerLevel0Dimensions(3, 5, {
           ...EFFEKSEER_LEVEL0_PROFILE,
-          [field]: EFFEKSEER_LEVEL0_PROFILE[field] + 1,
+          [field]: EFFEKSEER_LEVEL0_PROFILE[field] + (field === 'format' ? 2 : 1),
         }),
       /Unsupported Effekseer level0 device profile/,
     );

@@ -17,6 +17,7 @@ for (const directory of ['effekseer-level0', 'effekseer-level0-holdout']) {
       assert.deepEqual(frame, {
         width: item.width,
         height: item.height,
+        format: 21,
         rgba: Uint8Array.from(item.rgba),
       });
       assert.equal(Object.getPrototypeOf(frame.rgba), Uint8Array.prototype);
@@ -24,16 +25,17 @@ for (const directory of ['effekseer-level0', 'effekseer-level0-holdout']) {
     });
 }
 
-test('EFK default PNG decoder explicitly rejects the existing unproved RGB source', async () => {
+test('EFK default PNG decoder uses the real RGB source metadata and explicit format22', async () => {
   const bytes = await readFile(
-    new URL('./fixtures/effekseer/public-1.23/LaserMain01.png', import.meta.url),
-  );
+      new URL('./fixtures/effekseer/public-1.23/LaserMain01.png', import.meta.url),
+    ),
+    frame = await decodeEffekseerTexture(bytes);
   assert.equal(bytes[24], 8);
   assert.equal(bytes[25], 2);
-  await assert.rejects(
-    decodeEffekseerTexture(bytes),
-    /Unsupported Effekseer PNG layout: 8-bit\/type2/,
-  );
+  assert.equal(frame.format, 22);
+  assert.equal(frame.width, 64);
+  assert.equal(frame.height, 256);
+  for (let i = 3; i < frame.rgba.length; i += 4) assert.equal(frame.rgba[i], 255);
 });
 
 test('EFK PNG decoder rejects unknown profiles before any image decode', async () => {
@@ -41,7 +43,7 @@ test('EFK PNG decoder rejects unknown profiles before any image decode', async (
   for (const field of Object.keys(profile))
     await assert.rejects(
       decodeEffekseerTexture(new Uint8Array(0), {
-        profile: { ...profile, [field]: profile[field] + 1 },
+        profile: { ...profile, [field]: profile[field] + (field === 'format' ? 2 : 1) },
       }),
       /Unsupported Effekseer texture device profile/,
     );

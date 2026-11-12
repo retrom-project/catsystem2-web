@@ -62,14 +62,29 @@ model, sound or background-distortion renderer.
 `src/effekseer/resources.mjs` exports `EffekseerResources`. Its injected services
 reuse the existing mounted VFS, category configuration, CP932 conversion,
 SHA-256 identity. `resolveCategory`, `readNative`, `roundTripCP932` and `identify`
-are required. The default `decodeTexture` is the EFK-specific PNG8/color6 decoder
-followed by the selected legacy level0 converter. It returns owned physical
-RGBA8 pixels; unknown image layouts/profiles are explicit errors. It does not
-use the general RasterImage/canvas fallback. Decoder injection remains available
-for isolated algorithms or error/wait tests; its success does not establish the
-default loader's source-format capability. Existing generic RGB-PNG algorithm
-fixtures retain that explicit injection while their native format mapping is
-unverified. `disposeTexture`, `onWarning` and `readerLimits` are optional.
+are required. The default `decodeTexture` uses the EFK-specific PNG8 source
+contract and selected legacy level0 converter. RGBA8 produces physical format21;
+noninterlaced RGB8 without tRNS produces physical format22. The returned owned
+frame has `{ width, height, rgba, format }`. Format22's defined sampled pixels
+have alpha255; its native unused X backing byte is neither alpha nor checkpoint
+data. Unknown codecs, layouts and device profiles are explicit errors. It does
+not use the general RasterImage/canvas fallback.
+
+The general PNG parser only projects color metadata. The EFK seam admits images
+without color chunks, or one valid gAMA before palette/image data whose original
+numeric threshold does not require a gamma transform. It explicitly rejects
+sRGB, duplicate/malformed/late color chunks, zero gamma and an active gamma
+transform. cHRM, iCCP, pHYs and text chunks follow the proved ancillary-skip path.
+This keeps all ten current fixture sources in the no-transform domain without
+a source-name or observed-gamma whitelist. See
+[the level0 contract](effekseer-texture-level0.md) for precision and evidence limits.
+
+Decoder injection remains available for isolated algorithms or error/wait tests;
+it must identify its actual physical format and provide defined RGBA samples.
+A format22 frame with nonopaque fourth components is rejected. Injected generic
+PNG algorithm fixtures explicitly provide format21 sample frames; their success
+does not establish the native default source-format mapping. `disposeTexture`,
+`onWarning` and `readerLimits` are optional.
 Resource reads use mode 3, leaving
 archive qualification and patch priority to the existing file services.
 
@@ -92,7 +107,9 @@ disposed after its final reference. No manager, RNG, canvas or GPU is constructe
 identities and each texture binding's source/missing state and derived physical
 `storage` projection. A missing binding has `storage: null`; a successful binding
 records the selected device `profile`, actual frame `width`/`height`, and
-`rgbaSHA256`. The existing identify service hashes the converted pixels once;
+`rgbaSHA256`. The profile is derived from the actual frame's sole `format` value;
+there is no separately writable resource format. Fresh restore compares the
+profile as well as dimensions and defined-sample digest. The existing identify service hashes the converted pixels once;
 the immutable frame owns those pixels, and snapshot dimensions read that frame.
 There is no second writable dimensions record, pixel copy, cache or texture-ID
 table. Renderers borrow this physical frame as immutable data. Source SHA and

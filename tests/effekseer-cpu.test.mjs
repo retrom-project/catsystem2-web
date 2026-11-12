@@ -94,10 +94,10 @@ async function setup() {
       roundTripCP932: (name) => decodeNativeCP932(encodeNativeCP932(name)),
       identify: binaryIdentity,
       // Independent algorithm fixture: injected generic PNG decode, not the
-      // proved default source-format/level0 loader (RGB layouts remain unverified).
+      // native default loader. Its authored RGBA sample frames explicitly use format21.
       decodeTexture: async (bytes) => {
         const png = new PNG(bytes);
-        return { width: png.width, height: png.height, rgba: await png.decode() };
+        return { width: png.width, height: png.height, format: 21, rgba: await png.decode() };
       },
       disposeTexture: (frame) => disposed.push(frame),
     }),

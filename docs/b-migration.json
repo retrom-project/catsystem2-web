@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 227, "oracle": 148, "differential": 67 },
+    "counts": { "js": 228, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -54,6 +54,7 @@
         "tests/effekseer-texture-level0-holdout.test.mjs",
         "tests/effekseer-texture-level0.test.mjs",
         "tests/effekseer-texture-resources.test.mjs",
+        "tests/effekseer-texture-rgb.test.mjs",
         "tests/effekseer-world-executor.test.mjs",
         "tests/emote-animation.test.mjs",
         "tests/emote-commands.test.mjs",
@@ -48633,7 +48634,7 @@
     },
     {
       "file": "src/effekseer/resources.mjs",
-      "sourceSha256": "e3c50848a6c81fbe129ad1212ec641c87073636600b77eac7485d9971008b0bf",
+      "sourceSha256": "a5d5a4f6f30e3c5a12cc5702bd962954311df7aec61ff57885a3771a20e86198",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48711,7 +48712,7 @@
     },
     {
       "file": "src/effekseer/texture-decoder.mjs",
-      "sourceSha256": "886ef881bc7aa7c692486ec41db6f9c196eb8248b0971b49aa774d802ee19446",
+      "sourceSha256": "09605ee599571b5e1bceed41894519cc29687c31211d189b278941ac6b83e441",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48724,7 +48725,7 @@
     },
     {
       "file": "src/effekseer/texture-level0.mjs",
-      "sourceSha256": "56d15de4a64a932da85fe6a51dca0bd8e6678cf20682eb6563670f6f3258606d",
+      "sourceSha256": "ce684f44d22f62a6b4fc57395522ed639512daa1029bf23be53b3f0bcee20e95",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49361,7 +49362,7 @@
     },
     {
       "file": "src/formats/png.mjs",
-      "sourceSha256": "233036359c4a7acbf5e67df9f3556b21eaa26d90501aae2b5a09b2c832f3c53a",
+      "sourceSha256": "cbfb18281206bdfb294559ed867e0f0bc5901f4f24b9107fbb2985a96f9106b6",
       "domain": 5,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

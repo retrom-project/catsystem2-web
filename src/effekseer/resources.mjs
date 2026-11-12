@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // EFK category loading reuses the owning World's mounted-file and ACP services.
 import { readEffekseerEffect } from './effect-reader.mjs';
-import { EFFEKSEER_LEVEL0_PROFILE } from './texture-level0.mjs';
+import { EFFEKSEER_LEVEL0_PROFILE, effekseerLevel0Profile } from './texture-level0.mjs';
 import { decodeEffekseerTexture, isEffekseerTextureProfile } from './texture-decoder.mjs';
 
 // 6A7600 remembers separator index zero as its initial sentinel as well.
@@ -23,19 +23,24 @@ const dimension = (value) =>
 const framePixels = (frame) => {
   if (
     !frame ||
+    ![21, 22].includes(frame.format) ||
     !dimension(frame.width) ||
     !dimension(frame.height) ||
     !(frame.rgba instanceof Uint8Array || frame.rgba instanceof Uint8ClampedArray) ||
     frame.rgba.length !== frame.width * frame.height * 4
   )
     throw new Error('Effekseer texture decoder returned an invalid level0 frame');
+  if (frame.format === 22)
+    for (let i = 3; i < frame.rgba.length; i += 4)
+      if (frame.rgba[i] !== 255)
+        throw new Error('Effekseer format22 frame must contain defined opaque samples');
   return frame.rgba;
 };
 const storageIdentity = (texture) =>
   texture.missing
     ? null
     : {
-        profile: { ...EFFEKSEER_LEVEL0_PROFILE },
+        profile: { ...effekseerLevel0Profile(texture.frame.format) },
         width: texture.frame.width,
         height: texture.frame.height,
         rgbaSHA256: texture.rgbaSHA256,
@@ -52,7 +57,10 @@ const validStorage = (storage) =>
 const sameStorage = (a, b) =>
   a === null || b === null
     ? a === b
-    : a.width === b.width && a.height === b.height && a.rgbaSHA256 === b.rgbaSHA256;
+    : a.width === b.width &&
+      a.height === b.height &&
+      a.rgbaSHA256 === b.rgbaSHA256 &&
+      Object.entries(a.profile).every(([field, value]) => b.profile[field] === value);
 const textureIdentities = (textures) =>
   Object.fromEntries(
     Object.entries(textures).map(([kind, bindings]) => [
@@ -133,7 +141,6 @@ export class EffekseerResources {
         .then(async () => {
           texture.frame = await this.decodeTexture(source.bytes, {
             identity: `${source.resolved}@sha256:${source.sha256}`,
-            profile: EFFEKSEER_LEVEL0_PROFILE,
           });
           this.assertOpen();
           const rgbaSHA256 = await this.identify(framePixels(texture.frame));

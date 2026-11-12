@@ -155,7 +155,12 @@ test('EFK mounted default decoder preserves source identities, one physical cach
       ['textures.int/火花.png', 3],
       ['effects.int/spark.efk', 3],
     ]);
-    assert.deepEqual(frame, { width: 4, height: 2, rgba: Uint8Array.from(fixture.rgba) });
+    assert.deepEqual(frame, {
+      width: 4,
+      height: 2,
+      format: 21,
+      rgba: Uint8Array.from(fixture.rgba),
+    });
     assert.equal(physical.sha256, fixture.sourceSHA256);
     assert.equal(physical.resolved, 'textures.int/火花.png');
     assert.equal(physical.rgbaSHA256, rgbaHash);
@@ -247,7 +252,7 @@ test('EFK storage checkpoint rejects unknown profile/layout before any source I/
     const original = a.resources.snapshot();
     for (const mutate of [
       (s) => {
-        s.profile.format = 22;
+        s.profile.format = 23;
       },
       (s) => {
         s.profile.unknown = 1;
@@ -312,21 +317,94 @@ test('EFK missing textures retain null storage and consume no logical texture ID
   }
 });
 
-test('EFK real mounted RGB source is not published by the default decoder', async () => {
-  const textureBytes = await readFile(
-      new URL('./fixtures/effekseer/public-1.23/LaserMain01.png', import.meta.url),
-    ),
-    s = await setup({ textureBytes });
+test('EFK mounted default RGB decoder owns one actual format22 frame and fresh logical tokens', async () => {
+  const root = new URL('./fixtures/effekseer-rgb-level0/', import.meta.url),
+    recorded = JSON.parse(await readFile(new URL('native-cpu.json', root))).cases[1],
+    textureBytes = await readFile(new URL(recorded.file, root)),
+    a = await setup({ textureBytes }),
+    b = await setup({ textureBytes });
   try {
-    await assert.rejects(s.loads.load('spark'), /Unsupported Effekseer PNG layout/);
-    assert.equal(s.resources.textures.size, 0);
-    assert.equal(s.resources.assets.size, 0);
-    assert.equal(s.disposed.length, 0);
-    assert.deepEqual(s.loads.snapshot(), { nextID: 1, nextTextureID: 1, loads: [] });
+    const first = await a.loads.load('spark'),
+      second = await a.loads.load('spark'),
+      frame = first.textures.color[0].frame;
+    assert.equal(frame.format, 22);
+    assert.deepEqual(frame.rgba, Uint8Array.from(recorded.rgba));
+    assert.equal(a.resources.textures.size, 1);
+    assert.equal(frame, second.textures.color[1].frame);
+    assert.equal(Object.hasOwn(a.resources.get(first.sourceID).textures.color[0], 'format'), false);
+    const saved = await deserializeCheckpoint(
+      await serializeCheckpoint({ resources: a.resources.snapshot(), loads: a.loads.snapshot() }),
+    );
+    assert.equal(storage(saved.resources).profile.format, 22);
+    assert.equal(
+      storage(saved.resources).rgbaSHA256,
+      await binaryIdentity(Uint8Array.from(recorded.rgba)),
+    );
+    await b.resources.restore(saved.resources);
+    const reads = [...b.reads];
+    b.loads.restore(saved.loads);
+    assert.deepEqual(b.reads, reads);
+    assert.deepEqual(b.resources.snapshot(), saved.resources);
+    assert.deepEqual(b.loads.snapshot(), saved.loads);
+    assert.equal(b.loads.get(1).textures.color[0].frame.format, 22);
+    a.loads.release(first.id);
+    assert.equal(a.disposed.length, 0);
+    a.loads.release(second.id);
+    assert.deepEqual(a.disposed, [frame]);
   } finally {
-    s.close();
+    b.close();
+    a.close();
   }
 });
+
+for (const sourceFormat of [21, 22])
+  test(`EFK fresh restore compares the actual format${sourceFormat} even when bytes/dimensions match`, async () => {
+    const options =
+        sourceFormat === 21
+          ? {}
+          : {
+              textureBytes: await readFile(
+                new URL('./fixtures/effekseer-rgb-level0/rgb-npot-3x2.png', import.meta.url),
+              ),
+            },
+      a = await setup(options),
+      b = await setup(options);
+    try {
+      await a.loads.load('spark');
+      const saved = a.resources.snapshot();
+      storage(saved).profile.format = sourceFormat === 21 ? 22 : 21;
+      await assert.rejects(b.resources.restore(saved), /texture identity changed/);
+      assert.ok(b.reads.length > 0);
+      assert.equal(b.disposed.length, 1);
+      assert.equal(b.resources.closed, true);
+    } finally {
+      b.close();
+      a.close();
+    }
+  });
+
+for (const fault of ['missing-format', 'raw-x-as-alpha'])
+  test(`EFK custom decoder cannot publish ${fault} as a defined physical frame`, async () => {
+    const s = await setup({
+      decoder: async (bytes, options) => {
+        const frame = await decodeEffekseerTexture(bytes, options);
+        if (fault === 'missing-format') delete frame.format;
+        else {
+          frame.format = 22;
+          frame.rgba[3] = 0;
+        }
+        return frame;
+      },
+    });
+    try {
+      await assert.rejects(s.loads.load('spark'), /invalid level0 frame|defined opaque samples/);
+      assert.equal(s.disposed.length, 1);
+      assert.equal(s.loads.nextTextureID, 1);
+      assert.equal(s.resources.textures.size, 0);
+    } finally {
+      s.close();
+    }
+  });
 
 test('EFK a malformed storage digest fails after real decode and retires the frame once', async () => {
   for (const digest of ['invalid', null]) {

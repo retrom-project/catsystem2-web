@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Existing single-level RGBA8 consumer-device contract; no mip/sRGB/color-key path.
+// Selected single-level consumer-device contract; no mip/sRGB/color-key path.
 export const EFFEKSEER_LEVEL0_PROFILE = Object.freeze({
   textureCaps: 5,
   maxWidth: 4096,
@@ -10,6 +10,13 @@ export const EFFEKSEER_LEVEL0_PROFILE = Object.freeze({
   usage: 0,
   levels: 1,
 });
+const rgbProfile = Object.freeze({ ...EFFEKSEER_LEVEL0_PROFILE, format: 22 });
+
+export function effekseerLevel0Profile(format) {
+  if (format === 21) return EFFEKSEER_LEVEL0_PROFILE;
+  if (format === 22) return rgbProfile;
+  throw new Error('Unsupported Effekseer level0 physical format');
+}
 
 const f = Math.fround,
   normalizer = f(1 / 255),
@@ -40,7 +47,11 @@ export function effekseerLevel0Dimensions(width, height, profile = EFFEKSEER_LEV
   dimension(height);
   if (
     !profile ||
-    Object.entries(EFFEKSEER_LEVEL0_PROFILE).some(([field, value]) => profile[field] !== value)
+    ![21, 22].includes(profile.format) ||
+    Object.keys(profile).length !== Object.keys(EFFEKSEER_LEVEL0_PROFILE).length ||
+    Object.entries(effekseerLevel0Profile(profile.format)).some(
+      ([field, value]) => profile[field] !== value,
+    )
   )
     throw new Error('Unsupported Effekseer level0 device profile');
   const powerOfTwo = (value) => {
@@ -100,19 +111,20 @@ function contributions(sourceDimension, destinationDimension) {
   return result;
 }
 
-function writeRow(row, y, width, output) {
+function writeRow(row, y, width, output, channels) {
   const reverse = y & 1;
   for (let step = 0; step < width; step++) {
     const x = reverse ? width - 1 - step : step,
       at = x * 4,
       target = (y * width + x) * 4,
       dither = orderedDither[(y & 3) * 4 + (step & 3)];
-    for (let channel = 0; channel < 4; channel++) {
+    for (let channel = 0; channel < channels; channel++) {
       const value = Math.min(1, Math.max(0, row[at + channel])),
         scaled = towardsZero(value * 255),
         word = Math.trunc(towardsZero(scaled + dither));
       output[target + channel] = Math.min(255, Math.max(0, word));
     }
+    if (channels === 3) output[target + 3] = 255;
   }
 }
 
@@ -130,8 +142,12 @@ export function convertEffekseerLevel0(
     rgba.length !== width * height * 4
   )
     throw new RangeError('Effekseer level0 requires a complete decoded RGBA8 image');
-  if (width === destination.width && height === destination.height)
-    return { ...destination, rgba: new Uint8Array(rgba) };
+  const channels = profile.format === 22 ? 3 : 4;
+  if (width === destination.width && height === destination.height) {
+    const copy = new Uint8Array(rgba);
+    if (channels === 3) for (let i = 3; i < copy.length; i += 4) copy[i] = 255;
+    return { ...destination, rgba: copy };
+  }
 
   const horizontal = contributions(width, destination.width),
     vertical = contributions(height, destination.height),
@@ -162,14 +178,14 @@ export function convertEffekseerLevel0(
         for (let xi = 0; xi < xs.indices.length; xi++) {
           const at = xs.indices[xi] * 4,
             weight = f(xs.weights[xi] * yWeight);
-          for (let channel = 0; channel < 4; channel++)
+          for (let channel = 0; channel < channels; channel++)
             row[at + channel] = f(f(weight * sourceRow[source + channel]) + row[at + channel]);
         }
       }
     }
     for (const y of ys.indices)
       if (--remaining[y] === 0) {
-        writeRow(rows[y], y, destination.width, output);
+        writeRow(rows[y], y, destination.width, output, channels);
         free.push(rows[y]);
         rows[y] = null;
       }
