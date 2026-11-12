@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 189, "oracle": 148, "differential": 67 },
+    "counts": { "js": 190, "oracle": 148, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -84,6 +84,7 @@
         "tests/fes-string-table.test.mjs",
         "tests/fes-text-commands.test.mjs",
         "tests/fes-text-log-driver.test.mjs",
+        "tests/fes-tone-table.test.mjs",
         "tests/fes-window-image.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -2357,8 +2358,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 301,
-    "runtimeFiles": 455,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 61, "8": 170, "9": 55 },
+    "runtimeFiles": 456,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 62, "8": 170, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -52137,6 +52138,19 @@
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
       "dependencyTypes": [],
       "docs": ["docs/native-text.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/native/fes-tone-table.mjs",
+      "sourceSha256": "9d61836046f8c11e14d1377eff2dd97694638a3e637cae453535810b14f772be",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
       "executionSites": [],
       "executionSiteCounts": {},
       "indirectSites": [],
