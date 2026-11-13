@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { FES_PLATFORM_COMMANDS } from '../native/fes-platform-frontends.mjs';
 // Adapted from CatSystemKit FESInstance (OWCramer).
-import { evaluate, assign, condition } from './expression.mjs';
+import { evaluate, evaluateOperand, assign, condition } from './expression.mjs';
 import { FESObject, objectCommand, objectVerbs } from './object.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from './types.mjs';
 import { NativeDictionary } from '../native/dictionary.mjs';
@@ -236,6 +236,15 @@ export class FESInstance {
   }
   expandMacros(line) {
     return replaceFESMacros(line, this.macros, this.player.host.fesMacroLiterals?.());
+  }
+  operandValue(bytes) {
+    if (!this.runtime) throw new Error('FES byte operands require the normal runtime');
+    return evaluateOperand(bytes, this);
+  }
+  valueLookup(nameBytes, index) {
+    if (!this.runtime || !(nameBytes instanceof Uint8Array))
+      throw new TypeError('FES numeric lookup requires a normal raw-name reference');
+    return this.collection.lookup(nameBytes, index)?.handle ?? 0;
   }
   objectHandle(name, index) {
     if (this.runtime) return this.collection.lookup(name, index ?? 0)?.handle;

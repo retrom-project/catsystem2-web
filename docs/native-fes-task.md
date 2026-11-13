@@ -1124,3 +1124,38 @@ DEFAULT-before-own ordering, current index, macro/bank/SCRIPT jump and call
 targets, messages 335/337 and fresh continuation ownership. A separate bare case
 checks the CP932 String versus raw/UTF8 source boundary. These checks do not
 close dynamic ordinary-name lookup or the broader native lifecycle gaps.
+
+## Common-command numeric operands
+
+The normal common-command argument provider reads its existing byte getter once
+at each argument evaluation point. It parses transient owned narrow tokens and
+queries ordinary objects directly by the collection's name bytes and signed
+index. The index expression runs once; an absent object returns0. No presentation
+key, repeated name-bank/index parsing or expression-level macro callback is used.
+The source row already owns macro expansion. System names use the proven ASCII
+spelling; `@` borrows the existing native current word without replacing its H1
+owner. The independent String expression entry and its macro/arithmetic behavior,
+prepared property current/% values and other numeric frontends keep their own
+contracts.
+
+The supported identifier scanner retains ASCII letters/underscore, subsequent
+ASCII digits and embedded escaped ASCII quotes. Hyphen remains subtraction.
+Unquoted high bytes have an explicit numeric-name unsupported boundary. The new
+parser completes this expression before running its AST mutations; the getter,
+earlier arguments and prior handler work can already have effects.
+
+Single-quoted values follow the original16-bit WORD algorithm: shift8 before
+each byte and before testing the closing quote, sign-extend consumed bytes, then
+retain the WORD. Thus `'A'` is0x4100, `'AB'` is0x4200 and a single raw81 returns
+0x8100. ASCII double-quoted data has integer value0. High bytes in double quotes
+have a separate unproved literal-domain gate: a CP932 trail5C cannot safely be
+read as an ASCII escape. Broader quoted data, floating/unsafe scratch domains,
+mode1 keyword behavior and complete numeric grammar remain separate work.
+
+Actual default SDK/Game cases cover the real common provider and successful337
+rows, raw-name aliases and a decoded decoy, raw handles, signed missing indices,
+index mutations once, literal values and fresh restoration without source/START
+replay. Unsupported-expression tests check only their own AST mutation and the
+single getter; they do not imply whole-handler atomicity. Other decoded numeric
+producers, head/directeval, normal DEFINE admission and unrelated name/lifecycle
+gates remain open.

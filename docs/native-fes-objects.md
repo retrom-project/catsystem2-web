@@ -482,10 +482,20 @@ collection; it does not parse bracket suffixes or use decoded names as identity.
 Nonpositive counts retain empty groups and the original first count, including
 through fresh restoration; they do not construct objects or queue initializers.
 Complete positive factory coverage, unsafe names and failure/lifecycle behavior,
-remaining public byKey/input bridges, numeric object references and other
-ordinary-name consumers remain separate gates. Common-command selection and PL/copy
+remaining public byKey/input bridges, numeric object references outside common
+arguments and other ordinary-name consumers remain separate gates. Common-command selection and PL/copy
 transport now preserve raw bytes; correct labels, source-name addresses and
 common commands do not establish that all earlier consumers selected the correct
 raw object name.
 
 Normal native input events resolve the existing collection nameBytes/signed-index reference directly. Pressed references, SYSKEY and TOUCH resource tuples, directional selections and control messages 27/28 reach the current object without a presentation-key lookup; the shared event field writes, label whitelist and callback timing remain unchanged. Bare FES input retains its explicit String boundary. Keyboard-name filtering and public key lookups remain a separate gate, and the normal DEFINE ASCII guard stays enabled.
+
+Normal common numeric operands now use one raw byte getter and the existing
+collection's owned nameBytes/signed-index lookup. Known ASCII identifiers and
+escaped ASCII quote bytes retain their exact spelling; missing objects yield0,
+with one index evaluation. Literal high bytes are distinct from object-name
+bytes: single quotes retain the proven WORD shifts, while high bytes in double
+quotes remain an explicit literal-domain gate. Bare and independent String
+lookups keep their existing boundaries. This common-argument closure does not
+close the remaining decoded property/definition/motion/String numeric producers,
+H1 head/directeval/mode1, general name consumers or the normal DEFINE guard.

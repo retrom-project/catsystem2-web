@@ -845,7 +845,11 @@ export class FESCoordinator {
         });
       return 0;
     }
-    if (FES_COMMON_COMMANDS.has(verb)) return this.common.command(verb, selection, args, context);
+    if (FES_COMMON_COMMANDS.has(verb))
+      return this.common.command(verb, selection, args, {
+        ...context,
+        argument: (index) => instance.operandValue(context.bytes(index)),
+      });
     if (FES_IMAGE_CONTROL_COMMANDS.has(verb))
       return this.imageCommands.command(verb, selection, args, context);
     if (FES_RESOURCE_COMMANDS.has(verb))

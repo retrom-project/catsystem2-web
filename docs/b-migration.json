@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 292, "oracle": 149, "differential": 67 },
+    "counts": { "js": 293, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -123,6 +123,7 @@
         "tests/fes-motion-model.test.mjs",
         "tests/fes-notification-flush-default.test.mjs",
         "tests/fes-notification-liveness-default.test.mjs",
+        "tests/fes-numeric-object-reference-default.test.mjs",
         "tests/fes-nv-proportional.test.mjs",
         "tests/fes-object-collection.test.mjs",
         "tests/fes-object-verb-getter-default.test.mjs",
@@ -49271,7 +49272,7 @@
     },
     {
       "file": "src/fes/expression.mjs",
-      "sourceSha256": "2d4ca97c76edc0c602695e5745e093e920183367edf63b05dddbcd9b179a3699",
+      "sourceSha256": "9e3eed09cb36ad157a694a56a65e714f363a6202f497cd310cb3fa077493b17d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49284,7 +49285,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "7a21aa0f83119817068d91b0fd5bb35dff2b5bf1ebc3703891730983b2f8e0a6",
+      "sourceSha256": "b27905b28616ec5e5d2a425f29206816c232546da27db46dc534d58cfd27c912",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51871,7 +51872,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "1007794424d6ba94b9ed6b6fea54736d6872f61c0991d4158b546bc40304d12d",
+      "sourceSha256": "78527e1813a9fe8c6ad41390e88d11dfaf654a78dc557ede468639cb7245ab1d",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51888,28 +51889,28 @@
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1084,
+          "line": 1088,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1096,
+          "line": 1100,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1104,
+          "line": 1108,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1126,
+          "line": 1130,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
