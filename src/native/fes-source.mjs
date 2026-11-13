@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesSourceBytes, fesByteView, fesViewBytes } from '../fes/tokens.mjs';
 
 // FES native handlers can observe addresses of preprocessed command strings.
@@ -83,7 +82,7 @@ export class NativeFESSourceArena {
     if (this.programs.get(key)?.signature !== JSON.stringify(program.blocks))
       throw new Error(`FES source program changed during its lifetime: ${key}`);
   }
-  context(key, label, index, { bytes, offset = 0, name }) {
+  context(key, label, index, { bytes, offset = 0, nameBytes }) {
     const record = this.programs.get(key)?.blocks[label]?.[index];
     if (!record) throw new Error(`FES source command ${key}#${label}:${index + 1} is unavailable`);
     if (
@@ -91,13 +90,14 @@ export class NativeFESSourceArena {
       !Number.isInteger(offset) ||
       offset < 0 ||
       offset > bytes.length ||
-      typeof name !== 'string'
+      !(nameBytes instanceof Uint8Array)
     )
       throw new Error('Invalid FES executing source copy');
-    const identity = fesByteView(bytes);
+    const identity = fesByteView(bytes),
+      name = fesByteView(nameBytes);
     if (!record.copies.has(identity)) record.copies.set(identity, this.allocateString(bytes));
-    // Object names retain their independent native narrow-string ABI.
-    if (!record.names.has(name)) record.names.set(name, this.allocate(encodeCP932(`${name}\0`)));
+    // The selected collection owns these narrow bytes; the arena owns one copy.
+    if (!record.names.has(name)) record.names.set(name, this.allocateString(nameBytes));
     return {
       commandPointer: record.copies.get(identity) + offset,
       objectNameAddress: record.names.get(name),
@@ -158,7 +158,7 @@ export class NativeFESSourceArena {
           }
           for (const [name, address] of record.names) {
             if (typeof name !== 'string') throw new Error('Invalid FES object-name identity');
-            validateCopy(address, encodeCP932(name));
+            validateCopy(address, fesViewBytes(name));
           }
           return record.bytes;
         });

@@ -1333,7 +1333,7 @@ export class FESInstance {
                 this.program.sourceKey,
                 this.executingLabel || this.label,
                 (this.executingLine || pc) - 1,
-                { ...execution, name: selection.name },
+                { ...execution, nameBytes: selection.nameBytes },
               )
             : {};
           this.player.enqueue(
@@ -1365,7 +1365,7 @@ export class FESInstance {
               this.program.sourceKey,
               this.executingLabel || this.label,
               (this.executingLine || pc) - 1,
-              { ...execution, name: objects[0]?.baseName || head },
+              { ...execution, nameBytes: encodeCP932(objects[0]?.baseName || head) },
             )
           : {};
         const selectedIndex = this.selectionIndex(head),

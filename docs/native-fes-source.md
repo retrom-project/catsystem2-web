@@ -87,9 +87,19 @@ decoded views are identical. Runtime text commands receive the literal tail
 rather than rejoining those tokens. The source arena preserves the stored
 instruction and its separately allocated executing copies. Copy identity and
 conditional offsets use actual bytes; conditional dispatch preserves trailing
-tail bytes. Object-name allocations keep their separate CP932 ABI. Restoring
-validates copy contents and bounds, and retains macro values and copy/name
-addresses without reading sources or replaying registration.
+tail bytes. Object-name allocations copy the current selection's narrow bytes;
+their per-command-record cache uses reversible byte-view keys. Different raw
+names retain different addresses even when their decoded views match. The same
+name across array indices shares its existing name-only address. Normal execution
+passes the current selection bytes directly; the independent bare String caller
+performs its CP932 conversion once.
+
+Restoring validates copy/name bytes, NUL termination and bounds from those same
+byte-view keys, retaining macro values, addresses and subsequent allocation order
+without reading sources or replaying registration. The short two-ABI entry cases
+route raw notifications through a shared `@ getid` command and a fresh World.
+Their authored raw collection objects do not establish native message 338 or
+non-ASCII DEFINE support; those earlier identity boundaries remain separate.
 
 The source-byte tests cover BOM, invalid/dual-valid bytes, CP932-pair lexing,
 mixed-codec includes, group holes, once-only expansion and pending fresh World

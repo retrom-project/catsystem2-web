@@ -415,8 +415,13 @@ Labels, suspended stacks and DEFAULT keys are restored as saved runtime state.
 A fresh World does not reparse the source, re-expand macros, repeat declarations
 or dispatch the earlier event to reconstruct those identities.
 
-This closes label-key identity for an already selected object. Normal DEFINE
-keeps its implemented ASCII-name guard. Dynamic message 338, byKey and input bridges,
-numeric object references and source-arena object-name addresses still require
-the separate ordinary-name identity work; this label change does not establish
-that those earlier consumers selected the correct raw object name.
+Source-arena object-name addresses also retain the current selection's original
+narrow bytes. One command record caches each byte-view name once, independently
+of its selected array index; fresh restore preserves the same bytes and address.
+This closes the address service after selection.
+
+Normal DEFINE keeps its implemented ASCII-name guard. Dynamic message 338, byKey
+and input bridges, numeric object references and the common-command decoded-name
+lookup still require separate ordinary-name identity work. Correct labels and
+source-name addresses do not establish that those earlier consumers selected the
+correct raw object name.

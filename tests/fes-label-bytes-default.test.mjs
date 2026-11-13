@@ -44,6 +44,11 @@ const ascii = (value) => new TextEncoder().encode(value),
     ascii('\n$61=11\nbreak\n#'),
     i,
     ascii('\n$61+=100\nbreak\n#LITERAL\n$62+=1\nnext literal\\n\n#literal\\n\n$63+=1\nbreak\n'),
+    ascii('#'),
+    first,
+    ascii('.NAMEPTR\ncall NAMECOPY\nbreak\n#'),
+    second,
+    ascii('.NAMEPTR\ncall NAMECOPY\nbreak\n#NAMECOPY\n@ getid 53\n$54=@\nbreak\n'),
   );
 
 // This author owns raw NUL buffers. The legacy text view is observed only to
@@ -263,6 +268,28 @@ for (const profile of startupProfiles) {
       assert.equal(c.count('right'), 1);
       assert.equal(root.runtime.resources.entries.length, 4);
       assert.ok(c.lookup('panel', 0).imageResource.bitmap);
+      // Author raw current owners through the existing JS collection service.
+      // This does not enable non-ASCII DEFINE or the separate native338 entry.
+      c.create('SOUND', first, 2);
+      c.create('SOUND', second, 1);
+      const namePointer = async (world, nameBytes, index) => {
+        const payload = memory(ascii('NAMEPTR'), nameBytes, index);
+        await world.sendEngine(current.id, world.main.id, 337, 64, 0, { payload });
+        const bank = world.runtime.variableBank(world.main, false);
+        assert.equal(bank.get(54), index);
+        assert.equal(payload.stringReads, 0);
+        return bank.get(53);
+      };
+      const firstNameAddress = await namePointer(h.world, first, 1),
+        secondNameAddress = await namePointer(h.world, second, 0);
+      assert.notEqual(
+        firstNameAddress,
+        secondNameAddress,
+        'native SOUND getid must not collapse decoded aliases in one executing record',
+      );
+      assert.deepEqual(h.world.fesSources.read(firstNameAddress, 2), Uint8Array.of(0x81, 0));
+      assert.deepEqual(h.world.fesSources.read(secondNameAddress, 2), Uint8Array.of(0x82, 0));
+      assert.equal(await namePointer(h.world, first, 0), firstNameAddress);
       phase = 'jump';
       assert.equal(await root.player.notify('JUMP'), true);
       phase = 'loaded';
@@ -309,6 +336,13 @@ for (const profile of startupProfiles) {
       assert.equal(initializes, 1);
       assert.deepEqual(targetCalls, ['$str1', '$str0']);
       assert.deepEqual(scriptCalls, ['LABEL_CALL', 'LABEL_GO']);
+      const sourceExtent = fresh.world.fesSources.used;
+      assert.equal(await namePointer(fresh.world, first, 1), firstNameAddress);
+      assert.equal(await namePointer(fresh.world, second, 0), secondNameAddress);
+      assert.equal(await namePointer(fresh.world, first, 0), firstNameAddress);
+      assert.equal(fresh.world.fesSources.used, sourceExtent);
+      assert.deepEqual(fresh.world.fesSources.read(firstNameAddress, 2), Uint8Array.of(0x81, 0));
+      assert.deepEqual(fresh.world.fesSources.read(secondNameAddress, 2), Uint8Array.of(0x82, 0));
       await fresh.world.sendEngine(current.id, fresh.world.main.id, 333);
       assert.equal(nextWords.get(59), 1);
       assert.equal(nextWords.get(60), 1);

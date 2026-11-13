@@ -2886,8 +2886,12 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/getid.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/fes-source-bytes.test.mjs",
+        "tests/fes-label-bytes-default.test.mjs"
+      ],
+      "note": "Public contract fixture exists. SOUND getid retains the current narrow object-name address: one command-record cache distinguishes raw decoded aliases, shares the same name across array indices, and preserves bytes, addresses and allocation order through fresh restore. Registered-ABI raw337/current-owner cases cover this address service; dynamic338, ordinary byKey/input/numeric identity and native edge cases outside the documented signature remain separate.",
       "signatures": ["[obj] getid [v]"]
     },
     {

@@ -81,8 +81,16 @@ test('FES executing copies distinguish lossy decoded aliases and restore byte of
     alias = join(utf8('a str '), Uint8Array.of(0x82)),
     program = { blocks: { START: [original] } },
     key = arena.register(1, 'authored', program),
-    first = arena.context(key, 'START', 0, { bytes: original, offset: 2, name: '文字' }),
-    second = arena.context(key, 'START', 0, { bytes: alias, offset: 2, name: '文字' });
+    first = arena.context(key, 'START', 0, {
+      bytes: original,
+      offset: 2,
+      nameBytes: encodeCP932('文字'),
+    }),
+    second = arena.context(key, 'START', 0, {
+      bytes: alias,
+      offset: 2,
+      nameBytes: encodeCP932('文字'),
+    });
   assert.equal(fesNarrowText(original), fesNarrowText(alias));
   assert.notEqual(first.commandPointer, second.commandPointer);
   assert.equal(first.objectNameAddress, second.objectNameAddress);
@@ -90,14 +98,36 @@ test('FES executing copies distinguish lossy decoded aliases and restore byte of
     arena.read(first.commandPointer, original.length - 1),
     join(original.subarray(2), Uint8Array.of(0)),
   );
+  const leftName = Uint8Array.of(0x81),
+    rightName = Uint8Array.of(0x82),
+    left = arena.context(key, 'START', 0, { bytes: original, nameBytes: leftName }),
+    right = arena.context(key, 'START', 0, { bytes: original, nameBytes: rightName });
+  assert.equal(fesNarrowText(leftName), fesNarrowText(rightName));
+  assert.notEqual(left.objectNameAddress, right.objectNameAddress);
+  assert.equal(left.commandPointer, right.commandPointer);
+  assert.equal(
+    arena.context(key, 'START', 0, { bytes: original, nameBytes: leftName.slice() })
+      .objectNameAddress,
+    left.objectNameAddress,
+  );
+  leftName[0] = 0x83;
+  assert.deepEqual(arena.read(left.objectNameAddress, 2), Uint8Array.of(0x81, 0));
+  assert.deepEqual(arena.read(right.objectNameAddress, 2), Uint8Array.of(0x82, 0));
   const state = arena.snapshot(),
     restored = new NativeFESSourceArena();
   restored.restore(state);
   assert.deepEqual(
-    restored.context(key, 'START', 0, { bytes: alias, offset: 2, name: '文字' }),
+    restored.context(key, 'START', 0, { bytes: alias, offset: 2, nameBytes: encodeCP932('文字') }),
     second,
   );
   assert.deepEqual(restored.snapshot(), state);
+  assert.deepEqual(
+    restored.context(key, 'START', 0, { bytes: original, nameBytes: Uint8Array.of(0x81) }),
+    left,
+  );
+  assert.deepEqual(restored.read(left.objectNameAddress, 2), Uint8Array.of(0x81, 0));
+  assert.deepEqual(restored.read(right.objectNameAddress, 2), Uint8Array.of(0x82, 0));
+  assert.equal(restored.allocateString('next'), arena.allocateString('next'));
   const invalid = structuredClone(state);
   invalid.blocks[0].data[0] ^= 1;
   assert.throws(() => new NativeFESSourceArena().restore(invalid), /copy mismatch/);
