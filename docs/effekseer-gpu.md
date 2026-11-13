@@ -74,8 +74,28 @@ Task close retires its view while the World retains GPU/resource ownership.
 
 The normal default-FES tests cover current packed vertices, shared target/depth,
 entry/loss/fault boundaries and fresh rebinding through an explicit GL recorder.
-Historical D6 dirty-rectangle union, full Task geometry/device pixel acceptance
-and final frame-rate/memory goals remain outside that recorder evidence.
+The screen-effect renderer owns current/previous dirty RECT history. Normal
+presentation collects every known enabled D6 callback independently of its
+draw priority or the supplied frame subset. Positive queries contribute the
+configuration's current screen viewport; an enabled callback also expands
+nonempty current damage when its query returns zero. The presentation request
+carries the viewport intersection of the previous/current union. Known boolean
+47/48 registration changes query under the old flag before assigning the new
+one; repeated booleans add no query. FES MOT display uses that same47 producer.
+Unknown registration values retain their existing gates.
+
+History retires only after that renderer's presentation operation completes
+with an explicit signed32-success HRESULT, including zero. Negative HRESULTs,
+unsigned words with the high bit set, throws and paused/inactive frames retain
+history. The current checkpoint restores both RECTs in place without replay.
+These are callback contribution and data/history side effects: drawing and
+presentation still process the complete frame. Partial or empty damage does
+not crop or skip ordinary content.
+
+Ordinary old/new model bounds, unregister's disable-before-erase ordering,
+close/delete/SIZE damage and complete native rectangle clipping remain partial.
+Full Task geometry/device pixel acceptance and final frame-rate/memory goals
+also remain outside that recorder evidence.
 
 Unknown fog-enabled or non-solid inherited branches report an explicit error.
 The current2000-quad packet guard is an upload boundary, not a proof that the

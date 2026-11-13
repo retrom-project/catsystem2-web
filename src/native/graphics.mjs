@@ -547,6 +547,17 @@ export class NativeGraphicTask {
   get input() {
     return this.world.inputFor?.(this.record.id);
   }
+  setRegistrationEnabled(enabled) {
+    const graph = this.graph;
+    if (
+      graph.callback &&
+      typeof graph.registrationEnabled === 'boolean' &&
+      typeof enabled === 'boolean' &&
+      graph.registrationEnabled !== enabled
+    )
+      this.world.screenEffects.rendering.collectCallbackDirty();
+    graph.registrationEnabled = enabled;
+  }
   beforeChildren() {
     this.state.changed = 0;
   }
@@ -812,15 +823,17 @@ export class NativeGraphicTask {
           const parent = this.state.inheritPosition
             ? this.graphics.get(this.record.parent)?.graph
             : null;
-          if (!this.state.inheritPosition) this.graph.registrationEnabled = this.state.shown;
+          if (!this.state.inheritPosition) this.setRegistrationEnabled(this.state.shown);
           else if (parent)
             // An unverified parent may be a failed lookup, so even an external
             // zero does not establish the result. A real miss retains it.
-            this.graph.registrationEnabled = !hasRegistration(parent)
-              ? null
-              : this.state.shown
-                ? parent.registrationEnabled
-                : false;
+            this.setRegistrationEnabled(
+              !hasRegistration(parent)
+                ? null
+                : this.state.shown
+                  ? parent.registrationEnabled
+                  : false,
+            );
         }
         this.setInputDisplay();
         this.sync();
@@ -828,7 +841,7 @@ export class NativeGraphicTask {
       case 48:
         this.state.renderPaused = !l;
         if (hasRegistration(this.graph))
-          this.graph.registrationEnabled = this.state.shown && Boolean(l);
+          this.setRegistrationEnabled(this.state.shown && Boolean(l));
         if (this.graph)
           new DataView(this.graph.kx2.buffer).setInt32(
             MOTION_ABI.display,

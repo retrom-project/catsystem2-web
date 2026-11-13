@@ -4,6 +4,28 @@ import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
+const emptyRectangle = (r) => r[0] >= r[2] || r[1] >= r[3];
+const unionRectangles = (a, b) =>
+  emptyRectangle(a)
+    ? emptyRectangle(b)
+      ? [0, 0, 0, 0]
+      : [...b]
+    : emptyRectangle(b)
+      ? [...a]
+      : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
+const intersectRectangles = (a, b) => {
+  const r = [
+    Math.max(a[0], b[0]),
+    Math.max(a[1], b[1]),
+    Math.min(a[2], b[2]),
+    Math.min(a[3], b[3]),
+  ];
+  return emptyRectangle(r) ? [0, 0, 0, 0] : r;
+};
+const validRectangle = (r) =>
+  Array.isArray(r) &&
+  r.length === 4 &&
+  Array.from(r).every((n) => Number.isInteger(n) && n >= -0x80000000 && n <= 0x7fffffff);
 export function screenQuad(
   width,
   height,
@@ -38,6 +60,8 @@ export class NativeScreenEffectRenderer {
     this.prepared = false;
     this.frame = null;
     this.busy = 0;
+    this.dirtyCurrent = new Int32Array(4);
+    this.dirtyPrevious = new Int32Array(4);
   }
   get stage() {
     return this.world.stageRenderer;
@@ -133,6 +157,22 @@ export class NativeScreenEffectRenderer {
     }
     return changed;
   }
+  collectCallbackDirty() {
+    const screen = this.world.configuration.screen,
+      viewport = [0, 0, screen.currentWidth, screen.currentHeight];
+    let callback = false;
+    // Dirty contribution scans registrations, independently of draw ranges.
+    // Ordinary old/new model bounds remain a separate producer.
+    for (const task of this.world.graphics.tasks.values()) {
+      const graph = task.graph;
+      if (!graph?.callback || graph.registrationEnabled !== true) continue;
+      if (!task.queryDraw) throw new Error('Native callback registration lost its query');
+      callback = true;
+      if (task.queryDraw()) this.dirtyCurrent.set(viewport);
+    }
+    if (callback && !emptyRectangle(this.dirtyCurrent)) this.dirtyCurrent.set(viewport);
+    return intersectRectangles(viewport, unionRectangles(this.dirtyPrevious, this.dirtyCurrent));
+  }
   async prepareModels() {}
   clear(color, depthOnly = false) {
     const enabled = this.world.graphics.d3dContext.depthStencilEnabled;
@@ -220,6 +260,9 @@ export class NativeScreenEffectRenderer {
     this.frame = { items: items.filter(nativeItem).sort(compare), draw };
     this.busy++;
     try {
+      const dirtyRectangle = this.collectCallbackDirty();
+      let presented = false,
+        status;
       await this.prepareModels();
       await this.gpu.withRenderTargetAsync(
         this.gpu.primaryTarget,
@@ -236,10 +279,19 @@ export class NativeScreenEffectRenderer {
             this.clear(0xff000000);
             await effect.render();
           }
-          await present({ stageTarget: this.gpu.primaryTarget });
+          status = await present({ stageTarget: this.gpu.primaryTarget, dirtyRectangle });
+          presented = true;
         },
         { depthStencil: this.stage.screenDepth() },
       );
+      if (presented) {
+        if (!Number.isInteger(status) || status < -0x80000000 || status > 0xffffffff)
+          throw new TypeError('Native presentation must return a signed32 HRESULT word');
+        if ((status | 0) >= 0) {
+          this.dirtyPrevious.set(this.dirtyCurrent);
+          this.dirtyCurrent.fill(0);
+        }
+      }
     } finally {
       this.busy--;
       this.frame = null;
@@ -250,6 +302,8 @@ export class NativeScreenEffectRenderer {
     if (this.busy || this.frame)
       throw new Error('Cannot checkpoint an unsettled screen capture or render');
     return {
+      dirtyCurrent: [...this.dirtyCurrent],
+      dirtyPrevious: [...this.dirtyPrevious],
       backbuffer: this.gpu && {
         width: this.gpu.primaryTarget.width,
         height: this.gpu.primaryTarget.height,
@@ -265,6 +319,10 @@ export class NativeScreenEffectRenderer {
     };
   }
   restore(state) {
+    if (!validRectangle(state.dirtyCurrent) || !validRectangle(state.dirtyPrevious))
+      throw new Error('Invalid screen dirty RECT checkpoint');
+    this.dirtyCurrent.set(state.dirtyCurrent);
+    this.dirtyPrevious.set(state.dirtyPrevious);
     this.releaseCaptures({ producer: false });
     this.captures = [...state.captures];
     this.prepared = state.prepared;
