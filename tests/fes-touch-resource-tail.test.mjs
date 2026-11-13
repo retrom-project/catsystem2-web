@@ -155,14 +155,19 @@ function observe(h) {
       return message(code, ...args);
     },
   });
-  h.task.player.nativeEvent = (key, name) => {
+  h.task.player.nativeEvent = (reference, name) => {
+    // This recorder keeps its existing ASCII diagnostics; production receives the raw ref.
+    const key =
+      reference === null
+        ? null
+        : h.instance.collection.lookup(reference.nameBytes, reference.index).key;
     const row = current;
     if (row) {
       row.events.push([key, name]);
       row.order.push(`event:${key}`);
       row.eventDepth++;
     }
-    const result = event(key, name);
+    const result = event(reference, name);
     if (result && typeof result.then === 'function')
       return result
         .then((value) => {

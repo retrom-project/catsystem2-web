@@ -350,7 +350,12 @@ export class FESPlayer {
   }
   nativeEvent(key, event) {
     const instance = this.root,
-      object = key == null ? null : instance.byKey.get(key);
+      object =
+        key == null
+          ? null
+          : instance.runtime
+            ? instance.collection.lookup(key.nameBytes, key.index)
+            : instance.byKey.get(key);
     if (key != null && !object) throw new Error(`FES native input refers to missing object ${key}`);
     const fields = {
       PUSH_L: 'clickL',

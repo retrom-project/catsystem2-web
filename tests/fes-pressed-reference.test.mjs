@@ -77,8 +77,13 @@ function observe(h) {
       pushes.push({ words: [...words], senderWorldID: context.nativeSenderWorldID, context });
     return message(words, context);
   };
-  h.task.player.nativeEvent = (key, name) => {
-    const result = event(key, name);
+  h.task.player.nativeEvent = (reference, name) => {
+    // This recorder keeps its existing ASCII diagnostics; production receives the raw ref.
+    const key =
+      reference === null
+        ? null
+        : h.instance.collection.lookup(reference.nameBytes, reference.index).key;
+    const result = event(reference, name);
     events.push({
       key,
       name,

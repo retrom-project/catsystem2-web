@@ -98,12 +98,17 @@ function observe(h) {
       current = null;
     }
   };
-  h.task.player.nativeEvent = (key, name) => {
+  h.task.player.nativeEvent = (reference, name) => {
+    // This recorder keeps its existing ASCII diagnostics; production receives the raw ref.
+    const key =
+      reference === null
+        ? null
+        : h.instance.collection.lookup(reference.nameBytes, reference.index).key;
     if (current) {
       current.order.push(name);
       current.events.push([key, name]);
     }
-    return event(key, name);
+    return event(reference, name);
   };
   h.task.player.flush = (...args) => {
     if (current) current.order.push('flush');

@@ -28,12 +28,12 @@ export async function driverWorld(profile, { initialize = true, resources = true
         nativeInput: input,
         surface: null,
         mouse: null,
-        async nativeEvent(key, event) {
-          const object = instance.byKey.get(key);
+        async nativeEvent(reference, event) {
+          const object = instance.collection.lookup(reference.nameBytes, reference.index);
           if (!object) throw new Error('Fixture event refers to missing semantic control');
           if (event === 'SCRL_P') instance.scrollPosition = object.handle;
           api.events.push({
-            key,
+            key: object.key,
             event,
             value: object.value,
             scrollPosition: instance.scrollPosition,

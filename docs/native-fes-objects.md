@@ -448,3 +448,5 @@ still require separate identity work. Common-command selection and PL/copy
 transport now preserve raw bytes; correct labels, source-name addresses and
 common commands do not establish that all earlier consumers selected the correct
 raw object name.
+
+Normal native input events resolve the existing collection nameBytes/signed-index reference directly. Pressed references, SYSKEY and TOUCH resource tuples, directional selections and control messages 27/28 reach the current object without a presentation-key lookup; the shared event field writes, label whitelist and callback timing remain unchanged. Bare FES input retains its explicit String boundary. Keyboard-name filtering and public key lookups remain a separate gate, and the normal DEFINE ASCII guard stays enabled.

@@ -2261,9 +2261,10 @@
         "tests/browser/native-text.spec.mjs",
         "docs/native-fes-images.md",
         "tests/fes-define-type-case-default.test.mjs",
-        "tests/native-fes-input.test.mjs"
+        "tests/native-fes-input.test.mjs",
+        "tests/fes-input-event-bytes.test.mjs"
       ],
-      "note": "Both original constructors, complete header/apply and built-in command handlers, frame/MOT and retained ANM execute. Original CPU compositor covers MASK/BTYPE/affine/clip; 43 CPU/VRAM cases per PE and ten asymmetric final GPU cases per PE pass. Compound viewport/nested-renderer adapters, complete skin/input acceptance and CPU performance remain open. Normal requested BUTTON bindings retain owned collection nameBytes/index and only the latest child per tuple; bounds/warp use that existing child ID and current snapshots restore without replay. The nativeEvent/byKey bridge, keyboard name filters, waits and non-ASCII DEFINE remain separate.",
+      "note": "Both original constructors, complete header/apply and built-in command handlers, frame/MOT and retained ANM execute. Original CPU compositor covers MASK/BTYPE/affine/clip; 43 CPU/VRAM cases per PE and ten asymmetric final GPU cases per PE pass. Compound viewport/nested-renderer adapters, complete skin/input acceptance and CPU performance remain open. Normal requested BUTTON bindings retain owned collection nameBytes/index and only the latest child per tuple; bounds/warp use that existing child ID and current snapshots restore without replay. Keyboard name filters, public key lookups, waits and non-ASCII DEFINE remain separate. Normal native events retain the collection raw name/index through pressed, resource and control callbacks without presentation-key lookup; bare input and keyboard-name filtering retain their separate contracts.",
       "signatures": []
     },
     {
@@ -2396,8 +2397,12 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/o_scroll.html",
       "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
-      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
-      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "evidence": [
+        "tests/native-controls.test.mjs",
+        "docs/native-fes-controls.md",
+        "tests/fes-input-event-bytes.test.mjs"
+      ],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open. Normal native events retain the collection raw name/index through pressed, resource and control callbacks without presentation-key lookup; bare input and keyboard-name filtering retain their separate contracts.",
       "signatures": []
     },
     {
@@ -2407,8 +2412,12 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/o_scroll2.html",
       "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
-      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
-      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "evidence": [
+        "tests/native-controls.test.mjs",
+        "docs/native-fes-controls.md",
+        "tests/fes-input-event-bytes.test.mjs"
+      ],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open. Normal native events retain the collection raw name/index through pressed, resource and control callbacks without presentation-key lookup; bare input and keyboard-name filtering retain their separate contracts.",
       "signatures": []
     },
     {
@@ -2418,8 +2427,12 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/o_slider.html",
       "implementation": "src/native/fes-controls.mjs; src/native/control-task.mjs",
-      "evidence": ["tests/native-controls.test.mjs", "docs/native-fes-controls.md"],
-      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open.",
+      "evidence": [
+        "tests/native-controls.test.mjs",
+        "docs/native-fes-controls.md",
+        "tests/fes-input-event-bytes.test.mjs"
+      ],
+      "note": "Original constructors, complete header/apply and command handlers, child tasks, drag/repeat/focus/value events, native MOT, sleep and fresh-process restore execute for both frozen profiles. Authored execution and pixel tests pass; complete UI/skin acceptance remains open. Normal native events retain the collection raw name/index through pressed, resource and control callbacks without presentation-key lookup; bare input and keyboard-name filtering retain their separate contracts.",
       "signatures": []
     },
     {

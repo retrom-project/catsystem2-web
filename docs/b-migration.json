@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 286, "oracle": 149, "differential": 67 },
+    "counts": { "js": 287, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -108,6 +108,7 @@
         "tests/fes-image-model.test.mjs",
         "tests/fes-image-table-model.test.mjs",
         "tests/fes-input-actions-default.test.mjs",
+        "tests/fes-input-event-bytes.test.mjs",
         "tests/fes-input-initial-selection-default.test.mjs",
         "tests/fes-input-resetactive-default.test.mjs",
         "tests/fes-label-bytes-default.test.mjs",
@@ -49304,7 +49305,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "b0bb8f9d21c8455c944f9ee4e4d2a88c255b903d1a13bc84f4d0af92fb8f5b94",
+      "sourceSha256": "9b387cef67e848ea65a13f06d2c212129c178d763fbbad3eb3d8ac68d249567d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51831,7 +51832,7 @@
     },
     {
       "file": "src/native/fes-control-driver.mjs",
-      "sourceSha256": "0483f33f95b38351391d1bab17060bb2cbd3fec1025961f0b25c68ba589ab013",
+      "sourceSha256": "aeaac5191eb447222108b5b362cd3b161cefe9cf0cb991d3ac01672e86975f44",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52140,7 +52141,7 @@
     },
     {
       "file": "src/native/fes-input.mjs",
-      "sourceSha256": "e1e1ef138da691a6d562a3d3bf13ab975f6340f9224b0e06ea1bed38789740a5",
+      "sourceSha256": "282b658863718c9833a149dc72abf83a18ebc9ae91121c464043878dc371bdaa",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

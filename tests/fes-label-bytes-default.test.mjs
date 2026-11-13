@@ -258,8 +258,8 @@ for (const profile of startupProfiles) {
       strings.setBytes(1, ascii('LABEL_CALL'));
       await h.world.sendEngine(current.id, h.world.main.id, 333);
       words.set(55, 0);
-      assert.equal(await root.player.nativeEvent(left.key, 'FOCUS'), true);
-      assert.equal(await root.player.nativeEvent(right.key, 'FOCUS'), true);
+      assert.equal(await root.player.nativeEvent(root.collection.reference(left), 'FOCUS'), true);
+      assert.equal(await root.player.nativeEvent(root.collection.reference(right), 'FOCUS'), true);
       assert.equal(words.get(55), 1234);
       assert.deepEqual(eventInputs.slice(0, 2), [
         {

@@ -217,8 +217,12 @@ export class FESControlDriver {
         continue;
       if (message === 27) {
         setFESControlValue(object, value, 0);
-        await player.nativeEvent(object.key, 'SCRL_P');
-      } else await player.nativeEvent(object.key, value === 0 ? 'UNFOCUS' : 'FOCUS');
+        await player.nativeEvent(instance.collection.reference(object), 'SCRL_P');
+      } else
+        await player.nativeEvent(
+          instance.collection.reference(object),
+          value === 0 ? 'UNFOCUS' : 'FOCUS',
+        );
     }
     return true;
   }

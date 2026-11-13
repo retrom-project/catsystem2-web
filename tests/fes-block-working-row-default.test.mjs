@@ -314,7 +314,7 @@ for (const profile of startupProfiles) {
         frame = root.player.frameCount,
         button = root.collection.lookup('button', 0);
       root.player.focus({ s: root, o: button });
-      assert.equal(await root.player.nativeEvent(button.key, 'FOCUS'), true);
+      assert.equal(await root.player.nativeEvent(root.collection.reference(button), 'FOCUS'), true);
       assert.deepEqual(
         [41, 42, 43, 44].map((index) => h.words.get(index)),
         [2, 0, 2, 0],

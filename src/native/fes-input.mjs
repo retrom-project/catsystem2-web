@@ -65,7 +65,12 @@ export class FESInput {
       nameBytes: new Uint8Array(reference.nameBytes),
       index: reference.index | 0,
     };
-    return object?.key;
+    return object ? this.state.pressed : undefined;
+  }
+  pressedEventReference() {
+    const reference = this.state.pressed;
+    if (!reference?.nameBytes.length || reference.index === -1) return null;
+    return this.referenceObject(reference) ? reference : undefined;
   }
   pressedEventKey() {
     const reference = this.state.pressed;
@@ -477,7 +482,7 @@ export class FESInput {
       }
       await this.updateMouse();
       if (!live()) return 0;
-      const key = this.pressedEventKey(),
+      const reference = this.pressedEventReference(),
         event =
           keyIndex === 0
             ? 'RELEASE_L'
@@ -487,8 +492,8 @@ export class FESInput {
                 ? `RELEASE_${['UP', 'DOWN', 'LEFT', 'RIGHT'][keyIndex - 4]}`
                 : null;
       let handled = false;
-      if (event !== null && key !== undefined) {
-        handled = await player.nativeEvent(key, event);
+      if (event !== null && reference !== undefined) {
+        handled = await player.nativeEvent(reference, event);
         if (!live()) return 0;
         await player.flush();
         if (!live()) return 0;
@@ -538,22 +543,22 @@ export class FESInput {
       }
       await this.updateMouse();
       if (!live()) return 0;
-      const key = this.capturePressedReference();
+      const reference = this.capturePressedReference();
       let handled = false;
       if (keyIndex >= 4 && keyIndex <= 7) {
         handled = await this.moveDirection(keyIndex - 4, context);
         if (!live()) return 0;
       } else if (keyIndex === 0 || keyIndex === 1) {
-        if (key !== undefined) {
-          handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
+        if (reference !== undefined) {
+          handled = await player.nativeEvent(reference, keyIndex ? 'PUSH_R' : 'PUSH_L');
           if (!live()) return 0;
           await player.flush();
           if (!live()) return 0;
         }
       } else if (keyIndex === 8 || keyIndex === 9 || keyIndex === 10 || keyIndex === 11) {
         // Frozen scroll/page events write fields and return0 without dispatching labels.
-        if (key !== undefined)
-          player.nativeEvent(key, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][keyIndex - 8]);
+        if (reference !== undefined)
+          player.nativeEvent(reference, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][keyIndex - 8]);
       } else {
         let at = 0;
         while (at < runtime.resources.entries.length) {
@@ -572,7 +577,10 @@ export class FESInput {
               if (systemKey !== -1 && systemKey >>> 0 === keyIndex >>> 0) {
                 const object = instance.collection.lookup(entry.nameBytes, entry.index);
                 if (object) {
-                  const result = await player.nativeEvent(object.key, 'PUSH_L');
+                  const result = await player.nativeEvent(
+                    instance.collection.reference(object),
+                    'PUSH_L',
+                  );
                   if (!live()) return 0;
                   await player.flush();
                   if (!live()) return 0;
@@ -623,7 +631,7 @@ export class FESInput {
         const object = instance.collection.lookup(entry.nameBytes, entry.index);
         let handled = false;
         if (object) {
-          handled = await player.nativeEvent(object.key, 'TOUCH');
+          handled = await player.nativeEvent(instance.collection.reference(object), 'TOUCH');
           if (!live()) return 0;
           await player.flush();
           if (!live()) return 0;
@@ -752,7 +760,7 @@ export class FESInput {
     const reference = this.state.focus;
     try {
       await player.nativeEvent(
-        outcome.button.key,
+        reference,
         ['PUSH_UP', 'PUSH_DOWN', 'PUSH_LEFT', 'PUSH_RIGHT'][direction],
       );
       if (!live()) return true;
