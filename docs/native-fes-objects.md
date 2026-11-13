@@ -241,6 +241,31 @@ or re-evaluating the declarations. The public default-entry regression checks
 OBJECT application, real bitmap creation, NUMIMG holes, dynamic count0 and
 independent fresh ownership for both ABIs.
 
-This closes only the normal zero-count branch of `#DEFINE`. Native type-name
-matching, unknown-type diagnostics and the remaining byte/name/count-expression
-declaration constraints are still partial.
+The normal zero-count branch is independent of the known-name matching below.
+Per-version declaration-table membership, unknown-type diagnostics and the
+remaining byte/name/count-expression declaration constraints are still partial.
+
+## Known DEFINE type names in the C locale
+
+Normal DEFINE resolves an already-known type name using narrow ASCII case
+matching, with a private lookup derived from the existing canonical type
+catalogue and BASE descriptor. Only ASCII A through Z fold to lowercase; Unicode
+case conversion and new type aliases are not used. The canonical descriptor
+feeds the existing collection, typed object construction and Button keyNames
+registration. Program source and declaration type text remain unchanged, as do
+object-name matching and dynamic creation APIs.
+
+All existing ABI factory guards remain authoritative. SDK raw36 EFKPLANE still
+fails the effekseerTask guard in createFESTypedObject; raw37 STRING8 and raw38
+LOGSTRING8 still fail their real initializer utf8Text guards. An authored SDK
+negative case verifies uppercase and mixed case reach the same descriptors and
+same errors without allocating the unsupported World tasks. This does not close
+all original per-version declaration-table membership or diagnostic rules.
+
+Each instance's existing mutable keyNames Set is saved once as an array in its
+current FES player checkpoint. Restore validates that current array and fills
+the newly created same Set; malformed or missing current data is not interpreted
+as an empty set. Restoring does not replay source, declarations, macros or bank
+expansion. This keeps actual Button focus callbacks and keyboard selection
+metadata consistent with the restored canonical objects. DEFINE remains partial
+for its remaining declaration-table, unknown-type and byte/expression behavior.

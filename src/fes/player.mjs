@@ -625,6 +625,7 @@ export class FESPlayer {
             decodePending: s.decodePending,
             nativeQueuePending: s.nativeQueuePending,
             dynamicDefinitions: s.dynamicDefinitions,
+            keyNames: [...s.keyNames],
             macros: [...s.macros],
             nativeDictionary: s.nativeDictionary.snapshot(),
             objects: s.runtime
@@ -661,6 +662,12 @@ export class FESPlayer {
         macros: saved.macros,
         restoring: true,
       });
+      if (!Array.isArray(saved.keyNames)) throw new TypeError('Invalid FES keyboard name snapshot');
+      for (const name of saved.keyNames) {
+        if (typeof name !== 'string' || s.keyNames.has(name))
+          throw new TypeError('Invalid FES keyboard name snapshot');
+        s.keyNames.add(name);
+      }
       s.nativeDictionary.restore(saved.nativeDictionary);
       s.dynamicDefinitions = structuredClone(saved.dynamicDefinitions);
       if (s.runtime) await s.runtime.restore(saved.runtime);

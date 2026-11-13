@@ -3753,8 +3753,12 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/h_define.html",
       "implementation": "src/native/fes-coordinator.mjs",
-      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-define-zero-default.test.mjs"],
-      "note": "Scalar/array declarations use the ordinary native coordinator. Registered SDK74/Game76 normal DEFINE count0 becomes1 before factory/initializer work, including NUMIMG null slots; dynamic creation retains count0. Native type-name matching, unknown-type diagnostics, and byte/name/count-expression declaration constraints remain pending.",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/fes-define-zero-default.test.mjs",
+        "tests/fes-define-type-case-default.test.mjs"
+      ],
+      "note": "Normal scalar/array declarations normalize count0 to1 and match already-known type names with C-locale ASCII case rules, preserving existing typed-factory ABI gates and raw program metadata. Button keyNames retain current instance state across restore. Per-version declaration-table membership, unknown-type diagnostic policy, and byte/name/count-expression parsing remain pending.",
       "signatures": []
     },
     {

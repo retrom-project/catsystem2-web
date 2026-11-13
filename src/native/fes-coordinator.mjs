@@ -45,7 +45,7 @@ import {
 import { FESWorldEffects } from './fes-effect-driver.mjs';
 import { motionDefinition } from '../motion/definitions.mjs';
 import { FES_BUILTIN_VERBS } from '../fes/object.mjs';
-import { FES_OBJECT_DEFINITION_ORDER } from '../fes/types.mjs';
+import { FES_OBJECT_DEFINITION_ORDER, canonicalFESDefinitionType } from '../fes/types.mjs';
 import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesNarrowText } from '../fes/tokens.mjs';
@@ -247,11 +247,12 @@ export class FESCoordinator {
       const name = this.instance.soundArgument(declaration.name),
         // Normal DEFINE changes zero to one before factory/initializer work;
         // dynamic create retains the collection's independent count0 behavior.
-        count = declaration.count === 0 ? 1 : (declaration.count ?? 1);
-      this.collection.create(declaration.type, name, count, {
+        count = declaration.count === 0 ? 1 : (declaration.count ?? 1),
+        type = canonicalFESDefinitionType(declaration.type);
+      this.collection.create(type, name, count, {
         scalar: declaration.count === null,
       });
-      if (declaration.type === 'BUTTON') this.instance.keyNames.add(name);
+      if (type === 'BUTTON') this.instance.keyNames.add(name);
     }
     for (const table of program.tables) {
       const compiled = this.definitions.compile(table.columns);
