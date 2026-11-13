@@ -7,6 +7,9 @@ import {
   createD3DContext,
   snapshotD3DContext,
   restoreD3DContext,
+  d3dSamplerStages,
+  getD3DSamplerState,
+  setD3DSamplerState,
 } from '../render/particles-gl.mjs';
 const NOT_AVAILABLE = 0x8876086a;
 const INVALID_CALL = 0x8876086c;
@@ -116,7 +119,9 @@ export class EmoteD3D9 {
     this.objects = new Map();
     this.tables = new Map();
     this.calls = new Map();
+    this.ownsContext = context == null;
     this.context = context ?? createD3DContext({ depthStencilEnabled: true });
+    d3dSamplerStages(this.context);
     this.transforms = new Map([
       [2, identity()],
       [3, identity()],
@@ -124,7 +129,6 @@ export class EmoteD3D9 {
     ]);
     this.viewport = [0, 0, width, height, 0, 0x3f800000];
     this.scissor = [0, 0, width, height];
-    this.samplerStages = new Map([[0, this.context.samplers]]);
     this.textures = new Map();
     this.commands = [];
     this.frames = new Map();
@@ -145,6 +149,9 @@ export class EmoteD3D9 {
     this.renderTargets = new Map([[0, this.backbuffer]]);
     this.depthStencil = this.backDepth;
     this.scene = false;
+  }
+  get samplerStages() {
+    return d3dSamplerStages(this.context);
   }
   allocatePixels(record) {
     const surfaceID = this.surfaces?.create(record) ?? 0;
@@ -751,26 +758,11 @@ export class EmoteD3D9 {
           return 0;
         },
       ];
-      const samplerDefaults = new Map([
-        [1, 1],
-        [2, 1],
-        [3, 1],
-        [4, 0],
-        [5, 1],
-        [6, 1],
-        [7, 0],
-        [8, 0],
-        [9, 0],
-        [10, 1],
-        [11, 0],
-        [12, 0],
-        [13, 0],
-      ]);
       methods[68] = [
         'GetSamplerState',
         3,
         (_, [stage, id, output]) => {
-          const value = this.samplerStages.get(stage)?.get(id) ?? samplerDefaults.get(id);
+          const value = getD3DSamplerState(this.context, stage, id);
           if (value === undefined) return INVALID_CALL;
           p.store(output, value);
           return 0;
@@ -780,9 +772,7 @@ export class EmoteD3D9 {
         'SetSamplerState',
         3,
         (_, [stage, id, value]) => {
-          if (!this.samplerStages.has(stage))
-            this.samplerStages.set(stage, new Map(samplerDefaults));
-          this.samplerStages.get(stage).set(id, value);
+          setD3DSamplerState(this.context, stage, id, value);
           return 0;
         },
       ];
@@ -1728,11 +1718,10 @@ export class EmoteD3D9 {
       backDepth: this.backDepth,
       tables: [...this.tables],
       objects: [...this.objects],
-      context: snapshotD3DContext(this.context),
+      context: this.ownsContext ? snapshotD3DContext(this.context) : null,
       transforms: [...this.transforms],
       viewport: this.viewport,
       scissor: this.scissor,
-      samplerStages: [...this.samplerStages].map(([stage, states]) => [stage, [...states]]),
       textures: [...this.textures],
       renderTargets: [...this.renderTargets],
       depthStencil: this.depthStencil,
@@ -1757,6 +1746,9 @@ export class EmoteD3D9 {
     });
   }
   restore(state) {
+    if (this.ownsContext !== (state.context !== null))
+      throw new Error('D3D checkpoint context ownership differs from its current owner');
+    d3dSamplerStages(this.context);
     this.endSceneBatch();
     this.width = state.width;
     this.height = state.height;
@@ -1779,14 +1771,10 @@ export class EmoteD3D9 {
       this.surfaces.restore(state.surfaces);
     }
     this.objects = new Map(structuredClone(state.objects));
-    Object.assign(this.context, restoreD3DContext(state.context));
+    if (this.ownsContext) restoreD3DContext(state.context, this.context);
     this.transforms = new Map(structuredClone(state.transforms));
     this.viewport = [...state.viewport];
     this.scissor = [...state.scissor];
-    this.samplerStages = new Map(
-      state.samplerStages.map(([stage, states]) => [stage, new Map(states)]),
-    );
-    this.samplerStages.set(0, this.context.samplers);
     this.textures = new Map(state.textures);
     this.renderTargets = new Map(state.renderTargets ?? [[0, this.backbuffer]]);
     this.depthStencil = state.depthStencil ?? 0;

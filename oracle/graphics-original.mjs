@@ -376,7 +376,10 @@ export class NativeGraphics {
       nativeRenderOrder: [...this.nativeRenderOrder],
     });
   }
-  restore(state) {
+  restoreD3DContext(state) {
+    restoreD3DContext(state, this.d3dContext);
+  }
+  restore(state, { restoreContext = true } = {}) {
     const {
       bitmapAssets,
       d3dContext,
@@ -395,7 +398,7 @@ export class NativeGraphics {
     if (planeModelCommands) this.world.planeModelCommands.restore(planeModelCommands);
     Object.assign(this, values);
     this.nativeRenderOrder = new Map(nativeRenderOrder);
-    this.d3dContext = restoreD3DContext(d3dContext);
+    if (restoreContext) this.restoreD3DContext(d3dContext);
     this.view.restore(view);
     this.texturePages =
       texturePages && !texturePages.native

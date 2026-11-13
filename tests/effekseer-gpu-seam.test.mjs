@@ -116,11 +116,19 @@ test('AlphaFunc, ZFunc and sampler inheritance are explicit rather than reset to
     assert.deepEqual(
       [...s.samplerStages.get(stage)],
       [
-        [6, 1],
-        [5, 1],
-        [7, 0],
         [1, 3],
         [2, 3],
+        [3, 1],
+        [4, 0],
+        [5, 1],
+        [6, 1],
+        [7, 0],
+        [8, 0],
+        [9, 0],
+        [10, 1],
+        [11, 0],
+        [12, 0],
+        [13, 0],
       ],
     );
   assert.deepEqual(

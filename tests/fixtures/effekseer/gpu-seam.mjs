@@ -144,19 +144,13 @@ function setup() {
     ['texture0', { id: 'ordinaryTexture' }],
     ['fvf', 0x144],
   ]);
-  const samplerStages = new Map([[0, context.samplers]]);
+  const samplerStages = context.samplerStages;
   const viewport = [3, 4, 24, 16, 0.25, 0.75];
   const view = new EffekseerSharedDeviceView({
     context,
     gpu,
     viewport: () => viewport,
     bindings: { get: (n) => bindings.get(n), set: (n, v) => bindings.set(n, v) },
-    samplers: {
-      set(stage, id, value) {
-        if (!samplerStages.has(stage)) samplerStages.set(stage, new Map());
-        samplerStages.get(stage).set(id, value);
-      },
-    },
   });
   const scope = new EffekseerDeviceScope(view);
   return { ...r, gpu, stage, context, view, scope, bindings, samplerStages, viewport };

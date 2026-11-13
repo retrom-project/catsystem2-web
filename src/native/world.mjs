@@ -1053,11 +1053,15 @@ export class NativeWorld {
         .filter(([, record]) => record.type === 'variable-bank')
         .map(([handle, record]) => [handle, record.value.selectedContext]),
     );
-    await this.graphics.restore(state.graphics);
+    await this.graphics.restore(state.graphics, { restoreContext: !state.nativeEngine });
     this.fesSources.restore(state.fesSources);
     if (state.nativeEngine) {
       for (const [name] of state.nativeEngine.features) await this.getNativeFeature(name);
       const engine = await this.ensureNativeEngine();
+      // Feature construction may initialize the shared device's defaults. Its
+      // owner restores the saved context once, after construction and before
+      // borrowers restore their own non-context state.
+      this.graphics.restoreD3DContext(state.graphics.d3dContext);
       engine.restore(state.nativeEngine);
     }
     await this.effekseer.restore(state.effekseer);

@@ -6,13 +6,22 @@ through the existing StageRenderer program, target, depth attachment and
 texture cache. Typed buffers grow on demand and are reused. It does not create
 an Effekseer canvas or move frame images through the CPU.
 
-This backend does not yet install kind61, raw36, a task manager or a World CRT
-owner. EFK language execution remains unsupported until those actual task/
-device/thread/lifecycle paths are implemented and checked together.
+The default kind61/raw36 CPU path now owns its task manager and World CRT
+binding, but its callback still reports an unsupported GPU adapter. This
+independent backend is not yet connected to that actual submission path;
+physical bindings, pixels and device lifecycle remain GPU integration work.
 
 The normal solid/no-fog profile preserves the original quad order, programmable
 alpha and inherited depth/alpha/sampler state. The device scope restores twelve
 render states and five bindings; sampler changes retain the original leakage.
+`createD3DContext` owns the single `samplerStages` Map; its stage-zero entry
+aliases `samplers`. The JS semantic view and transitional Emote adapter read
+and write that same authority. Stages are allocated only when written, using
+the adapter's existing defaults. A read of an unwritten stage does not create
+another state owner. The snapshot stores stage zero only in `samplers` and
+other allocated stages only in `samplerStages`. This state-only owner change
+does not implement physical WebGL binding capture or actual kind61 submission.
+
 Unknown fog-enabled or non-solid inherited branches report an explicit error.
 The current2000-quad packet guard is an upload boundary, not a proof that the
 original shared batch splits or clamps at2000. Its byte reserve/flush and

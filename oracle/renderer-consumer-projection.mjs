@@ -3,7 +3,7 @@
 // StageRenderer owns texture/surface bytes, exposed through bounded PE consumer locks.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
-import { createD3DContext } from '../src/render/particles-gl.mjs';
+import { resetD3DContext } from '../src/render/particles-gl.mjs';
 import { NativeGraphicsPlatform } from './graphics-consumer-projection.mjs';
 import { installNativeDirectSound } from '../src/native/windows-directsound.mjs';
 
@@ -100,7 +100,7 @@ export class NativeRenderer {
     // Creating the transitional device starts with the old D3D defaults.
     // A view may then apply configured filters. Inheriting an earlier JS
     // draw's point sampler changes Game movie boundary pixels.
-    Object.assign(world.graphics.d3dContext, createD3DContext({ depthStencilEnabled: true }));
+    resetD3DContext(world.graphics.d3dContext, { depthStencilEnabled: true });
     this.d3d = new EmoteD3D9(this.process, {
       width: view.clientWidth,
       height: view.clientHeight,

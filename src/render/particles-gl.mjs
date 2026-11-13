@@ -264,6 +264,66 @@ function values(input) {
   return input instanceof Map ? input : new Map(input || []);
 }
 
+// Preserve the existing adapter's lazy defaults for stages not yet written.
+// Stage zero retains particleRenderState's established initialized values.
+const samplerDefaults = new Map([
+  [1, 1],
+  [2, 1],
+  [3, 1],
+  [4, 0],
+  [5, 1],
+  [6, 1],
+  [7, 0],
+  [8, 0],
+  [9, 0],
+  [10, 1],
+  [11, 0],
+  [12, 0],
+  [13, 0],
+]);
+export function d3dSamplerStages(context) {
+  if (
+    !(context?.samplers instanceof Map) ||
+    !(context?.samplerStages instanceof Map) ||
+    context.samplerStages.get(0) !== context.samplers
+  )
+    throw new TypeError('D3D sampler stages require their stage-zero alias');
+  return context.samplerStages;
+}
+export function getD3DSamplerState(context, stage, id) {
+  return d3dSamplerStages(context).get(stage)?.get(id) ?? samplerDefaults.get(id);
+}
+export function setD3DSamplerState(context, stage, id, value) {
+  const stages = d3dSamplerStages(context);
+  if (!stages.has(stage)) stages.set(stage, new Map(samplerDefaults));
+  stages.get(stage).set(id, value);
+}
+function copyMap(target, source) {
+  target.clear();
+  for (const [key, value] of source) target.set(key, value);
+}
+function copyStageMaps(target, source) {
+  const previous = new Map(target);
+  target.clear();
+  for (const [stage, states] of source) {
+    const current = previous.get(stage) ?? new Map();
+    copyMap(current, states);
+    target.set(stage, current);
+  }
+}
+function assignD3DContext(target, source) {
+  d3dSamplerStages(target);
+  const { states, samplers, samplerStages, stages, ...values } = source;
+  Object.assign(target, values);
+  copyMap(target.states, states);
+  copyMap(target.samplers, samplers);
+  copyStageMaps(target.stages, stages);
+  const nonzero = new Map(samplerStages);
+  nonzero.delete(0);
+  copyStageMaps(target.samplerStages, nonzero);
+  target.samplerStages.set(0, target.samplers);
+  return target;
+}
 export function createD3DContext({
   depthStencilEnabled = false,
   magFilter = 2,
@@ -274,6 +334,7 @@ export function createD3DContext({
   return {
     states,
     samplers,
+    samplerStages: new Map([[0, samplers]]),
     stages: new Map(),
     lastDrawType: 7,
     lastBlend: 7,
@@ -283,21 +344,39 @@ export function createD3DContext({
     multisampleAntialias,
   };
 }
+// Reinitialization preserves the existing context and Map aliases held by borrowers.
+export function resetD3DContext(context, options) {
+  return assignD3DContext(context, createD3DContext(options));
+}
 export function snapshotD3DContext(context) {
+  const samplerStages = d3dSamplerStages(context);
   return {
     ...context,
     states: [...context.states],
     samplers: [...context.samplers],
+    // Stage zero is saved only in samplers, never a second time here.
+    samplerStages: [...samplerStages]
+      .filter(([stage]) => stage !== 0)
+      .map(([stage, states]) => [stage, [...states]]),
     stages: [...context.stages].map(([stage, states]) => [stage, [...states]]),
   };
 }
-export function restoreD3DContext(state) {
-  return {
+export function restoreD3DContext(state, context = null) {
+  const samplers = new Map(state.samplers),
+    samplerStages = new Map([[0, samplers]]);
+  for (const [stage, states] of state.samplerStages) {
+    if (!Number.isInteger(stage) || stage <= 0 || stage > 0xffffffff || samplerStages.has(stage))
+      throw new Error('Invalid current D3D sampler stage checkpoint');
+    samplerStages.set(stage, new Map(states));
+  }
+  const restored = {
     ...state,
     states: new Map(state.states),
-    samplers: new Map(state.samplers),
+    samplers,
+    samplerStages,
     stages: new Map(state.stages.map(([stage, states]) => [stage, new Map(states)])),
   };
+  return context ? assignD3DContext(context, restored) : restored;
 }
 
 export function particleRenderState(blendMode = 0, renderStates = [], samplerStates = []) {

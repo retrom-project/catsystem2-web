@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Semantic view of one existing shared device. It owns no material/target state.
+import { d3dSamplerStages, setD3DSamplerState } from '../render/particles-gl.mjs';
 const STATES = Object.freeze({
   alphaBlendEnabled: [27, 'boolean'],
   blendOperation: [171, { add: 1, subtract: 2, reverseSubtract: 3, min: 4, max: 5 }],
@@ -60,26 +61,26 @@ function field(table, name) {
   return table[name];
 }
 export class EffekseerSharedDeviceView {
-  constructor({ context, bindings, samplers, gpu, viewport } = {}) {
+  constructor({ context, bindings, gpu, viewport } = {}) {
     if (
       !(context?.states instanceof Map) ||
       !(context?.samplers instanceof Map) ||
       !(context?.stages instanceof Map)
     )
       throw new TypeError('Current complete D3D context is required');
+    d3dSamplerStages(context);
     for (const [id] of Object.values(STATES))
       if (!context.states.has(id)) throw new Error('Current D3D state is missing ' + id);
     for (const [name, owner, method] of [
       ['bindings', bindings, 'get'],
       ['bindings', bindings, 'set'],
-      ['samplers', samplers, 'set'],
       ['gpu', gpu, 'clear'],
     ])
       if (typeof owner?.[method] !== 'function')
         throw new TypeError('Shared Effekseer ' + name + '.' + method + ' operation is required');
     if (typeof viewport !== 'function')
       throw new TypeError('Current shared viewport getter is required');
-    Object.assign(this, { context, bindings, samplers, gpu, viewport });
+    Object.assign(this, { context, bindings, gpu, viewport });
     this.state = { states: context.states, samplers: context.samplers, stages: context.stages };
     // Reuse the Clear rectangle and its containing list across calls.
     this.clearRectangle = [0, 0, 0, 0];
@@ -104,8 +105,7 @@ export class EffekseerSharedDeviceView {
     if (!Number.isInteger(stage) || stage < 0 || stage > 3)
       throw new Error('Effekseer sampler stage outside original four');
     const [id, spec] = field(SAMPLERS, name);
-    // Required owner operation updates its actual sampler stage; no shadow map.
-    this.samplers.set(stage, id, rawValue(value, spec));
+    setD3DSamplerState(this.context, stage, id, rawValue(value, spec));
   }
   clearDepth(depth) {
     if (depth !== 1) throw new Error('Unverified Effekseer task depth clear value');
