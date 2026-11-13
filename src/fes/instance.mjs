@@ -872,7 +872,8 @@ export class FESInstance {
           args.length &&
           this.elements(args[0]).some((o) => ['SOUND', 'SNDTABLE'].includes(o.type))
         ) {
-          this.waitSound = this.elements(args[0])[0].key;
+          const object = this.elements(args[0])[0];
+          this.waitSound = this.runtime ? this.collection.reference(object) : object.key;
           return { action: 'suspend' };
         }
         if (args.length && this.elements(args[0]).length) {

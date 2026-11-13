@@ -302,7 +302,7 @@ membership. An empty Set keeps the existing unfiltered policy. The current
 String-array checkpoint carries these byte-view keys unchanged; restore does not
 replay registration or expansion. Bare players retain their display-name keys.
 This closes membership filtering and its checkpoint, while
-placement/plane, sound waits and broader keyboard identity remain separate work.
+placement/plane and broader keyboard identity remain separate work.
 
 Normal public `push` accepts the current collection's raw `{nameBytes, index}`
 reference. Its synchronous Boolean reports acceptance; `await player.flush()`
@@ -314,8 +314,7 @@ independent bare player retains its synchronous String target API. A null or
 missing target, including an exact index of -1, returns false without changing
 focus or emitting events. Existing instance order, enable and visibility policy
 remain. This closes public push target identity and completion; other synchronous
-event entrances, coordinate parents, plane visibility and sound wait references
-remain separate work.
+event entrances, coordinate parents and plane visibility remain separate work.
 
 Normal named object-motion waits retain the selected collection references as
 owned raw name bytes and signed indices. The initial busy check and later frame
@@ -324,8 +323,18 @@ that decode alike do not redirect a wait. A missing saved element is no longer
 busy; the existing frame path clears the completed wait. Snapshot and restore
 copy the reference bytes without replaying source or argument expansion. Bare
 players keep their independent String references. Getter order, skip, next and
-motion completion timing retain their existing behavior; sound waits remain
-separate work.
+motion completion timing retain their existing behavior.
+
+Normal named sound waits also retain the selected collection's raw name bytes and
+signed index. The two existing operand getters and first selected object policy
+remain; later busy queries resolve that same reference. The object's filename and
+native sound bank remain separate resource and playback identities. A missing
+waited sound still raises the existing error. Audio completion or STOP releases
+the wait through the existing busy query, while returning events preserve it and
+`next` clears it. Current checkpoints copy the reference bytes without replaying
+FES source or PLAY commands; rebuilding media sources during restore is allowed.
+Bare players retain their independent String references and sound-host policy.
+This closes sound wait identity without extending sound timing or table behavior.
 
 ## Literal ASCII hyphen in DEFINE names
 

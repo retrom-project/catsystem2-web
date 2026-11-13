@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 293, "oracle": 149, "differential": 67 },
+    "counts": { "js": 294, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -171,6 +171,7 @@
         "tests/fes-touch-checkpoint.test.mjs",
         "tests/fes-touch-resource-tail.test.mjs",
         "tests/fes-wait-objects-reference-default.test.mjs",
+        "tests/fes-wait-sound-reference-default.test.mjs",
         "tests/fes-window-image.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -49285,7 +49286,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "b27905b28616ec5e5d2a425f29206816c232546da27db46dc534d58cfd27c912",
+      "sourceSha256": "be0ed9c97d471bf22d4f8b64eec0ff4d735fe4d98b24ac826c957662adfb147e",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49311,7 +49312,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "fdce7a1158b857f6b2f20f506acc1a535c2e9bc4af3f1326b7611ed32ae5032b",
+      "sourceSha256": "96d044816500d83918b4c72f5a70637a5ff78ef7c1145989312b0c5efa4f860d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

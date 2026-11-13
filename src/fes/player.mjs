@@ -159,9 +159,13 @@ export class FESPlayer {
       s.runtime?.beforeStep();
       const tick = async () => {
         if (s.waitSound !== null) {
-          const object = s.byKey.get(s.waitSound);
-          if (!object)
-            throw new Error(`${s.name}: waiting sound object ${s.waitSound} disappeared`);
+          const object = s.waitObject(s.waitSound);
+          if (!object) {
+            const reference = s.runtime
+              ? `${fesByteView(s.waitSound.nameBytes)}[${s.waitSound.index}]`
+              : s.waitSound;
+            throw new Error(`${s.name}: waiting sound object ${reference} disappeared`);
+          }
           if (this.nativeSound) {
             if (await this.nativeSound.busy(s, object)) return;
           } else {
