@@ -535,10 +535,15 @@ export class FESInput {
       const key = this.capturePressedReference();
       let handled = false;
       if (key !== undefined) {
-        handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
-        if (!live()) return 0;
-        await player.flush();
-        if (!live()) return 0;
+        if (keyIndex === 8) {
+          // Frozen event6 writes SCRL_U and returns0 without dispatching labels.
+          player.nativeEvent(key, 'SCRL_U');
+        } else {
+          handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
+          if (!live()) return 0;
+          await player.flush();
+          if (!live()) return 0;
+        }
       }
       await this.propagation(sender, handled);
       if (!live()) return 0;
@@ -780,7 +785,7 @@ export class FESInput {
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
-    if (message === 9 && this.instance.runtime && (l === 0 || l === 1))
+    if (message === 9 && this.instance.runtime && (l === 0 || l === 1 || l === 8))
       return this.consumePush(sender, l, context);
     if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);
     await this.updateMouse();

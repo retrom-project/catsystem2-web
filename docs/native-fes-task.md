@@ -661,8 +661,8 @@ World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
 The existing pressed field owns a narrow nameBytes/int32 index pair, separately
-from the active reference. Normal key0/1 PUSH captures it after mouse completion
-and before its event. Only an empty active name or a current raw6 BUTTON with
+from the active reference. Key0/1 and scroll-up key8 PUSH capture it after mouse
+completion and before their event. Only an empty active name or a current raw6 BUTTON with
 enable0 produces the invalid pressed sentinel (represented as null). A missing
 current object or a current non-BUTTON still copies the active name/index; the
 event helper's missing-name early return skips its fields and flush, whereas a
@@ -679,8 +679,8 @@ only the defined name bytes and int32 index, never the unused buffer tail. A
 native invalid index=-1 makes its previous name unread; null models that
 sentinel, and the release reader also recognizes a copied index=-1. The current
 unreleased checkpoint saves this single pressed field as a pair/null; no old
-string reader or additional snapshot is kept. Other PUSH paths only adopt the
-same representation here; their admission/events/tails remain separate leaves.
+string reader or additional snapshot is kept. Unmigrated PUSH paths only adopt
+the same representation here; their admission/events/tails remain separate leaves.
 
 The early source writes remain visible if a later mouse query fails or its
 owner closes; cancellation does not roll them back. This call captures its
@@ -690,9 +690,27 @@ later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
-This bounded correction covers only normal default message9 key0/1. Direction
-4..7 keeps its existing resource traversal without another pass. Other PUSH key/scroll and TOUCH post-callback tails remain separate
-uncompleted boundaries; the direct JS-authored FES input API is unchanged.
+Normal default message9 key0/1 and scroll-up key8 share this owner/resource
+path. Direction4..7 keeps its existing resource traversal without another pass.
+Other PUSH key/scroll and TOUCH post-callback tails remain separate uncompleted
+boundaries; the direct JS-authored FES input API is unchanged.
+
+Canonical/logical key8 selects frozen event6 in both registered FES switches.
+It writes the SCRL_U field and returns0 without default or object label dispatch.
+The same current pressed-reference lookup preserves missing-name early return
+and NULL field behavior. The callback performs no Player flush, reports the real
+unhandled result with94, visits the current resource FIFO, and synchronizes input
+before returning. It uses the actual callback's live executor entry and existing
+per-await owner checks; no entry or continuation is saved in the pulse or state.
+Authored SCRL_U labels are not an extra execution path or a handled=true case.
+
+The existing normal FES btnsimulate8 command reaches Input154 and the real
+World Input/Graph/FES callback. A real339 definition can leave an image dirty
+after the pulse is prepared; key8 consumes that work before its callback returns,
+without relying on the later FES frame. Fresh restore retains the same pulse and
+dirty state without source replay. Actual342 masks ordinary Graph delivery while
+sleeping; the gate regression explicitly uses the exposed FES message boundary
+after observing that mask. No browser-wheel binding or other key is inferred.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
