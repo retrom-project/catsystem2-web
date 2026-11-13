@@ -697,6 +697,19 @@ The only new owner field is `FESInput.state.activeLock`, initialized to0 and sav
 once by the existing input checkpoint. Its full signed word is retained rather
 than replaced by a boolean. Current checkpoint format changes in place.
 
+The nonempty operand now reaches the normal numeric byte reader directly, without
+CP932 decoding or a second bank/SCRIPT pass. Its object identifiers use the
+existing collection's raw name bytes and signed index; missing ASCII identifiers
+return0 and queue that value. The optional operand is a numeric input, with no
+prepared-property percent stripping. The established bounded literal and name
+domains of the common numeric reader also apply here. For example, raw81 in a
+single-quote WORD literal yields0x8100, while raw high-byte object names retain the
+explicit unsupported-name boundary. A genuine malformed expression is rejected
+without executing its expression mutations or appending an active-lock record;
+the earlier bank/SCRIPT getter has already run. The original token and expanded
+operand checks still diagnose the1024-byte temporary boundary, and empty values
+still bypass the numeric reader. No input scalar, FIFO or checkpoint owner changes.
+
 Its real reader is canonical64 hover from Graph7/8, reached by NativeInput hover
 and tick. Graph forwards its native task ID; the FES route resolves that ID to
 the World task before searching saved raw6 resource entries in original order.

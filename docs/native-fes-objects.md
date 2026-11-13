@@ -508,3 +508,10 @@ quotes remain an explicit literal-domain gate. Bare and independent String
 lookups keep their existing boundaries. This common-argument closure does not
 close the remaining decoded property/definition/motion/String numeric producers,
 H1 head/directeval/mode1, general name consumers or the normal DEFINE guard.
+
+The dedicated normal `lockactive` Number frontend also consumes its existing
+expanded bytes through that reader, preserving optional-empty behavior, both
+1024-byte checks and the original int32 FIFO. This closes that one producer;
+remaining prepared-property, definition, motion and general String numeric
+producers stay separate. The collection's raw ownership and signed-index lookup
+are reused, with no new identity or saved-state format.

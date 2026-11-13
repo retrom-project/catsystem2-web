@@ -219,7 +219,7 @@ for (const profile of profiles) {
       await notify(h, 'LOCK');
       await notify(h, 'UNLOCK');
       assert.equal(h.input.state.activeLock, 0);
-      await assert.rejects(notify(h, 'BAD'), /expression|identifier|unknown/i);
+      await assert.doesNotReject(() => notify(h, 'BAD'));
       assert.equal(h.input.state.activeLock, 0);
       assert.deepEqual(h.runtime.pendingRecords, []);
       assert.equal(h.world.nativeEngine, undefined);
@@ -385,4 +385,213 @@ for (const profile of profiles) {
       }
     },
   );
+}
+
+for (const profile of profiles) {
+  test(`${profile}: normal lockactive retains raw numeric bytes, signed lookup and fresh scalar without replay`, async (t) => {
+    const h = await open(
+      profile,
+      {
+        KNOWN: 'lockactive known[(++$10)-1]\n$30=++$30',
+      },
+      [7, 8, 9],
+    );
+    let restored;
+    try {
+      const root = h.instance,
+        collection = root.collection,
+        aName = Uint8Array.of(0x81),
+        bName = Uint8Array.of(0x82),
+        knownName = utf8('known'),
+        known = collection.create('VIEW', knownName, 2, { enqueue: false }),
+        a = collection.create('VIEW', aName, 1, { enqueue: false })[0],
+        b = collection.create('VIEW', bName, 1, { enqueue: false })[0],
+        decoy = collection.create('VIEW', utf8('?'), 1, { enqueue: false })[0],
+        getters = [],
+        numeric = [],
+        lookups = [],
+        argumentBytes = root.argumentBytes,
+        operandValue = root.operandValue,
+        valueLookup = root.valueLookup;
+      // Fixture owner data does not admit non-ASCII DEFINE or another native factory type.
+      assert.equal(a.baseName, b.baseName);
+      assert.notEqual(a.handle, b.handle);
+      assert.notEqual(a.handle, decoy.handle);
+      assert.deepEqual(collection.reference(a), { nameBytes: aName, index: 0 });
+      assert.deepEqual(collection.reference(b), { nameBytes: bName, index: 0 });
+      t.mock.method(root, 'argumentBytes', function (bytes) {
+        const result = argumentBytes.call(this, bytes);
+        getters.push({ source: bytes.slice(), result: result.slice() });
+        return result;
+      });
+      t.mock.method(root, 'operandValue', function (bytes) {
+        assert.ok(bytes instanceof Uint8Array);
+        numeric.push(bytes.slice());
+        return operandValue.call(this, bytes);
+      });
+      t.mock.method(root, 'valueLookup', function (nameBytes, index) {
+        assert.ok(nameBytes instanceof Uint8Array);
+        lookups.push({ nameBytes: nameBytes.slice(), index });
+        return valueLookup.call(this, nameBytes, index);
+      });
+      for (const raw of [aName, bName]) {
+        const bytes = Uint8Array.from([...utf8('(++$12)+'), ...raw]),
+          beforeGetter = getters.length,
+          beforeNumeric = numeric.length,
+          beforeLookup = lookups.length;
+        root.setGlobal(12, 0);
+        let caught;
+        try {
+          h.runtime.lockActive([bytes]);
+        } catch (error) {
+          caught = error;
+        }
+        if (!caught)
+          t.diagnostic(
+            JSON.stringify({
+              unexpectedlyAcceptedRaw: [...raw],
+              mutation: root.global(12),
+              queued: h.runtime.pendingRecords,
+              decoyHandle: decoy.handle,
+            }),
+          );
+        assert.match(caught?.message ?? '', /Unsupported FES numeric name byte/);
+        assert.deepEqual(getters.slice(beforeGetter), [{ source: bytes, result: bytes }]);
+        assert.deepEqual(numeric.slice(beforeNumeric), [bytes]);
+        assert.equal(lookups.length, beforeLookup);
+        assert.equal(root.global(12), 0);
+        assert.deepEqual(h.runtime.pendingRecords, []);
+        assert.equal(h.input.state.activeLock, 0);
+      }
+      root.setGlobal(12, 0);
+      assert.throws(() => h.runtime.lockActive([utf8('(++$12)+')]), /expression|token/i);
+      assert.equal(root.global(12), 0, 'A truly malformed expression has no AST mutation');
+      assert.deepEqual(h.runtime.pendingRecords, []);
+      const bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),
+        beforeBoundGetter = getters.length,
+        beforeBoundNumeric = numeric.length;
+      assert.throws(() => h.runtime.lockActive([utf8('1'.repeat(1024))]), /token exceeds/);
+      assert.equal(getters.length, beforeBoundGetter);
+      assert.equal(numeric.length, beforeBoundNumeric);
+      bank.setBytes(7, utf8('1'.repeat(1024)));
+      assert.throws(() => h.runtime.lockActive([utf8('$str7')]), /operand exceeds/);
+      assert.equal(getters.length, beforeBoundGetter + 1);
+      assert.equal(numeric.length, beforeBoundNumeric);
+      assert.deepEqual(h.runtime.pendingRecords, []);
+      const queue = async (args, expected) => {
+        const active = h.input.state.activeLock;
+        assert.equal(h.runtime.lockActive(args), -3);
+        assert.deepEqual(h.runtime.pendingRecords, [{ operation: 'active-lock', value: expected }]);
+        assert.equal(
+          h.input.state.activeLock,
+          active,
+          'The existing FIFO owns the deferred scalar',
+        );
+        await h.runtime.flushRecords();
+        assert.equal(h.input.state.activeLock, expected);
+        assert.deepEqual(h.runtime.pendingRecords, []);
+      };
+      await queue([Uint8Array.of(39, 0x81, 39)], 0x8100);
+      const beforeEmptyNumeric = numeric.length;
+      bank.setBytes(7, new Uint8Array());
+      await queue([utf8('$str7'), utf8('++$43')], 0);
+      assert.equal(
+        numeric.length,
+        beforeEmptyNumeric,
+        'Expanded empty bypasses the numeric reader',
+      );
+      const beforeMissingGetter = getters.length;
+      await queue([], 0);
+      assert.equal(getters.length, beforeMissingGetter);
+      assert.equal(numeric.length, beforeEmptyNumeric);
+      root.setGlobal(11, 0);
+      await queue([utf8('known[(++$11)-2]')], 0);
+      assert.equal(root.global(11), 1);
+      assert.deepEqual(lookups.at(-1), { nameBytes: knownName, index: -1 });
+      await queue([utf8('absent')], 0);
+      assert.deepEqual(lookups.at(-1), { nameBytes: utf8('absent'), index: 0 });
+      const bankCalls = [],
+        scriptCalls = [],
+        replacements = h.world.configuration.scriptReplacements,
+        expand = bank.expandBytes.bind(bank),
+        apply = replacements.apply.bind(replacements);
+      t.mock.method(bank, 'expandBytes', (bytes) => {
+        bankCalls.push(text(bytes));
+        return expand(bytes);
+      });
+      t.mock.method(replacements, 'apply', (bytes) => {
+        scriptCalls.push(text(bytes));
+        return apply(bytes);
+      });
+      bank.setBytes(7, utf8('VALUE'));
+      bank.setBytes(8, utf8('++$43'));
+      replacements.add(utf8('VALUE'), utf8('known[(++$10)-1]'));
+      const beforeRealGetter = getters.length,
+        beforeRealNumeric = numeric.length,
+        beforeRealLookup = lookups.length;
+      await notify(h, 'PARAM');
+      assert.deepEqual(getters.slice(beforeRealGetter), [
+        { source: utf8('$str7'), result: utf8('known[(++$10)-1]') },
+      ]);
+      assert.deepEqual(numeric.slice(beforeRealNumeric), [utf8('known[(++$10)-1]')]);
+      assert.deepEqual(lookups.slice(beforeRealLookup), [{ nameBytes: knownName, index: 0 }]);
+      assert.equal(bankCalls.filter((s) => s === '$str7').length, 1);
+      assert.equal(bankCalls.includes('$str8'), false);
+      assert.equal(scriptCalls.filter((s) => s === 'VALUE').length, 1);
+      assert.equal(root.global(10), 1);
+      assert.equal(root.global(30), 1);
+      assert.equal(root.global(43), 0);
+      assert.equal(h.input.state.activeLock, known[0].handle);
+      assert.deepEqual(h.runtime.pendingRecords, []);
+      assert.equal(root.nativeQueuePending, false);
+      await queue([utf8('known[1]')], known[1].handle);
+      const handles = collection.objects.map((object) => object.handle);
+      restored = await fresh(h);
+      const next = restored.instance,
+        restoredNumeric = [],
+        restoredLookups = [],
+        runNext = next.operandValue,
+        lookupNext = next.valueLookup;
+      assert.deepEqual(restored.reads, ['case.kcs']);
+      assert.deepEqual(
+        next.collection.objects.map((object) => object.handle),
+        handles,
+      );
+      assert.deepEqual(next.collection.reference(next.collection.lookup(aName, 0)), {
+        nameBytes: aName,
+        index: 0,
+      });
+      assert.deepEqual(next.collection.reference(next.collection.lookup(bName, 0)), {
+        nameBytes: bName,
+        index: 0,
+      });
+      assert.equal(restored.input.state.activeLock, known[1].handle);
+      assert.deepEqual(next.runtime.pendingRecords, []);
+      assert.equal(next.global(10), 1);
+      assert.equal(next.global(30), 1, 'Fresh restoration does not replay the completed event');
+      t.mock.method(next, 'operandValue', function (bytes) {
+        restoredNumeric.push(bytes.slice());
+        return runNext.call(this, bytes);
+      });
+      t.mock.method(next, 'valueLookup', function (nameBytes, index) {
+        assert.ok(nameBytes instanceof Uint8Array);
+        restoredLookups.push({ nameBytes: nameBytes.slice(), index });
+        return lookupNext.call(this, nameBytes, index);
+      });
+      // This saved source row has a literal operand; SCRIPT configuration is not a new snapshot owner.
+      await notify(restored, 'KNOWN');
+      assert.deepEqual(restoredNumeric, [utf8('known[(++$10)-1]')]);
+      assert.deepEqual(restoredLookups, [{ nameBytes: knownName, index: 1 }]);
+      assert.equal(next.global(10), 2);
+      assert.equal(next.global(30), 2);
+      assert.equal(restored.input.state.activeLock, known[1].handle);
+      assert.deepEqual(next.runtime.pendingRecords, []);
+      assert.equal(next.nativeQueuePending, false);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(restored.world.nativeEngine, undefined);
+    } finally {
+      await restored?.world.close();
+      await h.world.close();
+    }
+  });
 }

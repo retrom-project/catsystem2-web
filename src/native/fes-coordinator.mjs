@@ -457,7 +457,7 @@ export class FESCoordinator {
       const bytes = nativeDataString(this.instance.argumentBytes(source));
       if (bytes.length >= 1024)
         throw new RangeError('FES lockactive operand exceeds its 1024-byte temporary');
-      if (bytes.length) value = this.instance.value(fesNarrowText(bytes)) | 0;
+      if (bytes.length) value = this.instance.operandValue(bytes) | 0;
     }
     this.pendingRecords.push({ operation: 'active-lock', value });
     return -3;
