@@ -289,12 +289,12 @@ export class NativeInput {
     if (!down) this.captures[index] = 0;
     return result;
   }
-  async click() {
+  async click(context) {
     const point = this.virtualPoint(this.previousX, this.previousY);
     let consumed = false;
     for (const record of this.ordered())
       if (record.enabled && this.hit(record, true, point))
-        consumed = this.consumed(await this.send(record, 5, 0, 0)) || consumed;
+        consumed = this.consumed(await this.send(record, 5, 0, 0, context)) || consumed;
     return consumed;
   }
   async drag() {
@@ -468,7 +468,7 @@ export class NativeInput {
       this.pointerActivation = false;
       this.dragX = this.x;
       this.dragY = this.y;
-      await this.click();
+      await this.click(context);
     }
     const mouseDown = (this.queryKey(0, 0) | this.queryKey(0, 1)) & 2;
     if (mouseDown) {

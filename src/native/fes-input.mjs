@@ -597,6 +597,45 @@ export class FESInput {
       return 0;
     }
   }
+  async consumeTouch(sender, taskID, context) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live() || this.state.sleeping) return 0;
+    try {
+      await this.updateMouse();
+      if (!live()) return 0;
+      const entry = runtime.resources.entries.find(
+        (entry) => entry.savedType === 6 && taskID != null && entry.buttonTaskID === taskID,
+      );
+      if (entry) {
+        const object = instance.collection.lookup(entry.nameBytes, entry.index);
+        let handled = false;
+        if (object) {
+          handled = await player.nativeEvent(object.key, 'TOUCH');
+          if (!live()) return 0;
+          await player.flush();
+          if (!live()) return 0;
+        }
+        if (!handled) await this.propagation(sender, false);
+        return 0;
+      }
+      // Only a missing resource task ID reaches the native resource visitor.
+      await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+      if (!live()) return 0;
+      await this.sync();
+      return 0;
+    } catch (error) {
+      if (live()) throw error;
+      return 0;
+    }
+  }
   async consumeHover(taskID, entered, context) {
     const player = this.player,
       instance = this.instance,
@@ -841,6 +880,7 @@ export class FESInput {
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
+    if (message === 65 && this.instance.runtime) return this.consumeTouch(sender, w, context);
     if (message === 9 && this.instance.runtime) return this.consumePush(sender, l, context);
     if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);
     await this.updateMouse();

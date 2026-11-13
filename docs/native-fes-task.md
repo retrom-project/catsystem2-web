@@ -693,8 +693,8 @@ authority; fresh restore uses the same resource entries and references.
 All normal default message9 PUSH keys share this owner/resource path. The
 normal direction callback owns one final resource traversal, including its
 unhandled/no-candidate and consumed-without-default branches. The data-key
-SYSKEY path uses the same final traversal. TOUCH post-callback tails remain a
-separate uncompleted boundary; the direct JS-authored FES input API is unchanged.
+SYSKEY path uses the same final traversal. Normal TOUCH has the distinct return
+paths described below; the direct JS-authored FES input API is unchanged.
 
 Canonical/logical key8 selects frozen event6 in both registered FES switches.
 It writes the SCRL_U field and returns0 without default or object label dispatch.
@@ -719,8 +719,8 @@ an authored SCRL_D label. Key9 uses the same source95, mouse, pressed reference,
 unhandled94, current resource FIFO and input-sync path as key8, with no Player
 flush. The ordinary btnsimulate9 producer verifies the actual World Graph/FES
 callback in both ABIs: current339 image work is consumed before that callback
-returns, while scroll-up and key10's page-up fields stay unchanged. Other keys
-and the remaining TOUCH tails retain their separate recovery boundaries.
+returns, while scroll-up and key10's page-up fields stay unchanged. The distinct
+normal TOUCH returns are described below.
 
 Normal pagination logical keys10/11 select frozen events9/10, respectively.
 Both registered ABIs write their PAGE_U/PAGE_D field and return0 with no default
@@ -829,8 +829,8 @@ writes and issued Input145 effects remain. Settled fresh World restores the
 existing pressed reference and resource owners without replaying source or
 callbacks. No state, queue, checkpoint field or ABI capability is added. That
 leaf covered normal key0/1 release; the remaining message10 branches below
-reuse its owner and resource handling. Other PUSH and TOUCH tails remain
-independent incomplete leaves.
+reuse its owner and resource handling. Normal TOUCH has its own return paths
+below.
 
 All remaining normal message10 keys use this same consumeRelease. Keys4..7
 select the original RELEASE event15..18 (UP/DOWN/LEFT/RIGHT). Both frozen
@@ -856,5 +856,45 @@ message boundary; it is not presented as an80-key physical producer. Real125
 waits test close resolve/reject and live errors, and a live resource failure
 remains explicit. The current FIFO is visited inside the actual callback with
 that call's entry, rather than deferred to a later FES tick. These normal
-release-key branches are closed; TOUCH, automoveex, drag
-variants and raw23 remain independent incomplete leaves.
+release-key branches are closed; automoveex, drag variants and raw23 remain
+independent incomplete leaves.
+
+Normal TOUCH message65 first tests sleeping, before mouse queries, event work,
+propagation or resource/input synchronization. Awake callbacks update the mouse
+and find the first resource FIFO entry whose saved type is raw6 and whose own
+BUTTON child task ID matches the translated incoming task ID. That entry's
+name/index selects the current ordinary object for event21/TOUCH. This lookup
+does not use the presentation-key button map, the initial object handle, enable,
+active focus or the pressed reference. Repeated BUTTON definitions retain their
+distinct resource children; an older real Graph still selects the current
+same-name object even though the button map retains only the latest child ID.
+
+Matched TOUCH uses the existing native event field/default/own-label behavior
+and finishes its Player flush under the captured owner checks. A true event
+result returns0 immediately. A false result sends94 to the actual Graph sender
+and then returns0. Neither matched return traverses resources or calls input.sync.
+A matching entry whose current name is missing follows the helper's early false
+return before field writes or Player flush; it still sends94. Sleeping and
+missing-current-name admission are exposed FES boundary contracts: ordinary
+sleep masks Graph delivery, and the callback tests do not invent a physical
+producer for an already cleaned child.
+
+Only an unmatched task ID runs one current resource FIFO traversal followed by
+input.sync before returning0, with no TOUCH event, Player flush or94. The normal
+full-screen low-button Graph provides that real unmatched callback because it
+has an Input region and no raw6 resource entry. Input's pointer-activation tick
+reaches its existing click/message5/Graph/message65 route. That call's optional
+executor context now passes through click and message5 unchanged; the resource
+tail uses the same current executor entry. Direct click() creates no context or
+entry. Both registered ABIs verify matched true/false and unmatched callback
+returns, duplicate real Graphs, source/pressed preservation and current339 image
+work consumed inside the low-button callback. No browser contact/device sampling
+or new hardware binding is inferred.
+
+TOUCH itself does not query95 or write source, active or pressed state. Authored
+labels keep their ordinary effects. Every asynchronous continuation uses the
+same player/root/runtime/task live rules as the other normal input consumers;
+closed-owner rejection cancels later work and live errors propagate. Current
+touch-field persistence is preserved: these callback assertions use the actual
+before value and current event handle, without manually clearing the field.
+The native touch value's independent frame-clear/lifetime audit remains open.
