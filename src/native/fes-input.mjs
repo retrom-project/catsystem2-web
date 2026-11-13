@@ -81,7 +81,7 @@ export class FESInput {
     this.state.focus = target ? this.referenceFor(target.o) : null;
   }
   bounds(object) {
-    const id = this.state.buttons.find(([key]) => key === object.key)?.[1],
+    const id = object.nativeInputTaskID,
       region = id == null ? null : this.input.get(id);
     return region ? [...region.bounds] : null;
   }
@@ -225,11 +225,15 @@ export class FESInput {
       pair[2] = signature;
     }
   }
-  registerObject(object, taskID) {
-    const pair = [object.key, taskID];
-    this.state.buttons = this.state.buttons.filter(([key]) => key !== object.key);
+  registerObject(reference, taskID) {
+    const pair = [{ nameBytes: reference.nameBytes.slice(), index: reference.index }, taskID];
+    this.state.buttons = this.state.buttons.filter(
+      ([current]) =>
+        current.index !== reference.index ||
+        current.nameBytes.length !== reference.nameBytes.length ||
+        !current.nameBytes.every((byte, at) => byte === reference.nameBytes[at]),
+    );
     this.state.buttons.push(pair);
-    object.nativeInputTaskID = taskID;
     return pair;
   }
   async initializeObject(object) {
@@ -869,8 +873,8 @@ export class FESInput {
     this.input.pointer(x, y);
     this.player.mouse = { x, y };
     for (const region of this.input.regions) region.active = false;
-    const id = this.state.buttons.find(([key]) => key === object.key)?.[1],
-      region = id === undefined ? null : this.input.get(id);
+    const id = object.nativeInputTaskID,
+      region = id == null ? null : this.input.get(id);
     if (region) region.active = true;
   }
   async message([sender, message, w, l], context = {}) {

@@ -51863,7 +51863,7 @@
     },
     {
       "file": "src/native/fes-coordinator.mjs",
-      "sourceSha256": "0c04def48b449bfd515311d16bde952d51cf7a18ec1a66412eaa12aa02e6379a",
+      "sourceSha256": "cb5fb1ac8f1a78f0b4fe9305f3743b7aba9e8c12e73088f3f446085645add4df",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51880,28 +51880,28 @@
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1065,
+          "line": 1068,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1077,
+          "line": 1080,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1085,
+          "line": 1088,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1107,
+          "line": 1110,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -52071,7 +52071,7 @@
     },
     {
       "file": "src/native/fes-image-driver.mjs",
-      "sourceSha256": "f5bfb649fa866f24c6233e92306733879a8fbfb464d112dce1ae78fe04c032a6",
+      "sourceSha256": "08bdb71851f400b62a8eb96083e14fa9e125175b1df19ccb0c01f6ec88abcb0b",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52138,7 +52138,7 @@
     },
     {
       "file": "src/native/fes-input.mjs",
-      "sourceSha256": "7fbee00e14b733a7eb80fefe6afc803a0437cccdfcd815e08b57e4317ef1bb4e",
+      "sourceSha256": "e1e1ef138da691a6d562a3d3bf13ab975f6340f9224b0e06ea1bed38789740a5",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

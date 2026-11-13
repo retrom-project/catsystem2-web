@@ -45,7 +45,8 @@ async function open(profile) {
     const input = h.task.input.input,
       runtime = h.instance.runtime,
       b = h.instance.collection.lookup('b', 0),
-      first = runtime.resources.entries.find((entry) => entry.name === 'b');
+      first = runtime.resources.entries.find((entry) => entry.name === 'b'),
+      bReference = h.instance.collection.reference(b);
     assert.ok(input.get(first.buttonTaskID), 'first real BUTTON Graph is already registered');
     await world.sendEngine(
       h.id,
@@ -77,9 +78,16 @@ async function open(profile) {
     }
     assert.equal(b.nativeInputTaskID, entries[1].buttonTaskID);
     assert.deepEqual(
-      h.task.input.state.buttons.filter(([key]) => key === b.key).map(([, id]) => id),
+      h.task.input.state.buttons
+        .filter(
+          ([reference]) =>
+            reference.index === bReference.index &&
+            reference.nameBytes.length === bReference.nameBytes.length &&
+            reference.nameBytes.every((byte, at) => byte === bReference.nameBytes[at]),
+        )
+        .map(([, id]) => id),
       [entries[1].buttonTaskID],
-      'presentation-key map no longer contains the first live Graph',
+      'borrowed reference map retains only the latest Graph for this tuple',
     );
     return { ...h, world, input, runtime, bEntries: entries };
   } catch (error) {

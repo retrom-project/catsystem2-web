@@ -88,8 +88,7 @@ export async function entryWorld(profile, files = {}, initialize = true) {
               name: 'FE Button',
             });
             object.nativeInputTaskID = entry.buttonTaskID;
-            input.state.buttons = input.state.buttons.filter(([key]) => key !== object.key);
-            input.state.buttons.push([object.key, entry.buttonTaskID]);
+            input.registerObject(collection.reference(object), entry.buttonTaskID);
           }
         },
         visit(entry, object) {

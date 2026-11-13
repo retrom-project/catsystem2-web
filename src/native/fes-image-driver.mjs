@@ -961,7 +961,7 @@ export class FESImages {
       const id = object.nativeInputTaskID,
         input = this.world.objects.objects.get(r.owner)?.implementation?.player?.nativeInput;
       if (this.world.objects.objects.has(id)) await this.world.objects.destroy(id, r.owner);
-      if (input) input.state.buttons = input.state.buttons.filter(([key]) => key !== object.key);
+      if (input) input.state.buttons = input.state.buttons.filter(([, childID]) => childID !== id);
       object.nativeInputTaskID = null;
     }
     r.closed = true;

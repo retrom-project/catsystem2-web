@@ -164,6 +164,16 @@ Raw-owner tests use the existing collection author API; they do not enable
 non-ASCII DEFINE or native message338. Existing entry/projection counts and
 unrelated command coverage remain unchanged.
 
+Normal BUTTON bindings borrow one latest child task for each existing collection
+`nameBytes`/signed-index tuple. The resource allocator passes an owned reference
+explicitly even before the player root is assigned. Bounds and cursor warps read
+the object's existing `nativeInputTaskID`; duplicate old entries still drive that
+latest child. Cleanup removes the child actually destroyed, preserving another
+latest binding. Current Input snapshots clone owned reference/child pairs without
+replaying allocation or interpreting an older format. The independent bare
+player's String-key binding API remains separate. The normal nativeEvent/byKey
+bridge, keyboard name filters and named waits still have their own identity work.
+
 ## Collection identity and initialization requests
 
 `FESObjectCollection` separates byte-name/index keys, the first declared group

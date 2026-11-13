@@ -613,7 +613,10 @@ export class FESCoordinator {
           creator: this.instance.runtimeID,
           name: 'FE Button',
         });
-        this.instance.player.nativeInput.registerObject(object, entry.buttonTaskID);
+        this.instance.player.nativeInput.registerObject(
+          this.collection.reference(object),
+          entry.buttonTaskID,
+        );
       }
     } else if (this.controls.supports(object) || this.strings.supports(object)) {
       object.nativeTaskID = null;

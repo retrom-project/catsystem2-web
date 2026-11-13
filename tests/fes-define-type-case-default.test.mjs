@@ -31,13 +31,34 @@ break
 $61=++$61
 break
 `;
+// These raw names are collection author data, not a DEFINE/338 admission claim.
+const bindingNames = [Uint8Array.of(114, 0x81), Uint8Array.of(114, 0x82)],
+  join = (...parts) => Uint8Array.from(parts.flatMap((part) => [...part])),
+  bindingSource = join(
+    ascii(source),
+    ascii('#'),
+    bindingNames[0],
+    ascii('.FOCUS\n$62=100+@\nbreak\n#'),
+    bindingNames[1],
+    ascii('.FOCUS\n$62=200+@\nbreak\n'),
+  );
+function bindingIDs(input, reference) {
+  return input.state.buttons
+    .filter(
+      ([stored]) =>
+        stored.index === reference.index &&
+        stored.nameBytes.length === reference.nameBytes.length &&
+        stored.nameBytes.every((byte, at) => byte === reference.nameBytes[at]),
+    )
+    .map(([, id]) => id);
+}
 async function environment(profile, files = {}) {
   const scope = startupEnvironment();
   let player;
   try {
     const template = await ordinaryStartupGame(profile, {
         sound: false,
-        files: { 'assets/type.fes': ascii(source), ...files },
+        files: { 'assets/type.fes': bindingSource, ...files },
       }),
       startup = await template.require('startup.xml'),
       marker = ascii('</INT>'),
@@ -172,11 +193,103 @@ for (const profile of startupProfiles) {
       assert.equal(child.kind, 6);
       assert.equal(child.parent, current.id);
       assert.equal(button.nativeInputTaskID, child.id);
-      assert.ok(input.state.buttons.some(([key, id]) => key === 'Choice' && id === child.id));
+      assert.ok(
+        input.state.buttons.some(
+          ([reference, id]) =>
+            fesByteView(reference.nameBytes) === 'Choice' &&
+            reference.index === 0 &&
+            id === child.id,
+        ),
+      );
       assert.equal(bank.get(60), 0);
       await h.world.sendEngine(current.id, h.world.main.id, 64, h.world.nativeTaskID(child.id), 1);
       assert.equal(bank.get(60), 1);
       assert.deepEqual(input.state.focus, { nameBytes: ascii('Choice'), index: 0 });
+      const rawObjects = [
+          ...collection.create('BUTTON', bindingNames[0], 2),
+          ...collection.create('BUTTON', bindingNames[1], 1),
+        ],
+        rawRefs = rawObjects.map((object) => collection.reference(object));
+      rawObjects.forEach((object, index) =>
+        Object.assign(object, {
+          width: 6,
+          height: 4,
+          x: 4 + index * 10,
+          y: 5,
+          z: 0,
+          disp: true,
+          displayValue: 1,
+          dirty: true,
+          sizeDirty: true,
+        }),
+      );
+      await runtime.initializeResources();
+      await runtime.resources.traverse();
+      assert.equal(
+        input.state.buttons.length,
+        4,
+        'Choice and all three raw tuples retain separate borrowed bindings',
+      );
+      const originalRawIDs = rawObjects.map((object) => object.nativeInputTaskID);
+      rawObjects.forEach((object, index) => {
+        assert.deepEqual(bindingIDs(input, rawRefs[index]), [originalRawIDs[index]]);
+        assert.deepEqual(input.bounds(object), [4 + index * 10, 5, 10 + index * 10, 9]);
+      });
+      collection.create('BUTTON', bindingNames[0], 1);
+      await runtime.initializeResources();
+      const latestRawIDs = rawObjects.map((object) => object.nativeInputTaskID),
+        rawEntries = runtime.resources.entries.filter(
+          (entry) =>
+            entry.index === 0 && fesByteView(entry.nameBytes) === fesByteView(bindingNames[0]),
+        ),
+        visited = [],
+        sent = [],
+        registrations = [],
+        visit = runtime.images.visitEntry.bind(runtime.images),
+        send = h.world.graphics.send.bind(h.world.graphics);
+      assert.equal(rawEntries.length, 2);
+      assert.notEqual(latestRawIDs[0], originalRawIDs[0]);
+      assert.deepEqual(latestRawIDs.slice(1), originalRawIDs.slice(1));
+      assert.deepEqual(bindingIDs(input, rawRefs[0]), [latestRawIDs[0]]);
+      assert.equal(input.state.buttons.length, 4);
+      assert.ok(input.input.get(originalRawIDs[0]), 'The old entry still owns its live Graph');
+      t.mock.method(runtime.images, 'visitEntry', async (instance, object, entry, ...args) => {
+        if (rawEntries.includes(entry)) visited.push([entry.id, object.nativeInputTaskID]);
+        return visit(instance, object, entry, ...args);
+      });
+      t.mock.method(h.world.graphics, 'send', (id, ...args) => {
+        if ([originalRawIDs[0], latestRawIDs[0]].includes(id)) {
+          sent.push(id);
+          if (args[1] === 89)
+            registrations.push({
+              id,
+              sender: args[0],
+              w: args[2],
+              l: args[3],
+              area: Array.from({ length: 6 }, (_, at) => args[4].load(at * 4) | 0),
+            });
+        }
+        return send(id, ...args);
+      });
+      rawObjects[0].sizeDirty = true;
+      rawObjects[0].dirty = true;
+      await runtime.resources.traverse();
+      assert.deepEqual(
+        visited,
+        rawEntries.map((entry) => [entry.id, latestRawIDs[0]]),
+      );
+      assert.ok(sent.length > 0);
+      assert.ok(
+        sent.every((id) => id === latestRawIDs[0]),
+        'Old and new entries drive the current object child',
+      );
+      assert.deepEqual(registrations, [
+        { id: latestRawIDs[0], sender: current.id, w: 0, l: 0, area: [4, 5, 10, 9, 99, 0] },
+      ]);
+      assert.deepEqual(input.bounds(rawObjects[0]), [4, 5, 10, 9]);
+      const resourceCount = runtime.resources.entries.length,
+        worldObjectCount = h.world.objects.objects.size;
+
       defineCheckpointPixels(h.world);
       const checkpoint = await h.player.snapshot();
       phase = 'restore';
@@ -222,9 +335,48 @@ for (const profile of startupProfiles) {
       assert.equal(nextBank.get(60), 2);
       assert.equal(bank.get(60), 1);
       assert.equal(bank.get(61), 0);
+      const restoredInput = restored.input,
+        nextRaw = rawRefs.map((ref) => next.collection.lookup(ref.nameBytes, ref.index));
+      assert.equal(next.runtime.resources.entries.length, resourceCount);
+      assert.equal(
+        fresh.world.objects.objects.size,
+        worldObjectCount,
+        'Fresh restore does not replay child allocation',
+      );
+      assert.equal(restoredInput.state.buttons.length, 4);
+      nextRaw.forEach((object, index) => {
+        assert.equal(object.nativeInputTaskID, latestRawIDs[index]);
+        assert.deepEqual(bindingIDs(restoredInput, rawRefs[index]), [latestRawIDs[index]]);
+        assert.deepEqual(restoredInput.bounds(object), [4 + index * 10, 5, 10 + index * 10, 9]);
+        const task = fresh.world.objects.objects.get(latestRawIDs[index]);
+        assert.equal(task.kind, 6);
+        assert.equal(task.parent, current.id);
+      });
+      assert.ok(fresh.world.inputFor(current.id).get(originalRawIDs[0]));
+      await restoredInput.warp(nextRaw[0]);
+      assert.deepEqual(restored.player.mouse, { x: 4, y: 5 });
+      assert.equal(restoredInput.input.get(latestRawIDs[0]).active, true);
+      assert.equal(restoredInput.input.get(latestRawIDs[2]).active, false);
+      for (const index of [1, 2]) {
+        await fresh.world.sendEngine(
+          current.id,
+          fresh.world.main.id,
+          64,
+          fresh.world.nativeTaskID(latestRawIDs[index]),
+          1,
+        );
+        assert.equal(nextBank.get(62), index === 1 ? 101 : 200);
+        assert.deepEqual(restoredInput.state.focus, rawRefs[index]);
+      }
+      assert.equal(sourceReads, 1, 'Fresh raw events do not reread source');
+
       await h.world.objects.release(current.id);
       assert.equal(h.world.objects.objects.has(child.id), false);
       assert.equal(fresh.world.objects.objects.get(child.id).parent, current.id);
+      for (const id of [...originalRawIDs, latestRawIDs[0]]) {
+        assert.equal(h.world.objects.objects.has(id), false);
+        assert.equal(fresh.world.objects.objects.get(id).parent, current.id);
+      }
     } finally {
       await fresh?.dispose();
       await h.close();

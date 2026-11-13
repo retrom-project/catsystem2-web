@@ -8,6 +8,8 @@ import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { memoryGame } from './helpers.mjs';
+import { FESObjectCollection } from '../src/native/fes-object-collection.mjs';
+import { FESImages } from '../src/native/fes-image-driver.mjs';
 import { defaultFESWorld, loadDefaultFES, drawPixels } from './fixtures/default-fes-world.mjs';
 
 async function fixture(source) {
@@ -245,4 +247,131 @@ test('FES mouse variables use its Top input outside-window gate and virtual coor
   secondary.pointer(12, 20, 0);
   await input.updateMouse();
   assert.deepEqual(player.mouse, { x: -2147483648, y: -2147483648 });
+});
+
+test('canonical input bindings retain raw tuples before root assignment and clean only the destroyed child', async () => {
+  const collection = new FESObjectCollection({ create: (identity) => ({ ...identity }) }),
+    firstName = Uint8Array.of(0x81),
+    secondName = Uint8Array.of(0x82),
+    first = collection.create('BUTTON', firstName, 2, { enqueue: false }),
+    second = collection.create('BUTTON', secondName, 1, { enqueue: false })[0],
+    record = { id: 44, implementation: { player: null } },
+    regions = [11, 12, 13, 14].map((id) => ({ id, bounds: [id, 2, id + 3, 6], active: false })),
+    pointer = [],
+    destroyed = [],
+    released = [],
+    nativeInput = {
+      regions,
+      get: (id) => regions.find((r) => r.id === id),
+      pointer: (...point) => pointer.push(point),
+    },
+    tasks = new Map([
+      [44, record],
+      ...[11, 12, 13, 14].map((id) => [id, { id, kind: 6, parent: 44 }]),
+    ]),
+    world = {
+      graphics: { images: {} },
+      inputFor: (id) => {
+        assert.equal(id, 44);
+        return nativeInput;
+      },
+      objects: {
+        objects: tasks,
+        async destroy(id, owner) {
+          assert.equal(owner, 44);
+          destroyed.push(id);
+          tasks.delete(id);
+        },
+        async release(id) {
+          released.push(id);
+          tasks.delete(id);
+        },
+      },
+      async sendEngine(id, owner, message) {
+        assert.deepEqual([owner, message], [44, 3]);
+        tasks.delete(id);
+      },
+    },
+    input = new FESInput(record, world),
+    firstRef = collection.reference(first[0]);
+  first[0].nativeInputTaskID = 11;
+  input.registerObject(firstRef, 11);
+  first[0].nativeInputTaskID = 12;
+  const latestFirstRef = collection.reference(first[0]);
+  input.registerObject(latestFirstRef, 12);
+  second.nativeInputTaskID = 13;
+  input.registerObject(collection.reference(second), 13);
+  first[1].nativeInputTaskID = 14;
+  input.registerObject(collection.reference(first[1]), 14);
+  assert.equal(
+    input.state.buttons.length,
+    3,
+    'Raw aliases and signed indices do not share a binding',
+  );
+  firstRef.nameBytes[0] = 63;
+  const borrowed = input.state.buttons.find(([, id]) => id === 12)[0];
+  assert.notEqual(borrowed.nameBytes, latestFirstRef.nameBytes);
+  latestFirstRef.nameBytes[0] = 63;
+  assert.deepEqual(borrowed, { nameBytes: firstName, index: 0 });
+  assert.deepEqual(input.bounds(first[0]), [12, 2, 15, 6]);
+  const saved = input.snapshot(),
+    fresh = new FESInput(record, world);
+  fresh.restore(saved); // player/root are still absent here.
+  assert.notEqual(fresh.state.buttons, saved.buttons);
+  saved.buttons.find(([, id]) => id === 12)[0].nameBytes[0] = 63;
+  assert.deepEqual(fresh.state.buttons.find(([, id]) => id === 12)[0], {
+    nameBytes: firstName,
+    index: 0,
+  });
+  assert.deepEqual(fresh.bounds(first[1]), [14, 2, 17, 6]);
+  const instance = {
+      runtimeID: 44,
+      collection,
+      objects: collection.objects,
+      rect(object) {
+        const b = fresh.bounds(object);
+        return { x: b[0], y: b[1], w: b[2] - b[0], h: b[3] - b[1] };
+      },
+    },
+    player = { root: instance, nativeInput: fresh };
+  record.implementation.player = player;
+  await fresh.warp(first[1]);
+  assert.deepEqual(pointer, [[14, 2]]);
+  assert.equal(nativeInput.get(14).active, true);
+  assert.equal(nativeInput.get(13).active, false);
+  const images = new FESImages(world, {
+    cacheFor: () => null,
+    lookup: (owner, ref) => owner.collection.lookup(ref.nameBytes, ref.index),
+  });
+  images.removeBinding = async () => {};
+  images.replace = async () => {};
+  images.closeObject = async () => {};
+  const old = {
+    nativeType: 6,
+    key: first[0].key,
+    nativeInputTaskID: 11,
+    imageResource: { owner: 44, closed: false },
+  };
+  await images.close(old);
+  assert.deepEqual(destroyed, [11]);
+  assert.ok(
+    fresh.state.buttons.some(([, id]) => id === 12),
+    'Closing an old child keeps the latest tuple binding',
+  );
+  first[0].imageResource = { owner: 44, closed: false };
+  await images.close(first[0]);
+  assert.deepEqual(destroyed, [11, 12]);
+  assert.deepEqual(
+    fresh.state.buttons.map(([, id]) => id),
+    [13, 14],
+  );
+  const entry = { image: null, buttonTaskID: 13 };
+  await images.cleanupEntry({ ...instance, player }, entry);
+  assert.equal(entry.buttonTaskID, null);
+  assert.deepEqual(
+    fresh.state.buttons.map(([, id]) => id),
+    [14],
+  );
+  await fresh.close();
+  assert.deepEqual(released, [14]);
 });
