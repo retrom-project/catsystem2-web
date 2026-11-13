@@ -86,20 +86,43 @@ phase-7 work.
 
 ## Encoded image cache
 
-`FESImageCache` uses the canonical JavaScript data-buffer store. It retains the
-first descriptor inserted under a category-resolved name, caches file bytes
-once, and decodes each requested image into an independently owned bitmap. It
-preserves native selector behavior, format-specific RGB24 policy, canvas and
-crop offsets, anchors, attributes, bitmap modes and alpha hints through
-the shared bitmap import. A missing selector does not choose the first frame.
+`FESImageCache` uses the canonical JavaScript data-buffer store. Its task-owned
+resident map contains only explicitly inserted or preloaded descriptors. A new
+message350 key retains one reference; a duplicate leaves that first pointer and
+its count unchanged. `preload(name)` reads through the existing image category
+and native search mode3 before attempting first insertion, even for duplicate
+names. This service is not yet connected to the `#PRELOAD` source section.
 
-Concurrent reads share pending I/O. An explicit insertion while a read is pending
-retains ownership of that name even when the read misses. Cache snapshots save
-the descriptor references after I/O settles; runtime restoration reconstructs
-their bytes and reference counts first. Closing an individual interpreter must
-not release this task-owned cache. Final task close releases its descriptors.
-The cache model is independently verified against a new World without loading
-an EXE; the production FES task will adopt it at the family entry switch.
+`data(name)` grants one caller-owned reference: a resident hit increments that
+pointer, while a lazy miss reads into a separate descriptor without inserting it
+into the map. Independent misses perform independent reads and own distinct
+buffers. Native file-backed descriptor size/capacity round up to eight bytes;
+bytes beyond the actual file have no recovered native value. The current JS
+allocator initializes them to zero without treating that padding as an oracle.
+The resident lookup occurs only before I/O. An explicit first insertion arriving
+while a miss waits owns the map's entry independently: this miss still returns0
+for absent bytes, or a new owned descriptor for its own read bytes. It neither
+substitutes the late resident nor changes that resident's reference count.
+
+`decode(pointer, selector)` borrows the caller's descriptor and produces an
+independently owned bitmap. `load(name, selector)` returns its temporary encoded
+reference in `finally`, including decoder failure. Image, panel, text, control
+and plane metadata consumers follow the same rule. An IMAGE frame map retains
+its own descriptor; an IMGWND keeps one temporary descriptor across all nine
+frame lookups. PANEL font-frame decoding holds the current temporary file while
+consuming that file's frames and returns it on success or failure. Selector,
+RGB24, canvas/crop, anchor, bitmap-mode and alpha policies remain those of the
+shared bitmap import; a missing selector does not choose the first frame.
+
+Unsettled source I/O rejects cache snapshot/close. Once settled, the existing
+checkpoint saves the resident map's pointers once, while current object/entry
+state separately refers to its genuinely held descriptors in the same shared
+buffer store. Restore rebuilds those exact bytes/counts without source reads,
+resident reinsertion or image selection. Closing an interpreter releases its
+objects but preserves the task's resident map; final task close releases each
+map reference once. A caller still holding a temporary reference remains its
+owner until it returns that reference. Short ordinary World/kind34/default FES
+cases cover both registered ABIs; this does not complete source `#PRELOAD`.
 
 ## Whole-selection common commands
 

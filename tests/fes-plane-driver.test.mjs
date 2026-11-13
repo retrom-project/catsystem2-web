@@ -216,6 +216,8 @@ for (const profile of profiles) {
       { world, object: o, instance, driver } = f;
     let fresh;
     try {
+      // This case restores explicit residency; lazy metadata owns no map entry.
+      await f.cache.preload('geometry.hg3');
       Object.assign(o, {
         positionReference: { name: 'geometry.hg3', index: 0 },
         positionPending: true,

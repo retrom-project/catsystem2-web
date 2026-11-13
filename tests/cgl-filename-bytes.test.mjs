@@ -132,7 +132,14 @@ for (const profile of profiles)
     const model = await open(cgl(64)),
       file = new NativeGlobalFile(),
       name = decoder.decode(alias),
-      pixel = Uint8Array.of(17, 34, 51, 255);
+      pixel = Uint8Array.of(17, 34, 51, 255),
+      image = hg3(1, 1, pixel),
+      imageFilename = name + '.hg3',
+      imageRequest = '@cat/image/' + name,
+      expectedImageRequests = {
+        'sdk-4.01-engine-2.6.1.74': 0,
+        'nekopara-vol3-engine-2.6.1.76': 1,
+      }[profile];
     model.registry.register(name);
     file.write(80, model.registry.write());
     const savedFile = await file.file(),
@@ -143,8 +150,8 @@ for (const profile of profiles)
         {
           'screen.fes': text(source),
           'list.cgl': model.listBytes,
-          'first.hg3': hg3(1, 1, pixel),
-          [name + '.hg3']: hg3(1, 1, pixel),
+          'first.hg3': image,
+          [imageFilename]: image,
         },
         {
           storage: {
@@ -169,15 +176,22 @@ for (const profile of profiles)
       assert.deepEqual(received, [canonical, alias]);
       assert.equal(h.instance.collection.lookup('picture', 0).file, name);
       const pixels = await drawPixels(world, h.surface),
-        state = world.snapshot();
+        state = world.snapshot(),
+        imageReads = [],
+        imageProbes = [];
+      let phase = 'restore';
       fresh = await defaultFESWorld(
         profile,
-        {},
+        { [imageFilename]: image },
         {
           initialize: false,
           storage: {
-            read: async () => {
-              throw new Error('fresh CGL storage read');
+            read: async (path) => {
+              if (phase === 'SEEN' && path === imageRequest) {
+                imageProbes.push(path);
+                return null;
+              }
+              throw new Error(`fresh CGL storage read ${phase}: ${path}`);
             },
             write: async () => true,
           },
@@ -186,7 +200,11 @@ for (const profile of profiles)
       const read = fresh.game.read.bind(fresh.game);
       fresh.game.read = (path) => {
         if (path === 'case.kcs') return read(path);
-        throw new Error('fresh CGL resource read ' + path);
+        if (phase === 'SEEN' && path === imageFilename) {
+          imageReads.push(path);
+          return read(path);
+        }
+        throw new Error(`fresh CGL resource read ${phase}: ${path}`);
       };
       await fresh.restore(state);
       const task = fresh.objects.objects.get(h.id).implementation,
@@ -198,9 +216,16 @@ for (const profile of profiles)
         return freshApply(object, current, bytes);
       };
       assert.deepEqual(root.cgGallery.snapshot(), h.instance.cgGallery.snapshot());
+      assert.deepEqual(await drawPixels(fresh, h.surface), pixels);
+      assert.deepEqual(imageReads, []);
+      assert.deepEqual(imageProbes, []);
+      phase = 'SEEN';
       await task.player.notify('SEEN');
       await task.syncObjects();
+      phase = 'settled';
       assert.deepEqual(freshReceived, [canonical]);
+      assert.deepEqual(imageReads, Array(expectedImageRequests).fill(imageFilename));
+      assert.deepEqual(imageProbes, Array(expectedImageRequests).fill(imageRequest));
       assert.deepEqual(await drawPixels(fresh, h.surface), pixels);
       assert.equal(world.nativeEngine, undefined);
       assert.equal(fresh.nativeEngine, undefined);

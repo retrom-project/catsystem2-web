@@ -142,11 +142,13 @@ for (const profile of profiles) {
       await api.resources.traverse();
       const oldEntry = api.resources.entries[0],
         pointer = old.imageEncodedPointer;
-      assert.equal(world.runtime.imageDataBuffers.words(pointer)[3], 2);
+      assert.equal(world.runtime.imageDataBuffers.words(pointer)[3], 1);
+      assert.equal(api.cache.entries.size, 0, 'lazy data belongs only to the current IMAGE');
       assert.equal('encodedPointer' in oldEntry.image, false);
       await api.collection.remove(old);
       assert.equal(old.imageEncodedPointer, 0);
-      assert.equal(world.runtime.imageDataBuffers.words(pointer)[3], 1);
+      assert.equal(world.runtime.imageDataBuffers.owns(pointer), false);
+      assert.equal(api.cache.entries.size, 0);
       assert.ok(draw.entry(key(world, id)));
       const replacement = createEntryObject(api, 'IMAGE', 'again', fields);
       assert.notEqual(replacement.handle, old.handle);

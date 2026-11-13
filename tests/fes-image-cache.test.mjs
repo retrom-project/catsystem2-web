@@ -93,7 +93,9 @@ test('FES cache retains only its first inserted descriptor and reconstructs thro
     await fresh.restore(saved);
     restored = new FESImageCache(fresh, 12, entries);
     assert.equal(await restored.data('key'), first);
+    assert.equal(fresh.runtime.imageDataBuffers.words(first)[3], 2);
     assert.deepEqual(fresh.runtime.imageDataBuffers.data(first), bytes);
+    fresh.runtime.imageDataBuffers.releasePointer(first);
     assert.deepEqual(
       await fresh.graphics.images.get(await restored.load('key')).pixels(),
       await world.graphics.images.get(await cache.load('key')).pixels(),
@@ -108,33 +110,82 @@ test('FES cache retains only its first inserted descriptor and reconstructs thro
   }
 });
 
-test('FES cache coalesces pending reads and preserves insertion during I/O without retaining a second descriptor', async () => {
-  const { bytes } = authored(),
-    world = await dataWorld(profiles[0], {}, { initialize: false }),
-    cache = new FESImageCache(world, 12);
-  try {
-    let settle,
-      reads = 0;
-    world.game.readCategory = () => {
-      reads++;
-      return new Promise((resolve) => {
-        settle = resolve;
-      });
-    };
-    const first = cache.data('key'),
-      second = cache.data('key');
-    assert.equal(reads, 1);
-    assert.throws(() => cache.snapshot(), /settled resource I\/O/);
-    const inserted = world.runtime.imageDataBuffers.createPointer(bytes);
-    cache.insert('key', inserted);
-    world.runtime.imageDataBuffers.releasePointer(inserted);
-    settle(null);
-    assert.equal(await first, inserted);
-    assert.equal(await second, inserted);
-    assert.deepEqual(cache.snapshot(), [['key', inserted]]);
-    assert.equal(world.runtime.imageDataBuffers.pointers.size, 1);
-  } finally {
-    cache.close();
-    await world.close();
-  }
-});
+for (const result of ['null', 'bytes']) {
+  test(`FES lazy miss ${result} keeps its read result when a resident is inserted during I/O`, async () => {
+    const bytes = Uint8Array.of(11, 22, 33, 44, 55, 66, 77, 88, 99),
+      residentBytes = Uint8Array.of(240, 241, 242),
+      world = await dataWorld(profiles[0], {}, { initialize: false }),
+      cache = new FESImageCache(world, 12),
+      buffers = world.runtime.imageDataBuffers;
+    let results = [];
+    try {
+      let entered;
+      const started = new Promise((resolve) => {
+          entered = resolve;
+        }),
+        settle = [];
+      world.game.readCategory = () =>
+        new Promise((resolve) => {
+          settle.push(resolve);
+          if (settle.length === 2) entered();
+        });
+      const first = cache.data('key'),
+        second = cache.data('key');
+      assert.throws(() => cache.snapshot(), /settled resource I\/O/);
+      assert.throws(() => cache.close(), /settled resource I\/O/);
+      await started;
+      assert.equal(settle.length, 2);
+      const inserted = buffers.createPointer(residentBytes);
+      cache.insert('key', inserted);
+      buffers.releasePointer(inserted);
+      assert.equal(buffers.words(inserted)[3], 1);
+      for (const resolve of settle) resolve(result === 'null' ? null : bytes);
+      results = await Promise.all([first, second]);
+      if (result === 'null') {
+        assert.deepEqual(results, [0, 0], 'an entry-time miss cannot acquire a late resident');
+        assert.equal(buffers.pointers.size, 1);
+      } else {
+        assert.notEqual(
+          results[0],
+          inserted,
+          'read bytes own a new descriptor, not the late resident',
+        );
+        assert.notEqual(results[1], inserted);
+        assert.notEqual(results[0], results[1], 'independent reads own distinct descriptors');
+        for (const pointer of results) {
+          assert.equal(buffers.words(pointer)[3], 1);
+          assert.equal(buffers.words(pointer)[1], 16);
+          assert.deepEqual(buffers.data(pointer).subarray(0, bytes.length), bytes);
+        }
+        assert.equal(buffers.pointers.size, 3);
+        buffers.releasePointer(results[0]);
+        assert.equal(buffers.owns(results[0]), false);
+        assert.equal(buffers.words(results[1])[3], 1);
+        assert.equal(buffers.words(inserted)[3], 1);
+        buffers.releasePointer(results[1]);
+        assert.equal(buffers.owns(results[1]), false);
+        assert.equal(buffers.words(inserted)[3], 1);
+        results = [];
+      }
+      assert.deepEqual(cache.snapshot(), [['key', inserted]]);
+      assert.deepEqual(buffers.data(inserted), residentBytes);
+      assert.equal(
+        buffers.words(inserted)[3],
+        1,
+        'miss results never change the late map reference',
+      );
+      const hit = await cache.data('key');
+      assert.equal(hit, inserted, 'a later entry-time resident hit still retains normally');
+      assert.equal(buffers.words(inserted)[3], 2);
+      buffers.releasePointer(hit);
+      assert.equal(buffers.words(inserted)[3], 1);
+      assert.equal(settle.length, 2, 'the actual resident hit performs no third I/O');
+      cache.close();
+      assert.equal(buffers.owns(inserted), false);
+    } finally {
+      for (const pointer of results) buffers.releasePointer(pointer);
+      cache.close();
+      await world.close();
+    }
+  });
+}

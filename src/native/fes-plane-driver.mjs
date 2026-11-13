@@ -104,15 +104,19 @@ export class FESPlaneDriver {
     if (!reference) throw new Error('FES plane metadata request has no resource reference');
     const state = workspace(object),
       pointer = await this.cacheFor(instance).data(reference.name);
-    state.metadata.fill(0);
-    if (pointer)
-      nativeImageMetadata(
-        this.world.runtime.imageDataBuffers.data(pointer),
-        reference.index >>> 0,
-        false,
-        state.metadata,
-      );
-    return state.metadataView;
+    try {
+      state.metadata.fill(0);
+      if (pointer)
+        nativeImageMetadata(
+          this.world.runtime.imageDataBuffers.data(pointer),
+          reference.index >>> 0,
+          false,
+          state.metadata,
+        );
+      return state.metadataView;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(pointer);
+    }
   }
   async size(instance, object) {
     if (!object.sizePending) return;

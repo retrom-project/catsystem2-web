@@ -353,6 +353,8 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       assert.equal(buffers.words(first)[3], 2);
       assert.equal(buffers.words(second)[3], 1);
       assert.equal(await task.imageData('AuthoredCachedImage'), first);
+      assert.equal(buffers.words(first)[3], 3, 'data lookup grants one caller-owned reference');
+      buffers.releasePointer(first);
       assert.deepEqual(task.snapshot().imageCache, [['AuthoredCachedImage', first]]);
       await world.objects.release(id);
       assert.equal(buffers.words(first)[3], 1);

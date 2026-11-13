@@ -105,16 +105,20 @@ export class FESControlDriver {
       throw new Error('FES control has no owning encoded-byte cache');
     const scratch = this.workspace(object),
       pointer = await cache.data(reference.name);
-    scratch.metadata.fill(0);
-    if (pointer)
-      nativeImageMetadata(
-        this.world.runtime.imageDataBuffers.data(pointer),
-        reference.index,
-        false,
-        scratch.metadata,
-      );
-    for (let i = 0; i < 4; i++) scratch.rectangle[i] = scratch.view.getInt32(i * 4, true);
-    return scratch.rectangle;
+    try {
+      scratch.metadata.fill(0);
+      if (pointer)
+        nativeImageMetadata(
+          this.world.runtime.imageDataBuffers.data(pointer),
+          reference.index,
+          false,
+          scratch.metadata,
+        );
+      for (let i = 0; i < 4; i++) scratch.rectangle[i] = scratch.view.getInt32(i * 4, true);
+      return scratch.rectangle;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(pointer);
+    }
   }
   async load(instance, object, task) {
     if (object.positionPending) {

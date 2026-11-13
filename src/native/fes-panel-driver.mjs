@@ -205,14 +205,18 @@ export class FESPanelImages extends FESDifImages {
     const s = this.workspace(object),
       pointer = await this.cache(instance).data(this.filename(instance, object));
     if (!pointer) return null;
-    s.metadata.fill(0);
-    const result = nativeImageMetadata(
-      this.world.runtime.imageDataBuffers.data(pointer),
-      selector,
-      container,
-      s.metadata,
-    );
-    return result.success ? s.view : null;
+    try {
+      s.metadata.fill(0);
+      const result = nativeImageMetadata(
+        this.world.runtime.imageDataBuffers.data(pointer),
+        selector,
+        container,
+        s.metadata,
+      );
+      return result.success ? s.view : null;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(pointer);
+    }
   }
   async partPosition(instance, object, id) {
     const geometry = await this.panelMetadata(instance, object, id);
@@ -321,7 +325,9 @@ export class FESPanelImages extends FESDifImages {
             });
         } else {
           if (!same) {
-            data = await this.cache(instance).data(file);
+            const next = await this.cache(instance).data(file);
+            this.world.runtime.imageDataBuffers.releasePointer(data);
+            data = next;
             if (!data) continue;
             previous = file;
           }
@@ -366,6 +372,8 @@ export class FESPanelImages extends FESDifImages {
     } catch (error) {
       await release();
       throw error;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(data);
     }
   }
   async textPart(instance, object, part, destination, position) {

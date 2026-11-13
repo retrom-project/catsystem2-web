@@ -326,15 +326,19 @@ export class FESImages {
     const s = this.workspace(object),
       pointer = await this.cache(instance).data(this.expand(instance, reference.name));
     if (!pointer) return null;
-    s.metadata.fill(0);
-    return nativeImageMetadata(
-      this.world.runtime.imageDataBuffers.data(pointer),
-      reference.index,
-      false,
-      s.metadata,
-    ).success
-      ? s.view
-      : null;
+    try {
+      s.metadata.fill(0);
+      return nativeImageMetadata(
+        this.world.runtime.imageDataBuffers.data(pointer),
+        reference.index,
+        false,
+        s.metadata,
+      ).success
+        ? s.view
+        : null;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(pointer);
+    }
   }
   async applyGeometry(instance, object, size) {
     const reference = size ? object.sizeReference : object.positionReference;
@@ -533,16 +537,20 @@ export class FESImages {
       this.clearRequests(object);
       const pointer = await this.cache(instance).data(file);
       if (!pointer) return false;
-      await this.applyGeometry(instance, object, true);
-      const h = await composeFESWindow(
-        images,
-        object.width,
-        object.height,
-        (id) => this.cache(instance).load(file, id),
-        instance.runtimeID,
-      );
-      await this.replace(object, h);
-      return true;
+      try {
+        await this.applyGeometry(instance, object, true);
+        const h = await composeFESWindow(
+          images,
+          object.width,
+          object.height,
+          (id) => this.cache(instance).decode(pointer, id),
+          instance.runtimeID,
+        );
+        await this.replace(object, h);
+        return true;
+      } finally {
+        this.world.runtime.imageDataBuffers.releasePointer(pointer);
+      }
     }
     if (object.referenceRequest || object.copyRequest) {
       const reference = object.referenceRequest ?? object.copyRequest,
@@ -577,17 +585,21 @@ export class FESImages {
     this.clearRequests(object);
     if (object.idIndex >>> 0 === 0xffffffff) {
       const pointer = await this.cache(instance).data(name);
-      this.setEncodedData(object, pointer);
-      const source = pointer
-        ? await this.world.renderSources.decode(this.world.runtime.imageDataBuffers.data(pointer))
-        : 0;
-      if (source) {
-        const state = this.world.renderSources.get(source);
-        for (const h of [state.bitmap, ...state.frames.map((frame) => frame.bitmap)])
-          if (h) images.get(h).owner = instance.runtimeID;
+      try {
+        this.setEncodedData(object, pointer);
+        const source = pointer
+          ? await this.world.renderSources.decode(this.world.runtime.imageDataBuffers.data(pointer))
+          : 0;
+        if (source) {
+          const state = this.world.renderSources.get(source);
+          for (const h of [state.bitmap, ...state.frames.map((frame) => frame.bitmap)])
+            if (h) images.get(h).owner = instance.runtimeID;
+        }
+        await this.replace(object, undefined, source);
+        return true;
+      } finally {
+        this.world.runtime.imageDataBuffers.releasePointer(pointer);
       }
-      await this.replace(object, undefined, source);
-      return true;
     }
     const selector = fesImageFrameID(object);
     if (object.fileSingle) {

@@ -91,18 +91,23 @@ accumulate only through parent4; the parent's matrix precedes the child's.
 Draw depth uses the current FES priority rather than accumulated baseZ.
 Typed packet and transform buffers are reused. POS2 consumes its pending
 metadata source once; SIZE2 remains active for subsequent size rebuilds.
-Both use the owning FES encoded-byte cache, including inserted resources.
-Missing metadata retains the original zero output fields.
+Both borrow one caller-owned reference from the FES image-data service and
+return it after reading metadata, including failure. A lazy metadata read does
+not make that file resident; a later SIZE2 rebuild performs a new read unless an
+explicitly inserted/preloaded resident descriptor is available. Missing metadata
+retains the original zero output fields.
 
 Sleep publishes a temporary display mask and checkpoints that published mask
 without changing authored display. New World restore reuses existing child,
-shape, graph identity, render order and encoded cache without replaying loads
-or transforms. The short public tests exercise both registered ABIs through
-real World/D6 services, metadata, deletion/recreation and no-file continuation.
+shape, graph identity, render order and explicit image residency without
+replaying loads or transforms. The short public tests exercise both registered
+ABIs through real World/D6 services, metadata, deletion/recreation and no-file
+continuation. A later requested SIZE2 rebuild is a new metadata consumer, rather
+than part of restore; it requires an actual source or explicit residency.
 They do not add a GPU pixel claim; complete rendering acceptance belongs to
 the coordinated default-entry browser gate.
 
-The new driver is not yet installed by the default FES factory. Its original
-entry, driver and projection dependencies remain counted until that switch.
+The default World FES coordinator supplies this driver with its task-owned
+image-data service; no separate metadata residency is created by the driver.
 SimplePlane message86 is an independently established empty branch, so its
 pending filename request does not invent a file-backed graph.

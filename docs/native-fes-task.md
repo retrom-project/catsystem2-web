@@ -124,11 +124,17 @@ unrecovered rebindings remain outside the supported event domain.
 The `result` script command stores a signed 32-bit expression and yields through
 the native -3 processing path. Private context contents and names live once in
 `NativeVariableBank`; the FES checkpoint records their identity. The per-FES
-image cache stores original data-buffer pointers into the one shared process
-checkpoint. Original image-font data and retained CPU images consume that same
-cache. Closing an interpreter unregisters its private context before releasing
-its objects; closing its task then releases cached descriptors, followed by
-base/child disposal. Initialization also queries and retains the Top's sound
+image residency map stores only explicitly inserted/preloaded data-buffer
+pointers into the one shared process checkpoint. Lazy `imageData(name)` results
+are caller-owned: each miss reads a distinct descriptor without becoming
+resident, and each resident hit retains a temporary reference. The caller must
+return that reference. Decoded bitmaps own their independent data; current IMAGE
+frame maps retain their encoded descriptor in existing object state. Fresh
+restore neither rereads held bytes nor inserts them into residency. Closing an
+interpreter unregisters its private context before releasing its objects;
+closing its task then releases resident-map references, followed by base/child
+disposal. Unsettled source I/O rejects a checkpoint or cache close. The raw
+`#PRELOAD` source-section hook remains a separate pending leaf. Initialization also queries and retains the Top's sound
 receiver ID (game 35, SDK 33). Sound disposal routes to that saved ID even when
 the Top has already released its sound task; queries still require a written
 output word.

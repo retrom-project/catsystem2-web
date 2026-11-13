@@ -19,6 +19,10 @@ import { FESObjectCollection } from '../src/native/fes-object-collection.mjs';
 const pixels = Uint8Array.from([
   11, 22, 33, 255, 44, 55, 66, 0, 77, 88, 99, 255, 110, 121, 132, 128,
 ]);
+function heldBytes(actual, encoded) {
+  assert.deepEqual(actual.subarray(0, encoded.length), encoded);
+  assert.equal(actual.length, Math.ceil(encoded.length / 8) * 8);
+}
 for (const profile of profiles) {
   test(`${profile} image-font bytes follow the held frame-map data and survive FILE changes and World restore`, async () => {
     const encoded = frames(),
@@ -38,21 +42,14 @@ for (const profile of profiles) {
       setFESImageID(image, -1);
       await syncImages(api);
       const pointer = image.imageEncodedPointer;
-      assert.deepEqual(api.images.dataFor(api.instance, image), encoded);
-      assert.equal(buffers.words(pointer)[3], 2, 'cache and IMAGE each retain the actual buffer');
+      heldBytes(api.images.dataFor(api.instance, image), encoded);
+      assert.equal(buffers.words(pointer)[3], 1, 'IMAGE alone owns the lazy descriptor');
+      assert.equal(api.cache.entries.size, 0);
       setFESImageFile(image, 'second');
-      assert.deepEqual(
-        api.images.dataFor(api.instance, image),
-        encoded,
-        'FILE alone does not replace held bytes',
-      );
+      heldBytes(api.images.dataFor(api.instance, image), encoded);
       setFESImageID(image, 0);
       await syncImages(api);
-      assert.deepEqual(
-        api.images.dataFor(api.instance, image),
-        encoded,
-        'ordinary reload preserves the encoded getter',
-      );
+      heldBytes(api.images.dataFor(api.instance, image), encoded);
       fresh = await imageWorld(profile, {}, false);
       await fresh.restore(structuredClone(world.snapshot()));
       fresh.game.readCategory = () => {
@@ -62,10 +59,11 @@ for (const profile of profiles) {
         restoredImage = restored.instance.byKey.get('font');
       await syncImages(restored, { restoring: true });
       assert.equal(restoredImage.imageEncodedPointer, pointer);
-      assert.deepEqual(restored.images.dataFor(restored.instance, restoredImage), encoded);
-      assert.equal(fresh.runtime.imageDataBuffers.words(pointer)[3], 2);
-      await restored.images.close(restoredImage);
+      heldBytes(restored.images.dataFor(restored.instance, restoredImage), encoded);
       assert.equal(fresh.runtime.imageDataBuffers.words(pointer)[3], 1);
+      assert.equal(restored.cache.entries.size, 0);
+      await restored.images.close(restoredImage);
+      assert.equal(fresh.runtime.imageDataBuffers.owns(pointer), false);
       restored.cache.close();
       assert.equal(fresh.runtime.imageDataBuffers.owns(pointer), false);
       setFESImageID(image, -1);
@@ -76,7 +74,7 @@ for (const profile of profiles) {
         null,
         'frame-map miss clears the encoded getter',
       );
-      assert.equal(buffers.words(pointer)[3], 1);
+      assert.equal(buffers.owns(pointer), false);
     } finally {
       await fresh?.close();
       await world.close();

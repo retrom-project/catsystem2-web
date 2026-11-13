@@ -529,19 +529,23 @@ export class FESStringDriver {
       name = instance.player.expand ? instance.player.expand(reference.name) : reference.name,
       pointer = await cache.data(name);
     if (!pointer) return null;
-    scratch.metadata.fill(0);
-    if (
-      !nativeImageMetadata(
-        this.world.runtime.imageDataBuffers.data(pointer),
-        reference.index,
-        false,
-        scratch.metadata,
-      ).success
-    )
-      return null;
-    for (let index = 0; index < 4; index++)
-      scratch.rectangle[index] = scratch.view.getInt32(index * 4, true);
-    return scratch.rectangle;
+    try {
+      scratch.metadata.fill(0);
+      if (
+        !nativeImageMetadata(
+          this.world.runtime.imageDataBuffers.data(pointer),
+          reference.index,
+          false,
+          scratch.metadata,
+        ).success
+      )
+        return null;
+      for (let index = 0; index < 4; index++)
+        scratch.rectangle[index] = scratch.view.getInt32(index * 4, true);
+      return scratch.rectangle;
+    } finally {
+      this.world.runtime.imageDataBuffers.releasePointer(pointer);
+    }
   }
   setView(object, width, height) {
     object.width = width | 0;
