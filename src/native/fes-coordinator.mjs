@@ -245,8 +245,12 @@ export class FESCoordinator {
   async initialize() {
     const { program } = this.instance;
     for (const declaration of program.definitions) {
-      const name = this.instance.soundArgument(declaration.name),
-        type = canonicalFESDefinitionType(declaration.type);
+      const type = canonicalFESDefinitionType(declaration.type);
+      if (type === undefined) {
+        this.instance.diagnostic(`Unknown FES declaration type ${declaration.type}`);
+        continue;
+      }
+      const name = this.instance.soundArgument(declaration.name);
       let count = evaluate(declaration.count ?? '-1', this.instance) | 0;
       if (count === -1 && this.collection.count(name) <= 1) count = 0;
       if (count < 0) {

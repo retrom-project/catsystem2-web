@@ -242,8 +242,8 @@ OBJECT application, real bitmap creation, NUMIMG holes, dynamic count0 and
 independent fresh ownership for both ABIs.
 
 The normal zero-count branch is independent of the known-name matching below.
-Per-version declaration-table membership, unknown-type diagnostics and the
-remaining byte/name and malformed-count declaration constraints are still partial.
+Per-version declaration-table membership, malformed-declaration diagnostics and
+the remaining byte/name and malformed-count constraints are still partial.
 
 ## Known DEFINE type names in the C locale
 
@@ -268,7 +268,7 @@ the newly created same Set; malformed or missing current data is not interpreted
 as an empty set. Restoring does not replay source, declarations, macros or bank
 expansion. This keeps actual Button focus callbacks and keyboard selection
 metadata consistent with the restored canonical objects. DEFINE remains partial
-for its remaining declaration-table, unknown-type and byte/expression behavior.
+for its remaining declaration-table and byte/expression behavior.
 
 ## Literal ASCII hyphen in DEFINE names
 
@@ -325,3 +325,34 @@ positive counts, both-1 branches, actual OBJECT/resource FIFO and bitmap creatio
 and fresh continuation without expression side effects. Empty brackets, general
 malformed-expression fallback, other negative counts, remaining narrow-name
 bytes and per-version declaration membership remain partial.
+
+## Unknown DEFINE type names
+
+For a declaration accepted by the current source grammar, normal initialization
+looks up its type before expanding its object name or evaluating its count. A
+name absent from the existing shared type catalogue and BASE descriptor produces
+a located diagnostic using the original declaration type text, then skips that
+row. Later valid declarations continue. An unknown declaration creates no object,
+group, lifetime handle, initializer request or resource entry; it does not become
+a generic object or consume count-expression side effects.
+
+For example, with variable60 initially1, valid declarations surrounding
+`UNKNOWN skipped[$60++]` can request1 and2 objects using their own `[$60++]`
+counts and leave the current bank at3. The skipped name is never passed to the
+argument expansion service. The later OBJECT rows and ordinary resource consumer
+still process the valid declarations in their original FIFO order.
+
+A known descriptor whose ABI implementation is disabled keeps its existing strict
+factory or initializer error. In particular, this change does not make SDK
+EFKPLANE, STRING8 or LOGSTRING8 succeed or turn those errors into unknown-type
+skips. Per-version membership is not inferred from a table length or sentinel,
+and no unknown native slot or unregistered engine version is enabled.
+
+The two short registered-ABI default-entry cases verify the diagnostic, untouched
+raw declaration, name/count ordering, unchanged current bank, absent unknown
+object/group/request, subsequent OBJECT application and actual bitmap creation.
+Unknown rows with missing names or malformed name/count syntax still encounter
+the existing source parser's earlier validation. Full native diagnostic wording,
+arbitrary diagnostic callbacks, per-version membership and remaining narrow-byte
+syntax remain partial. The independent bare FES player's unknown-type policy is
+unchanged.

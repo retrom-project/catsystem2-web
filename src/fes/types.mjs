@@ -45,12 +45,12 @@ export const FES_OBJECT_TYPES = Object.freeze({
 export const FES_OBJECT_DEFINITION_ORDER = Object.freeze(['', ...Object.keys(FES_OBJECT_TYPES)]);
 
 // Normal DEFINE compares the existing narrow names in the C locale. Keep the
-// factory catalogue authoritative and preserve unknown text for its diagnostic.
+// factory catalogue authoritative; the declaration retains raw diagnostic text.
 const asciiLower = (value) =>
     value.replace(/[A-Z]/g, (letter) => String.fromCharCode(letter.charCodeAt(0) + 32)),
   definitionNames = new Map(
     ['BASE', ...Object.keys(FES_OBJECT_TYPES)].map((name) => [asciiLower(name), name]),
   );
 export function canonicalFESDefinitionType(type) {
-  return definitionNames.get(asciiLower(type)) ?? type;
+  return definitionNames.get(asciiLower(type));
 }

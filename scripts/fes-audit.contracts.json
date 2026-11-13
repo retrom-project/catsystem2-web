@@ -3758,9 +3758,10 @@
         "tests/fes-define-zero-default.test.mjs",
         "tests/fes-define-type-case-default.test.mjs",
         "tests/fes-define-hyphen-default.test.mjs",
-        "tests/fes-define-count-expression-default.test.mjs"
+        "tests/fes-define-count-expression-default.test.mjs",
+        "tests/fes-define-unknown-type-default.test.mjs"
       ],
-      "note": "Normal declarations normalize count0 to1, match known type names with C-locale ASCII case, retain literal ASCII hyphen name bytes, and evaluate raw count expressions once in declaration order against the current bank. Name expansion precedes count evaluation; first-name -1 becomes1, while -1 for an existing multi-object group diagnoses and skips. Existing typed-factory ABI gates remain. Full per-version membership, unknown-type diagnostics, other narrow-name bytes, general malformed/empty count expressions and other negative counts remain pending.",
+      "note": "Normal declarations normalize count0 to1, match known type names with C-locale ASCII case, retain literal ASCII hyphen name bytes, and evaluate raw count expressions once in declaration order against the current bank. Name expansion precedes count evaluation; first-name -1 becomes1, while -1 for an existing multi-object group diagnoses and skips. Syntactically accepted declarations with types absent from the shared catalog diagnose and skip before name expansion or count evaluation, then later valid declarations continue. Existing typed-factory ABI gates remain. Full per-version membership, malformed-declaration diagnostics, other narrow-name bytes, general malformed/empty count expressions and other negative counts remain pending.",
       "signatures": []
     },
     {
