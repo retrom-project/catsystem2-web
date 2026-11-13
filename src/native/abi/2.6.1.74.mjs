@@ -343,6 +343,7 @@ export default {
     },
   },
   graphics: {
+    textureCapsPolicy: null,
     resizeRGB24: false,
     compositeWideBase: false,
     preserveRGB24: true,

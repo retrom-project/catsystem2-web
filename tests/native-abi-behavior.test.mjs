@@ -85,6 +85,10 @@ test('ABI selection is exact and reports unknown, missing and conflicting engine
 test('reviewed ABI services expose independent capabilities and serializable layouts', () => {
   const [sdk, game] = Object.values(NATIVE_ABIS);
   assert.deepEqual([sdk.sound.banks, game.sound.banks], [32, 64]);
+  assert.deepEqual(
+    [sdk.graphics.textureCapsPolicy, game.graphics.textureCapsPolicy],
+    [null, 'virtual-d3d9'],
+  );
   assert.deepEqual([sdk.messages.tilePlaneCommand, game.messages.tilePlaneCommand], [44, 46]);
   assert.deepEqual([sdk.layouts.memoryFile.wide, game.layouts.memoryFile.wide], [false, true]);
   assert.deepEqual(
@@ -103,6 +107,12 @@ test('reviewed ABI services expose independent capabilities and serializable lay
   for (const abi of [sdk, game]) {
     assert.deepEqual(validateABI(JSON.parse(JSON.stringify(abi))), abi);
     assert.ok(Object.isFrozen(abi.configuration.memory.scalarFields));
+    const missingTextureCaps = structuredClone(abi);
+    delete missingTextureCaps.graphics.textureCapsPolicy;
+    assert.throws(() => validateABI(missingTextureCaps), /behavior data/);
+    const invalidTextureCaps = structuredClone(abi);
+    invalidTextureCaps.graphics.textureCapsPolicy = 'unregistered';
+    assert.throws(() => validateABI(invalidTextureCaps), /behavior data/);
     const missingCapability = structuredClone(abi);
     delete missingCapability.capabilities.steam;
     assert.throws(() => validateABI(missingCapability), /behavior data/);

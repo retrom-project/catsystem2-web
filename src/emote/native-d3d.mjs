@@ -2,6 +2,7 @@
 // Browser D3D9 services for the driver's software vertex-processing path.
 // COM slot/argument facts: IDirect3D9, IDirect3DDevice9 and IDirect3DTexture9.
 import { identity, multiply, transform } from '../motion/matrix.mjs';
+import { virtualD3DTextureCaps } from '../native/texture-layout.mjs';
 import { d3d9AdapterContracts, writeD3D9Caps } from './native-adapter.mjs';
 import {
   createD3DContext,
@@ -185,7 +186,9 @@ export class EmoteD3D9 {
       this.surfaceBytes(record).set(this.process.read(record.pixels, record.pitch * record.height));
   }
   get maximumTextureSize() {
-    return this.gpu ? Math.min(4096, this.gpu.gl.getParameter(this.gpu.gl.MAX_TEXTURE_SIZE)) : 4096;
+    return virtualD3DTextureCaps(
+      this.gpu ? this.gpu.gl.getParameter(this.gpu.gl.MAX_TEXTURE_SIZE) : 4096,
+    ).maximumTextureSize;
   }
   presentationParameters(address) {
     if (!address) return { error: INVALID_CALL };

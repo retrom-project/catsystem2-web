@@ -37,7 +37,12 @@ import {
   nativeMeshBounds,
   nativeMeshGeometry,
 } from './mesh.mjs';
-import { NativeTexturePages, negotiateNativeTextureLayout } from './texture-layout.mjs';
+import {
+  NativeTexturePages,
+  negotiateNativeTextureLayout,
+  virtualD3DTextureCaps,
+  virtualD3DGuardBand,
+} from './texture-layout.mjs';
 import { divideNativeTriangles, nativeDivisionLayout } from './divided-model.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
@@ -140,11 +145,17 @@ export class NativeGraphics {
     if (!texture) throw new Error('Native texture configuration is unavailable');
     const gpu = this.world.getNativeGPU?.(),
       gl = gpu?.gl,
-      maximum = gl?.getParameter(gl.MAX_TEXTURE_SIZE),
+      policy = this.world.profile && nativeABI(this.world.profile).graphics.textureCapsPolicy,
+      caps =
+        policy === 'virtual-d3d9'
+          ? virtualD3DTextureCaps(gpu ? gl.getParameter(gl.MAX_TEXTURE_SIZE) : 4096)
+          : null,
+      maximum = caps ? caps.maximumTextureSize : gl?.getParameter(gl.MAX_TEXTURE_SIZE),
       layout = negotiateNativeTextureLayout(
         texture,
-        maximum ? { width: maximum, height: maximum } : undefined,
+        caps || maximum ? { width: maximum, height: maximum } : undefined,
       );
+    if (caps) layout.textureCaps = caps;
     texture.size.set(layout.configurationSize);
     for (const field of ['grid', 'bppY']) texture[field].set(layout[field]);
     texture.areas.forEach((row, i) => row.set(layout.areas[i]));
@@ -337,6 +348,25 @@ export class NativeGraphics {
       planeModelCommands,
       ...values
     } = structuredClone(state);
+    if (
+      texturePages &&
+      this.world.profile &&
+      nativeABI(this.world.profile).graphics.textureCapsPolicy === 'virtual-d3d9'
+    ) {
+      const caps = texturePages.layout.textureCaps,
+        maximum = caps?.maximumTextureSize;
+      if (
+        !Number.isSafeInteger(maximum) ||
+        maximum < 1 ||
+        maximum > 4096 ||
+        !Array.isArray(caps.guardBand) ||
+        caps.guardBand.length !== 4 ||
+        caps.guardBand.some((value, index) => value !== virtualD3DGuardBand(maximum)[index]) ||
+        texturePages.layout.size.some((value) => value > maximum) ||
+        texturePages.layout.configurationSize.some((value) => value > maximum)
+      )
+        throw new Error('Invalid owned native texture caps checkpoint');
+    }
     this.images.restoreAssets(bitmapAssets);
     if (retainedDraw) this.world.retainedDraw.restore(retainedDraw);
     if (screenEffects) this.world.screenEffects.restore(screenEffects);
@@ -1317,7 +1347,11 @@ export class NativeGraphicTask {
           position = motionVector(source, MOTION_ABI.pos).map((v, i) => Math.fround(v + offset[i]));
         setMotionVector(source, MOTION_ABI.pos, position);
         const layout = this.graphics.texturePages.layout,
-          division = nativeDivisionLayout(layout.configurationSize, layout.grid),
+          division = nativeDivisionLayout(
+            layout.configurationSize,
+            layout.grid,
+            layout.textureCaps?.guardBand,
+          ),
           triangles = transformNativeTriangles(
             graph.triangles || rectangleTriangles(graph),
             source,

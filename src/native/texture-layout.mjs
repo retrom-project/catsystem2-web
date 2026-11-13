@@ -1,6 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 // Graphics constructor 678B60 and kc2DTextureManager 680280/680980.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
+// The shared virtual D3D9 platform exposes this guard band for its captured limit.
+export function virtualD3DGuardBand(maximum) {
+  return [-maximum, -maximum, maximum, maximum];
+}
+export function virtualD3DTextureCaps(maximum) {
+  const maximumTextureSize = Math.min(4096, maximum);
+  return { maximumTextureSize, guardBand: virtualD3DGuardBand(maximumTextureSize) };
+}
+
 export const NULL_NATIVE_TEXTURE = Object.freeze({
   width: 1,
   height: 1,

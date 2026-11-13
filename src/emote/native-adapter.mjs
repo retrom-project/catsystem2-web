@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // IDirect3D9 is a platform device, independent of the E-mote DLL. These
 // capabilities describe the shared fixed-function browser implementation.
+import { virtualD3DGuardBand } from '../native/texture-layout.mjs';
 const invalid = 0x8876086c;
 const unavailable = 0x8876086a;
 const colorFormats = new Set([21, 22]);
@@ -54,7 +55,7 @@ export function writeD3D9Caps(owner, adapter, type, output) {
     };
   p.zero(output, 304);
   for (const [offset, value] of Object.entries(words)) p.store(output + Number(offset), value);
-  owner.writeFloats(output + 112, [1e10, -maximum, -maximum, maximum, maximum, 0]);
+  owner.writeFloats(output + 112, [1e10, ...virtualD3DGuardBand(maximum), 0]);
   owner.writeFloats(output + 176, [1]);
   return 0;
 }
