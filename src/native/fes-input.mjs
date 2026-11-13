@@ -349,6 +349,29 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumeButtonSimulation({ index, value }) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return;
+    const top = this.world.engineMessages.closestTop(this.record),
+      inputID = top?.implementation.input;
+    if (this.world.objects.objects.get(inputID)?.kind !== 11)
+      throw new Error('FES btnsimulate requires its owning Top Input task');
+    try {
+      await this.world.engineMessages.dispatch(inputID, this.record.id, 154, index, value, {
+        flags: 0,
+      });
+    } catch (error) {
+      if (live()) throw error;
+    }
+  }
   async consumeRestoreMove() {
     const player = this.player,
       instance = this.instance,

@@ -2175,11 +2175,11 @@
       "id": "fes-extension.drag---dragimg---draghelp---btnsimulate",
       "domain": "fes-extension",
       "names": ["drag / dragimg / draghelp / btnsimulate"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/download",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Observed engine interaction extensions; native capture/hit-area lifecycle needs recovery.",
+      "implementation": "src/native/fes-coordinator.mjs",
+      "evidence": ["tests/fes-btnsimulate-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "btnsimulate: frozen74/76 two-required-numeric wrapper, original FIFO/return-3 and owning Top Input154 into the existing pulse/tick service. Missing second preserves first evaluation; expanded-empty is0; extras ignored. Default, close/live errors and fresh restore are covered. This leaf does not claim drag/dragimg/draghelp; unsafe indices remain explicit diagnostics.",
       "signatures": []
     },
     {

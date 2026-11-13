@@ -567,7 +567,8 @@ until a real complete Input125 writer runs; it neither captures in parentAssigne
 nor borrows a later valid Input to fill the original constructor's output. A
 fresh World restores null/known savedMouse and pending copiedXY once, with no
 query, source replay or re-selection. The separate restoremove reader below
-uses this same field; btnsimulate/automoveex remain separate leaves. The
+uses this same field; btnsimulate has no saved-point reader and automoveex
+remains a separate incomplete leaf. The
 ordinary337 close guard is the independently committed C6b dependency.
 
 Normal restoremove is parameterless in both frozen wrappers77BDC0/615620. Extra
@@ -611,3 +612,33 @@ This bounded correction covers only normal default message9 key0/1. Direction
 4..7 keeps its existing resource traversal without another pass. Other key,
 release, scroll and TOUCH post-callback tails remain separate uncompleted
 boundaries; the direct JS-authored FES input API is unchanged.
+
+Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
+operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
+before attempting required operand2. Missing operand1 returns0 without a getter;
+missing operand2 returns0 while preserving the first evaluation's side effects.
+Present expanded-empty numeric input is0 at this narrow getter boundary. Extra
+operands are ignored. The two captured int32 words are queued on the same FIFO
+(Game action29/SDK32), and the wrapper returns-3 to drain existing records in
+order. This does not alter the general expression evaluator.
+
+The62AC9F/5023D3 consumers send those words to the owning Top Input with flags0
+(canonical154; SDK raw152). They do not select an object, capture an active
+reference, query125, refresh the mouse, inspect autocur or touch savedMouse. The
+existing setPulse service owns the counter, including its full32-bit value,
+replacement and per-query consumption. Shared physical bindings use their
+existing injection table; there is no additional FES simulation state. Normal
+Input tick later chooses the then-current reference and traverses the real
+Graph/FES callback, borrowing that tick's entry rather than an enqueue entry.
+
+Already issued154 effects remain after owner close or failure. The same-owner
+call-stack guard cancels closed-owner rejection and later FIFO continuation;
+live errors still propagate. Unsafe key indices remain explicit Input table
+diagnostics, and operands crossing the original2560-byte temporary are not
+executed as native memory writes. Settled checkpoints retain the existing
+Input/device counters and ordinary numeric pending records once; fresh restore
+does not rerun the setter, source getter or bank/SCRIPT stages.
+
+Only btnsimulate in the grouped drag/dragimg/draghelp/btnsimulate contract is
+closed here, so that row stays partial. The other grouped names, automoveex and
+raw23 remain separate incomplete work; no unregistered ABI is enabled.

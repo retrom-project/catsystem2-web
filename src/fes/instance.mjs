@@ -724,6 +724,8 @@ export class FESInstance {
       return this.nativeCommandReturn(this.runtime.autoMove(args));
     if (this.runtime && head === 'restoremove')
       return this.nativeCommandReturn(this.runtime.restoreMove());
+    if (this.runtime && head === 'btnsimulate')
+      return this.nativeCommandReturn(this.runtime.buttonSimulate(args));
     if (this.runtime && head === 'lockactive')
       return this.nativeCommandReturn(this.runtime.lockActive(args));
     if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))

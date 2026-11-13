@@ -435,6 +435,18 @@ export class FESCoordinator {
     this.pendingRecords.push({ operation: 'restore-move' });
     return 0;
   }
+  buttonSimulate(args) {
+    const values = [];
+    for (let at = 0; at < 2; at++) {
+      if (args[at] === undefined) return 0;
+      const bytes = nativeDataString(this.instance.argumentBytes(args[at]));
+      if (bytes.length >= 2560)
+        throw new RangeError('FES btnsimulate operand exceeds its 2560-byte temporary');
+      values.push(bytes.length ? this.instance.value(fesNarrowText(bytes)) | 0 : 0);
+    }
+    this.pendingRecords.push({ operation: 'button-simulate', index: values[0], value: values[1] });
+    return -3;
+  }
   async flushRecords() {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
@@ -448,6 +460,8 @@ export class FESCoordinator {
         await this.instance.player.nativeInput.consumeAutoMove(record);
       else if (record.operation === 'restore-move')
         await this.instance.player.nativeInput.consumeRestoreMove();
+      else if (record.operation === 'button-simulate')
+        await this.instance.player.nativeInput.consumeButtonSimulation(record);
       else if (record.operation === 'active-lock')
         this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')
