@@ -439,7 +439,7 @@ reallocation or another321. Ordinary FES object deletion retains the evidenced
 child residual until final owner teardown, which releases it without another
 Stop. The two normal-profile tests exercise these paths through real FES owners
 without init, param, start or PPI configuration. This closes only the explicit
-target attach leaf. The existing init/start whole-wrapper parsing and
+target attach leaf. The existing init whole-wrapper parsing and
 NULL-holder traversal differences remain separate incomplete work; their code,
 driver ordering, factory/ABI gates and checkpoint format are unchanged.
 
@@ -464,6 +464,24 @@ object state, including a normal DELETE hole, without creating a particle bank.
 A present expanded-empty operand differs from a missing token. Expanded-empty
 and trailing-percent operands retain the current raw expression error boundary;
 these checks do not establish complete native malformed-input diagnostics.
+
+PARTICLE `start` follows the sole object-command table entries and complete
+775B90/60FEB0 wrappers. It freezes the selection extent, reads no operands, skips
+NULL and nonraw23 holders and requests the existing particle start flag, then
+returns zero. Extra operands, including invalid expressions, are not expanded or
+evaluated by this wrapper. Normal source row-bank expansion and selection parsing
+precede it and retain their own reads. SOUND `sndtag init`, image ANM and effect
+draw/wipe are different verbs with unchanged services.
+
+The resource FIFO consumes the flag before sending canonical315, w0/l0, from the
+actual FES owner to its existing owned kind16 child, then follows the existing
+running-state318 query. Both normal-profile tests cover a DELETE hole, SOUND,
+CIMAGE and DRAW class skips, empty selection and the actual315/318 parameters and
+returns. The existing adapter can handle these requests without a particle bank;
+this does not establish synchronous playback or complete native PPI/bankless
+semantics. Init parsing, filename guards, resource loading, driver/receiver order,
+factory/ABI gates and checkpoint formats remain unchanged. Init's whole-wrapper
+parsing and NULL traversal, missing-token scratch and PPI behavior remain open.
 
 For an existing enabled current BUTTON, the default World input route now uses
 the original directional reader: same-block searches preserve the first matching
