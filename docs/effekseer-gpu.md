@@ -92,8 +92,16 @@ These are callback contribution and data/history side effects: drawing and
 presentation still process the complete frame. Partial or empty damage does
 not crop or skip ordinary content.
 
-Ordinary old/new model bounds, unregister's disable-before-erase ordering,
-close/delete/SIZE damage and complete native rectangle clipping remain partial.
+Known D6 message3 unregisters query the old enabled registration before disabling
+and erasing it. Real FES SIZE/delete use this path while the old Task and FILE
+remain open; physical disposal follows in logic without another query. SIZE's
+empty replacement does not erase the old callback's damage. The existing
+checkpoint also retains this settled pending-destruction state and its dirty
+history, restoring the erased graph without registering or replaying it.
+Unknown flags acquire no query or implicit enable value during removal.
+
+Ordinary old/new model bounds/cache, ordinary unregister, direct Task/World
+close, other model replacement damage and complete native rectangle clipping remain partial.
 Full Task geometry/device pixel acceptance and final frame-rate/memory goals
 also remain outside that recorder evidence.
 

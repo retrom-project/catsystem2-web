@@ -662,6 +662,8 @@ export class NativeGraphicTask {
     };
     switch (id) {
       case 3:
+        if (this.graph?.callback && typeof this.graph.registrationEnabled === 'boolean')
+          this.setRegistrationEnabled(false);
         this.closeGraph();
         return this.base.message(words, context);
       case 19:
