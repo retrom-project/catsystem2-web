@@ -535,9 +535,9 @@ export class FESInput {
       const key = this.capturePressedReference();
       let handled = false;
       if (key !== undefined) {
-        if (keyIndex === 8) {
-          // Frozen event6 writes SCRL_U and returns0 without dispatching labels.
-          player.nativeEvent(key, 'SCRL_U');
+        if (keyIndex === 8 || keyIndex === 9) {
+          // Frozen events6/7 write scroll fields and return0 without dispatching labels.
+          player.nativeEvent(key, keyIndex === 8 ? 'SCRL_U' : 'SCRL_D');
         } else {
           handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
           if (!live()) return 0;
@@ -785,7 +785,7 @@ export class FESInput {
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
-    if (message === 9 && this.instance.runtime && (l === 0 || l === 1 || l === 8))
+    if (message === 9 && this.instance.runtime && (l === 0 || l === 1 || l === 8 || l === 9))
       return this.consumePush(sender, l, context);
     if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);
     await this.updateMouse();

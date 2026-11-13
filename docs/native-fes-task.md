@@ -661,7 +661,7 @@ World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
 The existing pressed field owns a narrow nameBytes/int32 index pair, separately
-from the active reference. Key0/1 and scroll-up key8 PUSH capture it after mouse
+from the active reference. Key0/1 and scroll keys8/9 PUSH capture it after mouse
 completion and before their event. Only an empty active name or a current raw6 BUTTON with
 enable0 produces the invalid pressed sentinel (represented as null). A missing
 current object or a current non-BUTTON still copies the active name/index; the
@@ -690,7 +690,7 @@ later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
-Normal default message9 key0/1 and scroll-up key8 share this owner/resource
+Normal default message9 key0/1 and scroll keys8/9 share this owner/resource
 path. Direction4..7 keeps its existing resource traversal without another pass.
 Other PUSH key/scroll and TOUCH post-callback tails remain separate uncompleted
 boundaries; the direct JS-authored FES input API is unchanged.
@@ -710,7 +710,16 @@ after the pulse is prepared; key8 consumes that work before its callback returns
 without relying on the later FES frame. Fresh restore retains the same pulse and
 dirty state without source replay. Actual342 masks ordinary Graph delivery while
 sleeping; the gate regression explicitly uses the exposed FES message boundary
-after observing that mask. No browser-wheel binding or other key is inferred.
+after observing that mask. No browser-wheel binding is inferred.
+
+Canonical/logical key9 selects event7, separately from adjacent key10/event9.
+Both registered switches write the SCRL_D field and return0 without dispatching
+an authored SCRL_D label. Key9 uses the same source95, mouse, pressed reference,
+unhandled94, current resource FIFO and input-sync path as key8, with no Player
+flush. The ordinary btnsimulate9 producer verifies the actual World Graph/FES
+callback in both ABIs: current339 image work is consumed before that callback
+returns, while scroll-up and key10's page-up fields stay unchanged. Other keys
+and the remaining TOUCH tails retain their separate recovery boundaries.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
