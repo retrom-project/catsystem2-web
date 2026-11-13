@@ -261,9 +261,9 @@ for (const profile of profiles) {
 
   test(`${profile} default FES STRING, sound, PTCL/PPI and M2 children share one restore authority`, async () => {
     const source =
-      '#DEFINE\nSTRING label\nNVSTRING nv\nSOUND sound\nPARTICLE script\nPARTICLE plugin\nM2PLANE model\nSTRTABLE words\n#OBJECT SIZE PRI DISP\nlabel 24,16 60000 1\nnv 24,16 60001 1\n#OBJECT FILE\nmodel ' +
+      '#MACRO\nEMPTY_TEXTURE $str0\n#DEFINE\nSTRING label\nNVSTRING nv\nSOUND sound\nPARTICLE script\nPARTICLE plugin\nM2PLANE model\nSTRTABLE words\n#OBJECT SIZE PRI DISP\nlabel 24,16 60000 1\nnv 24,16 60001 1\n#OBJECT FILE\nmodel ' +
       nativeM2Program +
-      '\nwords words.cnf\n#START\nlabel layout size 4\nlabel layout shadow 0\nlabel str ABC\nlabel draw\nnv insert\nnv apend DEF\nnv draw\nscript init 0 probe $str0 1 12\nscript start\nplugin init 1 rain $str0 1 13\nplugin param 4 8\nplugin start\nnext IDLE\n#IDLE\n';
+      '\nwords words.cnf\n#START\nlabel layout size 4\nlabel layout shadow 0\nlabel str ABC\nlabel draw\nnv insert\nnv apend DEF\nnv draw\nscript init 0 probe EMPTY_TEXTURE 1 12\nscript start\nplugin init 1 rain EMPTY_TEXTURE 1 13\nplugin param 4 8\nplugin start\nnext IDLE\n#IDLE\n';
     const world = await defaultFESWorld(profile, {
       ...nativeM2Files(),
       'screen.fes': bytes(source),
@@ -273,8 +273,35 @@ for (const profile of profiles) {
     });
     let fresh;
     try {
+      const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+        originalTexture = bank.getBytes(0);
+      bank.setBytes(0, bytes('$str0'));
       const h = await loadDefaultFES(world);
+      if (originalTexture === undefined) bank.entries.delete(0);
+      else bank.setBytes(0, originalTexture);
       await h.task.tick();
+      const initializedScript = h.instance.byKey.get('script'),
+        initializedPlugin = h.instance.byKey.get('plugin');
+      assert.deepEqual(
+        [
+          initializedScript.family,
+          initializedScript.program,
+          initializedScript.texture,
+          initializedScript.count,
+          initializedScript.priority,
+        ],
+        [0, 'probe', '', 1, 12],
+      );
+      assert.deepEqual(
+        [
+          initializedPlugin.family,
+          initializedPlugin.program,
+          initializedPlugin.texture,
+          initializedPlugin.count,
+          initializedPlugin.priority,
+        ],
+        [1, 'rain', '', 1, 13],
+      );
       for (let frame = 0; frame < 12; frame++) await world.tick();
       const label = h.instance.byKey.get('label'),
         nv = h.instance.byKey.get('nv'),

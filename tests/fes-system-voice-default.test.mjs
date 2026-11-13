@@ -53,11 +53,25 @@ function expectedWords(before, changes = {}) {
   for (const [index, value] of Object.entries(changes)) result[Number(index)] = value >>> 0;
   return result;
 }
-async function screen(t, profile, blocks, sound = tree(profile)) {
+async function screen(t, profile, blocks, sound = tree(profile), lateSlots = []) {
   const source = ascii(
-      '#START\nnext IDLE\n#IDLE\n' +
+      (lateSlots.length
+        ? '#MACRO\n' + lateSlots.map((slot) => `LATE_${slot} $str${slot}`).join('\n') + '\n'
+        : '') +
+        '#START\nnext IDLE\n#IDLE\n' +
         Object.entries(blocks)
-          .map(([name, commands]) => '#' + name + '\n' + commands + '\nbreak\n')
+          .map(
+            ([name, commands]) =>
+              '#' +
+              name +
+              '\n' +
+              (lateSlots.length
+                ? commands.replace(/\$str(\d+)/g, (token, slot) =>
+                    lateSlots.includes(Number(slot)) ? `LATE_${slot}` : token,
+                  )
+                : commands) +
+              '\nbreak\n',
+          )
           .join(''),
     ),
     world = await defaultFESWorld(profile, { 'screen.fes': source }, { soundConfiguration: sound });
@@ -65,7 +79,16 @@ async function screen(t, profile, blocks, sound = tree(profile)) {
   for (const method of ['sound', 'soundCommand', 'nativeMovie', 'nativeWindowAction'])
     world.host[method] = () =>
       assert.fail('Selection started an external/audio operation: ' + method);
+  const seedBank = lateSlots.length
+      ? world.runtime.stringBank(world.objects.objects.get(world.main.id))
+      : null,
+    savedSlots = lateSlots.map((slot) => [slot, seedBank.getBytes(slot)]);
+  for (const [slot] of savedSlots) seedBank.setBytes(slot, ascii(`$str${slot}`));
   const h = await loadDefaultFES(world);
+  for (const [slot, bytes] of savedSlots) {
+    if (bytes === undefined) seedBank.entries.delete(slot);
+    else seedBank.setBytes(slot, bytes);
+  }
   assert.ok(h.instance.runtime instanceof FESCoordinator);
   assert.equal(world.soundConfiguration, sound);
   assert.equal(world.runtime.services.soundConfiguration, sound);
@@ -210,10 +233,16 @@ for (const profile of profiles) {
   });
 
   test(`${profile} present empty destination and candidate are zero only in these frontends`, async (t) => {
-    const h = await screen(t, profile, {
-      BASIC: 'sysvoice $str1 $str1',
-      TREE: 'sysvoiceex $str1 $str1',
-    });
+    const h = await screen(
+      t,
+      profile,
+      {
+        BASIC: 'sysvoice $str1 $str1',
+        TREE: 'sysvoiceex $str1 $str1',
+      },
+      undefined,
+      [1],
+    );
     voices(h.world, [[0, 1]]);
     h.strings.setBytes(1, new Uint8Array());
     h.instance.setGlobal(0, 99);
@@ -274,9 +303,15 @@ for (const profile of profiles) {
   });
 
   test(`${profile} basic provided candidates retain weight and exact bank SCRIPT numeric read order`, async (t) => {
-    const h = await screen(t, profile, {
-      RUN: 'sysvoice $str1 $str2 $str2 $str3 $str2 -1 48 ++$10',
-    });
+    const h = await screen(
+      t,
+      profile,
+      {
+        RUN: 'sysvoice $str1 $str2 $str2 $str3 $str2 -1 48 ++$10',
+      },
+      undefined,
+      [1, 2, 3],
+    );
     voices(h.world, [
       [3, 2],
       [4, 1],
@@ -465,10 +500,16 @@ for (const profile of profiles) {
   });
 
   test(`${profile} ex comma bytes preserve empty components, one expansion and first NUL with Buffer results`, async (t) => {
-    const h = await screen(t, profile, {
-      EMPTY: 'sysvoiceex 20 $str1',
-      SIDE: 'sysvoiceex 20 $str2',
-    });
+    const h = await screen(
+      t,
+      profile,
+      {
+        EMPTY: 'sysvoiceex 20 $str1',
+        SIDE: 'sysvoiceex 20 $str2',
+      },
+      undefined,
+      [1, 2],
+    );
     const caller = Buffer.from(',0,,0,');
     h.strings.setBytes(1, caller);
     h.strings.setBytes(2, ascii('X'));

@@ -19,12 +19,30 @@ function blocks(values) {
     .map(([label, lines]) => `#${label}\n${lines}\nbreak\n`)
     .join('');
 }
-async function open(profile, values = {}) {
+async function open(profile, values = {}, lateSlots = []) {
   const world = await defaultFESWorld(profile, {
-    'screen.fes': utf8(declarations + blocks(values)),
+    'screen.fes': utf8(
+      lateSlots.length
+        ? '#MACRO\n' +
+            lateSlots.map((slot) => `LATE_${slot} $str${slot}`).join('\n') +
+            '\n' +
+            (declarations + blocks(values)).replace(/\$str(\d+)/g, (token, slot) =>
+              lateSlots.includes(Number(slot)) ? `LATE_${slot}` : token,
+            )
+        : declarations + blocks(values),
+    ),
   });
   try {
+    const seedBank = lateSlots.length
+        ? world.runtime.stringBank(world.objects.objects.get(world.main.id))
+        : null,
+      savedSlots = lateSlots.map((slot) => [slot, seedBank.getBytes(slot)]);
+    for (const [slot] of savedSlots) seedBank.setBytes(slot, utf8(`$str${slot}`));
     const h = await loadDefaultFES(world);
+    for (const [slot, bytes] of savedSlots) {
+      if (bytes === undefined) seedBank.entries.delete(slot);
+      else seedBank.setBytes(slot, bytes);
+    }
     await h.task.tick();
     return { ...h, world, input: h.task.input };
   } catch (error) {
@@ -200,12 +218,16 @@ for (const profile of profiles) {
   });
 
   test(`${profile}: input A optional getter expands bank and SCRIPT once with zero, empty, absent and error boundaries`, async () => {
-    const h = await open(profile, {
-      EVAL: 'single noact $str0',
-      ZERO: 'single noact 0',
-      EMPTY: 'single noact $str1',
-      NONE: 'single noact',
-    });
+    const h = await open(
+      profile,
+      {
+        EVAL: 'single noact $str0',
+        ZERO: 'single noact 0',
+        EMPTY: 'single noact $str1',
+        NONE: 'single noact',
+      },
+      [0, 1],
+    );
     try {
       const bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),
         bankCalls = [],

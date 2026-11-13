@@ -373,9 +373,12 @@ for (const profile of profiles) {
 
   test(`${profile} default whole tone commands expand once before bounds, retain holes and publish ordered globals`, async (t) => {
     const source =
-        '#DEFINE\nBGTABLE mixed[5]\nVIEW ignored\n#OBJECT FILE\nmixed file\n#START\nnext IDLE\n#IDLE\n#INITIAL\nmixed tonetbl initial\nbreak\n#LOAD\nmixed tonetbl $str1\nbreak\n#QUERY\nmixed gettonetbl ++$10 ++$10 ++$10\nbreak\n#ALIAS\nmixed gettonetbl 5 5 5\nbreak\n#IGNORED\nignored tonetbl $str1\nignored gettonetbl ++$10 ++$10 ++$10\nbreak\n#MISSINGARG\nmixed tonetbl\nbreak\n#MISSING\nmixed[0] tonetbl missing\nbreak\n#EMPTY\nmixed[0] tonetbl empty\nbreak\n#EMPTYNAME\nmixed[0] tonetbl $str2\nbreak\n#DEFAULT\nmixed[0] gettonetbl 1 2 3\nbreak\n',
+        '#MACRO\nLATE_1 $str1\nLATE_2 $str2\n#DEFINE\nBGTABLE mixed[5]\nVIEW ignored\n#OBJECT FILE\nmixed file\n#START\nnext IDLE\n#IDLE\n#INITIAL\nmixed tonetbl initial\nbreak\n#LOAD\nmixed tonetbl LATE_1\nbreak\n#QUERY\nmixed gettonetbl ++$10 ++$10 ++$10\nbreak\n#ALIAS\nmixed gettonetbl 5 5 5\nbreak\n#IGNORED\nignored tonetbl LATE_1\nignored gettonetbl ++$10 ++$10 ++$10\nbreak\n#MISSINGARG\nmixed tonetbl\nbreak\n#MISSING\nmixed[0] tonetbl missing\nbreak\n#EMPTY\nmixed[0] tonetbl empty\nbreak\n#EMPTYNAME\nmixed[0] tonetbl LATE_2\nbreak\n#DEFAULT\nmixed[0] gettonetbl 1 2 3\nbreak\n',
       world = await defaultFESWorld(profile, { 'screen.fes': ascii(source) });
     try {
+      const seedBank = world.runtime.stringBank(world.objects.objects.get(world.main.id));
+      seedBank.setBytes(1, ascii('$str1'));
+      seedBank.setBytes(2, ascii('$str2'));
       const h = await loadDefaultFES(world),
         { instance } = h,
         collection = instance.collection,

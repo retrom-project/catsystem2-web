@@ -28,13 +28,24 @@ const utf8 = (s) => new TextEncoder().encode(s),
     'a.RELEASE_L': '$15=++$15',
     'b.FOCUS': '$12=++$12',
   };
-async function open(profile, overrides = {}) {
+async function open(profile, overrides = {}, lateSlots = []) {
   const source =
       declarations +
       Object.entries({ ...labels, ...overrides })
         .map(([label, body]) => `#${label}\n${body}\nbreak\n`)
         .join(''),
-    world = await defaultFESWorld(profile, { 'screen.fes': utf8(source) });
+    world = await defaultFESWorld(profile, {
+      'screen.fes': utf8(
+        lateSlots.length
+          ? '#MACRO\n' +
+              lateSlots.map((slot) => `LATE_${slot} $str${slot}`).join('\n') +
+              '\n' +
+              source.replace(/\$str(\d+)/g, (token, slot) =>
+                lateSlots.includes(Number(slot)) ? `LATE_${slot}` : token,
+              )
+          : source,
+      ),
+    });
   Object.assign(world.configuration.screen, {
     width: 128,
     height: 96,
@@ -54,7 +65,16 @@ async function open(profile, overrides = {}) {
       name: 'native identity spacer',
       nativeID: 0x70000000,
     });
+    const seedBank = lateSlots.length
+        ? world.runtime.stringBank(world.objects.objects.get(world.main.id))
+        : null,
+      savedSlots = lateSlots.map((slot) => [slot, seedBank.getBytes(slot)]);
+    for (const [slot] of savedSlots) seedBank.setBytes(slot, utf8(`$str${slot}`));
     const h = await loadDefaultFES(world);
+    for (const [slot, bytes] of savedSlots) {
+      if (bytes === undefined) seedBank.entries.delete(slot);
+      else seedBank.setBytes(slot, bytes);
+    }
     await h.task.tick();
     return {
       ...h,
@@ -159,7 +179,7 @@ function closeDialog(dom) {
 }
 for (const profile of profiles) {
   test(`${profile}: lockactive evaluates optional operand once, defaults empty/missing to0 and preserves its signed word on the existing -3 FIFO`, async () => {
-    const h = await open(profile);
+    const h = await open(profile, {}, [7, 8, 9]);
     try {
       assert.equal(h.input.state.activeLock, 0);
       const bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),

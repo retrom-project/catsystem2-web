@@ -47,6 +47,23 @@ numbers.
 | 350                | Insert image data in this FES's filename cache; retain the shared 20-byte data-buffer descriptor only for a new key.                                                                                                                                  |
 | 351, 352           | Read/write the interpreter's own CP932 string-to-word dictionary, distinct from private variable names and the string bank.                                                                                                                           |
 
+Normal runtime block reads copy the current source-bound string bank expansion
+into owned working bytes, then apply registered source macros once. They do not
+apply whole-row SCRIPT replacement, split inserted bytes into new rows or mutate
+the stored program. Already prepared inline execution retains its current copy
+and offset without repeating either stage. Operand getters keep their separate
+bank/SCRIPT boundaries; a macro may emit a placeholder after the row-bank pass.
+
+When token zero is missing, a frame advances its existing PC and uses the native
+positive-one return to resume on the next frame. An event instead stops that
+label's row loop: a DEFAULT handler can still be followed by the object's own
+handler. Null-object notifications and event continuations after an asynchronous
+flush use the same event mode. They do not introduce a frame delay or retain the
+event's trailing rows. Checkpoints preserve stored rows and actual working-copy
+addresses without running either expansion stage during restoration. Bare FES
+players retain their independent source contract. Command-head SCRIPT ordering,
+conditional/skip and other parser parity remain separate audit work.
+
 The configuration event uses the registered ABI's
 `fes.configurationMessage` stages. The reviewed Game receiver visits the current
 object-key map first, calls each live image configuration callback, notifies

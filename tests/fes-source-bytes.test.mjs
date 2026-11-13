@@ -189,11 +189,12 @@ for (const profile of profiles) {
         );
         if (object.nativeType !== 29) assert.deepEqual(writer.parser.source, expected);
       }
-      assert.equal(
-        reads.filter(
-          (bytes) => fesByteView(bytes) === fesByteView(join(encodeCP932('猫'), utf8(' $str1'))),
-        ).length,
-        1,
+      const textStages = [utf8('mix str WORD $str1'), join(encodeCP932('猫'), utf8(' '), bankText)];
+      assert.deepEqual(
+        reads.filter((bytes) =>
+          textStages.some((stage) => fesByteView(bytes) === fesByteView(stage)),
+        ),
+        textStages,
       );
       assert.notEqual(
         objects[0].nativeTextState.source.buffer,
@@ -212,7 +213,13 @@ for (const profile of profiles) {
       assert.deepEqual(objects[2].nativeTextState.secondary, encodeCP932('猫'));
       assert.equal(objects[0].nativeTextState.secondary.length, 0);
       await h.task.player.notify('APPEND');
-      assert.equal(reads.filter((bytes) => fesByteView(bytes) === '$str1').length, 1);
+      const appendStages = [utf8('mix apend $str1'), bankText];
+      assert.deepEqual(
+        reads.filter((bytes) =>
+          appendStages.some((stage) => fesByteView(bytes) === fesByteView(stage)),
+        ),
+        appendStages,
+      );
       const pending = join(expected, expandedBank);
       for (const object of objects) assert.deepEqual(object.nativeTextState.source, pending);
       const checkpoint = world.snapshot();

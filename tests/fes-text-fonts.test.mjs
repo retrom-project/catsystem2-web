@@ -106,20 +106,28 @@ for (const profile of profiles) {
     const world = await defaultFESWorld(profile, {
       'screen.fes': join(
         utf8(
-          '#DEFINE\nSTRING mixed[4]\n#OBJECT SIZE\nmixed 24,16\n#START\nnext IDLE\n#IDLE\n#FACE\nmixed layout fontind ++$10 ',
+          '#MACRO\nLATE_1 $str1\n#DEFINE\nSTRING mixed[4]\n#OBJECT SIZE\nmixed 24,16\n#START\nnext IDLE\n#IDLE\n#FACE\nmixed layout fontind ++$10 ',
         ),
         encodeCP932('猫 EXTRA'),
         utf8(
-          '\nbreak\n#LITERAL\nmixed layout font $str1 X  EXTRA\nbreak\n#QUOTED\nmixed layout font ""\nbreak\n#DEFAULT\nmixed layout fontind ++$10\nbreak\n#HOLE\nmixed[1] layout fontind ++$10 IGNORED\nbreak\n#RESET\nmixed reset\nbreak\n',
+          '\nbreak\n#LITERAL\nmixed layout font LATE_1 X  EXTRA\nbreak\n#QUOTED\nmixed layout font ""\nbreak\n#DEFAULT\nmixed layout fontind ++$10\nbreak\n#HOLE\nmixed[1] layout fontind ++$10 IGNORED\nbreak\n#RESET\nmixed reset\nbreak\n',
         ),
       ),
     });
     let fresh, resetFresh;
     try {
       world.configuration.fields.font.name = 'Initial Face';
+      const seedBank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+        seedValue = seedBank.getBytes(1);
+      seedBank.setBytes(1, utf8('$str1'));
       const h = await loadDefaultFES(world),
         { instance } = h;
-      assert.deepEqual(instance.program.blocks.LITERAL[0], utf8('mixed layout font $str1 X EXTRA'));
+      if (seedValue === undefined) seedBank.entries.delete(1);
+      else seedBank.setBytes(1, seedValue);
+      assert.deepEqual(
+        instance.program.blocks.LITERAL[0],
+        utf8('mixed layout font LATE_1 X EXTRA'),
+      );
       for (const [index, type] of [
         [2, 'NVSTRING'],
         [3, profile === profiles[1] ? 'STRING8' : 'VIEW'],

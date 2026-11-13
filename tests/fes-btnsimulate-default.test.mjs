@@ -72,13 +72,33 @@ break
 $13=43
 break
 `;
-async function open(profile) {
-  const world = await defaultFESWorld(profile, { 'screen.fes': ascii(source) });
+async function open(profile, lateSlots = []) {
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': ascii(
+      lateSlots.length
+        ? '#MACRO\n' +
+            lateSlots.map((slot) => `LATE_${slot} $str${slot}`).join('\n') +
+            '\n' +
+            source.replace(/\$str(\d+)/g, (token, slot) =>
+              lateSlots.includes(Number(slot)) ? `LATE_${slot}` : token,
+            )
+        : source,
+    ),
+  });
   world.ensureNativeEngine = () => {
     throw new Error('btnsimulate must stay in the default JavaScript path');
   };
   try {
+    const seedBank = lateSlots.length
+        ? world.runtime.stringBank(world.objects.objects.get(world.main.id))
+        : null,
+      savedSlots = lateSlots.map((slot) => [slot, seedBank.getBytes(slot)]);
+    for (const [slot] of savedSlots) seedBank.setBytes(slot, ascii(`$str${slot}`));
     const h = await loadDefaultFES(world);
+    for (const [slot, bytes] of savedSlots) {
+      if (bytes === undefined) seedBank.entries.delete(slot);
+      else seedBank.setBytes(slot, bytes);
+    }
     await h.task.tick();
     return { ...h, world, input: h.task.input.input, runtime: h.instance.runtime };
   } catch (error) {
@@ -177,7 +197,7 @@ for (const profile of profiles) {
     }
   });
   test(`${profile}: required getter/eval order preserves missing-second effects, expanded-empty0 and the same prior FIFO without reading operand3`, async () => {
-    const h = await open(profile);
+    const h = await open(profile, [7, 8, 9, 10, 11]);
     try {
       const seen = observe(h),
         bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),

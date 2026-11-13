@@ -107,8 +107,19 @@ function deferred() {
   });
   return { promise, resolve, reject };
 }
-async function open(profile) {
-  const world = await defaultFESWorld(profile, { 'screen.fes': utf8(source) });
+async function open(profile, lateSlots = []) {
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': utf8(
+      lateSlots.length
+        ? '#MACRO\n' +
+            lateSlots.map((slot) => `LATE_${slot} $str${slot}`).join('\n') +
+            '\n' +
+            source.replace(/\$str(\d+)/g, (token, slot) =>
+              lateSlots.includes(Number(slot)) ? `LATE_${slot}` : token,
+            )
+        : source,
+    ),
+  });
   Object.assign(world.configuration.screen, {
     width: 128,
     height: 96,
@@ -127,7 +138,16 @@ async function open(profile) {
       name: 'identity spacer',
       nativeID: 0x70000000,
     });
+    const seedBank = lateSlots.length
+        ? world.runtime.stringBank(world.objects.objects.get(world.main.id))
+        : null,
+      savedSlots = lateSlots.map((slot) => [slot, seedBank.getBytes(slot)]);
+    for (const [slot] of savedSlots) seedBank.setBytes(slot, utf8(`$str${slot}`));
     const h = await loadDefaultFES(world);
+    for (const [slot, bytes] of savedSlots) {
+      if (bytes === undefined) seedBank.entries.delete(slot);
+      else seedBank.setBytes(slot, bytes);
+    }
     await h.task.tick();
     return { ...h, world, input: h.task.input, runtime: h.instance.runtime };
   } catch (error) {
@@ -258,7 +278,7 @@ for (const profile of profiles) {
     }
   });
   test(`${profile}: automove getter/index evaluate once, missing/empty/type/group gates and dequeue-time autocur/137 recheck preserve the single FIFO`, async () => {
-    const h = await open(profile);
+    const h = await open(profile, [7, 8, 9]);
     try {
       const bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),
         replacements = h.world.configuration.scriptReplacements,

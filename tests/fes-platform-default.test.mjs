@@ -549,7 +549,9 @@ for (const profile of profiles) {
   });
 
   test(`${profile} shared FIFO retains owned exact Buffer payloads, holes and empty operands`, async () => {
-    const world = await defaultFESWorld(profile, { 'screen.fes': fixtureSource }),
+    const world = await defaultFESWorld(profile, {
+        'screen.fes': Uint8Array.from([...ascii('#MACRO\nEMPTY_CLIP $str2\n'), ...fixtureSource]),
+      }),
       calls = [];
     world.host.nativeClipboard = {
       open: async (owner) => (calls.push(['open', owner]), true),
@@ -562,10 +564,14 @@ for (const profile of profiles) {
       return 33;
     };
     try {
+      const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+        originalEmpty = bank.getBytes(2);
+      bank.setBytes(2, ascii('$str2'));
       const h = await loadDefaultFES(world),
-        bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
         expand = h.instance.argumentBytes.bind(h.instance),
         produced = [];
+      if (originalEmpty === undefined) bank.entries.delete(2);
+      else bank.setBytes(2, originalEmpty);
       h.instance.argumentBytes = (token) => {
         const bytes = Buffer.from(expand(token));
         produced.push(bytes);
@@ -597,7 +603,7 @@ for (const profile of profiles) {
       assert.deepEqual(calls.at(-1)[1], [...ascii('https://example.invalid')]);
       calls.length = 0;
       bank.setBytes(2, new Uint8Array());
-      h.instance.execute(ascii('clipboard $str2 ++$10'), [], 0);
+      h.instance.execute(ascii('clipboard EMPTY_CLIP ++$10'), [], 0);
       h.instance.execute(ascii('opensite "first" ++$10'), [], 0);
       await h.instance.flushNativeRecords();
       assert.deepEqual(calls[2], ['write', '']);

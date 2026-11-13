@@ -545,7 +545,7 @@ export class FESInstance {
     this.eventObject = o;
     let jumped = false;
     for (const label of labels) {
-      jumped = this.run([[label, 0]]) || jumped;
+      jumped = this.run([[label, 0]], 'event') || jumped;
       if (jumped || this.finished !== null) break;
     }
     this.eventObject = current;
@@ -583,7 +583,7 @@ export class FESInstance {
       for (const label of labels) {
         if (!this.program.blocks[label]) continue;
         handled = true;
-        jumped = this.run([[label, 0]]) || jumped;
+        jumped = this.run([[label, 0]], 'event') || jumped;
         let flushes = 0;
         while (this.decodePending) {
           if (++flushes > 10000) throw new Error(`${this.name}: FES notification decode budget`);
@@ -597,7 +597,7 @@ export class FESInstance {
             if (this.nativeCommandReturn(value).action === 'suspend') break;
           }
           await this.flushNativeRecords();
-          jumped = this.run(continuation) || jumped;
+          jumped = this.run(continuation, 'event') || jumped;
         }
         if (jumped || this.finished !== null) break;
       }
@@ -668,7 +668,7 @@ export class FESInstance {
     if (!jumped && !this.suspended) this.suspended = saved;
     return true;
   }
-  run(stack) {
+  run(stack, mode = 'frame') {
     if (this.runtime?.closed) return false;
     let budget = 20000;
     let jumped = false;
@@ -686,6 +686,10 @@ export class FESInstance {
         } catch (error) {
           error.message = `${this.name}#${label}:${pc}: ${error.message}`;
           throw error;
+        }
+        if (result.action === 'empty-head') {
+          if (mode === 'event') return jumped;
+          result = this.nativeCommandReturn(1);
         }
         pc = result.pc ?? pc;
         if (result.action === 'call') {
@@ -726,12 +730,19 @@ export class FESInstance {
     if (this.runtime?.closed) throw new Error('FES runtime owner is closed');
     let bytes = fesSourceBytes(line);
     if (!execution) {
+      if (this.runtime) {
+        const expanded = this.player.host.nativeFESStringBytes(bytes, this);
+        if (!(expanded instanceof Uint8Array))
+          throw new Error('FES native row service must return bytes synchronously');
+        bytes = fesSourceBytes(expanded).slice();
+      }
       bytes = this.expandMacros(bytes);
       execution = { bytes, offset: 0 };
     }
     line = fesByteView(bytes);
-    const words = this.tokens(bytes),
-      head = fesNarrowText(words[0]),
+    const words = this.tokens(bytes);
+    if (this.runtime && words[0] === undefined) return { action: 'empty-head' };
+    const head = fesNarrowText(words[0]),
       args = words.slice(1),
       p = (i) => this.value(this.soundArgument(args[i] || '0'));
     const store = (i, v) => {

@@ -3806,8 +3806,12 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/h_macro.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-source-model.test.mjs", "tests/fes-source-player.test.mjs"],
-      "note": "Registration expands the first name/value tokens once. Each runtime block read replaces whole lexical identifiers once, retaining quoted literals and per-ABI emission. DEFINE/OBJECT are not source-macro expanded. Checkpoints preserve registered values and actual executing source copies.",
+      "evidence": [
+        "tests/fes-source-model.test.mjs",
+        "tests/fes-source-player.test.mjs",
+        "tests/fes-block-working-row-default.test.mjs"
+      ],
+      "note": "Registration expands the first name/value tokens once. Normal runtime block reads copy the current source-bank expansion before replacing whole lexical identifiers once, retaining quoted literals and per-ABI emission; prepared inline copies skip both stages. DEFINE/OBJECT are not source-macro expanded. A missing working head advances the frame PC and yields one frame, but stops only the current event label loop, including null notifications and flush continuations. Checkpoints preserve registered values and actual executing source copies without replay. Bare players retain their independent source contract; command-head SCRIPT and conditional/skip parity remain separate audit work.",
       "signatures": []
     },
     {

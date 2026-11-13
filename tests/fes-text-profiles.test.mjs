@@ -63,10 +63,12 @@ test('semantic profile setter owns its explicit complete bytes value, appends on
 
 for (const profile of profiles) {
   test(`${profile}: prepared FES profile tails retain internal and trailing spaces through default decoding and fresh restore`, async () => {
-    const line = utf8('text layout prof ++$10 ABC  $str1 X EXTRA  '),
+    const line = utf8('text layout prof ++$10 ABC  LATE_1 X EXTRA  '),
       tail = utf8('ABC  $str1 X EXTRA  '),
       body = join(
-        utf8('#DEFINE\nSTRING text\n#OBJECT SIZE\ntext 24,16\n#START\nnext IDLE\n#IDLE\n#QUERY\n'),
+        utf8(
+          '#MACRO\nLATE_1 $str1\n#DEFINE\nSTRING text\n#OBJECT SIZE\ntext 24,16\n#START\nnext IDLE\n#IDLE\n#QUERY\n',
+        ),
         line,
         utf8('\nbreak\n'),
       ),
@@ -81,9 +83,10 @@ for (const profile of profiles) {
     let fresh;
     try {
       const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id));
-      bank.setBytes(1, utf8('changed bank value'));
+      bank.setBytes(1, utf8('$str1'));
       world.configuration.scriptReplacements.add(utf8('X'), utf8('XX'));
       const h = await loadDefaultFES(world);
+      bank.setBytes(1, utf8('changed bank value'));
       await h.task.syncObjects();
       const object = h.instance.collection.lookup('text', 0);
       h.instance.setGlobal(10, 0);
@@ -120,11 +123,11 @@ for (const profile of profiles) {
 
   test(`${profile}: default layout profiles keep shared raw bytes across mixed targets, holes, raw-tail boundaries and fresh restore`, async () => {
     const lines = [
-        '#DEFINE\nSTRING mixed[5]\n#OBJECT SIZE\nmixed 24,16\n#START\nnext IDLE\n#IDLE\n',
+        '#MACRO\nLATE_1 $str1\n#DEFINE\nSTRING mixed[5]\n#OBJECT SIZE\nmixed 24,16\n#START\nnext IDLE\n#IDLE\n',
         ...corpora.map((bytes, i) =>
           join(utf8(`#RAW${i}\nmixed layout prof ++$10 `), bytes, utf8(' IGNORED\nbreak\n')),
         ),
-        '#BANK\nmixed layout prof ++$10 $str1 X\nbreak\n#DROP\nmixed layout d_prof ++$10 $str1 X\nbreak\n#NONE\nmixed[2] layout prof ++$10 $str1\nbreak\n#MISSING\nmixed[0] layout prof ++$10\nbreak\n',
+        '#BANK\nmixed layout prof ++$10 LATE_1 X\nbreak\n#DROP\nmixed layout d_prof ++$10 LATE_1 X\nbreak\n#NONE\nmixed[2] layout prof ++$10 LATE_1\nbreak\n#MISSING\nmixed[0] layout prof ++$10\nbreak\n',
       ],
       world = await defaultFESWorld(profile, {
         'screen.fes': join(...lines.map((line) => (typeof line === 'string' ? utf8(line) : line))),
@@ -133,11 +136,12 @@ for (const profile of profiles) {
     try {
       const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
         bankBytes = join(encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5), utf8('X'));
-      bank.setBytes(1, bankBytes);
+      bank.setBytes(1, utf8('$str1'));
       world.configuration.scriptReplacements.add(utf8('X'), utf8('XX'));
       const h = await loadDefaultFES(world),
         { instance } = h,
         collection = instance.collection;
+      bank.setBytes(1, bankBytes);
       for (const [index, type] of [
         [2, 'NVSTRING'],
         [3, 'VIEW'],
@@ -267,22 +271,28 @@ for (const profile of profiles) {
   for (const type of profile === profiles[0] ? ['LOGSTRING'] : ['LOGSTRING', 'LOGSTRING8'])
     test(`${profile}: default ${type} prof owns exact bytes only in its original main-child subset`, async () => {
       const bytes = join(encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5), utf8(' $str1 X EXTRA')),
+        authored = join(encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5), utf8(' LATE_1 X EXTRA')),
         world = await defaultFESWorld(profile, {
           ...files,
           'screen.fes': join(
             utf8(
-              `#DEFINE\n${type} log\n#OBJECT COUNT POS2 SIZE2 PRI\nlog 2 area:0 area:0 60000\n#START\nnext IDLE\n#IDLE\n#BIND\nlog setlog $0\nbreak\n#PROF\nlog layout prof ++$10 `,
+              `#MACRO\nLATE_1 $str1\n#DEFINE\n${type} log\n#OBJECT COUNT POS2 SIZE2 PRI\nlog 2 area:0 area:0 60000\n#START\nnext IDLE\n#IDLE\n#BIND\nlog setlog $0\nbreak\n#PROF\nlog layout prof ++$10 `,
             ),
-            bytes,
+            authored,
             utf8('\nbreak\n#DROP\nlog layout d_prof ++$10 '),
-            bytes,
+            authored,
             utf8('\nbreak\n'),
           ),
           'area.hg3': regions(),
         });
       try {
         world.configuration.scriptReplacements.add(utf8('X'), utf8('XX'));
+        const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+          originalProfile = bank.getBytes(1);
+        bank.setBytes(1, utf8('$str1'));
         const h = await loadDefaultFES(world);
+        if (originalProfile === undefined) bank.entries.delete(1);
+        else bank.setBytes(1, originalProfile);
         await h.task.syncObjects();
         await h.task.syncObjects();
         const object = h.instance.collection.lookup('log', 0),

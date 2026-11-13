@@ -170,7 +170,7 @@ for (const profile of profiles) {
       ]);
       assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
       assert.equal(h.instance.global(30), 1);
-      assert.deepEqual(bankCalls, []);
+      assert.deepEqual(bankCalls, ['resetactive $str7 NEVER_EVALUATE', '$30=++$30', 'break']);
       assert.deepEqual(scriptCalls, []);
       assert.equal(h.instance.global(42), 0);
       assert.equal(h.instance.nativeQueuePending, false);

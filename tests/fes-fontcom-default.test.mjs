@@ -129,7 +129,7 @@ for (const profile of profiles) {
   }
   test(`${profile} ordinary fontcom gates outputs and owns one synchronous current enumeration`, async () => {
     const source = ascii(
-        '#START\nnext IDLE\n#IDLE\n#UNINITIALIZED\nfontcom count ++$10\nfontcom get ++$10 ++$10\nfontcom search ++$10 $str1\nfontcom default ++$10\nbreak\n#INIT\nfontcom init ++$10\nbreak\n#COUNT\nfontcom count ++$10\nbreak\n#GET\nfontcom get 0 3\nfontcom get -1 4\nbreak\n#SEARCH\nfontcom search 5 固定 幅\nfontcom search 6 $str1\nfontcom search 7\nbreak\n#DEFAULT\nfontcom default 8\nbreak\n#UNKNOWN\nfontcom INIT ++$10\nfontcom unknown ++$10\nbreak\n',
+        '#MACRO\nLATE_1 $str1\n#START\nnext IDLE\n#IDLE\n#UNINITIALIZED\nfontcom count ++$10\nfontcom get ++$10 ++$10\nfontcom search ++$10 LATE_1\nfontcom default ++$10\nbreak\n#INIT\nfontcom init ++$10\nbreak\n#COUNT\nfontcom count ++$10\nbreak\n#GET\nfontcom get 0 3\nfontcom get -1 4\nbreak\n#SEARCH\nfontcom search 5 固定 幅\nfontcom search 6 LATE_1\nfontcom search 7\nbreak\n#DEFAULT\nfontcom default 8\nbreak\n#UNKNOWN\nfontcom INIT ++$10\nfontcom unknown ++$10\nbreak\n',
       ),
       // FES file bodies keep authored source bytes. Encode Japanese operands as
       // the original narrow ABI, independently of JS-authored UTF8 source.
@@ -148,8 +148,13 @@ for (const profile of profiles) {
       return defaultBytes;
     };
     try {
+      const seedBank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+        seedValue = seedBank.getBytes(1);
+      seedBank.setBytes(1, ascii('$str1'));
       const h = await loadDefaultFES(world),
         t = traceFrontends(h, world);
+      if (seedValue === undefined) seedBank.entries.delete(1);
+      else seedBank.setBytes(1, seedValue);
       assert.ok(h.instance.runtime instanceof FESCoordinator);
       assert.equal(typeof h.task.player.runtimeFactory, 'function');
       await h.task.tick();
@@ -276,7 +281,9 @@ for (const profile of profiles) {
   });
 
   test(`${profile} fontcom preserves complete evaluation/output order and the real renderer catalog mount`, async () => {
-    const world = await defaultFESWorld(profile, { 'screen.fes': ascii('#START\n#IDLE\n') });
+    const world = await defaultFESWorld(profile, {
+      'screen.fes': ascii('#MACRO\nLATE_1 $str1\n#START\n#IDLE\n'),
+    });
     const previous = world.bootstrapOwner;
     try {
       const renderer = Object.create(CanvasRenderer.prototype);
@@ -298,8 +305,13 @@ for (const profile of profiles) {
           return renderer.nativeFontFamilies(0x411);
         },
       };
+      const seedBank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
+        seedValue = seedBank.getBytes(1);
+      seedBank.setBytes(1, ascii('$str1'));
       const h = await loadDefaultFES(world),
         t = traceFrontends(h, world);
+      if (seedValue === undefined) seedBank.entries.delete(1);
+      else seedBank.setBytes(1, seedValue);
       h.instance.execute(ascii('fontcom init'), [], 0);
       assert.equal(enumerations, 2);
       t.clear();
@@ -345,7 +357,7 @@ for (const profile of profiles) {
         ],
       );
       t.clear();
-      h.instance.execute(ascii('fontcom search 10 $str1'), [], 0);
+      h.instance.execute(ascii('fontcom search 10 LATE_1'), [], 0);
       assert.deepEqual(
         t.calls.filter(([kind]) => ['eval', 'write'].includes(kind)),
         [
