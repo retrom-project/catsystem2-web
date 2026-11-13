@@ -20,6 +20,7 @@ function recordingBackend() {
   const d = commandRecorder(),
     packets = [],
     original = d.stage.drawEffekseer;
+  let currentToken = null;
   d.stage.drawEffekseer = function (packet, frame, options) {
     packets.push({
       vertices: bits(packet.vertices.subarray(0, packet.vertexCount * 10)),
@@ -27,7 +28,7 @@ function recordingBackend() {
       camera: bits(packet.camera),
       projection: bits(packet.projection),
       viewport: Array.from(packet.viewport),
-      textureID: d.bindings.get('texture0')?.id ?? null,
+      textureID: currentToken?.id ?? null,
       frame: frame && { width: frame.width, height: frame.height, rgba: Array.from(frame.rgba) },
     });
     return original.call(this, packet, frame, options);
@@ -39,8 +40,9 @@ function recordingBackend() {
       device: d.view,
       scope: d.scope,
       getViewport: () => d.viewport,
-      bindNormalPipeline({ device, textureToken }) {
-        device.setBinding('texture0', textureToken);
+      bindNormalPipeline({ textureToken }) {
+        currentToken = textureToken;
+        d.scope.bindNormalPipeline();
       },
     },
     close: () => d.scope.close(),

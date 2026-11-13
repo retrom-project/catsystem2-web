@@ -6,10 +6,7 @@ import {
   EffekseerStandardBatch,
   EffekseerUnsafeIndexDomainError,
 } from '../src/effekseer/standard-batch.mjs';
-import {
-  EFFEKSEER_RESTORED_STATES,
-  EFFEKSEER_RESTORED_BINDINGS,
-} from '../src/effekseer/materials.mjs';
+import { EFFEKSEER_RESTORED_STATES } from '../src/effekseer/materials.mjs';
 import { setup, material } from './fixtures/effekseer/gpu-seam.mjs';
 const cases = JSON.parse(
     await readFile(new URL('./fixtures/effekseer/batch-cases.json', import.meta.url)),
@@ -138,18 +135,17 @@ for (const input of cases)
     assert.equal(b.byteLength, 0);
     assert.equal(b.snapshot().ringCursor, expected.finalCursor);
   });
-test('unsafe draw applies known material and restores exactly12states/5bindings in finally', () => {
+test('unsafe draw applies known material and restores twelve states and physical bindings in finally', () => {
   const s = setup(),
     states = EFFEKSEER_RESTORED_STATES.map((k) => s.view.getState(k)),
-    bindings = EFFEKSEER_RESTORED_BINDINGS.map((k) => s.view.getBinding(k));
+    bindings = s.physical();
   let finished = 0,
     drawn = 0;
   const b = new EffekseerStandardBatch({
     camera: () => zero,
     projection: () => zero,
     prepare: (p) => {
-      s.view.setBinding('vertexShader', 'efk');
-      s.view.setBinding('pixelShader', 'plain');
+      s.scope.bindNormalPipeline();
       s.scope.applyNormalMaterial(material(p.state.alphaBlend, p.state.filter, p.state.wrap));
     },
     draw: () => {
@@ -157,8 +153,6 @@ test('unsafe draw applies known material and restores exactly12states/5bindings 
     },
     finish: () => {
       finished++;
-      s.view.setBinding('vertexShader', null);
-      s.view.setBinding('pixelShader', null);
     },
   });
   s.scope.begin();
@@ -181,10 +175,7 @@ test('unsafe draw applies known material and restores exactly12states/5bindings 
     EFFEKSEER_RESTORED_STATES.map((k) => s.view.getState(k)),
     states,
   );
-  assert.deepEqual(
-    EFFEKSEER_RESTORED_BINDINGS.map((k) => s.view.getBinding(k)),
-    bindings,
-  );
+  assert.deepEqual(s.physical(), bindings);
   assert.equal(s.context.samplers.get(5), 2);
   assert.equal(s.context.samplers.get(6), 2);
   assert.equal(s.context.samplers.get(1), 1);

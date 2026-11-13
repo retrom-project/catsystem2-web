@@ -9,18 +9,18 @@ an Effekseer canvas or move frame images through the CPU.
 The default kind61/raw36 CPU path now owns its task manager and World CRT
 binding, but its callback still reports an unsupported GPU adapter. This
 independent backend is not yet connected to that actual submission path;
-physical bindings, pixels and device lifecycle remain GPU integration work.
+callback pixels and complete Task/device lifecycle remain GPU integration work.
 
 The normal solid/no-fog profile preserves the original quad order, programmable
 alpha and inherited depth/alpha/sampler state. The device scope restores twelve
-render states and five bindings; sampler changes retain the original leakage.
+render states and actual physical bindings; sampler changes retain the original leakage.
 `createD3DContext` owns the single `samplerStages` Map; its stage-zero entry
 aliases `samplers`. The JS semantic view and transitional Emote adapter read
 and write that same authority. Stages are allocated only when written, using
 the adapter's existing defaults. A read of an unwritten stage does not create
 another state owner. The snapshot stores stage zero only in `samplers` and
-other allocated stages only in `samplerStages`. This state-only owner change
-does not implement physical WebGL binding capture or actual kind61 submission.
+other allocated stages only in `samplerStages`. Sampler ownership is separate
+from physical capture and actual kind61 submission.
 
 ParticlesGL now owns one VAO for its existing fixed interleaved vertex layout.
 Initialization, ordinary/typed/presentation draws, resource validation, shared
@@ -39,8 +39,18 @@ to one GPU/device generation; loss, retirement, closure or reconstruction skips
 old handles. Completed or failed restoration releases captured resource
 references. Captures are not checkpoint data or a parallel device/cache.
 
-This primitive does not yet replace the independent semantic five-binding
-fixture interface or connect default kind61 submission. Its focused tests use
+The C7 view/scope now delegates to this same physical owner, replacing the
+five-string semantic binding interface in place. Scope Begin saves the twelve
+D3D values, captures physical state and binds the backend's normal pipeline;
+End restores both. A nonready entry is rejected before CPU pass mutation. Only
+an active captured-owner/generation proof explaining restorefalse receives the
+private device-invalidation brand; completed bytes/cursor/Ring are not rewound.
+Known loss/retirement can recover after shared reconstruction, while arbitrary
+GL/cleanup failures and aggregates containing an unknown leaf remain permanent
+CPU-batch faults. Empty/cyclic/sparse aggregates do not qualify. Physical tokens
+and errors are not serialized or retained as new World authorities.
+
+This interface/lifecycle leaf does not connect default kind61 submission. Its focused tests use
 actual JS backend/lifecycle classes with an authored WebGL API recorder; they
 establish neither real shader compilation nor GPU pixels. Real WebGL numeric
 and mixed-state acceptance belongs to the later task/backend connection. The

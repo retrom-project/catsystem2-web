@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Strict authored WebGL API boundary recorder, not a compiler, driver or pixel
 // oracle. It models VAO-local ELEMENT/attribute state and global ARRAY state.
+const F32 = Float32Array,
+  I32 = Int32Array;
 export function glBindingRecorder() {
   let nextEnum = 0x100000,
     nextObject = 1;
@@ -73,8 +75,8 @@ export function glBindingRecorder() {
     if (type === 'bool') return Boolean(values[0] ?? 0);
     if (n === 1) return Number(values[0] ?? 0);
     return type.startsWith('i')
-      ? Int32Array.from({ length: n }, (_, i) => values[i] ?? 0)
-      : Float32Array.from({ length: n }, (_, i) => values[i] ?? 0);
+      ? I32.from({ length: n }, (_, i) => values[i] ?? 0)
+      : F32.from({ length: n }, (_, i) => values[i] ?? 0);
   };
   const faceValues = (face, front, back, values) => {
     if (face === gl.FRONT || face === gl.FRONT_AND_BACK)
@@ -204,6 +206,9 @@ export function glBindingRecorder() {
     texImage2D(_target, _level, _internal, width, height) {
       Object.assign(state.textures[state.activeUnit], { width, height });
     },
+    copyTexImage2D(_target, _level, _format, _x, _y, width, height) {
+      Object.assign(state.textures[state.activeUnit], { width, height });
+    },
     texParameteri(_target, id, value) {
       state.textures[state.activeUnit].parameters.set(id, value);
     },
@@ -233,16 +238,25 @@ export function glBindingRecorder() {
     },
     checkFramebufferStatus() {
       const f = state.drawFramebuffer,
-        color = f?.attachments.get(gl.COLOR_ATTACHMENT0),
-        depth = f?.attachments.get(gl.DEPTH_STENCIL_ATTACHMENT);
-      return color?.width > 0 && color.width === depth?.width && color.height === depth?.height
-        ? gl.FRAMEBUFFER_COMPLETE
-        : gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
+        color = f?.attachments.get(gl.COLOR_ATTACHMENT0);
+      const complete =
+        valid(color, 'Texture') &&
+        color.width > 0 &&
+        [...f.attachments.values()].every(
+          (attachment) =>
+            attachment === null ||
+            (['Texture', 'Renderbuffer'].includes(attachment.kind) &&
+              valid(attachment, attachment.kind) &&
+              attachment.width === color.width &&
+              attachment.height === color.height),
+        );
+      return complete ? gl.FRAMEBUFFER_COMPLETE : gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
     },
     enable: (key) => enabled.add(key),
     disable: (key) => enabled.delete(key),
     isEnabled: (key) => enabled.has(key),
     getParameter(key) {
+      if (key === gl.MAX_TEXTURE_SIZE) return 4096; // Declared authored API profile, not measured hardware.
       if (key === gl.CURRENT_PROGRAM) return state.program;
       if (key === gl.VERTEX_ARRAY_BINDING) return state.vertexArray;
       if (key === gl.ARRAY_BUFFER_BINDING) return state.arrayBuffer;
@@ -308,15 +322,15 @@ export function glBindingRecorder() {
     stencilOp(...values) {
       methods.stencilOpSeparate(gl.FRONT_AND_BACK, ...values);
     },
-    viewport: (...v) => parameters.set(gl.VIEWPORT, Int32Array.from(v)),
-    depthRange: (...v) => parameters.set(gl.DEPTH_RANGE, Float32Array.from(v)),
-    scissor: (...v) => parameters.set(gl.SCISSOR_BOX, Int32Array.from(v)),
-    blendColor: (...v) => parameters.set(gl.BLEND_COLOR, Float32Array.from(v)),
+    viewport: (...v) => parameters.set(gl.VIEWPORT, I32.from(v)),
+    depthRange: (...v) => parameters.set(gl.DEPTH_RANGE, F32.from(v)),
+    scissor: (...v) => parameters.set(gl.SCISSOR_BOX, I32.from(v)),
+    blendColor: (...v) => parameters.set(gl.BLEND_COLOR, F32.from(v)),
     colorMask: (...v) => parameters.set(gl.COLOR_WRITEMASK, v),
     pixelStorei: (key, value) => parameters.set(key, value),
     clearDepth: (value) => parameters.set(gl.DEPTH_CLEAR_VALUE, value),
     clearStencil: (value) => parameters.set(gl.STENCIL_CLEAR_VALUE, value),
-    clearColor: (...v) => parameters.set(gl.COLOR_CLEAR_VALUE, Float32Array.from(v)),
+    clearColor: (...v) => parameters.set(gl.COLOR_CLEAR_VALUE, F32.from(v)),
     clear() {},
     drawElements() {},
     drawArrays() {},
@@ -424,5 +438,14 @@ export function glBindingRecorder() {
   methods.scissor(0, 0, 8, 6);
   methods.blendColor(0, 0, 0, 0);
   methods.colorMask(true, true, true, true);
-  return { gl, calls, objects, state, parameters, vaos, enabled };
+  return {
+    gl,
+    calls,
+    objects,
+    state,
+    parameters,
+    vaos,
+    enabled,
+    enumName: (value) => names.get(value),
+  };
 }

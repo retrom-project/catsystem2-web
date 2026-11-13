@@ -8,12 +8,6 @@ import { setup, I } from './fixtures/effekseer/gpu-seam.mjs';
 import { official, setupMounted, managerFor } from './fixtures/effekseer/mounted.mjs';
 import { EffekseerMeshPass } from './fixtures/effekseer/mesh-pass.mjs';
 function passFor(s, mounted) {
-  const pipelines = {
-    vertexShader: { id: 'sharedNormalVS' },
-    pixelShaderTexture: { id: 'sharedTexturedPS' },
-    pixelShaderNoTexture: { id: 'sharedDiffusePS' },
-    vertexDeclaration: { id: 'sharedNormalDeclaration' },
-  };
   return new EffekseerMeshPass({
     stage: s.stage,
     resources: mounted.resources,
@@ -21,14 +15,8 @@ function passFor(s, mounted) {
     getCamera: () => I,
     getProjection: () => I,
     getViewport: () => s.viewport,
-    bindNormalPipeline({ device, frame }) {
-      device.setBinding('texture0', frame);
-      device.setBinding('vertexShader', pipelines.vertexShader);
-      device.setBinding(
-        'pixelShader',
-        frame ? pipelines.pixelShaderTexture : pipelines.pixelShaderNoTexture,
-      );
-      device.setBinding('vertexDeclaration', pipelines.vertexDeclaration);
+    bindNormalPipeline() {
+      s.view.beginNormalPipeline();
     },
   });
 }
@@ -72,7 +60,7 @@ for (const name of [...official, 'authored'])
           const random = m.threads.snapshot(),
             ages = [...manager.instances.values()].map((x) => [x.id, x.age]),
             savedStates = [...s.context.states],
-            savedBindings = new Map(s.bindings);
+            savedBindings = s.physical();
           const result = pass.draw(manager, { hasCurrentEffect: true, depthStencilEnabled: true });
           instances += result.instances;
           drawnNodes += result.drawnNodes;
@@ -83,7 +71,7 @@ for (const name of [...official, 'authored'])
             ages,
           );
           assert.deepEqual([...s.context.states], savedStates);
-          assert.deepEqual(s.bindings, savedBindings);
+          assert.deepEqual(s.physical(), savedBindings);
         }
         assert.ok(instances > 0, 'nonempty actual CPU instances required');
         if (name === 'block_simple') assert.ok(unavailable > 0);

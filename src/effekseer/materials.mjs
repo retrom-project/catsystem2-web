@@ -17,13 +17,6 @@ export const EFFEKSEER_RESTORED_STATES = Object.freeze([
   'lighting',
   'shadeMode',
 ]);
-export const EFFEKSEER_RESTORED_BINDINGS = Object.freeze([
-  'vertexShader',
-  'pixelShader',
-  'vertexDeclaration',
-  'texture0',
-  'fvf',
-]);
 const BLEND = Object.freeze([
   { enabled: false, operation: 'add', source: 'one', destination: 'zero', reference: 127 },
   {
@@ -58,10 +51,13 @@ const boolean = (value, field) => {
 export class EffekseerDeviceScope {
   constructor(device, { restoreStates = true } = {}) {
     for (const name of [
+      'assertEntry',
       'getState',
       'setState',
-      'getBinding',
-      'setBinding',
+      'createBindingCapture',
+      'captureBindings',
+      'restoreBindings',
+      'beginNormalPipeline',
       'setSampler',
       'clearDepth',
     ])
@@ -71,22 +67,24 @@ export class EffekseerDeviceScope {
     this.device = device;
     this.restoreStates = restoreStates;
     this.savedStates = new Array(EFFEKSEER_RESTORED_STATES.length);
-    this.savedBindings = new Array(EFFEKSEER_RESTORED_BINDINGS.length);
+    this.capture = device.createBindingCapture();
     this.active = false;
     this.closed = false;
   }
-  begin() {
+  assertEntry() {
     if (this.closed || this.active) throw new Error('Effekseer device scope is not fresh');
+    this.device.assertEntry();
+  }
+  begin() {
+    this.assertEntry();
     const d = this.device;
     if (this.restoreStates) {
       for (let i = 0; i < EFFEKSEER_RESTORED_STATES.length; i++)
         this.savedStates[i] = d.getState(EFFEKSEER_RESTORED_STATES[i]);
-      for (let i = 0; i < EFFEKSEER_RESTORED_BINDINGS.length; i++)
-        this.savedBindings[i] = d.getBinding(EFFEKSEER_RESTORED_BINDINGS[i]);
+      d.captureBindings(this.capture);
     }
     this.active = true;
-    d.setBinding('texture0', null);
-    d.setBinding('fvf', 0);
+    d.beginNormalPipeline(this.restoreStates ? this.capture : null);
     d.setState('colorVertex', true);
     d.setState('lighting', false);
     d.setState('shadeMode', 'gouraud');
@@ -149,16 +147,33 @@ export class EffekseerDeviceScope {
     boolean(enabled, 'depthStencilEnabled');
     if (enabled) this.device.clearDepth(1);
   }
+  bindNormalPipeline() {
+    this.assertActive();
+    this.device.beginNormalPipeline(this.restoreStates ? this.capture : null);
+  }
   end() {
     this.assertActive();
-    const d = this.device;
-    if (this.restoreStates) {
-      for (let i = 0; i < EFFEKSEER_RESTORED_STATES.length; i++)
-        d.setState(EFFEKSEER_RESTORED_STATES[i], this.savedStates[i]);
-      for (let i = 0; i < EFFEKSEER_RESTORED_BINDINGS.length; i++)
-        d.setBinding(EFFEKSEER_RESTORED_BINDINGS[i], this.savedBindings[i]);
+    let failure = null;
+    try {
+      if (this.restoreStates) {
+        try {
+          for (let i = 0; i < EFFEKSEER_RESTORED_STATES.length; i++)
+            this.device.setState(EFFEKSEER_RESTORED_STATES[i], this.savedStates[i]);
+        } catch (error) {
+          failure = error;
+        }
+        try {
+          this.device.restoreBindings(this.capture);
+        } catch (error) {
+          failure = failure
+            ? new AggregateError([failure, error], 'Effekseer state and physical restore failed')
+            : error;
+        }
+      }
+    } finally {
+      this.active = false;
     }
-    this.active = false;
+    if (failure) throw failure;
   }
   close() {
     if (this.closed) return;

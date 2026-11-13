@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 259, "oracle": 149, "differential": 67 },
+    "counts": { "js": 260, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -45,6 +45,7 @@
         "tests/effekseer-mesh-packet.test.mjs",
         "tests/effekseer-mesh-pass.test.mjs",
         "tests/effekseer-numerical.test.mjs",
+        "tests/effekseer-physical-scope.test.mjs",
         "tests/effekseer-reader.test.mjs",
         "tests/effekseer-render-state.test.mjs",
         "tests/effekseer-resources.test.mjs",
@@ -48601,7 +48602,7 @@
     },
     {
       "file": "src/effekseer/materials.mjs",
-      "sourceSha256": "a04c194a738d3c8df44585b123d5cd5da1f34f43d4667ff426752cc39ffe7237",
+      "sourceSha256": "a7c3459b8a1e5f9e5fd9db3ce8dfe2c94d728eb1f6bf738f2813d9c0c47054a6",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48627,7 +48628,7 @@
     },
     {
       "file": "src/effekseer/mesh-batch.mjs",
-      "sourceSha256": "8a9315265eb55ec9b336178269763d41695096172fe3317785e76d28bebcceb7",
+      "sourceSha256": "96ea8d9df7cd25bbf9ee05472a62e18a52e21b4fec8341edbe564c796e6e5ba9",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -48718,7 +48719,7 @@
     },
     {
       "file": "src/effekseer/shared-device-view.mjs",
-      "sourceSha256": "ae6b895bec49494e9fdb89187af9b202e3c8822484b2c38bea783afbb00fd89f",
+      "sourceSha256": "e8c2d2450ac9a0f9857048f701680d3b3be008cc513a35a670382b2b8c6f543f",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

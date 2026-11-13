@@ -59,7 +59,7 @@ test('ordinary to EFK to ordinary retains all twelve original saved states and d
   s.context.states.set(174, 1);
   s.context.states.set(52, 1);
   const saved = new Map(s.context.states),
-    bindings = new Map(s.bindings),
+    bindings = s.physical(),
     last = [s.context.lastDrawType, s.context.lastBlend];
   const fields = EFFEKSEER_RESTORED_STATES.map((n) => [n, s.view.getState(n)]);
   s.scope.begin().clearCurrentDepth(true);
@@ -70,7 +70,7 @@ test('ordinary to EFK to ordinary retains all twelve original saved states and d
     EFFEKSEER_RESTORED_STATES.map((n) => [n, s.view.getState(n)]),
     fields,
   );
-  assert.deepEqual(s.bindings, bindings);
+  assert.deepEqual(s.physical(), bindings);
   assert.deepEqual([...s.context.states], [...saved]);
   assert.deepEqual([s.context.lastDrawType, s.context.lastBlend], last);
   s.gpu.drawGeometry(
@@ -88,7 +88,7 @@ test('ordinary to EFK to ordinary retains all twelve original saved states and d
   assert.ok(efk.enabled.has('SCISSOR_TEST'));
   assert.deepEqual(
     s.calls.filter((c) => c.method === 'depthFunc').map((c) => c.args),
-    [['LEQUAL'], ['GREATER'], ['GREATER']],
+    [['LEQUAL'], ['GREATER'], ['LEQUAL'], ['GREATER']],
   );
   assert.deepEqual(s.uniforms.get('effekseerPass'), [0]);
   assert.equal(s.context.states.get(7), 2);
@@ -164,9 +164,16 @@ test('empty manager with current effect still enters scope and depth prelude', (
 });
 test('disabled depth prelude emits no clear and does not touch the target', () => {
   const s = setup();
-  s.scope.begin().clearCurrentDepth(false);
+  s.scope.begin();
+  const before = s.calls.length,
+    target = s.gpu.target,
+    depth = target.depthStencil;
+  s.scope.clearCurrentDepth(false);
+  assert.equal(s.calls.length, before, 'disabled prelude issues no API operation');
+  assert.equal(s.gpu.target, target);
+  assert.equal(target.depthStencil, depth);
   s.scope.end();
-  assert.equal(s.calls.length, 0);
+  assert.equal(s.calls.filter((c) => c.method === 'clear').length, 0);
 });
 test('typed path bypasses fixed-function texture-stage operations and preserves them for ordinary drawing', () => {
   const s = setup();
@@ -197,8 +204,8 @@ test('typed path bypasses fixed-function texture-stage operations and preserves 
 });
 test('current viewport and depth range apply for EFK and prior GPU values restore after it', () => {
   const s = setup();
-  s.state.viewport = [1, 2, 50, 40];
-  s.state.depthRange = [0.1, 0.9];
+  s.gl.viewport(1, 2, 50, 40);
+  s.gl.depthRange(0.1, 0.9);
   s.scope.begin();
   draw(s);
   s.scope.end();
@@ -206,12 +213,12 @@ test('current viewport and depth range apply for EFK and prior GPU values restor
   assert.deepEqual(d.viewport, [3, 4, 24, 16]);
   assert.deepEqual(d.depthRange, [0.25, 0.75]);
   assert.deepEqual(s.state.viewport, [1, 2, 50, 40]);
-  assert.deepEqual(s.state.depthRange, [0.1, 0.9]);
+  assert.deepEqual(s.state.depthRange, Array.from(new Float32Array([0.1, 0.9])));
 });
 test('draw failure restores viewport/depth and the original scope still restores all saved fields', () => {
   const s = setup(),
     states = [...s.context.states],
-    bindings = new Map(s.bindings);
+    bindings = s.physical();
   s.state.failDraw = true;
   s.scope.begin();
   try {
@@ -220,7 +227,7 @@ test('draw failure restores viewport/depth and the original scope still restores
     s.scope.end();
   }
   assert.deepEqual([...s.context.states], states);
-  assert.deepEqual(s.bindings, bindings);
+  assert.deepEqual(s.physical(), bindings);
   assert.deepEqual(s.state.viewport, [0, 0, 64, 48]);
   assert.deepEqual(s.state.depthRange, [0, 1]);
 });
@@ -263,23 +270,25 @@ test('fog or non-solid inherited branches fail before GL writes and retain actua
     const s = setup();
     s.context.states.set(id, value);
     s.scope.begin();
+    const before = s.calls.length;
     assert.throws(() => draw(s), /Unverified inherited/);
     assert.equal(s.context.states.get(id), value);
-    assert.equal(s.calls.length, 0);
+    assert.equal(s.calls.length, before);
     s.scope.end();
   }
 });
 test('malformed typed range and missing shared state fail before any GL command', () => {
   const s = setup();
   s.scope.begin();
+  const before = s.calls.length;
   const p = packet();
   p.indices[0] = 0;
   assert.throws(() => draw(s, p), /quad order/);
-  assert.equal(s.calls.length, 0);
+  assert.equal(s.calls.length, before);
   const state = { ...s.view.state, states: new Map(s.context.states) };
   state.states.delete(25);
   assert.throws(() => s.stage.drawEffekseer(packet(), null, { state }), /state 25 is missing/);
-  assert.equal(s.calls.length, 0);
+  assert.equal(s.calls.length, before);
   s.scope.end();
 });
 test('thirty warmed indexed submissions reuse typed storage without new typed arrays', () => {
@@ -322,7 +331,7 @@ test('shared view requires current owners and preserves raw D3DZB_USEW during re
   assert.equal(s.context.states.get(7), 0);
   s.scope.end();
   assert.equal(s.context.states.get(7), 2);
-  assert.throws(() => new EffekseerSharedDeviceView({ context: s.context }), /bindings/);
+  assert.throws(() => new EffekseerSharedDeviceView({ context: s.context }), /gpu/);
   assert.throws(() => s.view.setState('unknown', 0), /Unknown/);
   assert.throws(() => s.view.setSampler(4, 'minFilter', 'point'), /original four/);
 });

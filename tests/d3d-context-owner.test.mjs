@@ -63,8 +63,16 @@ function sharedView(context) {
   };
   return new EffekseerSharedDeviceView({
     context,
-    bindings: { get: unused, set: unused },
-    gpu: { clear: unused },
+    gpu: Object.fromEntries(
+      [
+        'clear',
+        'createBindingCapture',
+        'captureBindings',
+        'restoreBindings',
+        'requireDevice',
+        'bindVertexLayout',
+      ].map((name) => [name, unused]),
+    ),
     viewport: () => [0, 0, 8, 8, 0, 1],
   });
 }

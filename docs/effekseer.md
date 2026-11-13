@@ -12,9 +12,12 @@ Parsing a sample does not establish either ABI's complete runtime support.
 
 `mesh-packet.mjs` provides reusable typed vertex/index packets, exact quad order
 and explicit camera/projection/viewport inputs. `materials.mjs` requires current
-shared-device operations and retains the old 12-state/5-binding restore set,
-sampler inheritance and depth-only clear. `shared-device-view.mjs` maps those
-operations onto an injected current context; it owns no device or target state.
+shared-device operations, the original twelve restored D3D states, sampler
+inheritance and depth-only clear. `shared-device-view.mjs` borrows the current
+context and actual GPU capture/restore/pipeline operations. The former five
+string binding labels are removed; program, VAO/buffers, texture bindings,
+uniforms and target state use the existing physical backend. The view owns no
+device, target or second state cache.
 StageRenderer exposes these independent interfaces through its existing shared
 GPU backend; World and EFK tasks do not yet mount them. See
 [the GPU backend contract](effekseer-gpu.md) for the calibrated profile and limits. Their
@@ -315,9 +318,14 @@ not allocate a canvas or read pixels during rendering. Render-only drawing does
 not advance RNG or living time. Normal End flushes the remaining valid byte cache;
 explicit fault cleanup uses `EffekseerStandardBatch.abort` to discard only pending
 unsubmitted bytes, preserving previous submissions/cursor/current-state effects.
-The device scope still restores its twelve states and five bindings. The adapter
-retains the original error, reports cleanup failures, rejects future draw/snapshot
-after failure and never draws a partial cache from finally.
+The device scope restores its twelve states and actual physical bindings.
+Entry readiness is checked before beginning a CPU pass. Errors remain visible
+and finally never submits a partial cache. A private, capture-proved device
+invalidation permits later drawing with the same live CPU batch and Ring after
+shared reconstruction; its cursor and completed submissions are retained.
+Only nonempty aggregates whose every leaf has that private provenance qualify.
+Unknown draw/GL/cleanup errors, mixed aggregates and unexplained restore failures
+permanently reject further batch draw/snapshot. OnReset does not clear such faults.
 
 The current Task checkpoint saves its Ring matrix once at the outer Task and
 its settled batch cursor once through MeshBatch. MeshBatch neither creates,
@@ -328,7 +336,7 @@ owner once without Play, Update, MT/CRT sampling or historical replay. Resource,
 logical-load, manager, caller, graphics readiness and current target ownership must
 be restored by their respective owners before task publication. This ownership
 change adds no kind61/default FES registration, ABI capability or D6 hook beyond
-the existing CPU path. Actual callback submission, physical GPU bindings and
+the existing CPU path. Actual callback submission and complete
 pixel/lifecycle integration remain the next GPU slice. Legacy texture conversion
 stays the resource owner's contract; this mesh composition establishes no new
 D3DX resize/filter/mipmap/format domain or complete frame-rate acceptance.

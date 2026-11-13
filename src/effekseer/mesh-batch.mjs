@@ -4,6 +4,7 @@
 // verified original76 zero-submission Ring End guard. CPU state borrows its
 // owning Task's Ring; backend operations are temporary draw inputs.
 import { EffekseerStandardBatch } from './standard-batch.mjs';
+import { isEffekseerDeviceInvalidation } from './shared-device-view.mjs';
 import { EffekseerPackedMesh } from './mesh-packet.mjs';
 import { EffekseerRingCurrentState } from './ring-current-state.mjs';
 import { SpriteRingGeometry } from './sprite-ring-geometry.mjs';
@@ -83,7 +84,7 @@ export class EffekseerMeshBatch {
         this.result.indexCount += packed.indexCount;
       },
       // Original DX9 EndShader is empty, and render-state Pop does not apply
-      // another device update. The outer renderer End restores12states/5bindings.
+      // another device update. The outer renderer End restores12states and actual physical bindings.
       finish: () => {},
     });
     this.visitors = new WeakMap();
@@ -263,10 +264,11 @@ export class EffekseerMeshBatch {
     )
       throw new TypeError('Effekseer drawing requires an explicit current backend');
     const scope = backend.scope;
-    for (const name of ['begin', 'applyValues', 'clearCurrentDepth', 'end'])
+    for (const name of ['assertEntry', 'begin', 'applyValues', 'clearCurrentDepth', 'end'])
       if (typeof scope[name] !== 'function')
         throw new TypeError('Effekseer drawing backend scope requires ' + name);
     if (scope.active || scope.closed) throw new Error('Effekseer backend scope is unavailable');
+    scope.assertEntry(); // Entry rejection precedes any CPU pass/cursor/fault mutation.
     this.backend = backend;
     this.pipeline.device = backend.device;
     this.drawing = true;
@@ -280,19 +282,31 @@ export class EffekseerMeshBatch {
       this.batch.end();
     } catch (error) {
       failure = error;
-      this.fault = error;
+      if (!isEffekseerDeviceInvalidation(error)) this.fault = error;
     } finally {
       try {
+        let cleanupFailure = null;
         try {
           if (this.batch.active) this.batch.abort();
-        } finally {
-          if (scope.active) scope.end();
+        } catch (cleanup) {
+          cleanupFailure = cleanup;
         }
-      } catch (cleanup) {
-        this.fault = failure
-          ? new AggregateError([failure, cleanup], 'Effekseer draw and cleanup failed')
-          : cleanup;
-        failure = this.fault;
+        try {
+          if (scope.active) scope.end();
+        } catch (cleanup) {
+          cleanupFailure = cleanupFailure
+            ? new AggregateError(
+                [cleanupFailure, cleanup],
+                'Effekseer batch and physical cleanup failed',
+              )
+            : cleanup;
+        }
+        if (cleanupFailure) {
+          failure = failure
+            ? new AggregateError([failure, cleanupFailure], 'Effekseer draw and cleanup failed')
+            : cleanupFailure;
+          if (!isEffekseerDeviceInvalidation(failure)) this.fault = failure;
+        }
       } finally {
         this.current.builder = null;
         this.current.node = null;

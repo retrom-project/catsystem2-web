@@ -5,156 +5,141 @@ import { StageRenderer } from '../../../src/render/stage.mjs';
 import { EffekseerDeviceScope } from '../../../src/effekseer/materials.mjs';
 import { EffekseerPackedMesh } from '../../../src/effekseer/mesh-packet.mjs';
 import { EffekseerSharedDeviceView } from '../../../src/effekseer/shared-device-view.mjs';
+import { glBindingRecorder } from '../gl-binding-recorder.mjs';
 const I = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const material = (blend = 1, filter = 0, wrap = 1) => ({
   renderer: { alphaBlend: blend },
   texture: { zTest: true, zWrite: false, filter, wrap, distortion: false },
 });
 function recorder() {
-  const calls = [],
+  const model = glBindingRecorder(),
+    calls = [],
     queries = [],
-    uniforms = new Map(),
-    enabled = new Set(),
-    state = { viewport: [0, 0, 64, 48], depthRange: [0, 1], framebuffer: null },
-    buffers = new Map();
-  let gl;
-  const methods = {
-    getParameter(key) {
-      if (key === 'VIEWPORT') return [...state.viewport];
-      if (key === 'DEPTH_RANGE') return [...state.depthRange];
-      throw new Error('Unexpected query ' + key);
-    },
-    viewport(...args) {
-      state.viewport = args;
-    },
-    depthRange(...args) {
-      state.depthRange = args;
-    },
-    bindFramebuffer(_, value) {
-      state.framebuffer = value;
-    },
-    bindBuffer(key, value) {
-      buffers.set(key, value);
-    },
-    enable(key) {
-      enabled.add(key);
-    },
-    disable(key) {
-      enabled.delete(key);
-    },
-    drawElements(...args) {
-      calls.push({
-        method: 'drawElementsSnapshot',
-        args,
-        viewport: [...state.viewport],
-        depthRange: [...state.depthRange],
-        framebuffer: state.framebuffer,
-        uniforms: new Map(uniforms),
-        enabled: new Set(enabled),
-      });
-      if (state.failDraw) throw new Error('retained draw failure');
-    },
-    drawArrays(...args) {
-      calls.push({
-        method: 'drawArraysSnapshot',
-        args,
-        uniforms: new Map(uniforms),
-        framebuffer: state.framebuffer,
-      });
-    },
-  };
-  const target = {
-    COLOR_BUFFER_BIT: 0x4000,
-    DEPTH_BUFFER_BIT: 0x0100,
-    STENCIL_BUFFER_BIT: 0x0400,
-    isContextLost: () => {
-      queries.push('isContextLost');
-      return false;
-    },
-  };
-  gl = new Proxy(target, {
-    get(object, key) {
-      if (Object.hasOwn(object, key)) return object[key];
-      if (typeof key !== 'string') return undefined;
-      if (key.toUpperCase() === key) return key;
+    uniforms = new Map();
+  const enumArgs = (method, args) =>
+    args.map((value, i) => {
+      const enumIndex = [
+        'enable',
+        'disable',
+        'depthFunc',
+        'frontFace',
+        'cullFace',
+        'bindVertexArray',
+      ].includes(method)
+        ? i === 0
+        : method === 'drawElements'
+          ? i === 0 || i === 2
+          : ['drawArrays', 'bindBuffer', 'bindFramebuffer', 'bindTexture'].includes(method)
+            ? i === 0
+            : false;
+      return enumIndex ? (model.enumName(value) ?? value) : value;
+    });
+  const gl = new Proxy(model.gl, {
+    get(target, key) {
+      const value = target[key];
+      if (typeof value !== 'function') return value;
       return (...args) => {
-        calls.push({ method: key, args });
-        if (key.startsWith('uniform'))
-          uniforms.set(
-            args[0],
-            args.slice(1).map((x) => (ArrayBuffer.isView(x) ? Array.from(x) : x)),
-          );
-        return methods[key]?.(...args);
+        if (key === 'isContextLost') {
+          queries.push('isContextLost');
+          return value(...args);
+        }
+        if (key === 'drawElements' || key === 'drawArrays') {
+          calls.push({
+            method: key + 'Snapshot',
+            args: enumArgs(key, args),
+            viewport: Array.from(model.gl.getParameter(model.gl.VIEWPORT)),
+            depthRange: Array.from(model.gl.getParameter(model.gl.DEPTH_RANGE)),
+            framebuffer: model.state.drawFramebuffer,
+            uniforms: new Map(uniforms),
+            enabled: new Set([...model.enabled].map((v) => model.enumName(v))),
+          });
+          if (model.state.failDraw) throw new Error('retained draw failure');
+        }
+        const result = value(...args);
+        calls.push({ method: key, args: enumArgs(key, args) });
+        if (String(key).startsWith('uniform')) {
+          const values = args.slice(1).map((x) => (ArrayBuffer.isView(x) ? Array.from(x) : x));
+          if (key === 'uniform1i') values[0] = Number(values[0]);
+          uniforms.set(args[0].name, values);
+        }
+        return result;
       };
     },
   });
-  return { gl, calls, queries, uniforms, state, buffers, enabled };
+  return { ...model, gl, calls, queries, uniforms };
 }
 function setup() {
   const r = recorder(),
-    gpu = Object.create(ParticlesGL.prototype),
-    context = createD3DContext({ depthStencilEnabled: true });
-  Object.assign(gpu, {
-    gl: r.gl,
-    drawing: true,
-    canvas: { width: 64, height: 48 },
-    primaryTarget: {
-      framebuffer: { id: 'primary' },
-      width: 64,
-      height: 48,
-      depthStencil: { id: 'primaryDepth' },
-    },
-    activeTarget: {
-      framebuffer: { id: 'surface' },
-      width: 32,
-      height: 24,
-      depthStencil: { id: 'surfaceDepth' },
-    },
-    program: { id: 'sharedProgram' },
-    vertexArray: { id: 'sharedVertexArray' },
-    buffer: { id: 'sharedVertices' },
-    effekseerIndexBuffer: { id: 'efkIndices' },
-    destination: { id: 'destination' },
-    uniform: new Proxy({}, { get: (_, key) => key }),
-    frameContext: context,
-    frameOpaqueTarget: false,
-    anisotropy: null,
-  });
-  // Authored recorder surfaces represent already-produced content, not lost storage.
-  for (const target of [gpu.primaryTarget, gpu.activeTarget]) {
-    target.owner = gpu;
-    target.contentValid = true;
-    Object.assign(target.depthStencil, {
-      owner: gpu,
-      width: target.width,
-      height: target.height,
-      format: 75,
-      validMask: 6,
-    });
+    previous = globalThis.OffscreenCanvas;
+  let gpu;
+  globalThis.OffscreenCanvas = class {
+    constructor(width, height) {
+      this.width = width;
+      this.height = height;
+    }
+    getContext() {
+      return r.gl;
+    }
+    addEventListener() {}
+    removeEventListener() {}
+  };
+  try {
+    gpu = new ParticlesGL(64, 48);
+  } finally {
+    if (previous === undefined) delete globalThis.OffscreenCanvas;
+    else globalThis.OffscreenCanvas = previous;
   }
+  const context = createD3DContext({ depthStencilEnabled: true }),
+    stage = new StageRenderer(),
+    viewport = [3, 4, 24, 16, 0.25, 0.75];
+  stage.gpu = gpu;
+  stage.bindGraphicsDevice(gpu.graphicsDevice);
+  gpu.frameContext = context;
+  gpu.beginFrame();
+  const target = gpu.createRenderTarget(32, 24),
+    depth = gpu.createDepthStencil(32, 24, 75);
+  gpu.enterRenderTarget(target, depth);
+  gpu.clear({ flags: 7 });
+  // Authored prior GL viewport differs from the explicit native draw packet.
+  r.gl.viewport(0, 0, 64, 48);
+  r.gl.depthRange(0, 1);
+  Object.defineProperties(r.state, {
+    viewport: { get: () => Array.from(r.parameters.get(r.gl.VIEWPORT)) },
+    depthRange: { get: () => Array.from(r.parameters.get(r.gl.DEPTH_RANGE)) },
+  });
   gpu.texture = (frame) => {
     r.calls.push({ method: 'textureLookup', args: [frame] });
     return frame;
   };
-  const stage = Object.create(StageRenderer.prototype);
-  stage.gpu = gpu;
-  const bindings = new Map([
-    ['vertexShader', { id: 'ordinaryVS' }],
-    ['pixelShader', { id: 'ordinaryPS' }],
-    ['vertexDeclaration', { id: 'ordinaryVD' }],
-    ['texture0', { id: 'ordinaryTexture' }],
-    ['fvf', 0x144],
-  ]);
-  const samplerStages = context.samplerStages;
-  const viewport = [3, 4, 24, 16, 0.25, 0.75];
-  const view = new EffekseerSharedDeviceView({
-    context,
-    gpu,
-    viewport: () => viewport,
-    bindings: { get: (n) => bindings.get(n), set: (n, v) => bindings.set(n, v) },
+  const view = new EffekseerSharedDeviceView({ context, gpu, viewport: () => viewport }),
+    scope = new EffekseerDeviceScope(view),
+    samplerStages = context.samplerStages;
+  const physical = () => ({
+    program: r.state.program,
+    vertexArray: r.state.vertexArray,
+    arrayBuffer: r.state.arrayBuffer,
+    element: r.vaos.get(r.state.vertexArray).element,
+    textures: [...r.state.textures],
+    samplers: [...r.state.samplers],
+    activeUnit: r.state.activeUnit,
+    drawFramebuffer: r.state.drawFramebuffer,
+    readFramebuffer: r.state.readFramebuffer,
+    renderbuffer: r.state.renderbuffer,
+    parameters: new Map(
+      [...r.parameters].map(([k, v]) => [
+        k,
+        ArrayBuffer.isView(v) || Array.isArray(v) ? v.slice() : v,
+      ]),
+    ),
+    enabled: new Set(r.enabled),
+    uniforms: [...gpu.program.uniforms].map(([name, v]) => [
+      name,
+      ArrayBuffer.isView(v.value) ? v.value.slice() : v.value,
+    ]),
   });
-  const scope = new EffekseerDeviceScope(view);
-  return { ...r, gpu, stage, context, view, scope, bindings, samplerStages, viewport };
+  r.calls.length = 0;
+  r.queries.length = 0;
+  return { ...r, gpu, stage, context, view, scope, samplerStages, viewport, physical };
 }
 function packet(quads = 1, viewport = [3, 4, 24, 16, 0.25, 0.75]) {
   const positions = new Float32Array(quads * 12),

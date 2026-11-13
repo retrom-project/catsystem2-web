@@ -50,6 +50,7 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
     backends = [],
     packets = [],
     submit = device.stage.drawEffekseer;
+  let currentToken = null;
   device.stage.drawEffekseer = function (p, frame, options) {
     packets.push({
       vertices: bits(p.vertices.subarray(0, p.vertexCount * 10)),
@@ -58,7 +59,7 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
       projection: bits(p.projection),
       viewport: Array.from(p.viewport),
       frame,
-      token: device.bindings.get('texture0')?.id ?? null,
+      token: currentToken?.id ?? null,
     });
     return submit.call(this, p, frame, options);
   };
@@ -75,11 +76,9 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
         device: device.view,
         scope: new EffekseerDeviceScope(device.view),
         getViewport: () => device.viewport,
-        bindNormalPipeline({ device, frame, textureToken }) {
-          device.setBinding('vertexShader', 'EFKnormalVS');
-          device.setBinding('pixelShader', frame ? 'EFKtexturePS' : 'EFKnoTexturePS');
-          device.setBinding('vertexDeclaration', 'EFKnormalDecl');
-          device.setBinding('texture0', textureToken);
+        bindNormalPipeline({ textureToken }) {
+          currentToken = textureToken; // Observation only; no device/token shadow binding.
+          backend.scope.bindNormalPipeline();
         },
       };
       backends.push(backend);
@@ -136,11 +135,11 @@ async function setup({ nodes = [{}], colorPaths = [], files = null, saved = null
   };
 }
 function devicePrior(s) {
-  return { states: [...s.device.context.states], bindings: new Map(s.device.bindings) };
+  return { states: [...s.device.context.states], bindings: s.device.physical() };
 }
 function deviceSame(s, p) {
   assert.deepEqual([...s.device.context.states], p.states);
-  assert.deepEqual(s.device.bindings, p.bindings);
+  assert.deepEqual(s.device.physical(), p.bindings);
 }
 test('two real manager nodes coalesce into one byte/GPU-recorder submission', async () => {
   const s = await setup({ nodes: [{ position: [-0.25, 0, 0] }, { position: [0.25, 0, 0] }] });
@@ -369,7 +368,7 @@ test('abort discards only pending bytes, retaining previous draw/cursor and sett
   assert.deepEqual(batch.snapshot(), { ringCursor: cursor });
   assert.throws(() => batch.abort(), /active/);
 });
-test('fault after old flush never submits partial new cache and restores12states/5bindings', async () => {
+test('fault after old flush never submits partial new cache and restores twelve states and physical bindings', async () => {
   const s = await setup({ nodes: [{}, { blend: 2 }] });
   try {
     await s.play();
