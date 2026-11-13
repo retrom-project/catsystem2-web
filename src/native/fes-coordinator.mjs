@@ -853,6 +853,30 @@ export class FESCoordinator {
         selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
       first = selection.index === -1 ? 0 : selection.index,
       lookup = (index) => collection.lookup(selection.nameBytes, index);
+    if (verb === 'init') {
+      if (
+        args[0] === undefined ||
+        args[1] === undefined ||
+        args[2] === undefined ||
+        args[3] === undefined ||
+        args[4] === undefined
+      )
+        throw new Error('FES PARTICLE init requires all authored parameters');
+      const family = evaluate(fesNarrowText(context.bytes(0)), instance) | 0,
+        program = context.text(1),
+        texture = context.text(2),
+        particleCount = evaluate(fesNarrowText(context.bytes(3)), instance) | 0,
+        priority = evaluate(fesNarrowText(context.bytes(4)), instance) | 0;
+      if (encodeCP932(program).length >= 64 || encodeCP932(texture).length >= 64)
+        throw new RangeError('FES PARTICLE names exceed their defined slots');
+      const configuration = { family, program, texture, count: particleCount, priority };
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (!object || object.nativeType !== 23) continue;
+        configureFESParticle(object, configuration);
+      }
+      return 0;
+    }
     if (verb === 'start') {
       for (let at = first; at < count; at++) {
         const object = lookup(at);
@@ -1042,19 +1066,6 @@ export class FESCoordinator {
         await world.m2FES.command(instance, object, verb, args, context);
       else if (type === 34 || type === 35) {
         await world.dataFES.command(instance, object, verb, args, context);
-      } else if (type === 23 && verb === 'init') {
-        if (verb === 'init') {
-          if (args.length < 5)
-            throw new Error('FES PARTICLE init requires all authored parameters');
-          const family = context.argument(0),
-            program = context.text(1),
-            texture = context.text(2),
-            count = context.argument(3),
-            priority = context.argument(4);
-          if (encodeCP932(program).length >= 64 || encodeCP932(texture).length >= 64)
-            throw new RangeError('FES PARTICLE names exceed their defined slots');
-          configureFESParticle(object, { family, program, texture, count, priority });
-        }
       } else throw new Error('Unimplemented FES raw' + type + ' command ' + verb);
     }
     return 0;

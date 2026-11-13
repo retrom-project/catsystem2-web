@@ -439,9 +439,33 @@ reallocation or another321. Ordinary FES object deletion retains the evidenced
 child residual until final owner teardown, which releases it without another
 Stop. The two normal-profile tests exercise these paths through real FES owners
 without init, param, start or PPI configuration. This closes only the explicit
-target attach leaf. The existing init whole-wrapper parsing and
-NULL-holder traversal differences remain separate incomplete work; their code,
-driver ordering, factory/ABI gates and checkpoint format are unchanged.
+target attach leaf. Missing-token scratch, abnormal filename bytes and PPI
+behavior remain separate incomplete work; driver ordering, factory/ABI gates and
+checkpoint format are unchanged.
+
+PARTICLE `init` follows the complete775910/60FC30 wrappers for five explicit
+operands. After freezing the holder extent it reads family, program, texture,
+count and priority once, in that order, before any holder lookup. Numeric fields
+use direct signed int32 evaluation; each raw23 holder receives the same existing
+configuration, and NULL/other classes are skipped. The existing setter only
+updates configuration and allocationDirty, preserving FES registers and requests.
+Priority stays int32 until the existing driver converts it to float32.
+
+A missing or undefined operand is explicitly rejected with the existing required
+parameters diagnostic. The existing name-length, count and resource diagnostics
+remain in their current services. Normal ASCII filename tokens of1..63 bytes
+are covered without adding an ASCII rejection rule, native scratch emulation,
+filename-byte fields or another prepared reader. Missing native scratch,
+abnormal/nonterminated filename bytes and full PPI behavior remain unproved.
+Normal source row-bank expansion precedes the wrapper; only its own operand
+getters/evaluator are counted by the two registered-profile tests.
+
+Those tests use actual default FES owners and owned kind16 children, a PTCL KCS
+program and an explicit HG3 texture with a logical graphics device. They observe
+the existing314 zero-register packet followed by319 current registers and320
+alpha, then315/318 for the selected PTCL script. FES registers retain their
+authored9 across init. The driver, loader, script implementation and PPI registry
+are unchanged; the new command path does not establish general PPI playback.
 
 PARTICLE `param` follows the complete 775A60/60FD80 wrappers: freeze the holder
 extent, then read at most 32 present operand bytes and evaluate each once as a raw
@@ -480,8 +504,8 @@ CIMAGE and DRAW class skips, empty selection and the actual315/318 parameters an
 returns. The existing adapter can handle these requests without a particle bank;
 this does not establish synchronous playback or complete native PPI/bankless
 semantics. Init parsing, filename guards, resource loading, driver/receiver order,
-factory/ABI gates and checkpoint formats remain unchanged. Init's whole-wrapper
-parsing and NULL traversal, missing-token scratch and PPI behavior remain open.
+factory/ABI gates and checkpoint formats remain unchanged. Init's missing-token
+scratch, abnormal filename bytes and PPI behavior remain open.
 
 For an existing enabled current BUTTON, the default World input route now uses
 the original directional reader: same-block searches preserve the first matching
