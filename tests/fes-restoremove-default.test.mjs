@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -73,7 +74,7 @@ async function open(profile) {
   }
 }
 const notify = (h, label) =>
-  h.world.sendEngine(h.id, h.world.main.id, 337, 0, 0, { payload: { string: () => label } });
+  h.world.sendEngine(h.id, h.world.main.id, 337, 0, 0, { payload: fesLabelPayload(() => label) });
 async function capture(h, x = 17, y = 19) {
   h.input.input.pointer(x, y, 1);
   await notify(h, 'MOVE');

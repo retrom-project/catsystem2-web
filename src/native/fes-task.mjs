@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { FESPlayer } from '../fes/player.mjs';
 import { fesPreloadLine } from '../fes/program.mjs';
-import { fesNarrowText } from '../fes/tokens.mjs';
+import { fesNarrowText, fesByteView } from '../fes/tokens.mjs';
 import { FESCoordinator } from './fes-coordinator.mjs';
 import { FESImageCache } from './fes-image-cache.mjs';
 import { FESInput } from './fes-input.mjs';
@@ -9,6 +9,20 @@ import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeDictionary } from './dictionary.mjs';
 import { nativeABI } from './abi/index.mjs';
+
+// KCSMachine.bytes is the sender's existing mapped byte service. Keep the
+// current KCS string safety budget, without decoding a label's identity.
+function labelBytes(memory, address) {
+  const result = [];
+  for (let index = 0; index < 1024 * 1024; index++) {
+    const value = memory.bytes((address + index) >>> 0, 1);
+    if (!(value instanceof Uint8Array) || value.length !== 1)
+      throw new TypeError('FES labels require byte-addressable sender memory');
+    if (!value[0]) return Uint8Array.from(result);
+    result.push(value[0]);
+  }
+  throw new Error('FES unterminated label');
+}
 
 export function createNativeFESTask(world, record) {
   const implementation = world.base(record);
@@ -328,7 +342,7 @@ export function createNativeFESTask(world, record) {
           context.machine ||
           world.objects.machine(context.nativeSenderWorldID ?? words[0]);
         if (!memory) throw new Error('FES jump requires sender memory');
-        const label = memory.string(lParam),
+        const label = fesByteView(labelBytes(memory, lParam)),
           root = this.player.root;
         if (!root.program.blocks[label]) return 0;
         root.label = label;
@@ -356,9 +370,9 @@ export function createNativeFESTask(world, record) {
           context.machine ||
           world.objects.machine(context.nativeSenderWorldID ?? words[0]);
         if (!memory) throw new Error('FES notification requires sender memory');
-        const name = wParam ? memory.string(wParam) : null,
-          index = name === null ? 0 : memory.load(wParam + 32);
-        await player.notify(memory.string(lParam), name, index);
+        const name = wParam ? labelBytes(memory, wParam) : null,
+          index = name === null ? 0 : memory.load(wParam + 32) | 0;
+        await player.notify(labelBytes(memory, lParam), name, index);
         if (!live()) return NATIVE_UNWRITTEN_WORD;
         if (!input.state.sleeping) {
           await world.graphics.syncFES(record, player, {

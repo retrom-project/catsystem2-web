@@ -913,3 +913,38 @@ activation and Graph65 callback before portable checkpoint serialization,
 reconstruct a fresh World, and retain the same value after its next ordinary
 frame without replaying TOUCH, START or FES/FILE source loads. Broader native
 named-bank invalidation remains an independent audit.
+
+## Label bytes and control-flow entry points
+
+Block labels are reversible views of the source bytes. `next` and `call` select
+operand 1 through the existing current source-bank and SCRIPT byte getter once,
+then use the complete resulting bytes as the key. They do not decode and
+re-encode the result, apply another name expansion, or interpret literal `\n` and
+`\_` as escapes. A missing operand makes no jump or call-stack change. Macro
+emission still precedes that operand getter; the broader runtime block-row bank
+and command-head expansion pipeline remains a separate incomplete boundary.
+
+The external instance invoke/notify and player notify APIs accept CP932 String
+parameters or raw Uint8Array parameters. Internal block keys and continuation
+stacks are already byte views and do not pass through the external String
+encoding entry again. A JavaScript source String retains its existing UTF8 source
+meaning; it is not silently retried as CP932 when a key is missing.
+
+Message 335 reads the NUL-terminated label bytes at lParam from the selected
+sender memory's existing bytes(address,count) service. Message 337 uses the same
+service for its event label and optional name[32] context; the adjacent word
+remains that context's signed int32 index. It resolves that tuple through the
+current ordinary collection. Neither message borrows a decoded string() result
+or treats KCSMachine.read(operand) as a byte reader. The existing context selection
+order and current interpreter/resource continuation remain unchanged. The
+NUL-reading budget is the existing 1 MiB KCS implementation budget, not a newly
+proved native label-length limit.
+
+Authored message payloads provide owned NUL buffers through that same byte
+service. The shared public test helper evaluates its original CP932/raw producer
+at the first read, retaining one buffer for subsequent byte reads. The short
+two-ABI default-entry regression covers distinct invalid-CP932 label keys,
+DEFAULT-before-own ordering, current index, macro/bank/SCRIPT jump and call
+targets, messages 335/337 and fresh continuation ownership. A separate bare case
+checks the CP932 String versus raw/UTF8 source boundary. These checks do not
+close dynamic ordinary-name lookup or the broader native lifecycle gaps.

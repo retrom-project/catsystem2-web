@@ -113,7 +113,15 @@ for (const [profile, variable] of [
             interpreter = (current) => current.objects.objects.get(owner).implementation,
             jump = (current, label) =>
               current.sendEngine(owner, current.main.id, 335, 0, 0, {
-                payload: { string: () => label },
+                payload: ((read) => {
+                  let buffer;
+                  return {
+                    bytes(address, count) {
+                      buffer ??= new TextEncoder().encode(read() + String.fromCharCode(0));
+                      return buffer.subarray(address, address + count);
+                    },
+                  };
+                })(() => label),
               }),
             render = async (current) => {
               const renderer = current.stageRenderer;

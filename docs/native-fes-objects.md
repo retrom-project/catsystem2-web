@@ -395,3 +395,28 @@ Unknown rows do not validate a missing or malformed operand after their type has
 been rejected. Full native diagnostic wording, arbitrary diagnostic callbacks,
 per-version membership and remaining narrow-byte syntax remain partial. The
 independent bare FES player's unknown-type policy is unchanged.
+
+## Raw label keys and DEFAULT
+
+Generic section labels and DEFAULT prefixes use reversible byte-view keys. The
+program owns one block map with those keys; it does not retain a decoded label
+map. For example, raw bytes `81` and `82` remain distinct even though CP932 decoding
+can display both as the same replacement character. These are label identities,
+not text for a case-folding or Unicode matching operation.
+
+The normal DEFAULT definition keeps the expanded token as a byte-view key. Known
+native events first visit DEFAULT.EVENT and then the ordinary object's own
+name.EVENT label. The ordinary prefix comes from the collection's existing
+nameBytes/index reference, rather than its decoded presentation key. The existing
+current-object selection and event-index owners remain authoritative. Bare
+object names retain their independent CP932 String boundary.
+
+Labels, suspended stacks and DEFAULT keys are restored as saved runtime state.
+A fresh World does not reparse the source, re-expand macros, repeat declarations
+or dispatch the earlier event to reconstruct those identities.
+
+This closes label-key identity for an already selected object. Normal DEFINE
+keeps its implemented ASCII-name guard. Dynamic message 338, byKey and input bridges,
+numeric object references and source-arena object-name addresses still require
+the separate ordinary-name identity work; this label change does not establish
+that those earlier consumers selected the correct raw object name.

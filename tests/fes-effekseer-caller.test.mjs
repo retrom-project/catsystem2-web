@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { open, object, task, step, notify, observe } from './fixtures/fes-effekseer-world.mjs';
@@ -127,7 +128,7 @@ test('unknown/closed and mixed-native raw36 sampling fail before any CRT word or
     await assert.rejects(
       w.sendEngine(h.id, w.main.id, 337, 0, 0, {
         executorEntry: closed,
-        payload: { string: () => 'PLAY' },
+        payload: fesLabelPayload(() => 'PLAY'),
       }),
       /live explicit/,
     );

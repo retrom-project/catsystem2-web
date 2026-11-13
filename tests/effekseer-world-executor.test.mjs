@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
-import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import { defaultFESWorld, loadDefaultFES, fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import { readEffekseerEffect } from '../src/effekseer/effect-reader.mjs';
 import { authoredEffect } from './fixtures/effekseer/authored-effect.mjs';
 import { createEffekseerInstanceOperations } from '../src/effekseer/instance-operations.mjs';
@@ -371,7 +371,9 @@ for (const message of [333, 337])
           ]);
           return original(record, player, options);
         };
-        const payload = { string: () => 'PING' };
+        // This authored message maps PING at its unchanged lParam address 1.
+        const memory = fesLabelPayload(() => 'PING'),
+          payload = { bytes: (address, count) => memory.bytes(address - 1, count) };
         await w.withExecutor(forced, (e) =>
           w.sendEngine(h.id, w.main.id, message, 0, 1, { payload, executorEntry: e }),
         );

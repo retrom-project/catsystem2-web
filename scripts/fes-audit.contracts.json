@@ -1426,8 +1426,8 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/call.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-label-bytes-default.test.mjs"],
+      "note": "Control operand1 passes through the current bank/SCRIPT byte getter once and selects a reversible label key; continuation labels remain byte views through run and fresh restore. Missing operand does not push a call. Broader runtime block-row/head expansion and native edge cases outside this bounded label contract remain separate.",
       "signatures": ["call [header]"]
     },
     {
@@ -1826,8 +1826,8 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/next.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-label-bytes-default.test.mjs"],
+      "note": "Control operand1 passes through the current bank/SCRIPT byte getter once and selects a reversible label key without .text escape decoding. Missing operand makes no jump. Public String/raw-byte and fresh continuation fixtures cover the registered ABIs; the broader runtime block-row/head expansion pipeline remains separate.",
       "signatures": ["next [head]"]
     },
     {
@@ -3805,8 +3805,8 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/h_object.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Known columns initialize state; unknown columns are explicit diagnostics. ID.N/D/F/P, BTYPE and MASK remain unresolved in SDK.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-label-bytes-default.test.mjs"],
+      "note": "Known columns initialize state; unknown columns are explicit diagnostics. DEFAULT preserves its expanded bytes as a reversible label key. ID.N/D/F/P, BTYPE and MASK remain unresolved in SDK. Ordinary-name identity beyond the current normal DEFINE domain is not completed by the label-key change.",
       "signatures": ["#OBJECT [param1] [param2] [param3] ..."]
     },
     {
@@ -3852,8 +3852,8 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/event.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Default-before-object ordering and bank @ are tested; complete sound/playlist/input lifecycle is incomplete.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-label-bytes-default.test.mjs"],
+      "note": "Default-before-object ordering and current index are tested. DEFAULT is a byte-view label prefix, and the ordinary prefix comes from the existing collection nameBytes reference. Registered-ABI raw-label notifications and fresh ownership are covered. Earlier byKey/input/dynamic-name selection and complete sound/playlist/input lifecycle remain incomplete.",
       "signatures": ["#[obj].[event]"]
     },
     {
@@ -3874,8 +3874,8 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/headblock.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Case-sensitive labels; repeated headers append commands in source order, blocks repeat once per frame, and next transitions in the same frame. Repeated OBJECT headers retain their own column association.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-label-bytes-default.test.mjs"],
+      "note": "Case-sensitive raw byte-view labels retain distinct CP932 aliases. Repeated headers append commands in source order, blocks repeat once per frame, and next transitions in the same frame. Repeated OBJECT headers retain their own column association. Internal continuation keys and current checkpoint block keys use the same map; broader block-row/head expansion parity remains separate.",
       "signatures": []
     },
     {

@@ -1,6 +1,34 @@
 // SPDX-License-Identifier: MPL-2.0
 import { dataWorld } from './data-world.mjs';
 import { flipBitmapRows } from '../../src/native/raster-kernel.mjs';
+import { encodeCP932 } from '../../src/kcs/strings.mjs';
+
+// Author-owned message memory: read the existing text/byte producer at its
+// original first-read point, then retain one NUL-terminated narrow byte buffer.
+export function fesLabelPayload(read) {
+  let buffer;
+  return {
+    bytes(address, count) {
+      if (!buffer) {
+        const value = read(),
+          source = typeof value === 'string' ? encodeCP932(value) : value;
+        if (!(source instanceof Uint8Array))
+          throw new TypeError('FES label fixture requires narrow bytes');
+        buffer = new Uint8Array(source.length + 1);
+        buffer.set(source);
+      }
+      if (
+        !Number.isSafeInteger(address) ||
+        !Number.isSafeInteger(count) ||
+        address < 0 ||
+        count < 0 ||
+        address + count > buffer.length
+      )
+        throw new RangeError('FES label fixture memory is outside its owned buffer');
+      return buffer.subarray(address, address + count);
+    },
+  };
+}
 
 export const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
 const glyphs = {

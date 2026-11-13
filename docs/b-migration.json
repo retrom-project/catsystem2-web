@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 276, "oracle": 149, "differential": 67 },
+    "counts": { "js": 277, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -108,6 +108,7 @@
         "tests/fes-input-actions-default.test.mjs",
         "tests/fes-input-initial-selection-default.test.mjs",
         "tests/fes-input-resetactive-default.test.mjs",
+        "tests/fes-label-bytes-default.test.mjs",
         "tests/fes-lockactive-default.test.mjs",
         "tests/fes-log-model.test.mjs",
         "tests/fes-log-world.test.mjs",
@@ -49268,7 +49269,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "20dd413cf31107812994943bd2779bb2b8c5e6069c77bc1827fa412e06a5da02",
+      "sourceSha256": "c7a12189231961544426b38c9be46e941924cbabd075a36001c6b7e61c930842",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49307,7 +49308,7 @@
     },
     {
       "file": "src/fes/program.mjs",
-      "sourceSha256": "57abf1beb6e95c65f0de48a4170cf315de4f4986fdb8bcdc4861405116b912b7",
+      "sourceSha256": "15a80b9ef59ecd1ec6feda91d4ab8ca54f303b1fb41ad60eabc51a075175232f",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51917,7 +51918,7 @@
     },
     {
       "file": "src/native/fes-definitions.mjs",
-      "sourceSha256": "98e650bbac230ceb3c69d3af1f7303e63e283fc00f7c971ebe73892c516b05e8",
+      "sourceSha256": "88ba9b73727c1116672a03fd3df9f008f592aeba8d6857101f20e6542a3e5252",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52484,7 +52485,7 @@
     },
     {
       "file": "src/native/fes-task.mjs",
-      "sourceSha256": "2fe2aee3a7c4c50ebacbdc442f520c6c02bf900779d70a3af11d41e2d9c592b0",
+      "sourceSha256": "7f280f717643a4a77b620c8291c505a5d0a8aafde7196e71b6991b32746d17b3",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52494,28 +52495,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 79,
+          "line": 93,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 96,
+          "line": 110,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 109,
+          "line": 123,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 448,
+          "line": 462,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "traced",

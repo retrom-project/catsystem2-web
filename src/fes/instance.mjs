@@ -18,6 +18,21 @@ import {
 } from './tokens.mjs';
 const nativeArgumentDecoder = new TextDecoder('shift_jis');
 
+// External text parameters use the existing narrow CP932 boundary. Runtime
+// block keys already are reversible byte views and never pass through here.
+const labelBytes = (value) =>
+  fesSourceBytes(typeof value === 'string' ? encodeCP932(value) : value);
+const labelKey = (value) => fesByteView(labelBytes(value));
+function objectEventLabels(instance, object, event) {
+  const name = instance.collection
+    ? instance.collection.reference(object).nameBytes
+    : encodeCP932(object.baseName);
+  return [
+    object.defaultHandler && `${object.defaultHandler}.${event}`,
+    `${fesByteView(name)}.${event}`,
+  ].filter(Boolean);
+}
+
 // The standalone consumer's grammar is also a static inventory aid. This only
 // reads a raw row: no bank/SCRIPT expansion, expression evaluation or handlers.
 // Normal native DEFINE uses the coordinator's original byte-getter chain.
@@ -286,7 +301,11 @@ export class FESInstance {
       source,
     });
     columns = columns.map((value) => this.soundArgument(value));
-    values = values.map((value) => this.soundArgument(value));
+    values = values.map((value, index) =>
+      columns[index] === 'DEFAULT'
+        ? fesByteView(this.argumentBytes(value))
+        : this.soundArgument(value),
+    );
     {
       o.nativeDefinition ||= {};
       for (let i = 0; i < Math.min(columns.length, values.length); i++)
@@ -518,10 +537,7 @@ export class FESInstance {
     return true;
   }
   event(o, event) {
-    const labels = [
-      o.defaultHandler && `${o.defaultHandler}.${event}`,
-      `${o.baseName}.${event}`,
-    ].filter((label) => label && this.program.blocks[label]);
+    const labels = objectEventLabels(this, o, event).filter((label) => this.program.blocks[label]);
     if (!labels.length || this.finished !== null) return false;
     const saved = this.suspended,
       current = this.eventObject;
@@ -599,15 +615,22 @@ export class FESInstance {
     return handled;
   }
   dispatchEvent(object, event) {
-    const labels = [
-      object.defaultHandler && `${object.defaultHandler}.${event}`,
-      `${object.baseName}.${event}`,
-    ].filter(Boolean);
-    return this.invokeEventLabels(labels, object, object.index ?? 0);
+    return this.invokeEventLabels(
+      objectEventLabels(this, object, event),
+      object,
+      object.index ?? 0,
+    );
   }
   notify(event, name = null, index = 0) {
-    const object = name == null ? null : this.elements(`${name}[${index}]`)[0] || null;
-    return this.invokeEventLabels([name == null ? event : `${name}.${event}`], object, index);
+    const bytes = name == null ? null : labelBytes(name),
+      object =
+        bytes === null
+          ? null
+          : this.collection
+            ? this.collection.lookup(bytes, index)
+            : this.elements(`${fesNarrowText(bytes)}[${index}]`)[0] || null,
+      target = bytes === null ? labelKey(event) : `${fesByteView(bytes)}.${labelKey(event)}`;
+    return this.invokeEventLabels([target], object, index);
   }
   nativeCommandReturn(value) {
     const word = value >>> 0,
@@ -636,6 +659,7 @@ export class FESInstance {
     await this.runtime?.flushRecords();
   }
   invoke(label, parameters = []) {
+    label = labelKey(label);
     if (!this.program.blocks[label]) return false;
     parameters.forEach((v, i) => this.setLocal(i, v));
     const saved = this.suspended;
@@ -772,14 +796,16 @@ export class FESInstance {
     }
     switch (head) {
       case 'next':
-        this.label = this.text(args[0]);
+        if (args[0] === undefined) break;
+        this.label = fesByteView(this.argumentBytes(args[0]));
         this.waitFrames = 0;
         this.waitMotion = false;
         this.waitSound = null;
         this.waitObjects = null;
         return { action: 'next', target: this.label };
       case 'call': {
-        const target = this.text(args[0]);
+        if (args[0] === undefined) break;
+        const target = fesByteView(this.argumentBytes(args[0]));
         if (!this.program.blocks[target]) {
           this.player.unresolvedTargets.add(`${this.name}: missing call ${target}`);
           break;

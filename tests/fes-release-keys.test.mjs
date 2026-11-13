@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
@@ -269,7 +270,7 @@ for (const profile of profiles) {
       await press(missing, 4);
       const saved = missing.task.input.state.pressed;
       await missing.world.sendEngine(missing.id, missing.world.main.id, 337, 0, 0, {
-        payload: { string: () => 'DELETE' },
+        payload: fesLabelPayload(() => 'DELETE'),
       });
       assert.equal(missing.instance.collection.lookup(saved.nameBytes, saved.index), null);
       const rows = observe(missing);

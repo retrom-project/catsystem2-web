@@ -130,7 +130,7 @@ export function parseProgram(
           break;
         default:
           section = 'block';
-          current = program.blocks[label] ??= [];
+          current = program.blocks[fesByteView(first).slice(1)] ??= [];
       }
     } else if (section === 'macro') program.macros.push([first, ...words.slice(0, 1)]);
     else if (section === 'object')

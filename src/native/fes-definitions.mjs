@@ -3,6 +3,7 @@
 // targets. Missing columns preserve state; recognized inapplicable columns
 // retain their established per-type no-op behavior.
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { fesByteView } from '../fes/tokens.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 import {
   fesObjectFamily,
@@ -179,7 +180,7 @@ export function readFESDefinitionRecord(
     const field = fieldNames.get(code);
     if (field === undefined) continue; // Explicit header-code default branch.
     if (['FILE', 'DEFAULT', 'TABLE', 'GROUP'].includes(field)) {
-      fields.set(field, string(source));
+      fields.set(field, field === 'DEFAULT' ? fesByteView(source) : string(source));
       if (field === 'FILE') record.fileBytes = new Uint8Array(source);
     } else if (
       ['PL', 'PARENT', 'KEY_U', 'KEY_D', 'KEY_L', 'KEY_R', 'POS2', 'SIZE2'].includes(field)

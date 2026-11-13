@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { fesLabelPayload } from './default-fes-world.mjs';
 import { readFile } from 'node:fs/promises';
 import { defaultFESWorld, loadDefaultFES } from './default-fes-world.mjs';
 import { batchEffect } from './effekseer/batch-authored.mjs';
@@ -79,7 +80,7 @@ export function notify(h, label, executor = h.world.effekseer.frameExecutor) {
   return h.world.withExecutor(executor, (executorEntry) =>
     h.world.sendEngine(h.id, h.world.main.id, 337, 0, 0, {
       executorEntry,
-      payload: { string: () => label },
+      payload: fesLabelPayload(() => label),
     }),
   );
 }
