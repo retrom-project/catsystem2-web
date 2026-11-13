@@ -534,7 +534,10 @@ export class FESInput {
       if (!live()) return 0;
       const key = this.capturePressedReference();
       let handled = false;
-      if (key !== undefined) {
+      if (keyIndex >= 4 && keyIndex <= 7) {
+        handled = await this.moveDirection(keyIndex - 4, context);
+        if (!live()) return 0;
+      } else if (key !== undefined) {
         if (keyIndex === 8 || keyIndex === 9 || keyIndex === 10 || keyIndex === 11) {
           // Frozen scroll/page events write fields and return0 without dispatching labels.
           player.nativeEvent(key, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][keyIndex - 8]);
@@ -656,14 +659,7 @@ export class FESInput {
       if (live()) throw error;
       return true;
     }
-    if (outcome.controlChanged) {
-      try {
-        await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
-      } catch (error) {
-        if (live()) throw error;
-      }
-      return true;
-    }
+    if (outcome.controlChanged) return true;
     if (!outcome.button) return false;
     this.state.focus = selectedDefault
       ? {
@@ -694,7 +690,6 @@ export class FESInput {
         ((point[0] & 65535) | ((point[1] & 65535) << 16)) >>> 0,
         { ...context, flags: 0 },
       );
-      if (live()) await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
       return true;
     } catch (error) {
       if (live()) throw error;
@@ -703,8 +698,31 @@ export class FESInput {
   }
   async move(direction, context = {}) {
     let current = this.referenceObject(this.state.focus);
-    if (this.instance.runtime)
-      return this.moveDirection({ up: 0, down: 1, left: 2, right: 3 }[direction], context);
+    if (this.instance.runtime) {
+      const player = this.player,
+        instance = this.instance,
+        runtime = instance.runtime,
+        record = this.record,
+        live = () =>
+          this.player === player &&
+          this.instance === instance &&
+          this.record === record &&
+          !runtime.closed &&
+          record.state !== 'releasing' &&
+          this.world.objects.objects.get(record.id) === record;
+      try {
+        const handled = await this.moveDirection(
+          { up: 0, down: 1, left: 2, right: 3 }[direction],
+          context,
+        );
+        if (live())
+          await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+        return handled;
+      } catch (error) {
+        if (live()) throw error;
+        return true;
+      }
+    }
     if (!valid(current)) {
       const hovered = this.state.buttons.find(
         ([key, id]) =>
@@ -788,7 +806,16 @@ export class FESInput {
     if (
       message === 9 &&
       this.instance.runtime &&
-      (l === 0 || l === 1 || l === 8 || l === 9 || l === 10 || l === 11)
+      (l === 0 ||
+        l === 1 ||
+        l === 4 ||
+        l === 5 ||
+        l === 6 ||
+        l === 7 ||
+        l === 8 ||
+        l === 9 ||
+        l === 10 ||
+        l === 11)
     )
       return this.consumePush(sender, l, context);
     if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);

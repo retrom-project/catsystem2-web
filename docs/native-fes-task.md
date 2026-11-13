@@ -661,7 +661,7 @@ World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
 The existing pressed field owns a narrow nameBytes/int32 index pair, separately
-from the active reference. Key0/1 and scroll/page keys8..11 PUSH capture it after mouse
+from the active reference. Key0/1 and directions/scroll/page keys4..11 PUSH capture it after mouse
 completion and before their event. Only an empty active name or a current raw6 BUTTON with
 enable0 produces the invalid pressed sentinel (represented as null). A missing
 current object or a current non-BUTTON still copies the active name/index; the
@@ -690,10 +690,11 @@ later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
-Normal default message9 key0/1 and scroll/page keys8..11 share this owner/resource
-path. Direction4..7 keeps its existing resource traversal without another pass.
-Other PUSH keys and TOUCH post-callback tails remain separate uncompleted
-boundaries; the direct JS-authored FES input API is unchanged.
+Normal default message9 keys0/1 and4..11 share this owner/resource path. The
+normal direction callback owns one final resource traversal, including its
+unhandled/no-candidate and consumed-without-default branches. Other PUSH keys
+and TOUCH post-callback tails remain separate uncompleted boundaries; the direct
+JS-authored FES input API is unchanged.
 
 Canonical/logical key8 selects frozen event6 in both registered FES switches.
 It writes the SCRL_U field and returns0 without default or object label dispatch.
@@ -733,6 +734,18 @@ The existing FES frame end clears both page fields; a later frame does not
 retain the previous page event. Same-frame repeated Graph delivery sees the
 field already written by the prior callback and keeps the consumed image state.
 No browser paging binding, other key, direction or TOUCH behavior is inferred.
+
+Normal direction PUSH4..7 uses the same sender95/source, sleep gate, mouse and
+pressed-reference prelude. The pressed pair is captured before navigation changes
+the active reference; navigation still runs when that pair has no current object.
+The existing algorithm keeps its initial125, hit/default/attachment/cursor logic
+and event11..14 fields and Input138 handling. A consumed result sends no94; an unhandled
+result sends94. Every live completion then visits current resources exactly once
+and synchronizes input before callback return, including early no-result paths.
+The algorithm's two prior internal resource visits now belong to that common
+tail. The existing direct runtime move action separately owns its single
+resourcesOnly visit after the algorithm with captured owner/liveness checks;
+its nonruntime branch is unchanged. No new queue, option or saved state is added.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
