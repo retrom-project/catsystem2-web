@@ -1,4 +1,4 @@
-# Independent Effekseer GPU backend
+# Effekseer GPU submission
 
 The typed normal backend accepts explicit sprite/ribbon/ring/track geometry,
 camera/projection/viewport and the current shared D3D semantic state. It draws
@@ -6,10 +6,10 @@ through the existing StageRenderer program, target, depth attachment and
 texture cache. Typed buffers grow on demand and are reused. It does not create
 an Effekseer canvas or move frame images through the CPU.
 
-The default kind61/raw36 CPU path now owns its task manager and World CRT
-binding, but its callback still reports an unsupported GPU adapter. This
-independent backend is not yet connected to that actual submission path;
-callback pixels and complete Task/device lifecycle remain GPU integration work.
+The default kind61/raw36 path connects its current manager and sole Task-owned
+MeshBatch/Ring to the same World StageRenderer through `EffekseerTaskGPU`. The
+view borrows the existing GPU, target, depth and texture cache; it creates no
+canvas, renderer, device or second CPU state owner.
 
 The normal solid/no-fog profile preserves the original quad order, programmable
 alpha and inherited depth/alpha/sampler state. The device scope restores twelve
@@ -50,17 +50,38 @@ GL/cleanup failures and aggregates containing an unknown leaf remain permanent
 CPU-batch faults. Empty/cyclic/sparse aggregates do not qualify. Physical tokens
 and errors are not serialized or retained as new World authorities.
 
-This interface/lifecycle leaf does not connect default kind61 submission. Its focused tests use
-actual JS backend/lifecycle classes with an authored WebGL API recorder; they
-establish neither real shader compilation nor GPU pixels. Real WebGL numeric
-and mixed-state acceptance belongs to the later task/backend connection. The
-API state partition follows the [WebGL2 specification](https://registry.khronos.org/webgl/specs/2.0.0/)
+The scope-focused tests use actual JS backend/lifecycle classes with an authored
+WebGL API recorder. Those tests establish neither real shader compilation nor
+GPU pixels; numeric mixed-frame acceptance must exercise the actual default
+FES/Task callback separately. The API state partition follows the [WebGL2 specification](https://registry.khronos.org/webgl/specs/2.0.0/)
 and [uniform queries](https://registry.khronos.org/webgl/specs/1.0.3/#5.14.10).
+
+## Default Task callback
+
+Normal FES FILE/play commands retain the existing resource FIFO, default kind61
+factory and live executor. The registered D6 range callback draws that Task's
+current manager, loaded texture bindings and camera/projection, without another
+Play, Update, resource read or RNG sample. Ordinary plane alpha, clip and
+transform do not modify the custom callback. Current-FILE NULL and pending-reset
+gates still return0; an eligible callback returns1 even with no live instances.
+
+Entry checks require the same World graphics owner, StageRenderer GPU and open
+frame before any CPU pass changes. The borrowed view reads the current physical
+viewport/depth range and delegates normal-pipeline capture/restore to that GPU.
+Fresh Task restore starts without a backend view and rebinds on its first draw;
+it restores the existing current manager/resources/camera/Ring without replay.
+Task close retires its view while the World retains GPU/resource ownership.
+
+The normal default-FES tests cover current packed vertices, shared target/depth,
+entry/loss/fault boundaries and fresh rebinding through an explicit GL recorder.
+Historical D6 dirty-rectangle union, full Task geometry/device pixel acceptance
+and final frame-rate/memory goals remain outside that recorder evidence.
 
 Unknown fog-enabled or non-solid inherited branches report an explicit error.
 The current2000-quad packet guard is an upload boundary, not a proof that the
-original shared batch splits or clamps at2000. Its byte reserve/flush and
-persistent Ring cache are separate task-renderer integration work.
+original shared batch splits or clamps at2000. Byte reserve/flush and the
+persistent Ring cache use the owning Task MeshBatch; complete default-Task
+geometry/device and legal2000-particle acceptance remain separate requirements.
 
 The fixed source is official Effekseer1.23,
 5239bb1e416cbf55b4d3c8170594cbdc7815f263, under the retained MIT grant in

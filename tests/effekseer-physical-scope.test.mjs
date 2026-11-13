@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// Physical scope/current CPU-state seam. The default Task callback is still
-// unsupported; these tests pass its existing manager/batch an explicit backend.
+// Physical scope/current CPU-state seam. The default Task callback is also
+// mounted; these tests also pass its existing manager/batch an explicit backend.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openPhysicalWorld, ages } from './fixtures/effekseer/physical-world.mjs';
@@ -47,7 +47,7 @@ const uniforms = (program) =>
     ArrayBuffer.isView(v.value) ? v.value.slice() : v.value,
   ]);
 
-test('C7 scope uses real physical operations, restores12states/bindings and leaves default Task GPU unsupported', async () => {
+test('C7 scope uses real physical operations, restores12states/bindings and submits through the default Task shared backend', async () => {
   const h = await openPhysicalWorld({ extra }),
     { world: w, gpu, effectTask: t, api } = h,
     b = backend(h);
@@ -85,7 +85,13 @@ test('C7 scope uses real physical operations, restores12states/bindings and leav
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);
     assert.deepEqual(w.random.snapshot(), mt);
     assert.deepEqual(ages(t.manager), a);
-    assert.throws(() => t.plane.drawGPU(gpu), /GPU adapter is unimplemented/);
+    assert.equal(t.plane.drawGPU(gpu), 1);
+    assert.equal(t.gpuBackend.gpu, gpu);
+    assert.equal(t.gpuBackend.stage, w.stageRenderer);
+    assert.equal(t.gpuBackend.scope.capture.active, false);
+    assert.deepEqual(w.effekseer.threads.snapshot(), crt);
+    assert.deepEqual(w.random.snapshot(), mt);
+    assert.deepEqual(ages(t.manager), a);
     gpu.endNativeFrame();
   } finally {
     b.scope.close();

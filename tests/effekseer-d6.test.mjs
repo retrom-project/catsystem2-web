@@ -35,7 +35,7 @@ test('real registered kind61 callback honors47/48 without an extra model display
     assert.equal(plane.graph.callback, true);
     assert.equal(plane.graph.registrationEnabled, true);
     assert.equal(query(h), true);
-    await assert.rejects(async () => plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => plane.drawGPU(), /current World StageRenderer GPU/);
     await send(h, 47, 0);
     assert.equal(plane.graph.registrationEnabled, false);
     assert.equal(query(h), false);
@@ -53,7 +53,7 @@ test('real registered kind61 callback honors47/48 without an extra model display
     plane.sync();
     assert.equal(plane.graph.registrationEnabled, true);
     assert.equal(query(h), true);
-    await assert.rejects(async () => plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => plane.drawGPU(), /current World StageRenderer GPU/);
     assert.equal(w.nativeEngine, undefined);
   } finally {
     await w.close({ flushFiles: false });
@@ -80,7 +80,7 @@ test('callback query and actual draw use their distinct priority gates and prese
       assert.equal(await plane.drawGPU(undefined, { minimum, maximum }), 0);
     await assert.rejects(
       async () => plane.drawGPU(undefined, { minimum: 170, maximum: 171 }),
-      /GPU adapter is unimplemented/,
+      /current World StageRenderer GPU/,
     );
     await send(h, 49, 0, packet([0, 0, -5]));
     assert.equal(plane.queryDraw(), 1, 'the original callback query has no priority interval');
@@ -92,7 +92,7 @@ test('callback query and actual draw use their distinct priority gates and prese
     );
     await assert.rejects(
       async () => plane.drawGPU(undefined, { minimum: -10, maximum: 1 }),
-      /GPU adapter is unimplemented/,
+      /current World StageRenderer GPU/,
     );
     assert.deepEqual(t.manager.snapshot(), before);
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);
@@ -117,7 +117,7 @@ test('D6 callback ignores ordinary plane clip/color/transform while retaining it
     plane.graph.kx2.fill(0, MOTION_ABI.matrix, MOTION_ABI.matrix + 64);
     plane.sync();
     assert.equal(query(h), true);
-    await assert.rejects(async () => plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => plane.drawGPU(), /current World StageRenderer GPU/);
     assert.deepEqual(t.manager.snapshot(), before);
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);
   } finally {
@@ -144,7 +144,7 @@ test('query and draw stop on currentFILE NULL/pending even with retained live dr
     assert.equal(await t.plane.drawGPU(), 0);
     t.pendingReset = false;
     assert.equal(query(h), true);
-    await assert.rejects(async () => t.plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => t.plane.drawGPU(), /current World StageRenderer GPU/);
     assert.deepEqual(t.manager.snapshot(), manager);
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);
     w.effekseer.validateReferences();
@@ -220,7 +220,7 @@ test('true fresh World retains callback registration/current aliases without rep
     assert.deepEqual(fresh.effekseer.snapshot(), w.effekseer.snapshot());
     await fresh.sendEngine(p.record.id, h.id, 47, 0, 1);
     assert.equal(fresh.screenEffects.rendering.queryRange(170, 171), true);
-    await assert.rejects(async () => p.plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => p.plane.drawGPU(), /current World StageRenderer GPU/);
     assert.deepEqual(p.manager.snapshot(), manager);
     assert.equal(fresh.nativeEngine, undefined);
   } finally {
@@ -346,7 +346,7 @@ test('inherited47 reads real parent registration, preserves misses and restores 
     assert.equal(child.plane.state.shown, false);
     assert.equal(child.plane.graph.registrationEnabled, true, 'missing lookup retains one');
     assert.equal(child.plane.queryDraw(), 1, 'shown is not a missing-parent fallback');
-    await assert.rejects(async () => child.plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => child.plane.drawGPU(), /current World StageRenderer GPU/);
 
     const parent = await createCallback(h.id),
       parentID = parent.record.id,
@@ -529,7 +529,7 @@ test('D6 diagnoses unknown registration without changing ordinary messages or fa
     await to(id, 48, 1);
     assert.equal(plane.graph.registrationEnabled, true);
     assert.equal(plane.queryDraw(), 1);
-    await assert.rejects(async () => plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => plane.drawGPU(), /current World StageRenderer GPU/);
     assert.equal(
       parent.graph.registrationEnabled,
       'unverified',
@@ -559,7 +559,7 @@ test('D6 diagnoses unknown registration without changing ordinary messages or fa
     await fresh.sendEngine(id, h.id, 48, 0, 1);
     assert.equal(restored.plane.graph.registrationEnabled, true);
     assert.equal(restored.plane.queryDraw(), 1);
-    await assert.rejects(async () => restored.plane.drawGPU(), /GPU adapter is unimplemented/);
+    await assert.rejects(async () => restored.plane.drawGPU(), /current World StageRenderer GPU/);
     assert.deepEqual(restored.manager.snapshot(), manager);
     assert.deepEqual(fresh.effekseer.loads.snapshot(), resources);
     assert.deepEqual(fresh.effekseer.threads.snapshot(), crt);

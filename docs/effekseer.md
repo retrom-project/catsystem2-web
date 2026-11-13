@@ -2,11 +2,12 @@
 
 Phase 7 implements a JS reader, resource owner, independent CPU state algorithms
 and typed geometry builders for legacy SKFE Effects.
-The default registered76 kind61 factory now owns real CPU playback, mounted
-resources and settled task/World checkpoints. Actual task drawing requires the
-unimplemented GPU adapter and reports an explicit error. Registered76 default
-FES raw type36 now reaches that CPU task through its normal resource FIFO.
-This is partial EFKPLANE support; actual FES task GPU drawing remains unavailable.
+The default registered76 kind61 factory owns real CPU playback, mounted
+resources and settled task/World checkpoints. Registered76 default FES raw36
+reaches the current Task through its normal resource FIFO, and the eligible
+D6 callback submits its current manager through the same World StageRenderer.
+EFKPLANE remains partial while full geometry/device, dirty-history and final
+performance acceptance remain open.
 The fixed 2.6.1.74 ABI has no kind-61 factory; the fixed 2.6.1.76 ABI has one.
 Parsing a sample does not establish either ABI's complete runtime support.
 
@@ -18,8 +19,8 @@ context and actual GPU capture/restore/pipeline operations. The former five
 string binding labels are removed; program, VAO/buffers, texture bindings,
 uniforms and target state use the existing physical backend. The view owns no
 device, target or second state cache.
-StageRenderer exposes these independent interfaces through its existing shared
-GPU backend; World and EFK tasks do not yet mount them. See
+StageRenderer exposes these interfaces through its existing shared GPU backend;
+the default Task borrows them without another renderer or CPU owner. See
 [the GPU backend contract](effekseer-gpu.md) for the calibrated profile and limits. Their
 2,000-quad default upload bound does not define the original reserve/flush policy.
 The 21 packet tests include six public-source matrix comparison groups and three
@@ -151,9 +152,9 @@ frame entry fully exits, so awaiting it preserves the snapshot/close safe point.
 Settled checkpoints store the current CRT words once and restore without replay.
 While a native process exists or is loading, the gateway rejects sampling before
 manager callbacks because the actual native-owner binding remains unverified.
-The default76 kind61 CPU task uses this gateway per actual Play/Update. FES
-type36 remains unconnected; neither the gateway nor CPU task establishes complete
-EFKPLANE rendering support.
+The default76 kind61 task uses this gateway per actual Play/Update. Its default
+FES raw36 driver borrows the live caller; render-only submission does not sample
+this CRT stream.
 
 Integer tests include 20,480 comparisons with an independent BigInt recurrence; local original
 oracle evidence separately compares 320 return values and 320 PTD state words.
@@ -296,9 +297,9 @@ shared logical Effect-load owner and current camera/projection getters. Its
 constructor requires no stage, device, manager, MT or CRT owner. Actual drawing
 requires an explicit temporary backend: current stage/device, its state scope,
 viewport getter and pipeline operation. Those inputs are cleared on exit and
-never saved. This ownership slice does not connect the Task callback to a GPU;
-its eligible actual draw still reports the unimplemented GPU adapter. It uses
-one StandardRenderer byte cache across nodes and drawsets, comparing all nine
+never saved. The default Task callback borrows these same inputs through
+`EffekseerTaskGPU` and submits to its World StageRenderer. It uses one
+StandardRenderer byte cache across nodes and drawsets, comparing all nine
 material fields including logical texture identity. The decoded frame passed to
 the GPU remains separate from that identity. Normal vertices use the original
 24-byte XYZ/D3DCOLOR/UV layout before `EffekseerPackedMesh.prepareBatch` converts
@@ -358,15 +359,15 @@ not establish native float/pixel tolerances, playback timing, browser rendering,
 complete rendered-task restoration or frame-rate acceptance. The CPU task and
 true fresh-World checks below do not substitute for those EFKPLANE requirements.
 
-## Default kind61 CPU task
+## Default kind61 task
 
 The registered ABI capability enables the default kind61 factory for76 and keeps
 it unavailable for74. Unknown registrations cannot borrow this capability by
 name. Each task owns a real2000-capacity ManagerLifecycle and the existing instance
 operations, camera and Ring current-state owner. Its World exclusively owns the
-mounted source cache and EffectLoads. This leaf does not enable FES raw36 or
-install its resource driver, and actual nonempty draw raises an unsupported GPU
-adapter error; a blank frame is not accepted as successful playback.
+mounted source cache and EffectLoads. The default FES raw36 driver and current
+GPU callback reuse those owners. An eligible draw requires the current World
+StageRenderer GPU and its open frame; no private renderer is constructed.
 
 Messages569/570 release current FILE ownership before replacement/unload; earlier
 Play drawsets keep their own logical-load references. Each571 creates another
@@ -411,9 +412,9 @@ exercise opaque-entry guards, queue consumption, delayed GC and shared logical
 texture identities. A temporary host disposal failure and Stop wrapper test
 cleanup/result ordering; they do not replace the manager under test or claim
 native/GPU failure observations. No EXE is opened by this CPU path. The existing
-mixed-native CRT guard remains unchanged. Actual D6 registration/display producer,
-default FES36, shared GPU target/state and nonempty rendered-World/2000-particle
-acceptance remain separate required closures.
+mixed-native CRT guard remains unchanged. The default FES36 and D6/GPU paths
+below reuse these owners. Complete rendered-World geometry/device acceptance,
+legal2000-particle coverage and final performance remain required closures.
 
 ## Default FES raw36 CPU integration
 
@@ -459,9 +460,9 @@ authored Host callback forwarding the actual drain entry to FES333; it is not
 evidence that a native window automatically generates333. The independent
 word-only object queue does not accept FESTask's UNWRITTEN return, and no normal
 World publisher of333/337 into that queue was found; its contract is unchanged.
-CPU render-only queries do not update time or RNG. Nonempty actual task draw
-continues to throw the explicit unimplemented-GPU error. These checks complete
-only this CPU/FES slice, not W5 pixels, complete W4 or phase7.
+CPU render-only queries do not update time or RNG. Actual eligible drawing now
+borrows the existing StageRenderer through the Task GPU view. CPU/FES checks
+alone do not establish W5 pixels, complete W4 or phase7.
 
 ## D6 callback registration and query gates
 
@@ -494,8 +495,9 @@ checks the registered enable and invokes the existing task query without a
 priority condition, drawing or updating. Range selection remains in the shared
 screen compositor; stable priority/insertion order is unchanged. Ordinary plane
 alpha/color, geometric clip and transform are not applied by this callback.
-The current task's eligible actual draw continues to raise its unimplemented
-GPU-adapter error. This gate work does not establish pixel/GPU support.
+The current task's eligible actual draw submits its current manager/batch through
+the borrowed StageRenderer GPU view and returns1 even for an empty manager.
+Registration/query checks alone do not establish pixel/GPU support.
 
 `NativeScreenEffectRenderer.queryRange` provides only the callback boolean
 subbehavior, visiting enabled callbacks even after a previous positive result.
@@ -512,5 +514,5 @@ mode and retains its previous behavior. Checkpoints keep the current registratio
 flag and rebind the callback to the restored graph without Play, RNG or elapsed
 replay. The focused default FES/World cases cover47/48, distinct query/draw range
 gates, current-FILE NULL with retained instances, pending reset, real MOT display
-consumption and true fresh World. Fullscreen dirty history, actual GPU/state
-submission and W5 acceptance remain separate requirements.
+consumption and true fresh World. Fullscreen dirty history and complete W5
+acceptance remain separate requirements from the connected GPU submission.

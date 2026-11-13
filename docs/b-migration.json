@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 267, "oracle": 149, "differential": 67 },
+    "counts": { "js": 268, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -55,6 +55,7 @@
         "tests/effekseer-standard-batch.test.mjs",
         "tests/effekseer-task-aspect.test.mjs",
         "tests/effekseer-task-batch.test.mjs",
+        "tests/effekseer-task-gpu.test.mjs",
         "tests/effekseer-task.test.mjs",
         "tests/effekseer-texture-decoder.test.mjs",
         "tests/effekseer-texture-level0-holdout.test.mjs",
@@ -2436,8 +2437,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 486,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 81, "8": 180, "9": 55 },
+    "runtimeFiles": 487,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 82, "8": 180, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -48764,8 +48765,21 @@
       "review": "counted"
     },
     {
+      "file": "src/effekseer/task-gpu.mjs",
+      "sourceSha256": "b5d499cf66c5266cdd70337dc8a236c5a6e0794d79c21ed4a6aa8021869fcfcd",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/effekseer/task.mjs",
-      "sourceSha256": "ecffeacb688f7e66f4ae3e17b7679dcb7184c50ed4d1ed15bbcd9ec901f1e8c5",
+      "sourceSha256": "46fc06b51d5dbc89401fa787a3fe22a26d5e42993189ba45d69c65ced13823bc",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

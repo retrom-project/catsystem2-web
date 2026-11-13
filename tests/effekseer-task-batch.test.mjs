@@ -71,7 +71,7 @@ test('default FES Task owns a headless MeshBatch borrowing its sole Ring;missing
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);
     assert.deepEqual(t.meshBatch.snapshot(), { batch: { ringCursor: 0 } });
     assert.equal(t.meshBatch.backend, null);
-    assert.throws(() => t.plane.drawGPU(), /GPU adapter is unimplemented/);
+    assert.throws(() => t.plane.drawGPU(), /current World StageRenderer GPU/);
     t.meshBatch.close();
     assert.doesNotThrow(() => ring.assertOpen(), 'borrower close cannot retire the Task Ring');
   } finally {
@@ -153,7 +153,7 @@ test('true fresh default World saves and restores Task Ring and nonzero batch cu
     assert.equal(restored.meshBatch.loads, fresh.effekseer.loads);
     assert.deepEqual(fresh.effekseer.snapshot(), w.effekseer.snapshot());
     assert.deepEqual(fresh.random.snapshot(), mt);
-    assert.throws(() => restored.plane.drawGPU(), /GPU adapter is unimplemented/);
+    assert.throws(() => restored.plane.drawGPU(), /current World StageRenderer GPU/);
     a.packets.length = 0;
     t.meshBatch.draw(t.manager, { ...flags, backend: a.backend });
     restored.meshBatch.draw(restored.manager, { ...flags, backend: b.backend });

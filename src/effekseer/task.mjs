@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
-// Real task-owned CPU state. Actual GPU submission is a separate required adapter.
+// Task-owned current CPU state with a borrowed submission view of the shared GPU.
 import { nativeABI } from '../native/abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../native/engine-message.mjs';
 import { EffekseerManagerLifecycle } from './manager-lifecycle.mjs';
 import { createEffekseerInstanceOperations } from './instance-operations.mjs';
 import { EffekseerRingCurrentState } from './ring-current-state.mjs';
 import { EffekseerMeshBatch } from './mesh-batch.mjs';
+import { EffekseerTaskGPU } from './task-gpu.mjs';
 import { rotationX43, multiply43, transformVector43 } from './math43.mjs';
 import { identity44, perspectiveFovRH, lookAtRH } from './camera.mjs';
 
@@ -55,6 +56,7 @@ class EffekseerTask {
       getCamera: () => this.camera,
       getProjection: () => this.projection,
     });
+    this.gpuBackend = null;
     this.pendingReset = false;
     this.pending = 0;
     this.closed = false;
@@ -167,11 +169,11 @@ class EffekseerTask {
     return this.plane.message(words, context);
   }
   onLostDevice() {
-    // This leaf owns CPU Ring state only; no physical handles exist to release.
+    // GPU handles belong to the shared backend; retain current CPU Ring/batch state.
     this.ring.assertOpen();
   }
   onResetDevice() {
-    // Physical reconstruction belongs to the shared device/W5 adapter.
+    // Shared reconstruction publishes the generation; never clear CPU faults.
     this.ring.assertOpen();
   }
   beforeDrawChildren(_frame, context = {}) {
@@ -192,10 +194,33 @@ class EffekseerTask {
     this.world.graphics.device.requireReady();
     this.world.effekseer.update(context.executorEntry, this.manager, 1);
   }
-  drawGPU() {
+  drawGPU(gpu) {
     this.assertOpen();
     if (this.currentEffect === null || this.pendingReset) return 0;
-    throw new Error('Effekseer kind61 GPU adapter is unimplemented');
+    const stage = this.world.stageRenderer,
+      device = this.world.graphics.device;
+    if (
+      !gpu ||
+      stage?.gpu !== gpu ||
+      gpu.graphicsDevice !== device ||
+      stage.graphicsDevice !== device
+    )
+      throw new Error('Effekseer drawing requires the current World StageRenderer GPU');
+    gpu.requireDevice();
+    if (!gpu.drawing)
+      throw new Error('Effekseer drawing requires an open shared StageRenderer frame');
+    if (
+      this.gpuBackend &&
+      (this.gpuBackend.gpu !== gpu ||
+        this.gpuBackend.stage !== stage ||
+        this.gpuBackend.device.context !== this.world.graphics.d3dContext)
+    ) {
+      this.gpuBackend.close();
+      this.gpuBackend = null;
+    }
+    this.gpuBackend ??= new EffekseerTaskGPU(this, stage, gpu);
+    this.gpuBackend.draw();
+    return 1;
   }
   queryDraw() {
     this.assertOpen();
@@ -272,6 +297,10 @@ class EffekseerTask {
     for (const operation of [
       () => current !== null && this.loads.release(current),
       () => this.manager.close(),
+      () => {
+        this.gpuBackend?.close();
+        this.gpuBackend = null;
+      },
       () => this.meshBatch.close(),
       () => this.ring.close(),
       () => this.plane?.close(),

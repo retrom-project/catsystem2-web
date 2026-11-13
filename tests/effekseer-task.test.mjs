@@ -399,8 +399,8 @@ test('correct LOST/NOTRESET/pending/ready order precedes real children;render/qu
       snapshot = task.manager.snapshot();
     await w.sendEngine(task.record.id, w.main.id, 47, 0, 1);
     assert.equal(task.queryDraw(), 1);
-    assert.throws(() => task.drawGPU(), /GPU adapter is unimplemented/);
-    assert.throws(() => task.plane.drawGPU({}), /GPU adapter is unimplemented/);
+    assert.throws(() => task.drawGPU(), /current World StageRenderer GPU/);
+    assert.throws(() => task.plane.drawGPU({}), /current World StageRenderer GPU/);
     assert.deepEqual(crts(w), crt);
     assert.deepEqual(task.manager.snapshot(), snapshot);
     task.ring.matrix[0] = 17;

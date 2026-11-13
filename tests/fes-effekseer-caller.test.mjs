@@ -212,7 +212,7 @@ test('close during real async FILE releases the already-bound default child and 
   }
 });
 
-test('render-only CPU queries do not advance manager/CRT and actual nonempty draw stays unsupported', async () => {
+test('render-only CPU queries do not advance manager/CRT and drawing requires a mounted shared GPU', async () => {
   const h = await open(),
     w = h.world;
   try {
@@ -224,7 +224,7 @@ test('render-only CPU queries do not advance manager/CRT and actual nonempty dra
       crt = w.effekseer.threads.snapshot();
     for (let i = 0; i < 3; i++) {
       assert.equal(t.queryDraw(), 1);
-      assert.throws(() => t.drawGPU(), /GPU adapter is unimplemented/);
+      assert.throws(() => t.drawGPU(), /current World StageRenderer GPU/);
     }
     assert.deepEqual(t.snapshot(), state);
     assert.deepEqual(w.effekseer.threads.snapshot(), crt);

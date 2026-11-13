@@ -4101,13 +4101,14 @@
       "names": ["EFKPLANE"],
       "status": "partial",
       "source": "https://cs2.suki.jp/download",
-      "implementation": "src/native/fes-object-factory.mjs; src/native/fes-effekseer-driver.mjs; src/effekseer/task.mjs",
+      "implementation": "src/native/fes-object-factory.mjs; src/native/fes-effekseer-driver.mjs; src/effekseer/task.mjs; src/effekseer/task-gpu.mjs",
       "evidence": [
         "tests/fes-effekseer-default.test.mjs",
         "tests/fes-effekseer-caller.test.mjs",
+        "tests/effekseer-task-gpu.test.mjs",
         "docs/effekseer.md"
       ],
-      "note": "Registered76 raw36 reaches the real kind61 CPU manager, World FILE/texture loads, FIFO transforms, SIZE rebuild/previous-ID cleanup, play/stop571 quirk and fresh restore with the same live executor. SDK74/unknown are unavailable. Actual task GPU drawing is unimplemented and fails explicitly; full EFKPLANE/W4/W5 acceptance remains open.",
+      "note": "Registered76 raw36 reaches the real kind61 manager, World FILE/texture loads, FIFO transforms, SIZE rebuild/previous-ID cleanup, play/stop571 quirk and fresh restore with the same live executor. Its eligible D6 callback borrows the Task MeshBatch/Ring and current World StageRenderer GPU/target/depth without Play, Update, RNG or resource replay. SDK74/unknown remain unavailable. Full geometry/device pixels, historical dirty regions, legal2000 coverage, final performance and complete EFKPLANE/W4/W5 acceptance remain open.",
       "signatures": []
     },
     {
