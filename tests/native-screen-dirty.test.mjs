@@ -109,6 +109,12 @@ test('real FES47/48 and MOT collect every known enabled callback under its old f
     // Normal destroy removes the graph before the later Task.closing phase.
     await w.objects.destroy(id, h.id);
     assert.equal(w.graphics.get(id), null);
+    assert.deepEqual(
+      observed,
+      [{ id, firstFlag: false }],
+      'normal message3 queries the old enabled callback before erase',
+    );
+    observed.length = 0;
     r.collectCallbackDirty();
     await w.objects.release(id);
     assert.equal(other.closed, true);
