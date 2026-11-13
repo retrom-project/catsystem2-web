@@ -293,6 +293,17 @@ expansion. This keeps actual Button focus callbacks and keyboard selection
 metadata consistent with the restored canonical objects. DEFINE remains partial
 for its remaining declaration-table and byte/expression behavior.
 
+Normal BUTTON registration records a keyboard membership key from the created
+collection object's owned name bytes through the existing reversible byte view.
+The key contains only the raw base name, with no index or decoded display text.
+Normal public candidates compare the same base key, so distinct raw names that
+decode alike remain separate while all indices in one registered group share
+membership. An empty Set keeps the existing unfiltered policy. The current
+String-array checkpoint carries these byte-view keys unchanged; restore does not
+replay registration or expansion. Bare players retain their display-name keys.
+This closes membership filtering and its checkpoint, while public push,
+placement/plane, waits and broader keyboard identity remain separate work.
+
 ## Literal ASCII hyphen in DEFINE names
 
 Normal DEFINE retains literal `-` (byte0x2D). Both original narrow scanners stop

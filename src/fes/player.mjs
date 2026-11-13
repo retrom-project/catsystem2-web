@@ -4,7 +4,7 @@ import { readFES } from '../formats/scene.mjs';
 import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
 import { NativeFESSourceArena } from '../native/fes-source.mjs';
-import { tokenizeFESByteLine, fesSourceBytes } from './tokens.mjs';
+import { tokenizeFESByteLine, fesSourceBytes, fesByteView } from './tokens.mjs';
 import { CGGallery } from '../gallery.mjs';
 import { decodeText } from '../binary.mjs';
 
@@ -306,7 +306,10 @@ export class FESPlayer {
           (o) =>
             o.enable &&
             ['BUTTON', 'SLIDER', 'SCROLL2'].includes(o.type) &&
-            (!s.keyNames.size || s.keyNames.has(o.baseName)) &&
+            (!s.keyNames.size ||
+              s.keyNames.has(
+                s.runtime ? fesByteView(s.collection.reference(o).nameBytes) : o.baseName,
+              )) &&
             s.placement(o).shown,
         )
         .map((o) => ({ s, o, rect: s.rect(o) }))

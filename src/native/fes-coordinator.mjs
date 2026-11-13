@@ -304,8 +304,9 @@ export class FESCoordinator {
       // This normal declaration caller changes zero to one before creation;
       // dynamic create retains the collection's independent count0 behavior.
       if (!count) count = 1;
-      this.collection.create(type, reference.nameBytes, count, { scalar });
-      if (type === 'BUTTON') this.instance.keyNames.add(name);
+      const created = this.collection.create(type, reference.nameBytes, count, { scalar });
+      if (type === 'BUTTON')
+        this.instance.keyNames.add(fesByteView(this.collection.reference(created[0]).nameBytes));
     }
     for (const table of program.tables) {
       const compiled = this.definitions.compile(table.columns);
