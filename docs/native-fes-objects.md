@@ -302,7 +302,7 @@ membership. An empty Set keeps the existing unfiltered policy. The current
 String-array checkpoint carries these byte-view keys unchanged; restore does not
 replay registration or expansion. Bare players retain their display-name keys.
 This closes membership filtering and its checkpoint, while
-placement/plane, waits and broader keyboard identity remain separate work.
+placement/plane, sound waits and broader keyboard identity remain separate work.
 
 Normal public `push` accepts the current collection's raw `{nameBytes, index}`
 reference. Its synchronous Boolean reports acceptance; `await player.flush()`
@@ -314,7 +314,17 @@ independent bare player retains its synchronous String target API. A null or
 missing target, including an exact index of -1, returns false without changing
 focus or emitting events. Existing instance order, enable and visibility policy
 remain. This closes public push target identity and completion; other synchronous
-event entrances, coordinate parents, plane visibility and wait references remain
+event entrances, coordinate parents, plane visibility and sound wait references
+remain separate work.
+
+Normal named object-motion waits retain the selected collection references as
+owned raw name bytes and signed indices. The initial busy check and later frame
+checks resolve those same references through the current collection, so names
+that decode alike do not redirect a wait. A missing saved element is no longer
+busy; the existing frame path clears the completed wait. Snapshot and restore
+copy the reference bytes without replaying source or argument expansion. Bare
+players keep their independent String references. Getter order, skip, next and
+motion completion timing retain their existing behavior; sound waits remain
 separate work.
 
 ## Literal ASCII hyphen in DEFINE names

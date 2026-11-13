@@ -487,6 +487,11 @@ export class FESInstance {
     if (o.width > 0 && o.height > 0) return { x: at.x, y: at.y, w: o.width, h: o.height };
     return f ? { x: at.x + f.offsetX, y: at.y + f.offsetY, w: f.width, h: f.height } : null;
   }
+  waitObject(reference) {
+    return this.runtime
+      ? this.collection.lookup(reference.nameBytes, reference.index)
+      : this.byKey.get(reference);
+  }
   tick() {
     if (this.finished !== null) return;
     if (this.deferredCommandReturn !== null) {
@@ -519,7 +524,7 @@ export class FESInstance {
       this.commandDelayUntil = null;
     }
     if (this.waitFrames > 0 && --this.waitFrames > 0) return;
-    if (this.waitObjects?.some((key) => this.byKey.get(key)?.motionBusy)) return;
+    if (this.waitObjects?.some((reference) => this.waitObject(reference)?.motionBusy)) return;
     this.waitObjects = null;
     if (
       this.waitMotion &&
@@ -862,8 +867,10 @@ export class FESInstance {
           return { action: 'suspend' };
         }
         if (args.length && this.elements(args[0]).length) {
-          this.waitObjects = this.elements(args[0]).map((o) => o.key);
-          return this.waitObjects.some((key) => this.byKey.get(key).motionBusy)
+          this.waitObjects = this.elements(args[0]).map((o) =>
+            this.runtime ? this.collection.reference(o) : o.key,
+          );
+          return this.waitObjects.some((reference) => this.waitObject(reference).motionBusy)
             ? { action: 'suspend' }
             : {};
         }

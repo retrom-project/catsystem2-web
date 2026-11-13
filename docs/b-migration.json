@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 291, "oracle": 149, "differential": 67 },
+    "counts": { "js": 292, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -169,6 +169,7 @@
         "tests/fes-tone-table.test.mjs",
         "tests/fes-touch-checkpoint.test.mjs",
         "tests/fes-touch-resource-tail.test.mjs",
+        "tests/fes-wait-objects-reference-default.test.mjs",
         "tests/fes-window-image.test.mjs",
         "tests/font-backend.test.mjs",
         "tests/font.test.mjs",
@@ -49283,7 +49284,7 @@
     },
     {
       "file": "src/fes/instance.mjs",
-      "sourceSha256": "7671db69953e57cb96dd4d12d8cf5c20365863f7ac3d02b35b3e71d790295e4b",
+      "sourceSha256": "7a21aa0f83119817068d91b0fd5bb35dff2b5bf1ebc3703891730983b2f8e0a6",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
