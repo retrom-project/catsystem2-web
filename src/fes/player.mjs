@@ -26,6 +26,8 @@ export class FESPlayer {
       randomState: 12345,
       transparent: false,
       pending: new Set(),
+      publicPushPending: new Set(),
+      publicPushTail: Promise.resolve(),
       error: null,
       unsupportedCommands: new Set(),
       hints: new Set(),
@@ -130,8 +132,23 @@ export class FESPlayer {
       .finally(() => this.pending.delete(wrapped));
     this.pending.add(wrapped);
   }
-  async flush() {
-    while (this.pending.size) await Promise.all([...this.pending]);
+  enqueuePublicPush(operation) {
+    let completion;
+    completion = this.publicPushTail
+      .then(() => {
+        if (this.error) throw this.error;
+        return operation();
+      })
+      .catch((error) => {
+        this.error = error;
+      })
+      .finally(() => this.publicPushPending.delete(completion));
+    this.publicPushTail = completion;
+    this.publicPushPending.add(completion);
+  }
+  async flush({ commandsOnly = false } = {}) {
+    while (this.pending.size || (!commandsOnly && this.publicPushPending.size))
+      await Promise.all([...this.pending, ...(commandsOnly ? [] : this.publicPushPending)]);
     if (this.error) throw this.error;
   }
   async step() {
@@ -440,15 +457,71 @@ export class FESPlayer {
     target.s.event(target.o, 'RELEASE_L');
     return true;
   }
-  push(name) {
+  push(target) {
     for (const s of this.instances.toReversed()) {
-      const o = s.byKey.get(name);
+      const o =
+        target == null
+          ? null
+          : s.runtime
+            ? s.collection.lookup(target.nameBytes, target.index)
+            : s.byKey.get(target);
       if (o?.enable && s.placement(o).shown) {
+        if (s.runtime) {
+          const runtime = s.runtime,
+            record = runtime.world.objects.objects.get(s.runtimeID),
+            reference = s.collection.reference(o);
+          this.enqueuePublicPush(() => this.completePublicPush(s, reference, runtime, record));
+          return true;
+        }
         this.focus({ s, o });
         return this.press();
       }
     }
     return false;
+  }
+  async completePublicPush(instance, reference, runtime, record) {
+    const live = (owner, expectedRuntime, expectedRecord, object = null) =>
+      expectedRuntime &&
+      this.instances.includes(owner) &&
+      owner.runtime === expectedRuntime &&
+      !expectedRuntime.closed &&
+      expectedRecord?.state !== 'releasing' &&
+      expectedRuntime.world.objects.objects.get(owner.runtimeID) === expectedRecord &&
+      expectedRecord?.implementation?.player === this &&
+      (!object || (!object.deleted && owner.collection.graph.get(object.handle) === object));
+    if (!live(instance, runtime, record)) return;
+    const object = instance.collection.lookup(reference.nameBytes, reference.index);
+    if (
+      !object?.enable ||
+      !live(instance, runtime, record, object) ||
+      !instance.placement(object).shown
+    )
+      return;
+    const previous = this.focused;
+    if (previous?.o !== object) {
+      if (previous && this.instances.includes(previous.s)) {
+        const oldRuntime = previous.s.runtime,
+          oldRecord = oldRuntime.world.objects.objects.get(previous.s.runtimeID);
+        if (!live(previous.s, oldRuntime, oldRecord, previous.o)) return;
+        await previous.s.dispatchEvent(previous.o, 'UNFOCUS');
+        if (!live(instance, runtime, record, object)) return;
+      }
+      this.focused = { s: instance, o: object };
+      await instance.dispatchEvent(object, 'FOCUS');
+      if (!live(instance, runtime, record, object)) return;
+    }
+    // FOCUS may select another object. Like press(), capture the current target
+    // once for PUSH and RELEASE rather than replacing it with the request.
+    const pressed = this.focused;
+    if (!pressed || !pressed.o.enable || !this.instances.includes(pressed.s)) return;
+    const pressedRuntime = pressed.s.runtime,
+      pressedRecord = pressedRuntime.world.objects.objects.get(pressed.s.runtimeID),
+      stillPressed = () => live(pressed.s, pressedRuntime, pressedRecord, pressed.o);
+    if (!stillPressed()) return;
+    await pressed.s.dispatchEvent(pressed.o, 'PUSH_L');
+    if (!stillPressed()) return;
+    pressed.s.clickL = pressed.o.handle;
+    await pressed.s.dispatchEvent(pressed.o, 'RELEASE_L');
   }
   rightClick() {
     const s = this.instances.at(-1);
@@ -596,6 +669,8 @@ export class FESPlayer {
     this.dragging = null;
   }
   snapshot() {
+    if (this.publicPushPending.size)
+      throw new Error('Cannot snapshot FES while a public push is in flight');
     const instance = (s) =>
       s
         ? {

@@ -268,7 +268,7 @@ export class FESInput {
   }
   async event(key, event) {
     const handled = await this.player.nativeEvent(key, event);
-    await this.player.flush();
+    await this.player.flush({ commandsOnly: true });
     return handled;
   }
   async focus(key) {
@@ -495,7 +495,7 @@ export class FESInput {
       if (event !== null && reference !== undefined) {
         handled = await player.nativeEvent(reference, event);
         if (!live()) return 0;
-        await player.flush();
+        await player.flush({ commandsOnly: true });
         if (!live()) return 0;
       }
       if (handled && keyIndex < 2) {
@@ -552,7 +552,7 @@ export class FESInput {
         if (reference !== undefined) {
           handled = await player.nativeEvent(reference, keyIndex ? 'PUSH_R' : 'PUSH_L');
           if (!live()) return 0;
-          await player.flush();
+          await player.flush({ commandsOnly: true });
           if (!live()) return 0;
         }
       } else if (keyIndex === 8 || keyIndex === 9 || keyIndex === 10 || keyIndex === 11) {
@@ -582,7 +582,7 @@ export class FESInput {
                     'PUSH_L',
                   );
                   if (!live()) return 0;
-                  await player.flush();
+                  await player.flush({ commandsOnly: true });
                   if (!live()) return 0;
                   handled = result || handled;
                 }
@@ -633,7 +633,7 @@ export class FESInput {
         if (object) {
           handled = await player.nativeEvent(instance.collection.reference(object), 'TOUCH');
           if (!live()) return 0;
-          await player.flush();
+          await player.flush({ commandsOnly: true });
           if (!live()) return 0;
         }
         if (!handled) await this.propagation(sender, false);

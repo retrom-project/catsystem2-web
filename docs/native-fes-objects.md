@@ -301,8 +301,21 @@ decode alike remain separate while all indices in one registered group share
 membership. An empty Set keeps the existing unfiltered policy. The current
 String-array checkpoint carries these byte-view keys unchanged; restore does not
 replay registration or expansion. Bare players retain their display-name keys.
-This closes membership filtering and its checkpoint, while public push,
+This closes membership filtering and its checkpoint, while
 placement/plane, waits and broader keyboard identity remain separate work.
+
+Normal public `push` accepts the current collection's raw `{nameBytes, index}`
+reference. Its synchronous Boolean reports acceptance; `await player.flush()`
+waits for the serial operation, including focus, push, the click handle and release,
+and restores the interrupted frame and waits. Event and native input drains use
+explicit command-only flushing so an operation never waits for its own completion.
+A checkpoint rejects an unfinished public push; promises are not saved. The
+independent bare player retains its synchronous String target API. A null or
+missing target, including an exact index of -1, returns false without changing
+focus or emitting events. Existing instance order, enable and visibility policy
+remain. This closes public push target identity and completion; other synchronous
+event entrances, coordinate parents, plane visibility and wait references remain
+separate work.
 
 ## Literal ASCII hyphen in DEFINE names
 

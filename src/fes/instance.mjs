@@ -590,7 +590,7 @@ export class FESInstance {
           const continuation = this.suspended;
           this.decodePending = false;
           this.suspended = null;
-          await this.player.flush();
+          await this.player.flush({ commandsOnly: true });
           if (this.deferredCommandReturn !== null) {
             const value = this.deferredCommandReturn;
             this.deferredCommandReturn = null;
