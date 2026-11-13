@@ -104,6 +104,7 @@ async function createImage(h) {
   await h.world.sendEngine(h.id, h.world.main.id, 338, 0, 1, {
     payload: {
       string: () => 'b',
+      bytes: (at, count) => bytes.subarray(at, at + count),
       load: (at) => view.getUint32(at, true),
     },
   });

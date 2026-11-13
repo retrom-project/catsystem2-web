@@ -117,6 +117,7 @@ async function declare(h, name, type = 'BUTTON') {
     {
       payload: {
         string: (at) => decode(bytes.subarray(at, bytes.indexOf(0, at))),
+        bytes: (at, count) => bytes.subarray(at, at + count),
         load: (at) => view.getUint32(at, true),
       },
     },

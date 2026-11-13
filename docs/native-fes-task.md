@@ -37,7 +37,7 @@ numbers.
 | 333, 334           | Force a FES update and bind its retained rendering surface through the task graph. Surface IDs are resolved in the sender's Top.                                                                                                                      |
 | 335, 336           | Select an existing label and set `_SAVEOBJ_`. Only label selection writes a result word.                                                                                                                                                              |
 | 337                | Execute an immediate notification, synchronize objects, and honor `force_redraw` when awake.                                                                                                                                                          |
-| 338, 339           | Dynamic object declarations and `#OBJECT` rows. Replacing live groups and some definition columns still need original parser coverage.                                                                                                                |
+| 338, 339           | Dynamic object declarations and `#OBJECT` rows. Message338 reads the fixed count word before the raw NUL-terminated name. Replacing live groups and some definition columns still need original parser coverage.                                      |
 | 340, 341           | Select this FES's private context before scalar access. Indices outside unsigned 0..511 read zero and ignore writes.                                                                                                                                  |
 | 342                | Retain the raw sleep value, issue sleep/wake notifications and suppress this FES's logic while asleep. The original raw receiver reports unhandled and leaves the output word untouched.                                                              |
 | 343, 344           | Query/export 2048 bytes or import a partial prefix; import can select `_LOAD_`. These original helpers use the bank's currently selected context and do not select the receiving FES. A missing selected context is a diagnostic for a nonempty copy. |
@@ -315,6 +315,21 @@ JavaScript `writer.profile(category, text)` is a Unicode API with its writer's
 encoding; FES does not use it. Direct JavaScript-authored FES source/layout strings
 follow the UTF8 source convention. Other layout text arguments and complete
 whole-handler coverage remain separate phase-7 work.
+
+Message338 reads the original count word at name-address+32 before reading the
+NUL-terminated name from the same sender's mapped bytes. Within the existing
+31-byte name boundary, positive-count declarations reach the collection as owned
+raw names: CP932 display aliases stay separate, brackets remain literal, and no
+name-bank, SCRIPT or index parsing occurs. A mapped address0 remains valid. The
+existing factory ordinal guards and untouched result-word behavior remain in
+force. The independent JavaScript String API still performs one CP932 encoding.
+
+This closes positive-count name transport, not native signed-count behavior.
+The current count entry remains unchanged: in particular, native negative words
+still reach its unsigned range check. Game's normal nonpositive path retains an
+empty group and its first count, while the matching SDK inner-factory tail is
+still unproved. Those count paths remain separate work; the independent String
+API's count0 group and the normal DEFINE ASCII guard are unchanged.
 
 Repeated declarations through message338 keep the resource-request FIFO's
 multiplicity and the current object's first flag. After the first driver pass,

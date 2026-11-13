@@ -629,6 +629,7 @@ for (const profile of [sdkProfile, gameProfile])
             payload: {
               string: (at) =>
                 new TextDecoder().decode(declaration.subarray(at, declaration.indexOf(0, at))),
+              bytes: (at, count) => declaration.subarray(at, at + count),
               load: (at) => declarationView.getUint32(at, true),
             },
           });
@@ -656,6 +657,7 @@ for (const profile of [sdkProfile, gameProfile])
               payload: {
                 string: (at) =>
                   new TextDecoder().decode(declaration.subarray(at, declaration.indexOf(0, at))),
+                bytes: (at, count) => declaration.subarray(at, at + count),
                 load: (at) => declarationView.getUint32(at, true),
               },
             },

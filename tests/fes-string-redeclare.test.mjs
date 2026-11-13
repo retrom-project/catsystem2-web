@@ -81,6 +81,7 @@ async function redeclare(h, type) {
     {
       payload: {
         string: (at) => new TextDecoder().decode(data.subarray(at, data.indexOf(0, at))),
+        bytes: (at, count) => data.subarray(at, at + count),
         load: (at) => view.getUint32(at, true),
       },
     },

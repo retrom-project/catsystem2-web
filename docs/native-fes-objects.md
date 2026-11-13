@@ -453,9 +453,12 @@ narrow bytes. One command record caches each byte-view name once, independently
 of its selected array index; fresh restore preserves the same bytes and address.
 This closes the address service after selection.
 
-Normal DEFINE keeps its implemented ASCII-name guard. Dynamic message 338, byKey
-and input bridges, numeric object references and other ordinary-name consumers
-still require separate identity work. Common-command selection and PL/copy
+Normal DEFINE keeps its implemented ASCII-name guard. Dynamic message338 now
+passes positive-count raw names directly from the sender to the existing
+collection; it does not parse bracket suffixes or use decoded names as identity.
+Native nonpositive-count holder semantics, remaining public byKey/input bridges,
+numeric object references and other ordinary-name consumers remain separate
+gates. Common-command selection and PL/copy
 transport now preserve raw bytes; correct labels, source-name addresses and
 common commands do not establish that all earlier consumers selected the correct
 raw object name.

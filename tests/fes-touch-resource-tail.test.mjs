@@ -48,6 +48,10 @@ async function open(profile) {
       first = runtime.resources.entries.find((entry) => entry.name === 'b'),
       bReference = h.instance.collection.reference(b);
     assert.ok(input.get(first.buttonTaskID), 'first real BUTTON Graph is already registered');
+    const declaration = new Uint8Array(36),
+      declarationView = new DataView(declaration.buffer);
+    declaration[0] = 98;
+    declarationView.setUint32(32, 1, true);
     await world.sendEngine(
       h.id,
       world.main.id,
@@ -55,7 +59,11 @@ async function open(profile) {
       0,
       FES_OBJECT_DEFINITION_ORDER.indexOf('BUTTON'),
       {
-        payload: { string: () => 'b', load: () => 1 },
+        payload: {
+          string: () => 'b',
+          bytes: (at, count) => declaration.subarray(at, at + count),
+          load: () => 1,
+        },
       },
     );
     await runtime.initializeResources();

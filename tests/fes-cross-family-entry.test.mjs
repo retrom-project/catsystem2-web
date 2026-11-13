@@ -12,6 +12,7 @@ async function declareImage(world, id) {
   await world.sendEngine(id, world.main.id, 338, 0, FES_OBJECT_DEFINITION_ORDER.indexOf('CIMAGE'), {
     payload: {
       string: (at) => new TextDecoder().decode(bytes.subarray(at, bytes.indexOf(0, at))),
+      bytes: (at, count) => bytes.subarray(at, at + count),
       load: (at) => view.getUint32(at, true),
     },
   });
