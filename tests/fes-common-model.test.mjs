@@ -18,9 +18,20 @@ import {
   writeFESQuery,
 } from '../src/native/fes-common-model.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 const oracle = JSON.parse(
   await readFile(new URL('./fixtures/fes-common-model.json', import.meta.url), 'utf8'),
 );
+// The immutable native capture presents ASCII PL names as text. Project only
+// those two successful PL samples into the current raw reference representation.
+for (const profile of oracle.profiles)
+  for (const sample of profile.samples)
+    if (sample.label === 'pl-image-plane-binding')
+      for (const after of sample.after)
+        if (after.planeReference) {
+          const { name, index } = after.planeReference;
+          after.planeReference = { nameBytes: encodeCP932(name), index };
+        }
 function instance(objects) {
   return { objects, byKey: new Map(objects.map((o) => [o.key, o])) };
 }
@@ -65,7 +76,7 @@ test('typed FES graphical state and query writes match the independently capture
             setFESImageParentPlane(target, values[0] ?? 0);
             break;
           case 'pl':
-            setFESImagePlane(s, target, sample.args[0], 0);
+            setFESImagePlane(s, target, encodeCP932(sample.args[0]), 0);
             break;
           case 'getpos':
             result = fesGraphicalPosition(s, target);
@@ -123,7 +134,10 @@ test('dirty propagation follows lifetime parents independently of display-plane 
   const parent = { key: 'parent', handle: 1 },
     child = { key: 'child', handle: 2, parentHandle: 1 },
     grandchild = { key: 'grandchild', parent: 'child' },
-    associated = { key: 'associated', planeReference: { name: 'parent', index: 0 } },
+    associated = {
+      key: 'associated',
+      planeReference: { nameBytes: encodeCP932('parent'), index: 0 },
+    },
     s = instance([parent, child, grandchild, associated]);
   markFESObjectDirty(s, parent);
   assert.deepEqual(

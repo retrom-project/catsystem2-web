@@ -146,11 +146,23 @@ ARGB, and later supported objects inherit that value. Other objects initially
 use the explicit command-source address. This preserves the recovered boundary;
 it does not introduce PE addresses as object state.
 
-The public short tests cover expression side effects, type gates, holes,
-query writes, deferred copy requests, table outputs, real MOT delay and fresh
-target restore. This coordinator remains independent of the default FES
-factory until the shared collection and family drivers are integrated. The
-old D7 entry and projection counts therefore remain unchanged.
+Normal common commands carry the selection's original `nameBytes` and signed
+index directly into the existing collection; presentation names do not take part
+in count or lookup. Their argument/name expansion has already happened at the
+caller, so the command does not repeat bank expansion or parse another index.
+
+Image PL and deferred copy references store owned `nameBytes` and signed indices
+in the current checkpoint. PL compares byte content and index before dirty
+propagation; copy keeps independent buffers for each target and retains its
+source index-1 to0 rule. Normal image/panel/control/font and button PL readers
+consume those bytes directly. Resource filename references and the bare player's
+String plane association retain their independent contracts.
+
+The short tests cover expression side effects, type gates, holes, query writes,
+deferred copy requests, table outputs, real MOT delay and fresh target restore.
+Raw-owner tests use the existing collection author API; they do not enable
+non-ASCII DEFINE or native message338. Existing entry/projection counts and
+unrelated command coverage remain unchanged.
 
 ## Collection identity and initialization requests
 
@@ -421,7 +433,8 @@ of its selected array index; fresh restore preserves the same bytes and address.
 This closes the address service after selection.
 
 Normal DEFINE keeps its implemented ASCII-name guard. Dynamic message 338, byKey
-and input bridges, numeric object references and the common-command decoded-name
-lookup still require separate ordinary-name identity work. Correct labels and
-source-name addresses do not establish that those earlier consumers selected the
-correct raw object name.
+and input bridges, numeric object references and other ordinary-name consumers
+still require separate identity work. Common-command selection and PL/copy
+transport now preserve raw bytes; correct labels, source-name addresses and
+common commands do not establish that all earlier consumers selected the correct
+raw object name.

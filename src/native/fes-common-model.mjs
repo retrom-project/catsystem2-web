@@ -178,12 +178,19 @@ export function setFESImageClip(instance, object, x, y, width, height) {
   markFESObjectDirty(instance, object);
   return true;
 }
-export function setFESImagePlane(instance, object, name, index) {
+export function setFESImagePlane(instance, object, nameBytes, index) {
   if (!images.has(object.nativeType)) return false;
+  if (!(nameBytes instanceof Uint8Array))
+    throw new TypeError('FES image plane requires raw object-name bytes');
   index |= 0;
-  const previous = object.planeReference;
-  if (previous?.name !== name || previous?.index !== index) {
-    object.planeReference = { name, index };
+  const previous = object.planeReference,
+    previousBytes = previous?.nameBytes;
+  if (
+    previous?.index !== index ||
+    previousBytes?.length !== nameBytes.length ||
+    !nameBytes.every((byte, at) => byte === previousBytes[at])
+  ) {
+    object.planeReference = { nameBytes: nameBytes.slice(), index };
     markFESObjectDirty(instance, object);
   }
   return true;

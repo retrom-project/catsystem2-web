@@ -2745,8 +2745,8 @@
       "status": "missing",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/copy.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "evidence": ["tests/fes-common-commands.test.mjs"],
+      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented. Normal deferred copy requests retain independent owned source nameBytes, the original source index-1 to0 rule and rectangle; this transport proof does not complete all native copy behavior.",
       "signatures": ["[obj] copy [src] [x] [y] [w] [h]"]
     },
     {
@@ -2756,8 +2756,12 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/delay.html",
       "implementation": "src/fes/object.mjs; src/motion/instance.mjs",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "The per-object uint32 delay is passed to native SUBCOMMAND MOT instances and survives checkpoints. Built-in motion builders must use the same delay; their full integration is still in progress.",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/fes-common-commands.test.mjs",
+        "tests/fes-label-bytes-default.test.mjs"
+      ],
+      "note": "The per-object uint32 delay is passed to native SUBCOMMAND MOT instances and survives checkpoints. Built-in motion builders must use the same delay; their full integration is still in progress. Normal common-command selection retains the collection nameBytes/index tuple, including decoded aliases and group counts; declaration/input/name consumers remain separate.",
       "signatures": ["[obj] delay (frame)"]
     },
     {
@@ -2927,8 +2931,8 @@
       "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/getsize.html",
       "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed.",
+      "evidence": ["tests/fes-contracts.test.mjs", "tests/fes-common-commands.test.mjs"],
+      "note": "Public contract fixture exists; native edge cases outside the documented signature are not claimed. Normal common queries preserve raw collection nameBytes and the selected signed index; query evaluation, type and output rules remain unchanged.",
       "signatures": ["[obj] getsize (vx) (vy) (vz)"]
     },
     {
@@ -3247,8 +3251,8 @@
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/pl.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row.",
+      "evidence": ["tests/fes-common-commands.test.mjs"],
+      "note": "Only a subset of the documented behavior is implemented; matching a token or recording a hint does not complete this row. Normal image PL references retain owned nameBytes and signed index, compare byte content before dirty propagation, and use byte-only normal readers; input/byKey and non-ASCII DEFINE remain separate.",
       "signatures": ["[obj] pl [pl]"]
     },
     {

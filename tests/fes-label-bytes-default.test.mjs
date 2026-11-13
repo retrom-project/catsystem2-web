@@ -49,6 +49,15 @@ const ascii = (value) => new TextEncoder().encode(value),
     ascii('.NAMEPTR\ncall NAMECOPY\nbreak\n#'),
     second,
     ascii('.NAMEPTR\ncall NAMECOPY\nbreak\n#NAMECOPY\n@ getid 53\n$54=@\nbreak\n'),
+    ascii('#'),
+    first,
+    ascii('.COMMON\ncall COMMONSTEP\nbreak\n#'),
+    second,
+    ascii(
+      '.COMMON\ncall COMMONSTEP\nbreak\n#COMMONSTEP\n@ delay (10+@)\n$52=@\nbreak\n#COMMON_GROUP\n',
+    ),
+    first,
+    ascii(' delay 21\nbreak\n'),
   );
 
 // This author owns raw NUL buffers. The legacy text view is observed only to
@@ -290,6 +299,28 @@ for (const profile of startupProfiles) {
       assert.deepEqual(h.world.fesSources.read(firstNameAddress, 2), Uint8Array.of(0x81, 0));
       assert.deepEqual(h.world.fesSources.read(secondNameAddress, 2), Uint8Array.of(0x82, 0));
       assert.equal(await namePointer(h.world, first, 0), firstNameAddress);
+      // Common commands use those same raw owners, not their lossy presentation keys.
+      c.create('SOUND', '?', 1);
+      const commonRoute = async (world, nameBytes, index) => {
+        const payload = memory(ascii('COMMON'), nameBytes, index);
+        await world.sendEngine(current.id, world.main.id, 337, 64, 0, { payload });
+        assert.equal(world.runtime.variableBank(world.main, false).get(52), index);
+        assert.equal(payload.stringReads, 0);
+      };
+      const commonDelays = (collection) => [
+        collection.lookup(first, 0).motionDelay,
+        collection.lookup(first, 1).motionDelay,
+        collection.lookup(second, 0).motionDelay,
+        collection.lookup('?', 0).motionDelay,
+      ];
+      await commonRoute(h.world, first, 1);
+      await commonRoute(h.world, second, 0);
+      assert.deepEqual(commonDelays(c), [0, 11, 10, 0]);
+      await h.world.sendEngine(current.id, h.world.main.id, 337, 0, 0, {
+        payload: memory(ascii('COMMON_GROUP')),
+      });
+      assert.deepEqual(commonDelays(c), [21, 21, 10, 0]);
+
       phase = 'jump';
       assert.equal(await root.player.notify('JUMP'), true);
       phase = 'loaded';
@@ -343,6 +374,11 @@ for (const profile of startupProfiles) {
       assert.equal(fresh.world.fesSources.used, sourceExtent);
       assert.deepEqual(fresh.world.fesSources.read(firstNameAddress, 2), Uint8Array.of(0x81, 0));
       assert.deepEqual(fresh.world.fesSources.read(secondNameAddress, 2), Uint8Array.of(0x82, 0));
+      assert.deepEqual(commonDelays(next.collection), [21, 21, 10, 0]);
+      await commonRoute(fresh.world, first, 1);
+      await commonRoute(fresh.world, second, 0);
+      assert.deepEqual(commonDelays(next.collection), [21, 11, 10, 0]);
+
       await fresh.world.sendEngine(current.id, fresh.world.main.id, 333);
       assert.equal(nextWords.get(59), 1);
       assert.equal(nextWords.get(60), 1);

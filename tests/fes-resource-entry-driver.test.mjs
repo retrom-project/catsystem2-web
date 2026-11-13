@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { hg3 } from './helpers.mjs';
 import {
   profiles,
@@ -186,7 +187,7 @@ for (const profile of profiles) {
       const copy = createEntryObject(api, 'IMAGE', 'copy', {
         ...fields,
         renderID: 8,
-        referenceRequest: { name: 'source', index: 0 },
+        referenceRequest: { nameBytes: encodeCP932('source'), index: 0 },
       });
       await api.resources.appendPending(api.collection);
       await api.resources.traverse();

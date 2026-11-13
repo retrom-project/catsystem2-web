@@ -48,8 +48,7 @@ export async function entryWorld(profile, files = {}, initialize = true) {
       cache = new FESImageCache(world, record.id),
       images = new FESImages(world, {
         cacheFor: () => cache,
-        lookup: (_owner, reference) =>
-          collection.lookup(reference.nameBytes ?? reference.name, reference.index),
+        lookup: (_owner, reference) => collection.lookup(reference.nameBytes, reference.index),
       }),
       particles = new FESParticleDriver(world),
       collection = new FESObjectCollection({

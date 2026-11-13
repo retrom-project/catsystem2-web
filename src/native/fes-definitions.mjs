@@ -320,8 +320,7 @@ export class FESDefinitionModel {
       if (has('SIZE2')) resource(instance, object, 'sizeReference', get('SIZE2'), 'sizePending');
       if (has('PL')) {
         const ref = get('PL');
-        setFESImagePlane(instance, object, ref.name, ref.index);
-        object.planeReference.nameBytes = ref.nameBytes?.slice();
+        setFESImagePlane(instance, object, ref.nameBytes, ref.index);
       }
       if (type === 1 && has('COLOR')) {
         object.color = get('COLOR') >>> 0;

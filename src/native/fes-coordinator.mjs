@@ -1196,7 +1196,7 @@ export function installFESCoordinator(world) {
       if (!cache) throw new Error('FES resource requires its owning task encoded image cache');
       return cache;
     },
-    lookup = (instance, ref) => instance.collection.lookup(ref.nameBytes ?? ref.name, ref.index);
+    lookup = (instance, ref) => instance.collection.lookup(ref.nameBytes, ref.index);
   world.imagesFES = new FESPanelImages(world, {
     cacheFor,
     lookup,

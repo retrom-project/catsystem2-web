@@ -13,6 +13,11 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { MotionTarget } from '../src/motion/target.mjs';
 import { initialMotionObject, MOTION_ABI } from '../src/motion/abi.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { FESObjectCollection } from '../src/native/fes-object-collection.mjs';
+import { createFESTypedObject } from '../src/native/fes-object-factory.mjs';
+import { FESImages, initializeFESImage } from '../src/native/fes-image-driver.mjs';
+import { fesButtonCursorPoint } from '../src/native/fes-button-navigation.mjs';
 
 function image(index, extra = {}) {
   return {
@@ -96,10 +101,11 @@ function fixture(objects = [image(0), image(1), image(2)]) {
       reference(token) {
         const match = /^(.+?)(?:\[(.*)\])?$/.exec(token);
         if (!match) return null;
-        const index = match[2] === undefined ? -1 : instance.value(match[2]);
+        const nameBytes = encodeCP932(match[1]),
+          index = match[2] === undefined ? -1 : instance.value(match[2]);
         return {
-          name: match[1],
-          index: index === -1 && collection.count(match[1]) <= 1 ? 0 : index,
+          nameBytes,
+          index: index === -1 && collection.count(nameBytes) <= 1 ? 0 : index,
         };
       },
       bitmap: (object) => object.bitmap ?? null,
@@ -107,7 +113,7 @@ function fixture(objects = [image(0), image(1), image(2)]) {
     },
     commands = new FESCommonCommands(instance, services),
     command = (verb, args = [], index = -1, context) =>
-      commands.command(verb, { name: 'items', index }, args, context);
+      commands.command(verb, { nameBytes: encodeCP932('items'), index }, args, context);
   return {
     instance,
     collection,
@@ -267,13 +273,13 @@ test('deferred copy/reference/base options preserve source lookup and raw table 
   await f.command('copy', ['source', '(#0)++', '2', '3', '4']);
   assert.equal(f.bank.get(0), 1);
   assert.deepEqual(f.objects[0].copyRequest, {
-    name: 'source',
+    nameBytes: encodeCP932('source'),
     index: 0,
     rectangle: Int32Array.of(0, 2, 3, 4),
   });
   assert.equal(f.objects[1].copyRequest, undefined, 'CIMAGE has no copy branch');
   await f.command('pl', ['planes']);
-  assert.deepEqual(f.objects[0].planeReference, { name: 'planes', index: -1 });
+  assert.deepEqual(f.objects[0].planeReference, { nameBytes: encodeCP932('planes'), index: -1 });
   const table = new FESImageTable(17, Uint8Array.of(0x81, 0x9b, 44, 120, 44, 102, 111, 111));
   f.objects[0].nativeType = 17;
   f.objects[0].table = table;
@@ -372,3 +378,120 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       0xaabbccdd,
     );
   });
+
+test('common byte references preserve raw owners, deferred planes and copies through fresh restore', async () => {
+  const makeCollection = () =>
+      new FESObjectCollection({
+        create: (identity) =>
+          createFESTypedObject(identity, { initializeImage: initializeFESImage }),
+      }),
+    collection = makeCollection(),
+    first = Uint8Array.of(0x81),
+    second = Uint8Array.of(0x82),
+    planeFirst = Uint8Array.of(112, 0x81),
+    planeSecond = Uint8Array.of(112, 0x82),
+    left = collection.create('BUTTON', first, 2, { enqueue: false }),
+    right = collection.create('IMAGE', second, 1, { enqueue: false })[0],
+    bait = collection.create('IMAGE', '?', 2, { enqueue: false }),
+    firstPlanes = collection.create('PLANE', planeFirst, 2, { enqueue: false }),
+    secondPlanes = collection.create('PLANE', planeSecond, 2, { enqueue: false }),
+    instance = { collection, objects: collection.objects, byKey: collection.byKey, value: Number },
+    writes = [],
+    selector = (nameBytes, index) => ({
+      name: new TextDecoder('shift_jis').decode(nameBytes),
+      nameBytes,
+      index,
+    }),
+    images = new FESImages(
+      { graphics: { images: {} } },
+      {
+        cacheFor: () => {
+          throw new Error('Pure reference lookup must not read resources');
+        },
+        lookup: (owner, ref) => owner.collection.lookup(ref.nameBytes, ref.index),
+      },
+    );
+  let reference = { nameBytes: planeFirst.slice(), index: 0 };
+  const commands = new FESCommonCommands(instance, {
+    collection,
+    motions: { add() {}, busy: () => false, stop() {} },
+    writeGlobal: (index, value) => writes.push([index, value]),
+    reference: () => reference,
+  });
+  Object.assign(left[0], { x: 2, y: 3, width: 7, height: 5 });
+  Object.assign(left[1], { width: 8, height: 6 });
+  for (const object of bait) Object.assign(object, { width: 99, height: 98 });
+  Object.assign(firstPlanes[0], { x: 100, y: 200, planeProperty: 1 });
+  Object.assign(secondPlanes[0], { x: 300, y: 400, planeProperty: 1 });
+  Object.assign(secondPlanes[1], { x: 500, y: 600, planeProperty: 1 });
+  await commands.command('getsize', selector(first, 1), ['3', '4', '5']);
+  assert.deepEqual(writes, [
+    [3, 8],
+    [4, 6],
+    [5, 0],
+  ]);
+  await commands.command('delay', selector(first, -1), ['23']);
+  assert.deepEqual(
+    [left[0].motionDelay, left[1].motionDelay, right.motionDelay, bait[0].motionDelay],
+    [23, 23, 0, 0],
+  );
+  await commands.command('pl', selector(first, 0), ['plane']);
+  assert.deepEqual(left[0].planeReference, { nameBytes: planeFirst, index: 0 });
+  assert.notEqual(left[0].planeReference.nameBytes, reference.nameBytes);
+  reference.nameBytes[0] = 63;
+  assert.deepEqual(left[0].planeReference.nameBytes, planeFirst);
+  assert.equal(images.find(instance, left[0].planeReference), firstPlanes[0]);
+  assert.deepEqual(fesButtonCursorPoint(instance, left[0]), [102, 203]);
+  left[0].dirty = false;
+  reference = { nameBytes: planeFirst.slice(), index: 0 };
+  await commands.command('pl', selector(first, 0), ['plane']);
+  assert.equal(left[0].dirty, false, 'Equal bytes from another buffer keep the previous plane');
+  reference = { nameBytes: planeSecond.slice(), index: 0 };
+  await commands.command('pl', selector(first, 0), ['plane']);
+  assert.equal(left[0].dirty, true, 'A decoded alias still changes the plane bytes');
+  assert.deepEqual(fesButtonCursorPoint(instance, left[0]), [302, 403]);
+  left[0].dirty = false;
+  reference = { nameBytes: planeSecond.slice(), index: 1 };
+  await commands.command('pl', selector(first, 0), ['plane']);
+  assert.equal(left[0].dirty, true, 'The same name with another signed index changes the plane');
+  assert.deepEqual(fesButtonCursorPoint(instance, left[0]), [502, 603]);
+  reference = { nameBytes: planeSecond.slice(), index: -1 };
+  await commands.command('pl', selector(first, 0), ['plane']);
+  assert.equal(left[0].planeReference.index, -1);
+  assert.equal(images.find(instance, left[0].planeReference), null);
+  reference = { nameBytes: planeSecond.slice(), index: 1 };
+  await commands.command('pl', selector(first, 0), ['plane']);
+  reference = { nameBytes: second.slice(), index: -1 };
+  await commands.command('copy', selector(first, -1), ['source', '1', '2', '3', '4']);
+  for (const object of left) {
+    assert.deepEqual(object.copyRequest, {
+      nameBytes: second,
+      index: 0,
+      rectangle: Int32Array.of(1, 2, 3, 4),
+    });
+    assert.notEqual(object.copyRequest.nameBytes, reference.nameBytes);
+    assert.equal(images.find(instance, object.copyRequest), right);
+  }
+  assert.notEqual(left[0].copyRequest.nameBytes, left[1].copyRequest.nameBytes);
+  assert.notEqual(left[0].copyRequest.rectangle, left[1].copyRequest.rectangle);
+  reference.nameBytes[0] = 63;
+  left[0].copyRequest.nameBytes[0] = 63;
+  assert.deepEqual(left[1].copyRequest.nameBytes, second);
+  reference = { nameBytes: second.slice(), index: -1 };
+  await commands.command('copy', selector(first, -1), ['source', '1', '2', '3', '4']);
+  const snapshot = collection.snapshot(),
+    fresh = makeCollection();
+  fresh.restore(structuredClone(snapshot));
+  const restored = fresh.lookup(first, 0),
+    freshInstance = { collection: fresh, objects: fresh.objects, byKey: fresh.byKey };
+  assert.deepEqual(restored.planeReference, { nameBytes: planeSecond, index: 1 });
+  assert.deepEqual(restored.copyRequest, {
+    nameBytes: second,
+    index: 0,
+    rectangle: Int32Array.of(1, 2, 3, 4),
+  });
+  assert.notEqual(restored.planeReference.nameBytes, left[0].planeReference.nameBytes);
+  assert.notEqual(restored.copyRequest.nameBytes, left[0].copyRequest.nameBytes);
+  assert.equal(images.find(freshInstance, restored.copyRequest), fresh.lookup(second, 0));
+  assert.deepEqual(fesButtonCursorPoint(freshInstance, restored), [502, 603]);
+});

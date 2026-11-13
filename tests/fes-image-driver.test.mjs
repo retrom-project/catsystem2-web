@@ -111,10 +111,15 @@ for (const profile of profiles) {
       const { api } = await setupImages(world),
         collection = new FESObjectCollection({ create: (identity) => ({ ...identity }) }),
         [first, second] = collection.create('IMAGE', 'group', 2);
-      api.images.lookup = (_, reference) =>
-        collection.lookup(reference.nameBytes ?? reference.name, reference.index);
-      assert.equal(api.images.find(api.instance, { name: 'group', index: -1 }), null);
-      assert.equal(api.images.find(api.instance, { name: 'group', index: 0 }), first);
+      api.images.lookup = (_, reference) => collection.lookup(reference.nameBytes, reference.index);
+      assert.equal(
+        api.images.find(api.instance, { nameBytes: encodeCP932('group'), index: -1 }),
+        null,
+      );
+      assert.equal(
+        api.images.find(api.instance, { nameBytes: encodeCP932('group'), index: 0 }),
+        first,
+      );
       assert.equal(
         api.images.find(api.instance, { nameBytes: encodeCP932('group'), index: 1 }),
         second,
@@ -463,12 +468,16 @@ for (const profile of profiles) {
         reference = imageObject(api, 2, 'reference', {
           renderID: 2,
           disp: true,
-          referenceRequest: { name: 'source', index: 0 },
+          referenceRequest: { nameBytes: encodeCP932('source'), index: 0 },
         }),
         copied = imageObject(api, 2, 'copied', {
           renderID: 3,
           disp: true,
-          copyRequest: { name: 'source', index: 0, rectangle: Int32Array.of(0, 0, 2, 1) },
+          copyRequest: {
+            nameBytes: encodeCP932('source'),
+            index: 0,
+            rectangle: Int32Array.of(0, 0, 2, 1),
+          },
         });
       setFESImageFile(source, 'picture');
       await syncImages(api);
@@ -479,7 +488,7 @@ for (const profile of profiles) {
       assert.deepEqual(await b.pixels(), new Uint8ClampedArray(pixels));
       assert.deepEqual([...(await c.pixels())], [77, 88, 99, 255, 110, 121, 132, 128]);
       const old = reference.nativeImageHandle;
-      reference.referenceRequest = { name: 'missing', index: 0 };
+      reference.referenceRequest = { nameBytes: encodeCP932('missing'), index: 0 };
       reference.imageChanged = true;
       await syncImages(api);
       assert.equal(reference.nativeImageHandle, old);
@@ -606,7 +615,7 @@ for (const profile of profiles) {
           disp: true,
           x: 1.25,
           y: 2.75,
-          planeReference: { name: 'plane', index: 0 },
+          planeReference: { nameBytes: encodeCP932('plane'), index: 0 },
         }),
         plane = {
           baseZ: 0,

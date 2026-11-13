@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { dataWorld } from './data-world.mjs';
+import { encodeCP932 } from '../../src/kcs/strings.mjs';
+import { fesByteView } from '../../src/fes/tokens.mjs';
 import { FESImageCache } from '../../src/native/fes-image-cache.mjs';
 import { FESInput } from '../../src/native/fes-input.mjs';
 import { FESImages, initializeFESImage } from '../../src/native/fes-image-driver.mjs';
@@ -47,11 +49,11 @@ export async function imageWorld(profile, files = {}, initialize = true) {
         cacheFor: () => cache,
         lookup: (instance, reference) => {
           if (reference.index === -1) return null;
-          return (
-            instance.byKey.get(`${reference.name}[${reference.index}]`) ??
-            (reference.index === 0 ? instance.byKey.get(reference.name) : null) ??
-            null
-          );
+          const name = fesByteView(reference.nameBytes),
+            find = (token) =>
+              [...instance.byKey].find(([key]) => fesByteView(encodeCP932(key)) === token)?.[1] ??
+              null;
+          return find(`${name}[${reference.index}]`) ?? (reference.index === 0 ? find(name) : null);
         },
       });
     player.nativeInput = input;

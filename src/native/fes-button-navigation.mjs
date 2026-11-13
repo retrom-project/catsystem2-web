@@ -113,7 +113,7 @@ export function fesButtonCursorPoint(instance, object) {
   x = (x + (object.auxiliaryWidth | 0)) | 0;
   y = (y + (object.auxiliaryHeight | 0)) | 0;
   const ref = object.planeReference,
-    plane = ref ? instance.collection.lookup(ref.nameBytes ?? ref.name, ref.index) : null;
+    plane = ref ? instance.collection.lookup(ref.nameBytes, ref.index) : null;
   if ((plane?.nativeType === 3 || plane?.nativeType === 4) && plane.planeProperty) {
     const point = fesPlanePosition(instance, plane);
     x = (x + truncateFloat32(point[0])) | 0;

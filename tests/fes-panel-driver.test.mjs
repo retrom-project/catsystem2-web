@@ -513,7 +513,7 @@ for (const profile of profiles) {
       Object.assign(plane, { x: 100, y: 200, vramX: 3, vramY: 4, width: 20, height: 15 });
       api.instance.objects.push(plane);
       api.instance.byKey.set('plane', plane);
-      object.planeReference = { name: 'plane', index: 0 };
+      object.planeReference = { nameBytes: encodeCP932('plane'), index: 0 };
       setFESPanelFile(object, 'authored');
       const part = fesPanelPart(object, 0, true);
       Object.assign(part, {

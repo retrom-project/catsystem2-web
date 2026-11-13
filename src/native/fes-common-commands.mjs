@@ -107,7 +107,7 @@ export class FESCommonCommands {
     this.words[2] = 0;
     return this.words;
   }
-  async command(verb, { name, index }, args, context = {}) {
+  async command(verb, { nameBytes, index }, args, context = {}) {
     if (!FES_COMMON_COMMANDS.has(verb)) return undefined;
     index |= 0;
     const { collection, instance } = this,
@@ -115,9 +115,9 @@ export class FESCommonCommands {
         args[at] === undefined
           ? fallback
           : (context.argument ? context.argument(at) : instance.value(args[at])) | 0,
-      end = index === -1 ? collection.count(name) : index + 1,
+      end = index === -1 ? collection.count(nameBytes) : index + 1,
       start = index === -1 ? 0 : index,
-      lookup = (at) => collection.lookup(name, at);
+      lookup = (at) => collection.lookup(nameBytes, at);
 
     if (['getpos', 'getpos2', 'getsize', 'getbase', 'getoffset'].includes(verb)) {
       if (index === -1) return 0;
@@ -248,7 +248,7 @@ export class FESCommonCommands {
           if (!setFESGraphicalSize(object, ...numbers)) return 0;
           break;
         case 'pl':
-          if (!setFESImagePlane(instance, object, reference.name, reference.index)) return 0;
+          if (!setFESImagePlane(instance, object, reference.nameBytes, reference.index)) return 0;
           break;
         case 'refparentpl':
           setFESImageParentPlane(object, numbers[0]);
@@ -258,7 +258,11 @@ export class FESCommonCommands {
           break;
         case 'copy':
           if (copyTypes.has(object.nativeType)) {
-            object.copyRequest = { ...reference, rectangle: Int32Array.from(numbers) };
+            object.copyRequest = {
+              nameBytes: reference.nameBytes.slice(),
+              index: reference.index,
+              rectangle: Int32Array.from(numbers),
+            };
             object.imageChanged = true;
           }
           break;

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { FESObject } from '../src/fes/object.mjs';
 import { FESObjectCollection } from '../src/native/fes-object-collection.mjs';
 import { createFESTypedObject, initializeFESPlane } from '../src/native/fes-object-factory.mjs';
@@ -316,7 +317,7 @@ test('PARENT resolves once before type application; PL and external plane refere
   await f.model.row(['PARENT', 'PL'], 'g', ['parent[1]', 'parent']);
   for (const image of images) {
     assert.equal(image.parentHandle, parents[1].handle);
-    assert.equal(image.planeReference.name, 'parent');
+    assert.deepEqual(image.planeReference.nameBytes, encodeCP932('parent'));
     assert.equal(image.planeReference.index, -1);
     assert.equal(image.parentPlaneID, 0);
   }

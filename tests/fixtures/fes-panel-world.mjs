@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { dataWorld } from './data-world.mjs';
+import { encodeCP932 } from '../../src/kcs/strings.mjs';
+import { fesByteView } from '../../src/fes/tokens.mjs';
 import { FESImageCache } from '../../src/native/fes-image-cache.mjs';
 import { FESInput } from '../../src/native/fes-input.mjs';
 import { FESPanelImages } from '../../src/native/fes-panel-driver.mjs';
@@ -51,12 +53,12 @@ export async function imageWorld(profile, files = {}, initialize = true, options
       images = new FESPanelImages(world, {
         cacheFor: () => cache,
         lookup: (owner, reference) => {
-          const index = reference.index === -1 ? 0 : reference.index;
-          return (
-            owner.byKey.get(`${reference.name}[${index}]`) ??
-            (index === 0 ? owner.byKey.get(reference.name) : null) ??
-            null
-          );
+          const index = reference.index === -1 ? 0 : reference.index,
+            name = fesByteView(reference.nameBytes),
+            find = (token) =>
+              [...owner.byKey].find(([key]) => fesByteView(encodeCP932(key)) === token)?.[1] ??
+              null;
+          return find(`${name}[${index}]`) ?? (index === 0 ? find(name) : null);
         },
         snapshotMotion(_instance, object) {
           object.motionTarget ??= createFESMotionTarget(world.motionLibrary, instance, object);
