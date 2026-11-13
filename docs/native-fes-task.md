@@ -609,9 +609,9 @@ Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
 This bounded correction covers only normal default message9 key0/1. Direction
-4..7 keeps its existing resource traversal without another pass. Other key,
-release, scroll and TOUCH post-callback tails remain separate uncompleted
-boundaries; the direct JS-authored FES input API is unchanged.
+4..7 keeps its existing resource traversal without another pass. Other key, scroll, direction-release and TOUCH post-callback tails remain
+separate uncompleted boundaries; the direct JS-authored FES input API is
+unchanged.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
@@ -642,3 +642,36 @@ does not rerun the setter, source getter or bank/SCRIPT stages.
 Only btnsimulate in the grouped drag/dragimg/draghelp/btnsimulate contract is
 closed here, so that row stays partial. The other grouped names, automoveex and
 raw23 remain separate incomplete work; no unregistered ABI is enabled.
+
+Normal message10/key0/1 RELEASE_L/R follows the complete62CC90/504110
+receivers. It clears only the FES owner source word before checking sleeping.
+Sleeping sends unhandled94 and returns0 without a mouse query, resource pass
+or input synchronization. Normal delivery refreshes the mouse, then reads the
+existing pressed reference, independently of the current active reference. The
+pressed reference remains unchanged after this operation. The interpreter's
+separate inputSource value is not reset by this owner-word write.
+
+The actual RELEASE callback precedes owning Top Input145 flags0 (SDK raw143)
+when handled; unhandled uses94 instead. Both normal paths then traverse the
+current resource FIFO and run the existing input synchronization before
+returning0. Input145 retains its existing region-active/previous-coordinate/
+cursor-refresh effects; it does not replace the FES reference or introduce
+UNFOCUS or a warp. The same live call entry reaches the resource drivers, so
+Game EFK FILE/Play is consumed inside this Input callback.
+
+A NULL pressed reference still calls the existing native-event boundary and
+performs its RELEASE field writes. A nonNULL saved name that is no longer in
+the collection follows the original early false return before those writes.
+That narrow missing-name check belongs only to this release consumer; the
+general Player missing-name diagnostic is unchanged. Real pointer-leave and
+lockactive/delete followed by ordinary Graph delivery cover these distinct
+paths in both frozen ABIs. The sleeping case is separately exercised through
+the legal FES message boundary because normal sleeping input regions are masked.
+
+Same-player/root/runtime/task guards cancel later work after each asynchronous
+step or a closed-owner rejection; live errors propagate. Completed callback
+writes and issued Input145 effects remain. Settled fresh World restores the
+existing pressed reference and resource owners without replaying source or
+callbacks. No state, queue, checkpoint field or ABI capability is added. Only
+normal key0/1 release is covered; direction-release and the other event tails
+remain independent incomplete leaves.

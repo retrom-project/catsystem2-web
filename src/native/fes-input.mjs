@@ -433,6 +433,53 @@ export class FESInput {
       if (live()) throw error;
     }
   }
+  async consumeRelease(sender, keyIndex, context) {
+    const player = this.player,
+      instance = this.instance,
+      runtime = instance.runtime,
+      live = () =>
+        this.player === player &&
+        this.instance === instance &&
+        !runtime.closed &&
+        this.record.state !== 'releasing' &&
+        this.world.objects.objects.get(this.record.id) === this.record;
+    if (!live()) return 0;
+    this.state.source = 0;
+    try {
+      if (this.state.sleeping) {
+        await this.propagation(sender, false);
+        return 0;
+      }
+      await this.updateMouse();
+      if (!live()) return 0;
+      const key = this.state.pressed,
+        handled =
+          key !== null && !instance.byKey.has(key)
+            ? false
+            : await player.nativeEvent(key, keyIndex ? 'RELEASE_R' : 'RELEASE_L');
+      if (!live()) return 0;
+      await player.flush();
+      if (!live()) return 0;
+      if (handled) {
+        const top = this.world.engineMessages.closestTop(this.record),
+          inputID = top?.implementation.input;
+        if (this.world.objects.objects.get(inputID)?.kind !== 11)
+          throw new Error('FES release requires its owning Top Input task');
+        await this.world.engineMessages.dispatch(inputID, this.record.id, 145, 0, 0, {
+          flags: 0,
+          executorEntry: context.executorEntry,
+        });
+      } else await this.propagation(sender, false);
+      if (!live()) return 0;
+      await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
+      if (!live()) return 0;
+      await this.sync();
+      return 0;
+    } catch (error) {
+      if (live()) throw error;
+      return 0;
+    }
+  }
   async consumePush(sender, keyIndex, context) {
     const player = this.player,
       instance = this.instance,
@@ -702,6 +749,8 @@ export class FESInput {
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
     if (message === 9 && this.instance.runtime && (l === 0 || l === 1))
       return this.consumePush(sender, l, context);
+    if (message === 10 && this.instance.runtime && (l === 0 || l === 1))
+      return this.consumeRelease(sender, l, context);
     await this.updateMouse();
     switch (message) {
       case 64: {
