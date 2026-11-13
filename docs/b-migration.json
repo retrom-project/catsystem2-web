@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 254, "oracle": 149, "differential": 67 },
+    "counts": { "js": 255, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -112,6 +112,7 @@
         "tests/fes-particle-driver.test.mjs",
         "tests/fes-plane-driver.test.mjs",
         "tests/fes-platform-default.test.mjs",
+        "tests/fes-preload-default.test.mjs",
         "tests/fes-push-resource-tail.test.mjs",
         "tests/fes-push-source-order.test.mjs",
         "tests/fes-react-default.test.mjs",
@@ -49272,7 +49273,7 @@
     },
     {
       "file": "src/fes/program.mjs",
-      "sourceSha256": "ebf2d1dedf291ba281ad8de03a14693eb50b3cb608eaf86b97d1cf4443a0e59c",
+      "sourceSha256": "7baae97c6ff14bb89b0c025dcac244354aa01c9ceb17bca0c8c7661a4949c63b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52449,7 +52450,7 @@
     },
     {
       "file": "src/native/fes-task.mjs",
-      "sourceSha256": "5723c3d17a57a2ff4824152fcee6e89533e2c70cee0db04aa1fae807c0352bba",
+      "sourceSha256": "2fe2aee3a7c4c50ebacbdc442f520c6c02bf900779d70a3af11d41e2d9c592b0",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52459,28 +52460,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 77,
+          "line": 79,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 94,
+          "line": 96,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 107,
+          "line": 109,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "JS FES task/interpreter lifecycle and explicit parent-bank, Top sound/input and child FES/KCS messages. Ordinary task factories and current checkpoints retain the single World authorities."
         },
         {
-          "line": 434,
+          "line": 448,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "traced",

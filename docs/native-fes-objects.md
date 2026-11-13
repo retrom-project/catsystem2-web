@@ -91,7 +91,8 @@ resident map contains only explicitly inserted or preloaded descriptors. A new
 message350 key retains one reference; a duplicate leaves that first pointer and
 its count unchanged. `preload(name)` reads through the existing image category
 and native search mode3 before attempting first insertion, even for duplicate
-names. This service is not yet connected to the `#PRELOAD` source section.
+names. Successful default message332 connects the real whole-line `#PRELOAD`
+source getter to this service after definitions and before resource entries.
 
 `data(name)` grants one caller-owned reference: a resident hit increments that
 pointer, while a lazy miss reads into a separate descriptor without inserting it
@@ -122,7 +123,9 @@ resident reinsertion or image selection. Closing an interpreter releases its
 objects but preserves the task's resident map; final task close releases each
 map reference once. A caller still holding a temporary reference remains its
 owner until it returns that reference. Short ordinary World/kind34/default FES
-cases cover both registered ABIs; this does not complete source `#PRELOAD`.
+cases cover both registered ABIs. Source `#PRELOAD` performs repeated nth scans
+through the same bound string bank; its source and overflow boundaries are
+specified in the native FES task protocol.
 
 ## Whole-selection common commands
 

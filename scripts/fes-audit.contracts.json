@@ -3805,11 +3805,14 @@
       "id": "fes.syntax.PRELOAD",
       "domain": "fes-syntax",
       "names": ["#PRELOAD"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/code/h_preload.html",
-      "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Image metadata is preloaded by token scan; native explicit texture residency/destruction lifetime is incomplete.",
+      "implementation": "src/native/fes-task.mjs",
+      "evidence": [
+        "tests/fes-preload-default.test.mjs",
+        "tests/fes-image-cache-owner-default.test.mjs"
+      ],
+      "note": "Registered SDK74/Game76 ordinary World/kind34 message332 consumes whole PRELOAD byte lines after definitions and before resource entries. Each nth scan restarts at raw0 including headers and EOF, expands the one bound StringBank without SCRIPT, then reads actual image-category/mode3 resources before first-win Task residency insertion. Interpreter replacement preserves residency; fresh restore does not replay source or bank expansion. Original scratch/destination overflow domains are diagnosed; this is encoded-data residency, not GPU texture preloading. Unregistered versions and SDK JS VM are not enabled.",
       "signatures": []
     },
     {

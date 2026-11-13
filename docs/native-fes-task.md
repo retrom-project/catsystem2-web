@@ -133,8 +133,40 @@ frame maps retain their encoded descriptor in existing object state. Fresh
 restore neither rereads held bytes nor inserts them into residency. Closing an
 interpreter unregisters its private context before releasing its objects;
 closing its task then releases resident-map references, followed by base/child
-disposal. Unsettled source I/O rejects a checkpoint or cache close. The raw
-`#PRELOAD` source-section hook remains a separate pending leaf. Initialization also queries and retains the Top's sound
+disposal. Unsettled source I/O rejects a checkpoint or cache close.
+
+Successful message332 initializes definitions, then consumes the source's real
+`#PRELOAD` section before allocating resource entries. Each nth getter starts
+at raw section index0, including the section header itself, and repeats this
+scan even for its final EOF attempt. A header requires raw byte0 to be `#`;
+prepared leading spaces do not create a section. Repeated headers append to the same section.
+Plain input uses the existing source cleanup; prepared input preserves each
+whole byte line, interior blank, space and tab, without token or quote reduction.
+A terminal newline creates no synthetic trailing row.
+
+The load captures the actual already-bound string bank, without creating one.
+Every visited raw row expands against that same bank's current bytes before
+checking whether byte0 is `#`; an expanded-empty row is still a row. This getter
+uses neither the argument/SCRIPT service nor language or macro replacement.
+Each selected CString passes through the existing non-text resource-name ABI
+and `FESImageCache.preload`: real image-category search mode3 reads precede
+first-win insertion, including duplicate names. Empty files can own a zero-size
+descriptor; missing files do not terminate the section.
+
+The native getter's512-byte scratch receives a direct bank expansion with two
+NUL bytes (at most510 semantic bytes), or a no-bank copy with one NUL (at most511).
+It does not copy the raw source into that scratch before expansion, so a longer
+raw line can safely shrink through its bank substitutions. The selected filename
+then copies one NUL into its260-byte destination (at most259 semantic bytes).
+Crossing those original unbounded-write domains is an explicit diagnostic,
+without truncation, rollback of earlier reads or a new general resource limit.
+
+These raw rows stay in the existing program checkpoint; there is no PRELOAD
+cursor, replay flag or second residency owner. Reinitializing an interpreter
+preserves its Task map; an explicit new332 load repeats the source reads, while
+fresh restore rebuilds held/current/map references without source or bank replay.
+This contract covers the registered SDK74 and Game76 default FES paths; it does
+not enable the separate SDK JavaScript VM or unregistered versions. Initialization also queries and retains the Top's sound
 receiver ID (game 35, SDK 33). Sound disposal routes to that saved ID even when
 the Top has already released its sound task; queries still require a written
 output word.

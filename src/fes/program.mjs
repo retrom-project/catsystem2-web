@@ -15,6 +15,29 @@ export function includeNames(source, { prepared = false, tokens = tokenizeFESByt
   return result;
 }
 
+export function fesPreloadLine(lines, index, expand) {
+  if (!Number.isInteger(index) || index < 0)
+    throw new RangeError('FES PRELOAD index must be a nonnegative integer');
+  let selected = -1;
+  for (const line of lines) {
+    const value = expand ? expand(line) : line;
+    if (!(value instanceof Uint8Array))
+      throw new TypeError('FES PRELOAD string-bank expansion must return bytes synchronously');
+    const bytes = fesSourceBytes(value);
+    // The bank writes two NUL bytes; the no-bank copy writes one. The raw
+    // source is passed by pointer, without first copying it into this scratch.
+    if (bytes.length + (expand ? 2 : 1) > 512)
+      throw new RangeError('FES PRELOAD expanded line exceeds its 512-byte scratch');
+    if (bytes[0] === 35) continue;
+    if (++selected === index) {
+      if (bytes.length >= 260)
+        throw new RangeError('FES PRELOAD filename exceeds its 260-byte destination');
+      return new Uint8Array(bytes);
+    }
+  }
+  return null;
+}
+
 export function parseProgram(
   source,
   { prepared = false, include, tokens = tokenizeFESByteLine } = {},
@@ -35,6 +58,9 @@ export function parseProgram(
     program.sources.push({ bytes: fesSourceBytes(source).slice(), prepared: isPrepared });
     const lines = isPrepared ? splitFESLines(source) : prepareFESSource(source, { tokens }),
       result = [];
+    // Native splitting does not create a final empty line after a terminal
+    // newline. Prepared interior empty lines remain real section entries.
+    if (isPrepared && lines.at(-1)?.length === 0) lines.pop();
     let inserting = false;
     for (const bytes of lines) {
       const line = fesByteView(bytes);
@@ -58,6 +84,10 @@ export function parseProgram(
   }
   for (const bytes of expand(fesSourceBytes(source), prepared)) {
     const line = fesByteView(bytes);
+    if (section === 'preload' && bytes[0] !== 35) {
+      program.preload.push(new Uint8Array(bytes));
+      continue;
+    }
     if (!line || line.startsWith(';')) continue;
     const raw = tokens(bytes);
     if (!raw.every((token) => token instanceof Uint8Array))
@@ -65,7 +95,7 @@ export function parseProgram(
     const [first, ...words] = raw,
       head = first === undefined ? '' : fesNarrowText(first);
     if (!head) continue;
-    if (head.startsWith('#')) {
+    if (bytes[0] === 35 && head.startsWith('#')) {
       const label = head.slice(1);
       switch (label) {
         case 'INCLUDE':
@@ -84,6 +114,7 @@ export function parseProgram(
           break;
         case 'PRELOAD':
           section = 'preload';
+          program.preload.push(new Uint8Array(bytes));
           break;
         case 'SUBCOMMAND':
           section = 'subcommand';
@@ -108,7 +139,6 @@ export function parseProgram(
     } else if (section === 'object')
       current.rows.push({ target: first, values: words, source: bytes });
     else if (section === 'block') current.push(bytes);
-    else if (section === 'preload') program.preload.push(first);
     else if (section === 'subcommand')
       program.subcommands[fesNarrowText(words[0])] = { type: head, words: words.slice(1) };
     else if (section === 'keyblock') {

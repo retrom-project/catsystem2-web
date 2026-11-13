@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { FESPlayer } from '../fes/player.mjs';
+import { fesPreloadLine } from '../fes/program.mjs';
+import { fesNarrowText } from '../fes/tokens.mjs';
 import { FESCoordinator } from './fes-coordinator.mjs';
 import { FESImageCache } from './fes-image-cache.mjs';
 import { FESInput } from './fes-input.mjs';
@@ -135,6 +137,18 @@ export function createNativeFESTask(world, record) {
       this.player.root.nativeDictionary = this.nativeDictionary;
       this.player.root.runtimeID = record.id;
       this.player.root.variableBank = record.context.variableBank;
+      const bank = record.context.stringBank
+        ? world.runtime.handles.get(record.context.stringBank, 'string-bank')
+        : null;
+      for (let index = 0; ; index++) {
+        const bytes = fesPreloadLine(
+          this.player.root.program.preload,
+          index,
+          bank ? (line) => bank.expandBytes(line) : undefined,
+        );
+        if (bytes === null) break;
+        await imageCacheModel.preload(fesNarrowText(bytes));
+      }
       record.exitCode = -1;
       if (this.surface !== null) world.graphics.bindFES(this.surface, this.player, record.id);
       await world.graphics.initializeFES(record, this.player);
