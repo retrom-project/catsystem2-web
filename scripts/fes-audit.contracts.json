@@ -2164,11 +2164,11 @@
       "id": "fes-extension.automoveex",
       "domain": "fes-extension",
       "names": ["automoveex"],
-      "status": "missing",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/download",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Observed engine extension; no validated pointer restoration/coordinate contract.",
+      "implementation": "src/native/fes-coordinator.mjs",
+      "evidence": ["tests/fes-automoveex-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Frozen74/76 default wrappers require raw numeric X/Y, optionally copy frames (default8), preserve signed-low16 OR packing and enqueue return0 in the existing FIFO. The dequeue-time autocur gate reaches owning Top Input125, the unique savedMouse writer and Input137 with copied words; actual138 viewport/tick behavior stays authoritative. Both registered profiles cover evaluate-once/missing operands, packed negative X, raw frame bits, no forced flush and the current gate. Ordinary automove XY/w4 and restoremove remain unchanged; unknown slots and unregistered ABIs stay disabled.",
       "signatures": []
     },
     {

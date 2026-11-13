@@ -488,6 +488,30 @@ export class FESCoordinator {
     }
     return 0;
   }
+  autoMoveEx(args) {
+    const values = [];
+    for (let at = 0; at < 3; at++) {
+      if (args[at] === undefined) {
+        if (at < 2) return 0;
+        values.push(8);
+        break;
+      }
+      const bytes = nativeDataString(this.instance.argumentBytes(args[at]));
+      if (bytes.length >= 2560)
+        throw new RangeError('FES automoveex operand exceeds its 2560-byte temporary');
+      values.push(evaluate(fesNarrowText(bytes), this.instance) | 0);
+    }
+    // Each original coordinate load sign-extends its low word before the OR.
+    // A negative X therefore also sets bits in the packed Y half.
+    const x = (values[0] << 16) >> 16,
+      y = (values[1] << 16) >> 16;
+    this.pendingRecords.push({
+      operation: 'auto-move-ex',
+      packed: ((y << 16) | x) >>> 0,
+      frames: values[2],
+    });
+    return 0;
+  }
   restoreMove() {
     this.pendingRecords.push({ operation: 'restore-move' });
     return 0;
@@ -515,6 +539,8 @@ export class FESCoordinator {
       else if (record.operation === 'react') await this.instance.player.nativeInput.consumeReact();
       else if (record.operation === 'auto-move')
         await this.instance.player.nativeInput.consumeAutoMove(record);
+      else if (record.operation === 'auto-move-ex')
+        await this.instance.player.nativeInput.consumeAutoMoveEx(record);
       else if (record.operation === 'restore-move')
         await this.instance.player.nativeInput.consumeRestoreMove();
       else if (record.operation === 'button-simulate')

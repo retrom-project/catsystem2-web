@@ -324,6 +324,12 @@ export class FESInput {
     }
   }
   async consumeAutoMove({ x, y }) {
+    return this.consumeAutoMovePoint(((x & 65535) | ((y & 65535) << 16)) >>> 0, 4);
+  }
+  async consumeAutoMoveEx({ packed, frames }) {
+    return this.consumeAutoMovePoint(packed, frames);
+  }
+  async consumeAutoMovePoint(packed, frames) {
     const player = this.player,
       instance = this.instance,
       runtime = instance.runtime,
@@ -357,14 +363,9 @@ export class FESInput {
       });
       if (!live()) return;
       if (written !== 3) throw new Error('FES automove requires both native Input125 outputs');
-      await this.world.engineMessages.dispatch(
-        inputID,
-        this.record.id,
-        137,
-        4,
-        ((x & 65535) | ((y & 65535) << 16)) >>> 0,
-        { flags: 0 },
-      );
+      await this.world.engineMessages.dispatch(inputID, this.record.id, 137, frames, packed, {
+        flags: 0,
+      });
     } catch (error) {
       if (live()) throw error;
     }

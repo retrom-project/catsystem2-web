@@ -598,6 +598,27 @@ outputs are explicit errors, never fabricated zeroes. Local collection of this
 call's outputs is transient; there is one checkpointed saved point, separate
 from player.mouse and script _MOUSE_X_/_MOUSE_Y_.
 
+Normal automoveex uses the complete frozen781A40/61AC20 wrappers. X and Y are
+required and run their bank/SCRIPT getter and raw integer evaluator once in
+order. Missing X does no work; missing Y preserves X's completed evaluation
+without queuing. Optional frames defaults to8; a supplied value retains its
+int32 word without clamping. The integer evaluator does not remove a trailing
+coordinate-unit `%`. The wrapper copies both signed low16 coordinates, packs
+`(signedY << 16) | signedX` and queues that word with frames in the same FIFO
+(Game action30/SDK33), returning0 without a forced flush. In particular, negative
+X can set bits in the high half: X=-2/Y=12 produces FFFFFFFE.
+
+The independent table slots62B274/502930 target62ACCE/5023FF. At dequeue their
+current autocur gate precedes owning Top Input125 flags0, the same savedMouse
+writer and Input137 flags0 with the copied frames/packed words. Normal automove
+continues to queue copied XY and supply its own unsigned low16 packing and w4;
+only the shared live-owner action is factored. Existing Input137→138 viewport,
+foreground, drag and tick behavior stays authoritative. This action has no
+object lookup, event, focus/default update, Player flush,94 or resource visitor.
+The new record uses the existing checkpointed FIFO and saved point, with no new
+owner or format version. Tests cover both registered74/76 default paths;
+unregistered versions and unknown slots remain disabled.
+
 The original constructors628400/4FFA10 issue125 before their InputID+1A0 is
 written by the later initialization query. Their complete defined initial saved
 output is not established by this evidence. This implementation records null
@@ -605,9 +626,8 @@ until a real complete Input125 writer runs; it neither captures in parentAssigne
 nor borrows a later valid Input to fill the original constructor's output. A
 fresh World restores null/known savedMouse and pending copiedXY once, with no
 query, source replay or re-selection. The separate restoremove reader below
-uses this same field; btnsimulate has no saved-point reader and automoveex
-remains a separate incomplete leaf. The
-ordinary337 close guard is the independently committed C6b dependency.
+uses this same field; btnsimulate has no saved-point reader. The ordinary337
+close guard is the independently committed C6b dependency.
 
 Normal restoremove is parameterless in both frozen wrappers77BDC0/615620. Extra
 operands cause no argument getter, bank/SCRIPT expansion or numeric evaluation.
@@ -795,8 +815,8 @@ Input/device counters and ordinary numeric pending records once; fresh restore
 does not rerun the setter, source getter or bank/SCRIPT stages.
 
 Only btnsimulate in the grouped drag/dragimg/draghelp/btnsimulate contract is
-closed here, so that row stays partial. The other grouped names, automoveex and
-raw23 remain separate incomplete work; no unregistered ABI is enabled.
+closed here, so that row stays partial. The other grouped names and raw23
+remain separate incomplete work; no unregistered ABI is enabled.
 
 Normal message10/key0/1 RELEASE_L/R follows the complete62CC90/504110
 receivers. It clears only the FES owner source word before checking sleeping.
@@ -856,7 +876,7 @@ message boundary; it is not presented as an80-key physical producer. Real125
 waits test close resolve/reject and live errors, and a live resource failure
 remains explicit. The current FIFO is visited inside the actual callback with
 that call's entry, rather than deferred to a later FES tick. These normal
-release-key branches are closed; automoveex, drag variants and raw23 remain
+release-key branches are closed; drag variants and raw23 remain
 independent incomplete leaves.
 
 Normal TOUCH message65 first tests sleeping, before mouse queries, event work,
