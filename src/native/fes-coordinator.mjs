@@ -850,6 +850,17 @@ export class FESCoordinator {
         selection.index === -1 ? collection.count(selection.nameBytes) : selection.index + 1,
       first = selection.index === -1 ? 0 : selection.index,
       lookup = (index) => collection.lookup(selection.nameBytes, index);
+    if (verb === 'param') {
+      const values = [];
+      for (let index = 0; index < 32 && args[index] !== undefined; index++)
+        values.push(evaluate(fesNarrowText(context.bytes(index)), instance) | 0);
+      for (let at = first; at < count; at++) {
+        const object = lookup(at);
+        if (!object || object.nativeType !== 23) continue;
+        setFESParticleRegisters(object, values);
+      }
+      return 0;
+    }
     if (verb === 'attach') {
       const operand = args[0] === undefined ? null : nativeDataString(context.bytes(0)),
         reference =
@@ -1020,7 +1031,7 @@ export class FESCoordinator {
         await world.m2FES.command(instance, object, verb, args, context);
       else if (type === 34 || type === 35) {
         await world.dataFES.command(instance, object, verb, args, context);
-      } else if (type === 23 && ['init', 'param', 'start'].includes(verb)) {
+      } else if (type === 23 && ['init', 'start'].includes(verb)) {
         if (verb === 'init') {
           if (args.length < 5)
             throw new Error('FES PARTICLE init requires all authored parameters');
@@ -1032,12 +1043,7 @@ export class FESCoordinator {
           if (encodeCP932(program).length >= 64 || encodeCP932(texture).length >= 64)
             throw new RangeError('FES PARTICLE names exceed their defined slots');
           configureFESParticle(object, { family, program, texture, count, priority });
-        } else if (verb === 'param')
-          setFESParticleRegisters(
-            object,
-            args.slice(0, 32).map((_v, i) => context.argument(i)),
-          );
-        else if (verb === 'start') this.particles.start(object);
+        } else if (verb === 'start') this.particles.start(object);
       } else throw new Error('Unimplemented FES raw' + type + ' command ' + verb);
     }
     return 0;

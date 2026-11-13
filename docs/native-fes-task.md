@@ -422,9 +422,31 @@ reallocation or another321. Ordinary FES object deletion retains the evidenced
 child residual until final owner teardown, which releases it without another
 Stop. The two normal-profile tests exercise these paths through real FES owners
 without init, param, start or PPI configuration. This closes only the explicit
-target attach leaf. The existing init/param/start whole-wrapper parsing and
+target attach leaf. The existing init/start whole-wrapper parsing and
 NULL-holder traversal differences remain separate incomplete work; their code,
 driver ordering, factory/ABI gates and checkpoint format are unchanged.
+
+PARTICLE `param` follows the complete 775A60/60FD80 wrappers: freeze the holder
+extent, then read at most 32 present operand bytes and evaluate each once as a raw
+signed int32 before the first holder lookup. A missing token stops the reader;
+operand 33 is neither read nor evaluated. NULL holders and holders of other types are skipped,
+including SOUND, while an empty selection still consumes the operands. The
+coordinator retains the int32 vector and reuses the existing pure float32 setter
+for each raw23 holder, resetting unspecified registers to zero. In particular,
+2147483647 becomes positive 2147483648 and 16777217 becomes 16777216; converting to
+float32 before passing through the setter's int32 coercion would corrupt the
+first boundary. The SDK 5F0240 setter copies 128B and calls the common dirty marker,
+matching the Game 750060 setter.
+
+The unchanged resource driver sends canonical 319 with the 32 float32 registers,
+then 320 with the authored alpha, to each actual owned kind16 child and consumes
+dirty. These messages do not require init, PPI or start: an absent-bank receiver
+parses 319 without publishing host registers, and 320 retains its existing alpha
+mapping. The two default-profile tests observe the actual payloads and typed
+object state, including a normal DELETE hole, without creating a particle bank.
+A present expanded-empty operand differs from a missing token. Expanded-empty
+and trailing-percent operands retain the current raw expression error boundary;
+these checks do not establish complete native malformed-input diagnostics.
 
 For an existing enabled current BUTTON, the default World input route now uses
 the original directional reader: same-block searches preserve the first matching
