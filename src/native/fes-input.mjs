@@ -453,14 +453,22 @@ export class FESInput {
       await this.updateMouse();
       if (!live()) return 0;
       const key = this.state.pressed,
-        handled =
-          key !== null && !instance.byKey.has(key)
-            ? false
-            : await player.nativeEvent(key, keyIndex ? 'RELEASE_R' : 'RELEASE_L');
-      if (!live()) return 0;
-      await player.flush();
-      if (!live()) return 0;
-      if (handled) {
+        event =
+          keyIndex === 0
+            ? 'RELEASE_L'
+            : keyIndex === 1
+              ? 'RELEASE_R'
+              : keyIndex >= 4 && keyIndex <= 7
+                ? `RELEASE_${['UP', 'DOWN', 'LEFT', 'RIGHT'][keyIndex - 4]}`
+                : null;
+      let handled = false;
+      if (event !== null && (key === null || instance.byKey.has(key))) {
+        handled = await player.nativeEvent(key, event);
+        if (!live()) return 0;
+        await player.flush();
+        if (!live()) return 0;
+      }
+      if (handled && keyIndex < 2) {
         const top = this.world.engineMessages.closestTop(this.record),
           inputID = top?.implementation.input;
         if (this.world.objects.objects.get(inputID)?.kind !== 11)
@@ -469,7 +477,7 @@ export class FESInput {
           flags: 0,
           executorEntry: context.executorEntry,
         });
-      } else await this.propagation(sender, false);
+      } else if (!handled) await this.propagation(sender, false);
       if (!live()) return 0;
       await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
       if (!live()) return 0;
@@ -749,8 +757,7 @@ export class FESInput {
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
     if (message === 9 && this.instance.runtime && (l === 0 || l === 1))
       return this.consumePush(sender, l, context);
-    if (message === 10 && this.instance.runtime && (l === 0 || l === 1))
-      return this.consumeRelease(sender, l, context);
+    if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);
     await this.updateMouse();
     switch (message) {
       case 64: {

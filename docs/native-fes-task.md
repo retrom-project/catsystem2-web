@@ -615,9 +615,8 @@ Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
 This bounded correction covers only normal default message9 key0/1. Direction
-4..7 keeps its existing resource traversal without another pass. Other key, scroll, direction-release and TOUCH post-callback tails remain
-separate uncompleted boundaries; the direct JS-authored FES input API is
-unchanged.
+4..7 keeps its existing resource traversal without another pass. Other PUSH key/scroll and TOUCH post-callback tails remain separate
+uncompleted boundaries; the direct JS-authored FES input API is unchanged.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
@@ -678,6 +677,34 @@ Same-player/root/runtime/task guards cancel later work after each asynchronous
 step or a closed-owner rejection; live errors propagate. Completed callback
 writes and issued Input145 effects remain. Settled fresh World restores the
 existing pressed reference and resource owners without replaying source or
-callbacks. No state, queue, checkpoint field or ABI capability is added. Only
-normal key0/1 release is covered; direction-release and the other event tails
-remain independent incomplete leaves.
+callbacks. No state, queue, checkpoint field or ABI capability is added. That
+leaf covered normal key0/1 release; the remaining message10 branches below
+reuse its owner and resource handling. Other PUSH and TOUCH tails remain
+independent incomplete leaves.
+
+All remaining normal message10 keys use this same consumeRelease. Keys4..7
+select the original RELEASE event15..18 (UP/DOWN/LEFT/RIGHT). Both frozen
+versions write their direction-release fields, but neither the default-handler
+nor the object's own label table dispatches a direction label: both choose the
+event helper's false return. Normal direction release therefore sends94 and
+then traverses the same resource FIFO before input.sync. Only handled key0/1
+sends145; the original structural handled-direction path sends neither145 nor94.
+The directional tests exercise the actual RET0 field path.
+
+The switch-default keys select no native event and do not flush the Player.
+They send94 and run the same resource/input tail. A selected event with a
+nonNULL missing saved name likewise follows the original early false return
+without a nativeEvent or Player flush; NULL still follows the real field-write
+path. Source0/sleeping gates, pressed identity, per-await owner cancellation,
+current live executor and already completed effects stay in the same consumer.
+No owner helper, queue, state or checkpoint field is duplicated.
+
+Default Graph tests exercise the four directions, ordinary default keys2/79,
+NULL via pointer leave, missing saved names via lockactive/delete, and settled
+fresh restore. A UINTMAX key is separately verified through the defined FES
+message boundary; it is not presented as an80-key physical producer. Real125
+waits test close resolve/reject and live errors, and a live resource failure
+remains explicit. The current FIFO is visited inside the actual callback with
+that call's entry, rather than deferred to a later FES tick. These normal
+release-key branches are closed; PUSH scroll/hotkey, TOUCH, automoveex, drag
+variants and raw23 remain independent incomplete leaves.
