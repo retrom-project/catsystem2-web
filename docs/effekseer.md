@@ -377,10 +377,12 @@ the established UNWRITTEN sentinel. The common receiver protocol passes its same
 result container as an optional third message argument; existing receivers and
 the direct four-word/queued return contract keep their behavior.
 
-The three position words are one authority shared by constructor/51/57/571.
-Constructor and57 calculate the rotated/transformed eye in that slot;51 replaces
-it without changing old instances or recalculating the previous camera.55/66
-only relay56/67 to children.57 uses the original1.57f projection constant and
+The three position words are one authority shared by constructor/51/571.
+Constructor initializes that slot with its rotated eye;51 replaces it without
+changing old instances or recalculating the previous camera.57 computes a local
+transformed eye for the new camera without replacing the position read by571.
+Thus the default FES driver's51→57→571 sequence retains the authored position.
+55/66 only relay56/67 to children.57 uses the original1.57f projection constant and
 current view aspect;59/63 are observed ignored overrides. The relocated camera
 methods retain the fixed old approximate normalization. Two public/authored
 whole-method reference outputs preserve exact float32 bits. Earlier local26

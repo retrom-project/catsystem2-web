@@ -63,7 +63,7 @@ class EffekseerTask {
     this.closePending = null;
   }
   initialize({ restoring = false }) {
-    if (!restoring) this.setCamera();
+    if (!restoring) this.position.set(this.setCamera());
     const [width, height] = this.world.graphics.virtualSize();
     this.plane = this.world.graphics.customGraph(this.record, {
       width,
@@ -90,9 +90,9 @@ class EffekseerTask {
     const [width, height] = this.world.graphics.virtualSize();
     const projection = perspectiveFovRH(bits(0x3fc8f5c3), f(f(width) / f(height)), 1, 50);
     const camera = lookAtRH(eye, [0, 0, 0], [0, 1, 0]);
-    this.position.set(eye);
     this.projection.set(projection);
     this.camera.set(camera);
+    return eye;
   }
   memory(sender, context) {
     return this.world.engineMessages.memory(sender, context);

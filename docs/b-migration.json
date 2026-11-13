@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 263, "oracle": 149, "differential": 67 },
+    "counts": { "js": 264, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -89,6 +89,7 @@
         "tests/fes-define-zero-default.test.mjs",
         "tests/fes-definitions.test.mjs",
         "tests/fes-effekseer-caller.test.mjs",
+        "tests/fes-effekseer-camera-position-default.test.mjs",
         "tests/fes-effekseer-default.test.mjs",
         "tests/fes-effekseer-input-executor.test.mjs",
         "tests/fes-file-list.test.mjs",
@@ -48761,7 +48762,7 @@
     },
     {
       "file": "src/effekseer/task.mjs",
-      "sourceSha256": "a11dc41b1ad58b8f0aa8164d4eb946111abdcb80bea1f74e7c473d5955fa46c8",
+      "sourceSha256": "ecffeacb688f7e66f4ae3e17b7679dcb7184c50ed4d1ed15bbcd9ec901f1e8c5",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

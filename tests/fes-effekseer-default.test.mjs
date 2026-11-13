@@ -64,7 +64,7 @@ test('default76 FES raw36 drives its real2000 manager, loaded texture and ordere
     assert.equal(t.manager.instances.size, 1);
     const root = t.manager.root(t.manager.sets.get(0));
     assert.deepEqual(root.matrix.slice(9, 12), t.position);
-    assert.notDeepEqual([...t.position], [5, 6, 7], 'later57 writes the shared camera/play vector');
+    assert.deepEqual([...t.position], [5, 6, 7], 'later57 preserves the position passed to Play');
     assert.deepEqual(w.effekseer.threads.forThread('frame').snapshot(), {
       state: 2745024,
       calls: 1,

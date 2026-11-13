@@ -8,6 +8,7 @@ import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { createEffekseerTask } from '../src/effekseer/task.mjs';
+import { lookAtRH } from '../src/effekseer/camera.mjs';
 import { createFESTypedObject } from '../src/native/fes-object-factory.mjs';
 import { EffekseerManagerLifecycle } from '../src/effekseer/manager-lifecycle.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
@@ -293,7 +294,7 @@ test('two task managers use actual frame/forced entries and actual queue drain,n
   }
 });
 
-test('ctor,51,57,571 share one position slot;old instances/camera/scale andchild relay remain exact', async () => {
+test('ctor,51,571 share one position slot;57 updates only camera and child relay remains exact', async () => {
   const w = await setup();
   try {
     const task = await create(w),
@@ -310,11 +311,15 @@ test('ctor,51,57,571 share one position slot;old instances/camera/scale andchild
     translated[12] = 4;
     translated[13] = -2;
     translated[14] = 1;
+    const position = task.position;
     await send(w, task, 57, translated);
     const eye = Float32Array.from(initial, (v, i) => Math.fround(v + [4, -2, 1][i]));
-    assert.deepEqual(task.position, eye);
+    assert.equal(task.position, position);
+    assert.deepEqual(task.position, Float32Array.of(1, 2, 3));
+    assert.deepEqual(task.camera, lookAtRH(eye, [0, 0, 0], [0, 1, 0]));
+    assert.notDeepEqual(task.camera, camera);
     await send(w, task, 571);
-    assert.deepEqual(roots(task), [initial, Float32Array.of(1, 2, 3), eye]);
+    assert.deepEqual(roots(task), [initial, Float32Array.of(1, 2, 3), Float32Array.of(1, 2, 3)]);
     const childID = await w.objects.create({ kind: 2, parent: task.record.id }),
       child = w.graphics.get(childID);
     const seen = [],
