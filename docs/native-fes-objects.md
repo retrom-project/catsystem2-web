@@ -269,3 +269,21 @@ as an empty set. Restoring does not replay source, declarations, macros or bank
 expansion. This keeps actual Button focus callbacks and keyboard selection
 metadata consistent with the restored canonical objects. DEFINE remains partial
 for its remaining declaration-table, unknown-type and byte/expression behavior.
+
+## Literal ASCII hyphen in DEFINE names
+
+Within the already supported ASCII word-name domain, normal DEFINE also accepts
+literal `-` (byte0x2D). Both original narrow scanners stop a name only at NUL,
+space or `[`, so `panel-one[2]` retains name `panel-one` and the existing literal
+count2; `choice-one` retains its complete scalar name. This leaf adds only `-`
+to the current name character class. Other punctuation, Unicode/CP932 names,
+count expressions, arbitrary suffixes and diagnostic policy remain pending.
+
+Names keep the current field and nativeName owner. For this ASCII-only domain,
+CP932 encoding maps every name byte identically, including0x2D. There is no
+case folding, substitution or second name buffer authority. Current collection
+lookup, OBJECT rows, indexed commands, requested resource keys, Button callbacks
+and fresh lookup use the complete original hyphenated name. Existing name-byte
+limits and type/ABI/count behavior remain unchanged. The public two-ABI default
+regression checks these consumers and independent restored ownership; DEFINE
+remains partial for its unclosed domains.

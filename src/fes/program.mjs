@@ -129,7 +129,7 @@ export function parseProgram(
       }
     } else if (section === 'macro') program.macros.push([first, ...words.slice(0, 1)]);
     else if (section === 'define') {
-      const match = /^(\w+)(?:\[(\d+)\])?;?$/.exec(fesNarrowText(words[0]));
+      const match = /^([\w-]+)(?:\[(\d+)\])?;?$/.exec(fesNarrowText(words[0]));
       if (!match) throw new Error(`Invalid FES definition: ${line}`);
       program.definitions.push({
         type: head,
