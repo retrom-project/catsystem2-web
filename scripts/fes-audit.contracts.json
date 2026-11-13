@@ -2352,11 +2352,11 @@
       "id": "fes.code.o_particle",
       "domain": "fes-object",
       "names": ["PARTICLE"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/o_particle.html",
       "implementation": "src/fes",
-      "evidence": [],
-      "note": "No complete implementation; execution must retain an explicit diagnostic until implemented.",
+      "evidence": ["tests/fes-particle-attach-default.test.mjs", "docs/native-fes-task.md"],
+      "note": "Finite74/76 normal DEFINE raw23 attach: one optional reference parse, increasing holders/first-hole stop, per-holder current target lookup and only live raw3/4/33 target classes. The existing resource FIFO sends321 to the actual owned kind16; both default profiles cover CPLANE/PLANE, wrong-class skip, clean-dirty fresh restore and deletion/owner lifetime without extra Stop or replay. Missing/invalid references and missing-target NULL remain explicit unproved diagnostics, never guessed detach. Whole init/param/start evaluate-once and NULL-hole traversal remain independent gaps; no whole PARTICLE or PPI completion is claimed.",
       "signatures": []
     },
     {

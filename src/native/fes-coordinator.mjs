@@ -867,8 +867,14 @@ export class FESCoordinator {
         const object = lookup(at);
         if (!object) break;
         if (object.nativeType === 6) setFESButtonAttachment(object, reference);
-        else if (object.nativeType === 23)
-          throw new Error('FES PARTICLE attach requires its distinct original target/NULL gates');
+        else if (object.nativeType === 23) {
+          if (!reference)
+            throw new Error('FES PARTICLE attach has no proved missing/invalid-reference state');
+          const target = collection.lookup(reference.nameBytes, reference.index);
+          if (!target) throw new Error('FES PARTICLE attach has no proved missing-target state');
+          if ([3, 4, 33].includes(target.nativeType))
+            this.particles.attach(instance, object, target);
+        }
       }
       return 0;
     }
@@ -1014,7 +1020,7 @@ export class FESCoordinator {
         await world.m2FES.command(instance, object, verb, args, context);
       else if (type === 34 || type === 35) {
         await world.dataFES.command(instance, object, verb, args, context);
-      } else if (type === 23 && ['init', 'param', 'start', 'attach'].includes(verb)) {
+      } else if (type === 23 && ['init', 'param', 'start'].includes(verb)) {
         if (verb === 'init') {
           if (args.length < 5)
             throw new Error('FES PARTICLE init requires all authored parameters');
@@ -1032,12 +1038,6 @@ export class FESCoordinator {
             args.slice(0, 32).map((_v, i) => context.argument(i)),
           );
         else if (verb === 'start') this.particles.start(object);
-        else {
-          if (!args.length)
-            throw new Error('FES PARTICLE attach has no defined missing-target state');
-          const ref = this.reference(args[0]);
-          this.particles.attach(instance, object, collection.lookup(ref.nameBytes, ref.index));
-        }
       } else throw new Error('Unimplemented FES raw' + type + ' command ' + verb);
     }
     return 0;

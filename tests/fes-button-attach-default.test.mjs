@@ -343,7 +343,7 @@ for (const profile of profiles) {
       await h.world.close();
     }
   });
-  test(`${profile}: cross-block nearest retains sentinel/tie/order, and fresh references have no replay or raw23 fallback`, async () => {
+  test(`${profile}: cross-block nearest retains sentinel/tie/order, and fresh references have no replay and preserve the raw23 wrong-class gate`, async () => {
     const h = await open(profile, { HIDE: 'b enable 0', ATTACH: 'a attach lost[3]' }, '-1,-1,-1,1');
     let restored;
     try {
@@ -380,17 +380,21 @@ for (const profile of profiles) {
       await declare(restored, 'mixed', 'BUTTON', 2);
       await restored.instance.collection.remove(restored.get('mixed', 1));
       await declare(restored, 'mixed', 'PARTICLE', 2);
-      await assert.rejects(
-        command(restored, 'attach', ['a'], 'mixed', -1),
-        /distinct original target\/NULL gates/,
-      );
+      const mixedParticle = restored.get('mixed', 1),
+        mixedAttachment = mixedParticle.attachment,
+        mixedAttachmentDirty = mixedParticle.attachmentDirty;
+      assert.equal(await command(restored, 'attach', ['a'], 'mixed', -1), 0);
+      assert.equal(mixedParticle.attachment, mixedAttachment);
+      assert.equal(mixedParticle.attachmentDirty, mixedAttachmentDirty);
       assert.deepEqual(ref(restored.get('mixed').buttonAttachment), ['a', 0]);
       assert.equal(restored.get('mixed', 1).nativeType, 23);
       await declare(restored, 'particle', 'PARTICLE');
-      await assert.rejects(
-        command(restored, 'attach', ['a'], 'particle'),
-        /distinct original target\/NULL gates/,
-      );
+      const particle = restored.get('particle'),
+        attachment = particle.attachment,
+        attachmentDirty = particle.attachmentDirty;
+      assert.equal(await command(restored, 'attach', ['a'], 'particle'), 0);
+      assert.equal(particle.attachment, attachment);
+      assert.equal(particle.attachmentDirty, attachmentDirty);
       const ids = restored.input.state.buttons.map(([, id]) => id);
       await restored.world.objects.release(restored.id);
       assert.equal(

@@ -398,9 +398,33 @@ empty original name or unclosed index clears it; malformed numeric expressions
 still fail. A nonempty source name that expands empty in the reference reader
 remains a non-NULL empty reference with its supplied index. The whole wrapper
 reads its optional argument once, visits increasing holder indices, stops at the
-first hole and skips unrelated types. Raw23's separate attachment protocol remains
-explicitly unsupported at this entry; the particle service's other operations do
-not authorize that original target/NULL branch.
+first hole and skips unrelated types.
+
+The same frozen76FB50/60B7C0 wrapper now admits raw23 PARTICLE attachment to an
+explicit successfully parsed reference. The optional getter/reference parser
+runs once before the holder loop; each raw23 holder looks up the current target
+again. Only existing raw3/4/33 targets reach the existing particle setter; other
+existing classes are skipped. The setter copies the actual native graph task
+ID and marks attachmentDirty, without a new queue, event or Player flush. The
+normal resource FIFO later sends canonical321 (SDK raw316), w0, from the FES
+owner to its owned kind16 child. Ordinary DEFINE, the known typed raw23 factory
+and the existing resource allocator establish that ownership; manual standalone
+particle initialization is not proof of this normal entry.
+
+Both originals query the target type before testing the parse-success flag.
+Missing/invalid reference scratch and a missing target's NULL read are not
+proved portable states. They retain explicit diagnostics here, with no guessed
+detach/zero target. Unknown slots and unregistered versions remain gated.
+
+A checkpoint after attachmentDirty was consumed restores the existing resource
+entry, child task and copied graph identity without source/PPI/image reads,
+reallocation or another321. Ordinary FES object deletion retains the evidenced
+child residual until final owner teardown, which releases it without another
+Stop. The two normal-profile tests exercise these paths through real FES owners
+without init, param, start or PPI configuration. This closes only the explicit
+target attach leaf. The existing init/param/start whole-wrapper parsing and
+NULL-holder traversal differences remain separate incomplete work; their code,
+driver ordering, factory/ABI gates and checkpoint format are unchanged.
 
 For an existing enabled current BUTTON, the default World input route now uses
 the original directional reader: same-block searches preserve the first matching
