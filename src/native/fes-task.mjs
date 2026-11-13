@@ -395,7 +395,7 @@ export function createNativeFESTask(world, record) {
           world.objects.machine(context.nativeSenderWorldID ?? words[0]);
         if (!memory) throw new Error('FES object initialization requires sender memory');
         if (message === 338) {
-          const count = memory.load(wParam + 32);
+          const count = memory.load(wParam + 32) | 0;
           this.player.root.createObjects(lParam, labelBytes(memory, wParam), count);
         } else await this.player.root.applyObjects(memory.string(wParam), memory.string(lParam));
         return NATIVE_UNWRITTEN_WORD;

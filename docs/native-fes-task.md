@@ -318,18 +318,26 @@ whole-handler coverage remain separate phase-7 work.
 
 Message338 reads the original count word at name-address+32 before reading the
 NUL-terminated name from the same sender's mapped bytes. Within the existing
-31-byte name boundary, positive-count declarations reach the collection as owned
+31-byte name boundary, declarations reach the collection as owned
 raw names: CP932 display aliases stay separate, brackets remain literal, and no
 name-bank, SCRIPT or index parsing occurs. A mapped address0 remains valid. The
 existing factory ordinal guards and untouched result-word behavior remain in
 force. The independent JavaScript String API still performs one CP932 encoding.
 
-This closes positive-count name transport, not native signed-count behavior.
-The current count entry remains unchanged: in particular, native negative words
-still reach its unsigned range check. Game's normal nonpositive path retains an
-empty group and its first count, while the matching SDK inner-factory tail is
-still unproved. Those count paths remain separate work; the independent String
-API's count0 group and the normal DEFINE ASCII guard are unchanged.
+The fixed count word is interpreted as a signed int32 before it reaches the
+existing collection. For current known factory ordinals, nonpositive counts
+retain an owned raw-name group and its first count without constructing objects
+or queuing resource initializers. Repeated declarations keep the first count,
+including-1,0 and the signed minimum; later positive requests can construct and
+queue objects without replacing that count. Fresh restoration retains these
+current signed group records without source or START replay. The independent
+String API's signed counts and bare FES validation keep their own existing
+contracts. Unknown ordinal rejection and constructor capability guards remain
+in their existing locations; an empty group does not enable an unsupported type.
+
+Complete positive factory coverage, unsafe empty/long/unterminated names and
+allocation-failure/lifecycle behavior remain unproved. The normal DEFINE ASCII
+guard and all unregistered-version boundaries remain unchanged.
 
 Repeated declarations through message338 keep the resource-request FIFO's
 multiplicity and the current object's first flag. After the first driver pass,

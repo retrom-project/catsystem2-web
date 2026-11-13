@@ -320,3 +320,155 @@ test('338 reads the count slot before raw NUL names with zero-base sender memory
   assert.equal(collection.objects.length, before);
   assert.equal(data.stringReads(), 0);
 });
+
+for (const profile of profiles) {
+  test(
+    '338 signed nonpositive counts retain empty raw groups through fresh restore: ' + profile,
+    async () => {
+      const h = await open(profile);
+      let fresh;
+      try {
+        const c = h.instance.collection,
+          minimumName = ascii('signed-min'),
+          anchor = c.lookup('anchor', 0),
+          before = {
+            handles: c.objects.map((object) => object.handle),
+            nextHandle: c.graph.nextHandle,
+            worldIDs: [...h.world.objects.objects.keys()].sort((a, b) => a - b),
+            resources: h.runtime.resources.entries.length,
+            child: anchor.nativeInputTaskID,
+          },
+          emptyGroups = (collection) =>
+            collection
+              .snapshot()
+              .groups.filter(({ count }) => count <= 0)
+              .map(({ nameBytes, count }) => ({ nameBytes, count })),
+          noAllocation = (collection, runtime, world) => {
+            assert.deepEqual(
+              collection.objects.map((object) => object.handle),
+              before.handles,
+            );
+            assert.equal(collection.graph.nextHandle, before.nextHandle);
+            assert.deepEqual(
+              [...world.objects.objects.keys()].sort((a, b) => a - b),
+              before.worldIDs,
+            );
+            assert.equal(runtime.resources.entries.length, before.resources);
+            assert.deepEqual(pendingRefs(collection), []);
+            assert.equal(collection.lookup('anchor', 0).nativeInputTaskID, before.child);
+            assert.equal(collection.count('anchor'), 1);
+            assert.equal(world.objects.objects.get(before.child).kind, 6);
+          };
+        noAllocation(c, h.runtime, h.world);
+        const packets = [
+          await declare(h, aName, 0xffffffff),
+          await declare(h, bName, 0),
+          await declare(h, minimumName, 0x80000000),
+        ];
+        assert.deepEqual(
+          h.instance.createObjects(
+            FES_OBJECT_DEFINITION_ORDER.indexOf('BUTTON'),
+            'js-negative',
+            -1,
+          ),
+          [],
+        );
+        assert.deepEqual(
+          h.instance.createObjects(FES_OBJECT_DEFINITION_ORDER.indexOf('BUTTON'), 'js-zero', 0),
+          [],
+        );
+        const expectedGroups = [
+          { nameBytes: aName, count: -1 },
+          { nameBytes: bName, count: 0 },
+          { nameBytes: minimumName, count: -0x80000000 },
+          { nameBytes: ascii('js-negative'), count: -1 },
+          { nameBytes: ascii('js-zero'), count: 0 },
+        ];
+        assert.deepEqual(emptyGroups(c), expectedGroups);
+        assert.equal(
+          c.groups.get(c.name(aName).token).name.text,
+          c.groups.get(c.name(bName).token).name.text,
+        );
+        for (const { nameBytes, count } of expectedGroups) {
+          assert.equal(c.hasGroup(nameBytes), true);
+          assert.equal(c.count(nameBytes), count);
+          assert.equal(c.lookup(nameBytes, 0), null);
+        }
+        for (const data of packets) {
+          assert.deepEqual(data.reads[0], ['load', data.base + 32]);
+          assert.equal(data.stringReads(), 0);
+          data.bytes[data.base] = 122;
+        }
+        assert.deepEqual(emptyGroups(c), expectedGroups, 'Empty groups own the raw sender bytes');
+        await declare(h, aName, 0);
+        await declare(h, bName, 0xffffffff);
+        await declare(h, minimumName, 0xfffffffe);
+        await declare(h, ascii('anchor'), 0xffffffff);
+        assert.deepEqual(
+          emptyGroups(c),
+          expectedGroups,
+          'The first count wins for repeated raw names',
+        );
+        const invalid = packet(ascii('bad'), 0xffffffff);
+        await assert.rejects(
+          h.world.sendEngine(h.id, h.world.main.id, 338, invalid.base, 999, {
+            payload: invalid.memory,
+          }),
+          /factory index/,
+        );
+        assert.equal(c.hasGroup('bad'), false);
+        noAllocation(c, h.runtime, h.world);
+        assert.equal(h.instance.global(60), 1);
+        const saved = h.world.snapshot();
+        fresh = await defaultFESWorld(profile, {}, { initialize: false });
+        fresh.ensureNativeEngine = () => {
+          throw new Error('338 signed restore must stay JavaScript');
+        };
+        const reads = [],
+          read = fresh.game.read.bind(fresh.game);
+        fresh.game.read = (name) => {
+          reads.push(name);
+          if (name !== 'case.kcs') throw new Error('338 signed source replayed ' + name);
+          return read(name);
+        };
+        await fresh.restore(saved);
+        const next = fresh.objects.objects.get(h.id).implementation.player.root,
+          restored = next.collection;
+        noAllocation(restored, next.runtime, fresh);
+        assert.deepEqual(emptyGroups(restored), expectedGroups);
+        assert.deepEqual(reads, ['case.kcs']);
+        assert.equal(next.global(60), 1);
+        const target = { world: fresh, id: h.id };
+        await declare(target, aName, 0xfffffffe);
+        await declare(target, bName, 0xffffffff);
+        assert.deepEqual(emptyGroups(restored), expectedGroups);
+        noAllocation(restored, next.runtime, fresh);
+        await declare(target, aName, 1);
+        const created = restored.lookup(aName, 0);
+        assert.equal(created.nativeType, 6);
+        assert.equal(created.handle, before.nextHandle);
+        assert.deepEqual(restored.reference(created), ref(aName, 0));
+        assert.equal(restored.graph.nextHandle, before.nextHandle + 1);
+        assert.equal(restored.objects.length, before.handles.length + 1);
+        assert.equal(
+          restored.count(aName),
+          -1,
+          'A later positive request preserves the original negative first count',
+        );
+        assert.deepEqual(pendingRefs(restored), [ref(aName, 0)]);
+        assert.deepEqual(
+          [...fresh.objects.objects.keys()].sort((a, b) => a - b),
+          before.worldIDs,
+        );
+        assert.equal(next.runtime.resources.entries.length, before.resources);
+        assert.deepEqual(reads, ['case.kcs']);
+        assert.equal(next.global(60), 1);
+        assert.equal(h.sourceReads(), 1);
+        assert.equal(fresh.nativeEngine, undefined);
+      } finally {
+        await fresh?.close();
+        await h.world.close();
+      }
+    },
+  );
+}
