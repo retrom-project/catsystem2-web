@@ -3,6 +3,7 @@ import engine74 from './2.6.1.74.mjs';
 import engine76 from './2.6.1.76.mjs';
 import { validateNativeSignature, nativeSignatureDifferences } from './signature.mjs';
 import { resolveNativeTables } from './tables.mjs';
+import { validateFESCommonHeads, lookupFESCommonHead } from './fes-common-heads.mjs';
 
 export function resolveABI(registration) {
   validatePlainData(registration);
@@ -74,6 +75,10 @@ export function nativeABI(profile) {
       `Unregistered CatSystem2 ABI ${profile}; provide reviewed per-version ABI data`,
     );
   return abi;
+}
+
+export function nativeFESCommonHead(profile, bytes) {
+  return lookupFESCommonHead(nativeABI(profile).fes.commonHeads, bytes);
 }
 
 export function abiForEngineVersion(version) {
@@ -194,6 +199,7 @@ function validateBehavior(abi) {
   }
   if (!messages?.channels?.base || !messages?.channels?.control || !messages?.root)
     throw new Error(`Incomplete ABI message data ${abi.id}`);
+  validateFESCommonHeads(fes.commonHeads);
 }
 
 function validatePlainData(value) {

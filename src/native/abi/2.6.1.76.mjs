@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed per-version declarations and script-visible behavior.
+import { FES_COMMON_HEAD_REGISTRATIONS } from './fes-common-heads.mjs';
+
 export default {
   id: 'cs2-2.6.1.76',
   profile: 'nekopara-vol3-engine-2.6.1.76',
@@ -269,6 +271,7 @@ export default {
     accelerators: 'winmain-region',
   },
   fes: {
+    commonHeads: FES_COMMON_HEAD_REGISTRATIONS.game,
     configurationMessage: {
       liveObjects: true,
       notification: 'MES_CHANGECONFIG',

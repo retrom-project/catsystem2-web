@@ -86,6 +86,33 @@ Executable fingerprints and table addresses remain separately owned by each
 entry in `NATIVE_EXE_PROFILES`. Sharing semantics does not make those binary
 identities, memory layouts or private survey observations interchangeable.
 
+## FES common keyword membership
+
+The separate [FES common catalogue](../src/native/abi/fes-common-heads.mjs) owns
+134 native keywords once: 119 shared by the registered engines, 12 additional
+Game words and three additional SDK words. Each engine's `fes.commonHeads`
+explicitly registers the shared set, its additions, the complete count and
+`byte-exact-cstring` comparison. Missing, incomplete or inconsistent registrations
+are rejected. These keywords are not entries or ordinals in the four VM native
+ID namespaces, and their presence does not change a slot or capability.
+
+`nativeFESCommonHead(profile, narrowBytes)` resolves the exact registered profile
+before querying its data. It returns a tagged `present` descriptor or `absent`;
+the lookup compares narrow bytes through the first NUL, with an implicit NUL at
+the end of a getter-owned byte array. It preserves case and does not decode,
+expand, tokenize, evaluate or execute a command. It also does not establish
+native temporary-buffer or overflow behavior.
+
+A descriptor's `nameCrossrefs` are navigation to existing audit names, including
+explicitly authored alias groups. They do not prove that a native common handler
+has the same semantics or implementation status. Semantic links remain pending
+and dispatch bindings remain unbound. In particular, SDK `execjs`, `endjs` and
+`calljs` are known members even when their cross-reference is missing or has an
+unimplemented audit status. A future execution consumer must explicitly gate a
+known member without a reviewed implementation; only a genuine complete-table
+miss may choose the original whole-row evaluator. The current executor, head
+reader, object/common ordering and conditional/skip gates are unchanged.
+
 ## Historical evidence and verification
 
 The offline ID survey found signature extensions at main `0x181` (four to five

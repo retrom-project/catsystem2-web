@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 294, "oracle": 149, "differential": 67 },
+    "counts": { "js": 295, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -220,6 +220,7 @@
         "tests/native-effect-commands.test.mjs",
         "tests/native-engine-message.test.mjs",
         "tests/native-entry.test.mjs",
+        "tests/native-fes-common-heads.test.mjs",
         "tests/native-fes-config.test.mjs",
         "tests/native-fes-data.test.mjs",
         "tests/native-fes-input.test.mjs",
@@ -2463,8 +2464,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 487,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 82, "8": 180, "9": 55 },
+    "runtimeFiles": 488,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 83, "8": 180, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -49754,7 +49755,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "e204e024d6b839e98beb272d0f9a23185c3ee13d52b79aa975a390ad098ebb41",
+      "sourceSha256": "1febcdd301e36186d874fc1757165cab3bc96cd342b01ed797b0f488eef5d593",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49767,7 +49768,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "8eb0290d05e7f097522c2566e38135a37a31e6356bf2b7c9d71e3cf377cf596f",
+      "sourceSha256": "22ec2185c2d1d38371ca3e498d4e494bc206a15a47d00e56060ebe97d48d0775",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49779,8 +49780,21 @@
       "review": "counted"
     },
     {
+      "file": "src/native/abi/fes-common-heads.mjs",
+      "sourceSha256": "fe5335dc27472e7909e5bcae974cb4ac5549927fd75fa3060210c3c0dc10459c",
+      "domain": 7,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-abi-data.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "a0c9aabf9b387a6eabd75c7b497a636d6624fe2d39c59685424408d254b425a3",
+      "sourceSha256": "1f0654d4674948811ba8191730e024fff94c8b44f166473c113276c367da0270",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

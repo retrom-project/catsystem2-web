@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed per-version declarations and script-visible behavior.
+import { FES_COMMON_HEAD_REGISTRATIONS } from './fes-common-heads.mjs';
+
 export default {
   id: 'cs2-2.6.1.74',
   profile: 'sdk-4.01-engine-2.6.1.74',
@@ -236,6 +238,7 @@ export default {
     accelerators: 'ansi-resource',
   },
   fes: {
+    commonHeads: FES_COMMON_HEAD_REGISTRATIONS.sdk,
     configurationMessage: { liveObjects: false, notification: null, filenameComparison: null },
     controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
