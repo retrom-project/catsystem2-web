@@ -221,3 +221,26 @@ contract inventory must record manual-versus-frozen differences and ABI
 applicability separately from real missing implementations. They do not
 create an unversioned extension API or establish another engine version.
 Default factory/definition entry integration remains pending and counted.
+
+## Normal DEFINE zero count
+
+The registered SDK74 and Game76 normal `#DEFINE` consumers change a parsed
+count0 to1 before ordinary object construction and requested initialization.
+`CIMAGE image[0]` therefore creates `image[0]` and one pending key. `NUMIMG` keeps
+its established null-object factory behavior but registers count1 and one
+requested null key. A scalar, count1 and other nonzero counts retain their
+existing paths. This normalization belongs to `FESCoordinator.initialize`;
+the dynamic instance creation API and shared collection retain count0.
+
+The parsed source declaration still records its original count0. The collection
+owns the actual current count1, object, pending keys and resource entries.
+Message332 consumes those pending keys through the existing graphics
+initialization tail; message333 runs the ordinary interpreter/resource update.
+Fresh restore uses saved current objects and resource wrappers without reloading
+or re-evaluating the declarations. The public default-entry regression checks
+OBJECT application, real bitmap creation, NUMIMG holes, dynamic count0 and
+independent fresh ownership for both ABIs.
+
+This closes only the normal zero-count branch of `#DEFINE`. Native type-name
+matching, unknown-type diagnostics and the remaining byte/name/count-expression
+declaration constraints are still partial.

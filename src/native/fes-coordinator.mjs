@@ -244,8 +244,11 @@ export class FESCoordinator {
   async initialize() {
     const { program } = this.instance;
     for (const declaration of program.definitions) {
-      const name = this.instance.soundArgument(declaration.name);
-      this.collection.create(declaration.type, name, declaration.count ?? 1, {
+      const name = this.instance.soundArgument(declaration.name),
+        // Normal DEFINE changes zero to one before factory/initializer work;
+        // dynamic create retains the collection's independent count0 behavior.
+        count = declaration.count === 0 ? 1 : (declaration.count ?? 1);
+      this.collection.create(declaration.type, name, count, {
         scalar: declaration.count === null,
       });
       if (declaration.type === 'BUTTON') this.instance.keyNames.add(name);
