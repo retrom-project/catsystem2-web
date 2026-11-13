@@ -26,10 +26,10 @@ next WAIT
 #WAIT
 `);
   assert.deepEqual(program.definitions, [
-    { type: 'BUTTON', name: 'btn_data', count: 12 },
+    { type: 'BUTTON', name: 'btn_data', count: '12' },
     { type: 'IMAGE', name: 'cover', count: null },
     { type: 'PLANE', name: 'canvas', count: null },
-    { type: 'BUTTON', name: 'bare', count: 2 },
+    { type: 'BUTTON', name: 'bare', count: '2' },
   ]);
   for (const name of ['bad[12];;', 'bad;[12]', 'bad[12;]'])
     assert.throws(() => parseProgram(`#DEFINE\nBUTTON ${name}\n`), /Invalid FES definition/);

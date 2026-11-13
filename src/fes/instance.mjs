@@ -85,12 +85,14 @@ export class FESInstance {
     if (player.runtimeFactory) this.runtime = player.runtimeFactory(this);
     if (restoring || this.runtime) return;
     for (const d of program.definitions) {
-      this.declaredGroups[d.name] = d.count ?? 1;
+      const count = (d.count === null ? 1 : evaluate(d.count, this)) | 0;
+      if (count < 0) throw new Error(`Unsupported FES declaration count ${count}`);
+      this.declaredGroups[d.name] = count;
       if (player.nativeObjectAllocates?.(d.type) === false) continue;
       if (d.count === null) this.add(d.type, d.name, null);
       else {
-        if (d.count > 10000) throw new Error('FES object limit');
-        for (let i = 0; i < d.count; i++) this.add(d.type, d.name, i);
+        if (count > 10000) throw new Error('FES object limit');
+        for (let i = 0; i < count; i++) this.add(d.type, d.name, i);
       }
     }
     for (const table of program.tables)

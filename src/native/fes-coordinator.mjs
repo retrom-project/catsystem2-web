@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // One FES collection owns semantic objects, motion and requested resources.
+import { evaluate } from '../fes/expression.mjs';
 import {
   FESImageControlCommands,
   FES_IMAGE_CONTROL_COMMANDS,
@@ -245,10 +246,20 @@ export class FESCoordinator {
     const { program } = this.instance;
     for (const declaration of program.definitions) {
       const name = this.instance.soundArgument(declaration.name),
-        // Normal DEFINE changes zero to one before factory/initializer work;
-        // dynamic create retains the collection's independent count0 behavior.
-        count = declaration.count === 0 ? 1 : (declaration.count ?? 1),
         type = canonicalFESDefinitionType(declaration.type);
+      let count = evaluate(declaration.count ?? '-1', this.instance) | 0;
+      if (count === -1 && this.collection.count(name) <= 1) count = 0;
+      if (count < 0) {
+        this.instance.diagnostic(
+          count === -1
+            ? `FES definition ${name} requires an explicit array count`
+            : `FES definition ${name} has unsupported negative count ${count}`,
+        );
+        continue;
+      }
+      // Normal DEFINE changes zero to one before factory/initializer work;
+      // dynamic create retains the collection's independent count0 behavior.
+      if (!count) count = 1;
       this.collection.create(type, name, count, {
         scalar: declaration.count === null,
       });

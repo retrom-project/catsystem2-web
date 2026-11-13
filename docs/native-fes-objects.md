@@ -232,7 +232,7 @@ requested null key. A scalar, count1 and other nonzero counts retain their
 existing paths. This normalization belongs to `FESCoordinator.initialize`;
 the dynamic instance creation API and shared collection retain count0.
 
-The parsed source declaration still records its original count0. The collection
+The parsed source declaration records its original count text `0`. The collection
 owns the actual current count1, object, pending keys and resource entries.
 Message332 consumes those pending keys through the existing graphics
 initialization tail; message333 runs the ordinary interpreter/resource update.
@@ -243,7 +243,7 @@ independent fresh ownership for both ABIs.
 
 The normal zero-count branch is independent of the known-name matching below.
 Per-version declaration-table membership, unknown-type diagnostics and the
-remaining byte/name/count-expression declaration constraints are still partial.
+remaining byte/name and malformed-count declaration constraints are still partial.
 
 ## Known DEFINE type names in the C locale
 
@@ -275,9 +275,10 @@ for its remaining declaration-table, unknown-type and byte/expression behavior.
 Within the already supported ASCII word-name domain, normal DEFINE also accepts
 literal `-` (byte0x2D). Both original narrow scanners stop a name only at NUL,
 space or `[`, so `panel-one[2]` retains name `panel-one` and the existing literal
-count2; `choice-one` retains its complete scalar name. This leaf adds only `-`
+count text `2`; `choice-one` retains its complete scalar name. This leaf adds only `-`
 to the current name character class. Other punctuation, Unicode/CP932 names,
-count expressions, arbitrary suffixes and diagnostic policy remain pending.
+arbitrary suffixes and diagnostic policy remain pending. Count expressions have the
+separate normal initialization contract below.
 
 Names keep the current field and nativeName owner. For this ASCII-only domain,
 CP932 encoding maps every name byte identically, including0x2D. There is no
@@ -287,3 +288,40 @@ and fresh lookup use the complete original hyphenated name. Existing name-byte
 limits and type/ABI/count behavior remain unchanged. The public two-ABI default
 regression checks these consumers and independent restored ownership; DEFINE
 remains partial for its unclosed domains.
+
+## Normal DEFINE count expressions
+
+A parsed declaration retains every explicit count as its original expression
+text, including decimal literals such as `0`, `00` and `2`. A missing bracketed
+count remains null. This is the current program and checkpoint representation;
+it does not store an evaluated count or a second bank state.
+
+Normal initialization expands a declaration's name first, then evaluates its
+count once against the current interpreter bank, in source declaration order.
+Count text receives no additional string-bank or SCRIPT replacement. Arithmetic
+and variable side effects use the existing expression evaluator and signed
+integer result. For example, with variable60 initially1, successive declarations
+using `[$60++]` request1 and2 objects and leave that same variable at3. Object
+construction, initializer keys and the later OBJECT rows observe this order.
+
+The original shared name/count reader represents an omitted count as expression
+`-1`. A result of-1 becomes0 only if the current same-name group count is at most1;
+normal DEFINE then changes0 to1. Thus the first declaration `item[-1]` creates
+one object. If the current group already has count2, a later declaration yielding
+-1 records a diagnostic and skips that declaration. It does not request another
+initializer or replace the first group count. Other negative results remain
+unsupported and are diagnosed without invoking the factory. Dynamic creation
+and the shared collection keep their separate count0 behavior.
+
+The existing bare FES player also evaluates the retained count text before its
+creation loop, preserving that independent path's null-to1 and zero-count
+behavior. It does not acquire another native declaration or checkpoint reader.
+Fresh restore rebuilds current objects from saved state without re-evaluating
+count expressions, re-enqueuing initializers or reading the FES source.
+
+The short two-ABI default-entry regression checks current-bank arithmetic,
+name-before-count and declaration order, exactly-once increments, `00`, signed
+positive counts, both-1 branches, actual OBJECT/resource FIFO and bitmap creation,
+and fresh continuation without expression side effects. Empty brackets, general
+malformed-expression fallback, other negative counts, remaining narrow-name
+bytes and per-version declaration membership remain partial.

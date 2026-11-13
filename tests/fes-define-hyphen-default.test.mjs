@@ -146,7 +146,7 @@ for (const profile of startupProfiles) {
       assert.deepEqual(
         root.program.definitions.map(({ name, count }) => [name, count]),
         [
-          ['panel-one', 2],
+          ['panel-one', '2'],
           ['choice-one', null],
         ],
       );
@@ -226,7 +226,7 @@ for (const profile of startupProfiles) {
       assert.deepEqual(
         next.program.definitions.map(({ name, count }) => [name, count]),
         [
-          ['panel-one', 2],
+          ['panel-one', '2'],
           ['choice-one', null],
         ],
       );

@@ -3757,9 +3757,10 @@
         "tests/fes-contracts.test.mjs",
         "tests/fes-define-zero-default.test.mjs",
         "tests/fes-define-type-case-default.test.mjs",
-        "tests/fes-define-hyphen-default.test.mjs"
+        "tests/fes-define-hyphen-default.test.mjs",
+        "tests/fes-define-count-expression-default.test.mjs"
       ],
-      "note": "Normal declarations normalize count0 to1, match known type names with C-locale ASCII case, and retain literal ASCII hyphen name bytes through current native keys and restore. Existing typed-factory ABI gates and raw program metadata remain. Full per-version declaration membership, unknown-type diagnostic policy, other narrow-name bytes and byte/count-expression parsing remain pending.",
+      "note": "Normal declarations normalize count0 to1, match known type names with C-locale ASCII case, retain literal ASCII hyphen name bytes, and evaluate raw count expressions once in declaration order against the current bank. Name expansion precedes count evaluation; first-name -1 becomes1, while -1 for an existing multi-object group diagnoses and skips. Existing typed-factory ABI gates remain. Full per-version membership, unknown-type diagnostics, other narrow-name bytes, general malformed/empty count expressions and other negative counts remain pending.",
       "signatures": []
     },
     {

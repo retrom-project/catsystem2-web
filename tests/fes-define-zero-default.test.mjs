@@ -166,7 +166,7 @@ for (const profile of startupProfiles) {
       assert.equal(collection.peekPending(), null);
       assert.equal(runtime.resources.entries.length, 3);
       assert.equal(zero.imageResource.bitmap, 0);
-      assert.equal(root.program.definitions[0].count, 0);
+      assert.equal(root.program.definitions[0].count, '0');
       await h.world.sendEngine(current.id, h.world.main.id, 333);
       assert.equal(collection.peekPending(), null);
       assert.deepEqual(
@@ -213,7 +213,7 @@ for (const profile of startupProfiles) {
         nextZero = next.collection.lookup('zero', 0);
       assert.equal(initializeCalls, 1);
       assert.equal(sourceReads, 1);
-      assert.equal(restored.program.definitions[0].count, 0);
+      assert.equal(restored.program.definitions[0].count, '0');
       assert.equal(next.collection.count('zero'), 1);
       assert.equal(next.collection.count('hole'), 1);
       assert.equal(next.collection.lookup('hole', 0), null);
