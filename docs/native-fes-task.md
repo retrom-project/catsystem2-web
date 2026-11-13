@@ -64,6 +64,17 @@ addresses without running either expansion stage during restoration. Bare FES
 players retain their independent source contract. Command-head SCRIPT ordering,
 conditional/skip and other parser parity remain separate audit work.
 
+When the normal default route selects an existing collection object, its verb
+uses the existing byte-first bank/SCRIPT getter once. A missing verb returns0
+without a getter; a present verb that expands to empty still runs that getter.
+Built-in dispatch keeps its existing result and explicit implementation limits.
+A custom verb with no definition records a diagnostic and returns0, allowing the
+same event to continue. An unmatched object reference retains its current
+routing boundary. The selected raw name/index and complete working command copy
+remain the source of native addresses; checkpoints do not replay the getter.
+This object-verb stage preserves the separate command-head, object/common
+priority and conditional gates.
+
 The configuration event uses the registered ABI's
 `fes.configurationMessage` stages. The reviewed Game receiver visits the current
 object-key map first, calls each live image configuration callback, notifies

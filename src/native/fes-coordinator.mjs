@@ -1033,7 +1033,11 @@ export class FESCoordinator {
     }
     if (!FES_BUILTIN_VERBS.has(verb)) {
       const raw = instance.program.subcommands[verb];
-      if (!raw) throw new Error('Unimplemented FES object command ' + verb);
+      if (!raw) {
+        if (!lookup(first)) throw new Error('Unimplemented FES object command ' + verb);
+        instance.diagnostic('Unimplemented FES object command ' + verb);
+        return 0;
+      }
       const definition = motionDefinition(verb, { ...raw, words: raw.words.map(fesNarrowText) });
       for (let at = first; at < count; at++) {
         const object = lookup(at);

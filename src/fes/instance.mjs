@@ -1338,7 +1338,16 @@ export class FESInstance {
         break;
       default: {
         if (this.runtime) {
-          const selection = this.runtime.reference(words[0]);
+          const selection = this.runtime.reference(words[0]),
+            object = this.collection.lookup(
+              selection.nameBytes,
+              selection.index === -1 ? 0 : selection.index,
+            );
+          let verb = args[0];
+          if (object) {
+            if (verb === undefined) return {};
+            verb = this.argumentBytes(verb);
+          }
           const source = this.program.sourceKey
             ? (this.player.nativeSources || this.player.localSources).context(
                 this.program.sourceKey,
@@ -1349,7 +1358,7 @@ export class FESInstance {
             : {};
           this.player.enqueue(
             this.runtime
-              .command(fesNarrowText(args[0]), selection, args.slice(1), {
+              .command(fesNarrowText(verb), selection, args.slice(1), {
                 ...source,
                 commandBytes: bytes,
                 rawTail: fesRawTail(bytes, 2),
