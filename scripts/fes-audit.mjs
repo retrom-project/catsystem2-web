@@ -140,7 +140,9 @@ async function probeSDK(directory, filename = 'sdk-fes-parse.json') {
           const [head, verb] = line.split(/\s+/);
           const object =
             head === '@' ||
-            program.definitions.some((d) => head === d.name || head.startsWith(`${d.name}[`));
+            Object.keys(instance.declaredGroups).some(
+              (name) => head === name || head.startsWith(`${name}[`),
+            );
           const inventory = object ? objectCommands : commands,
             key = object ? verb : head;
           inventory[key] = (inventory[key] || 0) + 1;

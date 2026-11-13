@@ -7,6 +7,7 @@ import { KIFArchive } from '../src/files.mjs';
 import { readKCS, KCSMachine } from '../src/kcs.mjs';
 import { readFES, readScene } from '../src/formats/scene.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
+import { parseBareFESDefinition } from '../src/fes/instance.mjs';
 import { replaceFESMacros } from '../src/fes/source.mjs';
 import { NodeFile } from './node-files.mjs';
 import { commandBody } from './fes-audit.mjs';
@@ -64,13 +65,27 @@ export function inspectFES({ bytes, text, prepared }, include) {
         .filter((row) => row.length > 1)
         .map(([name, value]) => [fesByteView(name), value]),
     );
+  // These are literal standalone declarations, not runtime-native results.
+  // Keep rows that need a bank or cannot be read by that grammar unresolved.
+  const objects = [],
+    unresolvedDefinitions = [];
+  for (const row of program.definitions) {
+    const declaration = parseBareFESDefinition(row);
+    if (declaration === null) continue;
+    if (declaration === undefined || fesByteView(row).includes('$str')) {
+      unresolvedDefinitions.push({
+        raw: fesByteView(row),
+        reason: 'Declaration requires runtime expansion or is outside the static bare grammar',
+      });
+    } else objects.push({ type: declaration.type, name: declaration.name });
+  }
   const commands = [],
     objectCommands = [];
   for (const source of Object.values(program.blocks).flat()) {
     const line = commandBody(replaceFESMacros(source, macros));
     if (!line || /^(?:(?:\+\+|--))?[$\\]/.test(line)) continue;
     const [head, verb] = line.split(/\s+/);
-    const object = program.definitions.find(
+    const object = objects.find(
       (definition) => head === definition.name || head.startsWith(`${definition.name}[`),
     );
     if (object || head === '@')
@@ -80,7 +95,8 @@ export function inspectFES({ bytes, text, prepared }, include) {
   return {
     commands,
     objectCommands,
-    objects: program.definitions.map(({ type, name }) => ({ type, name })),
+    objects,
+    unresolvedDefinitions,
     pluginReferences: text
       .split(/\r?\n/)
       .flatMap((line, index) =>

@@ -15,7 +15,7 @@ import { NativeSteam } from '../src/native/steam.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { fesByteView, fesViewBytes } from '../src/fes/tokens.mjs';
 
-test('FES definitions accept an optional terminator after scalar and array names', () => {
+test('bare FES definitions keep their optional terminator grammar with owned raw rows', async () => {
   const program = parseProgram(`#DEFINE
 BUTTON btn_data[12];
 IMAGE cover;
@@ -25,14 +25,28 @@ BUTTON bare[2]
 next WAIT
 #WAIT
 `);
-  assert.deepEqual(program.definitions, [
-    { type: 'BUTTON', name: 'btn_data', count: '12' },
-    { type: 'IMAGE', name: 'cover', count: null },
-    { type: 'PLANE', name: 'canvas', count: null },
-    { type: 'BUTTON', name: 'bare', count: '2' },
+  assert.deepEqual(program.definitions.map(fesByteView), [
+    '#DEFINE',
+    'BUTTON btn_data[12];',
+    'IMAGE cover;',
+    'PLANE canvas',
+    'BUTTON bare[2]',
   ]);
+  const bare = await screen(
+    '#DEFINE\nBUTTON btn_data[12];\nIMAGE cover;\nPLANE canvas\nBUTTON bare[2]\n#START\nbreak\n',
+  );
+  assert.deepEqual(Object.entries(bare.root.declaredGroups), [
+    ['btn_data', 12],
+    ['cover', 1],
+    ['canvas', 1],
+    ['bare', 2],
+  ]);
+  assert.equal(bare.root.byKey.get('cover').baseName, 'cover');
   for (const name of ['bad[12];;', 'bad;[12]', 'bad[12;]'])
-    assert.throws(() => parseProgram(`#DEFINE\nBUTTON ${name}\n`), /Invalid FES definition/);
+    await assert.rejects(
+      screen(`#DEFINE\nBUTTON ${name}\n#START\nbreak\n`),
+      /Invalid FES definition/,
+    );
 });
 
 test('repeated FES block headers append commands while repeated object headers retain their own columns', async () => {
@@ -40,10 +54,12 @@ test('repeated FES block headers append commands while repeated object headers r
       '#DEFINE\nCIMAGE first\n#OBJECT PRI\nfirst 10\n#START\n$0=1\n#DEFINE\nCIMAGE second\n#OBJECT DISP\nsecond 1\n#START\n$0+=2\nnext WAIT\n#WAIT\n',
     program = parseProgram(source);
   assert.deepEqual(program.blocks.START.map(fesByteView), ['$0=1', '$0+=2', 'next WAIT']);
-  assert.deepEqual(
-    program.definitions.map((o) => o.name),
-    ['first', 'second'],
-  );
+  assert.deepEqual(program.definitions.map(fesByteView), [
+    '#DEFINE',
+    'CIMAGE first',
+    '#DEFINE',
+    'CIMAGE second',
+  ]);
   assert.deepEqual(
     program.tables.map((t) => [
       t.columns.map(fesByteView),

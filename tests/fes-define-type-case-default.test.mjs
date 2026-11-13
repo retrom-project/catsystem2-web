@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
@@ -114,7 +115,7 @@ function defineCheckpointPixels(world) {
   });
 }
 
-const rawTypes = ['cImAgE', 'bUtToN', 'vIeW'];
+const rawDefinitions = ['#DEFINE', 'cImAgE Panel', 'bUtToN Choice', 'vIeW Anchor'];
 for (const profile of startupProfiles) {
   test(`DEFINE known ASCII type case reaches canonical object and real Button consumers with fresh restore: ${profile}`, async (t) => {
     const h = await environment(profile);
@@ -141,10 +142,7 @@ for (const profile of startupProfiles) {
         input = current.implementation.input,
         bank = h.world.runtime.variableBank(h.world.main, false);
       assert.ok(runtime instanceof FESCoordinator);
-      assert.deepEqual(
-        root.program.definitions.map(({ type }) => type),
-        rawTypes,
-      );
+      assert.deepEqual(root.program.definitions.map(fesByteView), rawDefinitions);
       assert.deepEqual(
         [panel, button, collection.lookup('Anchor', 0)].map(({ type, nativeType }) => [
           type,
@@ -198,10 +196,7 @@ for (const profile of startupProfiles) {
         next = restored.player.root,
         nextButton = next.runtime.collection.lookup('Choice', 0),
         nextBank = fresh.world.runtime.variableBank(fresh.world.main, false);
-      assert.deepEqual(
-        next.program.definitions.map(({ type }) => type),
-        rawTypes,
-      );
+      assert.deepEqual(next.program.definitions.map(fesByteView), rawDefinitions);
       assert.deepEqual([...next.keyNames], ['Choice']);
       assert.equal(nextButton.type, 'BUTTON');
       assert.equal(nextButton.nativeType, 6);

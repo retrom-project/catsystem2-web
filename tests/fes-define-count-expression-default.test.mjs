@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
+import { FESDefinitionModel } from '../src/native/fes-definitions.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -117,14 +119,15 @@ function defineCheckpointPixels(world) {
 }
 
 const expectedDefinitions = [
-  ['bank', '1+$7'],
-  ['first', '$60++'],
-  ['second', '$60++'],
-  ['zero', '00'],
-  ['signed', '+2'],
-  ['sentinel', '-1'],
-  ['bank', '-1'],
-  ['scalar', null],
+  '#DEFINE',
+  'CIMAGE bank[1+$7]',
+  'CIMAGE first[$60++]',
+  'CIMAGE second[$60++]',
+  'CIMAGE zero[00]',
+  'CIMAGE signed[+2]',
+  'CIMAGE sentinel[-1]',
+  'CIMAGE bank[-1]',
+  'VIEW scalar',
 ];
 const expectedPending = [
   ['bank', 0],
@@ -155,7 +158,8 @@ for (const profile of startupProfiles) {
       phase = 'load',
       reads = 0,
       initializeCalls = 0,
-      declarationPending;
+      declarationPending,
+      readingDeclarations = true;
     const nameObservations = [];
     try {
       const current = await task(h.world),
@@ -164,7 +168,8 @@ for (const profile of startupProfiles) {
         read = file.read.bind(file),
         initialize = FESCoordinator.prototype.initialize,
         host = current.implementation.player.host,
-        argument = host.nativeFESArgumentBytes;
+        argument = host.nativeFESStringBytes,
+        compile = FESDefinitionModel.prototype.compile;
       assert.equal(bank.capacity, 64);
       bank.set(7, 1);
       bank.set(60, 1);
@@ -173,9 +178,18 @@ for (const profile of startupProfiles) {
         reads++;
         return read(...args);
       });
-      t.mock.method(host, 'nativeFESArgumentBytes', function (token, ...args) {
-        if (typeof token === 'string') nameObservations.push([token, bank.get(60)]);
-        return argument.call(this, token, ...args);
+      t.mock.method(host, 'nativeFESStringBytes', function (bytes, ...args) {
+        const name = fesByteView(bytes);
+        if (
+          readingDeclarations &&
+          ['bank', 'first', 'second', 'zero', 'signed', 'sentinel', 'scalar'].includes(name)
+        )
+          nameObservations.push([name, bank.get(60)]);
+        return argument.call(this, bytes, ...args);
+      });
+      t.mock.method(FESDefinitionModel.prototype, 'compile', function (...args) {
+        if (this.instance.runtimeID === current.id) readingDeclarations = false;
+        return compile.apply(this, args);
       });
       t.mock.method(FESCoordinator.prototype, 'initialize', async function (...args) {
         initializeCalls++;
@@ -195,10 +209,7 @@ for (const profile of startupProfiles) {
         h.world.objects.objects.get(current.id).context.variableBank,
         h.world.main.context.variableBank,
       );
-      assert.deepEqual(
-        root.program.definitions.map(({ name, count }) => [name, count]),
-        expectedDefinitions,
-      );
+      assert.deepEqual(root.program.definitions.map(fesByteView), expectedDefinitions);
       assert.deepEqual(nameObservations, [
         ['bank', 1],
         ['first', 1],
@@ -280,10 +291,7 @@ for (const profile of startupProfiles) {
         'fresh must restore evaluated state without running count expressions',
       );
       assert.equal(bank.get(60), 99);
-      assert.deepEqual(
-        restored.program.definitions.map(({ name, count }) => [name, count]),
-        expectedDefinitions,
-      );
+      assert.deepEqual(restored.program.definitions.map(fesByteView), expectedDefinitions);
       for (const [name, count] of expectedCounts)
         assert.equal(next.collection.count(name), count, name);
       assert.equal(next.collection.peekPending(), null);

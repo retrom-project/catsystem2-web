@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
@@ -143,13 +144,11 @@ for (const profile of startupProfiles) {
         bank = h.world.runtime.variableBank(h.world.main, false);
       assert.ok(runtime instanceof FESCoordinator);
       assert.equal(bank.capacity, 64);
-      assert.deepEqual(
-        root.program.definitions.map(({ name, count }) => [name, count]),
-        [
-          ['panel-one', '2'],
-          ['choice-one', null],
-        ],
-      );
+      assert.deepEqual(root.program.definitions.map(fesByteView), [
+        '#DEFINE',
+        'CIMAGE panel-one[2]',
+        'BUTTON choice-one',
+      ]);
       assert.equal(collection.count('panel-one'), 2);
       assert.equal(collection.count('choice-one'), 1);
       assert.deepEqual(
@@ -223,13 +222,11 @@ for (const profile of startupProfiles) {
         ],
         nextButton = next.runtime.collection.lookup(ascii('choice-one'), 0),
         nextBank = fresh.world.runtime.variableBank(fresh.world.main, false);
-      assert.deepEqual(
-        next.program.definitions.map(({ name, count }) => [name, count]),
-        [
-          ['panel-one', '2'],
-          ['choice-one', null],
-        ],
-      );
+      assert.deepEqual(next.program.definitions.map(fesByteView), [
+        '#DEFINE',
+        'CIMAGE panel-one[2]',
+        'BUTTON choice-one',
+      ]);
       assert.deepEqual(next.runtime.collection.reference(nextPanels[1]), {
         nameBytes: ascii('panel-one'),
         index: 1,

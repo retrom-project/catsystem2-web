@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
@@ -166,7 +167,7 @@ for (const profile of startupProfiles) {
       assert.equal(collection.peekPending(), null);
       assert.equal(runtime.resources.entries.length, 3);
       assert.equal(zero.imageResource.bitmap, 0);
-      assert.equal(root.program.definitions[0].count, '0');
+      assert.equal(fesByteView(root.program.definitions[1]), 'CIMAGE zero[0]');
       await h.world.sendEngine(current.id, h.world.main.id, 333);
       assert.equal(collection.peekPending(), null);
       assert.deepEqual(
@@ -213,7 +214,7 @@ for (const profile of startupProfiles) {
         nextZero = next.collection.lookup('zero', 0);
       assert.equal(initializeCalls, 1);
       assert.equal(sourceReads, 1);
-      assert.equal(restored.program.definitions[0].count, '0');
+      assert.equal(fesByteView(restored.program.definitions[1]), 'CIMAGE zero[0]');
       assert.equal(next.collection.count('zero'), 1);
       assert.equal(next.collection.count('hole'), 1);
       assert.equal(next.collection.lookup('hole', 0), null);

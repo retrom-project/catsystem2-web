@@ -142,7 +142,7 @@ test('section registration preserves raw header tokens, only the first macro val
       ['B', '17'],
     ],
   );
-  assert.deepEqual(program.definitions, [{ type: 'IMAGE', name: 'A', count: null }]);
+  assert.deepEqual(program.definitions.map(textView), ['#DEFINE', 'IMAGE A']);
   assert.deepEqual(
     program.tables.map((table) => ({
       header: textView(table.header),

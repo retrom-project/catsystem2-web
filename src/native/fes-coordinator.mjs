@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // One FES collection owns semantic objects, motion and requested resources.
 import { evaluate } from '../fes/expression.mjs';
+import { fesByteView, fesSourceBytes } from '../fes/tokens.mjs';
 import {
   FESImageControlCommands,
   FES_IMAGE_CONTROL_COMMANDS,
@@ -19,7 +20,7 @@ import {
 } from './fes-button-navigation.mjs';
 import { FESResourceEntries } from './fes-resource-entries.mjs';
 import { createFESTypedObject } from './fes-object-factory.mjs';
-import { FESDefinitionModel } from './fes-definitions.mjs';
+import { FESDefinitionModel, parseFESObjectReference } from './fes-definitions.mjs';
 import { FESMotionDriver, createFESMotionTarget } from './fes-motion-driver.mjs';
 import { FESCommonCommands, FES_COMMON_COMMANDS } from './fes-common-commands.mjs';
 import { FESResourceCommands, FES_RESOURCE_COMMANDS } from './fes-resource-commands.mjs';
@@ -243,16 +244,55 @@ export class FESCoordinator {
     return object;
   }
   async initialize() {
-    const { program } = this.instance;
-    for (const declaration of program.definitions) {
-      const type = canonicalFESDefinitionType(declaration.type);
-      if (type === undefined) {
-        this.instance.diagnostic(`Unknown FES declaration type ${declaration.type}`);
+    const { program } = this.instance,
+      host = this.instance.player.host,
+      bankBytes = (source) => {
+        const bytes = host.nativeFESStringBytes?.(source);
+        if (!(bytes instanceof Uint8Array))
+          throw new TypeError('FES declarations require their current string-bank byte service');
+        return fesSourceBytes(bytes);
+      },
+      expandName = (source) => {
+        const bytes = bankBytes(source);
+        if (!/^[A-Za-z0-9_;-]+$/.test(fesByteView(bytes)))
+          throw new Error('FES definition name bytes are outside the implemented ASCII domain');
+        return bytes;
+      };
+    // The section's first row is its header. Every later row is expanded at
+    // its actual visit, including repeated headers and prepared empty rows.
+    for (let index = 1; index < program.definitions.length; index++) {
+      const row = bankBytes(program.definitions[index]);
+      if (row[0] === 35) continue;
+      const [rawType, rawOperand] = this.instance.tokens(row);
+      if (rawType === undefined) {
+        this.instance.diagnostic('FES DEFINE row has no type');
         continue;
       }
-      const name = this.instance.soundArgument(declaration.name);
-      let count = evaluate(declaration.count ?? '-1', this.instance) | 0;
-      if (count === -1 && this.collection.count(name) <= 1) count = 0;
+      const type = canonicalFESDefinitionType(decoder.decode(this.instance.argumentBytes(rawType)));
+      if (type === undefined) {
+        this.instance.diagnostic(`Unknown FES declaration type ${decoder.decode(rawType)}`);
+        continue;
+      }
+      if (rawOperand === undefined) {
+        this.instance.diagnostic(`FES definition ${type} has no name/count operand`);
+        continue;
+      }
+      const operand = fesSourceBytes(this.instance.argumentBytes(rawOperand));
+      let end = 0;
+      while (end < operand.length && operand[end] !== 32 && operand[end] !== 91) end++;
+      if (!end) {
+        this.instance.diagnostic(`FES definition ${type} has an empty name`);
+        continue;
+      }
+      const scalar = operand[end] !== 91,
+        reference = parseFESObjectReference(operand, {
+          evaluate: (source) => evaluate(source, this.instance) | 0,
+          count: (name) => this.collection.count(name),
+          expandName,
+          allowEmptyName: true,
+        }),
+        name = reference.name;
+      let count = reference.index;
       if (count < 0) {
         this.instance.diagnostic(
           count === -1
@@ -261,12 +301,10 @@ export class FESCoordinator {
         );
         continue;
       }
-      // Normal DEFINE changes zero to one before factory/initializer work;
+      // This normal declaration caller changes zero to one before creation;
       // dynamic create retains the collection's independent count0 behavior.
       if (!count) count = 1;
-      this.collection.create(type, name, count, {
-        scalar: declaration.count === null,
-      });
+      this.collection.create(type, reference.nameBytes, count, { scalar });
       if (type === 'BUTTON') this.instance.keyNames.add(name);
     }
     for (const table of program.tables) {

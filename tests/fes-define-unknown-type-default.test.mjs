@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
+import { FESDefinitionModel } from '../src/native/fes-definitions.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -100,18 +102,26 @@ for (const profile of startupProfiles) {
   test(`unknown DEFINE type diagnoses before name/count and continues legitimate declarations: ${profile}`, async (t) => {
     const h = await environment(profile);
     const names = [];
-    let pending;
+    let pending,
+      readingDeclarations = true;
     try {
       const current = await task(h.world),
         bank = h.world.runtime.variableBank(h.world.main, false),
         host = current.implementation.player.host,
-        argument = host.nativeFESArgumentBytes,
+        argument = host.nativeFESStringBytes,
+        compile = FESDefinitionModel.prototype.compile,
         initialize = FESCoordinator.prototype.initialize;
       assert.equal(bank.capacity, 64);
       bank.set(60, 1);
-      t.mock.method(host, 'nativeFESArgumentBytes', function (token, ...args) {
-        if (typeof token === 'string') names.push([token, bank.get(60)]);
-        return argument.call(this, token, ...args);
+      t.mock.method(host, 'nativeFESStringBytes', function (bytes, ...args) {
+        const name = fesByteView(bytes);
+        if (readingDeclarations && ['before', 'after', 'skipped'].includes(name))
+          names.push([name, bank.get(60)]);
+        return argument.call(this, bytes, ...args);
+      });
+      t.mock.method(FESDefinitionModel.prototype, 'compile', function (...args) {
+        if (this.instance.runtimeID === current.id) readingDeclarations = false;
+        return compile.apply(this, args);
       });
       t.mock.method(FESCoordinator.prototype, 'initialize', async function (...args) {
         const result = await initialize.apply(this, args);
@@ -133,14 +143,12 @@ for (const profile of startupProfiles) {
         before = collection.lookup('before', 0),
         after = collection.lookup('after', 1);
       assert.ok(runtime instanceof FESCoordinator);
-      assert.deepEqual(
-        root.program.definitions.map(({ type, name, count }) => [type, name, count]),
-        [
-          ['CIMAGE', 'before', '$60++'],
-          ['UNKNOWN', 'skipped', '$60++'],
-          ['CIMAGE', 'after', '$60++'],
-        ],
-      );
+      assert.deepEqual(root.program.definitions.map(fesByteView), [
+        '#DEFINE',
+        'CIMAGE before[$60++]',
+        'UNKNOWN skipped[$60++]',
+        'CIMAGE after[$60++]',
+      ]);
       assert.deepEqual(names, [
         ['before', 1],
         ['after', 2],

@@ -18,6 +18,20 @@ import {
 } from './tokens.mjs';
 const nativeArgumentDecoder = new TextDecoder('shift_jis');
 
+// The standalone consumer's grammar is also a static inventory aid. This only
+// reads a raw row: no bank/SCRIPT expansion, expression evaluation or handlers.
+// Normal native DEFINE uses the coordinator's original byte-getter chain.
+export function parseBareFESDefinition(row, tokens = tokenizeFESByteLine) {
+  const line = fesByteView(row);
+  if (!line || line.startsWith('#') || line.startsWith(';')) return null;
+  const [first, operand] = tokens(row),
+    type = fesNarrowText(first);
+  if (!type) return null;
+  const match = /^([\w-]+)(?:\[([^\s[\];]+)\])?;?$/.exec(fesNarrowText(operand));
+  if (!match) return undefined;
+  return { type, name: match[1], count: match[2] ?? null };
+}
+
 export class FESInstance {
   constructor(
     name,
@@ -84,15 +98,19 @@ export class FESInstance {
     this.keyNames = new Set();
     if (player.runtimeFactory) this.runtime = player.runtimeFactory(this);
     if (restoring || this.runtime) return;
-    for (const d of program.definitions) {
-      const count = (d.count === null ? 1 : evaluate(d.count, this)) | 0;
+    for (const row of program.definitions) {
+      const declaration = parseBareFESDefinition(row, (source) => this.tokens(source));
+      if (declaration === null) continue;
+      if (declaration === undefined) throw new Error(`Invalid FES definition: ${fesByteView(row)}`);
+      const { type, name, count: expression } = declaration,
+        count = (expression === null ? 1 : evaluate(expression, this)) | 0;
       if (count < 0) throw new Error(`Unsupported FES declaration count ${count}`);
-      this.declaredGroups[d.name] = count;
-      if (player.nativeObjectAllocates?.(d.type) === false) continue;
-      if (d.count === null) this.add(d.type, d.name, null);
+      this.declaredGroups[name] = count;
+      if (player.nativeObjectAllocates?.(type) === false) continue;
+      if (expression === null) this.add(type, name, null);
       else {
         if (count > 10000) throw new Error('FES object limit');
-        for (let i = 0; i < count; i++) this.add(d.type, d.name, i);
+        for (let i = 0; i < count; i++) this.add(type, name, i);
       }
     }
     for (const table of program.tables)

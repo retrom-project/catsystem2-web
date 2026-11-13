@@ -232,7 +232,7 @@ requested null key. A scalar, count1 and other nonzero counts retain their
 existing paths. This normalization belongs to `FESCoordinator.initialize`;
 the dynamic instance creation API and shared collection retain count0.
 
-The parsed source declaration records its original count text `0`. The collection
+The owned raw DEFINE row retains the complete source text `CIMAGE image[0]`. The collection
 owns the actual current count1, object, pending keys and resource entries.
 Message332 consumes those pending keys through the existing graphics
 initialization tail; message333 runs the ordinary interpreter/resource update.
@@ -252,8 +252,9 @@ matching, with a private lookup derived from the existing canonical type
 catalogue and BASE descriptor. Only ASCII A through Z fold to lowercase; Unicode
 case conversion and new type aliases are not used. The canonical descriptor
 feeds the existing collection, typed object construction and Button keyNames
-registration. Program source and declaration type text remain unchanged, as do
-object-name matching and dynamic creation APIs.
+registration. The owned raw source row preserves the original type text; lookup
+uses the type token after the normal row/token expansion stages below. Object-name
+matching and dynamic creation APIs retain their existing authorities.
 
 All existing ABI factory guards remain authoritative. SDK raw36 EFKPLANE still
 fails the effekseerTask guard in createFESTypedObject; raw37 STRING8 and raw38
@@ -272,37 +273,75 @@ for its remaining declaration-table and byte/expression behavior.
 
 ## Literal ASCII hyphen in DEFINE names
 
-Within the already supported ASCII word-name domain, normal DEFINE also accepts
-literal `-` (byte0x2D). Both original narrow scanners stop a name only at NUL,
-space or `[`, so `panel-one[2]` retains name `panel-one` and the existing literal
-count text `2`; `choice-one` retains its complete scalar name. This leaf adds only `-`
-to the current name character class. Other punctuation, Unicode/CP932 names,
-arbitrary suffixes and diagnostic policy remain pending. Count expressions have the
-separate normal initialization contract below.
+Normal DEFINE retains literal `-` (byte0x2D). Both original narrow scanners stop
+name bytes at NUL, space or `[`, so `panel-one[2]` retains name `panel-one` and
+count text `2`; `choice-one` retains its complete scalar name. No Unicode regexp
+or decoded-name reconstruction chooses the scanner boundaries.
 
-Names keep the current field and nativeName owner. For this ASCII-only domain,
-CP932 encoding maps every name byte identically, including0x2D. There is no
-case folding, substitution or second name buffer authority. Current collection
-lookup, OBJECT rows, indexed commands, requested resource keys, Button callbacks
-and fresh lookup use the complete original hyphenated name. Existing name-byte
-limits and type/ABI/count behavior remain unchanged. The public two-ABI default
-regression checks these consumers and independent restored ownership; DEFINE
-remains partial for its unclosed domains.
+Names reach the existing collection as owned bytes. Current collection lookup,
+OBJECT rows, indexed commands, requested resource keys, Button callbacks and
+fresh lookup keep the complete hyphenated name and existing nativeName owner.
+The short two-ABI default regression retains these behavior and ownership checks.
+
+## Normal DEFINE raw rows and expansion stages
+
+The current program and checkpoint store DEFINE as owned raw byte rows, including
+the first and repeated section headers and prepared interior empty/comment rows.
+There is no persistent decoded type/name/count record. Normal initialization starts
+at section index1; the first header is index0. Each visited row passes through the
+same bound source string bank, without SCRIPT. An expanded row beginning with
+byte `#` is skipped. Missing type/operand tokens diagnose and continue without
+inventing an object.
+
+The line-bank result is tokenized by the existing profile scanner. The selected
+type token then passes through bank and SCRIPT before the shared known-type lookup.
+Only a known type proceeds to the operand token, which receives its own bank and
+SCRIPT expansion before the name/count byte scanner runs. Thus a row-bank value
+can insert token-separating spaces, and an operand-token replacement can introduce
+brackets and a count expression.
+
+The scanner stops the name at NUL, ASCII space or `[`. An explicit expression must
+reach `]` before NUL or space; bytes after that closing bracket are ignored. The
+scanned name alone receives one further bank expansion, without SCRIPT or rescanning.
+Only then is the scanned count sent directly to the integer evaluator, once. All
+stages observe the instance's existing current bank in source order.
+
+Semicolon is an ordinary name byte in this normal path: `CIMAGE scalar;` declares
+`scalar;`, while `CIMAGE array[2];;` declares `array` with count2 and ignores the
+suffix. The independent standalone FES consumer reads the same raw-row schema
+using its existing optional-terminator grammar. Its pure parser is also used by the
+static corpus survey, without evaluating counts or running expansion or handlers;
+that static grammar does not define normal native behavior.
+
+This stage supports nonempty final name bytes consisting of ASCII letters, digits,
+underscore, hyphen and semicolon. Other characters, non-ASCII names and brackets
+inserted by the final name-bank expansion remain unsupported implementation domains;
+this is not evidence that native rejects them. No decode/re-encode fallback is used.
+The existing collection copies through NUL and checks its existing31-byte name
+boundary; this change adds no new native length claim. General narrow-byte identity
+through labels, references and presentation-key consumers remains partial.
+
+The few default-entry cases for both registered ABIs exercise the real ENTRY,
+row/type/operand/name services, unknown-type skip, current-bank increments, OBJECT,
+exact resource FIFO and message333 bitmap creation. Fresh restore retains raw rows
+and current objects without reading source or replaying any expansion or count.
 
 ## Normal DEFINE count expressions
 
-A parsed declaration retains every explicit count as its original expression
-text, including decimal literals such as `0`, `00` and `2`. A missing bracketed
-count remains null. This is the current program and checkpoint representation;
-it does not store an evaluated count or a second bank state.
+Each owned raw row retains its complete source operand rather than a decoded
+count field. At initialization the row/token stages above run before the byte
+scanner extracts count text. Decimal literals such as `0`, `00` and `2` use the
+same direct evaluator as other expressions; an omitted bracketed count supplies
+expression `-1` to the shared reader.
 
-Normal initialization expands a declaration's name first, then evaluates its
+After scanning, normal initialization expands the name alone, then evaluates its
 count once against the current interpreter bank, in source declaration order.
-Count text receives no additional string-bank or SCRIPT replacement. Arithmetic
-and variable side effects use the existing expression evaluator and signed
-integer result. For example, with variable60 initially1, successive declarations
-using `[$60++]` request1 and2 objects and leave that same variable at3. Object
-construction, initializer keys and the later OBJECT rows observe this order.
+There is no further string-bank/SCRIPT pass or property-unit suffix stripping at
+this evaluator stage. Arithmetic and variable side effects use the existing
+expression evaluator and signed integer result. For example, with variable60
+initially1, successive declarations using `[$60++]` request1 and2 objects and leave
+that same variable at3. Object construction, initializer keys and later OBJECT rows
+observe this order.
 
 The original shared name/count reader represents an omitted count as expression
 `-1`. A result of-1 becomes0 only if the current same-name group count is at most1;
@@ -313,9 +352,10 @@ initializer or replace the first group count. Other negative results remain
 unsupported and are diagnosed without invoking the factory. Dynamic creation
 and the shared collection keep their separate count0 behavior.
 
-The existing bare FES player also evaluates the retained count text before its
-creation loop, preserving that independent path's null-to1 and zero-count
-behavior. It does not acquire another native declaration or checkpoint reader.
+The existing bare FES player extracts its count text from each raw row with its
+standalone grammar, then evaluates directly before its creation loop, preserving
+that independent path's omitted-count-to1 and zero-count behavior. Its pure parsing
+helper does not evaluate or retain a second program AST.
 Fresh restore rebuilds current objects from saved state without re-evaluating
 count expressions, re-enqueuing initializers or reading the FES source.
 
@@ -328,19 +368,19 @@ bytes and per-version declaration membership remain partial.
 
 ## Unknown DEFINE type names
 
-For a declaration accepted by the current source grammar, normal initialization
-looks up its type before expanding its object name or evaluating its count. A
-name absent from the existing shared type catalogue and BASE descriptor produces
-a located diagnostic using the original declaration type text, then skips that
-row. Later valid declarations continue. An unknown declaration creates no object,
-group, lifetime handle, initializer request or resource entry; it does not become
-a generic object or consume count-expression side effects.
+Normal initialization expands the row, tokenizes it, and expands the type token
+through bank and SCRIPT before looking it up. A name absent from the existing
+shared type catalogue and BASE descriptor produces a located diagnostic using the
+original type-token text, then skips the row before operand expansion, name scanning
+or count evaluation. Later valid declarations continue. An unknown declaration
+creates no object, group, lifetime handle, initializer request or resource entry.
 
 For example, with variable60 initially1, valid declarations surrounding
 `UNKNOWN skipped[$60++]` can request1 and2 objects using their own `[$60++]`
-counts and leave the current bank at3. The skipped name is never passed to the
-argument expansion service. The later OBJECT rows and ordinary resource consumer
-still process the valid declarations in their original FIFO order.
+counts and leave the current bank at3. The skipped operand is never requested from
+the argument expansion service, although the earlier row and type stages have run.
+The later OBJECT rows and ordinary resource consumer still process the valid
+declarations in their original FIFO order.
 
 A known descriptor whose ABI implementation is disabled keeps its existing strict
 factory or initializer error. In particular, this change does not make SDK
@@ -351,8 +391,7 @@ and no unknown native slot or unregistered engine version is enabled.
 The two short registered-ABI default-entry cases verify the diagnostic, untouched
 raw declaration, name/count ordering, unchanged current bank, absent unknown
 object/group/request, subsequent OBJECT application and actual bitmap creation.
-Unknown rows with missing names or malformed name/count syntax still encounter
-the existing source parser's earlier validation. Full native diagnostic wording,
-arbitrary diagnostic callbacks, per-version membership and remaining narrow-byte
-syntax remain partial. The independent bare FES player's unknown-type policy is
-unchanged.
+Unknown rows do not validate a missing or malformed operand after their type has
+been rejected. Full native diagnostic wording, arbitrary diagnostic callbacks,
+per-version membership and remaining narrow-byte syntax remain partial. The
+independent bare FES player's unknown-type policy is unchanged.

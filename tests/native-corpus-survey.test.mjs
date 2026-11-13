@@ -50,12 +50,12 @@ test('table binding keeps generic and versioned particle namespaces separate', a
   }
 });
 
-test('FES counting expands macros and includes while keeping object definitions', () => {
+test('static FES counting keeps literal declarations and unresolved raw rows without evaluation', () => {
   const report = inspectFES(
     {
-      text: '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
+      text: '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label[$60++]\n$str0\nCIMAGE dynamic[$str1]\n#START\nACTION 1\nlabel show 1\n',
       bytes: new TextEncoder().encode(
-        '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label\n#START\nACTION 1\nlabel show 1\n',
+        '#INCLUDE\ncommon.fes\n#DEFINE\nTEXT label[$60++]\n$str0\nCIMAGE dynamic[$str1]\n#START\nACTION 1\nlabel show 1\n',
       ),
       prepared: false,
     },
@@ -64,6 +64,16 @@ test('FES counting expands macros and includes while keeping object definitions'
   assert.deepEqual(report.commands, ['wait']);
   assert.deepEqual(report.objectCommands, [{ type: 'TEXT', command: 'show' }]);
   assert.deepEqual(report.objects, [{ type: 'TEXT', name: 'label' }]);
+  assert.deepEqual(report.unresolvedDefinitions, [
+    {
+      raw: '$str0',
+      reason: 'Declaration requires runtime expansion or is outside the static bare grammar',
+    },
+    {
+      raw: 'CIMAGE dynamic[$str1]',
+      reason: 'Declaration requires runtime expansion or is outside the static bare grammar',
+    },
+  ]);
 });
 
 test('CST end-of-line grouping retains other decoded command sites', async () => {

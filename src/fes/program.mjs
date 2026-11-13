@@ -88,6 +88,10 @@ export function parseProgram(
       program.preload.push(new Uint8Array(bytes));
       continue;
     }
+    if (section === 'define' && bytes[0] !== 35) {
+      program.definitions.push(new Uint8Array(bytes));
+      continue;
+    }
     if (!line || line.startsWith(';')) continue;
     const raw = tokens(bytes);
     if (!raw.every((token) => token instanceof Uint8Array))
@@ -106,6 +110,7 @@ export function parseProgram(
           break;
         case 'DEFINE':
           section = 'define';
+          program.definitions.push(new Uint8Array(bytes));
           break;
         case 'OBJECT':
           section = 'object';
@@ -128,15 +133,7 @@ export function parseProgram(
           current = program.blocks[label] ??= [];
       }
     } else if (section === 'macro') program.macros.push([first, ...words.slice(0, 1)]);
-    else if (section === 'define') {
-      const match = /^([\w-]+)(?:\[([^\s[\];]+)\])?;?$/.exec(fesNarrowText(words[0]));
-      if (!match) throw new Error(`Invalid FES definition: ${line}`);
-      program.definitions.push({
-        type: head,
-        name: match[1],
-        count: match[2] ?? null,
-      });
-    } else if (section === 'object')
+    else if (section === 'object')
       current.rows.push({ target: first, values: words, source: bytes });
     else if (section === 'block') current.push(bytes);
     else if (section === 'subcommand')

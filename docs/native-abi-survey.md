@@ -104,9 +104,19 @@ The input is an array of records containing `work`, `path` and a provenance
 GCALL instructions without running the VM, separates main, MOT and versioned
 particle namespaces, and records argument-word constants and dynamic operands.
 FES parsing expands available includes and macros, then separates commands from
-object methods. Existing command-prefix parsing is shared with `fes-audit.mjs`.
-Counts represent static sites and work coverage. Encrypted containers, missing
-includes and syntax failures remain visible in coverage records.
+object methods. Its literal object inventory shares the standalone FES consumer's
+pure declaration parser over the current owned raw DEFINE rows. It never evaluates
+counts or OBJECT rows, constructs objects, or calls bank, SCRIPT or native handlers.
+Rows containing string-bank placeholders or outside that standalone grammar retain
+their reversible raw byte view in `unresolvedDefinitions`.
+
+Literal type/name statistics describe the source as written; they do not establish
+native type membership, runtime bank/SCRIPT results or native DEFINE support. In
+particular, the normal native consumer's staged expansion and semicolon rules are
+independent of the static standalone grammar. Existing command-prefix parsing is
+shared with `fes-audit.mjs`. Counts represent static sites and work coverage.
+Encrypted containers, missing includes and syntax failures remain visible in
+coverage records.
 
 Keep original, prepared-reference, backup and translation-patch provenance
 separate when aggregating results. A shared numeric ID across unregistered
