@@ -126,7 +126,10 @@ for (const profile of profiles) {
       for (const verb of ['noact', 'setact']) {
         const bare = await open(profile, { DO: verb + ' single' });
         try {
-          await assert.rejects(notify(bare, 'DO'), /Unimplemented FES object command single/);
+          await assert.rejects(
+            notify(bare, 'DO'),
+            new RegExp('FES whole-row evaluator is pending: ' + verb),
+          );
         } finally {
           await bare.world.close();
         }

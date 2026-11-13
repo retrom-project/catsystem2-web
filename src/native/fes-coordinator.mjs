@@ -52,7 +52,7 @@ import { initializeFESM2, FES_M2_VERBS } from './emote-fes.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesNarrowText } from '../fes/tokens.mjs';
 import { fesRawTail } from '../fes/source.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeFESCommonHead } from './abi/index.mjs';
 import { replaceFESToneTable, clearFESToneTable } from './fes-tone-table.mjs';
 import { readNativeResource } from './resource-file.mjs';
 import { nativeDataString } from './data-text.mjs';
@@ -348,6 +348,50 @@ export class FESCoordinator {
       };
     }
     return this.definitions.reference(this.instance.argumentBytes(token), options);
+  }
+  commandHead(token) {
+    const { instance, collection } = this,
+      bytes = nativeDataString(instance.argumentBytes(token)),
+      current = instance.nativeContext,
+      indexText = (value) => new TextEncoder().encode(String(value | 0));
+    let nameBytes, indexBytes;
+    if (bytes.length === 1 && bytes[0] === 0x40) {
+      nameBytes = current.nameBytes.slice();
+      indexBytes = indexText(current.index);
+    } else {
+      let end = 0;
+      while (end < bytes.length && bytes[end] !== 0x20 && bytes[end] !== 0x5b) end++;
+      nameBytes = bytes.slice(0, end);
+      indexBytes = Uint8Array.of(0x2d, 0x31);
+      if (bytes[end] === 0x5b) {
+        const first = ++end;
+        while (end < bytes.length && bytes[end] !== 0x20 && bytes[end] !== 0x5d) end++;
+        if (bytes[end] !== 0x5d) throw new Error('FES command-head index is unclosed');
+        if (end === first)
+          throw new Error('FES command-head empty index scratch is not implemented');
+        indexBytes = bytes.slice(first, end);
+        if (indexBytes.length === 1 && indexBytes[0] === 0x40)
+          indexBytes = indexText(current.index);
+      }
+    }
+    if (indexBytes.length > 31)
+      throw new Error('FES command-head index exceeds its proven native byte boundary');
+    // The head binds the interpreter current word independently of property current/% values.
+    const context = Object.assign(Object.create(instance), { currentValue: current.current }),
+      index = context.operandValue(indexBytes) | 0,
+      selection = { nameBytes, index },
+      // Declared names cannot exceed31 bytes. An impossible name still evaluates its index first.
+      object =
+        nameBytes.length > 31 ? null : collection.lookup(nameBytes, index === -1 ? 0 : index);
+    if (object && collection.count(nameBytes) === 1) selection.index = 0;
+    return { selection, object };
+  }
+  pendingCommonHead(token) {
+    const bytes = nativeDataString(this.instance.argumentBytes(token)),
+      member = nativeFESCommonHead(this.world.profile, bytes),
+      name = fesByteView(bytes);
+    if (member.kind === 'present') throw new Error('FES native common handler is pending: ' + name);
+    throw new Error('FES whole-row evaluator is pending: ' + name);
   }
   elements(token) {
     const ref = this.reference(token),

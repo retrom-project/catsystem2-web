@@ -1379,16 +1379,10 @@ export class FESInstance {
         break;
       default: {
         if (this.runtime) {
-          const selection = this.runtime.reference(words[0]),
-            object = this.collection.lookup(
-              selection.nameBytes,
-              selection.index === -1 ? 0 : selection.index,
-            );
-          let verb = args[0];
-          if (object) {
-            if (verb === undefined) return {};
-            verb = this.argumentBytes(verb);
-          }
+          const { selection, object } = this.runtime.commandHead(words[0]);
+          if (!object) this.runtime.pendingCommonHead(words[0]);
+          if (args[0] === undefined) return {};
+          const verb = this.argumentBytes(args[0]);
           const source = this.program.sourceKey
             ? (this.player.nativeSources || this.player.localSources).context(
                 this.program.sourceKey,

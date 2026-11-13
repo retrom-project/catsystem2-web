@@ -1172,3 +1172,36 @@ replay. Unsupported-expression tests check only their own AST mutation and the
 single getter; they do not imply whole-handler atomicity. Other decoded numeric
 producers, head/directeval, normal DEFINE admission and unrelated name/lifecycle
 gates remain open.
+
+## Normal command-head object routing
+
+The normal runtime's existing default command path now fetches token0 through
+its argument bank and SCRIPT service before selecting an object. The head
+scanner owns the original narrow name bytes; it does not run a second name-bank
+lookup or decode and re-encode the name. A whole `@` takes the owned notification
+name/index tuple even when no typed object exists. A literal bracket `@` takes
+that tuple's signed index. Other bracket expressions reach the raw int32 numeric
+reader once, with the interpreter current word bound independently of prepared
+property current/% values. Unbracketed heads evaluate the original default -1.
+
+The object probe uses index0 for -1, otherwise the evaluated signed index. Only
+an actual hit with group count1 normalizes the dispatched index to0. An
+impossible long declaration name still evaluates its supported index before
+missing; it does not become a new long-name object or truncate to an existing
+key. Empty bracket scratch, unclosed indexes and indexes beyond the proven
+native byte field retain explicit gates. Existing early JavaScript common and
+control paths, including their supported long rows, keep their current domain.
+
+An object hit retains the reviewed token1 getter, original working row/source
+position, opaque return, wait and fresh ownership. Only an object miss fetches
+token0 a second time from the same original working row. The registered common
+catalogue then distinguishes a known native member whose handler is pending
+from an absent member whose whole-row evaluator is pending. Both fail explicitly;
+neither calls an unbound namesake JavaScript handler or silently succeeds. SDK
+`calljs`, `endjs` and `execjs` remain known members without a dispatch binding.
+
+This closes the default object-route seam. Reordering the earlier global/common
+branches, whole-row grammar and actual common handler bindings remain separate
+work, as do conditional/skip control flow and unproven native overflow domains.
+The four VM tables, ABI registration/signature statuses and unknown-slot gates
+do not change.
