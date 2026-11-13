@@ -30,6 +30,34 @@ export function fesLabelPayload(read) {
   };
 }
 
+// This author owns raw NUL buffers. The legacy text view is observed only to
+// prove that native label messages consume the existing byte service directly.
+export function fesNotificationMemory(label, name = null, index = 0) {
+  const data = new Uint8Array(256);
+  data.set(label, 0);
+  if (name) {
+    data.set(name, 64);
+    new DataView(data.buffer).setInt32(96, index, true);
+  }
+  let stringReads = 0;
+  return {
+    bytes(address, count) {
+      return data.subarray(address, address + count);
+    },
+    load(address) {
+      return new DataView(data.buffer).getUint32(address, true);
+    },
+    string(address) {
+      stringReads++;
+      const value = data.subarray(address),
+        end = value.indexOf(0);
+      return new TextDecoder('shift_jis').decode(value.subarray(0, end));
+    },
+    get stringReads() {
+      return stringReads;
+    },
+  };
+}
 export const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
 const glyphs = {
   measure: (_font, text) => ({

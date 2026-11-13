@@ -75,6 +75,23 @@ remain the source of native addresses; checkpoints do not replay the getter.
 This object-verb stage preserves the separate command-head, object/common
 priority and conditional gates.
 
+The normal interpreter owns the event's raw name bytes, signed index and evaluator
+current value independently of its typed object. Construction starts with an empty
+name and zero words; frames do not reset them. Ordinary DEFAULT and own handlers
+use the actual collection group's bytes and index. Message337 copies its original
+name bytes: a NULL name clears both words, while a non-NULL empty name retains its
+incoming index and current value. A missing typed object does not discard this
+context. The original label bytes remain separate from the context name.
+
+Each normal event saves and restores the complete tuple, including nested
+notifications and its existing asynchronous command continuations. Explicit
+property and motion evaluator current values, including zero, keep priority over
+the event current value. Normal checkpoints require and copy the current tuple at
+the existing settled frame/wait boundary; restoration does not replay source,
+events or resources, or serialize a pending Promise. Bare evaluator semantics,
+the separate GCALL notification producer, command-head parsing, object/common
+ordering, conditional/skip and native overflow gates remain separate work.
+
 The configuration event uses the registered ABI's
 `fes.configurationMessage` stages. The reviewed Game receiver visits the current
 object-key map first, calls each live image configuration callback, notifies

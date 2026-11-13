@@ -73,6 +73,7 @@ export class FESInstance {
       waitObjects: null,
       transitionUntil: 0,
       eventObject: null,
+      nativeContext: { nameBytes: new Uint8Array(), index: 0, current: 0 },
       clickL: 0,
       clickR: 0,
       scrollUp: 0,
@@ -266,7 +267,11 @@ export class FESInstance {
       _SAVEOBJ_: this.player.saveObject ?? this.player.host.saveObject?.handle,
       _MOUSE_X_: this.player.mouse.x,
       _MOUSE_Y_: this.player.mouse.y,
-      '@': this.currentValue ?? this.eventIndex ?? this.eventObject?.index ?? 0,
+      '@':
+        this.currentValue ??
+        (this.runtime
+          ? this.nativeContext.current
+          : (this.eventIndex ?? this.eventObject?.index ?? 0)),
     }[name];
   }
   value(text, currentValue) {
@@ -552,13 +557,19 @@ export class FESInstance {
     if (!jumped && !this.suspended) this.suspended = saved;
     return true;
   }
-  async invokeEventLabels(labels, object, index) {
+  async invokeEventLabels(labels, { object, nameBytes, index, current }) {
     if (this.finished !== null) return false;
+    const entry = this.runtime ? { nameBytes: nameBytes.slice(), index, current } : null,
+      bindContext = () => {
+        if (entry) this.nativeContext = entry;
+        else this.eventIndex = index;
+      };
     const saved = {
       suspended: this.suspended,
       decodePending: this.decodePending,
       object: this.eventObject,
       index: this.eventIndex,
+      nativeContext: this.nativeContext,
       executingLabel: this.executingLabel,
       executingLine: this.executingLine,
       waits: Object.fromEntries(
@@ -576,13 +587,14 @@ export class FESInstance {
     this.suspended = null;
     this.decodePending = false;
     this.eventObject = object;
-    this.eventIndex = index;
+    bindContext();
     let jumped = false,
       handled = false;
     try {
       for (const label of labels) {
         if (!this.program.blocks[label]) continue;
         handled = true;
+        bindContext();
         jumped = this.run([[label, 0]], 'event') || jumped;
         let flushes = 0;
         while (this.decodePending) {
@@ -591,19 +603,22 @@ export class FESInstance {
           this.decodePending = false;
           this.suspended = null;
           await this.player.flush({ commandsOnly: true });
+          bindContext();
           if (this.deferredCommandReturn !== null) {
             const value = this.deferredCommandReturn;
             this.deferredCommandReturn = null;
             if (this.nativeCommandReturn(value).action === 'suspend') break;
           }
           await this.flushNativeRecords();
+          bindContext();
           jumped = this.run(continuation, 'event') || jumped;
         }
         if (jumped || this.finished !== null) break;
       }
     } finally {
       this.eventObject = saved.object;
-      this.eventIndex = saved.index;
+      if (entry) this.nativeContext = saved.nativeContext;
+      else this.eventIndex = saved.index;
       this.executingLabel = saved.executingLabel;
       this.executingLine = saved.executingLine;
       if (!jumped && this.finished === null) {
@@ -615,11 +630,14 @@ export class FESInstance {
     return handled;
   }
   dispatchEvent(object, event) {
-    return this.invokeEventLabels(
-      objectEventLabels(this, object, event),
+    const reference = this.collection
+      ? this.collection.reference(object)
+      : { nameBytes: encodeCP932(object.baseName), index: object.index ?? 0 };
+    return this.invokeEventLabels(objectEventLabels(this, object, event), {
       object,
-      object.index ?? 0,
-    );
+      ...reference,
+      current: reference.index,
+    });
   }
   notify(event, name = null, index = 0) {
     const bytes = name == null ? null : labelBytes(name),
@@ -630,7 +648,13 @@ export class FESInstance {
             ? this.collection.lookup(bytes, index)
             : this.elements(`${fesNarrowText(bytes)}[${index}]`)[0] || null,
       target = bytes === null ? labelKey(event) : `${fesByteView(bytes)}.${labelKey(event)}`;
-    return this.invokeEventLabels([target], object, index);
+    const current = this.runtime && bytes === null ? 0 : index;
+    return this.invokeEventLabels([target], {
+      object,
+      nameBytes: bytes ?? new Uint8Array(),
+      index: current,
+      current,
+    });
   }
   nativeCommandReturn(value) {
     const word = value >>> 0,

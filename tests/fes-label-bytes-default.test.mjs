@@ -8,6 +8,7 @@ import { FESPlayer } from '../src/fes/player.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
 import { fesByteView } from '../src/fes/tokens.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { fesNotificationMemory as memory } from './fixtures/default-fes-world.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -60,34 +61,6 @@ const ascii = (value) => new TextEncoder().encode(value),
     ascii(' delay 21\nbreak\n'),
   );
 
-// This author owns raw NUL buffers. The legacy text view is observed only to
-// prove that native label messages consume the existing byte service directly.
-function memory(label, name = null, index = 0) {
-  const data = new Uint8Array(256);
-  data.set(label, 0);
-  if (name) {
-    data.set(name, 64);
-    new DataView(data.buffer).setInt32(96, index, true);
-  }
-  let stringReads = 0;
-  return {
-    bytes(address, count) {
-      return data.subarray(address, address + count);
-    },
-    load(address) {
-      return new DataView(data.buffer).getUint32(address, true);
-    },
-    string(address) {
-      stringReads++;
-      const value = data.subarray(address),
-        end = value.indexOf(0);
-      return new TextDecoder('shift_jis').decode(value.subarray(0, end));
-    },
-    get stringReads() {
-      return stringReads;
-    },
-  };
-}
 async function environment(profile, contents = source) {
   const scope = startupEnvironment();
   let player;
@@ -220,7 +193,8 @@ for (const profile of startupProfiles) {
           scriptCalls.push(fesByteView(bytes));
         return apply.call(this, bytes, ...args);
       });
-      t.mock.method(FESInstance.prototype, 'invokeEventLabels', function (labels, object, index) {
+      t.mock.method(FESInstance.prototype, 'invokeEventLabels', function (labels, context) {
+        const { object, index } = context;
         if (this.runtimeID === current.id && object)
           eventInputs.push({
             labels: [...labels],
@@ -229,7 +203,7 @@ for (const profile of startupProfiles) {
           });
         if (this.runtimeID === current.id && index === -1)
           negativeIndexInputs.push({ labels: [...labels], object, index });
-        return invokeLabels.call(this, labels, object, index);
+        return invokeLabels.call(this, labels, context);
       });
       const initialize = current.implementation.loadSource;
       t.mock.method(current.implementation, 'loadSource', async function (...args) {

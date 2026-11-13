@@ -677,6 +677,15 @@ export class FESPlayer {
             name: s.name,
             program: s.program,
             runtime: s.runtime?.snapshot() ?? null,
+            ...(s.runtime
+              ? {
+                  nativeContext: {
+                    nameBytes: s.nativeContext.nameBytes.slice(),
+                    index: s.nativeContext.index,
+                    current: s.nativeContext.current,
+                  },
+                }
+              : {}),
             label: s.label,
             ...(this.nativeVariableContext
               ? { nativeVariableContextKey: s.nativeVariableContextKey }
@@ -736,6 +745,25 @@ export class FESPlayer {
     this.stringTable = structuredClone(state.stringTable);
     const instance = async (saved) => {
       if (!saved) return null;
+      let nativeContext;
+      if (this.runtimeFactory) {
+        const context = saved.nativeContext;
+        if (
+          !context ||
+          !(context.nameBytes instanceof Uint8Array) ||
+          context.nameBytes.length > 31 ||
+          context.nameBytes.includes(0) ||
+          ![context.index, context.current].every(
+            (word) => Number.isInteger(word) && word >= -0x80000000 && word <= 0x7fffffff,
+          )
+        )
+          throw new TypeError('Invalid FES native context snapshot');
+        nativeContext = {
+          nameBytes: context.nameBytes.slice(),
+          index: context.index,
+          current: context.current,
+        };
+      }
       if (saved.program.sourceKey)
         (this.nativeSources || this.localSources).validateProgram(
           saved.program.sourceKey,
@@ -746,6 +774,7 @@ export class FESPlayer {
         macros: saved.macros,
         restoring: true,
       });
+      if (s.runtime) s.nativeContext = nativeContext;
       if (!Array.isArray(saved.keyNames)) throw new TypeError('Invalid FES keyboard name snapshot');
       for (const name of saved.keyNames) {
         if (typeof name !== 'string' || s.keyNames.has(name))
