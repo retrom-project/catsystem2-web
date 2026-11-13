@@ -25,6 +25,18 @@ raw 326 correspond to game 331; SDK bank queries 174/175 correspond to game
 176/177. The lower common task messages keep their independently recovered
 numbers.
 
+Native main447 (`fes.start`) has an explicit registration for both pinned
+profiles. The complete SDK `520020` and Game `654EC0` wrappers each contain 51
+instructions and read two argv words: the target task handle and a filename
+format pointer. They send SDK raw326/raw327 or Game331/332, then return control2
+without writing the VM result word. Their `ret 0x10` cleans four callback
+parameters; it does not add script argument words. SDK447 independently reuses
+the shared two-word, void, unwritten-result signature and its declared review.
+Handle kind/ownership and pointer address space/direction/encoding remain
+unknown. This registration adds no frontend: the existing JavaScript FES route
+already enforces two words and returns control2. Other unknown slots and
+unregistered versions retain their explicit gates.
+
 | Canonical messages | Behavior and limits                                                                                                                                                                                                                                   |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 3                  | Set the private `_EXITCODE_` to -1 and send sound-bank message 210 before the base destruction request; actual resource release remains deferred.                                                                                                     |

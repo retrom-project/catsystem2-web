@@ -7,6 +7,8 @@ import { NATIVE_SEMANTICS } from '../src/native/abi/semantics.mjs';
 import { abiForEngineVersion, nativeABI } from '../src/native/abi/index.mjs';
 import { nativeCatalog } from '../src/native/catalog.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { NativeRuntime } from '../src/native/runtime.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 const sdk = nativeABI(sdkRegistration.profile),
   game = nativeABI(gameRegistration.profile);
@@ -85,3 +87,39 @@ for (const registration of [sdkRegistration, gameRegistration]) {
     }
   });
 }
+
+test('SDK main447 explicitly binds its existing two-word unwritten FES contract', async () => {
+  const entry = sdk.tables.main.entries[447],
+    gameEntry = game.tables.main.entries[447],
+    runtime = new NativeRuntime({
+      profile: sdk.profile,
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('control.kcs');
+  runtime.register('main', 447, () => ({ control: 1, value: 0 }));
+  let rejectedWrongControl = false;
+  try {
+    runtime.native('main', 447, [0, 0], task.machine, task, runtime.scheduler);
+  } catch (error) {
+    assert.match(error.message, /control 1 disagrees with the fixed ABI \(2\)/);
+    rejectedWrongControl = true;
+  }
+  assert.deepEqual(
+    { status: entry.status, name: entry.name, rejectedWrongControl },
+    { status: 'recovered', name: 'fes.start', rejectedWrongControl: true },
+  );
+  assert.deepEqual(entry.signature, NATIVE_SEMANTICS.main[447].signature);
+  assert.deepEqual(entry.signature, gameEntry.signature);
+  assert.equal(entry.signature.argumentWords, 2);
+  assert.deepEqual(entry.signature.controlCodes, [2]);
+  assert.equal(entry.signature.result.kind, 'void');
+  assert.equal(entry.signature.resultWritten, false);
+  assert.equal(entry.signature.review, 'declared');
+  assert.deepEqual(entry.observedArgumentWords, [2]);
+  assert.match(entry.evidence, /SDK-2\.6\.1\.74-main447-full-wrapper/);
+  assert.notEqual(entry.evidence, gameEntry.evidence);
+  for (const id of [448, 449]) {
+    assert.equal(sdk.tables.main.entries[id].status, 'unknown');
+    assert.equal(sdk.tables.main.entries[id].name, null);
+  }
+});

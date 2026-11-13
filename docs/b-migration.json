@@ -11521,7 +11521,7 @@
           "table": "main",
           "id": 447,
           "hexID": "0x1bf",
-          "semanticName": null,
+          "semanticName": "fes.start",
           "fesRoute": {
             "id": 447,
             "label": "fes.start",
@@ -11548,10 +11548,7 @@
               }
             ]
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -49757,7 +49754,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "e71db9a4c512ce53a9e2d306b4ef80e57e9f9ed7a6fcb31b3ead44c06982d0a0",
+      "sourceSha256": "b69c71076125ff3b58ecd923d198ca59fb4f0c23ac048c9d62e956aa3829a633",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
