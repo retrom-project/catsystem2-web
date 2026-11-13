@@ -897,4 +897,19 @@ same player/root/runtime/task live rules as the other normal input consumers;
 closed-owner rejection cancels later work and live errors propagate. Current
 touch-field persistence is preserved: these callback assertions use the actual
 before value and current event handle, without manually clearing the field.
-The native touch value's independent frame-clear/lifetime audit remains open.
+The complete cached Game756900 frame decompilation names both automatic reset
+lists and omits TOUCH. The SDK5F4BB0 cache supplies their raw CString addresses,
+whose literal identities remain unverified here. Different addresses do not
+establish different names; this leaf makes no native SDK TOUCH-reset claim. Both
+current ports retain their existing TOUCH value across ordinary frames; authored
+named-value writes and context teardown keep their separate contracts.
+
+The existing instance.touch value is saved in the current FES instance checkpoint
+and restored through its existing field table. Before any event, serialization
+uses the existing system-zero semantics. The normal event producer does not
+mirror this value into the generic named bank, so its names snapshot is not a
+second source for the TOUCH value. Both registered ABIs use a real pointer
+activation and Graph65 callback before portable checkpoint serialization,
+reconstruct a fresh World, and retain the same value after its next ordinary
+frame without replaying TOUCH, START or FES/FILE source loads. Broader native
+named-bank invalidation remains an independent audit.
