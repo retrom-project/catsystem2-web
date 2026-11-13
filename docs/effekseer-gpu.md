@@ -22,6 +22,31 @@ another state owner. The snapshot stores stage zero only in `samplers` and
 other allocated stages only in `samplerStages`. This state-only owner change
 does not implement physical WebGL binding capture or actual kind61 submission.
 
+ParticlesGL now owns one VAO for its existing fixed interleaved vertex layout.
+Initialization, ordinary/typed/presentation draws, resource validation, shared
+generation rebuild and close use that same layout resource. Inherited attribute pointers,
+including the default VAO's null pointers, are never rewritten. After selecting
+the entry VAO, restore explicitly reinstates its captured ELEMENT binding;
+the entry may itself be the backend VAO used by the typed upload. A successful
+resource transaction retires a previous VAO that is still valid; context-loss
+handles are already invalid. Failed allocation does not publish a new layout.
+
+Its physical binding primitive captures the actual current program, the owned
+program's linked uniform values, VAO/ARRAY/ELEMENT bindings, four2D texture and
+sampler bindings, active unit, draw/read framebuffer, renderbuffer, viewport,
+depth/scissor, blend/stencil/masks and unpack state. The temporary token belongs
+to one GPU/device generation; loss, retirement, closure or reconstruction skips
+old handles. Completed or failed restoration releases captured resource
+references. Captures are not checkpoint data or a parallel device/cache.
+
+This primitive does not yet replace the independent semantic five-binding
+fixture interface or connect default kind61 submission. Its focused tests use
+actual JS backend/lifecycle classes with an authored WebGL API recorder; they
+establish neither real shader compilation nor GPU pixels. Real WebGL numeric
+and mixed-state acceptance belongs to the later task/backend connection. The
+API state partition follows the [WebGL2 specification](https://registry.khronos.org/webgl/specs/2.0.0/)
+and [uniform queries](https://registry.khronos.org/webgl/specs/1.0.3/#5.14.10).
+
 Unknown fog-enabled or non-solid inherited branches report an explicit error.
 The current2000-quad packet guard is an upload boundary, not a proof that the
 original shared batch splits or clamps at2000. Its byte reserve/flush and

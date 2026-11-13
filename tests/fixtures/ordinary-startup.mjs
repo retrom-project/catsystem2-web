@@ -10,7 +10,8 @@ import { kif, kcsProgram } from '../helpers.mjs';
 export const startupProfiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
 
 function createGL() {
-  let next = 1;
+  let next = 1,
+    vertexArray = null;
   const constants = new Map(),
     handles = new Map(),
     state = new WeakMap(),
@@ -28,11 +29,67 @@ function createGL() {
       if (!live(kind, handle)) throw new Error(`Invalid fixture ${kind} handle`);
       return state.get(handle);
     },
-    bound = (kind, target) => require(kind, bindings.get(target)),
+    defaultVertexArray = { element: null, attributes: new Map() },
+    currentVertexArray = () =>
+      vertexArray === null ? defaultVertexArray : require('VertexArray', vertexArray),
+    attribute = (index) => {
+      if (!Number.isInteger(index) || index < 0) throw new Error('Invalid fixture attribute index');
+      const attributes = currentVertexArray().attributes;
+      if (!attributes.has(index))
+        attributes.set(index, {
+          enabled: false,
+          buffer: null,
+          size: 4,
+          type: gl.FLOAT,
+          normalized: false,
+          stride: 0,
+          offset: 0,
+        });
+      return attributes.get(index);
+    },
+    bound = (kind, target) =>
+      require(kind, kind === 'Buffer' && target === gl.ELEMENT_ARRAY_BUFFER
+        ? currentVertexArray().element
+        : bindings.get(target)),
+    reflectUniforms = (shaders) => {
+      const uniforms = new Map(),
+        types = {
+          float: gl.FLOAT,
+          int: gl.INT,
+          uint: gl.UNSIGNED_INT,
+          bool: gl.BOOL,
+          sampler2D: gl.SAMPLER_2D,
+          vec2: gl.FLOAT_VEC2,
+          vec3: gl.FLOAT_VEC3,
+          vec4: gl.FLOAT_VEC4,
+          ivec2: gl.INT_VEC2,
+          ivec3: gl.INT_VEC3,
+          ivec4: gl.INT_VEC4,
+          mat4: gl.FLOAT_MAT4,
+        };
+      for (const shader of shaders)
+        for (const [, typeName, name, count] of state
+          .get(shader)
+          .source.matchAll(/uniform\s+(\w+)\s+(\w+)(?:\s*\[\s*(\d+)\s*\])?\s*;/g)) {
+          if (!Object.hasOwn(types, typeName))
+            throw new Error('Unimplemented fixture uniform type ' + typeName);
+          const size = count === undefined ? 1 : Number(count),
+            info = { name: count === undefined ? name : name + '[0]', size, type: types[typeName] };
+          const previous = uniforms.get(name);
+          if (previous && (previous.info.type !== info.type || previous.info.size !== size))
+            throw new Error('Conflicting fixture uniform declarations');
+          if (!previous) uniforms.set(name, { info });
+        }
+      return uniforms;
+    },
     result = {
       getExtension: () => null,
       getParameter(key) {
         if (key === gl.MAX_TEXTURE_SIZE) return 4096;
+        if (key === gl.CURRENT_PROGRAM) return bindings.get(gl.CURRENT_PROGRAM) ?? null;
+        if (key === gl.VERTEX_ARRAY_BINDING) return vertexArray;
+        if (key === gl.ARRAY_BUFFER_BINDING) return bindings.get(gl.ARRAY_BUFFER) ?? null;
+        if (key === gl.ELEMENT_ARRAY_BUFFER_BINDING) return currentVertexArray().element;
         if (key === gl.FRAMEBUFFER_BINDING || key === gl.DRAW_FRAMEBUFFER_BINDING)
           return bindings.get(gl.DRAW_FRAMEBUFFER) ?? bindings.get(gl.FRAMEBUFFER) ?? null;
         if (key === gl.READ_FRAMEBUFFER_BINDING) return bindings.get(gl.READ_FRAMEBUFFER) ?? null;
@@ -49,7 +106,10 @@ function createGL() {
         const data = require('Shader', shader);
         data.compiled = !!data.source;
       },
-      getShaderParameter: (shader) => require('Shader', shader).compiled === true,
+      getShaderParameter(shader, name) {
+        if (name !== gl.COMPILE_STATUS) throw new Error('Unexpected fixture shader query');
+        return require('Shader', shader).compiled === true;
+      },
       createProgram: () => create('Program', { shaders: [] }),
       attachShader(program, shader) {
         require('Shader', shader);
@@ -58,18 +118,69 @@ function createGL() {
       linkProgram(program) {
         const data = require('Program', program);
         data.linked = data.shaders.length === 2 && data.shaders.every((s) => state.get(s).compiled);
+        data.uniforms = data.linked ? reflectUniforms(data.shaders) : new Map();
       },
-      getProgramParameter: (program) => require('Program', program).linked === true,
+      getProgramParameter(program, name) {
+        const data = require('Program', program);
+        if (name === gl.LINK_STATUS) return data.linked === true;
+        if (name === gl.ACTIVE_UNIFORMS) {
+          if (!data.linked) throw new Error('Fixture program is unlinked');
+          return data.uniforms.size;
+        }
+        throw new Error('Unexpected fixture program query');
+      },
+      getActiveUniform(program, index) {
+        const data = require('Program', program);
+        if (!data.linked || !Number.isInteger(index) || index < 0 || index >= data.uniforms.size)
+          throw new Error('Invalid fixture active uniform index');
+        return { ...[...data.uniforms.values()][index].info };
+      },
       useProgram(program) {
-        if (!require('Program', program).linked) throw new Error('Fixture program is unlinked');
+        if (program !== null && !require('Program', program).linked)
+          throw new Error('Fixture program is unlinked');
+        bindings.set(gl.CURRENT_PROGRAM, program);
       },
       getUniformLocation(program, name) {
-        if (!require('Program', program).linked) throw new Error('Fixture program is unlinked');
-        return { program, name };
+        const data = require('Program', program);
+        if (!data.linked) throw new Error('Fixture program is unlinked');
+        const uniform = data.uniforms.get(name.replace(/\[0\]$/, ''));
+        if (!uniform) return null;
+        return (uniform.location ??= { program, name: uniform.info.name });
+      },
+      bindVertexArray(handle) {
+        if (handle !== null) require('VertexArray', handle);
+        vertexArray = handle;
+      },
+      enableVertexAttribArray(index) {
+        attribute(index).enabled = true;
+      },
+      vertexAttribPointer(index, size, type, normalized, stride, offset) {
+        const buffer = bindings.get(gl.ARRAY_BUFFER);
+        require('Buffer', buffer);
+        if (
+          type !== gl.FLOAT ||
+          !Number.isInteger(size) ||
+          size < 1 ||
+          size > 4 ||
+          !Number.isInteger(stride) ||
+          stride < 0 ||
+          !Number.isInteger(offset) ||
+          offset < 0
+        )
+          throw new Error('Unimplemented or invalid fixture vertex attribute layout');
+        Object.assign(attribute(index), {
+          buffer,
+          size,
+          type,
+          normalized: Boolean(normalized),
+          stride,
+          offset,
+        });
       },
       bindBuffer(target, buffer) {
         if (buffer !== null) require('Buffer', buffer);
-        bindings.set(target, buffer);
+        if (target === gl.ELEMENT_ARRAY_BUFFER) currentVertexArray().element = buffer;
+        else bindings.set(target, buffer);
       },
       bufferData(target, data) {
         const buffer = bound('Buffer', target);
@@ -174,7 +285,14 @@ function createGL() {
     };
   for (const kind of ['Buffer', 'Texture', 'Framebuffer', 'Renderbuffer', 'VertexArray'])
     result[`create${kind}`] = () =>
-      create(kind, kind === 'Framebuffer' ? { attachments: new Map() } : {});
+      create(
+        kind,
+        kind === 'Framebuffer'
+          ? { attachments: new Map() }
+          : kind === 'VertexArray'
+            ? { element: null, attributes: new Map() }
+            : {},
+      );
   for (const kind of [
     'Shader',
     'Program',
@@ -185,18 +303,12 @@ function createGL() {
     'VertexArray',
   ]) {
     result[`is${kind}`] = (handle) => live(kind, handle);
-    result[`delete${kind}`] = (handle) => handles.get(kind)?.delete(handle);
+    result[`delete${kind}`] = (handle) => {
+      if (kind === 'VertexArray' && vertexArray === handle) vertexArray = null;
+      return handles.get(kind)?.delete(handle);
+    };
   }
-  for (const name of [
-    'uniform1i',
-    'uniform2f',
-    'viewport',
-    'enable',
-    'blendFunc',
-    'texParameteri',
-    'enableVertexAttribArray',
-    'vertexAttribPointer',
-  ])
+  for (const name of ['uniform1i', 'uniform2f', 'viewport', 'enable', 'blendFunc', 'texParameteri'])
     result[name] = () => {};
   const gl = new Proxy(result, {
     get(target, key) {

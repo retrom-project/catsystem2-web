@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NativeGraphicsDevice } from '../native/graphics-device.mjs';
+import {
+  describeGLUniforms,
+  createGLBindingCapture,
+  captureGLBindings,
+  restoreGLBindings,
+} from './gl-bindings.mjs';
 // Effekseer normal shader adaptation: copyright (c) 2011 Effekseer Project,
 // MIT grant in ../../licenses/effekseer-MIT.txt; fixed official1.23 source.
 import { PARTICLE_BLEND_FACTORS } from '../ppi/abi.mjs';
@@ -530,6 +536,16 @@ export class ParticlesGL {
         'alphaReference',
       ].map((n) => [n, gl.getUniformLocation(this.program, n)]),
     );
+    try {
+      this.bindingUniforms = describeGLUniforms(gl, this.program);
+      this.vertexArray = gl.createVertexArray();
+      if (!this.vertexArray) throw new Error('Shared graphics vertex layout allocation failed');
+    } catch (error) {
+      gl.deleteProgram(this.program);
+      this.program = null;
+      throw error;
+    }
+    gl.bindVertexArray(this.vertexArray);
     this.buffer = gl.createBuffer();
     this.effekseerIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.effekseerIndexBuffer);
@@ -626,6 +642,20 @@ export class ParticlesGL {
     this.graphicsDevice?.requireReady();
     if (this.closed) throw new Error('Graphics backend is closed');
   }
+  createBindingCapture() {
+    return createGLBindingCapture(this);
+  }
+  captureBindings(capture) {
+    return captureGLBindings(this, capture);
+  }
+  restoreBindings(capture) {
+    return restoreGLBindings(this, capture);
+  }
+  bindVertexLayout() {
+    if (!this.vertexArray) throw new Error('Graphics vertex layout is unavailable');
+    this.gl.bindVertexArray(this.vertexArray);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+  }
   resourcesReady() {
     const gl = this.gl;
     return (
@@ -633,6 +663,7 @@ export class ParticlesGL {
       !gl.isContextLost() &&
       gl.isProgram(this.program) &&
       gl.getProgramParameter(this.program, gl.LINK_STATUS) &&
+      gl.isVertexArray(this.vertexArray) &&
       gl.isBuffer(this.buffer) &&
       gl.isBuffer(this.effekseerIndexBuffer) &&
       gl.isTexture(this.targetTexture) &&
@@ -654,6 +685,7 @@ export class ParticlesGL {
   rebuildResources() {
     if (this.closed) throw new Error('Graphics backend is closed');
     const primary = this.primaryTarget,
+      previousVertexArray = this.vertexArray,
       primaryDepth = this.primaryDepthStencil,
       targets = [...this.nativeTargets],
       depths = [...this.nativeDepth],
@@ -702,6 +734,8 @@ export class ParticlesGL {
         nativeTargets: new Set(targets),
         nativeDepth: new Set(depths),
       });
+      if (this.gl.isVertexArray(previousVertexArray))
+        this.gl.deleteVertexArray(previousVertexArray);
       this.drawing = false;
       this.activeTarget = null;
       this.nativeBatch = null;
@@ -1394,7 +1428,7 @@ export class ParticlesGL {
     this.primaryTarget.depthStencil = this.primaryDepthStencil;
     this.primaryTarget.attachmentsChecked = true;
     gl.useProgram(this.program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+    this.bindVertexLayout();
     gl.uniform2f(this.uniform.resolution, this.canvas.width, this.canvas.height);
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.colorMask(true, true, true, true);
@@ -1524,7 +1558,7 @@ export class ParticlesGL {
     if (s.get(27) || s.get(194)) this.requireTargetContent(this.target);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.target.framebuffer);
     gl.useProgram(this.program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+    this.bindVertexLayout();
     gl.uniform1i(this.uniform.backgroundPass, 0);
     gl.uniform1i(this.uniform.effekseerPass, Number(Boolean(effekseer)));
     if (effekseer) {
@@ -1991,7 +2025,7 @@ export class ParticlesGL {
     try {
       gl.viewport(packet.viewport[0], packet.viewport[1], packet.viewport[2], packet.viewport[3]);
       gl.depthRange(packet.viewport[4], packet.viewport[5]);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+      this.bindVertexLayout();
       gl.bufferData(gl.ARRAY_BUFFER, packet.vertices, gl.STREAM_DRAW, 0, packet.vertexCount * 10);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.effekseerIndexBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, packet.indices, gl.STREAM_DRAW, 0, packet.indexCount);
@@ -2083,7 +2117,7 @@ export class ParticlesGL {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, w, h);
     gl.useProgram(this.program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+    this.bindVertexLayout();
     gl.uniform2f(this.uniform.resolution, w, h);
     gl.disable(gl.BLEND);
     gl.disable(gl.DEPTH_TEST);
@@ -2140,6 +2174,7 @@ export class ParticlesGL {
     for (const texture of this.ownedTextures ?? []) gl.deleteTexture(texture);
     if (this.framebuffer) gl.deleteFramebuffer(this.framebuffer);
     if (this.depthStencil) gl.deleteRenderbuffer(this.depthStencil);
+    if (this.vertexArray) gl.deleteVertexArray(this.vertexArray);
     if (this.buffer) gl.deleteBuffer(this.buffer);
     if (this.effekseerIndexBuffer) gl.deleteBuffer(this.effekseerIndexBuffer);
     if (this.program) gl.deleteProgram(this.program);

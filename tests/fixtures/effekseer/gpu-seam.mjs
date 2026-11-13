@@ -111,6 +111,7 @@ function setup() {
       depthStencil: { id: 'surfaceDepth' },
     },
     program: { id: 'sharedProgram' },
+    vertexArray: { id: 'sharedVertexArray' },
     buffer: { id: 'sharedVertices' },
     effekseerIndexBuffer: { id: 'efkIndices' },
     destination: { id: 'destination' },

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 252, "oracle": 149, "differential": 67 },
+    "counts": { "js": 253, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -140,6 +140,7 @@
         "tests/font.test.mjs",
         "tests/formats.test.mjs",
         "tests/gallery-contracts.test.mjs",
+        "tests/gl-binding-primitive.test.mjs",
         "tests/host-log.test.mjs",
         "tests/jpeg.test.mjs",
         "tests/kcs-contracts.test.mjs",
@@ -2421,8 +2422,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 485,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 46, "7": 81, "8": 180, "9": 55 },
+    "runtimeFiles": 486,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 81, "8": 180, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -57117,6 +57118,19 @@
       "review": "counted"
     },
     {
+      "file": "src/render/gl-bindings.mjs",
+      "sourceSha256": "e4594584f4dac5298310797ef558be4869e3bcaf4122b4671483378fa1ed57a2",
+      "domain": 6,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/render/native-geometry.mjs",
       "sourceSha256": "24e1d773dfce8f60ab106c05218c7096d517117efa359f9d8674f36ae6ca2f8b",
       "domain": 6,
@@ -57157,7 +57171,7 @@
     },
     {
       "file": "src/render/particles-gl.mjs",
-      "sourceSha256": "5c806b27b1f1af100a21560754e615494d2ad0e8df240e8f2af4a24095dd9e2c",
+      "sourceSha256": "1dea2832c0bfb888bc9806383a6838ed7e72946f40b8a549ef9a078919573a3d",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
