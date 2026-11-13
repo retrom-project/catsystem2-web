@@ -599,16 +599,27 @@ known restore reads the then-current field, never a producer snapshot, and does
 not overwrite it. These are the registered74/76 normal default paths; other
 automatic-input commands remain separate.
 
-Normal Graph/FES message9 PUSH_L/R (key0/1) has its own synchronous resource
-tail. In the registered74/76 paths, it refreshes the mouse, invokes the actual
-PUSH callback, sends94 only when unhandled, traverses the current resource FIFO,
-and then synchronizes input before returning0. The traversal borrows the same
-live executor entry from the Input tick/Graph call; it does not wait for a later
-FES frame. FILE/Play authored in a Game PUSH callback therefore reach the real
-EFK task and manager within that invocation, rather than retaining a callback
-executor in pending state.
+Normal Graph/FES message9 PUSH_L/R (key0/1) writes the source into the FES owner
+and interpreter before checking sleeping. Sleeping sends94 and returns0 without
+mouse queries, a PUSH event, resource traversal or input synchronization. Awake
+calls then refresh the mouse, invoke the actual PUSH callback, send94 only when
+unhandled, traverse the current resource FIFO, and synchronize input before
+returning0. The traversal borrows the same live executor entry from the Input
+tick/Graph call; it does not wait for a later FES frame. FILE/Play authored in a
+Game PUSH callback therefore reach the real EFK task and manager within that
+invocation, rather than retaining a callback executor in pending state.
 
-This call captures its player/root/runtime/task identity and checks that owner
+The current direct source read is verified for actual same-Top Graph routes:
+the sender and FES share the Top Input, and ordinary Input routing has already
+mapped source16 to2. The original receiver instead queries the sender with
+canonical95, flags1, w0/l1. That general query remains a separate unfinished
+boundary; cross-Top, non-Graph and synthetic source16 messages are not covered
+by this equivalence. Actual342 masks the hardware path while sleeping; the
+sleeping regression uses the exposed FES message boundary explicitly.
+
+The early source writes remain visible if a later mouse query fails or its
+owner closes; cancellation does not roll them back. This call captures its
+player/root/runtime/task identity and checks that owner
 after each asynchronous step. Closing an owner during a real Host wait cancels
 later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input

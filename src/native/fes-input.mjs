@@ -500,14 +500,14 @@ export class FESInput {
         this.world.objects.objects.get(this.record.id) === this.record;
     if (!live()) return 0;
     try {
-      await this.updateMouse();
-      if (!live()) return 0;
       this.state.source = this.input.source;
       instance.inputSource = this.state.source;
       if (this.state.sleeping) {
         await this.propagation(sender, false);
         return 0;
       }
+      await this.updateMouse();
+      if (!live()) return 0;
       const focused = this.referenceObject(this.state.focus),
         key = valid(focused) ? focused.key : null;
       this.state.pressed = key;
