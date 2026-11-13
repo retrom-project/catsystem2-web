@@ -53,6 +53,24 @@ export class FESInput {
       ) ?? null
     );
   }
+  capturePressedReference() {
+    const reference = this.state.focus,
+      object = this.referenceObject(reference);
+    if (!reference?.nameBytes.length || (object?.nativeType === 6 && !object.enable)) {
+      this.state.pressed = null;
+      return null;
+    }
+    this.state.pressed = {
+      nameBytes: new Uint8Array(reference.nameBytes),
+      index: reference.index | 0,
+    };
+    return object?.key;
+  }
+  pressedEventKey() {
+    const reference = this.state.pressed;
+    if (!reference?.nameBytes.length || reference.index === -1) return null;
+    return this.referenceObject(reference)?.key;
+  }
   get focused() {
     const object = this.referenceObject(this.state.focus);
     return object ? { s: this.instance, o: object } : null;
@@ -453,7 +471,7 @@ export class FESInput {
       }
       await this.updateMouse();
       if (!live()) return 0;
-      const key = this.state.pressed,
+      const key = this.pressedEventKey(),
         event =
           keyIndex === 0
             ? 'RELEASE_L'
@@ -463,7 +481,7 @@ export class FESInput {
                 ? `RELEASE_${['UP', 'DOWN', 'LEFT', 'RIGHT'][keyIndex - 4]}`
                 : null;
       let handled = false;
-      if (event !== null && (key === null || instance.byKey.has(key))) {
+      if (event !== null && key !== undefined) {
         handled = await player.nativeEvent(key, event);
         if (!live()) return 0;
         await player.flush();
@@ -514,13 +532,14 @@ export class FESInput {
       }
       await this.updateMouse();
       if (!live()) return 0;
-      const focused = this.referenceObject(this.state.focus),
-        key = valid(focused) ? focused.key : null;
-      this.state.pressed = key;
-      const handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
-      if (!live()) return 0;
-      await player.flush();
-      if (!live()) return 0;
+      const key = this.capturePressedReference();
+      let handled = false;
+      if (key !== undefined) {
+        handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
+        if (!live()) return 0;
+        await player.flush();
+        if (!live()) return 0;
+      }
       await this.propagation(sender, handled);
       if (!live()) return 0;
       await runtime.sync({ resourcesOnly: true, executorEntry: context.executorEntry });
@@ -787,7 +806,7 @@ export class FESInput {
         }
         const focused = this.referenceObject(this.state.focus),
           key = valid(focused) ? focused.key : null;
-        this.state.pressed = key;
+        this.state.pressed = key === null ? null : this.referenceFor(focused);
         let handled = false;
         if (l === 0 || l === 1) handled = await this.event(key, l ? 'PUSH_R' : 'PUSH_L');
         else if (l >= 4 && l <= 7)
@@ -813,15 +832,12 @@ export class FESInput {
       }
       case 10: {
         this.state.source = 0;
+        const key = this.pressedEventKey();
         let handled = false;
-        if (!this.state.sleeping) {
-          if (l === 0 || l === 1)
-            handled = await this.event(this.state.pressed, l ? 'RELEASE_R' : 'RELEASE_L');
+        if (!this.state.sleeping && key !== undefined) {
+          if (l === 0 || l === 1) handled = await this.event(key, l ? 'RELEASE_R' : 'RELEASE_L');
           else if (l >= 4 && l <= 7)
-            handled = await this.event(
-              this.state.pressed,
-              `RELEASE_${['UP', 'DOWN', 'LEFT', 'RIGHT'][l - 4]}`,
-            );
+            handled = await this.event(key, `RELEASE_${['UP', 'DOWN', 'LEFT', 'RIGHT'][l - 4]}`);
         }
         await this.propagation(sender, handled);
         await this.sync();

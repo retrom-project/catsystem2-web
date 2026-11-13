@@ -75,7 +75,10 @@ function position(h) {
 async function press(h, key = 0) {
   h.input.key(key, true);
   await h.world.tick();
-  assert.equal(h.task.input.state.pressed, h.instance.collection.lookup('b', 0).key);
+  assert.deepEqual(
+    h.task.input.state.pressed,
+    h.instance.collection.reference(h.instance.collection.lookup('b', 0)),
+  );
 }
 function observe(h) {
   const releases = [],
@@ -262,7 +265,7 @@ for (const profile of profiles) {
       const saved = missing.task.input.state.pressed,
         click = missing.instance.clickL;
       await notify(missing, 'DELETE');
-      assert.equal(missing.instance.byKey.has(saved), false);
+      assert.equal(missing.instance.collection.lookup(saved.nameBytes, saved.index), null);
       assert.equal(missing.task.input.state.pressed, saved);
       const rows = observe(missing);
       missing.input.key(0, false);
@@ -421,7 +424,7 @@ for (const profile of profiles) {
         before = position(restored),
         rows = observe(restored);
       assert.deepEqual(reads, ['case.kcs']);
-      assert.equal(task.input.state.pressed, saved);
+      assert.deepEqual(task.input.state.pressed, saved);
       restored.input.key(0, false);
       await fresh.tick();
       assert.ok(rows.length > 0);
@@ -435,7 +438,7 @@ for (const profile of profiles) {
       );
       assert.equal(restored.instance.global(12), 37);
       assert.equal(h.instance.global(12), 0);
-      assert.equal(task.input.state.pressed, saved);
+      assert.deepEqual(task.input.state.pressed, saved);
       assert.equal(fresh.nativeEngine, undefined);
     } finally {
       if (fresh) await fresh.close();

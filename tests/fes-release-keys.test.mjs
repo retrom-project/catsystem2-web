@@ -57,7 +57,10 @@ async function open(profile) {
 async function press(h, key) {
   h.input.key(key, true);
   await h.world.tick();
-  assert.equal(h.task.input.state.pressed, h.instance.collection.lookup('b', 0).key);
+  assert.deepEqual(
+    h.task.input.state.pressed,
+    h.instance.collection.reference(h.instance.collection.lookup('b', 0)),
+  );
 }
 const flags = (h) => Object.fromEntries(fieldNames.map((name) => [name, h.instance[name]]));
 function observe(h) {
@@ -199,7 +202,7 @@ for (const profile of profiles) {
           for (const other of fieldNames.filter((name) => name !== field))
             assert.equal(row.after[other], row.before[other]);
         }
-        assert.equal(h.task.input.state.pressed, object.key);
+        assert.deepEqual(h.task.input.state.pressed, h.instance.collection.reference(object));
         assert.equal(h.task.input.state.source, 0);
         assert.equal(h.instance.inputSource, 1);
         assert.equal(
@@ -268,7 +271,7 @@ for (const profile of profiles) {
       await missing.world.sendEngine(missing.id, missing.world.main.id, 337, 0, 0, {
         payload: { string: () => 'DELETE' },
       });
-      assert.equal(missing.instance.byKey.has(saved), false);
+      assert.equal(missing.instance.collection.lookup(saved.nameBytes, saved.index), null);
       const rows = observe(missing);
       missing.input.key(4, false);
       await missing.world.tick();
@@ -390,7 +393,7 @@ for (const profile of profiles) {
         rows = observe(restored),
         object = restored.instance.collection.lookup('b', 0);
       assert.deepEqual(reads, ['case.kcs']);
-      assert.equal(task.input.state.pressed, saved);
+      assert.deepEqual(task.input.state.pressed, saved);
       restored.input.key(4, false);
       await fresh.tick();
       assert.ok(rows.length > 0);
@@ -406,7 +409,7 @@ for (const profile of profiles) {
         ]);
         assert.equal(row.after.releaseUp, object.handle);
       }
-      assert.equal(task.input.state.pressed, saved);
+      assert.deepEqual(task.input.state.pressed, saved);
       assert.equal(restored.instance.global(40), 0);
       assert.equal(fresh.nativeEngine, undefined);
     } finally {

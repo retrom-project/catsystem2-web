@@ -660,6 +660,28 @@ route boundaries, without claiming a cross-Top hardware producer. Ordinary
 World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
+The existing pressed field owns a narrow nameBytes/int32 index pair, separately
+from the active reference. Normal key0/1 PUSH captures it after mouse completion
+and before its event. Only an empty active name or a current raw6 BUTTON with
+enable0 produces the invalid pressed sentinel (represented as null). A missing
+current object or a current non-BUTTON still copies the active name/index; the
+event helper's missing-name early return skips its fields and flush, whereas a
+NULL event retains the original field writes. RELEASE looks the saved pair up
+in the current collection, so deletion and replacement never pin an old object
+or a presentation key. It does not consume the pressed pair. Active changes
+and fresh restore therefore preserve this independent reference.
+
+The native source active names are32 bytes with a separate index (Game+1E0/+200,
+SDK+1E4/+204). PUSH copies the CString byte by byte through NUL into the pressed
+name buffer (Game+45C, SDK+35C), then writes its index at+49C/+39C. This is not a
+36-byte memcpy; the destination index is64 bytes after its name buffer. JS saves
+only the defined name bytes and int32 index, never the unused buffer tail. A
+native invalid index=-1 makes its previous name unread; null models that
+sentinel, and the release reader also recognizes a copied index=-1. The current
+unreleased checkpoint saves this single pressed field as a pair/null; no old
+string reader or additional snapshot is kept. Other PUSH paths only adopt the
+same representation here; their admission/events/tails remain separate leaves.
+
 The early source writes remain visible if a later mouse query fails or its
 owner closes; cancellation does not roll them back. This call captures its
 player/root/runtime/task identity and checks that owner

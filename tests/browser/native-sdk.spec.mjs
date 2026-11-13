@@ -241,10 +241,15 @@ test('official SDK starts with saved setup and restores the title and tutorial c
   expect(
     await page.evaluate(() => ({
       scroll: window.scrollY,
-      pressed: window.catSystem2.activeFES().nativeInput.state.pressed,
+      pressed: (() => {
+        const reference = window.catSystem2.activeFES().nativeInput.state.pressed;
+        return reference === null
+          ? null
+          : { nameBytes: Array.from(reference.nameBytes), index: reference.index };
+      })(),
       selected: window.catSystem2.activeFES().root.local(30),
     })),
-  ).toEqual({ scroll: 0, pressed: 'fr1[1]', selected: 1 });
+  ).toEqual({ scroll: 0, pressed: { nameBytes: [102, 114, 49], index: 1 }, selected: 1 });
   expect(errors).toEqual([]);
 });
 

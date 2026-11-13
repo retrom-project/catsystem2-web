@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 257, "oracle": 149, "differential": 67 },
+    "counts": { "js": 258, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -114,6 +114,7 @@
         "tests/fes-plane-driver.test.mjs",
         "tests/fes-platform-default.test.mjs",
         "tests/fes-preload-default.test.mjs",
+        "tests/fes-pressed-reference.test.mjs",
         "tests/fes-push-resource-tail.test.mjs",
         "tests/fes-push-sender-source.test.mjs",
         "tests/fes-push-source-order.test.mjs",
@@ -52098,7 +52099,7 @@
     },
     {
       "file": "src/native/fes-input.mjs",
-      "sourceSha256": "2ef183f7cec476a969d7ef4dda1f5e07560096e6e16c4dd76bffaa743dc10eb0",
+      "sourceSha256": "93d017257d44d5e2f7bc6f40b25bb079ed55b1a197a3ed78e9c284289f0a7b25",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

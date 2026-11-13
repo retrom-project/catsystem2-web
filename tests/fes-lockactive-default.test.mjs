@@ -216,11 +216,11 @@ for (const profile of profiles) {
       await graph(h, 7, a);
       assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
       await graph(h, 4, a, 0, 1);
-      assert.equal(h.input.state.pressed, 'a');
+      assert.deepEqual(ref(h.input.state.pressed), ['a', 0]);
       await notify(h, 'WRAP');
       await graph(h, 8, a);
       assert.deepEqual(ref(h.input.state.focus), ['', 0]);
-      assert.equal(h.input.state.pressed, 'a');
+      assert.deepEqual(ref(h.input.state.pressed), ['a', 0]);
       assert.ok(
         seen.some((r) => r[0] === 'event' && r[2] === 'UNFOCUS' && r[3][0] === '' && r[3][1] === 0),
       );
