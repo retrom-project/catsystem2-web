@@ -661,7 +661,7 @@ World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
 The existing pressed field owns a narrow nameBytes/int32 index pair, separately
-from the active reference. Key0/1 and scroll keys8/9 PUSH capture it after mouse
+from the active reference. Key0/1 and scroll/page keys8..11 PUSH capture it after mouse
 completion and before their event. Only an empty active name or a current raw6 BUTTON with
 enable0 produces the invalid pressed sentinel (represented as null). A missing
 current object or a current non-BUTTON still copies the active name/index; the
@@ -690,9 +690,9 @@ later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
-Normal default message9 key0/1 and scroll keys8/9 share this owner/resource
+Normal default message9 key0/1 and scroll/page keys8..11 share this owner/resource
 path. Direction4..7 keeps its existing resource traversal without another pass.
-Other PUSH key/scroll and TOUCH post-callback tails remain separate uncompleted
+Other PUSH keys and TOUCH post-callback tails remain separate uncompleted
 boundaries; the direct JS-authored FES input API is unchanged.
 
 Canonical/logical key8 selects frozen event6 in both registered FES switches.
@@ -720,6 +720,19 @@ flush. The ordinary btnsimulate9 producer verifies the actual World Graph/FES
 callback in both ABIs: current339 image work is consumed before that callback
 returns, while scroll-up and key10's page-up fields stay unchanged. Other keys
 and the remaining TOUCH tails retain their separate recovery boundaries.
+
+Normal pagination logical keys10/11 select frozen events9/10, respectively.
+Both registered ABIs write their PAGE_U/PAGE_D field and return0 with no default
+or object label dispatch and no Player flush. They use the same current pressed
+reference and common source95/mouse/unhandled94/resource/input-sync path. The
+ordinary btnsimulate10 and btnsimulate11 producers each reach the actual World
+Graph/FES callback; consecutive real339 changes are consumed before the
+corresponding callback returns. Each key writes its own page field, preserves
+the other page/scroll fields, and leaves authored PAGE_U/PAGE_D labels idle.
+The existing FES frame end clears both page fields; a later frame does not
+retain the previous page event. Same-frame repeated Graph delivery sees the
+field already written by the prior callback and keeps the consumed image state.
+No browser paging binding, other key, direction or TOUCH behavior is inferred.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
