@@ -8,6 +8,7 @@ import {
   navigateFESButton,
   fesButtonCursorPoint,
   findFESInitialButton,
+  validateFESButtonInitialHandle,
 } from './fes-button-navigation.mjs';
 const packet = (words) => new NativeGraphicsPacket(words);
 const valid = (object) => object?.type === 'BUTTON' && !object.deleted && object.enable;
@@ -537,15 +538,52 @@ export class FESInput {
       if (keyIndex >= 4 && keyIndex <= 7) {
         handled = await this.moveDirection(keyIndex - 4, context);
         if (!live()) return 0;
-      } else if (key !== undefined) {
-        if (keyIndex === 8 || keyIndex === 9 || keyIndex === 10 || keyIndex === 11) {
-          // Frozen scroll/page events write fields and return0 without dispatching labels.
-          player.nativeEvent(key, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][keyIndex - 8]);
-        } else {
+      } else if (keyIndex === 0 || keyIndex === 1) {
+        if (key !== undefined) {
           handled = await player.nativeEvent(key, keyIndex ? 'PUSH_R' : 'PUSH_L');
           if (!live()) return 0;
           await player.flush();
           if (!live()) return 0;
+        }
+      } else if (keyIndex === 8 || keyIndex === 9 || keyIndex === 10 || keyIndex === 11) {
+        // Frozen scroll/page events write fields and return0 without dispatching labels.
+        if (key !== undefined)
+          player.nativeEvent(key, ['SCRL_U', 'SCRL_D', 'PAGE_U', 'PAGE_D'][keyIndex - 8]);
+      } else {
+        let at = 0;
+        while (at < runtime.resources.entries.length) {
+          const entry = runtime.resources.entries[at];
+          if (entry.savedType === 6) {
+            validateFESButtonInitialHandle(entry);
+            const initial = instance.collection.graph.get(entry.initialHandle);
+            if (!initial || initial.nativeType !== 6)
+              throw new Error(
+                'FES SYSKEY reads an unavailable initial BUTTON before resource cleanup',
+              );
+            if (initial.enable) {
+              const systemKey = initial.systemKey;
+              if (!Number.isInteger(systemKey) || (systemKey | 0) !== systemKey)
+                throw new Error('FES BUTTON has no initialized int32 SYSKEY word');
+              if (systemKey !== -1 && systemKey >>> 0 === keyIndex >>> 0) {
+                const object = instance.collection.lookup(entry.nameBytes, entry.index);
+                if (object) {
+                  const result = await player.nativeEvent(object.key, 'PUSH_L');
+                  if (!live()) return 0;
+                  await player.flush();
+                  if (!live()) return 0;
+                  handled = result || handled;
+                }
+              }
+            }
+          }
+          // Native next is read after this entry's event and its complete flush.
+          const entries = runtime.resources.entries;
+          if (entries[at] !== entry) {
+            at = entries.indexOf(entry);
+            if (at < 0)
+              throw new Error('FES SYSKEY reads a resource entry removed during its event');
+          }
+          at++;
         }
       }
       await this.propagation(sender, handled);
@@ -803,21 +841,7 @@ export class FESInput {
     if ([64, 65].includes(message) && this.world.resolveTaskID)
       w = this.world.resolveTaskID(w, this.record.id);
     if (message === 64 && this.instance.runtime) return this.consumeHover(w, l, context);
-    if (
-      message === 9 &&
-      this.instance.runtime &&
-      (l === 0 ||
-        l === 1 ||
-        l === 4 ||
-        l === 5 ||
-        l === 6 ||
-        l === 7 ||
-        l === 8 ||
-        l === 9 ||
-        l === 10 ||
-        l === 11)
-    )
-      return this.consumePush(sender, l, context);
+    if (message === 9 && this.instance.runtime) return this.consumePush(sender, l, context);
     if (message === 10 && this.instance.runtime) return this.consumeRelease(sender, l, context);
     await this.updateMouse();
     switch (message) {

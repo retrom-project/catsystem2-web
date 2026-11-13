@@ -661,8 +661,8 @@ World Input/Graph callbacks separately verify the real sender, including the
 independent low-button Graph.
 
 The existing pressed field owns a narrow nameBytes/int32 index pair, separately
-from the active reference. Key0/1 and directions/scroll/page keys4..11 PUSH capture it after mouse
-completion and before their event. Only an empty active name or a current raw6 BUTTON with
+from the active reference. Normal PUSH captures it after mouse
+completion and before navigation or event dispatch. Only an empty active name or a current raw6 BUTTON with
 enable0 produces the invalid pressed sentinel (represented as null). A missing
 current object or a current non-BUTTON still copies the active name/index; the
 event helper's missing-name early return skips its fields and flush, whereas a
@@ -690,11 +690,11 @@ later resource/input work and canceled request rejection; live errors propagate.
 Already completed effects remain. It adds no queue, snapshot field or input
 authority; fresh restore uses the same resource entries and references.
 
-Normal default message9 keys0/1 and4..11 share this owner/resource path. The
+All normal default message9 PUSH keys share this owner/resource path. The
 normal direction callback owns one final resource traversal, including its
-unhandled/no-candidate and consumed-without-default branches. Other PUSH keys
-and TOUCH post-callback tails remain separate uncompleted boundaries; the direct
-JS-authored FES input API is unchanged.
+unhandled/no-candidate and consumed-without-default branches. The data-key
+SYSKEY path uses the same final traversal. TOUCH post-callback tails remain a
+separate uncompleted boundary; the direct JS-authored FES input API is unchanged.
 
 Canonical/logical key8 selects frozen event6 in both registered FES switches.
 It writes the SCRL_U field and returns0 without default or object label dispatch.
@@ -746,6 +746,27 @@ The algorithm's two prior internal resource visits now belong to that common
 tail. The existing direct runtime move action separately owns its single
 resourcesOnly visit after the algorithm with captured owner/liveness checks;
 its nonruntime branch is unchanged. No new queue, option or saved state is added.
+
+Normal data keys2/3 and unsigned values above11 share the original SYSKEY
+fallback. They do not imply a hardware binding or a native-function slot. The
+current resource FIFO is scanned without preselecting matches: each saved raw6
+entry reads enable and signed SYSKEY from its original ordinary BUTTON identity,
+excludes SYSKEY-1, and compares the remaining value as a32-bit word. The existing
+SYSKEY definition initializes that field; an unbound BUTTON starts at-1 in both
+ABIs. Its current enumerable object state already owns the field in checkpoints.
+A missing initial identity is the original unsafe object-read domain and is
+reported rather than rebound to a replacement dictionary object.
+
+Each match resolves the entry's current name/index for event2/PUSH_L. All matches
+run, even after one handles the event; results are ORed. Existing event/flush
+owner checks finish before the next live FIFO entry is read, so an author label
+can change a later BUTTON's eligibility. No active or pressed object is required
+for this scan, and matched buttons do not replace the earlier pressed pair. Only
+an entirely unhandled scan sends94; every live completion then visits resources
+and synchronizes input once. The ordinary btnsimulate producer addresses the
+existing80-key table, including2/3 and79; this does not create a producer for
+out-of-table values or enable an unregistered ABI. Nonruntime hotkey behavior
+retains its existing independent implementation.
 
 Normal btnsimulate follows the complete781940/61AB20 wrappers. It reads required
 operand1 through the byte-first bank/SCRIPT getter and evaluates that int32
@@ -835,5 +856,5 @@ message boundary; it is not presented as an80-key physical producer. Real125
 waits test close resolve/reject and live errors, and a live resource failure
 remains explicit. The current FIFO is visited inside the actual callback with
 that call's entry, rather than deferred to a later FES tick. These normal
-release-key branches are closed; PUSH scroll/hotkey, TOUCH, automoveex, drag
+release-key branches are closed; TOUCH, automoveex, drag
 variants and raw23 remain independent incomplete leaves.

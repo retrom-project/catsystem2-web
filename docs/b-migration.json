@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 271, "oracle": 149, "differential": 67 },
+    "counts": { "js": 272, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -130,6 +130,7 @@
         "tests/fes-push-scroll-up.test.mjs",
         "tests/fes-push-sender-source.test.mjs",
         "tests/fes-push-source-order.test.mjs",
+        "tests/fes-push-syskey.test.mjs",
         "tests/fes-react-default.test.mjs",
         "tests/fes-release-keys.test.mjs",
         "tests/fes-release-resource-tail.test.mjs",
@@ -52058,7 +52059,7 @@
     },
     {
       "file": "src/native/fes-image-driver.mjs",
-      "sourceSha256": "1a4c4339a8ae7abf6ca9e1b45f9b872e50426026444f10b638b40f7de9caf62e",
+      "sourceSha256": "f5bfb649fa866f24c6233e92306733879a8fbfb464d112dce1ae78fe04c032a6",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52068,14 +52069,14 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 780,
+          "line": 781,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "The coordinator owns typed semantic objects and resource FIFO entries. Named World family tasks, Draw, controls, image/text, particles and effects are JS receivers; no original object constructor or producer record is requested."
         },
         {
-          "line": 1014,
+          "line": 1015,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -52125,7 +52126,7 @@
     },
     {
       "file": "src/native/fes-input.mjs",
-      "sourceSha256": "0928d04f649d6f05a6e05e9a9b94c79cd47fb48ffdf7ca3ee3596565ead7aa95",
+      "sourceSha256": "7edb14272f9f38011a86d12e73c151ce0d7af9aa64ab09ad0e39e6509d85a267",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

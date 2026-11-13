@@ -117,6 +117,7 @@ export function initializeFESImage(object) {
   if (object.nativeType === 6)
     Object.assign(object, {
       buttonType: 0,
+      systemKey: -1,
       buttonLock: 0,
       buttonAttachment: null,
       lockedPosition: null,
