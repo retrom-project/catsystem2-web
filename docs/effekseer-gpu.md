@@ -100,8 +100,36 @@ checkpoint also retains this settled pending-destruction state and its dirty
 history, restoring the erased graph without registering or replaying it.
 Unknown flags acquire no query or implicit enable value during removal.
 
-Ordinary old/new model bounds/cache, ordinary unregister, direct Task/World
-close, other model replacement damage and complete native rectangle clipping remain partial.
+Plain colored CPLANE2D models now contribute their cached old RECT and current
+transformed vertex bounds to that same renderer history. The calculation uses
+the real model geometry and projection phase, without the draw visibility,
+alpha or MOT gates. Float32 coordinates truncate with signed32 conversion;
+each vertex contributes its native one-pixel RECT, including signed overflow
+and empty-rectangle rules. The proven domain is the finite2D plane transform
+with the default screen matrix and shift. Other model types, vertex effects,
+trails,3D transforms and nondefault screen projection remain partial; normal
+rendering continues to process them without guessing a damage rectangle.
+
+The dirty marker and raw cached RECT belong to the colored model even when
+its current transform leaves that calculation domain. Transform setters,
+parent propagation and actual FES MOT writes mark the model; color/alpha
+changes use the native value/override comparison. Known47/48 changes mark
+before querying under the old registration flag. Normal3/42/68 removal also
+queries before disabling and erasing the old model. The cached RECT changes
+during collection; a failed or paused presentation keeps the dirty marker and
+history. Successful presentation clears registered models' markers, including
+disabled models, while retaining their cached RECTs. Current checkpoints require
+both model fields and restore them with the existing transform alias intact.
+
+Real FES CPLANE SIZE preserves the old model's damage before replacement.
+Its newly created disabled model retains the existing initial empty-cache
+behavior; this does not establish complete SIZE parity or replay its old pose.
+The short actual FES/World cases cover movement, failed presentation,47/48,
+color, enabled deletion, parent MOT and fresh checkpoint restoration through
+the existing presentation boundary. They add no browser pixel evidence.
+
+Direct Task/World close, other model replacement damage and complete native
+rectangle clipping remain partial.
 Full Task geometry/device pixel acceptance and final frame-rate/memory goals
 also remain outside that recorder evidence.
 

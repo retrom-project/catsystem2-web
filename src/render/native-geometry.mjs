@@ -140,3 +140,77 @@ export function nativeGraphGeometry(
     return { vertices: [...projected, projected[2]] };
   });
 }
+
+// The cache belongs to the plain colored model, independently of whether
+// its current transform/effect is inside the proven bounds calculation domain.
+export const isNativeColoredModel = (graph) =>
+  graph?.type === 2 && !graph.custom && !graph.callback;
+
+export function supportsNativeColoredBounds(graph, state, projection) {
+  if (
+    !isNativeColoredModel(graph) ||
+    graph.vertexEffectID !== undefined ||
+    graph.triangles ||
+    graph.movie ||
+    graph.mesh ||
+    graph.vram ||
+    state.trail?.enabled ||
+    state.trail?.graphs?.length ||
+    !(graph.kx2 instanceof Uint8Array) ||
+    graph.kx2.byteLength < MOTION_ABI.objectSize ||
+    ![graph.x ?? 0, graph.y ?? 0, graph.z ?? 0, graph.width, graph.height].every(Number.isFinite) ||
+    (graph.z ?? 0) !== 0 ||
+    projection.screenMatrix?.length !== 16 ||
+    !Array.from(projection.screenMatrix).every((n, i) => n === (i % 5 === 0 ? 1 : 0)) ||
+    projection.screenShift?.length !== 2 ||
+    !projection.screenShift.every((n) => n === 0)
+  )
+    return false;
+  const position = motionVector(graph.kx2, MOTION_ABI.pos),
+    base = motionVector(graph.kx2, MOTION_ABI.base),
+    scale = motionVector(graph.kx2, MOTION_ABI.scale);
+  if (![...position, ...base, ...scale].every(Number.isFinite) || position[2] !== 0) return false;
+  if (graph.matrixExplicit === false) {
+    const rotation = motionVector(graph.kx2, MOTION_ABI.rotation);
+    return rotation.every(Number.isFinite) && rotation[0] === 0 && rotation[1] === 0;
+  }
+  const view = new DataView(graph.kx2.buffer, graph.kx2.byteOffset, graph.kx2.byteLength),
+    matrix = Array.from({ length: 16 }, (_, i) => view.getFloat32(MOTION_ABI.matrix + i * 4, true));
+  return (
+    matrix.every(Number.isFinite) &&
+    [2, 3, 6, 7, 8, 9, 11, 14].every((i) => matrix[i] === 0) &&
+    matrix[15] === 1
+  );
+}
+
+export function nativeVertexBounds(triangles) {
+  const cvtt = (n) =>
+    Number.isFinite(n) && n >= -0x80000000 && n < 0x80000000 ? Math.trunc(n) | 0 : -0x80000000;
+  let bounds = null;
+  for (const triangle of triangles)
+    for (const vertex of triangle.vertices.slice(0, 3)) {
+      const x = cvtt(f(vertex.x)),
+        y = cvtt(f(vertex.y)),
+        right = (x + 1) | 0,
+        bottom = (y + 1) | 0;
+      // UnionRect ignores an empty point RECT, including signed overflow.
+      if (right <= x || bottom <= y) continue;
+      bounds = bounds
+        ? [
+            Math.min(bounds[0], x),
+            Math.min(bounds[1], y),
+            Math.max(bounds[2], right),
+            Math.max(bounds[3], bottom),
+          ]
+        : [x, y, right, bottom];
+    }
+  return bounds ?? [0, 0, 0, 0];
+}
+
+export function nativeColoredBounds(graph, state, projection) {
+  if (!supportsNativeColoredBounds(graph, state, projection))
+    throw new Error('Unsupported ordinary plane dirty bounds domain');
+  // Use the real model's pure transform/projection phase, without drawGraph's
+  // visibility/MOT/alpha gates, which may already have changed before a query.
+  return nativeVertexBounds(nativeGraphGeometry(graph, state, projection));
+}

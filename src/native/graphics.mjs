@@ -16,6 +16,7 @@ import {
   nativeGraphGeometry,
   rectangleTriangles,
   transformNativeTriangles,
+  isNativeColoredModel,
 } from '../render/native-geometry.mjs';
 import {
   createD3DContext,
@@ -547,15 +548,28 @@ export class NativeGraphicTask {
   get input() {
     return this.world.inputFor?.(this.record.id);
   }
+  markBoundsDirty() {
+    if (isNativeColoredModel(this.graph)) this.graph.boundsDirty = true;
+  }
+  unregisterGraph() {
+    const graph = this.graph;
+    if (
+      (graph?.callback || isNativeColoredModel(graph)) &&
+      typeof graph.registrationEnabled === 'boolean'
+    )
+      this.setRegistrationEnabled(false);
+  }
   setRegistrationEnabled(enabled) {
     const graph = this.graph;
     if (
-      graph.callback &&
+      (graph.callback || isNativeColoredModel(graph)) &&
       typeof graph.registrationEnabled === 'boolean' &&
       typeof enabled === 'boolean' &&
       graph.registrationEnabled !== enabled
-    )
-      this.world.screenEffects.rendering.collectCallbackDirty();
+    ) {
+      this.markBoundsDirty();
+      this.world.screenEffects.rendering.collectDirty();
+    }
     graph.registrationEnabled = enabled;
   }
   beforeChildren() {
@@ -621,6 +635,10 @@ export class NativeGraphicTask {
       matrixExplicit: false,
       textureMatrixExplicit: false,
     };
+    if (isNativeColoredModel(this.graph)) {
+      this.graph.boundsDirty = false;
+      this.graph.cachedBounds = [0, 0, 0, 0];
+    }
     setMotionVector(this.graph.kx2, MOTION_ABI.base, [0, 0, 5000]);
     // A solid rectangle has one native model. Both selector values resolve
     // to that model, while textured rectangles have separate UV transforms.
@@ -658,12 +676,14 @@ export class NativeGraphicTask {
       textureSelected() ? this.graph?.textureTransform : this.graph?.kx2;
     const vector = (offset) => (this.graph ? motionVector(transformState(), offset) : [0, 0, 0]);
     const setVector = (offset, values) => {
-      if (this.graph) setMotionVector(transformState(), offset, values);
+      if (this.graph) {
+        setMotionVector(transformState(), offset, values);
+        this.markBoundsDirty();
+      }
     };
     switch (id) {
       case 3:
-        if (this.graph?.callback && typeof this.graph.registrationEnabled === 'boolean')
-          this.setRegistrationEnabled(false);
+        this.unregisterGraph();
         this.closeGraph();
         return this.base.message(words, context);
       case 19:
@@ -701,6 +721,7 @@ export class NativeGraphicTask {
         return 0;
       }
       case 42: {
+        this.unregisterGraph();
         const numbers = floats(l, 5),
           color = load(l + 28);
         this.state.shapeWords = Array.from({ length: 8 }, (_, i) => load(l + i * 4));
@@ -903,6 +924,7 @@ export class NativeGraphicTask {
             transformState().set(bytes(l, 64), MOTION_ABI.matrix);
             this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
           } else setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
+          this.markBoundsDirty();
           this.sync();
         }
         this.updateGraphInputArea();
@@ -912,13 +934,22 @@ export class NativeGraphicTask {
         if (this.graph) {
           transformState().set(bytes(l, 64), MOTION_ABI.matrix);
           this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
+          this.markBoundsDirty();
         }
         this.sync();
         this.updateGraphInputArea();
         await this.broadcast(58, w, l, context);
         return 0;
       case 59:
-        if (this.graph) new DataView(this.graph.kx2.buffer).setUint32(MOTION_ABI.color, l, true);
+        if (this.graph) {
+          const view = new DataView(this.graph.kx2.buffer);
+          if (
+            view.getUint32(MOTION_ABI.color, true) !== l >>> 0 ||
+            this.state.colorOverride !== Boolean(w)
+          )
+            this.markBoundsDirty();
+          view.setUint32(MOTION_ABI.color, l, true);
+        }
         this.state.colorOverride = Boolean(w);
         this.sync();
         return 0;
@@ -961,24 +992,27 @@ export class NativeGraphicTask {
         return 0;
       case 63:
         if (this.graph) {
-          const view = new DataView(this.graph.kx2.buffer);
-          view.setUint32(
-            MOTION_ABI.color,
-            ((l & 255) << 24) | (view.getUint32(MOTION_ABI.color, true) & 0xffffff),
-            true,
-          );
+          const view = new DataView(this.graph.kx2.buffer),
+            previous = view.getUint32(MOTION_ABI.color, true),
+            next = (((l & 255) << 24) | (previous & 0xffffff)) >>> 0;
+          if (previous !== next || !this.state.colorOverride) this.markBoundsDirty();
+          view.setUint32(MOTION_ABI.color, next, true);
         }
         this.state.colorOverride = true;
         this.sync();
         return 0;
       case 66:
         // 6774E0 always selects the geometry graph, ignoring message wParam.
-        if (this.graph) setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
+        if (this.graph) {
+          setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
+          this.markBoundsDirty();
+        }
         this.sync();
         this.updateGraphInputArea();
         await this.broadcast(67, w, l, context);
         return 0;
       case 68:
+        this.unregisterGraph();
         this.unload();
         return 0;
       case 74:
@@ -1230,6 +1264,7 @@ export class NativeGraphicTask {
         Math.fround(base[2] + offset[2]),
       ]);
       setMotionVector(this.graph.kx2, MOTION_ABI.pos, pos);
+      this.markBoundsDirty();
     } else {
       const region = this.input?.get(this.record.id);
       if (region) {
@@ -1322,6 +1357,16 @@ export class NativeGraphicTask {
     return structuredClone({ state: this.state, graph: this.graph });
   }
   restore(data) {
+    if (
+      isNativeColoredModel(data.graph) &&
+      (typeof data.graph.boundsDirty !== 'boolean' ||
+        !Array.isArray(data.graph.cachedBounds) ||
+        data.graph.cachedBounds.length !== 4 ||
+        !Array.from(data.graph.cachedBounds).every(
+          (n) => Number.isInteger(n) && n >= -0x80000000 && n <= 0x7fffffff,
+        ))
+    )
+      throw new Error('Invalid ordinary plane dirty bounds checkpoint');
     this.bindState(structuredClone(data.state));
     this.graph = structuredClone(data.graph);
     for (const graph of this.state.trail?.graphs ?? [])

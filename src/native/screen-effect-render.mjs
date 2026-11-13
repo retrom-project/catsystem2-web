@@ -3,6 +3,11 @@
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
+import {
+  isNativeColoredModel,
+  supportsNativeColoredBounds,
+  nativeColoredBounds,
+} from '../render/native-geometry.mjs';
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
 const emptyRectangle = (r) => r[0] >= r[2] || r[1] >= r[3];
 const unionRectangles = (a, b) =>
@@ -157,18 +162,29 @@ export class NativeScreenEffectRenderer {
     }
     return changed;
   }
-  collectCallbackDirty() {
+  collectDirty() {
     const screen = this.world.configuration.screen,
-      viewport = [0, 0, screen.currentWidth, screen.currentHeight];
+      viewport = [0, 0, screen.currentWidth, screen.currentHeight],
+      projection = this.world.graphics.projection();
     let callback = false;
     // Dirty contribution scans registrations, independently of draw ranges.
-    // Ordinary old/new model bounds remain a separate producer.
     for (const task of this.world.graphics.tasks.values()) {
       const graph = task.graph;
-      if (!graph?.callback || graph.registrationEnabled !== true) continue;
-      if (!task.queryDraw) throw new Error('Native callback registration lost its query');
-      callback = true;
-      if (task.queryDraw()) this.dirtyCurrent.set(viewport);
+      if (graph?.registrationEnabled !== true) continue;
+      if (graph.callback) {
+        if (!task.queryDraw) throw new Error('Native callback registration lost its query');
+        callback = true;
+        if (task.queryDraw()) this.dirtyCurrent.set(viewport);
+      } else if (
+        isNativeColoredModel(graph) &&
+        graph.boundsDirty &&
+        supportsNativeColoredBounds(graph, task.state, projection)
+      ) {
+        this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, graph.cachedBounds));
+        const next = nativeColoredBounds(graph, task.state, projection);
+        graph.cachedBounds.splice(0, 4, ...next);
+        this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, next));
+      }
     }
     if (callback && !emptyRectangle(this.dirtyCurrent)) this.dirtyCurrent.set(viewport);
     return intersectRectangles(viewport, unionRectangles(this.dirtyPrevious, this.dirtyCurrent));
@@ -260,7 +276,7 @@ export class NativeScreenEffectRenderer {
     this.frame = { items: items.filter(nativeItem).sort(compare), draw };
     this.busy++;
     try {
-      const dirtyRectangle = this.collectCallbackDirty();
+      const dirtyRectangle = this.collectDirty();
       let presented = false,
         status;
       await this.prepareModels();
@@ -290,6 +306,16 @@ export class NativeScreenEffectRenderer {
         if ((status | 0) >= 0) {
           this.dirtyPrevious.set(this.dirtyCurrent);
           this.dirtyCurrent.fill(0);
+          // Native retirement visits registered models even when disabled or
+          // outside this leaf's calculation domain. FC remains query-owned.
+          for (const task of this.world.graphics.tasks.values()) {
+            const graph = task.graph;
+            if (
+              isNativeColoredModel(graph) &&
+              (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null)
+            )
+              graph.boundsDirty = false;
+          }
         }
       }
     } finally {

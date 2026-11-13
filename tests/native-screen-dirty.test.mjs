@@ -115,7 +115,7 @@ test('real FES47/48 and MOT collect every known enabled callback under its old f
       'normal message3 queries the old enabled callback before erase',
     );
     observed.length = 0;
-    r.collectCallbackDirty();
+    r.collectDirty();
     await w.objects.release(id);
     assert.equal(other.closed, true);
     assert.deepEqual(observed, [], 'close/destroy did not introduce a teardown query');
@@ -304,26 +304,26 @@ test('the same renderer restores current RECTs in place and computes clipped old
     r.restore(saved);
     assert.equal(r.dirtyCurrent, current);
     assert.equal(r.dirtyPrevious, previous);
-    assert.deepEqual(r.collectCallbackDirty(), [12, 5, 40, 18]);
+    assert.deepEqual(r.collectDirty(), [12, 5, 40, 18]);
     saved.dirtyCurrent[0] = 99;
     assert.equal(r.dirtyCurrent[0], 12);
     r.dirtyCurrent.set([75, 55, 90, 70]);
     r.dirtyPrevious.fill(0);
-    assert.deepEqual(r.collectCallbackDirty(), [75, 55, 80, 60]);
+    assert.deepEqual(r.collectDirty(), [75, 55, 80, 60]);
     r.dirtyCurrent.set([12, 8, 22, 18]);
     t.pendingReset = true;
     await send(h, t.record.id, 47, 1);
     assert.deepEqual([...r.dirtyCurrent], [12, 8, 22, 18], 'enable queried the old disabled flag');
     assert.equal(t.queryDraw(), 0);
     assert.deepEqual(
-      r.collectCallbackDirty(),
+      r.collectDirty(),
       viewport,
       'a present callback expands nonempty damage even when its query returns zero',
     );
     r.dirtyCurrent.fill(0);
     r.dirtyPrevious.set([30, 5, 40, 10]);
     assert.deepEqual(
-      r.collectCallbackDirty(),
+      r.collectDirty(),
       [30, 5, 40, 10],
       'previous damage does not become current before presentation',
     );
@@ -333,7 +333,7 @@ test('the same renderer restores current RECTs in place and computes clipped old
     };
     for (const unknown of [null, 'unverified']) {
       t.plane.graph.registrationEnabled = unknown;
-      assert.deepEqual(r.collectCallbackDirty(), [30, 5, 40, 10]);
+      assert.deepEqual(r.collectDirty(), [30, 5, 40, 10]);
       assert.equal(t.plane.graph.registrationEnabled, unknown);
     }
     t.queryDraw = query;

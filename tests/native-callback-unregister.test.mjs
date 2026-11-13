@@ -208,7 +208,7 @@ test('a settled real post-delete checkpoint restores pending disposal and dirty 
     assert.deepEqual(fresh.random.snapshot(), mt);
     assert.deepEqual([...currentRenderer.dirtyCurrent], viewport);
     assert.deepEqual([...currentRenderer.dirtyPrevious], empty);
-    assert.deepEqual(currentRenderer.collectCallbackDirty(), viewport);
+    assert.deepEqual(currentRenderer.collectDirty(), viewport);
     assert.equal(queries, 0);
     assert.deepEqual(calls, []);
     await fresh.tick();
