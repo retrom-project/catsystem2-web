@@ -3,6 +3,7 @@
 // Each FES BUTTON owns a real base-plane task; the low button is independent.
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 import {
   navigateFESButton,
   fesButtonCursorPoint,
@@ -500,7 +501,12 @@ export class FESInput {
         this.world.objects.objects.get(this.record.id) === this.record;
     if (!live()) return 0;
     try {
-      this.state.source = this.input.source;
+      const reply = await this.world.engineMessages.dispatch(sender, this.record.id, 95, 0, 1, {
+        flags: 1,
+        executorEntry: context.executorEntry,
+      });
+      if (!live()) return 0;
+      this.state.source = nativeEngineWord(reply.result, 'FES PUSH source query');
       instance.inputSource = this.state.source;
       if (this.state.sleeping) {
         await this.propagation(sender, false);

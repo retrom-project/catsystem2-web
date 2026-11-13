@@ -641,13 +641,24 @@ tick/Graph call; it does not wait for a later FES frame. FILE/Play authored in a
 Game PUSH callback therefore reach the real EFK task and manager within that
 invocation, rather than retaining a callback executor in pending state.
 
-The current direct source read is verified for actual same-Top Graph routes:
-the sender and FES share the Top Input, and ordinary Input routing has already
-mapped source16 to2. The original receiver instead queries the sender with
-canonical95, flags1, w0/l1. That general query remains a separate unfinished
-boundary; cross-Top, non-Graph and synthetic source16 messages are not covered
-by this equivalence. Actual342 masks the hardware path while sleeping; the
-sleeping regression uses the exposed FES message boundary explicitly.
+Source acquisition awaits the actual sender's canonical95 query, flags1,
+w0/l1, through the existing EngineMessage protocol. It borrows the callback's
+live executor entry and uses the sender's World identity. A Graph receiver reads
+its own Top Input and maps source16 to2, including when its Top differs from the
+FES owner. The FES Input's own source is not a fallback. Existing written-word
+validation accepts a written0 and diagnoses absent/non-Graph receivers that
+leave the output unwritten; routing and handled status are not output values.
+
+The query's await checks the same player/root/runtime/task owner before writing
+either source field. Closing the owner cancels a resolved or rejected pending
+query without writing a new source; a live query error propagates. The two source
+writes still precede sleeping and all mouse queries. No source, queue, snapshot
+or executor authority is duplicated. Actual342 masks the sleeping hardware path;
+its regression explicitly uses the exposed FES message boundary. Cross-Top and
+un-normalized source16 regressions likewise identify their exposed FES/Input
+route boundaries, without claiming a cross-Top hardware producer. Ordinary
+World Input/Graph callbacks separately verify the real sender, including the
+independent low-button Graph.
 
 The early source writes remain visible if a later mouse query fails or its
 owner closes; cancellation does not roll them back. This call captures its
