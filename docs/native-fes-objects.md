@@ -544,7 +544,32 @@ the event owner. Their internal commands-only drain does not wait on its own
 public completion. An unfinished public callback remains covered by the existing
 snapshot guard; settled restoration recreates no Promise or callback.
 
-This closes only the public focus/event owner seam. Public press, click,
-right-click, slider and drag actions still require separate review of writes
-outside their callbacks, including PUSH/clickL/RELEASE and scroll position order.
-Bare FES callbacks retain their independent synchronous String contract.
+## Normal public BUTTON press
+
+Normal semantic BUTTON (raw6) press captures the focused object at entry and
+retains its existing Boolean admission result. It runs PUSH_L, then reads that
+same object's handle into clickL after PUSH succeeds, then runs RELEASE_L. It
+does not synthesize focus or repeat placement/enable qualification. getid's image
+selector output is independent of this lifetime handle.
+
+With no pending public operation, genuinely synchronous callbacks and errors
+retain their call-stack order. A missing handler or finished script is a
+successful no-op and still permits the original clickL/RELEASE sequence. PUSH
+failure prevents the field write and RELEASE; synchronous RELEASE failure follows
+the field write. If PUSH really awaits, or the action starts behind an existing
+public operation, the whole remaining sequence occupies the existing single
+public tail until RELEASE settles. A non-enqueuing H1 event step shares the
+explicit settled result with focus callbacks and never joins its own tail.
+
+After a queued/awaited boundary, the captured instance, runtime, task record,
+object and raw reference must still identify the same live owner. Deletion,
+same-name replacement or close cancels the remaining field write/RELEASE rather
+than transferring the press to a new object. Asynchronous errors retain the
+existing player.error/flush behavior and unfinished actions retain the snapshot
+guard; no queue, owner or persistent checkpoint flag is added.
+
+This closes only normal BUTTON press and the public focus/event owner seam.
+Other normal press types retain their existing behavior. Complete click actions,
+including an awaited FOCUS that redirects selection, right-click, slider and drag
+actions still require separate review of their writes and callback order. Bare
+FES callbacks and press retain their independent synchronous String contract.

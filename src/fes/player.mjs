@@ -174,6 +174,18 @@ export class FESPlayer {
       this.enqueuePublicPush(() => live() && instance.dispatchEvent(object, event));
       return true;
     }
+    const { handled, completion } = this.publicEventStep(instance, object, event);
+    if (completion) this.trackPublicCompletion(completion);
+    return handled;
+  }
+  publicEventStep(instance, object, event) {
+    const name = fesByteView(instance.collection.reference(object).nameBytes),
+      labels = [object.defaultHandler && `${object.defaultHandler}.${event}`, `${name}.${event}`];
+    if (
+      instance.finished !== null ||
+      !labels.some((label) => label && instance.program.blocks[label])
+    )
+      return { handled: false, completion: null };
     if (this.error) throw this.error;
     let outcome;
     const promise = instance.dispatchEvent(object, event, (value) => {
@@ -189,10 +201,11 @@ export class FESPlayer {
         });
         throw error;
       }
-      return outcome.handled;
+      return { handled: outcome.handled, completion: null };
     }
-    this.trackPublicCompletion(promise);
-    return true;
+    // The H1 observer reports settlement after its sole owner restores the caller.
+    // This step never registers or waits on the public tail itself.
+    return { handled: true, completion: promise };
   }
   async flush({ commandsOnly = false } = {}) {
     while (this.pending.size || (!commandsOnly && this.publicPushPending.size))
@@ -504,9 +517,42 @@ export class FESPlayer {
   press() {
     const target = this.focused;
     if (!target || !target.o.enable || !this.instances.includes(target.s)) return false;
+    if (target.s.runtime && target.o.type === 'BUTTON' && target.o.nativeType === 6)
+      return this.completePublicPress(target.s, target.o);
     target.s.event(target.o, 'PUSH_L');
     target.s.clickL = target.o.handle;
     target.s.event(target.o, 'RELEASE_L');
+    return true;
+  }
+  completePublicPress(instance, object) {
+    const runtime = instance.runtime,
+      record = runtime.world.objects.objects.get(instance.runtimeID),
+      reference = this.publicEventLive(instance, runtime, record, object)
+        ? instance.collection.reference(object)
+        : null,
+      live = () =>
+        reference !== null &&
+        this.publicEventLive(instance, runtime, record, object) &&
+        instance.collection.lookup(reference.nameBytes, reference.index) === object,
+      dispatch = (event) =>
+        live() ? this.publicEventStep(instance, object, event).completion : null,
+      release = () => {
+        instance.clickL = object.handle;
+        return dispatch('RELEASE_L');
+      },
+      complete = (queued) => {
+        if (queued && !live()) return null;
+        const completion = dispatch('PUSH_L');
+        if (completion) return completion.then(() => (live() ? release() : null));
+        // Preserve the existing inline field write even if a synchronous
+        // callback removed its object. Queued/awaited actions use P1 cancellation.
+        return queued && !live() ? null : release();
+      };
+    if (this.publicPushPending.size) this.enqueuePublicPush(() => complete(true));
+    else {
+      const completion = complete(false);
+      if (completion) this.trackPublicCompletion(completion);
+    }
     return true;
   }
   push(target) {
