@@ -573,7 +573,34 @@ guard; no queue, owner or persistent checkpoint flag is added.
 The same action now covers existing normal collection objects, with CPLANE
 (raw3) and BUTTON (raw6) default-entry regressions. Their existing factory,
 initialization and capability gates remain in place; routing press creates no
-new type or ABI support. Complete click actions, including an awaited FOCUS that
-redirects selection, right-click, slider and drag actions still require separate
-review of their writes and callback order. Bare FES callbacks and press retain
-their independent synchronous String contract.
+new type or ABI support.
+
+## Normal public BUTTON-hit click
+
+A normal click that hits a semantic BUTTON (raw6) captures that hit once and
+retains its existing Boolean admission result. With no pending public operation,
+UNFOCUS runs its synchronous prefix, the focused target commits immediately, and
+FOCUS runs after UNFOCUS settles. An awaited UNFOCUS does not delay that original
+focused commit, and its later continuation does not commit the hit a second time.
+Synchronous UNFOCUS failure precedes the commit; synchronous FOCUS failure follows
+it. Missing handlers and finished scripts remain successful no-ops.
+
+After FOCUS finishes, click reads the actual focused object and applies the
+original press admission. A real setact/lockactive FIFO may select another BUTTON;
+a host callback can select an existing CPLANE through public focus. The internal
+press operation runs directly on that actual target and keeps PUSH, the later
+clickL write and the complete RELEASE within the same click completion.
+
+If an earlier public operation is pending, the whole click waits on the existing
+single tail. Its caller does not change focused early, and previous focus is
+read when this action begins. After a queued or awaited boundary, the original
+captured hit must still identify the same live object and owner; deletion,
+same-name replacement or close cancels the remaining action without rollback or
+retargeting. An invalid old previous object only skips its own UNFOCUS and does
+not cancel a live new hit. No hit/placement qualification is repeated.
+
+Focus callbacks and the extracted generic press operation dispatch through the
+existing H1 owner without rejoining their own public tail. No queue, checkpoint
+flag or second event context owner is added. Complete SLIDER/SCROLL2-hit click,
+right-click, slider/slide and drag actions remain separate gates. Bare FES click,
+focus and press retain their independent synchronous String contract.

@@ -890,3 +890,597 @@ for (const profile of startupProfiles) {
     }
   });
 }
+
+const clickNames = [
+  'Hit',
+  'Next[2]',
+  'AltHit',
+  'Sync',
+  'Silent',
+  'AwaitOld',
+  'Plain',
+  'Queue',
+  'OldDelete',
+  'ReplaceHit',
+  'CloseHit',
+  'BadU',
+  'BadF',
+  'AsyncBadU',
+  'AsyncBadF',
+  'Decline',
+];
+const clickBlocks = {
+  'Hit.FOCUS': [
+    '$50=++$50',
+    '@ getid 55',
+    'clipboard (:click-focus)',
+    'Next[1] setact',
+    'lockactive 0',
+    '$51=++$51',
+    'break',
+  ],
+  'Hit.PUSH_L': ['$40=++$40', 'break'],
+  'Hit.RELEASE_L': ['$41=++$41', 'break'],
+  'Next.FOCUS': ['$53=++$53', 'break'],
+  'Next.UNFOCUS': ['$61=++$61', 'break'],
+  'Next.PUSH_L': ['$42=++$42', '@ getid 56', 'break'],
+  'Next.RELEASE_L': ['$43=++$43', '@ getid 57', 'clipboard (:click-release)', '$52=++$52', 'break'],
+  'AltHit.FOCUS': ['$54=++$54', '@ getid 58', 'clipboard (:plane-focus)', 'break'],
+  'AltHit.PUSH_L': ['$44=++$44', 'break'],
+  'AltHit.RELEASE_L': ['$45=++$45', 'break'],
+  'Plane.PUSH_L': ['$46=++$46', '@ getid 59', 'clipboard (:plane-press)', 'break'],
+  'Plane.RELEASE_L': [
+    '$47=++$47',
+    '@ getid 60',
+    'clipboard (:plane-release)',
+    '$48=++$48',
+    'break',
+  ],
+  REENTER: ['Next[1] getid 63', '$62=++$62', 'break'],
+  'Sync.FOCUS': ['$10=++$10', 'break'],
+  'Sync.UNFOCUS': ['$11=++$11', 'break'],
+  'Sync.PUSH_L': ['$12=++$12', 'break'],
+  'Sync.RELEASE_L': ['$13=++$13', 'break'],
+  'AwaitOld.UNFOCUS': ['$14=++$14', 'clipboard (:unfocus-click)', '$15=++$15', 'break'],
+  'Plain.FOCUS': ['$16=++$16', 'break'],
+  'Plain.PUSH_L': ['$17=++$17', 'break'],
+  'Plain.RELEASE_L': ['$18=++$18', 'break'],
+  'Queue.FOCUS': ['$19=++$19', 'break'],
+  'Queue.PUSH_L': ['$20=++$20', 'break'],
+  'Queue.RELEASE_L': ['$21=++$21', 'break'],
+  'OldDelete.UNFOCUS': ['clipboard (:delete-old)', '$22=++$22', 'break'],
+  'ReplaceHit.FOCUS': ['clipboard (:replace-hit)', '$23=++$23', 'break'],
+  'ReplaceHit.PUSH_L': ['$24=++$24', 'break'],
+  'ReplaceHit.RELEASE_L': ['$25=++$25', 'break'],
+  'CloseHit.FOCUS': ['clipboard (:close-hit)', '$26=++$26', 'break'],
+  'CloseHit.PUSH_L': ['$27=++$27', 'break'],
+  'CloseHit.RELEASE_L': ['$28=++$28', 'break'],
+  'BadU.UNFOCUS': ['$29=++$29', 'K2_CLICK_UNKNOWN_U', 'break'],
+  'BadF.FOCUS': ['$30=++$30', 'K2_CLICK_UNKNOWN_F', 'break'],
+  'AsyncBadU.UNFOCUS': ['$31=++$31', '@ m2att', '$32=++$32', 'break'],
+  'AsyncBadF.FOCUS': ['$33=++$33', '@ m2att', '$34=++$34', 'break'],
+  'Decline.FOCUS': ['clipboard (:decline-click)', 'break'],
+  'Decline.PUSH_L': ['$35=++$35', 'break'],
+  'Decline.RELEASE_L': ['$36=++$36', 'break'],
+};
+const clickSource = ascii(
+  [
+    '#DEFINE',
+    ...clickNames.map((name) => 'BUTTON ' + name),
+    'CPLANE Plane[2]',
+    '#OBJECT SIZE POS DISP',
+    ...clickNames.map(
+      (name, index) =>
+        name.replace(/\[.*$/, '') +
+        ' 6,4 ' +
+        (1 + (index % 6) * 10) +
+        ',' +
+        (1 + Math.floor(index / 6) * 10) +
+        ' 1',
+    ),
+    'Plane 6,4 51,35 1',
+    '#START',
+    'wait 1',
+    'next IDLE',
+    '#IDLE',
+    'break',
+    ...Object.entries(clickBlocks).flatMap(([label, lines]) => ['#' + label, ...lines]),
+    '',
+  ].join('\n'),
+);
+async function clickTrial(profile) {
+  const h = await environment(profile, clickSource);
+  try {
+    const root = await h.load();
+    for (let index = 10; index < 64; index++) h.words.set(index, 0);
+    await h.world.sendEngine(h.id, h.world.main.id, 333);
+    return {
+      h,
+      root,
+      fes: root.player,
+      get: (name, index = 0) => root.collection.lookup(ascii(name), index),
+    };
+  } catch (error) {
+    await h.close();
+    throw error;
+  }
+}
+function clickAt(root, object) {
+  const rect = root.rect(object);
+  assert.ok(rect?.w > 0 && rect?.h > 0);
+  const x = rect.x + rect.w / 2,
+    y = rect.y + rect.h / 2;
+  assert.strictEqual(
+    root.player.hit(x, y)?.o,
+    object,
+    'the real geometry must hit this owned BUTTON',
+  );
+  return root.player.click(x, y);
+}
+function clickClipboard(trial) {
+  const { h, root, fes, get } = trial,
+    service = h.world.host.nativeClipboard,
+    io = { writes: [], reentries: [], replaced: null, deletedOld: null, closing: null };
+  assert.ok(service instanceof BrowserNativeClipboard);
+  service.clipboard = {
+    async writeText(value) {
+      io.writes.push(value);
+      if (value === 'click-focus' || value === 'plane-press') {
+        const saved = frame(root);
+        assert.ok(root.runtime.platform.inFlight);
+        assert.ok(fes.publicPushPending.size > 0);
+        await h.world.sendEngine(h.id, h.world.main.id, 337, 0, 0, {
+          payload: fesLabelPayload(() => ascii('REENTER')),
+        });
+        assert.deepEqual(frame(root), saved);
+        io.reentries.push(structuredClone(root.nativeContext));
+      } else if (value === 'plane-focus') {
+        // setact is BUTTON-only. The actual clipboard host uses public focus for raw3.
+        const plane = get('Plane', 1);
+        fes.focus({ s: root, o: plane });
+        assert.strictEqual(fes.focused.o, plane);
+        assert.deepEqual(fes.nativeInput.state.focus, root.collection.reference(plane));
+      } else if (value === 'unfocus-click') {
+        // Neither Plain.UNFOCUS nor Silent.FOCUS has a handler. This public
+        // redirect must survive the outer click's awaited UNFOCUS continuation.
+        fes.focus({ s: root, o: get('Silent') });
+      } else if (value === 'delete-old') {
+        io.deletedOld = get('OldDelete');
+        await root.collection.remove(io.deletedOld);
+      } else if (value === 'replace-hit') {
+        const old = get('ReplaceHit');
+        await root.collection.remove(old);
+        await declareButtons(h, 'ReplaceHit', 1);
+        const replacement = get('ReplaceHit');
+        assert.notStrictEqual(replacement, old);
+        assert.notEqual(replacement.handle, old.handle);
+        io.replaced = { old, replacement };
+      } else if (value === 'decline-click') {
+        // Change the existing semantic enable flag during a real host await,
+        // as the accepted push admission fixture does.
+        get('Decline').enable = false;
+      } else if (value === 'close-hit') {
+        io.closing = h.world.objects.release(h.id);
+        await io.closing;
+      }
+    },
+  };
+  return io;
+}
+function observeClickSource(t, trial) {
+  const { h, root, get } = trial,
+    calls = [],
+    getters = [],
+    produced = [],
+    specs = {
+      'Hit.FOCUS': { name: 'Hit', index: 0, raw: 6, line: 2, slot: 55, head: '@' },
+      'Next.PUSH_L': { name: 'Next', index: 1, raw: 6, line: 2, slot: 56, head: '@' },
+      'Next.RELEASE_L': { name: 'Next', index: 1, raw: 6, line: 2, slot: 57, head: '@' },
+      'AltHit.FOCUS': { name: 'AltHit', index: 0, raw: 6, line: 2, slot: 58, head: '@' },
+      'Plane.PUSH_L': { name: 'Plane', index: 1, raw: 3, line: 2, slot: 59, head: '@' },
+      'Plane.RELEASE_L': { name: 'Plane', index: 1, raw: 3, line: 2, slot: 60, head: '@' },
+      REENTER: { name: 'Next', index: 1, raw: 6, line: 1, slot: 63, head: 'Next[1]', notify: true },
+    };
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command;
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const label = root.executingLabel,
+        spec = specs[label],
+        object = get(spec.name, spec.index),
+        reference = { nameBytes: ascii(spec.name), index: spec.index },
+        row = spec.head + ' getid ' + spec.slot,
+        arena = h.world.fesSources,
+        record = arena.programs.get(root.program.sourceKey).blocks[label][spec.line - 1],
+        nameAddress = record.names.get(fesByteView(reference.nameBytes)),
+        rowAddress = record.copies.get(row),
+        owner = spec.notify
+          ? { nameBytes: new Uint8Array(), index: 0, current: 0 }
+          : { ...reference, current: reference.index };
+      assert.equal(object.nativeType, spec.raw);
+      assert.deepEqual(root.collection.reference(object), reference);
+      assert.equal(root.executingLine, spec.line);
+      assert.deepEqual(selection, reference);
+      assert.deepEqual(root.nativeContext, owner);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, reference.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(Number.isInteger(address));
+        assert.ok(address >= arena.base && address + bytes.length + 1 <= arena.base + arena.used);
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      const occurrences = produced.filter((entry) => entry.label === label).length + 1,
+        tokens = getters.filter((entry) => entry.label === label && entry.line === spec.line);
+      assert.equal(tokens.filter((entry) => entry.token === spec.head).length, occurrences);
+      assert.equal(tokens.filter((entry) => entry.token === 'getid').length, occurrences);
+      produced.push({
+        label,
+        slot: spec.slot,
+        reference,
+        current: owner.current,
+        nameAddress,
+        rowAddress,
+        expected: spec.raw === 3 ? nameAddress : object.idIndex | 0,
+      });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return {
+    calls,
+    produced,
+    check() {
+      assert.deepEqual(
+        calls.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.objectNameAddress,
+          entry.commandPointer,
+        ]),
+        produced.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.nameAddress,
+          entry.rowAddress,
+        ]),
+      );
+      for (const entry of produced) assert.equal(h.words.get(entry.slot), entry.expected);
+    },
+  };
+}
+
+for (const profile of startupProfiles) {
+  test(
+    'normal public BUTTON click waits for owned focus before capturing press: ' + profile,
+    async (t) => {
+      const trial = await clickTrial(profile),
+        { h, root, fes, get } = trial;
+      let fresh;
+      try {
+        const hit = get('Hit'),
+          next = get('Next', 1),
+          saved = frame(root),
+          rng = h.world.random.snapshot(),
+          io = clickClipboard(trial),
+          sourceCalls = observeClickSource(t, trial),
+          events = [],
+          fifo = [],
+          dispatch = root.dispatchEvent,
+          flushRecords = root.runtime.flushRecords;
+        assert.equal(hit.nativeType, 6);
+        assert.equal(next.nativeType, 6);
+        t.mock.method(root, 'dispatchEvent', function (object, event, settled) {
+          events.push({
+            object,
+            event,
+            reference: this.collection.reference(object),
+            clickL: this.clickL,
+            releaseDone: h.words.get(52),
+          });
+          return dispatch.call(this, object, event, settled);
+        });
+        t.mock.method(root.runtime, 'flushRecords', function (...args) {
+          if (this.pendingRecords.some((entry) => entry.operation === 'active-reference'))
+            fifo.push(structuredClone(this.pendingRecords));
+          return flushRecords.apply(this, args);
+        });
+
+        // First oracle is the existing asynchronous wrong receiver, before any
+        // assertions about the new policy for a second queued click.
+        fes.focus(null);
+        assert.equal(clickAt(root, hit), true);
+        await fes.flush();
+        assert.strictEqual(fes.focused.o, next);
+        assert.deepEqual(fifo[0], [
+          { operation: 'active-reference', reference: { nameBytes: ascii('Next'), index: 1 } },
+          { operation: 'active-lock', value: 0 },
+        ]);
+        assert.deepEqual(
+          [40, 41, 42, 43].map((index) => h.words.get(index)),
+          [0, 0, 1, 1],
+          'click must capture Next[1] after its real FOCUS redirect settles',
+        );
+        assert.equal(root.clickL, next.handle);
+        assert.equal(h.words.get(50), 1);
+        assert.equal(h.words.get(51), 1);
+        assert.equal(h.words.get(52), 1);
+        assert.deepEqual(root.runtime.pendingRecords, []);
+        sourceCalls.check();
+        assert.deepEqual(frame(root), saved);
+        assert.equal(fes.publicPushPending.size, 0);
+
+        fresh = await freshCheckpoint(t, h, profile);
+        const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+          fWords = fresh.world.runtime.variableBank(fresh.world.main, false),
+          fSaved = frame(fRoot),
+          fSilent = fRoot.collection.lookup(ascii('Silent'), 0);
+        assert.deepEqual(fRoot.collection.reference(fRoot.player.focused.o), {
+          nameBytes: ascii('Next'),
+          index: 1,
+        });
+        assert.equal(fRoot.clickL, 0);
+        assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+        assert.deepEqual(
+          [40, 41, 42, 43].map((index) => fWords.get(index)),
+          [0, 0, 1, 1],
+        );
+        assert.equal(clickAt(fRoot, fSilent), true);
+        assert.equal(fRoot.clickL, fSilent.handle);
+        assert.deepEqual(frame(fRoot), fSaved);
+        assert.equal(fRoot.player.publicPushPending.size, 0);
+
+        fes.focus(null);
+        events.length = 0;
+        const sync = get('Sync');
+        assert.equal(clickAt(root, sync), true);
+        assert.deepEqual(
+          [10, 12, 13].map((index) => h.words.get(index)),
+          [1, 1, 1],
+        );
+        assert.strictEqual(fes.focused.o, sync);
+        assert.equal(root.clickL, sync.handle);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.equal(clickAt(root, sync), true);
+        assert.deepEqual(
+          [10, 12, 13].map((index) => h.words.get(index)),
+          [1, 2, 2],
+        );
+        assert.deepEqual(
+          events.map((entry) => entry.event),
+          ['FOCUS', 'PUSH_L', 'RELEASE_L', 'PUSH_L', 'RELEASE_L'],
+        );
+        assert.equal(fes.click(-1000, -1000), false);
+        assert.equal(root.clickL, -1);
+        assert.strictEqual(fes.focused.o, sync);
+        const silent = get('Silent');
+        assert.equal(clickAt(root, silent), true);
+        assert.equal(root.clickL, silent.handle);
+        assert.equal(fes.publicPushPending.size, 0);
+
+        fes.focus({ s: root, o: get('AwaitOld') });
+        assert.equal(clickAt(root, get('Plain')), true);
+        assert.strictEqual(
+          fes.focused.o,
+          get('Plain'),
+          'UNFOCUS prefix precedes immediate focused commit',
+        );
+        assert.equal(h.words.get(14), 1);
+        assert.equal(h.words.get(15), 0);
+        assert.equal(h.words.get(16), 0);
+        await fes.flush();
+        assert.strictEqual(
+          fes.focused.o,
+          silent,
+          'awaited UNFOCUS must not commit hit again over a real redirect',
+        );
+        assert.equal(h.words.get(15), 1);
+        assert.equal(h.words.get(16), 1);
+        assert.deepEqual([h.words.get(17), h.words.get(18)], [0, 0]);
+        assert.equal(root.clickL, silent.handle);
+        assert.deepEqual(frame(root), saved);
+
+        assert.equal(clickAt(root, get('AltHit')), true);
+        await fes.flush();
+        const plane = get('Plane', 1);
+        assert.strictEqual(fes.focused.o, plane);
+        assert.deepEqual(
+          [44, 45, 46, 47, 48].map((index) => h.words.get(index)),
+          [0, 0, 1, 1, 1],
+        );
+        assert.equal(root.clickL, plane.handle);
+        sourceCalls.check();
+        assert.deepEqual(io.reentries, [
+          { nameBytes: ascii('Hit'), index: 0, current: 0 },
+          { nameBytes: ascii('Plane'), index: 1, current: 1 },
+        ]);
+
+        fes.focus({ s: root, o: sync });
+        events.length = 0;
+        const releaseBefore = h.words.get(52),
+          queue = get('Queue');
+        assert.equal(clickAt(root, hit), true);
+        assert.strictEqual(fes.focused.o, hit);
+        assert.equal(clickAt(root, queue), true);
+        assert.strictEqual(
+          fes.focused.o,
+          hit,
+          'an already pending whole click does not commit focus at its caller',
+        );
+        assert.equal(h.words.get(19), 0);
+        assert.throws(() => fes.snapshot(), /public push is in flight/);
+        await fes.flush();
+        assert.strictEqual(fes.focused.o, queue);
+        assert.deepEqual(
+          events
+            .filter((entry) => ['PUSH_L', 'RELEASE_L'].includes(entry.event))
+            .map((entry) => [entry.reference, entry.event]),
+          [
+            [{ nameBytes: ascii('Next'), index: 1 }, 'PUSH_L'],
+            [{ nameBytes: ascii('Next'), index: 1 }, 'RELEASE_L'],
+            [{ nameBytes: ascii('Queue'), index: 0 }, 'PUSH_L'],
+            [{ nameBytes: ascii('Queue'), index: 0 }, 'RELEASE_L'],
+          ],
+        );
+        const queueFocus = events.findIndex(
+            (entry) => entry.object === queue && entry.event === 'FOCUS',
+          ),
+          previous = events
+            .slice(0, queueFocus)
+            .filter((entry) => entry.event === 'UNFOCUS')
+            .at(-1);
+        assert.strictEqual(previous.object, next, 'previous is read when the queued click begins');
+        assert.equal(events[queueFocus].releaseDone, releaseBefore + 1);
+        assert.deepEqual(
+          [19, 20, 21].map((index) => h.words.get(index)),
+          [1, 1, 1],
+        );
+        assert.equal(root.clickL, queue.handle);
+        sourceCalls.check();
+        assert.deepEqual(frame(root), saved);
+
+        fes.focus({ s: root, o: get('OldDelete') });
+        assert.equal(clickAt(root, get('Plain')), true);
+        assert.strictEqual(fes.focused.o, get('Plain'));
+        await fes.flush();
+        assert.equal(io.deletedOld.deleted, true);
+        assert.equal(h.words.get(22), 1);
+        assert.deepEqual([h.words.get(17), h.words.get(18)], [1, 1]);
+        assert.equal(
+          root.clickL,
+          get('Plain').handle,
+          'old previous deletion cannot cancel a live new hit',
+        );
+
+        const beforeReplace = root.clickL,
+          replacedHit = get('ReplaceHit');
+        assert.equal(clickAt(root, replacedHit), true);
+        await fes.flush();
+        assert.strictEqual(io.replaced.old, replacedHit);
+        assert.strictEqual(get('ReplaceHit'), io.replaced.replacement);
+        assert.equal(replacedHit.deleted, true);
+        assert.deepEqual(
+          [23, 24, 25].map((index) => h.words.get(index)),
+          [1, 0, 0],
+        );
+        assert.equal(root.clickL, beforeReplace);
+        assert.equal(fes.publicPushPending.size, 0);
+        const beforeDecline = root.clickL;
+        assert.equal(clickAt(root, get('Decline')), true);
+        await fes.flush();
+        assert.equal(get('Decline').enable, false);
+        assert.deepEqual([h.words.get(35), h.words.get(36)], [0, 0]);
+        assert.equal(root.clickL, beforeDecline);
+
+        let synchronousError;
+        const execute = root.execute;
+        t.mock.method(root, 'execute', function (...args) {
+          try {
+            return execute.apply(this, args);
+          } catch (error) {
+            synchronousError = error;
+            throw error;
+          }
+        });
+        const badU = get('BadU'),
+          beforeError = root.clickL;
+        fes.focus({ s: root, o: badU });
+        assert.throws(
+          () => clickAt(root, get('Plain')),
+          (error) => {
+            assert.strictEqual(error, synchronousError);
+            assert.match(error.message, /FES whole-row evaluator is pending: K2_CLICK_UNKNOWN_U/);
+            return true;
+          },
+        );
+        assert.strictEqual(fes.focused.o, badU);
+        assert.equal(h.words.get(29), 1);
+        assert.equal(root.clickL, beforeError);
+        assert.equal(fes.error, null);
+        assert.equal(fes.publicPushPending.size, 0);
+        await root.collection.remove(badU);
+        const badF = get('BadF');
+        assert.throws(
+          () => clickAt(root, badF),
+          (error) => {
+            assert.strictEqual(error, synchronousError);
+            assert.match(error.message, /FES whole-row evaluator is pending: K2_CLICK_UNKNOWN_F/);
+            return true;
+          },
+        );
+        assert.strictEqual(fes.focused.o, badF);
+        assert.equal(h.words.get(30), 1);
+        assert.equal(root.clickL, beforeError);
+        assert.equal(fes.error, null);
+        assert.equal(fes.publicPushPending.size, 0);
+        await fes.flush();
+        assert.deepEqual(frame(root), saved);
+        assert.deepEqual(h.world.random.snapshot(), rng);
+
+        // Each terminal failure/close gets a real fresh startup owner. No error
+        // field or suspended stack is cleared to manufacture a continuation.
+        for (const mode of ['unfocus-error', 'focus-error', 'close']) {
+          const isolated = await clickTrial(profile),
+            { h: ih, root: ir, fes: ip, get: ig } = isolated;
+          try {
+            const iSaved = frame(ir);
+            clickClipboard(isolated);
+            if (mode === 'close') {
+              assert.equal(clickAt(ir, ig('CloseHit')), true);
+              await ip.flush();
+              assert.equal(ih.world.objects.objects.has(ih.id), false);
+              assert.equal(ir.runtime.closed, true);
+              assert.deepEqual(
+                [26, 27, 28].map((index) => ih.words.get(index)),
+                [0, 0, 0],
+              );
+              assert.equal(ir.clickL, 0);
+              assert.equal(ip.publicPushPending.size, 0);
+            } else {
+              let asynchronousError;
+              const command = ir.runtime.command;
+              t.mock.method(ir.runtime, 'command', function (...args) {
+                const result = command.apply(this, args);
+                if (args[0] === 'm2att')
+                  result.catch((error) => {
+                    asynchronousError = error;
+                  });
+                return result;
+              });
+              const isUnfocus = mode === 'unfocus-error',
+                target = ig(isUnfocus ? 'Plain' : 'AsyncBadF');
+              ip.focus({ s: ir, o: ig(isUnfocus ? 'AsyncBadU' : 'Silent') });
+              assert.equal(clickAt(ir, target), true);
+              assert.strictEqual(ip.focused.o, target);
+              assert.equal(ih.words.get(isUnfocus ? 31 : 33), 1);
+              await assert.rejects(ip.flush(), (error) => {
+                assert.strictEqual(error, asynchronousError);
+                assert.match(error.message, /Unimplemented FES raw6 command m2att/);
+                return true;
+              });
+              assert.strictEqual(ip.error, asynchronousError);
+              assert.deepEqual(
+                [17, 18, 32, 34].map((index) => ih.words.get(index)),
+                [0, 0, 0, 0],
+              );
+              assert.equal(ir.clickL, 0);
+              assert.deepEqual(frame(ir), iSaved);
+              assert.equal(ip.publicPushPending.size, 0);
+            }
+            assert.equal(ih.world.nativeEngine, undefined);
+          } finally {
+            await ih.close();
+          }
+        }
+        assert.equal(fresh.world.nativeEngine, undefined);
+        assert.equal(h.world.nativeEngine, undefined);
+      } finally {
+        await fresh?.dispose();
+        await h.close();
+      }
+    },
+  );
+}
