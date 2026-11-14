@@ -744,3 +744,20 @@ does not decode a replacement RECT. This rectangle excludes PL/PARENT, skin and
 plane offsets and does not claim the initial native area or retained drag pixel.
 Native input, capture/release and complete Canvas/native pixel equivalence remain
 separate, along with unsupported raw13, unknown types, slots and versions.
+
+Normal runtime/raw15 public `moveFocus` left/right uses the public frontend's
+existing `max(1, ceil((maximum-minimum)/20))` step and typed minimum/maximum
+endpoints. It writes through the typed notify0 setter before SCRL_P's synchronous
+prefix, commits `scrollPosition` afterward and returns the original admission
+Boolean. The direction push field still commits first. Clamping to an unchanged
+value still dispatches SCRL_P, as in the original public branch. Bare arithmetic
+and all other navigation paths are unchanged.
+
+These are public FES logical numbers: range10..110 has public endpoints10/110.
+The low Slider setter separately clamps then snaps, giving settled endpoints
+10/100, while pointer quantization can reach0/100. A notify0 task update does not
+copy that low value back into the FES object. Fresh restores the public and low
+values independently; this change adds no checkpoint fields or native keyboard
+equivalence claim. Whole movement selection/value ordering behind an existing
+public tail, complete hover/drag gestures and unsupported types remain separate
+gates.

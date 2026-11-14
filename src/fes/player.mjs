@@ -799,6 +799,17 @@ export class FESPlayer {
     current.s[`push${direction[0].toUpperCase()}${direction.slice(1)}`] = current.o.handle;
     if (current.o.type === 'SLIDER' && ['left', 'right'].includes(direction)) {
       const o = current.o;
+      if (current.s.runtime && o.nativeType === 15) {
+        const step = Math.max(1, Math.ceil((o.maximum - o.minimum) / 20)),
+          value = Math.max(
+            o.minimum,
+            Math.min(o.maximum, o.value + (direction === 'right' ? 1 : -1) * step),
+          );
+        setFESControlValue(o, value, 0);
+        current.s.event(o, 'SCRL_P');
+        current.s.scrollPosition = o.handle;
+        return true;
+      }
       o.value = Math.max(
         o.min,
         Math.min(

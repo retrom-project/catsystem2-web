@@ -3526,3 +3526,241 @@ for (const profile of startupProfiles) {
     }
   });
 }
+
+const sliderKeyboardNumbersSource = ascii(
+  text(controlSlideSource) +
+    '\n#Slider.SETLOW\n@ pos 12\nbreak\n#Slider.SETHIGH\n@ pos 105\nbreak\n',
+);
+function observeSliderKeyboardNumbers(t, h, root) {
+  const calls = [],
+    getters = [],
+    produced = [],
+    reference = { nameBytes: ascii('Slider'), index: 1 };
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command;
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const arena = h.world.fesSources,
+        row = '@ getid 50',
+        record = arena.programs.get(root.program.sourceKey).blocks['Slider.PROBE'][0],
+        nameAddress = record.names.get(fesByteView(reference.nameBytes)),
+        rowAddress = record.copies.get(row),
+        object = root.collection.lookup(reference.nameBytes, 1),
+        occurrence = produced.length + 1;
+      assert.equal(object.nativeType, 15);
+      assert.deepEqual(root.collection.reference(object), reference);
+      assert.deepEqual(selection, reference);
+      assert.deepEqual(root.nativeContext, { ...reference, current: 1 });
+      assert.equal(root.executingLabel, 'Slider.PROBE');
+      assert.equal(root.executingLine, 1);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, reference.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(
+          Number.isInteger(address) &&
+            address >= arena.base &&
+            address + bytes.length + 1 <= arena.base + arena.used,
+        );
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      for (const token of ['@', 'getid'])
+        assert.equal(
+          getters.filter((v) => v.label === 'Slider.PROBE' && v.line === 1 && v.token === token)
+            .length,
+          occurrence,
+        );
+      produced.push({ reference, current: 1, nameAddress, rowAddress });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return async () => {
+    const count = produced.length;
+    await controlHitNotify(h, 'PROBE', 'Slider', 1);
+    assert.equal(produced.length, count + 1);
+    assert.deepEqual(
+      calls.map((v) => [v.reference, v.current, v.objectNameAddress, v.commandPointer]),
+      produced.map((v) => [v.reference, v.current, v.nameAddress, v.rowAddress]),
+    );
+    assert.equal(h.words.get(50), produced.at(-1).nameAddress);
+    assert.equal(h.words.get(51), 1);
+    return h.words.get(52);
+  };
+}
+function observeKeyboardNumberPrefix(t, root) {
+  const event = root.event,
+    observed = [];
+  t.mock.method(root, 'event', function (object, name) {
+    if (name === 'SCRL_P')
+      observed.push({
+        reference: this.collection.reference(object),
+        value: object.value,
+        pending: object.valuePending,
+        notify: object.valueNotify,
+        field: this.scrollPosition,
+      });
+    return event.call(this, object, name);
+  });
+  return observed;
+}
+for (const profile of startupProfiles) {
+  test('normal public SLIDER moveFocus uses typed keyboard numbers: ' + profile, async (t) => {
+    const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+      h = await environment(profile, sliderKeyboardNumbersSource, {
+        controlImages: { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+      });
+    let fresh;
+    try {
+      const root = await h.load();
+      for (let index = 10; index < 16; index++) h.words.set(index, 0);
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      const fes = root.player,
+        slider = root.collection.lookup(ascii('Slider'), 1),
+        scroll = root.collection.lookup(ascii('Scroll'), 1),
+        task = controlTrack(h.world, root, slider).task,
+        saved = frame(root),
+        rng = h.world.random.snapshot(),
+        previousScroll = root.scrollPosition,
+        prefix = observeKeyboardNumberPrefix(t, root),
+        probe = observeSliderKeyboardNumbers(t, h, root);
+      assert.deepEqual([slider.nativeType, scroll.nativeType], [15, 14]);
+      assert.deepEqual([slider.value, slider.minimum, slider.maximum], [25, 10, 110]);
+      assert.deepEqual([slider.min, slider.max], [0, 10]);
+      assert.ok(fes.candidates().some((v) => v.o === slider));
+      fes.focus({ s: root, o: slider });
+      const admitted = fes.moveFocus('right'),
+        immediate = {
+          value: slider.value,
+          pending: slider.valuePending,
+          notify: slider.valueNotify,
+          field: root.scrollPosition,
+          count: h.words.get(10),
+          index: h.words.get(11),
+          oldField: h.words.get(12),
+        };
+      assert.equal(
+        await probe(),
+        30,
+        'normal public Slider keyboard must publish its typed logical value through real getpos',
+      );
+      assert.strictEqual(admitted, true);
+      assert.deepEqual(immediate, {
+        value: 30,
+        pending: true,
+        notify: 0,
+        field: slider.handle,
+        count: 1,
+        index: 1,
+        oldField: previousScroll,
+      });
+      assert.equal(root.pushRight, slider.handle);
+      assert.deepEqual(prefix[0], {
+        reference: controlHitReferences[0],
+        value: 30,
+        pending: true,
+        notify: 0,
+        field: previousScroll,
+      });
+      assert.equal(task.model.state.value, 30);
+      assert.deepEqual(frame(root), saved);
+      assert.strictEqual(fes.moveFocus('left'), true);
+      assert.equal(await probe(), 25);
+      assert.equal(root.pushLeft, slider.handle);
+      assert.equal(h.words.get(10), 2);
+
+      // Independent public endpoints, deliberately distinct from low setter/pointer domains.
+      for (const [index, spec] of [
+        { setup: 'SETLOW', start: 12, direction: 'left', expected: 10, low: 10 },
+        { setup: null, start: 10, direction: 'left', expected: 10, low: 10 },
+        { setup: 'SETHIGH', start: 105, direction: 'right', expected: 110, low: 100 },
+        { setup: null, start: 110, direction: 'right', expected: 110, low: 100 },
+      ].entries()) {
+        if (spec.setup) await controlHitNotify(h, spec.setup, 'Slider', 1);
+        assert.equal(slider.value, spec.start);
+        assert.strictEqual(fes.moveFocus(spec.direction), true);
+        assert.deepEqual(
+          [slider.value, slider.valuePending, slider.valueNotify],
+          [spec.expected, true, 0],
+        );
+        assert.equal(h.words.get(10), 3 + index, 'unchanged endpoint still dispatches one SCRL_P');
+        assert.equal(await probe(), spec.expected);
+        assert.equal(task.model.state.value, spec.low);
+        assert.equal(root[spec.direction === 'right' ? 'pushRight' : 'pushLeft'], slider.handle);
+        assert.equal(root.scrollPosition, slider.handle);
+        assert.deepEqual(frame(root), saved);
+      }
+      assert.equal(prefix.length, 6);
+      assert.deepEqual(
+        prefix,
+        [30, 25, 10, 10, 110, 110].map((value, index) => ({
+          reference: controlHitReferences[0],
+          value,
+          pending: true,
+          notify: 0,
+          field: index === 0 ? previousScroll : slider.handle,
+        })),
+      );
+      assert.deepEqual([h.words.get(10), h.words.get(13)], [6, 0]);
+      assert.equal(scroll.value, 30);
+      assert.strictEqual(fes.focused.o, slider);
+      assert.equal(fes.publicPushPending.size, 0);
+      assert.deepEqual(h.world.random.snapshot(), rng);
+      assert.deepEqual([slider.value, task.model.state.value], [110, 100]);
+
+      let imageReads = 0,
+        loads = 0;
+      for (const name of ['controls', 'area']) {
+        const file = h.game.lookup(h.game.resolveCategory(name, 'image')).file,
+          read = file.read;
+        t.mock.method(file, 'read', function (...args) {
+          imageReads++;
+          return read.apply(this, args);
+        });
+      }
+      const load = FESControlDriver.prototype.load;
+      t.mock.method(FESControlDriver.prototype, 'load', function (...args) {
+        loads++;
+        return load.apply(this, args);
+      });
+      fresh = await freshCheckpoint(t, h, profile);
+      const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+        fSlider = fRoot.collection.lookup(ascii('Slider'), 1),
+        fTask = controlTrack(fresh.world, fRoot, fSlider).task,
+        words = fresh.world.runtime.variableBank(fresh.world.main, false),
+        fh = { world: fresh.world, id: h.id, words },
+        fSaved = frame(fRoot);
+      assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+      assert.deepEqual([fSlider.value, fTask.model.state.value], [110, 100]);
+      assert.equal(words.get(10), 6);
+      assert.equal(fRoot.scrollPosition, 0);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      const fPrefix = observeKeyboardNumberPrefix(t, fRoot),
+        fProbe = observeSliderKeyboardNumbers(t, fh, fRoot);
+      // Select the actual restored live object through the existing public setup;
+      // this leaf promises value persistence, not native active-focus restoration.
+      fRoot.player.focus({ s: fRoot, o: fSlider });
+      assert.strictEqual(fRoot.player.moveFocus('left'), true);
+      assert.deepEqual([fSlider.value, fSlider.valuePending, fSlider.valueNotify], [105, true, 0]);
+      assert.equal(words.get(10), 7);
+      assert.equal(await fProbe(), 105);
+      assert.equal(fTask.model.state.value, 100);
+      assert.deepEqual(fPrefix, [
+        { reference: controlHitReferences[0], value: 105, pending: true, notify: 0, field: 0 },
+      ]);
+      assert.equal(fRoot.pushLeft, fSlider.handle);
+      assert.equal(fRoot.scrollPosition, fSlider.handle);
+      assert.deepEqual(frame(fRoot), fSaved);
+      assert.equal(fRoot.player.publicPushPending.size, 0);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      assert.equal(fresh.world.nativeEngine, undefined);
+      assert.equal(h.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}
