@@ -517,8 +517,7 @@ export class FESPlayer {
   press() {
     const target = this.focused;
     if (!target || !target.o.enable || !this.instances.includes(target.s)) return false;
-    if (target.s.runtime && target.o.type === 'BUTTON' && target.o.nativeType === 6)
-      return this.completePublicPress(target.s, target.o);
+    if (target.s.runtime) return this.completePublicPress(target.s, target.o);
     target.s.event(target.o, 'PUSH_L');
     target.s.clickL = target.o.handle;
     target.s.event(target.o, 'RELEASE_L');

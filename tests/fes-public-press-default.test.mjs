@@ -9,6 +9,7 @@ import { NativeStringBank } from '../src/native/string-bank.mjs';
 import { NativeScriptReplacements } from '../src/native/script-replacement.mjs';
 import { BrowserNativeClipboard } from '../src/native/clipboard-browser.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
+import { fesByteView } from '../src/fes/tokens.mjs';
 import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import {
   startupProfiles,
@@ -616,6 +617,271 @@ for (const profile of startupProfiles) {
       assert.equal(events.filter((entry) => entry.event === 'RELEASE_L').length, releases);
       assert.equal(player.publicPushPending.size, 0);
       assert.deepEqual(h.world.random.snapshot(), rng);
+      assert.equal(fresh.world.nativeEngine, undefined);
+      assert.equal(h.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}
+
+const nonButtonSource = ascii(
+  [
+    '#DEFINE',
+    'CPLANE Choice[2]',
+    'CPLANE Other',
+    'CPLANE Silent',
+    '#OBJECT SIZE POS DISP',
+    'Choice 6,4 4,5 1',
+    'Other 6,4 20,5 1',
+    'Silent 6,4 30,5 1',
+    '#START',
+    'wait 1',
+    'next IDLE',
+    '#IDLE',
+    'break',
+    '#Other.PUSH_L',
+    '$50=++$50',
+    'break',
+    '#Other.RELEASE_L',
+    '$51=++$51',
+    'break',
+    '#Choice.PUSH_L',
+    '$52=++$52',
+    '@ getid 55',
+    'clipboard (:public-press)',
+    '@ getid 56',
+    '$53=++$53',
+    'break',
+    '#Choice.RELEASE_L',
+    '$54=++$54',
+    '@ getid 57',
+    'clipboard (:public-release)',
+    '$58=++$58',
+    'break',
+    '#REENTER',
+    'Other getid 63',
+    '$62=++$62',
+    'break',
+    '',
+  ].join('\n'),
+);
+
+for (const profile of startupProfiles) {
+  test('normal public non-BUTTON press preserves complete action order: ' + profile, async (t) => {
+    const h = await environment(profile, nonButtonSource);
+    let fresh;
+    try {
+      const root = await h.load(),
+        player = root.player;
+      for (let index = 50; index < 64; index++) h.words.set(index, 0);
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      const first = root.collection.lookup(ascii('Choice'), 1),
+        other = root.collection.lookup(ascii('Other'), 0),
+        silent = root.collection.lookup(ascii('Silent'), 0),
+        firstRef = { nameBytes: ascii('Choice'), index: 1 },
+        otherRef = { nameBytes: ascii('Other'), index: 0 },
+        saved = frame(root),
+        rng = h.world.random.snapshot(),
+        calls = [],
+        getters = [],
+        events = [],
+        producers = [],
+        io = installClipboard(h, root),
+        dispatch = root.dispatchEvent,
+        firstOwned = { ...firstRef, current: 1 },
+        notifyOwned = { nameBytes: new Uint8Array(), index: 0, current: 0 },
+        expected = [
+          {
+            label: 'Choice.PUSH_L',
+            line: 2,
+            head: '@',
+            row: '@ getid 55',
+            slot: 55,
+            ref: firstRef,
+            owned: firstOwned,
+          },
+          {
+            label: 'REENTER',
+            line: 1,
+            head: 'Other',
+            row: 'Other getid 63',
+            slot: 63,
+            ref: otherRef,
+            owned: notifyOwned,
+          },
+          {
+            label: 'Choice.PUSH_L',
+            line: 4,
+            head: '@',
+            row: '@ getid 56',
+            slot: 56,
+            ref: firstRef,
+            owned: firstOwned,
+          },
+          {
+            label: 'Choice.RELEASE_L',
+            line: 2,
+            head: '@',
+            row: '@ getid 57',
+            slot: 57,
+            ref: firstRef,
+            owned: firstOwned,
+          },
+        ];
+      for (const object of [first, other, silent]) {
+        assert.equal(object.type, 'CPLANE');
+        assert.equal(object.nativeType, 3);
+      }
+      assert.deepEqual(root.collection.reference(first), firstRef);
+      assert.deepEqual(root.collection.reference(other), otherRef);
+      assert.notEqual(first.handle, other.handle);
+      observeCommands(t, root, h.world, calls, getters);
+      const command = root.runtime.command;
+      t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+        if (verb === 'getid') {
+          const entry = expected[producers.length],
+            arena = h.world.fesSources,
+            record = arena.programs.get(root.program.sourceKey).blocks[entry.label][entry.line - 1],
+            row = ascii(entry.row),
+            nameAddress = record.names.get(fesByteView(entry.ref.nameBytes)),
+            rowAddress = record.copies.get(fesByteView(row));
+          // Observe the actual producer record after context() populated it.
+          // Never call context() here or derive this oracle from its consumer.
+          assert.equal(root.executingLabel, entry.label);
+          assert.equal(root.executingLine, entry.line);
+          assert.deepEqual(record.bytes, row);
+          assert.deepEqual(selection, entry.ref);
+          assert.deepEqual(root.nativeContext, entry.owned);
+          for (const [address, bytes] of [
+            [nameAddress, entry.ref.nameBytes],
+            [rowAddress, row],
+          ]) {
+            assert.ok(Number.isInteger(address));
+            assert.ok(
+              address >= arena.base && address + bytes.length + 1 <= arena.base + arena.used,
+            );
+            assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+          }
+          assert.notEqual(nameAddress, first.handle);
+          assert.notEqual(nameAddress, other.handle);
+          assert.equal(context.objectNameAddress, nameAddress);
+          assert.equal(context.commandPointer, rowAddress);
+          assert.deepEqual(context.commandBytes, row);
+          producers.push({ nameAddress, rowAddress });
+        }
+        return command.call(this, verb, selection, args, context);
+      });
+      t.mock.method(root, 'dispatchEvent', function (object, event, settled) {
+        events.push({ object, event, clickL: this.clickL, completed: h.words.get(58) });
+        return dispatch.call(this, object, event, settled);
+      });
+
+      player.focus({ s: root, o: other });
+      assert.equal(player.press(), true);
+      assert.strictEqual(player.focused.o, other);
+      assert.deepEqual([h.words.get(50), h.words.get(51)], [1, 1]);
+      assert.equal(root.clickL, other.handle);
+      assert.equal(player.publicPushPending.size, 0);
+      assert.deepEqual(
+        events.map((entry) => [entry.object, entry.event, entry.clickL]),
+        [
+          [other, 'PUSH_L', 0],
+          [other, 'RELEASE_L', other.handle],
+        ],
+      );
+      player.focus({ s: root, o: silent });
+      const count = events.length;
+      assert.equal(player.press(), true);
+      assert.equal(root.clickL, silent.handle);
+      assert.equal(events.length, count);
+      assert.equal(player.publicPushPending.size, 0);
+      player.focus({ s: root, o: other });
+      assert.equal(player.press(), true);
+      assert.deepEqual([h.words.get(50), h.words.get(51)], [2, 2]);
+      events.length = 0;
+      assert.deepEqual(frame(root), saved);
+
+      player.focus({ s: root, o: first });
+      assert.equal(player.press(), true);
+      assert.strictEqual(player.focused.o, first);
+      assert.equal(h.words.get(52), 1);
+      assert.equal(h.words.get(53), 0);
+      assert.equal(root.clickL, other.handle, 'CPLANE PUSH must settle before the clickL write');
+      assert.equal(h.words.get(54), 0);
+      assert.ok(player.publicPushPending.size > 0);
+      assert.throws(() => player.snapshot(), /public push is in flight/);
+      player.focus({ s: root, o: other });
+      assert.equal(player.press(), true);
+      assert.strictEqual(player.focused.o, other);
+      assert.deepEqual([h.words.get(50), h.words.get(51)], [2, 2]);
+      assert.equal(root.clickL, other.handle);
+      await player.flush();
+      assert.deepEqual(
+        events.map((entry) => [entry.object, entry.event, entry.clickL, entry.completed]),
+        [
+          [first, 'PUSH_L', other.handle, 0],
+          [first, 'RELEASE_L', first.handle, 0],
+          [other, 'PUSH_L', first.handle, 1],
+          [other, 'RELEASE_L', other.handle, 1],
+        ],
+      );
+      assert.equal(producers.length, expected.length);
+      assert.deepEqual(
+        calls.map((call) => [call.reference, text(call.commandBytes), call.current]),
+        expected.map((entry) => [entry.ref, entry.row, entry.ref.index]),
+      );
+      for (const [index, entry] of expected.entries()) {
+        assert.equal(h.words.get(entry.slot), producers[index].nameAddress);
+        const tokens = getters.filter(
+          (value) => value.label === entry.label && value.line === entry.line,
+        );
+        assert.equal(tokens.filter((value) => value.token === entry.head).length, 1);
+        assert.equal(tokens.filter((value) => value.token === 'getid').length, 1);
+      }
+      assert.deepEqual(
+        [50, 51, 52, 53, 54, 58, 62].map((index) => h.words.get(index)),
+        [3, 3, 1, 1, 1, 1, 1],
+      );
+      assert.deepEqual(io.writes, ['', 'public-press', '', 'public-release']);
+      assert.deepEqual(io.reentries, [{ ...firstRef, current: 1 }]);
+      assert.deepEqual(frame(root), saved);
+      assert.equal(player.pending.size, 0);
+      assert.equal(player.publicPushPending.size, 0);
+      assert.deepEqual(h.world.random.snapshot(), rng);
+
+      fresh = await freshCheckpoint(t, h, profile);
+      const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+        fPlayer = fRoot.player,
+        fWords = fresh.world.runtime.variableBank(fresh.world.main, false),
+        fOther = fRoot.collection.lookup(otherRef.nameBytes, otherRef.index),
+        fSaved = frame(fRoot);
+      assert.equal(fOther.nativeType, 3);
+      assert.strictEqual(fPlayer.focused.o, fOther);
+      assert.notStrictEqual(fOther, other);
+      assert.equal(fRoot.clickL, 0);
+      assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+      assert.deepEqual(
+        [50, 51, 52, 53, 54, 58, 62].map((index) => fWords.get(index)),
+        [3, 3, 1, 1, 1, 1, 1],
+      );
+      for (const [index, entry] of expected.entries()) {
+        const record = fresh.world.fesSources.programs.get(fRoot.program.sourceKey).blocks[
+          entry.label
+        ][entry.line - 1];
+        assert.equal(
+          record.names.get(fesByteView(entry.ref.nameBytes)),
+          producers[index].nameAddress,
+        );
+        assert.equal(record.copies.get(fesByteView(ascii(entry.row))), producers[index].rowAddress);
+        assert.equal(fWords.get(entry.slot), producers[index].nameAddress);
+      }
+      assert.equal(fPlayer.press(), true);
+      assert.deepEqual([fWords.get(50), fWords.get(51)], [4, 4]);
+      assert.equal(fRoot.clickL, fOther.handle);
+      assert.deepEqual(frame(fRoot), fSaved);
+      assert.equal(fPlayer.publicPushPending.size, 0);
       assert.equal(fresh.world.nativeEngine, undefined);
       assert.equal(h.world.nativeEngine, undefined);
     } finally {

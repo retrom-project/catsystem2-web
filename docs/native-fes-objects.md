@@ -544,13 +544,15 @@ the event owner. Their internal commands-only drain does not wait on its own
 public completion. An unfinished public callback remains covered by the existing
 snapshot guard; settled restoration recreates no Promise or callback.
 
-## Normal public BUTTON press
+## Normal public press
 
-Normal semantic BUTTON (raw6) press captures the focused object at entry and
-retains its existing Boolean admission result. It runs PUSH_L, then reads that
-same object's handle into clickL after PUSH succeeds, then runs RELEASE_L. It
-does not synthesize focus or repeat placement/enable qualification. getid's image
-selector output is independent of this lifetime handle.
+Public press on an existing normal collection object captures the focused
+object at entry and retains its existing Boolean admission result. It runs
+PUSH_L, then reads that same object's handle into clickL after PUSH succeeds,
+then runs RELEASE_L. It does not synthesize focus or repeat placement/enable
+qualification. getid retains its separate type contract: BUTTON returns its
+image selector, while CPLANE returns its owned S9 source-name address. Neither
+output supplies the lifetime handle committed by press.
 
 With no pending public operation, genuinely synchronous callbacks and errors
 retain their call-stack order. A missing handler or finished script is a
@@ -568,8 +570,10 @@ than transferring the press to a new object. Asynchronous errors retain the
 existing player.error/flush behavior and unfinished actions retain the snapshot
 guard; no queue, owner or persistent checkpoint flag is added.
 
-This closes only normal BUTTON press and the public focus/event owner seam.
-Other normal press types retain their existing behavior. Complete click actions,
-including an awaited FOCUS that redirects selection, right-click, slider and drag
-actions still require separate review of their writes and callback order. Bare
-FES callbacks and press retain their independent synchronous String contract.
+The same action now covers existing normal collection objects, with CPLANE
+(raw3) and BUTTON (raw6) default-entry regressions. Their existing factory,
+initialization and capability gates remain in place; routing press creates no
+new type or ABI support. Complete click actions, including an awaited FOCUS that
+redirects selection, right-click, slider and drag actions still require separate
+review of their writes and callback order. Bare FES callbacks and press retain
+their independent synchronous String contract.
