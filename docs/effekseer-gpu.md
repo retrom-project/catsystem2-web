@@ -154,6 +154,37 @@ original shared batch splits or clamps at2000. Byte reserve/flush and the
 persistent Ring cache use the owning Task MeshBatch; complete default-Task
 geometry/device and legal2000-particle acceptance remain separate requirements.
 
+The authored default World browser cases use the ordinary FES FILE path and one
+actual51/571 Play followed by four normal World updates. A public view and57
+camera input select their fixed perspective reference before the registered D6
+callback draws on the current World GPU, target and depth. Each Sprite, Ribbon,
+Ring and Track case requires actual indexed submission and exact numerical RGBA,
+then repeats the same current state in a newly constructed World and its own
+GPU through the existing checkpoint restore. Restore reloads the pinned immutable
+authored78-byte bootstrap KCS program without executing it, then reopens the one
+pinned case Effect for the existing mounted-source identity validation. Each read
+reserves its sole ordered quota on entry and must match its fixed length and
+SHA-256. FES, texture and all other mounted reads remain forbidden. Rendering and
+snapshotting perform no mounted reads. Neither restore nor rendering may replay
+resource commands/state, Play, Update or RNG sampling. The helper does not force
+Task camera, manager, frame or depth fields. Active legacy CPU vertex bytes,
+typed GPU uploads and Uint16 index uploads are observed separately from
+backing-buffer capacity.
+
+The first Ribbon/Track draw creates the fixture's sole identified group draw
+cache. The tests require the independently fixed count, final cursor and UVs;
+Track also requires its fixed sampled colors and sizes. They clone the complete
+manager state before drawing, replace only that one initially null cache with
+the fixed expectation, and compare every manager field. The fresh checkpoint
+must already contain that exact cache, and its next draw must preserve the whole
+manager state unchanged. No other matrix, sample, age, pool or counter field is
+excluded from the comparison.
+
+The four CC0 effect inputs and independently derived perspective references are
+self-contained public test data. Their finite opaque, untextured, solid/no-fog
+scope is separate from the older independent typed-backend shader profile.
+These cases add no legal2000, device-loss/reset or nonprimary-target coverage.
+
 The fixed source is official Effekseer1.23,
 5239bb1e416cbf55b4d3c8170594cbdc7815f263, under the retained MIT grant in
 licenses/effekseer-MIT.txt. Typed packing, shared-owner interfaces and renderer

@@ -1,0 +1,233 @@
+{
+  "sourceGit": "7a7aac286f12808d1079fdfefff0fa2d2d269161",
+  "profile": "nekopara-vol3-engine-2.6.1.76",
+  "canvas": [64, 48],
+  "virtualView": [64, 64],
+  "viewport": [8, 6, 32, 24, 0, 1],
+  "clearARGB": 4279311659,
+  "clearRGBA": [17, 29, 43, 255],
+  "playPosition": [0, 0, 0.5],
+  "PlayCount": 1,
+  "normalWorldUpdateCount": 4,
+  "public57Bits": [
+    1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 1091633758, 3223222724,
+    1065353216
+  ],
+  "TaskCameraBits": [
+    1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 2147483648, 2147483648,
+    3219128310, 1065353216
+  ],
+  "TaskProjectionBits": [
+    1065359898, 0, 0, 0, 0, 1065359898, 0, 0, 0, 0, 3213008060, 3212836864, 0, 0, 3213008060, 0
+  ],
+  "deriveSHA256": "5f56298e9ce05de4ae536343f9147da07e297351c7bf7030477792b525e9ba45",
+  "calibrationSHA256": "48602be1c584258eb28b9fccaca5a0e894e95f93f2faac7179399331aab9faf0",
+  "kind": "authored default World four-geometry perspective browser reference",
+  "license": "CC0-1.0",
+  "fesSource": "#DEFINE\nEFKPLANE fx\n#OBJECT FILE SIZE POS BASE PRI DISP COLOR\nfx scene.efk 800,600 0,0,0 0,0,0 170 1 0xffffffff\n#START\nnext IDLE\n#IDLE\nbreak\nnext IDLE\n",
+  "bootKCSBase64": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+  "bootKCSSHA256": "b4c8926b70dfb87320ae7059acc34cbd408f1821d51e2615fc152a26464a5a0b",
+  "cases": [
+    {
+      "kind": "sprite",
+      "RGBABytes": 12288,
+      "RGBASHA256": "bfbdce0cb9470460c214489eb9b075b72993914ad807de12fbe2fbb28f95e41c",
+      "changedPixels": 117,
+      "rgbaDeflateBase64": "eNrtzzENADAIADAsIAAF+NcHFlj29qiAZvUkAAAAHE3EM39/f39/f39/AAAAAAAA/i0m2WzP",
+      "rowPixelXs": {
+        "14": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "15": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "16": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "17": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "18": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "19": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "20": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "21": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "22": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+      },
+      "effectivePacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 0, 0, 3219128310, 1065353216
+      ],
+      "D3DDepthRange": [0.20408109937359767, 0.20408109937359767],
+      "efkBytes": 284,
+      "efkSHA256": "68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1",
+      "efkBase64": "U0tGRQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAA/////wEAAAACAAAANAAAAAEAAAACAAAAAgAAAAIAAAABAAAAAAAAAAAAAABkAAAAZAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v//f/7//38AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AgAAAAAAAAACAAAAAAAAAP8AAP8AAAAAAQAAAAAAAL8AAAC/AAAAPwAAAL8AAAC/AAAAPwAAAD8AAAA/AAAAAAAAAAA=",
+      "expected": {
+        "instances": 1,
+        "vertexCount": 4,
+        "indexCount": 6,
+        "drawCalls": 1,
+        "normalNodes": 1
+      },
+      "population": {
+        "capacity": 2000,
+        "roots": 1,
+        "nonRoots": 1,
+        "occupiedPool": 1,
+        "globalCount": 2
+      },
+      "expectedPacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 2147483648, 2147483648,
+        3219128310, 1065353216
+      ],
+      "quadCount": 1
+    },
+    {
+      "kind": "ribbon",
+      "RGBABytes": 12288,
+      "RGBASHA256": "ac25a06e81fc3f78cce528f2980d372a6b945332b5e6bdd07662a91db7b2616f",
+      "changedPixels": 14,
+      "rgbaDeflateBase64": "eNrt0jENADAMBLFSCIAiKH98HwSRsnTzYAAnXd2XAgAAAABYSs5Ivz8AAAAAAAD4pwF9ejf3",
+      "rowPixelXs": {
+        "20": [21, 22, 23, 24, 25, 26, 27],
+        "21": [21, 22, 23, 24, 25, 26, 27]
+      },
+      "effectivePacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 0, 0, 3219128310, 1065353216
+      ],
+      "D3DDepthRange": [0.20408109937359767, 0.20408109937359767],
+      "efkBytes": 316,
+      "efkSHA256": "d5c92a68a70a07e4dc4b892b729ffeb0fda76eb637d64c5f0e6af1d1ba74f4e3",
+      "efkBase64": "U0tGRQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAA/////wEAAAADAAAANAAAAAQAAAACAAAAAgAAAAIAAAABAAAAAAAAAAAAAABkAAAAZAAAAAAAgD8AAIA/AAAAAAAAAAABAAAASAAAAAAAAAAAAMC+AAAAAAAAAAAAAMC+AAAAAAAAAAAAAIA+AAAAAAAAAAAAAIA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v//f/7//38AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AwAAAAAAAAAAAAAA//8A/wAAAAABAAAAAACAvgAAgD4AAAAAAAAAAA==",
+      "expected": {
+        "instances": 3,
+        "vertexCount": 8,
+        "indexCount": 12,
+        "drawCalls": 1,
+        "normalNodes": 1
+      },
+      "population": {
+        "capacity": 2000,
+        "roots": 1,
+        "nonRoots": 3,
+        "occupiedPool": 3,
+        "globalCount": 4
+      },
+      "expectedPacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 2147483648, 2147483648,
+        3219128310, 1065353216
+      ],
+      "quadCount": 2
+    },
+    {
+      "kind": "ring",
+      "RGBABytes": 12288,
+      "RGBASHA256": "a7f805c3a86283af8bca7f9412c25223d2e483872d2f71e67221012e5586bb66",
+      "changedPixels": 150,
+      "rgbaDeflateBase64": "eNrt18sRgCAMBUBaoAArsP/60AY8OOaALzuZvcEhhE+Yx7kmAABQYtzRMeen6Jhz+lqMD5Gc/9sxKblXjv973SvmpNQ+bQ90r3/38+/+9/7r//T//n8AAAAAAOzmArMZgjU=",
+      "rowPixelXs": {
+        "11": [24],
+        "12": [21, 22, 23, 24, 25, 26, 27],
+        "13": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "14": [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+        "15": [17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 30, 31],
+        "16": [16, 17, 18, 19, 20, 28, 29, 30, 31, 32],
+        "17": [15, 16, 17, 18, 19, 20, 28, 29, 30, 31, 32, 33],
+        "18": [15, 16, 17, 18, 19, 29, 30, 31, 32, 33],
+        "19": [15, 16, 17, 18, 19, 20, 28, 29, 30, 31, 32, 33],
+        "20": [16, 17, 18, 19, 20, 28, 29, 30, 31, 32],
+        "21": [17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 30, 31],
+        "22": [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+        "23": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "24": [21, 22, 23, 24, 25, 26, 27],
+        "25": [24]
+      },
+      "effectivePacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 0, 0, 3214934009, 1065353216
+      ],
+      "D3DDepthRange": [0.20408109937359767, 0.20408109937359767],
+      "efkBytes": 304,
+      "efkSHA256": "4ec8b63030853e75baa8346246cca9f978c218545de9376e6080f134d703e865",
+      "efkBase64": "U0tGRQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAA/////wEAAAAEAAAANAAAAAEAAAACAAAAAgAAAAIAAAABAAAAAAAAAAAAAABkAAAAZAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v//f/7//38AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/BAAAAAAAAAACAAAACAAAAAAAAAAAALRDAAAAAAAAQD8AAAAAAAAAADMzsz4AAAAAAAAAAAAAAD8AAAAAAP8A/wAAAAAA/wD/AAAAAAD/AP8AAAAAAAAAAA==",
+      "expected": {
+        "instances": 1,
+        "vertexCount": 64,
+        "indexCount": 96,
+        "drawCalls": 1,
+        "normalNodes": 1
+      },
+      "population": {
+        "capacity": 2000,
+        "roots": 1,
+        "nonRoots": 1,
+        "occupiedPool": 1,
+        "globalCount": 2
+      },
+      "expectedPacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 0, 0, 3214934009, 1065353216
+      ],
+      "quadCount": 16
+    },
+    {
+      "kind": "track",
+      "RGBABytes": 12288,
+      "RGBASHA256": "99ecd67f02847714bb16375a06c6a1e5c375f2fd8791a029d28d4c7ead4fe06f",
+      "changedPixels": 14,
+      "rgbaDeflateBase64": "eNrt0jENADAIAEEsIAAF+NcHCki6dLvhBHzyWT0JAAAAAPAoYk76/QEAAAAAAMA/CxUiKgU=",
+      "rowPixelXs": {
+        "20": [21, 22, 23, 24, 25, 26, 27],
+        "21": [21, 22, 23, 24, 25, 26, 27]
+      },
+      "effectivePacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 0, 0, 3219128310, 1065353216
+      ],
+      "D3DDepthRange": [0.20408109937359767, 0.20408109937359767],
+      "efkBytes": 360,
+      "efkSHA256": "986b82bbc06faf280338d23ec8591803229daf9981d9babee05a1f8a1cc58a4c",
+      "efkBase64": "U0tGRQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAA/////wEAAAAGAAAANAAAAAQAAAACAAAAAgAAAAIAAAABAAAAAAAAAAAAAABkAAAAZAAAAAAAgD8AAIA/AAAAAAAAAAABAAAASAAAAAAAAAAAAMC+AAAAAAAAAAAAAMC+AAAAAAAAAAAAAIA+AAAAAAAAAAAAAIA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v//f/7//38AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/BgAAAAAAAAAAAAA/AAAAAAAAAD8AAAAAAAAAPwAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAAAA",
+      "expected": {
+        "instances": 3,
+        "vertexCount": 16,
+        "indexCount": 24,
+        "drawCalls": 1,
+        "normalNodes": 1
+      },
+      "population": {
+        "capacity": 2000,
+        "roots": 1,
+        "nonRoots": 3,
+        "occupiedPool": 3,
+        "globalCount": 4
+      },
+      "expectedPacketCameraBits": [
+        1065353143, 0, 0, 0, 0, 1065353145, 0, 0, 0, 0, 1065353204, 0, 2147483648, 2147483648,
+        3219128310, 1065353216
+      ],
+      "quadCount": 4
+    }
+  ],
+  "provenance": {
+    "input": "Existing authored CC0 SKFE9 fixture bytes; bootstrap instructions [[37,240],[43,71,4],[59]]; no private files",
+    "numeric": "Independent binary32 camera/clip plus rational finite-raster reference, calibrated to two previously observed camera outputs and four existing D3D shader/API pixel references",
+    "A0OracleSHA256": "6d63c3e3491090d9553994e754dccf81f059960cee00ac3355e4ca400c12cc85",
+    "A0SealSHA256": "ed8a3dc0f4529e84a4207ea105a84b7a63d3130badfb8b3a253bbf51c340456b",
+    "actualGPUObservedToCreateReference": false
+  },
+  "scope": "Four opaque untextured solid/no-fog authored workloads, one actual Play and four normal updates, current default World callback and true fresh World. No legal2000, loss/reset or original-manager claim.",
+  "indexStorage": "Uint16Array; actual GL UNSIGNED_SHORT, two bytes per index",
+  "bootKCSBytes": 78,
+  "restoreReadPolicy": {
+    "onlyDuring": "fresh World.restore",
+    "orderedReads": [
+      {
+        "name": "case.kcs",
+        "bytes": 78,
+        "sha256": "b4c8926b70dfb87320ae7059acc34cbd408f1821d51e2615fc152a26464a5a0b",
+        "quota": 1,
+        "purpose": "Immutable program reconstruction without VM execution"
+      },
+      {
+        "name": "scene.efk",
+        "bytes": "per-case efkBytes",
+        "sha256": "per-case efkSHA256",
+        "quota": 1,
+        "purpose": "Existing mounted Effect identity revalidation without Play/Update"
+      }
+    ],
+    "entryReservesQuota": true,
+    "allOtherMountedResourceReads": 0,
+    "renderSnapshotMountedReads": 0,
+    "resourceCommandStateReplay": false,
+    "PlayUpdateRNGReplay": false
+  }
+}
