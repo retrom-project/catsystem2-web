@@ -4,6 +4,37 @@ import assert from 'node:assert/strict';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const ascii = (text) => new TextEncoder().encode(text),
   decode = (bytes) => new TextDecoder().decode(bytes),
   source = `#DEFINE
@@ -30,8 +61,11 @@ break
 sound start $20++ 1/0 $str0
 image start $20++ 1/0 $str0
 effect start $20++ 1/0 $str0
-p[99] start $20++ 1/0 $str0
 $40=++$40
+break
+#MISSING
+p[99] start $20++ 1/0 $str0
+$42=++$42
 break
 #BEGIN
 p start $21++ 1/0 3% $str0
@@ -201,6 +235,20 @@ for (const profile of profiles) {
       // No particle is running yet, so wrong-class/empty selections do not
       // introduce a start request or an ordinary running-state318 poll.
       await notify(h, 'GATES');
+      assert.equal(traces.length, 3);
+      await expectMissingHead(h.instance, () => notify(h, 'MISSING'), 'p[99]');
+      assert.equal(traces.length, 3);
+      assert.equal(h.instance.global(20), 0);
+      assert.equal(h.instance.global(42), 0);
+      assert.deepEqual(messages, []);
+      assert.equal(
+        await h.runtime.command(
+          'start',
+          { nameBytes: ascii('p'), index: 99 },
+          ['$20++', '1/0', '$str0'].map(ascii),
+        ),
+        0,
+      );
       assert.equal(h.instance.global(40), 1);
       assert.deepEqual(
         traces.map(({ name }) => name),

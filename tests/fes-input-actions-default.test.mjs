@@ -9,6 +9,37 @@ import { nativeWindowDOM } from './fixtures/native-window-dom.mjs';
 import { EngineHost } from '../src/host.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const utf8 = (value) => new TextEncoder().encode(value),
   string = (bytes) => new TextDecoder().decode(bytes),
   reference = (ref) => (ref === null ? null : [string(ref.nameBytes), ref.index]),
@@ -200,17 +231,34 @@ for (const profile of profiles) {
     const h = await open(profile, {
       SINGLE: 'single noact ++$10',
       MANY: 'many noact ++$10',
-      MISSING: 'many[9] noact ++$10',
-      NEGATIVE: 'many[-2] setact ++$10',
+      MISSING: 'many[9] noact ++$10\n$60=++$60',
+      NEGATIVE: 'many[-2] setact ++$10\n$60=++$60',
     });
     try {
       await notify(h, 'SINGLE');
       assert.equal(h.instance.global(10), 1);
       await notify(h, 'MANY');
       assert.equal(h.instance.global(10), 1);
-      await notify(h, 'MISSING');
+      await expectMissingHead(h.instance, () => notify(h, 'MISSING'), 'many[9]');
+      assert.equal(h.instance.global(10), 1);
+      assert.equal(h.instance.global(60), 0);
+      // The wrapper's missing-target behavior is independent of normal head admission.
+      assert.equal(
+        await h.instance.runtime.command('noact', { nameBytes: utf8('many'), index: 9 }, [
+          utf8('++$10'),
+        ]),
+        0,
+      );
       assert.equal(h.instance.global(10), 2);
-      await notify(h, 'NEGATIVE');
+      await expectMissingHead(h.instance, () => notify(h, 'NEGATIVE'), 'many[-2]');
+      assert.equal(h.instance.global(10), 2);
+      assert.equal(h.instance.global(60), 0);
+      assert.equal(
+        await h.instance.runtime.command('setact', { nameBytes: utf8('many'), index: -2 }, [
+          utf8('++$10'),
+        ]),
+        0,
+      );
       assert.equal(h.instance.global(10), 3);
       assert.deepEqual(
         h.instance.runtime.pendingRecords.map((r) => reference(r.reference)),
@@ -286,15 +334,69 @@ for (const profile of profiles) {
     const h = await open(profile, {
       DROP: 'many[1] delete',
       WRONG: 'other setact ++$10',
-      HOLE: 'many[1] noact ++$10',
-      '_TOPOBJ_.CHECK': '@ noact ++$10',
+      HOLE: 'many[1] noact ++$10\n$60=++$60',
+      '_TOPOBJ_.CHECK': '@ noact ++$10\n$60=++$60',
     });
     try {
       await notify(h, 'DROP');
       await h.task.syncObjects();
       await notify(h, 'WRONG');
-      await notify(h, 'HOLE');
-      await h.task.player.notify('CHECK', '_TOPOBJ_', 0);
+      assert.equal(h.instance.global(10), 1);
+      await expectMissingHead(h.instance, () => notify(h, 'HOLE'), 'many[1]');
+      assert.equal(h.instance.global(10), 1);
+      assert.equal(h.instance.global(60), 0);
+      assert.equal(
+        await h.instance.runtime.command('noact', { nameBytes: utf8('many'), index: 1 }, [
+          utf8('++$10'),
+        ]),
+        0,
+      );
+      assert.equal(h.instance.global(10), 2);
+      // This existing JS lookup route returns a real BASE/raw0 top object.
+      // It is separate from the ordinary native tuple-map missing-record gate.
+      const top = h.instance.collection.lookup(utf8('_TOPOBJ_'), 0),
+        savedContext = structuredClone(h.instance.nativeContext),
+        topGetters = [],
+        topCommands = [],
+        argument = h.instance.argumentBytes,
+        command = h.instance.runtime.command;
+      assert.equal(top.nativeType, 0);
+      assert.equal(h.instance.collection.graph.get(top.handle), top);
+      h.instance.argumentBytes = function (token, ...args) {
+        topGetters.push(typeof token === 'string' ? token : string(token));
+        return argument.call(this, token, ...args);
+      };
+      h.instance.runtime.command = async function (verb, selection, args, context) {
+        const entry = structuredClone(h.instance.nativeContext),
+          result = await command.call(this, verb, selection, args, context);
+        topCommands.push({
+          verb,
+          reference: reference(selection),
+          entry,
+          bytes: context.commandBytes.slice(),
+          result,
+        });
+        return result;
+      };
+      try {
+        assert.equal(await h.task.player.notify('CHECK', '_TOPOBJ_', 0), true);
+      } finally {
+        h.instance.argumentBytes = argument;
+        h.instance.runtime.command = command;
+      }
+      assert.deepEqual(topGetters, ['@', 'noact', '++$10']);
+      assert.deepEqual(topCommands, [
+        {
+          verb: 'noact',
+          reference: ['_TOPOBJ_', 0],
+          entry: { nameBytes: utf8('_TOPOBJ_'), index: 0, current: 0 },
+          bytes: utf8('@ noact ++$10'),
+          result: 0,
+        },
+      ]);
+      assert.deepEqual(h.instance.nativeContext, savedContext);
+      assert.equal(h.instance.collection.lookup(utf8('_TOPOBJ_'), 0), top);
+      assert.equal(h.instance.global(60), 1, 'native0 runs the real top handler continuation');
       assert.equal(h.instance.global(10), 3);
       assert.deepEqual(h.instance.runtime.pendingRecords, []);
       assert.equal(h.instance.defaultButton, null);

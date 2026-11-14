@@ -4,6 +4,37 @@ import assert from 'node:assert/strict';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const ascii = (text) => new TextEncoder().encode(text),
   decode = (bytes) => new TextDecoder().decode(bytes),
   operands = ['$20++', '2147483647', '16777217', '-2147483648', ...Array(28).fill('0'), '$21++'],
@@ -235,10 +266,19 @@ for (const profile of profiles) {
       for (const object of live) assert.deepEqual([...object.registers], short);
 
       messages.length = 0;
-      await notify(h, 'EMPTY');
+      const traceCount = traces.length;
+      await expectMissingHead(h.instance, () => notify(h, 'EMPTY'), 'p[99]');
+      assert.equal(h.instance.global(22), 4);
+      assert.equal(h.instance.global(42), 0);
+      assert.equal(traces.length, traceCount);
+      assert.deepEqual(messages, []);
+      assert.equal(
+        await h.runtime.command('param', { nameBytes: ascii('p'), index: 99 }, [ascii('$22++')]),
+        0,
+      );
       parsed(traces.at(-1), [0], [99]);
       assert.equal(h.instance.global(22), 5);
-      assert.equal(h.instance.global(42), 1);
+      assert.equal(h.instance.global(42), 0, 'normal missing head never reaches the following row');
       assert.deepEqual(messages, []);
       await notify(h, 'OTHER');
       parsed(traces.at(-1), [0], [0]);

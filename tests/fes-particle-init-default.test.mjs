@@ -5,6 +5,37 @@ import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fe
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 import { kcsProgram, hg3 } from './helpers.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const ascii = (text) => new TextEncoder().encode(text),
   decode = (bytes) => new TextDecoder().decode(bytes),
   operands = '($20++&0) probe quad.hg3 1+($21++&0) -17+($22++&0)',
@@ -226,10 +257,32 @@ for (const profile of profiles) {
       assert.equal(h.instance.collection.lookup('p', 1), null);
       assert.equal(h.world.objects.objects.get(children[1].id), children[1]);
 
-      await notify(h, 'EMPTY');
+      const beforeEmpty = [20, 21, 22].map((index) => h.instance.global(index)),
+        traceCount = traces.length;
+      await expectMissingHead(h.instance, () => notify(h, 'EMPTY'), 'p[99]');
+      assert.deepEqual(
+        [20, 21, 22].map((index) => h.instance.global(index)),
+        beforeEmpty,
+      );
+      assert.equal(traces.length, traceCount);
+      assert.equal(h.instance.global(40), 0, 'normal missing head never reaches the following row');
+      assert.deepEqual(messages, []);
+      assert.deepEqual(particleReads(reads), []);
+      assert.equal(
+        await h.runtime.command(
+          'init',
+          { nameBytes: ascii('p'), index: 99 },
+          operands.split(' ').map(ascii),
+        ),
+        0,
+      );
       parsed(traces.at(-1), [99]);
       assert.deepEqual(traces.at(-1).after, traces.at(-1).before);
-      assert.equal(h.instance.global(40), 1);
+      assert.equal(
+        h.instance.global(40),
+        0,
+        'direct wrapper return0 does not run a failed normal row continuation',
+      );
       assert.deepEqual(messages, []);
       assert.deepEqual(particleReads(reads), []);
       await notify(h, 'OTHER');

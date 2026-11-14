@@ -11,6 +11,37 @@ import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { hg3, u32 } from './helpers.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const utf8 = (text) => new TextEncoder().encode(text),
   join = (...parts) => Uint8Array.from(parts.flatMap((part) => [...part]));
 function wide(text) {
@@ -110,7 +141,7 @@ for (const profile of profiles) {
         ),
         encodeCP932('猫 EXTRA'),
         utf8(
-          '\nbreak\n#LITERAL\nmixed layout font LATE_1 X  EXTRA\nbreak\n#QUOTED\nmixed layout font ""\nbreak\n#DEFAULT\nmixed layout fontind ++$10\nbreak\n#HOLE\nmixed[1] layout fontind ++$10 IGNORED\nbreak\n#RESET\nmixed reset\nbreak\n',
+          '\nbreak\n#LITERAL\nmixed layout font LATE_1 X  EXTRA\nbreak\n#QUOTED\nmixed layout font ""\nbreak\n#DEFAULT\nmixed layout fontind ++$10\nbreak\n#MISSING\nmixed[1] layout fontind ++$10 IGNORED\n$60=++$60\nbreak\n#HOLE\nmixed layout fontind 1\nbreak\n#RESET\nmixed reset\nbreak\n',
         ),
       ),
     });
@@ -177,9 +208,30 @@ for (const profile of profiles) {
         }
       }
       instance.setGlobal(10, 0);
+      const beforeMissingFaces = objects.map((object) => faces(world, object));
+      await expectMissingHead(instance, () => h.task.player.notify('MISSING'), 'mixed[1]');
+      assert.equal(instance.global(10), 0);
+      assert.equal(instance.global(60), 0);
+      assert.equal(
+        await instance.runtime.command(
+          'layout',
+          { nameBytes: utf8('mixed'), index: 1 },
+          ['fontind', '++$10', 'IGNORED'].map(utf8),
+          { commandBytes: instance.program.blocks.MISSING[0].slice() },
+        ),
+        0,
+      );
+      assert.equal(instance.global(10), 1);
+      for (let at = 0; at < objects.length; at++)
+        assert.deepEqual(faces(world, objects[at]), beforeMissingFaces[at]);
       await h.task.player.notify('HOLE');
       assert.equal(instance.global(10), 1);
       const savedFaces = objects.map((object) => faces(world, object));
+      assert.deepEqual(
+        savedFaces,
+        beforeMissingFaces,
+        'whole-group hole visit retains exact current Settings face bytes',
+      );
       fresh = await defaultFESWorld(profile, {}, { initialize: false });
       const read = fresh.game.read.bind(fresh.game);
       fresh.game.read = (name) => {

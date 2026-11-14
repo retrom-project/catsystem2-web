@@ -12,6 +12,37 @@ import { nativeWindowDOM } from './fixtures/native-window-dom.mjs';
 import { EngineHost } from '../src/host.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const utf8 = (value) => new TextEncoder().encode(value);
 function configs(world, object, raw) {
   if (object.nativeType !== 29) return [raw ?? world.text.fes.layout(object).config()];
@@ -516,7 +547,9 @@ for (const profile of profiles)
   test(`${profile}: message19 resolves each saved key after its ABI notification can delete the current object`, async () => {
     const world = await defaultFESWorld(profile, {
       'screen.fes': utf8(
-        '#DEFINE\nSTRING text\n#OBJECT SIZE\ntext 24,16\n#START\nnext IDLE\n#IDLE\n#MES_CHANGECONFIG\ntext delete\nbreak\n',
+        '#DEFINE\nSTRING text\n#OBJECT SIZE\ntext 24,16\n#START\nnext IDLE\n#IDLE\n#MES_CHANGECONFIG\ntext delete\n' +
+          (profile === profiles[1] ? '$60=++$60\n' : '') +
+          'break\n',
       ),
     });
     let fresh;
@@ -533,6 +566,7 @@ for (const profile of profiles)
       };
       assert.equal(h.instance.runtime.resources.entries.length, 1);
       await world.sendEngine(h.id, world.main.id, 19);
+      assert.equal(h.instance.global(60), profile === profiles[1] ? 1 : 0);
       assert.deepEqual(calls, profile === profiles[1] ? [] : [original.handle]);
       assert.equal(
         h.instance.collection.lookup('text', 0),
@@ -544,7 +578,22 @@ for (const profile of profiles)
       );
       fresh = await restore(profile, world.snapshot());
       const task = fresh.objects.objects.get(h.id).implementation;
-      await fresh.sendEngine(h.id, fresh.main.id, 19);
+      if (profile === profiles[1]) {
+        await expectMissingHead(
+          task.player.root,
+          () => fresh.sendEngine(h.id, fresh.main.id, 19),
+          'text',
+        );
+        assert.equal(task.player.root.global(60), 1);
+        assert.equal(
+          await task.player.root.runtime.command(
+            'delete',
+            { nameBytes: utf8('text'), index: 0 },
+            [],
+          ),
+          0,
+        );
+      } else await fresh.sendEngine(h.id, fresh.main.id, 19);
       assert.equal(!!task.player.root.collection.lookup('text', 0), profile === profiles[0]);
       assert.ok(fresh.objects.objects.has(child));
       assert.equal(fresh.nativeEngine, undefined);

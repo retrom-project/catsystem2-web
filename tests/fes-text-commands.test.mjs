@@ -6,6 +6,37 @@ import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
 import { hg3 } from './helpers.mjs';
 import { append } from './fixtures/fes-log-model.mjs';
 
+async function expectMissingHead(instance, invoke, head) {
+  const getters = [],
+    argument = instance.argumentBytes,
+    records = structuredClone(instance.runtime.pendingRecords),
+    queuePending = instance.nativeQueuePending,
+    commands = instance.player.pending.size;
+  instance.argumentBytes = function (token, ...args) {
+    getters.push(typeof token === 'string' ? token : new TextDecoder().decode(token));
+    return argument.call(this, token, ...args);
+  };
+  try {
+    await assert.rejects(
+      async () => invoke(),
+      (error) => {
+        assert.equal(
+          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
+          true,
+          error.message,
+        );
+        return true;
+      },
+    );
+  } finally {
+    instance.argumentBytes = argument;
+  }
+  assert.deepEqual(getters, [head, head], 'only the two native head getter stages ran');
+  assert.deepEqual(instance.runtime.pendingRecords, records);
+  assert.equal(instance.nativeQueuePending, queuePending);
+  assert.equal(instance.player.pending.size, commands);
+}
+
 const source = `#DEFINE
 STRING mixed[5]
 #OBJECT SIZE
@@ -62,10 +93,18 @@ break
 mixed endpos
 break
 `;
-async function setup(profile) {
-  const world = await defaultFESWorld(profile, {
-    'screen.fes': new TextEncoder().encode(source),
-  });
+async function setup(profile, { queryHead = false } = {}) {
+  const offset = queryHead ? 1 : 0,
+    body = queryHead
+      ? source
+          .replace('STRING mixed[5]', 'STRING mixed[6]')
+          .replaceAll('mixed[3]', 'mixed[4]')
+          .replaceAll('mixed[2]', 'mixed[3]') +
+        '#MISSING\nmixed[99] isdraw ++$10\n$60=++$60\nbreak\n'
+      : source,
+    world = await defaultFESWorld(profile, {
+      'screen.fes': new TextEncoder().encode(body),
+    });
   try {
     const h = await loadDefaultFES(world),
       { instance } = h,
@@ -75,15 +114,21 @@ async function setup(profile) {
         instance.createObjects(FES_OBJECT_DEFINITION_ORDER.indexOf(type), 'mixed', index + 1);
         await instance.applyObjects('#OBJECT SIZE', `mixed[${index}] 24,16`);
       };
-    await replace(2, 'NVSTRING');
-    await replace(3, 'VIEW');
-    if (profile === profiles[1]) await replace(4, 'STRING8');
-    await collection.remove(collection.lookup('mixed', 1));
+    if (queryHead) await replace(0, 'VIEW');
+    await replace(2 + offset, 'NVSTRING');
+    await replace(3 + offset, 'VIEW');
+    if (profile === profiles[1]) await replace(4 + offset, 'STRING8');
+    await collection.remove(collection.lookup('mixed', 1 + offset));
     await instance.applyObjects('#OBJECT SIZE', 'mixed 24,16');
     await h.task.syncObjects();
     assert.deepEqual(
-      Array.from({ length: 5 }, (_, index) => collection.lookup('mixed', index)?.nativeType),
-      [21, undefined, 29, 0, profile === profiles[1] ? 37 : 21],
+      Array.from(
+        { length: 5 + offset },
+        (_, index) => collection.lookup('mixed', index)?.nativeType,
+      ),
+      queryHead
+        ? [0, 21, undefined, 29, 0, profile === profiles[1] ? 37 : 21]
+        : [21, undefined, 29, 0, profile === profiles[1] ? 37 : 21],
     );
     instance.setGlobal(10, 41);
     return { world, ...h };
@@ -216,9 +261,10 @@ break
   });
 
   test(`${profile}: default text queries keep each output position shared and preserve distinct hole rules`, async () => {
-    const h = await setup(profile),
+    const h = await setup(profile, { queryHead: true }),
       { instance, world } = h,
-      objects = [0, 2, 4].map((at) => instance.collection.lookup('mixed', at)),
+      headRecord = instance.collection.lookup('mixed', 0),
+      objects = [1, 3, 5].map((at) => instance.collection.lookup('mixed', at)),
       query = (label) => h.task.player.notify(label);
     try {
       for (const [at, object] of objects.entries())
@@ -279,8 +325,16 @@ break
       await query('RESET');
       for (const object of objects) assert.equal(object.nativeTextState.dirty, true);
       assert.equal(instance.global(10), 42, 'reset ignores authored argument tokens');
-      for (const at of [0, 2, 4])
+      for (const at of [1, 3, 5])
         await instance.collection.remove(instance.collection.lookup('mixed', at));
+      // This original nontext slot0 stays alive; no deleted object is resurrected.
+      assert.equal(instance.collection.lookup('mixed', 0), headRecord);
+      assert.equal(headRecord.nativeType, 0);
+      const beforeMissing = instance.global(10);
+      await expectMissingHead(instance, () => query('MISSING'), 'mixed[99]');
+      assert.equal(instance.global(10), beforeMissing);
+      assert.equal(instance.global(60), 0);
+      assert.equal(instance.local(0), 23);
       await query('ISDRAW');
       assert.equal(
         instance.local(0),
