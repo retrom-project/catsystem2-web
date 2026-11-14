@@ -881,15 +881,38 @@ export class FESPlayer {
       h = f?.height || 25;
     return { x: at.x + (o.areaWidth - w) * t, y: at.y + (o.areaHeight - h) / 2, w, h };
   }
+  completePublicSlide(instance, object, x, y) {
+    const complete = this.publicSlideOperation(instance, object, x, y);
+    if (!complete) return;
+    if (this.publicPushPending.size) this.enqueuePublicPush(complete);
+    else {
+      const completion = complete();
+      if (completion) this.trackPublicCompletion(completion);
+    }
+  }
+  publicSlideOperation(instance, object, x, y) {
+    const runtime = instance.runtime,
+      record = runtime.world.objects.objects.get(instance.runtimeID);
+    // Preserve the projector's stale-owner/object no-op before taking a reference.
+    if (!this.publicEventLive(instance, runtime, record, object)) return null;
+    const reference = instance.collection.reference(object),
+      live = () =>
+        this.publicEventLive(instance, runtime, record, object) &&
+        instance.collection.lookup(reference.nameBytes, reference.index) === object;
+    return () => {
+      if (!live()) return null;
+      const value = this.nativeControls.projectSlideValue(instance, object, x, y);
+      if (value === null || value === object.value) return null;
+      setFESControlValue(object, value, 0);
+      const completion = this.publicEventStep(instance, object, 'SCRL_P').completion;
+      instance.scrollPosition = object.handle;
+      return completion;
+    };
+  }
   slide(target, x, y) {
     const { s, o } = target;
     if (s.runtime && (o.nativeType === 14 || o.nativeType === 15)) {
-      const value = this.nativeControls.projectSlideValue(s, o, x, y);
-      if (value !== null && value !== o.value) {
-        setFESControlValue(o, value, 0);
-        s.event(o, 'SCRL_P');
-        s.scrollPosition = o.handle;
-      }
+      this.completePublicSlide(s, o, x, y);
       return;
     }
     const at = s.placement(o),

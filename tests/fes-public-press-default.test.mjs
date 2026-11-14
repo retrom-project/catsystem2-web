@@ -2908,3 +2908,344 @@ for (const profile of startupProfiles) {
     },
   );
 }
+
+function standaloneSlideProgram(trial = false) {
+  const header = text(controlSlideSource).split('#Slider.SCRL_P')[0];
+  return ascii(
+    header +
+      [
+        '#Slider.SCRL_P',
+        ...(trial
+          ? ['$41=++$41', 'break']
+          : [
+              '$40=_SCRL_P_',
+              '@ getid 52',
+              '@ getpos 60',
+              'clipboard (:standalone-slider-scroll)',
+              'Scroll[1] getpos 62',
+              '$44=_SCRL_P_',
+              '$41=++$41',
+              'break',
+            ]),
+        '#Scroll.SCRL_P',
+        '$42=_SCRL_P_',
+        '@ getid 53',
+        '@ getpos 61',
+        'clipboard (:' + (trial ? 'standalone-trial' : 'standalone-scroll-scroll') + ')',
+        ...(trial ? [] : ['$45=_SCRL_P_']),
+        '$43=++$43',
+        'break',
+        '#Slider.INIT',
+        '@ page 10 110',
+        '@ pos 25',
+        'break',
+        '#FINISH',
+        'exit 0',
+        'break',
+      ].join('\n'),
+  );
+}
+function observeStandaloneSlideSource(t, h, root) {
+  const calls = [],
+    getters = [],
+    produced = [];
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command;
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const index = produced.length,
+        spec = controlHitReferences[index],
+        label = text(spec.nameBytes) + '.SCRL_P',
+        slot = 52 + index,
+        row = '@ getid ' + slot,
+        object = root.collection.lookup(spec.nameBytes, 1),
+        arena = h.world.fesSources,
+        record = arena.programs.get(root.program.sourceKey).blocks[label][1],
+        nameAddress = record.names.get(fesByteView(spec.nameBytes)),
+        rowAddress = record.copies.get(row);
+      assert.equal(object.nativeType, index === 0 ? 15 : 14);
+      assert.deepEqual(selection, spec);
+      assert.deepEqual(root.collection.reference(object), spec);
+      assert.deepEqual(root.nativeContext, { ...spec, current: 1 });
+      assert.equal(root.executingLabel, label);
+      assert.equal(root.executingLine, 2);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, spec.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(
+          Number.isInteger(address) &&
+            address >= arena.base &&
+            address + bytes.length + 1 <= arena.base + arena.used,
+        );
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      for (const token of ['@', 'getid'])
+        assert.equal(
+          getters.filter(
+            (entry) => entry.label === label && entry.line === 2 && entry.token === token,
+          ).length,
+          1,
+        );
+      produced.push({ reference: spec, current: 1, nameAddress, rowAddress, slot });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return {
+    check() {
+      assert.equal(produced.length, 2);
+      assert.deepEqual(
+        calls.map((v) => [v.reference, v.current, v.objectNameAddress, v.commandPointer]),
+        produced.map((v) => [v.reference, v.current, v.nameAddress, v.rowAddress]),
+      );
+      for (const v of produced) assert.equal(h.words.get(v.slot), v.nameAddress);
+    },
+  };
+}
+for (const profile of startupProfiles) {
+  test(
+    'normal standalone control slide waits for prior scroll completion: ' + profile,
+    async (t) => {
+      const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+        controlImages = { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+        h = await environment(profile, standaloneSlideProgram(), { controlImages });
+      let fresh;
+      try {
+        const root = await h.load();
+        for (let index = 40; index < 64; index++) h.words.set(index, 0);
+        await h.world.sendEngine(h.id, h.world.main.id, 333);
+        const fes = root.player,
+          objects = controlHitReferences.map((ref) => root.collection.lookup(ref.nameBytes, 1)),
+          targets = objects.map((o) => ({ s: root, o })),
+          saved = frame(root),
+          rng = h.world.random.snapshot(),
+          previousScroll = root.scrollPosition,
+          observed = observeStandaloneSlideSource(t, h, root),
+          writes = [],
+          queued = [],
+          settled = [],
+          events = [];
+        assert.deepEqual(
+          objects.map((o) => o.nativeType),
+          [15, 14],
+        );
+        assert.deepEqual(
+          objects.map((o) => o.value),
+          [25, 30],
+        );
+        for (const object of objects)
+          assert.equal(controlTrack(h.world, root, object).task.model.state.loaded, true);
+        const dispatch = root.dispatchEvent;
+        t.mock.method(root, 'dispatchEvent', function (object, event, observer) {
+          const reference = this.collection.reference(object);
+          events.push({ reference, event });
+          return dispatch.call(this, object, event, (outcome) => {
+            // Read only after H1's sole finally, then forward the actual outcome.
+            settled.push({
+              reference,
+              event,
+              handled: outcome.handled,
+              failed: outcome.failed,
+              frame: frame(this),
+              values: objects.map((o) => o.value),
+              field: this.scrollPosition,
+            });
+            observer?.(outcome);
+          });
+        });
+        let imageReads = 0,
+          loads = 0;
+        for (const name of ['controls', 'area']) {
+          const file = h.game.lookup(h.game.resolveCategory(name, 'image')).file,
+            read = file.read;
+          t.mock.method(file, 'read', function (...args) {
+            imageReads++;
+            return read.apply(this, args);
+          });
+        }
+        const load = FESControlDriver.prototype.load;
+        t.mock.method(FESControlDriver.prototype, 'load', function (...args) {
+          loads++;
+          return load.apply(this, args);
+        });
+        const service = h.world.host.nativeClipboard;
+        assert.ok(service instanceof BrowserNativeClipboard);
+        service.clipboard = {
+          async writeText(value) {
+            writes.push(value);
+            if (value === 'standalone-slider-scroll') {
+              queued.push({
+                returned: fes.slide(targets[1], 50, 16),
+                value: objects[1].value,
+                field: root.scrollPosition,
+              });
+            }
+          },
+        };
+        const returned = fes.slide(targets[0], 110, 43),
+          immediate = { value: objects[0].value, field: root.scrollPosition };
+        await fes.flush();
+        assert.deepEqual(
+          [h.words.get(62), h.words.get(61)],
+          [30, 37],
+          'standalone slide must wait for the prior scroll source and its restored caller',
+        );
+        observed.check();
+        assert.strictEqual(returned, undefined);
+        assert.deepEqual(immediate, { value: 48, field: objects[0].handle });
+        assert.deepEqual(queued, [{ returned: undefined, value: 30, field: objects[0].handle }]);
+        assert.deepEqual(writes, ['', 'standalone-slider-scroll', '', 'standalone-scroll-scroll']);
+        assert.deepEqual(
+          events,
+          controlHitReferences.map((reference) => ({ reference, event: 'SCRL_P' })),
+        );
+        assert.deepEqual(settled, [
+          {
+            reference: controlHitReferences[0],
+            event: 'SCRL_P',
+            handled: true,
+            failed: false,
+            frame: saved,
+            values: [48, 30],
+            field: objects[0].handle,
+          },
+          {
+            reference: controlHitReferences[1],
+            event: 'SCRL_P',
+            handled: true,
+            failed: false,
+            frame: saved,
+            values: [48, 37],
+            field: objects[1].handle,
+          },
+        ]);
+        assert.deepEqual([h.words.get(40), h.words.get(42)], [previousScroll, objects[0].handle]);
+        assert.deepEqual(
+          [h.words.get(44), h.words.get(45)],
+          objects.map((o) => o.handle),
+        );
+        assert.deepEqual([h.words.get(41), h.words.get(43)], [1, 1]);
+        assert.deepEqual(
+          objects.map((o) => o.value),
+          [48, 37],
+        );
+        assert.equal(root.scrollPosition, objects[1].handle);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.deepEqual(frame(root), saved);
+        assert.deepEqual(h.world.random.snapshot(), rng);
+        assert.deepEqual([imageReads, loads], [0, 0]);
+
+        fresh = await freshCheckpoint(t, h, profile);
+        const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+          words = fresh.world.runtime.variableBank(fresh.world.main, false);
+        assert.deepEqual(frame(fRoot), {
+          ...saved,
+          executingLabel: undefined,
+          executingLine: undefined,
+        });
+        assert.deepEqual(
+          controlHitReferences.map((ref) => fRoot.collection.lookup(ref.nameBytes, 1).value),
+          [48, 37],
+        );
+        assert.deepEqual(
+          [words.get(41), words.get(43), words.get(62), words.get(61)],
+          [1, 1, 30, 37],
+        );
+        assert.equal(fRoot.scrollPosition, 0);
+        assert.equal(fRoot.player.publicPushPending.size, 0);
+        assert.deepEqual([imageReads, loads], [0, 0]);
+        assert.equal(fresh.world.nativeEngine, undefined);
+
+        await root.notify('FINISH');
+        const completedWrites = writes.slice();
+        assert.strictEqual(fes.slide(targets[0], 110, 75), undefined);
+        assert.equal(objects[0].value, 100);
+        assert.equal(root.scrollPosition, objects[0].handle);
+        assert.deepEqual(writes, completedWrites);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.equal(h.world.nativeEngine, undefined);
+      } finally {
+        await fresh?.dispose();
+        await h.close();
+      }
+
+      for (const boundary of ['replace', 'close']) {
+        const trial = await environment(profile, standaloneSlideProgram(true), { controlImages });
+        try {
+          const root = await trial.load();
+          for (let index = 40; index < 64; index++) trial.words.set(index, 0);
+          await trial.world.sendEngine(trial.id, trial.world.main.id, 333);
+          const fes = root.player,
+            slider = root.collection.lookup(ascii('Slider'), 1),
+            scroll = root.collection.lookup(ascii('Scroll'), 1),
+            writes = [];
+          let replacement, queuedReturn, afterBoundary;
+          trial.world.host.nativeClipboard.clipboard = {
+            async writeText(value) {
+              writes.push(value);
+              if (value !== 'standalone-trial') return;
+              queuedReturn = fes.slide({ s: root, o: slider }, 110, 43);
+              if (boundary === 'replace') {
+                await root.collection.remove(slider);
+                await declareControlClickSlider(trial);
+                replacement = root.collection.lookup(ascii('Slider'), 1);
+                assert.notStrictEqual(replacement, slider);
+                assert.notEqual(replacement.handle, slider.handle);
+                assert.equal(
+                  controlTrack(trial.world, root, replacement).task.model.state.loaded,
+                  true,
+                );
+                assert.equal(replacement.value, 25);
+                assert.equal(fes.nativeControls.projectSlideValue(root, replacement, 110, 43), 48);
+              } else {
+                await trial.world.objects.release(trial.id);
+              }
+              // Existing boundary cleanup may change fields; only the later action is cancelled.
+              afterBoundary = { value: scroll.value, field: root.scrollPosition };
+            },
+          };
+          assert.strictEqual(fes.slide({ s: root, o: scroll }, 50, 16), undefined);
+          await fes.flush();
+          assert.strictEqual(queuedReturn, undefined, boundary);
+          assert.deepEqual(writes, ['', 'standalone-trial'], boundary);
+          assert.deepEqual(
+            { value: scroll.value, field: root.scrollPosition },
+            afterBoundary,
+            boundary,
+          );
+          assert.equal(slider.value, 25, boundary);
+          if (boundary === 'close') {
+            assert.equal(root.runtime.closed, true, boundary);
+            assert.equal(trial.world.objects.objects.has(trial.id), false, boundary);
+          } else {
+            assert.ok(replacement, boundary);
+            assert.equal(replacement.value, 25, boundary);
+          }
+          // The existing closed runtime stops source execution; replacement does not.
+          assert.deepEqual(
+            [trial.words.get(41), trial.words.get(43)],
+            [0, boundary === 'replace' ? 1 : 0],
+            boundary,
+          );
+          assert.equal(fes.publicPushPending.size, 0, boundary);
+          // A stale direct target keeps the original projector's no-op, rather than
+          // throwing from reference capture after its identity has been removed.
+          assert.strictEqual(fes.slide({ s: root, o: slider }, 110, 43), undefined, boundary);
+          assert.deepEqual(
+            { value: scroll.value, field: root.scrollPosition },
+            afterBoundary,
+            boundary,
+          );
+          assert.equal(fes.publicPushPending.size, 0, boundary);
+          assert.equal(trial.world.nativeEngine, undefined, boundary);
+        } finally {
+          await trial.close();
+        }
+      }
+    },
+  );
+}

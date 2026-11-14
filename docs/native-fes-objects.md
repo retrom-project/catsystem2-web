@@ -707,3 +707,22 @@ events. These public clicks do not send PUSH/RELEASE or perform native page-step
 capture or release. Standalone slide and native input area lifetimes are unchanged;
 repeated standalone slide, knob, hover, drag and moveFocus await ordering remains
 outside this leaf, as do unknown slots, versions and unsupported types.
+
+Normal raw14/15 standalone public `slide` also queues its whole absolute-value
+action behind the same public completion tail. It keeps its `undefined` return,
+with no initial await on an idle path. The captured owner, runtime, record, raw
+reference, object and coordinates are checked before the queued projection; a
+deleted object, replacement or closed owner cannot receive the old action. The
+stale-owner/object gate precedes reference capture, preserving the existing
+projector's no-op while retaining validation errors for corrupt owned controls.
+
+The changed value still uses notify0, then SCRL_P's synchronous prefix, then the
+immediate `scrollPosition` commit. Any awaited SCRL_P remainder and its sole H1
+caller restoration finish before the next slide starts. Synchronous errors leave
+the field uncommitted; asynchronous errors follow the field commit and reach the
+existing flush. Empty/finished handlers keep the synchronous value and field
+behavior. Bare slide, the complete control-click operation and typed mathematics
+remain unchanged. Hover/drag callers inherit this individual method's queue,
+while their complete gestures, knob and moveFocus ordering remain separate gates.
+No native input area, page-step, capture/release, ABI, type or version is enabled
+by this change.
