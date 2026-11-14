@@ -343,7 +343,7 @@ export default {
     },
   },
   graphics: {
-    textureCapsPolicy: null,
+    textureCapsPolicy: 'virtual-d3d9',
     resizeRGB24: false,
     compositeWideBase: false,
     preserveRGB24: true,

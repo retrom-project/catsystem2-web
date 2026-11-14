@@ -122,7 +122,7 @@ function recordedGL(maximum, queries, memory) {
   });
 }
 
-async function open({ size, maximum, sourceX }) {
+async function open({ size, maximum, sourceX, profile: selectedProfile = profile }) {
   const scope = startupEnvironment(),
     queries = [],
     memory = [],
@@ -150,7 +150,7 @@ next IDLE
 break
 next IDLE
 `),
-      template = await ordinaryStartupGame(profile, {
+      template = await ordinaryStartupGame(selectedProfile, {
         sound: false,
         startup: `<TEXTURE><size><x>${size[0]}</x><y>${size[1]}</y></size>
 <vt><x>1</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>1</dx><dy>1</dy></area00>
@@ -176,7 +176,7 @@ next IDLE
     await game.open();
     const options = {
       game,
-      nativeProfile: profile,
+      nativeProfile: selectedProfile,
       canvas: new Canvas(),
       randomSeed: 77,
       audioContext: { currentTime: 0, close: async () => {} },
@@ -320,6 +320,171 @@ test('Game normal PLANE clamps texture pages and preserves owned caps through a 
   const h = await open({ size: [8192, 8], maximum: 8192, sourceX: 4098 });
   let fresh;
   try {
+    const initial = geometry(await draw(h.world, h.plane));
+    // Old raw GL max produces page0. The registered virtual platform selects page1.
+    assert.deepEqual(
+      initial,
+      expected(2, 4096).map((vertices) => ({ textureID: 1, vertices })),
+    );
+    const pages = h.world.graphics.texturePages,
+      layout = pages.layout;
+    assert.deepEqual([...layout.size], [4096, 8]);
+    assert.deepEqual([...layout.configurationSize], [4096, 8]);
+    assert.deepEqual([...layout.grid], [2, 1]);
+    assert.deepEqual(layout.textureCaps, {
+      maximumTextureSize: 4096,
+      guardBand: [-4096, -4096, 4096, 4096],
+    });
+    // Configuration allocation is independent of max negotiation: explicitly allocate page1
+    // through the existing 21E native after observing the real page-selection regression.
+    h.world.configuration.fields.texture.areas[0].set([0, 0, 2, 1]);
+    await h.world.runtime.native('main', 0x21e, [], h.world.main.machine, h.world.main);
+    await h.world.graphics.fill(0, 0, 4096, 8, 0xff102030);
+    await h.world.graphics.fill(4096, 0, 4096, 8, 0xff804020);
+    const rendered = await draw(h.world, h.plane);
+    assert.deepEqual(geometry(rendered), initial);
+    assert.ok(rendered.every((call) => call.frame === pages.frame(1)));
+    assert.deepEqual([...pages.frame(0).rgba.slice(0, 4)], [16, 32, 48, 255]);
+    assert.deepEqual([...pages.frame(1).rgba.slice(0, 4)], [128, 64, 32, 255]);
+    assert.equal(
+      [...pages.pages.values()].reduce((total, page) => total + page.frame.rgba.byteLength, 0),
+      262144,
+    );
+    const gpu = h.world.getNativeGPU(),
+      { width, height } = gpu.primaryTarget;
+    // Explicitly overwrite the primary target with a known blank API buffer before checkpoint.
+    // This establishes only the recorder readback contract, never rasterized pixel correctness.
+    gpu.uploadRenderTarget(gpu.primaryTarget, {
+      width,
+      height,
+      rgba: new Uint8Array(width * height * 4),
+    });
+    const rng = h.world.random.snapshot(),
+      runtime = h.instance.runtime.snapshot(),
+      source = h.world.fesSources.snapshot(),
+      checkpoint = await h.player.snapshot(),
+      savedLayout = checkpoint.world.graphics.texturePages.layout,
+      transforms = [h.plane.graph.kx2.slice(), h.plane.graph.textureTransform.slice()];
+    assert.ok(h.memory.some((event) => event.operation === 'readPixels' && event.allZero));
+    assert.deepEqual(savedLayout.textureCaps, layout.textureCaps);
+    assert.notStrictEqual(savedLayout.textureCaps.guardBand, layout.textureCaps.guardBand);
+    let restoring = true;
+    for (const [prototype, method] of [
+      [FESInstance.prototype, 'execute'],
+      [FESInstance.prototype, 'expandMacros'],
+      [FESCoordinator.prototype, 'initialize'],
+      [NativeStringBank.prototype, 'expandBytes'],
+      [NativeScriptReplacements.prototype, 'apply'],
+    ]) {
+      const original = prototype[method];
+      t.mock.method(prototype, method, function (...args) {
+        assert.equal(restoring, false, 'fresh must not replay ' + method);
+        return original.apply(this, args);
+      });
+    }
+    const file = h.world.game.lookup(filename).file,
+      read = file.read;
+    t.mock.method(file, 'read', function (...args) {
+      assert.equal(restoring, false, 'fresh must not reopen FES source');
+      return read.apply(this, args);
+    });
+    const queries = h.queries.length;
+    const uploadsBeforeRestore = h.memory.filter(
+      (event) => event.operation === 'texSubImage2D',
+    ).length;
+    fresh = new CatSystem2({ ...h.options, canvas: new h.Canvas() });
+    try {
+      await fresh.initialize({ checkpoint });
+    } finally {
+      restoring = false;
+    }
+    assert.equal(
+      h.memory.filter((event) => event.operation === 'texSubImage2D').length,
+      uploadsBeforeRestore + 1,
+    );
+    assert.equal(
+      h.queries.length,
+      queries,
+      'fresh restores owned caps without querying GPU max again',
+    );
+    const w = fresh.world,
+      task = w.objects.objects.get(h.id).implementation,
+      object = task.player.root.collection.lookup('texture', 0),
+      restored = w.graphics.get(object.nativeTaskID),
+      restoredLayout = w.graphics.texturePages.layout;
+    assert.deepEqual(restoredLayout, layout);
+    assert.notStrictEqual(restoredLayout.textureCaps.guardBand, savedLayout.textureCaps.guardBand);
+    assert.deepEqual([restored.graph.kx2, restored.graph.textureTransform], transforms);
+    assert.notStrictEqual(restored.graph.kx2, restored.graph.textureTransform);
+    assert.deepEqual(geometry(await draw(w, restored)), initial);
+    assert.deepEqual([...w.graphics.texturePages.frame(1).rgba.slice(0, 4)], [128, 64, 32, 255]);
+    assert.deepEqual(task.player.root.runtime.snapshot(), runtime);
+    assert.deepEqual(w.fesSources.snapshot(), source);
+    assert.deepEqual(w.random.snapshot(), rng);
+    assert.equal(w.runtime.variableBank(w.main, false).get(50), 1);
+    assert.equal(w.nativeEngine, undefined);
+    layout.textureCaps.guardBand[0] = -2;
+    assert.equal(
+      restoredLayout.textureCaps.guardBand[0],
+      -4096,
+      'fresh owns independent cap bytes',
+    );
+  } finally {
+    await fresh?.dispose();
+    await h.close();
+  }
+});
+
+test('SDK normal PLANE division uses the platform guard band across a source cell boundary', async () => {
+  const h = await open({
+    profile: 'sdk-4.01-engine-2.6.1.74',
+    size: [8, 8],
+    maximum: 4096,
+    sourceX: 2,
+  });
+  try {
+    assert.deepEqual(h.instance.collection.reference(h.object), {
+      nameBytes: ascii('texture'),
+      index: 0,
+    });
+    const before = h.instance.runtime.snapshot(),
+      random = h.world.random.snapshot(),
+      calls = await draw(h.world, h.plane),
+      actual = geometry(calls);
+    // This real draw assertion is the semantic red: old half-cells split the triangles.
+    assert.deepEqual(
+      actual,
+      expected(2, 8).map((vertices) => ({ textureID: 0, vertices })),
+    );
+    assert.equal(calls.length, 2);
+    assert.ok(calls.every((call) => call.frame === h.world.graphics.texturePages.frame(0)));
+    assert.deepEqual(h.world.graphics.texturePages.layout.textureCaps, {
+      maximumTextureSize: 4096,
+      guardBand: [-4096, -4096, 4096, 4096],
+    });
+    assert.deepEqual([...h.world.graphics.texturePages.layout.configurationSize], [8, 8]);
+    assert.deepEqual(h.instance.runtime.snapshot(), before);
+    assert.deepEqual(h.world.random.snapshot(), random);
+    assert.equal(h.words.get(50), 1);
+    assert.equal(h.world.nativeEngine, undefined);
+  } finally {
+    await h.close();
+  }
+});
+
+test('SDK normal PLANE clamps texture pages and preserves owned caps through a fresh checkpoint', async (t) => {
+  const h = await open({
+    profile: 'sdk-4.01-engine-2.6.1.74',
+    size: [8192, 8],
+    maximum: 8192,
+    sourceX: 4098,
+  });
+  let fresh;
+  try {
+    assert.deepEqual(h.instance.collection.reference(h.object), {
+      nameBytes: ascii('texture'),
+      index: 0,
+    });
     const initial = geometry(await draw(h.world, h.plane));
     // Old raw GL max produces page0. The registered virtual platform selects page1.
     assert.deepEqual(

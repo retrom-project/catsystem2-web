@@ -163,26 +163,28 @@ expectations retain the Effekseer MIT source attribution. GPU profile results
 do not establish original manager/geometry simulation or original batch
 execution, and they do not replace full kind61 task/World restore checks.
 
-## Game texture capabilities and layout ownership
+## Texture capabilities and layout ownership
 
-Game ABI `2.6.1.76` registers `graphics.textureCapsPolicy: 'virtual-d3d9'`.
-Its normal caps constructor writes the registered renderer block through the
+Game ABI `2.6.1.76` and SDK ABI `2.6.1.74` register
+`graphics.textureCapsPolicy: 'virtual-d3d9'`. Their independently verified
+normal caps constructors write the registered renderer block through the
 current virtual D3D9 `GetDeviceCaps` service. The shared platform policy is
 `min(4096, MAX_TEXTURE_SIZE)`, or 4096 without a GPU, with guard band
 `[-maximum, -maximum, maximum, maximum]`. The ordinary PLANE path captures
 these capabilities in its texture layout, negotiates the page limit and passes
 the owned guard band to source-cell division. This fixes the previous raw GL
 maximum and default half-cell policy. The generic layout and division helpers
-retain their independent input defaults. SDK `2.6.1.74` explicitly registers
-null until its native caps chain is independently verified.
+retain their independent input defaults. The SDK renderer independently consumes
+its caps block's maximum width/height and four guard-band floats, with its own
+verified -1/+1 thresholds, when deriving page and cell dimensions.
 
-Current Game layout checkpoints include and validate these owned capabilities;
+Current registered layout checkpoints include and validate these owned capabilities;
 fresh restore copies them without querying the GPU or replaying FES declarations,
 macros, bank services or motion. Existing initialization early returns and
 configuration/reinitialization control flow are unchanged. The verified native
 scope covers normal initialization, the sound-enumeration tail and the existing
-layout owner; the separately registered configuration callback has not been
-proved here and this change makes no claim that native caps can never refresh.
+layout owner. This change does not establish every native configuration or
+refresh policy, or extend the proof to failed capability queries or mode2.
 
 The short default-entry tests exercise actual PLANE creation, rendered triangle
 coordinates, UVs and page identity, plus CPU-owned source pixels and fresh state.
@@ -190,3 +192,5 @@ Their GL API recorder has no rasterizer: checkpoint readback verifies only bytes
 explicitly uploaded to its known backing, not native GPU pixel equivalence.
 Textured dirty bounds still require the distinct source/derived F8/FC and page
 dirty-owner proofs; this caps change does not enable those paths or unknown ABIs.
+The SDK max/guard input policy does not establish complete native factory,
+clipping or UV equivalence from the Game tests.

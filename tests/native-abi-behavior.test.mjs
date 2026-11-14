@@ -87,7 +87,7 @@ test('reviewed ABI services expose independent capabilities and serializable lay
   assert.deepEqual([sdk.sound.banks, game.sound.banks], [32, 64]);
   assert.deepEqual(
     [sdk.graphics.textureCapsPolicy, game.graphics.textureCapsPolicy],
-    [null, 'virtual-d3d9'],
+    ['virtual-d3d9', 'virtual-d3d9'],
   );
   assert.deepEqual([sdk.messages.tilePlaneCommand, game.messages.tilePlaneCommand], [44, 46]);
   assert.deepEqual([sdk.layouts.memoryFile.wide, game.layouts.memoryFile.wide], [false, true]);
