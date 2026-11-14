@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 304, "oracle": 149, "differential": 67 },
+    "counts": { "js": 305, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -277,6 +277,7 @@
         "tests/native-screen-dirty.test.mjs",
         "tests/native-script-replacement.test.mjs",
         "tests/native-sdk-fes-bind-save-admission.test.mjs",
+        "tests/native-sdk-fes-update-exit-admission.test.mjs",
         "tests/native-sdk-task-abi.test.mjs",
         "tests/native-shared-abi.test.mjs",
         "tests/native-signature-records.test.mjs",
@@ -11636,7 +11637,7 @@
           "table": "main",
           "id": 448,
           "hexID": "0x1c0",
-          "semanticName": null,
+          "semanticName": "fes.update",
           "fesRoute": {
             "id": 448,
             "label": "fes.update",
@@ -11663,11 +11664,7 @@
               }
             ]
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11878,7 +11875,7 @@
           "table": "main",
           "id": 453,
           "hexID": "0x1c5",
-          "semanticName": null,
+          "semanticName": "fes.setCurrentExitCode",
           "fesRoute": {
             "id": 453,
             "label": "fes.setCurrentExitCode",
@@ -11898,11 +11895,7 @@
             ],
             "consumerRoutes": []
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -49928,7 +49921,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "33396519979a12806c6d1c4064b7a5f03836b924f148bb42acc2be4bafa344aa",
+      "sourceSha256": "547a6fcd2f056b11d5abee3a14ef3afeb2971ba6a9847be29cfc62a784f7292e",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

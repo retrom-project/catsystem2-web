@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 800       | 82            | 19            | 108     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 802       | 82            | 19            | 106     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -179,10 +179,30 @@ bindings, control2/no value and an unchanged caller VM snapshot. Packet
 observation delegates to the real transport. This is a normal JS receiver
 acceptance, not execution of the original SDK.
 
-SDK448, 450 and452–454 retain their unknown admission and cannot execute their
+SDK450, 452 and454 retain their unknown admission and cannot execute their
 installed wrappers. In particular the formatter core and exceptional tail of
 450 remain separate evidence work. No other slot, version, type or capability
 is enabled by these two registrations.
+
+## SDK FES update and caller exit-code registrations
+
+SDK main448 (`fes.update`) and main453 (`fes.setCurrentExitCode`) have their own
+explicit wrapper evidence. Both take one VM word, return control `2` and write
+no universal VM result. Shared signatures, Game data and all other SDK slots
+remain unchanged. Main448 uses the existing SDK raw328 to canonical333 mapping;
+the Game independently sends333. The real kind34 update runs its existing
+FESCoordinator and source: the short test observes a FES bank assignment and one
+player frame, while preserving the caller's stack/PC and control2/no-value reply.
+Those intended FES bank effects are separate from a VM return-value write.
+
+Main453 stores the complete argument DWORD into its actual caller context's
+exit-code field. The normal JS bridge owns that value on the Script task record.
+Tests use zero, a negative word and a high-bit word with the existing signed
+interpretation; they verify the record and its current object snapshot, leave
+a different FES task's exit code alone and preserve the caller machine snapshot.
+No new width restriction, clamp, implicit target or VM result is introduced.
+SDK450, 452 and454 remain unknown; their installed wrappers gain no admission
+from these two registrations.
 
 ## Resolution and consumers
 
