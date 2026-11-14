@@ -135,22 +135,24 @@ export class CanvasRenderer {
         }
       } else if (['SLIDER', 'SCROLL2'].includes(o.type) && o.file) {
         const k = player.knob(s, o);
-        if (o.type === 'SLIDER')
-          await drawImage(
-            player.expand(o.file),
-            player.dragging?.o === o ? 3 : player.focused?.o === o ? 2 : o.enable ? 0 : 1,
-            k.x,
-            k.y,
-          );
-        else {
-          const top = player.picture(o.file)?.frame(1),
-            bottom = player.picture(o.file)?.frame(2);
-          await drawImage(player.expand(o.file), 1, k.x, k.y);
-          await drawImage(player.expand(o.file), 0, k.x, k.y + (top?.height || 0), 1, {
-            width: k.w,
-            height: Math.max(1, k.h - (top?.height || 0) - (bottom?.height || 0)),
-          });
-          await drawImage(player.expand(o.file), 2, k.x, k.y + k.h - (bottom?.height || 0));
+        if (k) {
+          if (o.type === 'SLIDER')
+            await drawImage(
+              player.expand(o.file),
+              player.dragging?.o === o ? 3 : player.focused?.o === o ? 2 : o.enable ? 0 : 1,
+              k.x,
+              k.y,
+            );
+          else {
+            const top = player.picture(o.file)?.frame(1),
+              bottom = player.picture(o.file)?.frame(2);
+            await drawImage(player.expand(o.file), 1, k.x, k.y);
+            await drawImage(player.expand(o.file), 0, k.x, k.y + (top?.height || 0), 1, {
+              width: k.w,
+              height: Math.max(1, k.h - (top?.height || 0) - (bottom?.height || 0)),
+            });
+            await drawImage(player.expand(o.file), 2, k.x, k.y + k.h - (bottom?.height || 0));
+          }
         }
       } else if (o.color !== undefined && o.width > 0) {
         const a = ['CPLANE', 'CIMAGE'].includes(o.type) ? 255 : o.color >>> 24;

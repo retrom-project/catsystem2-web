@@ -49315,7 +49315,7 @@
     },
     {
       "file": "src/fes/player.mjs",
-      "sourceSha256": "567d97b395167e5bd027a208fad07a4aec38e77aff4a472579b9ed6bfd97eaac",
+      "sourceSha256": "3a986be6a7e1379362b282c9f5a07bb540e9e02efa783ab59075738c5d9585a4",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50294,7 +50294,7 @@
     },
     {
       "file": "src/native/control-task-model.mjs",
-      "sourceSha256": "73599521ba9a2a8869fb9e665e7a055805e96011dfe1e24900c078ee3f127ca0",
+      "sourceSha256": "2ccb029f2fe77f53defba7826b3b57496048586d9b4f61e94d7ebc18cd3de228",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51855,7 +51855,7 @@
     },
     {
       "file": "src/native/fes-control-driver.mjs",
-      "sourceSha256": "57773aa5d0484406ed1f13d96fdeae28d06e0f32df743c7afbf4081e06474ac7",
+      "sourceSha256": "f2d07d7b29db3e05ad716c0d8160bdb84dd8d4631f273a43f1193ccf2ad4be78",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51865,7 +51865,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 124,
+          "line": 171,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -57163,7 +57163,7 @@
     },
     {
       "file": "src/render/canvas.mjs",
-      "sourceSha256": "d40a2ef1e9dcbc59ad4e53bdb7aaee40e7312bdfa4f464752ac87f1a16a67b4b",
+      "sourceSha256": "df7f08437713c37c2b4f88e7f3e0702ced8cbd09f02cc3ffcc6f921cfe3a2401",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -3249,3 +3249,280 @@ for (const profile of startupProfiles) {
     },
   );
 }
+
+import { encodeHG2 } from '../src/formats/hg2.mjs';
+import { snapshotFESControl } from '../src/native/fes-control-model.mjs';
+
+async function declareKnobPending(h) {
+  const data = new Uint8Array(36),
+    view = new DataView(data.buffer);
+  data.set(ascii('Pending'));
+  view.setUint32(32, 1, true);
+  await h.world.sendEngine(
+    h.id,
+    h.world.main.id,
+    338,
+    0,
+    FES_OBJECT_DEFINITION_ORDER.indexOf('SLIDER'),
+    {
+      payload: {
+        string: (at) => text(data.subarray(at, data.indexOf(0, at))),
+        bytes: (at, length) => data.subarray(at, at + length),
+        load: (at) => view.getUint32(at, true),
+      },
+    },
+  );
+}
+function knobState(h, root, objects) {
+  const tasks = objects.map((o) => h.world.controlsFES.validate(root, o));
+  return {
+    frame: frame(root),
+    fields: [root.scrollPosition, root.clickL, root.clickR],
+    typed: objects.map((o) => structuredClone(snapshotFESControl(o))),
+    tasks: tasks.map((task) => task.snapshot()),
+    areas: tasks.map((task) => h.world.inputFor(task.record.id).snapshot()),
+    descriptors: h.world.retainedDraw.snapshot(),
+    owners: h.world.objects.objects.size,
+    sourceBytes: h.world.fesSources.used,
+    rng: h.world.random.snapshot(),
+    pending: root.player.publicPushPending.size,
+  };
+}
+for (const profile of startupProfiles) {
+  test('normal public knob projects owned typed thumb geometry: ' + profile, async (t) => {
+    const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+      controlImages = { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+      h = await environment(profile, controlSlideSource, { controlImages });
+    let fresh;
+    try {
+      const root = await h.load();
+      for (let index = 10; index < 16; index++) h.words.set(index, 0);
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      const fes = root.player,
+        objects = controlHitReferences.map((ref) => root.collection.lookup(ref.nameBytes, 1)),
+        tracks = objects.map((o) => controlTrack(h.world, root, o)),
+        saved = frame(root),
+        initial = [
+          { x: 104, y: 26, w: 8, h: 8 },
+          { x: 37, y: 12, w: 16, h: 8 },
+        ],
+        projected = [
+          { x: 104, y: 38, w: 8, h: 8 },
+          { x: 41, y: 12, w: 16, h: 8 },
+        ];
+      assert.deepEqual(
+        objects.map((o) => o.nativeType),
+        [15, 14],
+      );
+      assert.deepEqual(
+        objects.map((o) => [o.value, o.minimum, o.maximum, o.pageSize]),
+        [
+          [25, 10, 110, 0],
+          [30, 10, 110, 20],
+        ],
+      );
+      // Fixture64/72 axis, full8 thumb, native minimum16 and integer snap,
+      // independent of the query's returned values or low task thumbBounds.
+      assert.deepEqual(
+        objects.map((o) => fes.knob(root, o)),
+        initial,
+        'normal knob must project the owned typed logical thumb rectangles',
+      );
+
+      let querying = false,
+        imageReads = 0,
+        loads = 0;
+      const query = (fn) => {
+        querying = true;
+        try {
+          return fn();
+        } finally {
+          querying = false;
+        }
+      };
+      for (const [owner, method] of [
+        [h.world, 'sendEngine'],
+        [h.world.objects, 'create'],
+        [root, 'flushNativeRecords'],
+        [fes, 'flush'],
+        [root, 'event'],
+      ]) {
+        const original = owner[method];
+        t.mock.method(owner, method, function (...args) {
+          assert.equal(querying, false, 'knob query must not call ' + method);
+          return original.apply(this, args);
+        });
+      }
+      for (const name of ['controls', 'area']) {
+        const file = h.game.lookup(h.game.resolveCategory(name, 'image')).file,
+          read = file.read;
+        t.mock.method(file, 'read', function (...args) {
+          imageReads++;
+          assert.equal(querying, false, 'knob query must not read image bytes');
+          return read.apply(this, args);
+        });
+      }
+      const load = FESControlDriver.prototype.load;
+      t.mock.method(FESControlDriver.prototype, 'load', function (...args) {
+        loads++;
+        assert.equal(querying, false, 'knob query must not load geometry');
+        return load.apply(this, args);
+      });
+      const before = knobState(h, root, objects),
+        rectangles = query(() => objects.map((o) => fes.knob(root, o)));
+      assert.deepEqual(rectangles, initial);
+      for (const rect of rectangles)
+        assert.strictEqual(Object.getPrototypeOf(rect), Object.prototype);
+      rectangles[0].x = -999;
+      assert.deepEqual(
+        query(() => objects.map((o) => fes.knob(root, o))),
+        initial,
+      );
+      assert.deepEqual(knobState(h, root, objects), before);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+
+      const lowBefore = tracks.map(({ task }) => task.snapshot());
+      assert.strictEqual(fes.slide({ s: root, o: objects[0] }, 110, 43), undefined);
+      assert.strictEqual(fes.slide({ s: root, o: objects[1] }, 50, 16), undefined);
+      assert.deepEqual(
+        objects.map((o) => [o.value, o.valuePending]),
+        [
+          [48, true],
+          [37, true],
+        ],
+      );
+      assert.deepEqual(
+        tracks.map(({ task }) => task.snapshot()),
+        lowBefore,
+        'public logical values have not driven the low task',
+      );
+      const pendingState = knobState(h, root, objects);
+      assert.deepEqual(
+        query(() => objects.map((o) => fes.knob(root, o))),
+        projected,
+      );
+      assert.deepEqual(knobState(h, root, objects), pendingState);
+      assert.deepEqual(
+        tracks.map(({ task }) => [task.model.state.value, task.model.state.pixel]),
+        [
+          [25, 14],
+          [30, 21],
+        ],
+      );
+      assert.deepEqual([h.words.get(10), h.words.get(13)], [1, 1]);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+
+      const observed = observeControlHitSource(t, h, root);
+      for (const ref of controlHitReferences) {
+        await controlHitNotify(h, 'PROBE', text(ref.nameBytes), 1);
+        assert.equal(h.words.get(50), observed.produced.at(-1).nameAddress);
+        assert.equal(h.words.get(51), 1);
+        assert.deepEqual(frame(root), saved);
+      }
+      observed.check();
+      fresh = await freshCheckpoint(t, h, profile);
+      const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+        fObjects = controlHitReferences.map((ref) => fRoot.collection.lookup(ref.nameBytes, 1)),
+        fSaved = frame(fRoot),
+        fh = { world: fresh.world };
+      assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+      const freshBefore = knobState(fh, fRoot, fObjects);
+      assert.deepEqual(
+        query(() => fObjects.map((o) => fRoot.player.knob(fRoot, o))),
+        projected,
+      );
+      assert.deepEqual(knobState(fh, fRoot, fObjects), freshBefore);
+      assert.equal(fRoot.scrollPosition, 0);
+      assert.equal(fRoot.player.publicPushPending.size, 0);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+
+      await declareKnobPending(h);
+      const pending = root.collection.lookup(ascii('Pending'), 0);
+      assert.equal(pending.nativeTaskID, undefined);
+      assert.strictEqual(
+        query(() => fes.knob(root, pending)),
+        null,
+      );
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      assert.equal(h.world.controlsFES.validate(root, pending).model.state.loaded, false);
+      assert.strictEqual(
+        query(() => fes.knob(root, pending)),
+        null,
+      );
+      await root.collection.remove(pending);
+      assert.strictEqual(
+        query(() => fes.knob(root, pending)),
+        null,
+      );
+
+      const record = h.world.objects.objects.get(objects[0].nativeTaskID),
+        parent = record.parent;
+      try {
+        record.parent = h.world.main.id;
+        assert.throws(() => query(() => fes.knob(root, objects[0])), /actual owned JS World task/);
+      } finally {
+        record.parent = parent;
+      }
+      assert.deepEqual(
+        query(() => objects.map((o) => fes.knob(root, o))),
+        projected,
+      );
+      await controlHitDefinition(h, 'POS2', 'Slider[1] area:7');
+      assert.equal(objects[0].positionPending, true);
+      const positionPending = knobState(h, root, objects);
+      assert.deepEqual(
+        query(() => fes.knob(root, objects[0])),
+        projected[0],
+      );
+      assert.deepEqual(knobState(h, root, objects), positionPending);
+      await controlHitDefinition(h, 'FILE', 'Slider[1] controls');
+      assert.equal(objects[0].filePending, true);
+      const filePending = knobState(h, root, objects);
+      assert.strictEqual(
+        query(() => fes.knob(root, objects[0])),
+        null,
+      );
+      assert.deepEqual(knobState(h, root, objects), filePending);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(fresh.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+
+    // A real encoded cropped frame, not invented decoded metadata or model state.
+    const rgba = new Uint8Array(8 * 16 * 4);
+    for (let y = 4; y < 12; y++) for (let x = 0; x < 8; x++) rgba[(y * 8 + x) * 4 + 3] = 255;
+    const cropped = await encodeHG2({ width: 8, height: 16, rgba }),
+      source = ascii(
+        '#DEFINE\nSLIDER Slider[2]\n#OBJECT FILE POS2 PRI DISP ENABLE\nSlider controls area:8 80 1 1\n#OBJECT ENABLE\nSlider[0] 0\n#START\nSlider[1] page 10 110\nSlider[1] pos 25\nwait 1\nnext IDLE\n#IDLE\nbreak\n#Slider.PROBE\n@ getid 50\n$51=@\nbreak\n',
+      ),
+      ch = await environment(profile, source, {
+        controlImages: { 'assets/controls.hg2': cropped, 'assets/area.hg2': area },
+      });
+    try {
+      const root = await ch.load();
+      await ch.world.sendEngine(ch.id, ch.world.main.id, 333);
+      const object = root.collection.lookup(ascii('Slider'), 1),
+        task = controlTrack(ch.world, root, object).task,
+        before = task.snapshot(),
+        saved = frame(root);
+      assert.deepEqual(Array.from(task.resource.metadata[0].slice(0, 6)), [0, 4, 8, 8, 8, 16]);
+      assert.equal(task.model.state.thumbLength, 16);
+      // 64-16=48 travel; value25 of100 ->pixel12; output stays crop8x8,
+      // with no picture offset4 added to the logical top12.
+      assert.deepEqual(root.player.knob(root, object), { x: 104, y: 24, w: 8, h: 8 });
+      assert.deepEqual(task.snapshot(), before);
+      const observed = observeControlHitSource(t, ch, root);
+      await controlHitNotify(ch, 'PROBE', 'Slider', 1);
+      assert.equal(ch.words.get(50), observed.produced[0].nameAddress);
+      assert.equal(ch.words.get(51), 1);
+      observed.check();
+      assert.deepEqual(frame(root), saved);
+      assert.equal(ch.world.nativeEngine, undefined);
+    } finally {
+      await ch.close();
+    }
+  });
+}

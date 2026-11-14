@@ -726,3 +726,21 @@ remain unchanged. Hover/drag callers inherit this individual method's queue,
 while their complete gestures, knob and moveFocus ordering remain separate gates.
 No native input area, page-step, capture/release, ABI, type or version is enabled
 by this change.
+
+Normal owned raw14/15 `knob` synchronously returns a plain logical thumb rectangle
+from current typed RECT/range/page/value and the actual decoded control metadata.
+Unavailable, unloaded, FILE-pending or dead targets return `null`; corrupt owned
+records retain the existing validator error. The generic Canvas caller skips only
+its knob drawing branch for `null`, inside its existing save/restore. Bare knob
+and drawing for valid results are unchanged.
+
+Projection reuses signed native page/snap arithmetic in local plain data. Slider
+travel uses the frame's full canvas axis while returned dimensions use its crop;
+Scroll2 uses its decoded cap minimum and page-derived thumb length. Direction
+comes from the signed typed RECT. Querying consumes no pending state and performs
+no image I/O, task/resource/World allocation, sends, flushes or events. Current
+logical values are visible even before their low task consumes them; POS2 pending
+does not decode a replacement RECT. This rectangle excludes PL/PARENT, skin and
+plane offsets and does not claim the initial native area or retained drag pixel.
+Native input, capture/release and complete Canvas/native pixel equivalence remain
+separate, along with unsupported raw13, unknown types, slots and versions.

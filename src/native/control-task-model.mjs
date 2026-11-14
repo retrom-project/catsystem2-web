@@ -162,6 +162,42 @@ export function projectControlPointValue(kind, rect, range, geometry, pointer) {
   return quantizeControlPixel(state);
 }
 
+// Logical FES thumb geometry is projected without driving the live input model.
+export function projectControlThumbRect(kind, rect, range, geometry) {
+  if (kind !== 41 && kind !== 42)
+    throw new RangeError('Control thumb projection requires kind41 or kind42');
+  const left = rect[0] | 0,
+    top = rect[1] | 0,
+    width = ((rect[2] | 0) - left) | 0,
+    height = ((rect[3] | 0) - top) | 0,
+    direction = Number(width < height),
+    thumbLength = kind === 42 ? geometry.canvasSize[direction] | 0 : 0,
+    state = {
+      kind,
+      minimum: range.minimum | 0,
+      maximum: range.maximum | 0,
+      pageSize: range.pageSize | 0,
+      left,
+      top,
+      direction,
+      trackLength: abs32(direction ? height : width),
+      minimumThumb: geometry.minimumThumb | 0,
+      thumbLength,
+      pixelMinimum: 0,
+      pixelMaximum: ((direction ? height : width) - thumbLength) | 0,
+      value: range.value | 0,
+      pixel: 0,
+    };
+  recomputeControlPage(state);
+  snapControlValue(state);
+  return {
+    x: (left + (direction ? 0 : state.pixel)) | 0,
+    y: (top + (direction ? state.pixel : 0)) | 0,
+    w: kind === 42 || direction ? geometry.cropSize[0] | 0 : state.thumbLength,
+    h: kind === 42 || !direction ? geometry.cropSize[1] | 0 : state.thumbLength,
+  };
+}
+
 export function createControlTaskState(kind) {
   if (kind !== 40 && kind !== 41 && kind !== 42)
     throw new RangeError(`Unsupported control task kind ${kind}`);

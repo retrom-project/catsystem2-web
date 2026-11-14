@@ -869,6 +869,8 @@ export class FESPlayer {
     return true;
   }
   knob(s, o) {
+    if (s.runtime && (o.nativeType === 14 || o.nativeType === 15))
+      return this.nativeControls.projectKnobRect(s, o);
     const at = s.placement(o),
       span = Math.max(1, o.max - o.min - (o.type === 'SCROLL2' ? o.page : 0));
     const t = Math.max(0, Math.min(1, (o.value - o.min) / span));
