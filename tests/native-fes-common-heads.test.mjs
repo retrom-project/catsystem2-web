@@ -3,6 +3,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as abiAPI from '../src/native/abi/index.mjs';
+import {
+  lookupFESCommonHead,
+  FES_COMMON_HEAD_BINDING_REVIEWS,
+} from '../src/native/abi/fes-common-heads.mjs';
 
 const bytes = (value) => new TextEncoder().encode(value),
   sdk = 'sdk-4.01-engine-2.6.1.74',
@@ -110,8 +114,11 @@ for (const [profile, count, additions] of [
       assert.equal(result.kind, 'present');
       const entry = result.entry;
       assert.equal(entry.keyword, word);
-      assert.equal(entry.semanticLink, null);
-      assert.equal(entry.dispatchBinding, null);
+      assert.equal(
+        entry.semanticLink,
+        word === 'resetactive' ? 'fes.reference.cn.resetactive' : null,
+      );
+      assert.equal(entry.dispatchBinding, word === 'resetactive' ? 'active-reference-null' : null);
       assert.ok(Object.isFrozen(entry));
       assert.ok(Object.isFrozen(entry.nameCrossrefs));
       if (entry.nameCrossrefs.length) linked++;
@@ -131,6 +138,33 @@ for (const [profile, count, additions] of [
         kind: 'name-crossref-only',
       },
     ]);
+
+    const ownReview = registration.reviewedBindings[0],
+      otherReview = (profile === sdk ? gameRegistration : sdkRegistration).reviewedBindings[0];
+    assert.equal(registration.reviewedBindings.length, 1);
+    assert.ok(Object.isFrozen(registration.reviewedBindings));
+    assert.deepEqual(FES_COMMON_HEAD_BINDING_REVIEWS[ownReview], {
+      binding: 'active-reference-null',
+      operandGetters: 0,
+      returnWord: 0,
+      recordCode: profile === sdk ? 14 : 11,
+      referenceBytes: 36,
+      reference: 'null',
+    });
+    assert.strictEqual(
+      query(sdk, bytes('resetactive')).entry,
+      query(game, bytes('resetactive')).entry,
+    );
+    const unqualified = structuredClone(registration);
+    unqualified.reviewedBindings = [];
+    const present = lookupFESCommonHead(unqualified, bytes('resetactive'));
+    assert.equal(present.kind, 'present');
+    assert.equal(present.entry.semanticLink, null);
+    assert.equal(present.entry.dispatchBinding, null);
+    assert.deepEqual(
+      present.entry.nameCrossrefs,
+      query(profile, bytes('resetactive')).entry.nameCrossrefs,
+    );
 
     const rejects = (change) => {
       const invalid = structuredClone(abi);
@@ -161,6 +195,18 @@ for (const [profile, count, additions] of [
     });
     rejects((value) => {
       value.unreviewed = true;
+    });
+    rejects((value) => {
+      delete value.reviewedBindings;
+    });
+    rejects((value) => {
+      value.reviewedBindings = ['unregistered-common-binding-review'];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [otherReview];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [ownReview, ownReview];
     });
   });
 }

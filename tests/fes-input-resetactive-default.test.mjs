@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { nativeWindowDOM } from './fixtures/native-window-dom.mjs';
 import { EngineHost } from '../src/host.mjs';
+import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const utf8 = (value) => new TextEncoder().encode(value),
@@ -23,9 +24,9 @@ const utf8 = (value) => new TextEncoder().encode(value),
     'b.UNFOCUS': '$13=++$13',
     HOLD: 'config_open\n$31=99',
   };
-async function open(profile, labels = {}) {
+async function open(profile, labels = {}, definitions = declarations) {
   const source =
-      declarations +
+      definitions +
       Object.entries({ ...blocks, ...labels })
         .map(([label, body]) => `#${label}\n${body}\nbreak\n`)
         .join(''),
@@ -170,8 +171,14 @@ for (const profile of profiles) {
       ]);
       assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
       assert.equal(h.instance.global(30), 1);
-      assert.deepEqual(bankCalls, ['resetactive $str7 NEVER_EVALUATE', '$30=++$30', 'break']);
-      assert.deepEqual(scriptCalls, []);
+      assert.deepEqual(bankCalls, [
+        'resetactive $str7 NEVER_EVALUATE',
+        'resetactive',
+        'resetactive',
+        '$30=++$30',
+        'break',
+      ]);
+      assert.deepEqual(scriptCalls, ['resetactive', 'resetactive']);
       assert.equal(h.instance.global(42), 0);
       assert.equal(h.instance.nativeQueuePending, false);
       assert.deepEqual(values, [], 'return0 did not flush');
@@ -414,4 +421,140 @@ for (const profile of profiles) {
       }
     },
   );
+}
+
+for (const profile of profiles) {
+  test(`${profile}: resetactive head routes objects before its reviewed common binding`, async (t) => {
+    const h = await open(
+      profile,
+      {
+        COLLISION: 'resetactive getid 45',
+        REMOVE_HEAD: 'resetactive delete',
+        ALIAS_RESET: 'LATE_RESET ++$42\n$30=++$30',
+      },
+      declarations.replace('#DEFINE\n', '#DEFINE\nCPLANE resetactive\n'),
+    );
+    let copy,
+      restoring = false;
+    try {
+      assert.equal(h.get('resetactive').nativeType, 3);
+      await selected(h);
+      await notify(h, 'DEFAULT');
+      await drain(h);
+      const inputID = await armRegion(h);
+      h.input.input.pointer(17, 19, 1);
+      const calls = [],
+        command = h.instance.runtime.command;
+      t.mock.method(h.instance.runtime, 'command', async function (verb, selection, args, context) {
+        const result = await command.call(this, verb, selection, args, context);
+        if (verb === 'getid')
+          calls.push({
+            nameBytes: selection.nameBytes.slice(),
+            index: selection.index,
+            bytes: context.commandBytes.slice(),
+            pointer: context.commandPointer,
+            nameAddress: context.objectNameAddress,
+            result,
+          });
+        return result;
+      });
+      await notify(h, 'COLLISION');
+      // The baseline early shortcut incorrectly queues a NULL reset for this real object.
+      assert.deepEqual(h.instance.runtime.pendingRecords, []);
+      assert.equal(calls.length, 1);
+      assert.deepEqual(calls[0].nameBytes, utf8('resetactive'));
+      assert.equal(calls[0].index, 0);
+      assert.equal(calls[0].result, 0);
+      assert.deepEqual(calls[0].bytes, utf8('resetactive getid 45'));
+      assert.equal(h.instance.global(45), calls[0].nameAddress);
+      assert.equal(h.world.fesSources.string(calls[0].nameAddress), 'resetactive');
+      assert.equal(h.world.fesSources.string(calls[0].pointer), 'resetactive getid 45');
+      assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
+
+      await notify(h, 'REMOVE_HEAD');
+      assert.equal(h.get('resetactive'), null);
+      const strings = h.world.runtime.stringBank(h.world.main),
+        rules = h.world.configuration.scriptReplacements;
+      strings.setBytes(7, utf8('SIDE'));
+      rules.add(utf8('SIDE'), utf8('++$42'));
+      rules.add(utf8('LATE_RESET'), utf8('resetactive'));
+      const values = trace(h);
+      await notify(h, 'RESET');
+      await notify(h, 'ALIAS_RESET');
+      assert.deepEqual(h.instance.runtime.pendingRecords, [
+        { operation: 'active-reference', reference: null },
+        { operation: 'active-reference', reference: null },
+      ]);
+      assert.equal(h.instance.global(30), 2, 'opaque0 continues to each following sentinel');
+      assert.equal(h.instance.global(42), 0, 'neither common route fetches ignored operands');
+      assert.equal(h.instance.nativeQueuePending, false);
+      assert.deepEqual(values, [], 'native0 does not borrow a -3 flush');
+      assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
+      assert.equal(h.task.player.pending.size, 0);
+
+      const initialize = FESCoordinator.prototype.initialize;
+      t.mock.method(FESCoordinator.prototype, 'initialize', function (...args) {
+        assert.equal(restoring, false, 'fresh common binding must not replay initialization');
+        return initialize.apply(this, args);
+      });
+      const source = h.world.fesSources.snapshot(),
+        ids = [...h.world.objects.objects.values()].map(({ id, kind, parent, creator }) => ({
+          id,
+          kind,
+          parent,
+          creator,
+        }));
+      restoring = true;
+      copy = await fresh(h);
+      restoring = false;
+      assert.deepEqual(copy.world.fesSources.snapshot(), source);
+      assert.deepEqual(
+        [...copy.world.objects.objects.values()].map(({ id, kind, parent, creator }) => ({
+          id,
+          kind,
+          parent,
+          creator,
+        })),
+        ids,
+      );
+      assert.equal(
+        copy.reads.every((name) => name === 'case.kcs'),
+        true,
+        'fresh retains FES/resources; only the existing KCS restore read is allowed',
+      );
+      assert.deepEqual(copy.instance.runtime.pendingRecords, h.instance.runtime.pendingRecords);
+      assert.equal(copy.instance.global(30), 2);
+      assert.equal(copy.instance.global(42), 0);
+      assert.deepEqual(ref(copy.input.state.focus), ['a', 0]);
+      const restored = trace(copy);
+      await drain(copy);
+      assert.deepEqual(copy.instance.runtime.pendingRecords, []);
+      assert.equal(
+        restored.filter(([kind, message]) => kind === 'input' && message === 145).length,
+        2,
+      );
+      assert.equal(
+        restored.filter(([kind, , name]) => kind === 'event' && name === 'UNFOCUS').length,
+        1,
+      );
+      assert.equal(
+        restored
+          .filter(([kind, message]) => kind === 'input' && message === 145)
+          .every(([, , target]) => target === inputID),
+        true,
+      );
+      assert.equal(copy.input.state.focus, null);
+      assert.deepEqual(ref(copy.instance.defaultButton), ['b', 0]);
+      assert.equal(copy.instance.global(11), 1);
+      assert.equal(copy.instance.global(42), 0);
+      assert.deepEqual(ref(h.input.state.focus), ['a', 0]);
+      assert.equal(h.instance.runtime.pendingRecords.length, 2);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(copy.world.nativeEngine, undefined);
+    } finally {
+      restoring = false;
+      await copy?.world.close();
+      await h.world.close();
+    }
+  });
 }

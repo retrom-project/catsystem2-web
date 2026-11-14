@@ -170,6 +170,50 @@ const sharedNames = freeze(Object.keys(shared).sort()),
   gameAdditions = freeze(Object.keys(gameOnly).sort()),
   sdkAdditions = freeze(Object.keys(sdkOnly).sort());
 
+// A common meaning is defined once; an engine must separately register its proof.
+const commonBindings = freeze({
+  'active-reference-null': {
+    keyword: 'resetactive',
+    semanticLink: 'fes.reference.cn.resetactive',
+  },
+});
+const sdkResetReview = 'sdk74-common-resetactive-null',
+  gameResetReview = 'game76-common-resetactive-null';
+export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
+  [sdkResetReview]: {
+    binding: 'active-reference-null',
+    operandGetters: 0,
+    returnWord: 0,
+    recordCode: 14,
+    referenceBytes: 36,
+    reference: 'null',
+  },
+  [gameResetReview]: {
+    binding: 'active-reference-null',
+    operandGetters: 0,
+    returnWord: 0,
+    recordCode: 11,
+    referenceBytes: 36,
+    reference: 'null',
+  },
+});
+const boundEntries = freeze(
+  Object.fromEntries(
+    Object.entries(commonBindings).map(([id, binding]) => [
+      id,
+      {
+        ...FES_COMMON_HEAD_CATALOGUE[binding.keyword],
+        semanticLink: binding.semanticLink,
+        dispatchBinding: id,
+      },
+    ]),
+  ),
+);
+const reviewRegistrations = freeze([
+  { additions: sdkAdditions, reviews: [sdkResetReview] },
+  { additions: gameAdditions, reviews: [gameResetReview] },
+]);
+
 export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
   sdk: {
     shared: sharedNames,
@@ -177,6 +221,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 122,
     complete: true,
     comparison: 'byte-exact-cstring',
+    reviewedBindings: [sdkResetReview],
   },
   game: {
     shared: sharedNames,
@@ -184,6 +229,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 131,
     complete: true,
     comparison: 'byte-exact-cstring',
+    reviewedBindings: [gameResetReview],
   },
 });
 
@@ -195,7 +241,14 @@ function sameNames(left, right) {
   );
 }
 
-const registrationFields = new Set(['shared', 'additions', 'count', 'complete', 'comparison']);
+const registrationFields = new Set([
+  'shared',
+  'additions',
+  'count',
+  'complete',
+  'comparison',
+  'reviewedBindings',
+]);
 
 export function validateFESCommonHeads(registration) {
   if (
@@ -208,7 +261,17 @@ export function validateFESCommonHeads(registration) {
     !sameNames(registration.shared, sharedNames) ||
     ![gameAdditions, sdkAdditions].some((names) => sameNames(registration.additions, names)) ||
     !Number.isSafeInteger(registration.count) ||
-    registration.count !== registration.shared.length + registration.additions.length
+    registration.count !== registration.shared.length + registration.additions.length ||
+    !Array.isArray(registration.reviewedBindings) ||
+    registration.reviewedBindings.some(
+      (id, index, list) =>
+        typeof id !== 'string' ||
+        list.indexOf(id) !== index ||
+        !reviewRegistrations.some(
+          (group) =>
+            sameNames(registration.additions, group.additions) && group.reviews.includes(id),
+        ),
+    )
   )
     throw new Error('Invalid FES common head registration');
   return registration;
@@ -232,7 +295,10 @@ export function lookupFESCommonHead(registration, bytes) {
     (!registration.shared.includes(keyword) && !registration.additions.includes(keyword))
   )
     return absent;
-  return freeze({ kind: 'present', entry: FES_COMMON_HEAD_CATALOGUE[keyword] });
+  const qualified = registration.reviewedBindings
+    .map((id) => boundEntries[FES_COMMON_HEAD_BINDING_REVIEWS[id].binding])
+    .find((entry) => entry.keyword === keyword);
+  return freeze({ kind: 'present', entry: qualified ?? FES_COMMON_HEAD_CATALOGUE[keyword] });
 }
 
 // Check the shared data without deriving execution support from a contract's

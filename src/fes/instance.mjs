@@ -810,8 +810,6 @@ export class FESInstance {
     const host = this.player.host;
     if (this.runtime && FES_PLATFORM_COMMANDS.includes(head))
       return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
-    if (this.runtime && head === 'resetactive')
-      return this.nativeCommandReturn(this.runtime.resetActive());
     if (this.runtime && head === 'react') return this.nativeCommandReturn(this.runtime.react());
     if (this.runtime && head === 'automove')
       return this.nativeCommandReturn(this.runtime.autoMove(args));
@@ -1380,7 +1378,7 @@ export class FESInstance {
       default: {
         if (this.runtime) {
           const { selection, object } = this.runtime.commandHead(words[0]);
-          if (!object) this.runtime.pendingCommonHead(words[0]);
+          if (!object) return this.nativeCommandReturn(this.runtime.commonHead(words[0]));
           if (args[0] === undefined) return {};
           const verb = this.argumentBytes(args[0]);
           const source = this.program.sourceKey

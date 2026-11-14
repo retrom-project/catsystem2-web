@@ -1207,13 +1207,24 @@ control paths, including their supported long rows, keep their current domain.
 An object hit retains the reviewed token1 getter, original working row/source
 position, opaque return, wait and fresh ownership. Only an object miss fetches
 token0 a second time from the same original working row. The registered common
-catalogue then distinguishes a known native member whose handler is pending
-from an absent member whose whole-row evaluator is pending. Both fail explicitly;
-neither calls an unbound namesake JavaScript handler or silently succeeds. SDK
-`calljs`, `endjs` and `execjs` remain known members without a dispatch binding.
+catalogue then distinguishes a reviewed handler binding, a known native member
+whose handler is pending and an absent member whose whole-row evaluator is
+pending. The latter two fail explicitly. A reviewed handler's zero return is
+terminal for that command and continues the row loop without whole-row
+evaluation. SDK `calljs`, `endjs` and `execjs` remain known, unbound members.
 
-This closes the default object-route seam. Reordering the earlier global/common
-branches, whole-row grammar and actual common handler bindings remain separate
-work, as do conditional/skip control flow and unproven native overflow domains.
-The four VM tables, ABI registration/signature statuses and unknown-slot gates
-do not change.
+`resetactive` now uses this object-first route: a real object with that raw name
+receives its object verb; only a miss can select the reviewed common handler.
+Both current common registries explicitly authorize the shared
+`active-reference-null` meaning. It reads no operand, queues the existing NULL
+active-reference record and returns zero without flushing. The native records
+use code 11 in Game and code 14 in SDK, each with a declared 36-byte reference size and a NULL payload;
+these differences remain separate registry evidence for the same observable
+meaning. An empty registry review list leaves the word present but unbound;
+unknown or wrong-registry review IDs are rejected. No profile-name branch
+selects the runtime action.
+
+Other early global/common routes, whole-row grammar, remaining common bindings,
+conditional/skip control flow and unproven native overflow domains remain
+separate work. The four VM tables, ABI registration/signature statuses and
+unknown-slot gates do not change.

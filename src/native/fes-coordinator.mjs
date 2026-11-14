@@ -386,12 +386,15 @@ export class FESCoordinator {
     if (object && collection.count(nameBytes) === 1) selection.index = 0;
     return { selection, object };
   }
-  pendingCommonHead(token) {
+  commonHead(token) {
     const bytes = nativeDataString(this.instance.argumentBytes(token)),
       member = nativeFESCommonHead(this.world.profile, bytes),
       name = fesByteView(bytes);
-    if (member.kind === 'present') throw new Error('FES native common handler is pending: ' + name);
-    throw new Error('FES whole-row evaluator is pending: ' + name);
+    if (member.kind === 'absent') throw new Error('FES whole-row evaluator is pending: ' + name);
+    if (member.entry.dispatchBinding === 'active-reference-null') return this.resetActive();
+    if (member.entry.dispatchBinding !== null)
+      throw new Error('Unsupported FES common binding ' + member.entry.dispatchBinding);
+    throw new Error('FES native common handler is pending: ' + name);
   }
   elements(token) {
     const ref = this.reference(token),

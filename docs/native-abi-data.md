@@ -105,13 +105,26 @@ native temporary-buffer or overflow behavior.
 
 A descriptor's `nameCrossrefs` are navigation to existing audit names, including
 explicitly authored alias groups. They do not prove that a native common handler
-has the same semantics or implementation status. Semantic links remain pending
-and dispatch bindings remain unbound. In particular, SDK `execjs`, `endjs` and
-`calljs` are known members even when their cross-reference is missing or has an
-unimplemented audit status. A future execution consumer must explicitly gate a
-known member without a reviewed implementation; only a genuine complete-table
-miss may choose the original whole-row evaluator. The current executor, head
-reader, object/common ordering and conditional/skip gates are unchanged.
+has the same semantics or implementation status. The raw catalogue remains
+unbound. Each common registration must additionally provide `reviewedBindings`;
+only the matching registry's reviewed evidence may qualify a shared meaning.
+An explicit empty list keeps every member present but unbound. Missing lists,
+unknown reviews, duplicates and reviews from the other registry are rejected.
+
+The one reviewed shared meaning is `active-reference-null`, linked to
+`fes.reference.cn.resetactive`. Separate Game and SDK review records preserve
+their native codes 11 and 14, declared 36-byte reference size and a NULL payload,
+zero operand getters and
+zero return. Both query results reuse one qualified descriptor; the other 133
+keywords retain pending semantic links and unbound dispatch. SDK `execjs`,
+`endjs` and `calljs` remain known members regardless of their cross-references.
+
+The normal consumer queries this data only after the raw object probe misses
+and token0 has passed through its second getter. Reviewed `resetactive` queues
+the existing NULL semantic record and returns zero without flushing or running
+a whole-row evaluator. Known unbound members and absent members retain separate
+explicit pending gates. Other early routes, whole-row grammar and
+conditional/skip remain separate work; no VM slot or capability is enabled.
 
 ## Historical evidence and verification
 
