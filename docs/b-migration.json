@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 301, "oracle": 149, "differential": 67 },
+    "counts": { "js": 302, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -221,6 +221,7 @@
         "tests/native-domain4-review.test.mjs",
         "tests/native-draw.test.mjs",
         "tests/native-effect-commands.test.mjs",
+        "tests/native-effekseer-close-query.test.mjs",
         "tests/native-engine-message.test.mjs",
         "tests/native-entry.test.mjs",
         "tests/native-fes-common-heads.test.mjs",
@@ -48807,7 +48808,7 @@
     },
     {
       "file": "src/effekseer/task.mjs",
-      "sourceSha256": "46fc06b51d5dbc89401fa787a3fe22a26d5e42993189ba45d69c65ced13823bc",
+      "sourceSha256": "c05c24de2914f607c115b8399ca7817e7b28140e8cd1d71428a0aae63b6649c5",
       "domain": 7,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

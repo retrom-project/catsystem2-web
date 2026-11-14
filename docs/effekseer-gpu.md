@@ -100,6 +100,21 @@ checkpoint also retains this settled pending-destruction state and its dirty
 history, restoring the erased graph without registering or replaying it.
 Unknown flags acquire no query or implicit enable value during removal.
 
+Known kind61 direct release follows the later destructor order instead: clear
+the current FILE, close the manager and Task batch/Ring, then query the still
+enabled registration before disabling and erasing it. That callback returns zero
+for its cleared FILE while the full query still collects other dirty models.
+Only a closing, not-yet-closed Task with a NULL current FILE admits that query;
+queries of a fully closed Task still fail. A graph already erased by message3
+or disabled through47 acquires no second query. This does not widen unknown
+registration or ABI admission.
+
+Query failures remain part of the existing aggregate cleanup result while
+remaining Task/plane disposal continues. The short real FES/World tests check
+the dirty CPLANE cache transition through actual presentation, movement and
+direct release, plus empty/disabled/repeated and failed-close boundaries. They
+do not establish native fatal-error behavior or browser pixel equivalence.
+
 Plain colored CPLANE2D models now contribute their cached old RECT and current
 transformed vertex bounds to that same renderer history. The calculation uses
 the real model geometry and projection phase, without the draw visibility,
@@ -128,8 +143,8 @@ The short actual FES/World cases cover movement, failed presentation,47/48,
 color, enabled deletion, parent MOT and fresh checkpoint restoration through
 the existing presentation boundary. They add no browser pixel evidence.
 
-Direct Task/World close, other model replacement damage and complete native
-rectangle clipping remain partial.
+Direct close for other task/model families, other model replacement damage
+and complete native rectangle clipping remain partial.
 Full Task geometry/device pixel acceptance and final frame-rate/memory goals
 also remain outside that recorder evidence.
 

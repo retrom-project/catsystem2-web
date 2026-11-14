@@ -223,6 +223,7 @@ class EffekseerTask {
     return 1;
   }
   queryDraw() {
+    if (this.closing && !this.closed && this.currentEffect === null) return 0;
     this.assertOpen();
     return Number(this.currentEffect !== null && !this.pendingReset);
   }
@@ -303,6 +304,7 @@ class EffekseerTask {
       },
       () => this.meshBatch.close(),
       () => this.ring.close(),
+      () => this.plane?.unregisterGraph(),
       () => this.plane?.close(),
     ]) {
       try {
