@@ -602,5 +602,33 @@ not cancel a live new hit. No hit/placement qualification is repeated.
 Focus callbacks and the extracted generic press operation dispatch through the
 existing H1 owner without rejoining their own public tail. No queue, checkpoint
 flag or second event context owner is added. Complete SLIDER/SCROLL2-hit click,
-right-click, slider/slide and drag actions remain separate gates. Bare FES click,
-focus and press retain their independent synchronous String contract.
+slider/slide and drag actions remain separate gates. Bare FES click, focus and
+press retain their independent synchronous String contract.
+
+## Normal public right click
+
+Public rightClick retains its undefined return and captures only the last
+instance's same-owner focused object. It has no enable, type, placement or shown
+admission and does not change focus. Its original order differs from left press:
+clickR receives that same object's handle (or -1 without a target) before PUSH_R,
+then RELEASE_R runs without clearing clickR. Native input's separate RELEASE_R
+clears the field before its callback and is not used for this public action.
+
+An idle synchronous right click keeps its field write, callbacks and any Error
+within the caller's stack. With a public action already pending, the entire
+captured right action waits on the existing single tail, including a no-target
+-1 write. A later right click therefore cannot overwrite the field seen by an
+earlier PUSH remainder or RELEASE. The completion includes the whole RELEASE
+callback, and no callback rejoins its own tail.
+
+After queueing or a real await, captured owner, task record, raw reference and
+object identity guard remaining work. Deletion, same-name replacement or close
+cancels it without retargeting or rolling back a field already committed before
+PUSH. Missing handlers and finished scripts remain successful no-ops. Both
+synchronous PUSH and RELEASE errors follow the pre-PUSH field write; asynchronous
+errors retain player.error/flush behavior.
+
+clickR remains an existing transient field: frame completion clears it and fresh
+restore constructs it as 0. The existing pending snapshot guard covers unfinished
+right actions; no saved queue, field format or event context owner is added.
+Bare right click retains its independent inline behavior.

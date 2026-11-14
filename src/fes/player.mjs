@@ -674,10 +674,43 @@ export class FESPlayer {
   rightClick() {
     const s = this.instances.at(-1);
     const target = this.focused?.s === s ? this.focused : null;
+    if (s?.runtime) {
+      this.completePublicRightClick(s, target?.o ?? null);
+      return;
+    }
     if (s) s.clickR = target?.o.handle || -1;
     if (target) {
       s.event(target.o, 'PUSH_R');
       s.event(target.o, 'RELEASE_R');
+    }
+  }
+  completePublicRightClick(instance, object) {
+    const runtime = instance.runtime,
+      record = runtime.world.objects.objects.get(instance.runtimeID),
+      reference =
+        object && this.publicEventLive(instance, runtime, record, object)
+          ? instance.collection.reference(object)
+          : null,
+      live = () =>
+        this.publicEventLive(instance, runtime, record, object) &&
+        (!object ||
+          (reference !== null &&
+            instance.collection.lookup(reference.nameBytes, reference.index) === object)),
+      dispatch = (event) =>
+        live() ? this.publicEventStep(instance, object, event).completion : null,
+      complete = (queued) => {
+        if (queued && !live()) return null;
+        // Public right click commits before PUSH, including the no-target -1.
+        instance.clickR = object?.handle || -1;
+        if (!object) return null;
+        const completion = dispatch('PUSH_R');
+        if (completion) return completion.then(() => dispatch('RELEASE_R'));
+        return dispatch('RELEASE_R');
+      };
+    if (this.publicPushPending.size) this.enqueuePublicPush(() => complete(true));
+    else {
+      const completion = complete(false);
+      if (completion) this.trackPublicCompletion(completion);
     }
   }
   scroll(up) {

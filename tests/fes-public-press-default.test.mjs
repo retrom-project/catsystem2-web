@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { CatSystem2 } from '../src/engine.mjs';
 import { BlobFile, GameFiles } from '../src/files.mjs';
 import { FESInstance } from '../src/fes/instance.mjs';
+import { FESPlayer } from '../src/fes/player.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
 import { NativeScriptReplacements } from '../src/native/script-replacement.mjs';
@@ -1484,3 +1485,498 @@ for (const profile of startupProfiles) {
     },
   );
 }
+
+const rightBlocks = {
+  'A.PUSH_R': ['$50=_CLICK_R_', '@ getid 55', 'clipboard (:right-A)', '$51=_CLICK_R_', 'break'],
+  'A.RELEASE_R': [
+    '$52=_CLICK_R_',
+    '@ getid 56',
+    'clipboard (:right-release)',
+    '$53=++$53',
+    'break',
+  ],
+  'B.PUSH_R': ['$54=_CLICK_R_', '@ getid 57', 'break'],
+  'B.RELEASE_R': ['$59=_CLICK_R_', '@ getid 58', '$60=++$60', 'break'],
+  REENTER: ['$61=_CLICK_R_', 'A[1] getid 63', '$62=++$62', 'break'],
+  'Sync.PUSH_R': ['$10=_CLICK_R_', '$11=++$11', 'break'],
+  'Sync.RELEASE_R': ['$12=_CLICK_R_', '$13=++$13', 'break'],
+  'Victim.PUSH_R': ['$14=++$14', 'break'],
+  'Victim.RELEASE_R': ['$15=++$15', 'break'],
+  'Kill.PUSH_R': ['clipboard (:right-kill)', '$16=++$16', 'break'],
+  'Kill.RELEASE_R': ['$17=++$17', 'break'],
+  'Close.PUSH_R': ['clipboard (:right-close)', '$18=++$18', 'break'],
+  'Close.RELEASE_R': ['$19=++$19', 'break'],
+  'SyncFail.PUSH_R': ['$20=++$20', 'RIGHT_UNKNOWN_PUSH', 'break'],
+  'SyncFail.RELEASE_R': ['$21=++$21', 'break'],
+  'ReleaseFail.PUSH_R': ['$22=++$22', 'break'],
+  'ReleaseFail.RELEASE_R': ['$23=++$23', 'RIGHT_UNKNOWN_RELEASE', 'break'],
+  'AsyncFail.PUSH_R': ['$24=++$24', '@ m2att', '$25=++$25', 'break'],
+  'AsyncFail.RELEASE_R': ['$26=++$26', 'break'],
+  'AsyncRelease.PUSH_R': ['$27=++$27', 'break'],
+  'AsyncRelease.RELEASE_R': ['$28=++$28', '@ m2att', '$29=++$29', 'break'],
+  FINISH: ['exit 0', 'break'],
+};
+const rightSource = ascii(
+  [
+    '#DEFINE',
+    'BUTTON A[2]',
+    'CPLANE B[2]',
+    'BUTTON Silent',
+    'BUTTON Sync',
+    'BUTTON Victim[2]',
+    'BUTTON Kill',
+    'BUTTON Close',
+    'BUTTON SyncFail',
+    'BUTTON ReleaseFail',
+    'BUTTON AsyncFail',
+    'BUTTON AsyncRelease',
+    '#OBJECT SIZE POS DISP',
+    'A 6,4 4,5 1',
+    'B 6,4 20,5 1',
+    'Silent 6,4 30,5 1',
+    'Sync 6,4 4,15 1',
+    '#START',
+    'wait 1',
+    'next IDLE',
+    '#IDLE',
+    'break',
+    ...Object.entries(rightBlocks).flatMap(([label, lines]) => ['#' + label, ...lines]),
+    '',
+  ].join('\n'),
+);
+async function rightTrial(profile) {
+  const h = await environment(profile, rightSource);
+  try {
+    const root = await h.load();
+    for (let index = 10; index < 64; index++) h.words.set(index, 0);
+    await h.world.sendEngine(h.id, h.world.main.id, 333);
+    return {
+      h,
+      root,
+      fes: root.player,
+      get: (name, index = 0) => root.collection.lookup(ascii(name), index),
+    };
+  } catch (error) {
+    await h.close();
+    throw error;
+  }
+}
+function rightClipboard(trial) {
+  const { h, root, fes, get } = trial,
+    service = h.world.host.nativeClipboard,
+    io = {
+      mode: 'pair',
+      writes: [],
+      reentries: [],
+      releaseValues: [],
+      replacement: null,
+      killed: null,
+      closing: null,
+    };
+  assert.ok(service instanceof BrowserNativeClipboard);
+  service.clipboard = {
+    async writeText(value) {
+      io.writes.push(value);
+      if (value === 'right-A') {
+        if (io.mode === 'pair') {
+          const b = get('B', 1);
+          b.enable = false;
+          b.disp = false;
+          fes.focus({ s: root, o: b });
+          assert.strictEqual(fes.rightClick(), undefined);
+        } else if (io.mode === 'sentinel') {
+          fes.focus(null);
+          assert.strictEqual(fes.rightClick(), undefined);
+          // The captured no-target call must not select this later focus.
+          fes.focus({ s: root, o: get('B', 1) });
+        } else if (io.mode === 'queued-replace') {
+          const old = get('Victim', 1);
+          fes.focus({ s: root, o: old });
+          assert.strictEqual(fes.rightClick(), undefined);
+          await root.collection.remove(old);
+          await declareButtons(h, 'Victim', 2);
+          const replacement = get('Victim', 1);
+          assert.notStrictEqual(old, replacement);
+          assert.notEqual(old.handle, replacement.handle);
+          io.replacement = { old, replacement };
+        }
+        const saved = frame(root);
+        assert.ok(root.runtime.platform.inFlight);
+        assert.ok(fes.publicPushPending.size > 0);
+        await h.world.sendEngine(h.id, h.world.main.id, 337, 0, 0, {
+          payload: fesLabelPayload(() => ascii('REENTER')),
+        });
+        assert.deepEqual(frame(root), saved);
+        io.reentries.push(structuredClone(root.nativeContext));
+      } else if (value === 'right-release') {
+        io.releaseValues.push(root.system('_CLICK_R_'));
+      } else if (value === 'right-kill') {
+        io.killed = get('Kill');
+        await root.collection.remove(io.killed);
+      } else if (value === 'right-close') {
+        fes.focus(null);
+        assert.strictEqual(fes.rightClick(), undefined);
+        io.closing = h.world.objects.release(h.id);
+        await io.closing;
+      }
+    },
+  };
+  return io;
+}
+function observeRightSource(t, trial) {
+  const { h, root, get } = trial,
+    calls = [],
+    getters = [],
+    produced = [],
+    specs = {
+      'A.PUSH_R': { name: 'A', index: 1, raw: 6, line: 2, slot: 55, head: '@' },
+      'A.RELEASE_R': { name: 'A', index: 1, raw: 6, line: 2, slot: 56, head: '@' },
+      'B.PUSH_R': { name: 'B', index: 1, raw: 3, line: 2, slot: 57, head: '@' },
+      'B.RELEASE_R': { name: 'B', index: 1, raw: 3, line: 2, slot: 58, head: '@' },
+      REENTER: { name: 'A', index: 1, raw: 6, line: 2, slot: 63, head: 'A[1]', notify: true },
+    };
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command;
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const label = root.executingLabel,
+        spec = specs[label],
+        object = get(spec.name, spec.index),
+        reference = { nameBytes: ascii(spec.name), index: spec.index },
+        row = spec.head + ' getid ' + spec.slot,
+        arena = h.world.fesSources,
+        record = arena.programs.get(root.program.sourceKey).blocks[label][spec.line - 1],
+        nameAddress = record.names.get(fesByteView(reference.nameBytes)),
+        rowAddress = record.copies.get(row),
+        owner = spec.notify
+          ? { nameBytes: new Uint8Array(), index: 0, current: 0 }
+          : { ...reference, current: reference.index };
+      assert.equal(object.nativeType, spec.raw);
+      assert.deepEqual(root.collection.reference(object), reference);
+      assert.deepEqual(selection, reference);
+      assert.deepEqual(root.nativeContext, owner);
+      assert.equal(root.executingLine, spec.line);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, reference.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(Number.isInteger(address));
+        assert.ok(address >= arena.base && address + bytes.length + 1 <= arena.base + arena.used);
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      const occurrence = produced.filter((entry) => entry.label === label).length + 1,
+        tokens = getters.filter((entry) => entry.label === label && entry.line === spec.line);
+      assert.equal(tokens.filter((entry) => entry.token === spec.head).length, occurrence);
+      assert.equal(tokens.filter((entry) => entry.token === 'getid').length, occurrence);
+      produced.push({
+        label,
+        slot: spec.slot,
+        reference,
+        current: owner.current,
+        nameAddress,
+        rowAddress,
+        expected: spec.raw === 3 ? nameAddress : object.idIndex | 0,
+      });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return {
+    produced,
+    check() {
+      assert.deepEqual(
+        calls.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.objectNameAddress,
+          entry.commandPointer,
+        ]),
+        produced.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.nameAddress,
+          entry.rowAddress,
+        ]),
+      );
+      for (const entry of produced) assert.equal(h.words.get(entry.slot), entry.expected);
+    },
+  };
+}
+
+for (const profile of startupProfiles) {
+  test(
+    'normal public right click keeps its field until RELEASE completes: ' + profile,
+    async (t) => {
+      const trial = await rightTrial(profile),
+        { h, root, fes, get } = trial;
+      let fresh;
+      try {
+        const a = get('A', 1),
+          b = get('B', 1),
+          saved = frame(root),
+          rng = h.world.random.snapshot(),
+          io = rightClipboard(trial),
+          sourceCalls = observeRightSource(t, trial),
+          events = [],
+          dispatch = root.dispatchEvent;
+        assert.equal(a.nativeType, 6);
+        assert.equal(b.nativeType, 3);
+        assert.notEqual(a.handle, b.handle);
+        t.mock.method(root, 'dispatchEvent', function (object, event, settled) {
+          events.push({ object, event, clickR: this.clickR, releaseDone: h.words.get(53) });
+          return dispatch.call(this, object, event, settled);
+        });
+        fes.focus(null);
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.equal(root.clickR, -1);
+        assert.equal(events.length, 0);
+        fes.focus({ s: root, o: a });
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.equal(root.clickR, a.handle, 'idle right click commits before PUSH_R');
+        assert.equal(h.words.get(50), a.handle);
+        await fes.flush();
+        assert.deepEqual(
+          [50, 51, 52].map((index) => h.words.get(index)),
+          [a.handle, a.handle, a.handle],
+          'queued right click must not replace the field read by the earlier A callbacks',
+        );
+        assert.deepEqual([h.words.get(54), h.words.get(59)], [b.handle, b.handle]);
+        assert.equal(h.words.get(53), 1);
+        assert.equal(h.words.get(60), 1);
+        assert.equal(h.words.get(61), a.handle);
+        assert.equal(root.clickR, b.handle);
+        assert.equal(b.enable, false);
+        assert.equal(b.disp, false);
+        assert.deepEqual(
+          events.map((entry) => [entry.object, entry.event, entry.clickR, entry.releaseDone]),
+          [
+            [a, 'PUSH_R', a.handle, 0],
+            [a, 'RELEASE_R', a.handle, 0],
+            [b, 'PUSH_R', b.handle, 1],
+            [b, 'RELEASE_R', b.handle, 1],
+          ],
+        );
+        assert.deepEqual(io.releaseValues, [a.handle]);
+        assert.deepEqual(io.reentries, [{ nameBytes: ascii('A'), index: 1, current: 1 }]);
+        sourceCalls.check();
+        assert.deepEqual(frame(root), saved);
+        assert.equal(fes.publicPushPending.size, 0);
+
+        fresh = await freshCheckpoint(t, h, profile);
+        const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+          fWords = fresh.world.runtime.variableBank(fresh.world.main, false),
+          fSaved = frame(fRoot),
+          fSilent = fRoot.collection.lookup(ascii('Silent'), 0);
+        assert.equal(fRoot.clickR, 0);
+        assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+        assert.deepEqual(
+          [50, 51, 52].map((index) => fWords.get(index)),
+          [a.handle, a.handle, a.handle],
+        );
+        fRoot.player.focus({ s: fRoot, o: fSilent });
+        assert.strictEqual(fRoot.player.rightClick(), undefined);
+        assert.equal(fRoot.clickR, fSilent.handle);
+        assert.deepEqual(frame(fRoot), fSaved);
+        assert.equal(fRoot.player.publicPushPending.size, 0);
+
+        const sync = get('Sync');
+        fes.focus({ s: root, o: sync });
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.deepEqual(
+          [10, 11, 12, 13].map((index) => h.words.get(index)),
+          [sync.handle, 1, sync.handle, 1],
+        );
+        assert.equal(root.clickR, sync.handle);
+        assert.equal(fes.publicPushPending.size, 0);
+        fes.focus({ s: root, o: get('Silent') });
+        const eventCount = events.length;
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.equal(root.clickR, get('Silent').handle);
+        assert.equal(events.length, eventCount);
+        assert.equal(fes.publicPushPending.size, 0);
+
+        io.mode = 'sentinel';
+        fes.focus({ s: root, o: a });
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.throws(() => fes.snapshot(), /public push is in flight/);
+        await fes.flush();
+        assert.deepEqual(
+          [50, 51, 52].map((index) => h.words.get(index)),
+          [a.handle, a.handle, a.handle],
+        );
+        assert.equal(root.clickR, -1);
+        assert.strictEqual(fes.focused.o, b);
+        assert.equal(h.words.get(60), 1, 'captured no-target action emits no B callback');
+        assert.deepEqual(io.releaseValues, [a.handle, a.handle]);
+
+        io.mode = 'queued-replace';
+        fes.focus({ s: root, o: a });
+        assert.strictEqual(fes.rightClick(), undefined);
+        await fes.flush();
+        assert.equal(io.replacement.old.deleted, true);
+        assert.strictEqual(get('Victim', 1), io.replacement.replacement);
+        assert.deepEqual([h.words.get(14), h.words.get(15)], [0, 0]);
+        assert.equal(
+          root.clickR,
+          a.handle,
+          'stale queued action is cancelled before its field write',
+        );
+        assert.deepEqual(
+          [50, 51, 52].map((index) => h.words.get(index)),
+          [a.handle, a.handle, a.handle],
+        );
+        sourceCalls.check();
+
+        const kill = get('Kill');
+        fes.focus({ s: root, o: kill });
+        assert.strictEqual(fes.rightClick(), undefined);
+        await fes.flush();
+        assert.equal(io.killed.deleted, true);
+        assert.deepEqual([h.words.get(16), h.words.get(17)], [1, 0]);
+        assert.equal(
+          root.clickR,
+          kill.handle,
+          'await cancellation does not roll back the pre-PUSH write',
+        );
+        assert.equal(fes.publicPushPending.size, 0);
+
+        let synchronousError;
+        const execute = root.execute;
+        t.mock.method(root, 'execute', function (...args) {
+          try {
+            return execute.apply(this, args);
+          } catch (error) {
+            synchronousError = error;
+            throw error;
+          }
+        });
+        for (const [name, pattern, slots] of [
+          ['SyncFail', /FES whole-row evaluator is pending: RIGHT_UNKNOWN_PUSH/, [20, 21]],
+          ['ReleaseFail', /FES whole-row evaluator is pending: RIGHT_UNKNOWN_RELEASE/, [22, 23]],
+        ]) {
+          const object = get(name);
+          fes.focus({ s: root, o: object });
+          assert.throws(
+            () => fes.rightClick(),
+            (error) => {
+              assert.strictEqual(error, synchronousError);
+              assert.match(error.message, pattern);
+              return true;
+            },
+          );
+          assert.equal(root.clickR, object.handle);
+          assert.deepEqual(
+            slots.map((index) => h.words.get(index)),
+            name === 'SyncFail' ? [1, 0] : [1, 1],
+          );
+          assert.equal(fes.error, null);
+          assert.equal(fes.publicPushPending.size, 0);
+          assert.deepEqual(frame(root), saved);
+          await fes.flush();
+        }
+        await root.notify('FINISH');
+        assert.equal(root.finished, 0);
+        fes.focus({ s: root, o: sync });
+        assert.strictEqual(fes.rightClick(), undefined);
+        assert.equal(root.clickR, sync.handle);
+        assert.deepEqual([h.words.get(11), h.words.get(13)], [1, 1]);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.deepEqual(h.world.random.snapshot(), rng);
+
+        for (const mode of ['push-error', 'release-error', 'close']) {
+          const isolated = await rightTrial(profile),
+            { h: ih, root: ir, fes: ip, get: ig } = isolated;
+          try {
+            const iSaved = frame(ir);
+            rightClipboard(isolated);
+            if (mode === 'close') {
+              const object = ig('Close');
+              ip.focus({ s: ir, o: object });
+              assert.strictEqual(ip.rightClick(), undefined);
+              await ip.flush();
+              assert.equal(ih.world.objects.objects.has(ih.id), false);
+              assert.equal(ir.runtime.closed, true);
+              assert.deepEqual([ih.words.get(18), ih.words.get(19)], [0, 0]);
+              assert.equal(
+                ir.clickR,
+                object.handle,
+                'closed owner cancels queued no-target field write',
+              );
+            } else {
+              let asynchronousError;
+              const command = ir.runtime.command;
+              t.mock.method(ir.runtime, 'command', function (...args) {
+                const result = command.apply(this, args);
+                if (args[0] === 'm2att')
+                  result.catch((error) => {
+                    asynchronousError = error;
+                  });
+                return result;
+              });
+              const object = ig(mode === 'push-error' ? 'AsyncFail' : 'AsyncRelease');
+              ip.focus({ s: ir, o: object });
+              assert.strictEqual(ip.rightClick(), undefined);
+              assert.equal(ir.clickR, object.handle);
+              ip.focus(null);
+              assert.strictEqual(ip.rightClick(), undefined);
+              await assert.rejects(ip.flush(), (error) => {
+                assert.strictEqual(error, asynchronousError);
+                assert.match(error.message, /Unimplemented FES raw6 command m2att/);
+                return true;
+              });
+              assert.equal(ir.clickR, object.handle);
+              assert.strictEqual(ip.error, asynchronousError);
+              assert.deepEqual(
+                [24, 25, 26, 27, 28, 29].map((index) => ih.words.get(index)),
+                mode === 'push-error' ? [1, 0, 0, 0, 0, 0] : [0, 0, 0, 1, 1, 0],
+              );
+              assert.deepEqual(frame(ir), iSaved);
+            }
+            assert.equal(ip.publicPushPending.size, 0);
+            assert.equal(ih.world.nativeEngine, undefined);
+          } finally {
+            await ih.close();
+          }
+        }
+        assert.equal(fresh.world.nativeEngine, undefined);
+        assert.equal(h.world.nativeEngine, undefined);
+      } finally {
+        await fresh?.dispose();
+        await h.close();
+      }
+    },
+  );
+}
+
+test('bare public right click retains inline field and undefined return', async () => {
+  const bytes = ascii(
+      '#DEFINE\nBUTTON button\n#OBJECT DISP\nbutton 0\n#START\nwait 10\n#button.PUSH_R\n$1=_CLICK_R_\nbreak\n#button.RELEASE_R\n$2=_CLICK_R_\nbreak\n',
+    ),
+    player = new FESPlayer(
+      { require: async () => bytes, has: () => false, width: 64, height: 48 },
+      {},
+    );
+  assert.strictEqual(player.rightClick(), undefined);
+  await player.start('bare-right-click');
+  assert.equal(player.root.runtime, undefined);
+  await player.step();
+  assert.strictEqual(player.rightClick(), undefined);
+  assert.equal(player.root.clickR, -1);
+  const object = player.root.byKey.get('button'),
+    expected = object.handle || -1;
+  object.enable = false;
+  object.disp = false;
+  player.focus({ s: player.root, o: object });
+  assert.strictEqual(player.rightClick(), undefined);
+  assert.equal(player.root.clickR, expected);
+  assert.deepEqual([player.globals[1], player.globals[2]], [expected, expected]);
+  assert.equal(player.publicPushPending.size, 0);
+  player.focus(null);
+  assert.strictEqual(player.rightClick(), undefined);
+  assert.equal(player.root.clickR, -1);
+  await player.step();
+  assert.equal(player.root.clickR, 0);
+});
