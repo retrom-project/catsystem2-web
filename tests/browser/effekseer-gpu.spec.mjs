@@ -209,7 +209,59 @@ async function exerciseDefaultWorld(data) {
       if (x instanceof Set) return { set: [...x] };
       return Object.is(x, -0) ? { negativeZero: true } : x;
     });
-  const same = (a, b, message) => check(encode(a) === encode(b), message);
+  const legal2000 = data.workload === 'legal2000';
+  check(
+    !legal2000 ||
+      (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
+        data.effectSHA256 === 'c200585dcd42001e80730c893a237fbe0bc4c97127ffadfd69523df0595cbbd5' &&
+        data.positionF32SHA256 ===
+          'feae8189dd796d405e16e67d96a2787a2604087671a37e9b1ea55160ae94000d' &&
+        data.plays === 2000 &&
+        data.normalWorldUpdateCount === 2 &&
+        data.positionWords.length === 6000),
+    'Compact workload is not the pinned legal2000 fixture',
+  );
+  const same = (a, b, message) => {
+    if (!legal2000) return check(encode(a) === encode(b), message);
+    const expected = encode(b),
+      actual = encode(a);
+    if (actual !== expected) {
+      const entries = [];
+      let count = 0;
+      const describe = (v) => {
+        const text = JSON.stringify(v) ?? 'undefined';
+        return text.length <= 512 ? text : text.slice(0, 512) + '…';
+      };
+      const diff = (x, y, path) => {
+        if (Object.is(x, y)) return;
+        if (
+          x &&
+          y &&
+          typeof x === 'object' &&
+          typeof y === 'object' &&
+          Array.isArray(x) === Array.isArray(y)
+        ) {
+          for (const key of new Set([...Object.keys(x), ...Object.keys(y)]))
+            diff(x[key], y[key], path + '/' + key);
+        } else {
+          count++;
+          if (entries.length < 64)
+            entries.push({ path, actual: describe(x), expected: describe(y) });
+        }
+      };
+      diff(JSON.parse(actual), JSON.parse(expected), '');
+      evidence.comparisonFailure = { message, count, entries, truncated: count > entries.length };
+      throw new Error(message);
+    }
+  };
+  const hash = async (bytes) =>
+    Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (x) =>
+      x.toString(16).padStart(2, '0'),
+    ).join('');
+  const summary = async (text) => {
+    const bytes = new TextEncoder().encode(text);
+    return { encodedBytes: bytes.byteLength, sha256: await hash(bytes) };
+  };
   const words = (v) => Array.from(new Uint32Array(v.buffer, v.byteOffset, v.length));
   const population = (t) => {
     const instances = [...t.manager.instances.values()];
@@ -386,7 +438,7 @@ async function exerciseDefaultWorld(data) {
     );
     const cpu = task.manager.snapshot(),
       crt = world.effekseer.threads.snapshot();
-    const managerBefore = structuredClone(cpu);
+    const managerBefore = legal2000 ? cpu : structuredClone(cpu);
     const trail = data.trailFixture;
     let expectedFirstDraw = null;
     if (trail) {
@@ -502,14 +554,21 @@ async function exerciseDefaultWorld(data) {
         const managerAfter = structuredClone(task.manager.snapshot());
         const beforeJSON = encode(managerBefore),
           afterJSON = encode(managerAfter);
-        check(
-          new TextEncoder().encode(beforeJSON).byteLength <= 1048576 &&
-            new TextEncoder().encode(afterJSON).byteLength <= 1048576,
-          'Diagnostic manager snapshots exceed one MiB each',
-        );
+        if (!legal2000)
+          check(
+            new TextEncoder().encode(beforeJSON).byteLength <= 1048576 &&
+              new TextEncoder().encode(afterJSON).byteLength <= 1048576,
+            'Diagnostic manager snapshots exceed one MiB each',
+          );
         const observed = {
           rgba,
-          managerSnapshots: { before: JSON.parse(beforeJSON), after: JSON.parse(afterJSON) },
+          managerSnapshots: legal2000
+            ? {
+                before: await summary(beforeJSON),
+                after: await summary(afterJSON),
+                completeTypedNegativeZeroComparison: beforeJSON === afterJSON,
+              }
+            : { before: JSON.parse(beforeJSON), after: JSON.parse(afterJSON) },
           packets,
           indexed,
           uploads,
@@ -560,6 +619,118 @@ async function exerciseDefaultWorld(data) {
       if (gpu.drawing) gpu.endNativeFrame();
     }
   }
+  async function setupLegal2000(world, plays, updates) {
+    const sourceRead = world.game.read,
+      reads = [];
+    world.game.read = async function (name) {
+      const observation = { name, phase: evidence.stage, attempt: reads.length + 1 };
+      reads.push(observation);
+      const bytes = await sourceRead.call(this, name);
+      check(bytes instanceof Uint8Array, 'Setup resource did not return owned bytes: ' + name);
+      Object.assign(observation, { bytes: bytes.byteLength, sha256: await hash(bytes) });
+      return bytes;
+    };
+    evidence.setup = { reads, bootstrapReadObserved: false };
+    try {
+      evidence.stage = 'legal2000 FILE';
+      const { sender, task } = await loadDefaultEffect(world);
+      check(plays.length === 0 && updates.length === 0, 'FES setup replayed Play/Update');
+      const initialFrame = world.frame,
+        positions = new Float32Array(Uint32Array.from(data.positionWords).buffer);
+      check(
+        (await hash(new Uint8Array(positions.buffer))) === data.positionF32SHA256,
+        'Public position bytes changed before Play',
+      );
+      evidence.stage = 'legal2000 public Play';
+      await world.withExecutor(world.effekseer.frameExecutor, async (executorEntry) => {
+        for (let i = 0; i < data.plays; i++) {
+          await world.sendEngine(task.record.id, sender, 51, 0, 0, {
+            executorEntry,
+            payload: floatPacket(positions.subarray(i * 3, i * 3 + 3)),
+          });
+          await world.sendEngine(task.record.id, sender, 571, 0, 0, { executorEntry });
+        }
+      });
+      evidence.stage = 'legal2000 normal updates';
+      for (let i = 0; i < data.normalWorldUpdateCount; i++) await world.tick();
+      check(
+        plays.length === 2000 &&
+          plays.every((p) => p.manager === task.manager && p.owner === plays[0].owner),
+        'Not 2000 actual Task Plays on the same executor',
+      );
+      const observedPositions = Float32Array.from(plays.flatMap((p) => p.position));
+      same(
+        words(observedPositions),
+        data.positionWords,
+        'Original Play position order/bytes changed',
+      );
+      check(
+        updates.length === 2 &&
+          updates.every((u) => u.manager === task.manager && u.owner === plays[0].owner),
+        'Not two updates on the same executor',
+      );
+      check(world.frame === initialFrame + 2, 'Unexpected legal2000 World frame count');
+      const roots = [...task.manager.instances.values()].filter((i) => i.slot === null),
+        children = [...task.manager.instances.values()].filter((i) => i.slot !== null);
+      check(
+        task.manager.sequence === 2 &&
+          roots.length === 2000 &&
+          children.length === 2000 &&
+          task.manager.freeSlots.length === 0 &&
+          roots.every((i) => i.age === 1 && i.sequence === 2 && i.stepTime === true) &&
+          children.every(
+            (i) =>
+              i.age === 0 &&
+              i.sequence === 2 &&
+              i.stepTime === true &&
+              i.values.velocityReady === true &&
+              i.values.rendered.ready === true,
+          ),
+        'Two-update newborn/sequence state differs from the static preflight',
+      );
+      const loads = world.effekseer.loads,
+        assets = loads.resources.snapshot().assets;
+      check(
+        loads.nextID === 2 &&
+          loads.loads.size === 1 &&
+          assets.length === 1 &&
+          [...task.manager.sets.values()].every((set) => set.assetID === task.currentEffect),
+        'FILE did not create one shared logical Effect load/source',
+      );
+      const effectReads = reads.filter((r) => r.name === 'scene.efk');
+      check(
+        effectReads.length === 1 &&
+          effectReads[0].bytes === 284 &&
+          effectReads[0].sha256 === data.effectSHA256,
+        'Setup did not read the one Effect source exactly once',
+      );
+      evidence.setup = {
+        plays: plays.length,
+        updates: updates.length,
+        owner: plays[0].owner,
+        frame: world.frame,
+        positionF32Bytes: observedPositions.byteLength,
+        positionF32SHA256: await hash(new Uint8Array(observedPositions.buffer)),
+        logicalFILELoads: loads.loads.size,
+        sourceAssets: assets.length,
+        effectSourceReads: effectReads.length,
+        reads,
+        bootstrapReadObserved: false,
+        newborn: {
+          sequence: task.manager.sequence,
+          roots: roots.length,
+          children: children.length,
+          poolFree: task.manager.freeSlots.length,
+          rootsAge: 1,
+          childrenAge: 0,
+          allCalculatedBeforeDraw: true,
+        },
+      };
+      return { sender, task };
+    } finally {
+      world.game.read = sourceRead;
+    }
+  }
   const NativeCanvas = globalThis.OffscreenCanvas;
   let canvases = 0,
     world,
@@ -592,25 +763,29 @@ async function exerciseDefaultWorld(data) {
       updates.push({ manager: args[1], owner: world.dispatchContext.executorID(args[0]) });
       return update.apply(this, args);
     };
-    const { sender, task } = await loadDefaultEffect(world);
-    check(plays.length === 0 && updates.length === 0, 'FES setup replayed Play/Update');
-    const initialFrame = world.frame;
-    await world.withExecutor(world.effekseer.frameExecutor, async (executorEntry) => {
-      await world.sendEngine(task.record.id, sender, 51, 0, 0, {
-        executorEntry,
-        payload: floatPacket(data.playPosition),
+    let sender, task;
+    if (legal2000) ({ sender, task } = await setupLegal2000(world, plays, updates));
+    else {
+      ({ sender, task } = await loadDefaultEffect(world));
+      check(plays.length === 0 && updates.length === 0, 'FES setup replayed Play/Update');
+      const initialFrame = world.frame;
+      await world.withExecutor(world.effekseer.frameExecutor, async (executorEntry) => {
+        await world.sendEngine(task.record.id, sender, 51, 0, 0, {
+          executorEntry,
+          payload: floatPacket(data.playPosition),
+        });
+        await world.sendEngine(task.record.id, sender, 571, 0, 0, { executorEntry });
       });
-      await world.sendEngine(task.record.id, sender, 571, 0, 0, { executorEntry });
-    });
-    for (let i = 0; i < data.normalWorldUpdateCount; i++) await world.tick();
-    check(plays.length === 1 && plays[0].manager === task.manager, 'Not one actual Task Play');
-    same(plays[0].position, data.playPosition, 'Different Play position');
-    check(
-      updates.length === 4 &&
-        updates.every((x) => x.manager === task.manager && x.owner === plays[0].owner),
-      'Not four updates on the same executor',
-    );
-    check(world.frame === initialFrame + 4, 'Unexpected normal World frame count');
+      for (let i = 0; i < data.normalWorldUpdateCount; i++) await world.tick();
+      check(plays.length === 1 && plays[0].manager === task.manager, 'Not one actual Task Play');
+      same(plays[0].position, data.playPosition, 'Different Play position');
+      check(
+        updates.length === 4 &&
+          updates.every((x) => x.manager === task.manager && x.owner === plays[0].owner),
+        'Not four updates on the same executor',
+      );
+      check(world.frame === initialFrame + 4, 'Unexpected normal World frame count');
+    }
     world.graphics.view.configure({
       virtualWidth: data.virtualView[0],
       virtualHeight: data.virtualView[1],
@@ -622,11 +797,12 @@ async function exerciseDefaultWorld(data) {
       }),
     );
     check(!world.nativeEngine, 'Default World opened the original engine');
-    evidence.setup = {
-      plays: plays.map((x) => ({ position: x.position, owner: x.owner })),
-      updates: updates.map((x) => ({ owner: x.owner })),
-      frame: world.frame,
-    };
+    if (!legal2000)
+      evidence.setup = {
+        plays: plays.map((x) => ({ position: x.position, owner: x.owner })),
+        updates: updates.map((x) => ({ owner: x.owner })),
+        frame: world.frame,
+      };
     const before = canvases,
       original = await render(world, task, 'original'),
       after = canvases;
@@ -654,6 +830,25 @@ async function exerciseDefaultWorld(data) {
     same(restored.snapshot(), savedTask, 'Fresh Task current bytes differ');
     same(fresh.effekseer.threads.snapshot(), savedCRT, 'Fresh CRT differs');
     same(fresh.random.snapshot(), savedMT, 'Fresh MT differs');
+    if (legal2000) {
+      const current = restored.snapshot();
+      evidence.freshState = {
+        task: { saved: await summary(encode(savedTask)), restored: await summary(encode(current)) },
+        manager: {
+          saved: await summary(encode(savedTask.manager)),
+          restored: await summary(encode(current.manager)),
+        },
+        crt: {
+          saved: await summary(encode(savedCRT)),
+          restored: await summary(encode(fresh.effekseer.threads.snapshot())),
+        },
+        mt: {
+          saved: await summary(encode(savedMT)),
+          restored: await summary(encode(fresh.random.snapshot())),
+        },
+        completeTypedNegativeZeroComparison: true,
+      };
+    }
     const freshBefore = canvases,
       restoredFrame = await render(fresh, restored, 'restored');
     result = {
@@ -662,6 +857,7 @@ async function exerciseDefaultWorld(data) {
       freshIndependentOwners: true,
       canvases: { before, after, freshBefore, freshAfter: canvases },
       setup: evidence.setup,
+      ...(legal2000 ? { freshState: evidence.freshState } : {}),
       reads: evidence.reads,
       // Immutable mounted sources are revalidated; resource commands/state never replay.
       noResourceCommandStateReplay: true,
@@ -851,3 +1047,189 @@ for (const c of defaultReference.cases) {
     },
   );
 }
+
+// Same pinned legal workload as the independent typed2000 input; public camera only.
+const legal2000Reference = JSON.parse(
+  await readFile(
+    new URL('../fixtures/effekseer/default-world-legal2000-reference.json', import.meta.url),
+  ),
+);
+const legal2000Effect = Buffer.from(legal2000Reference.effectBase64, 'base64');
+const legal2000Positions = Buffer.from(legal2000Reference.positionF32Base64, 'base64');
+const legal2000RGBA = inflateSync(Buffer.from(legal2000Reference.rgbaDeflateBase64, 'base64'));
+for (const [bytes, length, sha256] of [
+  [legal2000Effect, legal2000Reference.effectBytes, legal2000Reference.effectSHA256],
+  [legal2000Positions, legal2000Reference.positionF32Bytes, legal2000Reference.positionF32SHA256],
+  [legal2000RGBA, legal2000Reference.RGBABytes, legal2000Reference.RGBASHA256],
+])
+  if (bytes.length !== length || digest(bytes) !== sha256)
+    throw new Error('Authored legal2000 input/reference identity changed');
+
+test('default FES legal2000 submits through its World GPU and a true fresh World', async ({
+  page,
+}, testInfo) => {
+  const c = legal2000Reference,
+    blocked = [];
+  await page.route('**/*', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url());
+    if (request.isNavigationRequest() && url.pathname === '/') {
+      await route.fulfill({
+        contentType: 'text/html',
+        body: '<!doctype html><title>Default EFK legal2000 World</title>',
+      });
+      return;
+    }
+    if (
+      /\/oracle\/|\/native\/engine-process\.mjs|\/ppi\/(?:backend|backend-artifact)\.mjs|unicorn|\.(?:exe|dll|ppi)(?:$|\?)/i.test(
+        url.href,
+      ) ||
+      /(?:^|\/)(?:cs2_debug_key\.dat|[^/]*\.key)(?:$|\?)/i.test(url.pathname)
+    ) {
+      blocked.push(url.href);
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  });
+  await page.goto('/');
+  async function preserve(value) {
+    const body = Buffer.from(JSON.stringify({ value, blocked }));
+    expect(body.length, 'Compact evidence exceeds one MiB').toBeLessThanOrEqual(1048576);
+    await testInfo.attach('default-legal2000-evidence', { body, contentType: 'application/json' });
+    const frames =
+      value?.frames ?? (value ? { original: value.original, restored: value.restored } : {});
+    for (const [name, frame] of Object.entries(frames))
+      if (frame?.rgba)
+        await testInfo.attach('default-legal2000-' + name + '-rgba', {
+          body: Buffer.from(frame.rgba),
+          contentType: 'application/octet-stream',
+        });
+  }
+  let actual;
+  try {
+    actual = await page.evaluate(exerciseDefaultWorld, {
+      ...c,
+      trailFixture: null,
+      positionWords: Array.from({ length: 6000 }, (_, i) => legal2000Positions.readUInt32LE(i * 4)),
+      restoreResources: c.restoreReadPolicy.orderedReads,
+      files: {
+        'case.kcs': Array.from(bootKCS),
+        'screen.fes': Array.from(new TextEncoder().encode(defaultReference.fesSource)),
+        'scene.efk': Array.from(legal2000Effect),
+      },
+    });
+  } catch (error) {
+    const partial = await page
+      .evaluate(() => globalThis.__defaultEFKProgress ?? null)
+      .catch(() => null);
+    await preserve(partial);
+    throw error;
+  }
+  await preserve(actual);
+  expect(blocked).toEqual([]);
+  expect(actual.freshIndependentOwners).toBe(true);
+  expect(actual.noResourceCommandStateReplay && actual.noRenderSnapshotReads).toBe(true);
+  expect(actual.restoreReadQuota).toEqual({ attempts: 2, verified: 2 });
+  expect(actual.reads).toEqual(
+    c.restoreReadPolicy.orderedReads.map((r, i) => ({
+      phase: 'fresh restore',
+      name: r.name,
+      attempt: i + 1,
+      allowed: true,
+      bytes: r.bytes,
+      sha256: r.sha256,
+    })),
+  );
+  expect(actual.canvases).toEqual({ before: 3, after: 3, freshBefore: 6, freshAfter: 6 });
+  expect(actual.setup).toMatchObject({
+    plays: 2000,
+    updates: 2,
+    positionF32Bytes: c.positionF32Bytes,
+    positionF32SHA256: c.positionF32SHA256,
+    logicalFILELoads: 1,
+    sourceAssets: 1,
+    effectSourceReads: 1,
+    bootstrapReadObserved: false,
+    newborn: {
+      sequence: 2,
+      roots: 2000,
+      children: 2000,
+      poolFree: 0,
+      rootsAge: 1,
+      childrenAge: 0,
+      allCalculatedBeforeDraw: true,
+    },
+  });
+  expect(actual.setup.reads.filter((r) => r.name === 'scene.efk')).toEqual([
+    {
+      name: 'scene.efk',
+      phase: 'legal2000 FILE',
+      attempt: 2,
+      bytes: c.effectBytes,
+      sha256: c.effectSHA256,
+    },
+  ]);
+  expect(actual.setup.reads.map((r) => r.name)).toEqual(['screen.fes', 'scene.efk']);
+  expect(actual.freshState.completeTypedNegativeZeroComparison).toBe(true);
+  for (const field of ['task', 'manager', 'crt', 'mt'])
+    expect(actual.freshState[field].restored).toEqual(actual.freshState[field].saved);
+  for (const frame of [actual.original, actual.restored]) {
+    expect(frame.subpixelBits).toBeGreaterThanOrEqual(4);
+    expect(frame.subpixelBits).toBeLessThanOrEqual(12);
+    expect(frame.population).toEqual(c.population);
+    expect(frame.stats).toMatchObject(c.stats);
+    expect(frame.packets).toHaveLength(1);
+    expect(frame.packets[0]).toEqual({
+      vertexCount: 8000,
+      indexCount: 12000,
+      quadCount: 2000,
+      cpuActiveBytes: c.CPUActiveBytes,
+      cpuCapacityBytes: c.CPUReserveBytes,
+      vertexBytes: c.GPUVertexBytes,
+      indexBytes: c.GPUIndexBytes,
+      indexStorage: 'Uint16Array',
+      cameraBits: c.TaskCameraBits,
+      projectionBits: c.TaskProjectionBits,
+      viewport: c.viewport,
+      sameContext: true,
+      sameTarget: true,
+    });
+    expect(frame.taskCameraBits).toEqual(c.TaskCameraBits);
+    expect(frame.taskProjectionBits).toEqual(c.TaskProjectionBits);
+    expect(frame.indexed).toEqual([[4, 12000, 5123, 0]]);
+    const vertices = frame.uploads.filter((x) => x.target === 34962),
+      indices = frame.uploads.filter((x) => x.target === 34963);
+    expect(vertices).toHaveLength(1);
+    expect(indices).toHaveLength(1);
+    expect(vertices[0]).toMatchObject({
+      storage: 'Float32Array',
+      srcOffset: 0,
+      activeElements: 80000,
+      activeBytes: 320000,
+    });
+    expect(indices[0]).toMatchObject({
+      storage: 'Uint16Array',
+      srcOffset: 0,
+      activeElements: 12000,
+      activeBytes: 24000,
+    });
+    for (const upload of [...vertices, ...indices])
+      expect(upload.capacityBytes).toBeGreaterThanOrEqual(upload.activeBytes);
+    expect(frame.managerSnapshots.completeTypedNegativeZeroComparison).toBe(true);
+    expect(frame.managerSnapshots.after).toEqual(frame.managerSnapshots.before);
+    expect(frame.physicalRestored && frame.logicalStatesRestored && frame.targetDepthShared).toBe(
+      true,
+    );
+    const rgba = Buffer.from(frame.rgba);
+    expect(rgba.length).toBe(12288);
+    expect(digest(rgba)).toBe(c.RGBASHA256);
+    expect(rgba).toEqual(legal2000RGBA);
+    let changed = 0;
+    for (let i = 0; i < rgba.length; i += 4)
+      if (!rgba.subarray(i, i + 4).equals(Buffer.from(c.clearRGBA))) changed++;
+    expect(changed).toBe(2000);
+  }
+  expect(actual.restored.rgba).toEqual(actual.original.rgba);
+  expect(actual.restored.frame).toBe(actual.original.frame);
+});

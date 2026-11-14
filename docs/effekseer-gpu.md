@@ -281,3 +281,45 @@ gates. Native allocation/capacity fatal callees and external diagnostics remain
 unreviewed; this normal resource proof does not establish all native exception
 paths. The short recorder
 cases establish API, geometry and owner behavior, not native raster equivalence.
+
+### Default World legal2000 workload
+
+The separate `default FES legal2000` browser case uses the existing CC0 Fixed2
+Sprite Effect (284 bytes, SHA-256 `c200585d…5cbbd5`) and the original 2000
+ordered float32 positions, with exactly two normal World updates. FES owns one
+kind61 Task and one logical FILE load. All 2000 public 51/571 Play pairs and both
+updates use that Task's actual frame executor. Delegated setup reads are observed
+after bootstrap: the Effect source is read once across FILE, Plays and updates;
+bootstrap reads before this observer are not counted.
+
+Public view and message57 inputs put this same workload in the default camera's
+visible domain without changing the 65-degree rotation, fov, near1/far50, Effect
+or positions. The float32 camera eye is `(0, 0, 1.500999927520752)`. Independent
+float32 matrix, shader, clipping and 4–12 subpixel-bit raster derivations establish
+2000 disjoint samples and reproduce the entire existing 12288-byte RGBA mask
+(SHA-256 `86f0a74a…8e126e9`). The hermetic
+`default-world-legal2000-reference.json` records those inputs and provenance;
+no observed browser pixels create the expected image.
+
+The normal registered callback submits through its own World StageRenderer/GPU,
+current primary target/depth, and unchanged physical/logical render state. The
+legal manager has 2000 roots outside the pool plus 2000 nonroot instances occupying
+the complete 2000-slot pool: global count4000 is distinct from 2000 rendered
+particles/quads. One draw contains 8000 vertices and 12000 Uint16 indices. CPU
+active batch bytes are192000 within a320000-byte reserve; GPU active vertex bytes
+are320000 and index bytes24000 (GL type5123). Two normal/fresh submissions upload
+688000 active bytes in total; that cumulative count is neither resident capacity
+nor a per-frame byte count.
+
+Two updates have already calculated every newborn before drawing. This Sprite
+workload permits no first-draw manager cache exception. Complete manager, Task
+restore, CRT and MT comparisons retain typed storage and negative zero. Only this
+pinned legal2000 case transports compact successful byte counts/hashes and bounded
+failure differences; the four smaller geometry cases retain full snapshots.
+A true fresh World owns new CPU, StageRenderer, GPU and device objects. Restore
+revalidates the immutable78-byte bootstrap KCS and284-byte Effect exactly once
+each, then snapshot and drawing perform no mounted reads. Restore/render cannot
+Play, Update, sample RNG, or replay resource commands/state. Both actual normal
+and fresh RGBA outputs must equal the independent full reference. This case does
+not establish over-capacity behavior, performance, device loss/reset or nonprimary
+target acceptance; unregistered versions and slots remain disabled.
