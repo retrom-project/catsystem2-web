@@ -10,6 +10,7 @@ import { NativeStringBank } from '../src/native/string-bank.mjs';
 import { NativeScriptReplacements } from '../src/native/script-replacement.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGraphicTask } from '../src/native/graphics.mjs';
+import { NativeTexturePages } from '../src/native/texture-layout.mjs';
 import { NativeTextTask, NativeNVTextTask } from '../src/native/text-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -136,7 +137,7 @@ const shared = (offset) => [0x13, (0x80000000 + offset) >>> 0],
     [59],
   ]);
 
-async function open({ size, maximum, sourceX, profile: selectedProfile = profile }) {
+async function open({ size, maximum, sourceX, grid = [1, 1], profile: selectedProfile = profile }) {
   const scope = startupEnvironment(),
     queries = [],
     memory = [],
@@ -178,8 +179,8 @@ break
       template = await ordinaryStartupGame(selectedProfile, {
         sound: false,
         startup: `<TEXTURE><size><x>${size[0]}</x><y>${size[1]}</y></size>
-<vt><x>1</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>1</dx><dy>1</dy></area00>
-<bpp32y>0</bpp32y><bpp16y>1</bpp16y></TEXTURE>`,
+<vt><x>${grid[0]}</x><y>${grid[1]}</y></vt><area00><sx>0</sx><sy>0</sy><dx>${grid[0]}</dx><dy>${grid[1]}</dy></area00>
+<bpp32y>0</bpp32y><bpp16y>${grid[1]}</bpp16y></TEXTURE>`,
         files: { 'assets/texture-caps.fes': source, 'motions/move.kcs': move },
       }),
       startup = await template.require('startup.xml'),
@@ -386,13 +387,7 @@ test('Game ordinary PLANE query clears source dirtiness while derived bounds wai
     await p.render();
     assert.equal(p.requests.length, presentations + 1);
     assert.ok(p.draws.length > draws, 'page-only gate keeps real drawing and full presentation');
-    assert.ok(
-      p.requests
-        .at(-1)
-        .dirtyQueryGates.some(
-          (gate) => gate.recordID === t.record.id && gate.reason === 'page-contribution-unreviewed',
-        ),
-    );
+    assert.deepEqual(p.requests.at(-1).dirtyQueryGates, []);
     assert.equal(Object.hasOwn(t.snapshot().graph, 'boundsGate'), false);
     assert.equal(Object.hasOwn(t.snapshot().graph, 'dirtyQueryGates'), false);
     assert.deepEqual([...r.dirtyPrevious], empty);
@@ -569,13 +564,7 @@ test('Game ordinary PLANE color and lifecycle changes preserve separate bounds o
     assert.deepEqual(gg.cachedBounds, [0, 1, 5, 4]);
     assert.deepEqual(instance.runtime.snapshot(), runtime);
     await pp.render();
-    assert.ok(
-      pp.requests
-        .at(-1)
-        .dirtyQueryGates.some(
-          (gate) => gate.recordID === t.record.id && gate.reason === 'page-contribution-unreviewed',
-        ),
-    );
+    assert.deepEqual(pp.requests.at(-1).dirtyQueryGates, []);
     assert.deepEqual([...rr.dirtyPrevious], empty);
     await send(f, restoredTask, 59, 1, 0xffffffff);
     assert.equal(gg.boundsDirty, true);
@@ -836,3 +825,246 @@ for (const [name, selectedProfile] of [
       await h.close();
     }
   });
+
+const pageCase = () => open({ size: [8, 8], maximum: 4096, sourceX: 6, grid: [3, 1] }),
+  pageZeroBounds = [7, 8, 10, 11],
+  pageOneBounds = [9, 8, 12, 11],
+  mainNative = (h, id, args) =>
+    h.world.runtime.native('main', id, args, h.world.main.machine, h.world.main),
+  clearPage = (h, index, id = 0x75) => mainNative(h, id, [0, index * 8, 1, 1, 1, 0]);
+
+test('Game ordinary PLANE page-only bounds select dirty pages without changing model FC', async (testContext) => {
+  const h = await pageCase(),
+    p = presentation(h),
+    t = h.plane,
+    g = t.graph,
+    pages = h.world.graphics.texturePages,
+    r = h.world.screenEffects.rendering;
+  let bitmapHandle;
+  try {
+    await p.render();
+    await p.render();
+    assert.deepEqual(g.cachedBounds, initial);
+    assert.equal(g.sourceBoundsDirty, false);
+    assert.equal(g.boundsDirty, false);
+    await clearPage(h, 1);
+    // First red observes the actual page query, before any new-state assertion.
+    assert.deepEqual(queryWithoutReplay(h, r), pageOneBounds);
+    assert.ok(pages.dirtyFlags instanceof Uint32Array);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 0]);
+    assert.deepEqual(g.cachedBounds, initial, 'page-only query neither unions nor overwrites FC');
+    assert.deepEqual(queryWithoutReplay(h, r), pageOneBounds);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 0], 'query does not consume page flags');
+    await clearPage(h, 2, 0x2e0);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 1]);
+    assert.deepEqual(
+      queryWithoutReplay(h, r),
+      pageOneBounds,
+      'unused page contributes no triangle',
+    );
+    p.status(-1);
+    await p.render();
+    assert.deepEqual(p.requests.at(-1).dirtyRectangle, pageOneBounds);
+    assert.ok(p.geometry(t).some((item) => item.textureID === 0));
+    assert.ok(p.geometry(t).some((item) => item.textureID === 1));
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 1]);
+    assert.deepEqual(g.cachedBounds, initial);
+    const paused = { requests: p.requests.length, draws: p.draws.length, graph: t.snapshot() };
+    h.world.graphics.view.configure({ paused: true });
+    await p.render();
+    assert.equal(p.requests.length, paused.requests);
+    assert.equal(p.draws.length, paused.draws);
+    assert.deepEqual(t.snapshot(), paused.graph);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 1]);
+    h.world.graphics.view.configure({ paused: false });
+    p.status(0);
+    await p.render();
+    assert.deepEqual([...pages.dirtyFlags], [0, 0, 0], 'success clears the unused index too');
+    await p.render();
+
+    bitmapHandle = h.world.graphics.images.create(1, 1);
+    const bitmap = h.world.graphics.images.get(bitmapHandle);
+    await bitmap.fill(0, 0, 1, 1, 0xff123456);
+    const rgba = pages.frame(0).rgba;
+    const originalSet = testContext.mock.method(rgba, 'set', () => {
+      throw new Error('authored page upload failure');
+    });
+    try {
+      await assert.rejects(h.world.graphics.output(bitmap, [6, 1]), /authored page upload failure/);
+    } finally {
+      originalSet.mock.restore();
+    }
+    assert.deepEqual(
+      [...pages.dirtyFlags],
+      [1, 0, 0],
+      'the real copy failure cannot roll back mark1',
+    );
+    assert.deepEqual(queryWithoutReplay(h, r), pageZeroBounds);
+    await h.world.graphics.output(bitmap, [6, 1]);
+    assert.deepEqual([...rgba.slice((8 + 6) * 4, (8 + 6) * 4 + 4)], [18, 52, 86, 255]);
+    assert.deepEqual(g.cachedBounds, initial);
+    assert.equal(g.boundsDirty, false);
+    assert.equal(g.sourceBoundsDirty, false);
+    await p.render();
+    await p.render();
+    const originalFill = testContext.mock.method(pages.frame(2).rgba, 'fill', () => {
+      throw new Error('authored page clear failure');
+    });
+    try {
+      await assert.rejects(clearPage(h, 2), /authored page clear failure/);
+    } finally {
+      originalFill.mock.restore();
+    }
+    assert.deepEqual([...pages.dirtyFlags], [0, 0, 1]);
+    assert.deepEqual(queryWithoutReplay(h, r), empty);
+    await mainNative(h, 0x75, [0, 0, 0, 0, 1, 0]);
+    await mainNative(h, 0x75, [0, 40, 0, 1, 1, 0]);
+    assert.deepEqual([...pages.dirtyFlags], [0, 0, 1]);
+    await p.render();
+    assert.deepEqual([...pages.dirtyFlags], [0, 0, 0]);
+    assert.equal(h.words.get(50), 1);
+    assert.equal(h.world.nativeEngine, undefined);
+  } finally {
+    if (bitmapHandle) await h.world.graphics.images.release(bitmapHandle);
+    await h.close();
+  }
+});
+
+test('Game page flags survive release and fresh restore until successful whole-grid presentation', async (testContext) => {
+  // This first world really presents before exercising F8=false and release.
+  const first = await pageCase();
+  try {
+    const p = presentation(first),
+      t = first.plane,
+      pages = first.world.graphics.texturePages,
+      r = first.world.screenEffects.rendering;
+    await p.render();
+    await p.render();
+    await clearPage(first, 1);
+    await mainNative(first, 0x21d, [8, 0, 8, 8]);
+    assert.equal(pages.pages.has(1), false);
+    // The second red also reaches a real query before checking the new field.
+    assert.deepEqual(queryWithoutReplay(first, r), pageOneBounds);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 0]);
+    assert.equal(t.graph.boundsDirty, false);
+    assert.deepEqual(t.graph.cachedBounds, initial);
+    await mainNative(first, 0x21e, []);
+    assert.equal(pages.pages.has(1), true);
+    assert.equal(pages.frame(1).revision, 0);
+    assert.deepEqual([...pages.dirtyFlags], [0, 1, 0], 'allocation preserves the existing flag');
+    await p.render();
+    assert.deepEqual([...pages.dirtyFlags], [0, 0, 0]);
+  } finally {
+    await first.close();
+  }
+
+  // This independent ENTRY has not drawn: its real depth target is absent.
+  // The recorder can checkpoint explicit blank upload bytes, not raster depth.
+  const h = await pageCase();
+  let fresh;
+  try {
+    const pages = h.world.graphics.texturePages,
+      t = h.plane,
+      r = h.world.screenEffects.rendering,
+      bitmapHandle = h.world.graphics.images.create(1, 1),
+      bitmap = h.world.graphics.images.get(bitmapHandle);
+    await bitmap.fill(0, 0, 1, 1, 0xff123456);
+    await h.world.graphics.output(bitmap, [6, 1]);
+    await h.world.graphics.images.release(bitmapHandle);
+    await clearPage(h, 1);
+    await clearPage(h, 2);
+    await mainNative(h, 0x21d, [8, 0, 8, 8]);
+    await h.instance.runtime.motions.add(h.object, 'move');
+    await h.world.sendEngine(h.id, h.world.main.id, 333);
+    assert.equal(h.instance.runtime.motions.busy(h.object), false);
+    assert.deepEqual(motionVector(t.graph.kx2, MOTION_ABI.pos), [1, 2, 0]);
+    queryWithoutReplay(h, r);
+    assert.equal(t.graph.sourceBoundsDirty, false);
+    assert.equal(t.graph.boundsDirty, true);
+    assert.deepEqual(t.graph.cachedBounds, [0, 1, 5, 4]);
+    assert.deepEqual([...pages.dirtyFlags], [1, 1, 1]);
+    assert.equal(h.world.stageRenderer.frameDepth, null);
+    const gpu = h.world.getNativeGPU(),
+      { width, height } = gpu.primaryTarget;
+    gpu.uploadRenderTarget(gpu.primaryTarget, {
+      width,
+      height,
+      rgba: new Uint8Array(width * height * 4),
+    });
+    const savedPages = pages.snapshot(),
+      savedTask = t.snapshot(),
+      runtime = h.instance.runtime.snapshot(),
+      sources = h.world.fesSources.snapshot(),
+      rng = h.world.random.snapshot(),
+      checkpoint = await h.player.snapshot();
+    assert.notStrictEqual(savedPages.dirtyFlags, pages.dirtyFlags);
+    let restoring = true;
+    for (const [prototype, method] of [
+      [FESInstance.prototype, 'execute'],
+      [FESInstance.prototype, 'expandMacros'],
+      [FESCoordinator.prototype, 'initialize'],
+      [NativeStringBank.prototype, 'expandBytes'],
+      [NativeScriptReplacements.prototype, 'apply'],
+      [NativeTexturePages.prototype, 'upload'],
+      [Object.getPrototypeOf(r), 'collectDirty'],
+    ]) {
+      const original = prototype[method];
+      testContext.mock.method(prototype, method, function (...args) {
+        assert.equal(restoring, false, 'page fresh cannot replay ' + method);
+        return original.apply(this, args);
+      });
+    }
+    const source = h.world.game.lookup(filename).file,
+      read = source.read;
+    testContext.mock.method(source, 'read', function (...args) {
+      assert.equal(restoring, false, 'page fresh cannot reopen source');
+      return read.apply(this, args);
+    });
+    fresh = new CatSystem2({ ...h.options, canvas: new h.Canvas() });
+    try {
+      await fresh.initialize({ checkpoint });
+    } finally {
+      restoring = false;
+    }
+    const f = { ...h, player: fresh, world: fresh.world },
+      restoredPages = f.world.graphics.texturePages,
+      restoredTask = f.world.graphics.get(t.record.id),
+      pp = presentation(f);
+    f.instance = f.world.objects.objects.get(h.id).implementation.player.root;
+    assert.deepEqual(restoredPages.snapshot(), savedPages);
+    assert.notStrictEqual(restoredPages.dirtyFlags, pages.dirtyFlags);
+    assert.notStrictEqual(restoredPages.dirtyFlags, savedPages.dirtyFlags);
+    assert.equal(restoredPages.pages.has(1), false);
+    assert.deepEqual(restoredTask.snapshot(), savedTask);
+    assert.deepEqual(f.instance.runtime.snapshot(), runtime);
+    assert.deepEqual(f.world.fesSources.snapshot(), sources);
+    assert.deepEqual(f.world.random.snapshot(), rng);
+    assert.deepEqual(
+      [...restoredPages.frame(0).rgba.slice((8 + 6) * 4, (8 + 6) * 4 + 4)],
+      [18, 52, 86, 255],
+    );
+    assert.deepEqual([...restoredPages.dirtyFlags], [1, 1, 1]);
+    queryWithoutReplay(f, f.world.screenEffects.rendering);
+    assert.deepEqual([...restoredPages.dirtyFlags], [1, 1, 1]);
+    await mainNative(f, 0x21e, []);
+    assert.equal(restoredPages.pages.has(1), true);
+    assert.equal(restoredPages.frame(1).revision, 0);
+    assert.deepEqual([...restoredPages.dirtyFlags], [1, 1, 1]);
+    await pp.render();
+    assert.equal(pp.requests.length, 1);
+    assert.ok(pp.geometry(restoredTask).some((item) => item.textureID === 0));
+    assert.ok(pp.geometry(restoredTask).some((item) => item.textureID === 1));
+    assert.deepEqual([...restoredPages.dirtyFlags], [0, 0, 0]);
+    assert.equal(restoredTask.graph.sourceBoundsDirty, false);
+    assert.equal(restoredTask.graph.boundsDirty, false);
+    assert.deepEqual(restoredTask.graph.cachedBounds, savedTask.graph.cachedBounds);
+    assert.deepEqual(f.instance.runtime.snapshot(), runtime);
+    assert.deepEqual(f.world.fesSources.snapshot(), sources);
+    assert.deepEqual(f.world.random.snapshot(), rng);
+    assert.equal(f.world.runtime.variableBank(f.world.main, false).get(50), 1);
+    assert.equal(f.world.nativeEngine, undefined);
+  } finally {
+    await fresh?.dispose();
+    await h.close();
+  }
+});

@@ -158,7 +158,14 @@ export class NativeGraphics {
     this.texturePages = new NativeTexturePages(layout, {
       stage: this.world.stageRenderer ?? null,
       release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
+      trackDirty: this.tracksTextureDirty,
     });
+  }
+  get tracksTextureDirty() {
+    return Boolean(
+      this.world.profile &&
+        nativeABI(this.world.profile).graphics.texturedBoundsQuery === 'model-and-pages',
+    );
   }
   async meshTexture(index) {
     this.initializeTextures();
@@ -378,6 +385,7 @@ export class NativeGraphics {
       ? new NativeTexturePages(texturePages.layout, {
           stage: this.world.stageRenderer ?? null,
           release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
+          trackDirty: this.tracksTextureDirty,
         })
       : null;
     if (texturePages) this.texturePages.restore(texturePages);
@@ -396,7 +404,7 @@ export class NativeGraphics {
         task.record.kind === 2 &&
         this.tasks.get(task.record.id) === task &&
         this.world.profile &&
-        nativeABI(this.world.profile).graphics.texturedBoundsQuery === 'model-dirty' &&
+        nativeABI(this.world.profile).graphics.texturedBoundsQuery === 'model-and-pages' &&
         isNativeTexturedModel(graph),
     );
   }

@@ -169,7 +169,7 @@ function validateBehavior(abi) {
     !['raw', 'wrap-raw'].includes(fes?.macroLiterals?.character) ||
     !graphics ||
     ![null, 'virtual-d3d9'].includes(graphics.textureCapsPolicy) ||
-    ![null, 'model-dirty'].includes(graphics.texturedBoundsQuery) ||
+    ![null, 'model-and-pages'].includes(graphics.texturedBoundsQuery) ||
     !startup ||
     !['before-defaults', 'after-preferences'].includes(startup.resourceCheck) ||
     startup.verification?.cipher !== 'blowfish-le32' ||

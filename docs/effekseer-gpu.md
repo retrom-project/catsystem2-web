@@ -195,7 +195,7 @@ Page dirty ownership remains independently pending.
 The SDK max/guard input policy does not establish complete native factory,
 clipping or UV equivalence from the Game tests.
 
-The Game ABI separately registers `graphics.texturedBoundsQuery: 'model-dirty'`;
+The Game ABI separately registers `graphics.texturedBoundsQuery: 'model-and-pages'`;
 the SDK explicitly registers `null` pending its own query and owner proof.
 Only the registered kind2 SimplePlane task owns this query policy; text tasks'
 composed planes retain their existing drawing contract and remain unreviewed.
@@ -215,11 +215,23 @@ buffers without replaying declarations, bank/macro services or MOT.
 
 This calculation covers ordinary finite2D PLANE geometry with the default screen
 projection and its owned texture layout. Unsupported geometry keeps its owner
-and cached RECT and reports `geometry-domain-unreviewed`. A clean derived marker
-does not prove a clean page: `page-contribution-unreviewed` records that gap,
-without guessing a page contribution or writing the cached RECT. These
+and cached RECT and reports `geometry-domain-unreviewed`. With a clean derived
+marker, only actual triangles whose texture IDs have a nonzero page flag
+contribute; this query does not union the old cached RECT, write it, or consume
+page flags. These
 `dirtyQueryGates` are per-query diagnostics passed to presentation, never graph
 or checkpoint fields. Actual full drawing and presentation continue in every
-case. SDK query ownership, per-page dirty upload/clear/present retirement and
-complete textured branch acceptance remain separate gates. The short recorder
+case. The existing texture-page owner keeps one DWORD flag for every grid index,
+independently of allocated pages and pixel revisions. The table starts at zero
+after initial allocation; later allocations preserve it. Upload and clear mark
+each intersecting present page before pixel work, and
+release preserves its flag. Failed pixel work does not roll back that mark.
+Only successful actual presentation clears the entire grid, including unused
+and released indices; failed or paused presentation preserves it. The current
+checkpoint copies these owned flags and restores them directly without source
+uploads. SDK policy remains null and does not activate this tracking or query.
+SDK query ownership and complete textured branch acceptance remain separate
+gates. Native allocation/capacity fatal callees and external diagnostics remain
+unreviewed; this normal resource proof does not establish all native exception
+paths. The short recorder
 cases establish API, geometry and owner behavior, not native raster equivalence.

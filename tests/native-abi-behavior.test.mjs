@@ -91,7 +91,7 @@ test('reviewed ABI services expose independent capabilities and serializable lay
   );
   assert.deepEqual(
     [sdk.graphics.texturedBoundsQuery, game.graphics.texturedBoundsQuery],
-    [null, 'model-dirty'],
+    [null, 'model-and-pages'],
   );
   assert.deepEqual([sdk.messages.tilePlaneCommand, game.messages.tilePlaneCommand], [44, 46]);
   assert.deepEqual([sdk.layouts.memoryFile.wide, game.layouts.memoryFile.wide], [false, true]);

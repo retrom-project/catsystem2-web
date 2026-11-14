@@ -5,6 +5,7 @@ import {
   isNativeTexturedModel,
   supportsNativeTexturedBounds,
   nativeTexturedBounds,
+  nativeTexturedGeometry,
 } from '../render/native-textured-geometry.mjs';
 import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
@@ -12,6 +13,7 @@ import {
   isNativeColoredModel,
   supportsNativeColoredBounds,
   nativeColoredBounds,
+  nativeVertexBounds,
 } from '../render/native-geometry.mjs';
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
 const emptyRectangle = (r) => r[0] >= r[2] || r[1] >= r[3];
@@ -213,7 +215,13 @@ export class NativeScreenEffectRenderer {
           const next = nativeTexturedBounds(graph, task.state, projection, layout);
           graph.cachedBounds.splice(0, 4, ...next);
           this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, next));
-        } else gate('page-contribution-unreviewed');
+        } else {
+          const pages = this.world.graphics.texturePages,
+            triangles = nativeTexturedGeometry(graph, task.state, projection, layout).filter(
+              (triangle) => pages.isDirty(triangle.textureID),
+            );
+          this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, nativeVertexBounds(triangles)));
+        }
       }
     }
     if (callback && !emptyRectangle(this.dirtyCurrent)) this.dirtyCurrent.set(viewport);
@@ -338,6 +346,7 @@ export class NativeScreenEffectRenderer {
         if (!Number.isInteger(status) || status < -0x80000000 || status > 0xffffffff)
           throw new TypeError('Native presentation must return a signed32 HRESULT word');
         if ((status | 0) >= 0) {
+          this.world.graphics.texturePages?.clearDirty();
           this.dirtyPrevious.set(this.dirtyCurrent);
           this.dirtyCurrent.fill(0);
           // Native retirement visits registered models even when disabled or

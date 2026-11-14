@@ -90,12 +90,22 @@ export function textureDitherThreshold(x, y) {
   ];
 }
 export class NativeTexturePages {
-  constructor(layout, { release = () => {}, stage = null } = {}) {
+  constructor(layout, { release = () => {}, stage = null, trackDirty = false } = {}) {
     this.layout = structuredClone(layout);
     this.releaseFrame = release;
     this.stage = stage;
     this.pages = new Map();
     this.allocateMissing();
+    // The flag table covers the entire grid and starts clean after allocation.
+    this.dirtyFlags = trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null;
+  }
+  isDirty(index) {
+    return Boolean(
+      this.dirtyFlags && index >= 0 && index < this.dirtyFlags.length && this.dirtyFlags[index],
+    );
+  }
+  clearDirty() {
+    this.dirtyFlags?.fill(0);
   }
   allocateMissing(texture = this.layout) {
     const layout = this.layout;
@@ -161,13 +171,14 @@ export class NativeTexturePages {
     const dither = Boolean(this.layout.dither);
     const input = await bitmap.frame(),
       [sx, sy, right, bottom] = rectangle ?? [0, 0, input.width, input.height];
-    for (const page of this.pages.values()) {
+    for (const [index, page] of this.pages) {
       const { frame } = page,
         left = Math.max(0, sx, page.x),
         top = Math.max(0, sy, page.y),
         endX = Math.min(input.width, right, page.x + frame.width),
         endY = Math.min(input.height, bottom, page.y + frame.height);
       if (left >= endX || top >= endY) continue;
+      if (this.dirtyFlags) this.dirtyFlags[index] = 1;
       for (let y = top; y < endY; y++) {
         const row = input.rgba.subarray((y * input.width + left) * 4, (y * input.width + endX) * 4),
           at = ((y - page.y) * frame.width + left - page.x) * 4;
@@ -191,13 +202,14 @@ export class NativeTexturePages {
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
-    for (const page of this.pages.values()) {
+    for (const [index, page] of this.pages) {
       const { frame } = page,
         left = Math.max(x, page.x),
         top = Math.max(y, page.y),
         endX = Math.min(right, page.x + frame.width),
         endY = Math.min(bottom, page.y + frame.height);
       if (left >= endX || top >= endY) continue;
+      if (this.dirtyFlags) this.dirtyFlags[index] = 1;
       for (let row = top; row < endY; row++)
         frame.rgba.fill(
           0,
@@ -221,6 +233,7 @@ export class NativeTexturePages {
   snapshot() {
     return structuredClone({
       layout: this.layout,
+      dirtyFlags: this.dirtyFlags,
       pages: [...this.pages].map(([index, page]) => [
         index,
         { ...page, frame: { ...page.frame, rgba: encodeSparseBytes(page.frame.rgba) } },
@@ -228,8 +241,19 @@ export class NativeTexturePages {
     });
   }
   restore(state) {
+    const flags = state.dirtyFlags,
+      count = state.layout.grid[0] * state.layout.grid[1];
+    if (
+      this.dirtyFlags === null
+        ? flags !== null
+        : !(flags instanceof Uint32Array) ||
+          flags.length !== count ||
+          flags.some((value) => value !== 0 && value !== 1)
+    )
+      throw new Error('Invalid native texture page dirty flags checkpoint');
     this.close();
     this.layout = structuredClone(state.layout);
+    this.dirtyFlags = flags === null ? null : flags.slice();
     this.pages = new Map(structuredClone(state.pages));
     for (const [index, page] of this.pages) {
       if (
