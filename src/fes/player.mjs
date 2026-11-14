@@ -512,6 +512,8 @@ export class FESPlayer {
     }
     if (target.s.runtime && target.o.type === 'BUTTON' && target.o.nativeType === 6)
       return this.completePublicClick(target.s, target.o);
+    if (target.s.runtime && (target.o.nativeType === 14 || target.o.nativeType === 15))
+      return this.completePublicControlClick(target.s, target.o, x, y);
     this.focus(target);
     if (target.o.type === 'BUTTON') this.press();
     else this.slide(target, x, y);
@@ -525,6 +527,64 @@ export class FESPlayer {
     target.s.clickL = target.o.handle;
     target.s.event(target.o, 'RELEASE_L');
     return true;
+  }
+  completePublicControlClick(instance, object, x, y) {
+    const complete = this.publicControlClickOperation(instance, object, x, y);
+    if (this.publicPushPending.size) this.enqueuePublicPush(() => complete(true));
+    else {
+      const completion = complete(false);
+      if (completion) this.trackPublicCompletion(completion);
+    }
+    return true;
+  }
+  publicControlClickOperation(instance, object, x, y) {
+    const runtime = instance.runtime,
+      record = runtime.world.objects.objects.get(instance.runtimeID),
+      reference = instance.collection.reference(object),
+      live = () =>
+        this.publicEventLive(instance, runtime, record, object) &&
+        instance.collection.lookup(reference.nameBytes, reference.index) === object,
+      slide = (afterBoundary) => {
+        if (afterBoundary && !live()) return null;
+        const value = this.nativeControls.projectSlideValue(instance, object, x, y);
+        if (value === null || value === object.value) return null;
+        setFESControlValue(object, value, 0);
+        const completion = this.publicEventStep(instance, object, 'SCRL_P').completion;
+        // Keep the field after the synchronous prefix, before any awaited remainder.
+        instance.scrollPosition = object.handle;
+        return completion;
+      },
+      focus = (afterBoundary) => {
+        if (afterBoundary && !live()) return null;
+        const completion = live()
+          ? this.publicEventStep(instance, object, 'FOCUS').completion
+          : null;
+        if (completion) return completion.then(() => (live() ? slide(true) : null));
+        return afterBoundary && !live() ? null : slide(afterBoundary);
+      };
+    return (afterBoundary) => {
+      if (afterBoundary && !live()) return null;
+      const previous = this.focused;
+      if (previous?.o === object) return slide(afterBoundary);
+      let completion = null;
+      if (previous && this.instances.includes(previous.s)) {
+        const oldRuntime = previous.s.runtime;
+        if (oldRuntime) {
+          const oldRecord = oldRuntime.world.objects.objects.get(previous.s.runtimeID),
+            oldLive = this.publicEventLive(previous.s, oldRuntime, oldRecord, previous.o),
+            oldReference = oldLive ? previous.s.collection.reference(previous.o) : null;
+          if (
+            oldReference &&
+            previous.s.collection.lookup(oldReference.nameBytes, oldReference.index) === previous.o
+          )
+            completion = this.publicEventStep(previous.s, previous.o, 'UNFOCUS').completion;
+        }
+      }
+      // Match the original focus commit even when UNFOCUS awaits.
+      this.focused = { s: instance, o: object };
+      if (completion) return completion.then(() => (live() ? focus(true) : null));
+      return focus(afterBoundary);
+    };
   }
   completePublicClick(instance, object) {
     const complete = this.publicClickOperation(instance, object);

@@ -689,3 +689,21 @@ Bare slide and other input actions retain their existing bodies. The whole
 control-hit click and repeated slide actions across a real await or pending tail
 still need their separate FIFO, focus-completion and cancellation contracts.
 Public knob, hover, drag and keyboard movement are not completed by this leaf.
+
+Normal owned SCROLL2/raw14 and SLIDER/raw15 public `click` now completes focus before
+sliding the captured hit at its entry coordinates. A FOCUS callback may redirect
+focus, but it does not redirect this control's slide. The action returns `true`
+at admission and uses the existing public completion tail for UNFOCUS, FOCUS and
+SCRL_P, including each callback's final caller restoration. Pending clicks wait
+as whole actions; deleting or replacing the captured object, or closing its owner,
+cancels the remaining action after a wait.
+
+The value still uses the existing decoded typed projection and notify0 write.
+`scrollPosition` commits after SCRL_P's synchronous prefix, before any awaited
+remainder; that remainder keeps later actions queued. A synchronous SCRL_P error
+therefore leaves the new value and the previous field; an asynchronous error
+occurs after the field commits. Finished or absent handlers are successful empty
+events. These public clicks do not send PUSH/RELEASE or perform native page-step,
+capture or release. Standalone slide and native input area lifetimes are unchanged;
+repeated standalone slide, knob, hover, drag and moveFocus await ordering remains
+outside this leaf, as do unknown slots, versions and unsupported types.

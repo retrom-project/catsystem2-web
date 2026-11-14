@@ -2558,3 +2558,353 @@ for (const profile of startupProfiles) {
     }
   });
 }
+
+function controlClickProgram(resetAfterFocus = true) {
+  return ascii(
+    [
+      '#DEFINE',
+      'SLIDER Slider[2]',
+      'SCROLL2 Scroll[2]',
+      'CPLANE Other',
+      '#OBJECT FILE POS2 PRI DISP ENABLE',
+      'Slider controls area:8 80 1 1',
+      'Scroll controls area:7 90 1 1',
+      '#OBJECT ENABLE',
+      'Slider[0] 0',
+      'Scroll[0] 0',
+      '#OBJECT SIZE POS DISP',
+      'Other 2,2 1,1 1',
+      '#START',
+      'Slider[1] page 10 110',
+      'Slider[1] pos 25',
+      'Scroll[1] page 10 110 20',
+      'Scroll[1] pos 30',
+      'wait 1',
+      'next IDLE',
+      '#IDLE',
+      'break',
+      '#Slider.FOCUS',
+      '@ getid 50',
+      'clipboard (:control-slider-focus)',
+      ...(resetAfterFocus ? ['@ pos 25'] : []),
+      'break',
+      '#Scroll.FOCUS',
+      '@ getid 51',
+      'clipboard (:control-scroll-focus)',
+      ...(resetAfterFocus ? ['@ pos 30'] : []),
+      'break',
+      '#Slider.SCRL_P',
+      '$40=_SCRL_P_',
+      '@ getid 52',
+      '@ getpos 60',
+      'clipboard (:control-slider-scroll)',
+      '$44=_SCRL_P_',
+      '$41=++$41',
+      'break',
+      '#Scroll.SCRL_P',
+      '$42=_SCRL_P_',
+      '@ getid 53',
+      '@ getpos 61',
+      'clipboard (:control-scroll-scroll)',
+      '$45=_SCRL_P_',
+      '$43=++$43',
+      'break',
+      '#Slider.INIT',
+      '@ page 10 110',
+      '@ pos 25',
+      'break',
+      '#FINISH',
+      'exit 0',
+      'break',
+    ].join('\n'),
+  );
+}
+function observeControlClickSource(t, h, root) {
+  const calls = [],
+    getters = [],
+    produced = [];
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command,
+    rows = {
+      'Slider.FOCUS': [0, 1, 50],
+      'Scroll.FOCUS': [1, 1, 51],
+      'Slider.SCRL_P': [0, 2, 52],
+      'Scroll.SCRL_P': [1, 2, 53],
+    };
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const label = root.executingLabel,
+        [index, line, slot] = rows[label],
+        spec = controlHitReferences[index],
+        object = root.collection.lookup(spec.nameBytes, 1),
+        arena = h.world.fesSources,
+        row = '@ getid ' + slot,
+        record = arena.programs.get(root.program.sourceKey).blocks[label][line - 1],
+        nameAddress = record.names.get(fesByteView(spec.nameBytes)),
+        rowAddress = record.copies.get(row);
+      assert.equal(object.nativeType, index === 0 ? 15 : 14);
+      assert.deepEqual(selection, spec);
+      assert.deepEqual(root.collection.reference(object), spec);
+      assert.deepEqual(root.nativeContext, { ...spec, current: 1 });
+      assert.equal(root.executingLine, line);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, spec.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(
+          Number.isInteger(address) &&
+            address >= arena.base &&
+            address + bytes.length + 1 <= arena.base + arena.used,
+        );
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      for (const token of ['@', 'getid'])
+        assert.equal(
+          getters.filter(
+            (entry) => entry.label === label && entry.line === line && entry.token === token,
+          ).length,
+          1,
+        );
+      produced.push({ label, reference: spec, current: 1, nameAddress, rowAddress, slot });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return {
+    check() {
+      assert.deepEqual(
+        calls.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.objectNameAddress,
+          entry.commandPointer,
+        ]),
+        produced.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.nameAddress,
+          entry.rowAddress,
+        ]),
+      );
+      assert.deepEqual(
+        produced.map((entry) => entry.label),
+        ['Slider.FOCUS', 'Slider.SCRL_P', 'Scroll.FOCUS', 'Scroll.SCRL_P'],
+      );
+      for (const entry of produced) assert.equal(h.words.get(entry.slot), entry.nameAddress);
+    },
+  };
+}
+async function declareControlClickSlider(h) {
+  const data = new Uint8Array(36),
+    view = new DataView(data.buffer);
+  data.set(ascii('Slider'));
+  view.setUint32(32, 2, true);
+  await h.world.sendEngine(
+    h.id,
+    h.world.main.id,
+    338,
+    0,
+    FES_OBJECT_DEFINITION_ORDER.indexOf('SLIDER'),
+    {
+      payload: {
+        string: (at) => text(data.subarray(at, data.indexOf(0, at))),
+        bytes: (at, length) => data.subarray(at, at + length),
+        load: (at) => view.getUint32(at, true),
+      },
+    },
+  );
+  await controlHitDefinition(h, 'FILE POS2 PRI DISP ENABLE', 'Slider controls area:8 80 1 1');
+  await controlHitDefinition(h, 'ENABLE', 'Slider[0] 0');
+  await controlHitNotify(h, 'INIT', 'Slider', 1);
+}
+for (const profile of startupProfiles) {
+  test(
+    'normal public control click waits for captured focus and complete scroll: ' + profile,
+    async (t) => {
+      const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+        controlImages = { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+        h = await environment(profile, controlClickProgram(), { controlImages });
+      let fresh;
+      try {
+        const root = await h.load();
+        for (let index = 40; index < 64; index++) h.words.set(index, 0);
+        await h.world.sendEngine(h.id, h.world.main.id, 333);
+        const fes = root.player,
+          objects = controlHitReferences.map((ref) => root.collection.lookup(ref.nameBytes, 1)),
+          other = root.collection.lookup(ascii('Other'), 0),
+          saved = frame(root),
+          rng = h.world.random.snapshot(),
+          previousScroll = root.scrollPosition,
+          observed = observeControlClickSource(t, h, root),
+          writes = [],
+          queued = [];
+        assert.deepEqual(
+          objects.map((o) => o.nativeType),
+          [15, 14],
+        );
+        assert.deepEqual(
+          objects.map((o) => [o.minimum, o.maximum, o.pageSize]),
+          [
+            [10, 110, 0],
+            [10, 110, 20],
+          ],
+        );
+        for (const [index, point] of [
+          [0, [110, 43]],
+          [1, [50, 16]],
+        ]) {
+          const hit = fes.hit(...point);
+          assert.strictEqual(hit.o, objects[index]);
+          assert.deepEqual(root.collection.reference(hit.o), controlHitReferences[index]);
+          assert.equal(controlTrack(h.world, root, hit.o).task.model.state.loaded, true);
+        }
+        const service = h.world.host.nativeClipboard;
+        assert.ok(service instanceof BrowserNativeClipboard);
+        service.clipboard = {
+          async writeText(value) {
+            writes.push(value);
+            if (value === 'control-slider-focus') {
+              // A real public focus redirect has no handlers and does not await its own tail.
+              fes.focus({ s: root, o: other });
+            } else if (value === 'control-slider-scroll') {
+              queued.push({
+                admitted: fes.click(50, 16),
+                focused: fes.focused.o,
+                value: objects[1].value,
+                field: root.scrollPosition,
+              });
+            } else if (value === 'control-scroll-focus') {
+              queued.push({ completedSlider: h.words.get(41) });
+            }
+          },
+        };
+        assert.strictEqual(fes.click(110, 43), true);
+        const immediate = {
+          focused: fes.focused.o,
+          value: objects[0].value,
+          field: root.scrollPosition,
+        };
+        await fes.flush();
+        // Independent decoded inputs: Slider N100/travel56/pixel27 ->48;
+        // Scroll full100/cap80/travel56/step70/scaled2600 ->37, with no minimum offset.
+        assert.deepEqual(
+          [h.words.get(60), h.words.get(61)],
+          [48, 37],
+          'control click must slide its captured hit after FOCUS completes',
+        );
+        observed.check();
+        assert.deepEqual(immediate, { focused: objects[0], value: 25, field: previousScroll });
+        assert.deepEqual(queued, [
+          { admitted: true, focused: other, value: 30, field: objects[0].handle },
+          { completedSlider: 1 },
+        ]);
+        assert.deepEqual(writes, [
+          '',
+          'control-slider-focus',
+          '',
+          'control-slider-scroll',
+          '',
+          'control-scroll-focus',
+          '',
+          'control-scroll-scroll',
+        ]);
+        assert.deepEqual([h.words.get(40), h.words.get(42)], [previousScroll, objects[0].handle]);
+        assert.deepEqual(
+          [h.words.get(44), h.words.get(45)],
+          objects.map((o) => o.handle),
+        );
+        assert.deepEqual([h.words.get(41), h.words.get(43)], [1, 1]);
+        assert.deepEqual(
+          objects.map((o) => o.value),
+          [48, 37],
+        );
+        assert.strictEqual(fes.focused.o, objects[1]);
+        assert.equal(root.scrollPosition, objects[1].handle);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.deepEqual(frame(root), saved);
+        assert.deepEqual(h.world.random.snapshot(), rng);
+
+        fresh = await freshCheckpoint(t, h, profile);
+        const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+          words = fresh.world.runtime.variableBank(fresh.world.main, false);
+        assert.deepEqual(frame(fRoot), {
+          ...saved,
+          executingLabel: undefined,
+          executingLine: undefined,
+        });
+        assert.deepEqual(
+          controlHitReferences.map((ref) => fRoot.collection.lookup(ref.nameBytes, 1).value),
+          [48, 37],
+        );
+        assert.deepEqual([words.get(41), words.get(43)], [1, 1]);
+        assert.equal(fRoot.scrollPosition, 0);
+        assert.equal(fRoot.player.publicPushPending.size, 0);
+        assert.equal(fresh.world.nativeEngine, undefined);
+
+        await root.notify('FINISH');
+        const completedWrites = writes.slice();
+        assert.strictEqual(fes.click(110, 75), true);
+        assert.equal(objects[0].value, 100);
+        assert.equal(root.scrollPosition, objects[0].handle);
+        assert.deepEqual(writes, completedWrites);
+        assert.equal(fes.publicPushPending.size, 0);
+        assert.equal(h.world.nativeEngine, undefined);
+      } finally {
+        await fresh?.dispose();
+        await h.close();
+      }
+
+      for (const boundary of ['replace', 'close']) {
+        const trial = await environment(profile, controlClickProgram(false), { controlImages });
+        try {
+          const root = await trial.load();
+          for (let index = 40; index < 64; index++) trial.words.set(index, 0);
+          await trial.world.sendEngine(trial.id, trial.world.main.id, 333);
+          const fes = root.player,
+            name = boundary === 'replace' ? 'Slider' : 'Scroll',
+            object = root.collection.lookup(ascii(name), 1),
+            initialValue = object.value,
+            initialScroll = root.scrollPosition,
+            point = boundary === 'replace' ? [110, 43] : [50, 16],
+            writes = [];
+          let replacement;
+          trial.world.host.nativeClipboard.clipboard = {
+            async writeText(value) {
+              writes.push(value);
+              if (boundary === 'replace' && value === 'control-slider-focus') {
+                await root.collection.remove(object);
+                await declareControlClickSlider(trial);
+                replacement = root.collection.lookup(ascii('Slider'), 1);
+                assert.notStrictEqual(replacement, object);
+                assert.notEqual(replacement.handle, object.handle);
+                assert.equal(
+                  controlTrack(trial.world, root, replacement).task.model.state.loaded,
+                  true,
+                );
+                assert.equal(fes.nativeControls.projectSlideValue(root, replacement, 110, 43), 48);
+                assert.equal(replacement.value, 25);
+              } else if (boundary === 'close' && value === 'control-scroll-focus') {
+                await trial.world.objects.release(trial.id);
+              }
+            },
+          };
+          assert.strictEqual(fes.click(...point), true);
+          await fes.flush();
+          assert.deepEqual(writes, ['', 'control-' + name.toLowerCase() + '-focus']);
+          assert.equal(object.value, initialValue);
+          assert.equal(root.scrollPosition, initialScroll);
+          assert.deepEqual([trial.words.get(41), trial.words.get(43)], [0, 0]);
+          assert.equal(fes.publicPushPending.size, 0);
+          if (replacement) assert.equal(replacement.value, 25);
+          else assert.equal(trial.world.objects.objects.has(trial.id), false);
+          assert.equal(trial.world.nativeEngine, undefined);
+        } finally {
+          await trial.close();
+        }
+      }
+    },
+  );
+}
