@@ -497,7 +497,24 @@ transport now preserve raw bytes; correct labels, source-name addresses and
 common commands do not establish that all earlier consumers selected the correct
 raw object name.
 
-Normal native input events resolve the existing collection nameBytes/signed-index reference directly. Pressed references, SYSKEY and TOUCH resource tuples, directional selections and control messages 27/28 reach the current object without a presentation-key lookup; the shared event field writes, label whitelist and callback timing remain unchanged. Bare FES input retains its explicit String boundary. Keyboard-name filtering and public key lookups remain a separate gate, and the normal DEFINE ASCII guard stays enabled.
+Normal native input events resolve the existing collection nameBytes/signed-index reference directly. Pressed references, SYSKEY and TOUCH resource tuples, directional selections and control messages 27/28 reach the current object without a presentation-key lookup; the shared event field writes, label whitelist and callback timing remain unchanged. Bare FES input retains its explicit String boundary. Keyboard membership uses the collection byte-view keys described above; remaining public key consumers retain their separate gates. The normal DEFINE ASCII guard stays enabled.
+
+The normal public FESInput.focus entry accepts the same {nameBytes, index} value.
+It resolves against its receiving Task's current collection, copies the selected
+object's owned reference into the existing focus state, and sends raw references
+through the real UNFOCUS/FOCUS event bridge. Distinct raw names with the same
+decoded key remain separate, and the signed index has no display-name or index0
+fallback. Equal raw values do not repeat events; null, empty and missing targets,
+including index-1, retain the existing clear-focus policy.
+
+The state commits before awaiting UNFOCUS and then FOCUS, with the existing
+Promise return resolving to undefined and event/flush errors preserved. Bare players keep their
+String lookup and event arguments. A fresh World restores the same value into a
+new Task/input/collection without replaying the FES, declarations, macros, bank
+expansion, resource commands or RNG; immutable KCS restoration may read its
+program once. This bounded identity bridge does not complete whole-focus FIFO,
+owner cancellation or rebinding across waits, other public key queries, native
+keyboard policy or non-ASCII DEFINE.
 
 Normal common numeric operands now use one raw byte getter and the existing
 collection's owned nameBytes/signed-index lookup. Known ASCII identifiers and

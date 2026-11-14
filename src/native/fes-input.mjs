@@ -272,8 +272,10 @@ export class FESInput {
     return handled;
   }
   async focus(key) {
-    const current = this.referenceObject(this.state.focus),
-      target = key == null ? null : this.instance.byKey.get(key),
+    const runtime = this.instance?.runtime,
+      current = this.referenceObject(this.state.focus),
+      target =
+        key == null ? null : runtime ? this.referenceObject(key) : this.instance.byKey.get(key),
       reference = target ? this.referenceFor(target) : null,
       old = this.state.focus;
     if (
@@ -286,8 +288,8 @@ export class FESInput {
     )
       return;
     this.state.focus = reference;
-    if (current) await this.event(current.key, 'UNFOCUS');
-    if (target) await this.event(target.key, 'FOCUS');
+    if (current) await this.event(runtime ? this.referenceFor(current) : current.key, 'UNFOCUS');
+    if (target) await this.event(runtime ? reference : target.key, 'FOCUS');
   }
   async consumeActiveReference(reference) {
     const player = this.player,
