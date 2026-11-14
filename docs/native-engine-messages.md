@@ -50,6 +50,27 @@ a null reply, leaving the Main42 GCALL word at its original sentinel. A differen
 parent can attach the new task in its own map while the ancestor retains the
 first branch. A missing parent leaves the allocated task unattached.
 
+## Explicit SDK task wrapper registration
+
+SDK 2.6.1.74 explicitly registers main `0x42` and `0x44`. They reuse the
+shared three-word and zero-word signatures respectively, with control 1 and
+a word result. Other unknown SDK slots remain unregistered even when the
+shared catalog defines a meaning.
+
+The create wrapper reads type, destination and formatter input from its three
+words. Message 1 returns a task pointer; only a non-null pointer writes its
+word at offset 4 to the GCALL result and triggers message 26. A null pointer
+leaves the result untouched. The formatter remains an opaque helper boundary.
+The SDK and Game private inline message-26 buffers differ without changing
+the public signature.
+
+The current-task wrapper reads no argument words and returns the call
+context's word at offset 4. These contracts establish SDK registration and
+reply validation; they do not establish the owner of shared virtual byte 8
+or a complete CST draw creation, frame or completion path. The independently
+reviewed SDK wrappers are `528E20` and `528FA0`, with getter `7D5CE0`; the Game
+counterparts are `65A430`, `65A5B0` and `69CD90`.
+
 ## Base and Top contracts
 
 Both Base builds implement registration 2, destruction request 3, kind 13,

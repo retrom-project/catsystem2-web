@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 300, "oracle": 149, "differential": 67 },
+    "counts": { "js": 301, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -274,6 +274,7 @@
         "tests/native-scene-history.test.mjs",
         "tests/native-screen-dirty.test.mjs",
         "tests/native-script-replacement.test.mjs",
+        "tests/native-sdk-task-abi.test.mjs",
         "tests/native-shared-abi.test.mjs",
         "tests/native-signature-records.test.mjs",
         "tests/native-signatures.test.mjs",
@@ -3628,8 +3629,8 @@
           "table": "main",
           "id": 66,
           "hexID": "0x42",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "task.create",
+          "catalogStatus": "recovered",
           "implementation": "unknown",
           "module": "src/native/task.mjs",
           "domain": 8,
@@ -3640,8 +3641,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
           ]
         },
         {
@@ -3668,8 +3668,8 @@
           "table": "main",
           "id": 68,
           "hexID": "0x44",
-          "semanticName": null,
-          "catalogStatus": "unknown",
+          "semanticName": "task.current",
+          "catalogStatus": "recovered",
           "implementation": "unknown",
           "module": "src/native/task.mjs",
           "domain": 8,
@@ -3680,8 +3680,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
           ]
         },
         {
@@ -49757,7 +49756,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "44fbfa1eba83114d28436e962b016b0efa1e4b58b3ae6357abc5345c2c0181d9",
+      "sourceSha256": "37bb1d1a9103918ce111dd2ac0084c289031c269ad3fa62b395963a1b972fbfe",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
