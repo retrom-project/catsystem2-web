@@ -133,18 +133,66 @@ export class FESPlayer {
     this.pending.add(wrapped);
   }
   enqueuePublicPush(operation) {
-    let completion;
-    completion = this.publicPushTail
-      .then(() => {
+    this.trackPublicCompletion(
+      this.publicPushTail.then(() => {
         if (this.error) throw this.error;
         return operation();
-      })
+      }),
+    );
+  }
+  trackPublicCompletion(promise) {
+    let completion;
+    completion = promise
       .catch((error) => {
         this.error = error;
       })
       .finally(() => this.publicPushPending.delete(completion));
     this.publicPushTail = completion;
     this.publicPushPending.add(completion);
+  }
+  publicEventLive(owner, expectedRuntime, expectedRecord, object = null) {
+    return (
+      expectedRuntime &&
+      this.instances.includes(owner) &&
+      owner.runtime === expectedRuntime &&
+      !expectedRuntime.closed &&
+      expectedRecord?.state !== 'releasing' &&
+      expectedRuntime.world.objects.objects.get(owner.runtimeID) === expectedRecord &&
+      expectedRecord?.implementation?.player === this &&
+      (!object || (!object.deleted && owner.collection.graph.get(object.handle) === object))
+    );
+  }
+  completePublicEvent(instance, object, event) {
+    const runtime = instance.runtime,
+      record = runtime.world.objects.objects.get(instance.runtimeID),
+      reference = instance.collection.reference(object),
+      live = () =>
+        this.publicEventLive(instance, runtime, record, object) &&
+        instance.collection.lookup(reference.nameBytes, reference.index) === object;
+    if (!live()) return false;
+    if (this.publicPushPending.size) {
+      this.enqueuePublicPush(() => live() && instance.dispatchEvent(object, event));
+      return true;
+    }
+    if (this.error) throw this.error;
+    let outcome;
+    const promise = instance.dispatchEvent(object, event, (value) => {
+      outcome = value;
+    });
+    if (outcome) {
+      if (outcome.failed) {
+        const error = outcome.error;
+        // This exact rejection has already been delivered synchronously. Keep
+        // any different unexpected failure visible through the usual flush.
+        promise.catch((reason) => {
+          if (reason !== error) this.error = reason;
+        });
+        throw error;
+      }
+      return outcome.handled;
+    }
+    this.trackPublicCompletion(promise);
+    return true;
   }
   async flush({ commandsOnly = false } = {}) {
     while (this.pending.size || (!commandsOnly && this.publicPushPending.size))
@@ -484,15 +532,7 @@ export class FESPlayer {
     return false;
   }
   async completePublicPush(instance, reference, runtime, record) {
-    const live = (owner, expectedRuntime, expectedRecord, object = null) =>
-      expectedRuntime &&
-      this.instances.includes(owner) &&
-      owner.runtime === expectedRuntime &&
-      !expectedRuntime.closed &&
-      expectedRecord?.state !== 'releasing' &&
-      expectedRuntime.world.objects.objects.get(owner.runtimeID) === expectedRecord &&
-      expectedRecord?.implementation?.player === this &&
-      (!object || (!object.deleted && owner.collection.graph.get(object.handle) === object));
+    const live = (...args) => this.publicEventLive(...args);
     if (!live(instance, runtime, record)) return;
     const object = instance.collection.lookup(reference.nameBytes, reference.index);
     if (

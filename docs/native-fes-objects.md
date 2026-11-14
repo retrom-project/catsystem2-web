@@ -515,3 +515,36 @@ expanded bytes through that reader, preserving optional-empty behavior, both
 remaining prepared-property, definition, motion and general String numeric
 producers stay separate. The collection's raw ownership and signed-index lookup
 are reused, with no new identity or saved-state format.
+
+## Normal public focus callbacks
+
+Normal public focus and FESInstance.event callbacks borrow the same event frame
+as native notifications. The semantic object's collection reference supplies its
+owned raw name, index and current word; display names and baseName aliases do not
+supply this identity. The existing event owner restores the caller's tuple,
+execution position and wait fields before reporting an internal settled outcome.
+
+When an event completes synchronously and no public operation is pending, its
+Boolean result, side effects and any thrown Error stay synchronous. A real
+decode or platform await retains its completion in the existing public input
+tail. Later normal public events use that same tail and check the captured
+instance, runtime, task record and semantic object before dispatch. No additional
+queue, context owner or checkpoint flag is created. Synchronous rejection is
+consumed only as the duplicate of the same Error already thrown to the caller;
+asynchronous failures remain visible through player.error and external flush.
+
+Focus still commits at its original synchronous position: an UNFOCUS prefix may
+run, then the focused target changes immediately. If that callback awaits, its
+remainder settles before the queued FOCUS begins. This does not mean the whole
+UNFOCUS callback finishes before the target changes. Pure synchronous keyboard
+focus movement retains its immediate counters and target selection.
+
+Native input and the public push operation continue to dispatch directly through
+the event owner. Their internal commands-only drain does not wait on its own
+public completion. An unfinished public callback remains covered by the existing
+snapshot guard; settled restoration recreates no Promise or callback.
+
+This closes only the public focus/event owner seam. Public press, click,
+right-click, slider and drag actions still require separate review of writes
+outside their callbacks, including PUSH/clickL/RELEASE and scroll position order.
+Bare FES callbacks retain their independent synchronous String contract.

@@ -556,8 +556,19 @@ export class FESInstance {
     return true;
   }
   event(o, event) {
+    if (
+      this.runtime &&
+      !this.player.publicEventLive(
+        this,
+        this.runtime,
+        this.runtime.world.objects.objects.get(this.runtimeID),
+        o,
+      )
+    )
+      return false;
     const labels = objectEventLabels(this, o, event).filter((label) => this.program.blocks[label]);
     if (!labels.length || this.finished !== null) return false;
+    if (this.runtime) return this.player.completePublicEvent(this, o, event);
     const saved = this.suspended,
       current = this.eventObject;
     this.suspended = null;
@@ -571,8 +582,11 @@ export class FESInstance {
     if (!jumped && !this.suspended) this.suspended = saved;
     return true;
   }
-  async invokeEventLabels(labels, { object, nameBytes, index, current }) {
-    if (this.finished !== null) return false;
+  async invokeEventLabels(labels, { object, nameBytes, index, current }, settled) {
+    if (this.finished !== null) {
+      settled?.({ handled: false, failed: false });
+      return false;
+    }
     const entry = this.runtime ? { nameBytes: nameBytes.slice(), index, current } : null,
       bindContext = () => {
         if (entry) this.nativeContext = entry;
@@ -603,7 +617,9 @@ export class FESInstance {
     this.eventObject = object;
     bindContext();
     let jumped = false,
-      handled = false;
+      handled = false,
+      failed = false,
+      failure;
     try {
       for (const label of labels) {
         if (!this.program.blocks[label]) continue;
@@ -629,6 +645,10 @@ export class FESInstance {
         }
         if (jumped || this.finished !== null) break;
       }
+    } catch (error) {
+      failed = true;
+      failure = error;
+      throw error;
     } finally {
       this.eventObject = saved.object;
       if (entry) this.nativeContext = saved.nativeContext;
@@ -640,18 +660,25 @@ export class FESInstance {
         this.decodePending = saved.decodePending;
         Object.assign(this, saved.waits);
       }
+      // Public adapters observe completion only after this sole owner restores
+      // the caller. The returned Promise does not expose synchronous settlement.
+      settled?.({ handled, failed, error: failure });
     }
     return handled;
   }
-  dispatchEvent(object, event) {
+  dispatchEvent(object, event, settled) {
     const reference = this.collection
       ? this.collection.reference(object)
       : { nameBytes: encodeCP932(object.baseName), index: object.index ?? 0 };
-    return this.invokeEventLabels(objectEventLabels(this, object, event), {
-      object,
-      ...reference,
-      current: reference.index,
-    });
+    return this.invokeEventLabels(
+      objectEventLabels(this, object, event),
+      {
+        object,
+        ...reference,
+        current: reference.index,
+      },
+      settled,
+    );
   }
   notify(event, name = null, index = 0) {
     const bytes = name == null ? null : labelBytes(name),
