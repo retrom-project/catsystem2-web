@@ -123,19 +123,63 @@ function world() {
   });
 }
 
-test('divided meshes sample their own VRAM page and retain data, coordinates and pixels after restore', async () => {
+test('divided meshes sample their own VRAM page and retain data, coordinates and pixels after restore', async (t) => {
   const first = world();
   let second;
   try {
     await first.initialize('main.kcs');
     const id = await first.objects.create({ kind: 2, parent: first.main.id }),
-      machine = first.main.machine;
+      machine = first.main.machine,
+      nativeTarget = first.nativeTaskID(id);
     machine.store(128, 1);
     [0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1].forEach((number, i) =>
       machine.store(132 + i * 4, floatBits(number)),
     );
-    await first.runtime.native('main', 0x1d3, [id, 128, 1], machine, first.main);
-    await first.runtime.native('main', 0x1d2, [id, 128], machine, first.main);
+    const capture = () =>
+        structuredClone({
+          objects: first.objects.snapshot(),
+          graphics: first.graphics.snapshot(),
+          resources: first.resourceCache.snapshot(),
+          runtime: first.runtime.snapshot(),
+          calls: [...first.runtime.calls],
+          random: first.random.snapshot(),
+        }),
+      unchanged = capture(),
+      args = [nativeTarget, 128, 1],
+      details = {
+        profile: first.profile,
+        table: 'main',
+        id: 0x1d3,
+        task: first.main.id,
+        script: first.main.name,
+        pc: machine.pc,
+        args,
+        source: structuredClone(machine.debug),
+      };
+    await assert.rejects(
+      async () =>
+        first.runtime.native('main', 0x1d3, args, machine, first.main, first.runtime.scheduler),
+      (error) => {
+        assert.equal(error.name, 'UnsupportedKCSNative');
+        assert.equal(
+          error.message,
+          `Unsupported ${details.profile}/main native 0x1d3 in ${details.script} at 0x${details.pc.toString(16)}`,
+        );
+        assert.deepEqual(error.details, details);
+        return true;
+      },
+    );
+    assert.deepEqual(capture(), unchanged);
+    // Host mesh setup uses the admitted engine message, without recovering VM467.
+    const packed = packNativeMesh(machine.bytes(128, 64), 1),
+      view = new DataView(packed.buffer, packed.byteOffset, packed.byteLength);
+    await first.sendEngine(id, first.main.id, 83, 1, 0, {
+      payload: {
+        load: (at) => view.getUint32(at, true),
+        bytes: (at, size) => packed.subarray(at, at + size),
+      },
+    });
+    await first.runtime.native('main', 0x1d2, [nativeTarget, 128], machine, first.main);
     await first.graphics.fill(2, 0, 2, 2, 0xff804020);
     const collect = async (current) => {
         const draws = [];
@@ -159,6 +203,17 @@ test('divided meshes sample their own VRAM page and retain data, coordinates and
         [-0.5, 1.5, 0xffffffff, 0, 1],
       ],
     );
+    t.diagnostic(
+      JSON.stringify({
+        stage: 'mesh-slot467 first draw and original pixel/vertex checks passed',
+        worldTarget: id,
+        nativeTarget,
+        packedBytes: packed.byteLength,
+        triangles: before[0].geometry.length,
+        frameSize: [before[0].frame.width, before[0].frame.height],
+        rgba: Array.from(before[0].frame.rgba),
+      }),
+    );
     second = world();
     await second.restore(structuredClone(first.snapshot()));
     assert.equal(second.graphics.get(id).state.coordMode, 128);
@@ -166,6 +221,13 @@ test('divided meshes sample their own VRAM page and retain data, coordinates and
     await first.graphics.fill(2, 0, 2, 2, 0xff112233);
     assert.equal((await collect(first))[0].frame.rgba[0], 17);
     assert.equal((await collect(second))[0].frame.rgba[0], 128);
+    t.diagnostic(
+      JSON.stringify({
+        stage: 'mesh-slot467 actual fresh restore and independent page checks passed',
+        restoredCoordinateMode: second.graphics.get(id).state.coordMode,
+        differentWorld: second !== first,
+      }),
+    );
   } finally {
     await first.close();
     await second?.close();
