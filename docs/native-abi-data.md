@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 791       | 82            | 19            | 117     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 792       | 82            | 19            | 116     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -78,6 +78,31 @@ immediate control return. Its original downstream copy/push/resume loop was
 not independently read for this recovery. Unproved pointer subfields and
 `resultWritten: null` remain unchanged, as do every other slot and the central
 unknown-admission guard.
+
+## SDK synchronous script-message registration
+
+SDK main `0x45` (`task.send`) is explicitly recovered for normal registered
+sender and receiver tasks from its own `0x529150` wrapper and complete
+`0x5d8f60` bank selector. It takes four words: target, message, wParam and lParam.
+Its Script message170 uses the registered kind12 mapping to canonical172;
+the Game's independently reviewed wrapper sends172 and calls `0x728ab0`.
+These are separate from the drawing-message mapping.
+
+Both wrappers clear the VM output word, send the four-word packet with flags1,
+conditionally restore the caller's bank, then copy the host-return scratch word
+to the VM output and return control1. Their shared `resultWritten` field is
+therefore `true`; all other parameter types, word widths, review and result
+fields remain unchanged. The selector's own zero/one return is discarded: it
+selects the existing receiver-keyed bank entry, preserving the prior selection
+on a missing entry, and does not supply the message result. In the normal World
+regression, a receiver that halts returns zero while the caller's successful
+bank selection returns one; the caller VM then reads its own private word11,
+with the receiver's private word22 preserved.
+
+This recovery reuses the accepted host transport and valid compiler-call
+contract. It does not establish foreign or uninitialized context, unregistered
+target, unwritten transport scratch, native cookie failure or invalid-memory
+behavior. Other unknown slots remain centrally blocked.
 
 ## SDK drawing flag registrations
 

@@ -2467,9 +2467,9 @@
       "5": 223,
       "6": 438,
       "7": 48,
-      "8": 531,
+      "8": 532,
       "9": 37,
-      "unassigned": 124
+      "unassigned": 123
     },
     "nativeNeedsReview": 305,
     "runtimeFiles": 489,
@@ -3690,21 +3690,19 @@
           "table": "main",
           "id": 69,
           "hexID": "0x45",
-          "semanticName": null,
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "semanticName": "task.send",
+          "catalogStatus": "recovered",
           "implementation": "unknown",
-          "module": "src/native/runtime.mjs",
-          "domain": null,
-          "route": "NativeRuntime/UnsupportedKCSNative",
-          "registration": null,
-          "features": [],
-          "dependencies": [],
+          "module": "src/native/task.mjs",
+          "domain": 8,
+          "route": "NativeRuntime/fallback/nativeTask",
+          "registration": "src/native/task.mjs:23",
+          "features": ["task-memory"],
+          "dependencies": ["src/native/task-memory.mjs"],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
           ]
         },
         {
@@ -49943,7 +49941,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "836bb9afca0d49f2a16d4df3ad81bc5dc0b9d79d6e238a6ce1e387c21b16d994",
+      "sourceSha256": "e530265199cf41a03a72561932a7b2b82c64eb3861057ae5527bb42dd2555beb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50008,7 +50006,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "7830008825885b6517959a33bc9684ffbf92a232cd722307978c139652040717",
+      "sourceSha256": "30f40205def0bd1abf270e7e065d50f3f701227e0d685a6140d8bec85be4c4f3",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

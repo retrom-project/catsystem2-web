@@ -319,3 +319,113 @@ test('SDK unknown main264 blocks its installed drawing handler without side effe
     await world.close({ flushFiles: false });
   }
 });
+
+for (const registration of [sdkRegistration, gameRegistration]) {
+  test(`${registration.profile} ordinary World task.send returns the receiver word and restores the caller bank`, async () => {
+    const wait = [
+        [37, 128],
+        [43, 0x47, 4],
+      ],
+      world = await dataWorld(registration.profile, {
+        'case.kcs': kcsProgram([[37, 8], [43, 0xd1, 4], ...wait, [59]]),
+        'receiver.kcs': kcsProgram([[37, 3], [37, 22], [43, 0x293, 8], ...wait, [59]]),
+        'caller.kcs': kcsProgram([
+          ...wait,
+          [37, 3],
+          [37, 11],
+          [43, 0x293, 8],
+          [37, [0x33, 132]],
+          [37, 0x33],
+          [37, 0x10203040],
+          [37, 0xfedcba98],
+          [43, 0x45, 16],
+          [37, 3],
+          [43, 0x292, 4],
+          [59],
+        ]),
+      });
+    try {
+      const bank = world.runtime.variableBank(world.main, false),
+        receiver = await world.spawnScript('receiver.kcs', {
+          parent: world.main.id,
+          initialExecute: false,
+        });
+      await world.tick();
+      assert.equal(receiver.status, 'waiting');
+      assert.deepEqual(receiver.machine.waiting, { kind: 'message', address: 128, native: 71 });
+      assert.equal(bank.context(receiver.id).words[3], 22);
+      const caller = await world.spawnScript('caller.kcs', {
+          parent: world.main.id,
+          initialExecute: true,
+        }),
+        receiverNative = world.nativeTaskID(receiver.id),
+        callerNative = world.nativeTaskID(caller.id),
+        trigger = [world.nativeTaskID(world.main.id), receiverNative, 0xfeed, 0xbeef],
+        beforeFrame = world.frame,
+        sent = [],
+        send = world.sendNativeEngine;
+      assert.equal(caller.status, 'waiting');
+      assert.equal(caller.context.variableBank, receiver.context.variableBank);
+      assert.equal(caller.context.variableBank, world.main.context.variableBank);
+      assert.notEqual(bank.context(caller.id).words, bank.context(receiver.id).words);
+      assert.equal(caller.machine.sp, 4096);
+      assert.equal(receiver.machine.sp, 4096);
+      trigger.forEach((word, i) => caller.machine.store(512 + i * 4, word));
+      world.sendNativeEngine = function (...args) {
+        const context = args[5];
+        sent.push([
+          ...args.slice(0, 5),
+          context.flags,
+          Array.from({ length: 4 }, (_, i) => context.payload.load(args[4] + i * 4)),
+        ]);
+        return send.apply(this, args);
+      };
+      assert.equal(
+        await world.sendEngine(caller.id, world.main.id, 172, 0, 512, { payload: caller.machine }),
+        0,
+      );
+      assert.equal(world.frame, beforeFrame);
+      assert.deepEqual(sent, [
+        [receiverNative, caller.id, 172, 0, 0, 1, [callerNative, 0x33, 0x10203040, 0xfedcba98]],
+      ]);
+      assert.deepEqual(
+        [128, 132, 136, 140].map((at) => receiver.machine.load(at)),
+        [callerNative, 0x33, 0x10203040, 0xfedcba98],
+      );
+      assert.deepEqual(
+        [128, 132, 136, 140].map((at) => caller.machine.load(at)),
+        trigger,
+      );
+      // Up-growing stack: wait result1, actual message result0, then caller private word11.
+      assert.equal(caller.machine.sp, 4108);
+      assert.deepEqual(
+        [4096, 4100, 4104].map((at) => caller.machine.load(at)),
+        [1, 0, 11],
+      );
+      assert.equal(receiver.machine.sp, 4100);
+      assert.equal(receiver.machine.load(4096), 1);
+      assert.equal(bank.selectedContext, caller.id);
+      assert.equal(bank.context(caller.id).words[3], 11);
+      assert.equal(bank.context(receiver.id).words[3], 22);
+      assert.equal(world.runtime.calls.get('main:69'), 1);
+      for (const task of [caller, receiver]) {
+        assert.equal(task.status, 'finished');
+        assert.equal(task.machine.halted, true);
+        assert.equal(task.machine.waiting, null);
+        assert.equal(world.objects.objects.get(task.id).kind, 12);
+        assert.equal(world.runtime.scheduler.tasks.get(task.id), task);
+      }
+      const entry = nativeABI(registration.profile).tables.main.entries[69];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'task.send');
+      assert.equal(entry.signature.argumentWords, 4);
+      assert.deepEqual(entry.controlCodes, [1]);
+      assert.deepEqual(entry.signature.result, { bits: 32, description: 'word', kind: 'bits' });
+      await world.tick();
+      for (const task of [caller, receiver])
+        assert.equal(world.objects.objects.get(task.id).scriptEnabled, 0);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+}

@@ -2514,7 +2514,7 @@ export const NATIVE_SEMANTICS = freeze({
           description: 'word',
           kind: 'bits',
         },
-        resultWritten: null,
+        resultWritten: true,
         review: 'declared',
       },
     },
