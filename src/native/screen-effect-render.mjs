@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // JS owns callback phases, captures, model ordering and submission.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
+import {
+  isNativeTexturedModel,
+  supportsNativeTexturedBounds,
+  nativeTexturedBounds,
+} from '../render/native-textured-geometry.mjs';
 import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
 import {
@@ -67,6 +72,7 @@ export class NativeScreenEffectRenderer {
     this.busy = 0;
     this.dirtyCurrent = new Int32Array(4);
     this.dirtyPrevious = new Int32Array(4);
+    this.dirtyQueryGates = [];
   }
   get stage() {
     return this.world.stageRenderer;
@@ -167,6 +173,7 @@ export class NativeScreenEffectRenderer {
       viewport = [0, 0, screen.currentWidth, screen.currentHeight],
       projection = this.world.graphics.projection();
     let callback = false;
+    this.dirtyQueryGates = [];
     // Dirty contribution scans registrations, independently of draw ranges.
     for (const task of this.world.graphics.tasks.values()) {
       const graph = task.graph;
@@ -184,6 +191,29 @@ export class NativeScreenEffectRenderer {
         const next = nativeColoredBounds(graph, task.state, projection);
         graph.cachedBounds.splice(0, 4, ...next);
         this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, next));
+      } else if (isNativeTexturedModel(graph)) {
+        const gate = (reason) => this.dirtyQueryGates.push({ recordID: task.record.id, reason });
+        if (!this.world.graphics.ownsTexturedBounds(task, graph)) {
+          gate('textured-query-unreviewed');
+          continue;
+        }
+        // The source F8 is consumed by the query; the derived F8 survives it.
+        if (graph.sourceBoundsDirty) {
+          graph.boundsDirty = true;
+          graph.sourceBoundsDirty = false;
+        }
+        if (graph.boundsDirty)
+          this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, graph.cachedBounds));
+        const layout = this.world.graphics.texturePages?.layout;
+        if (!supportsNativeTexturedBounds(graph, task.state, projection, layout)) {
+          gate('geometry-domain-unreviewed');
+          continue;
+        }
+        if (graph.boundsDirty) {
+          const next = nativeTexturedBounds(graph, task.state, projection, layout);
+          graph.cachedBounds.splice(0, 4, ...next);
+          this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, next));
+        } else gate('page-contribution-unreviewed');
       }
     }
     if (callback && !emptyRectangle(this.dirtyCurrent)) this.dirtyCurrent.set(viewport);
@@ -295,7 +325,11 @@ export class NativeScreenEffectRenderer {
             this.clear(0xff000000);
             await effect.render();
           }
-          status = await present({ stageTarget: this.gpu.primaryTarget, dirtyRectangle });
+          status = await present({
+            stageTarget: this.gpu.primaryTarget,
+            dirtyRectangle,
+            dirtyQueryGates: this.dirtyQueryGates.map((gate) => ({ ...gate })),
+          });
           presented = true;
         },
         { depthStencil: this.stage.screenDepth() },
@@ -311,7 +345,8 @@ export class NativeScreenEffectRenderer {
           for (const task of this.world.graphics.tasks.values()) {
             const graph = task.graph;
             if (
-              isNativeColoredModel(graph) &&
+              (isNativeColoredModel(graph) ||
+                this.world.graphics.ownsTexturedBounds(task, graph)) &&
               (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null)
             )
               graph.boundsDirty = false;
@@ -349,6 +384,7 @@ export class NativeScreenEffectRenderer {
       throw new Error('Invalid screen dirty RECT checkpoint');
     this.dirtyCurrent.set(state.dirtyCurrent);
     this.dirtyPrevious.set(state.dirtyPrevious);
+    this.dirtyQueryGates = [];
     this.releaseCaptures({ producer: false });
     this.captures = [...state.captures];
     this.prepared = state.prepared;

@@ -89,6 +89,10 @@ test('reviewed ABI services expose independent capabilities and serializable lay
     [sdk.graphics.textureCapsPolicy, game.graphics.textureCapsPolicy],
     ['virtual-d3d9', 'virtual-d3d9'],
   );
+  assert.deepEqual(
+    [sdk.graphics.texturedBoundsQuery, game.graphics.texturedBoundsQuery],
+    [null, 'model-dirty'],
+  );
   assert.deepEqual([sdk.messages.tilePlaneCommand, game.messages.tilePlaneCommand], [44, 46]);
   assert.deepEqual([sdk.layouts.memoryFile.wide, game.layouts.memoryFile.wide], [false, true]);
   assert.deepEqual(
@@ -113,6 +117,12 @@ test('reviewed ABI services expose independent capabilities and serializable lay
     const invalidTextureCaps = structuredClone(abi);
     invalidTextureCaps.graphics.textureCapsPolicy = 'unregistered';
     assert.throws(() => validateABI(invalidTextureCaps), /behavior data/);
+    const missingTexturedQuery = structuredClone(abi);
+    delete missingTexturedQuery.graphics.texturedBoundsQuery;
+    assert.throws(() => validateABI(missingTexturedQuery), /behavior data/);
+    const invalidTexturedQuery = structuredClone(abi);
+    invalidTexturedQuery.graphics.texturedBoundsQuery = 'unregistered';
+    assert.throws(() => validateABI(invalidTexturedQuery), /behavior data/);
     const missingCapability = structuredClone(abi);
     delete missingCapability.capabilities.steam;
     assert.throws(() => validateABI(missingCapability), /behavior data/);

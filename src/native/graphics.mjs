@@ -14,10 +14,13 @@ import { NativeImages, NATIVE_IMAGE_IDS, nativeImage } from './image.mjs';
 import { identity } from '../motion/matrix.mjs';
 import {
   nativeGraphGeometry,
-  rectangleTriangles,
-  transformNativeTriangles,
   isNativeColoredModel,
+  rectangleTriangles,
 } from '../render/native-geometry.mjs';
+import {
+  isNativeTexturedModel,
+  nativeTexturedGeometry,
+} from '../render/native-textured-geometry.mjs';
 import {
   createD3DContext,
   snapshotD3DContext,
@@ -30,20 +33,13 @@ import {
   setFESBaseImage,
 } from './fes-graphics.mjs';
 import { NativeView } from './view.mjs';
-import {
-  NATIVE_MESH_IDS,
-  nativeMesh,
-  decodeNativeMesh,
-  nativeMeshBounds,
-  nativeMeshGeometry,
-} from './mesh.mjs';
+import { NATIVE_MESH_IDS, nativeMesh, decodeNativeMesh, nativeMeshBounds } from './mesh.mjs';
 import {
   NativeTexturePages,
   negotiateNativeTextureLayout,
   virtualD3DTextureCaps,
   virtualD3DGuardBand,
 } from './texture-layout.mjs';
-import { divideNativeTriangles, nativeDivisionLayout } from './divided-model.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
@@ -393,6 +389,17 @@ export class NativeGraphics {
     this.tasks.set(record.id, task);
     return task;
   }
+  ownsTexturedBounds(task, graph = task.graph) {
+    return Boolean(
+      task instanceof NativeGraphicTask &&
+        task.graphics === this &&
+        task.record.kind === 2 &&
+        this.tasks.get(task.record.id) === task &&
+        this.world.profile &&
+        nativeABI(this.world.profile).graphics.texturedBoundsQuery === 'model-dirty' &&
+        isNativeTexturedModel(graph),
+    );
+  }
   async send(target, sender, id, w = 0, l = 0, payload = null, flags = 0) {
     return this.world.sendEngine(target, sender, id, w, l, {
       ...(payload ? { payload } : {}),
@@ -578,13 +585,19 @@ export class NativeGraphicTask {
   get input() {
     return this.world.inputFor?.(this.record.id);
   }
-  markBoundsDirty() {
-    if (isNativeColoredModel(this.graph)) this.graph.boundsDirty = true;
+  ownsTexturedBounds(graph = this.graph) {
+    return this.graphics.ownsTexturedBounds(this, graph);
+  }
+  markBoundsDirty(source = false) {
+    const graph = this.graph;
+    if (isNativeColoredModel(graph)) graph.boundsDirty = true;
+    else if (this.ownsTexturedBounds(graph))
+      graph[source ? 'sourceBoundsDirty' : 'boundsDirty'] = true;
   }
   unregisterGraph() {
     const graph = this.graph;
     if (
-      (graph?.callback || isNativeColoredModel(graph)) &&
+      (graph?.callback || isNativeColoredModel(graph) || this.ownsTexturedBounds(graph)) &&
       typeof graph.registrationEnabled === 'boolean'
     )
       this.setRegistrationEnabled(false);
@@ -592,7 +605,7 @@ export class NativeGraphicTask {
   setRegistrationEnabled(enabled) {
     const graph = this.graph;
     if (
-      (graph.callback || isNativeColoredModel(graph)) &&
+      (graph.callback || isNativeColoredModel(graph) || this.ownsTexturedBounds(graph)) &&
       typeof graph.registrationEnabled === 'boolean' &&
       typeof enabled === 'boolean' &&
       graph.registrationEnabled !== enabled
@@ -665,9 +678,10 @@ export class NativeGraphicTask {
       matrixExplicit: false,
       textureMatrixExplicit: false,
     };
-    if (isNativeColoredModel(this.graph)) {
+    if (isNativeColoredModel(this.graph) || this.ownsTexturedBounds()) {
       this.graph.boundsDirty = false;
       this.graph.cachedBounds = [0, 0, 0, 0];
+      if (this.ownsTexturedBounds()) this.graph.sourceBoundsDirty = false;
     }
     setMotionVector(this.graph.kx2, MOTION_ABI.base, [0, 0, 5000]);
     // A solid rectangle has one native model. Both selector values resolve
@@ -708,7 +722,7 @@ export class NativeGraphicTask {
     const setVector = (offset, values) => {
       if (this.graph) {
         setMotionVector(transformState(), offset, values);
-        this.markBoundsDirty();
+        this.markBoundsDirty(textureSelected());
       }
     };
     switch (id) {
@@ -736,6 +750,7 @@ export class NativeGraphicTask {
         await this.forwardInput(64, this.record.nativeID, id === 7 ? 1 : 0, context);
         return 0;
       case 41: {
+        this.unregisterGraph();
         const numbers = floats(l, 7);
         this.state.shapeWords = Array.from({ length: 8 }, (_, i) => load(l + i * 4));
         this.makeGraph({
@@ -954,7 +969,7 @@ export class NativeGraphicTask {
             transformState().set(bytes(l, 64), MOTION_ABI.matrix);
             this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
           } else setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
-          this.markBoundsDirty();
+          this.markBoundsDirty(id !== 67 && textureSelected());
           this.sync();
         }
         this.updateGraphInputArea();
@@ -964,7 +979,7 @@ export class NativeGraphicTask {
         if (this.graph) {
           transformState().set(bytes(l, 64), MOTION_ABI.matrix);
           this.graph[textureSelected() ? 'textureMatrixExplicit' : 'matrixExplicit'] = true;
-          this.markBoundsDirty();
+          this.markBoundsDirty(textureSelected());
         }
         this.sync();
         this.updateGraphInputArea();
@@ -974,6 +989,7 @@ export class NativeGraphicTask {
         if (this.graph) {
           const view = new DataView(this.graph.kx2.buffer);
           if (
+            this.ownsTexturedBounds() ||
             view.getUint32(MOTION_ABI.color, true) !== l >>> 0 ||
             this.state.colorOverride !== Boolean(w)
           )
@@ -1025,7 +1041,8 @@ export class NativeGraphicTask {
           const view = new DataView(this.graph.kx2.buffer),
             previous = view.getUint32(MOTION_ABI.color, true),
             next = (((l & 255) << 24) | (previous & 0xffffff)) >>> 0;
-          if (previous !== next || !this.state.colorOverride) this.markBoundsDirty();
+          if (this.ownsTexturedBounds() || previous !== next || !this.state.colorOverride)
+            this.markBoundsDirty();
           view.setUint32(MOTION_ABI.color, next, true);
         }
         this.state.colorOverride = true;
@@ -1340,30 +1357,12 @@ export class NativeGraphicTask {
     }
     if (inputGraph.mesh || inputGraph.vram) {
       this.graphics.initializeTextures();
-      let graph = inputGraph;
-      if (!graph.mesh) {
-        const source = graph.textureTransform.slice(),
-          offset = motionVector(graph.kx2, MOTION_ABI.vram),
-          position = motionVector(source, MOTION_ABI.pos).map((v, i) => Math.fround(v + offset[i]));
-        setMotionVector(source, MOTION_ABI.pos, position);
-        const layout = this.graphics.texturePages.layout,
-          division = nativeDivisionLayout(
-            layout.configurationSize,
-            layout.grid,
-            layout.textureCaps?.guardBand,
-          ),
-          triangles = transformNativeTriangles(
-            graph.triangles || rectangleTriangles(graph),
-            source,
-            { useEuler: !graph.textureMatrixExplicit },
-          );
-        graph = { ...graph, mesh: divideNativeTriangles(triangles, division, position) };
-      }
-      for (const item of nativeMeshGeometry(
-        graph,
+      for (const item of nativeTexturedGeometry(
+        inputGraph,
         state,
         this.graphics.projection(),
-        (vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
+        this.graphics.texturePages.layout,
+        (graph, vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
       )) {
         const frame =
           item.textureID === -1 ? WHITE : await this.graphics.meshTexture(item.textureID);
@@ -1392,8 +1391,9 @@ export class NativeGraphicTask {
   }
   restore(data) {
     if (
-      isNativeColoredModel(data.graph) &&
-      (typeof data.graph.boundsDirty !== 'boolean' ||
+      (isNativeColoredModel(data.graph) || this.ownsTexturedBounds(data.graph)) &&
+      ((this.ownsTexturedBounds(data.graph) && typeof data.graph.sourceBoundsDirty !== 'boolean') ||
+        typeof data.graph.boundsDirty !== 'boolean' ||
         !Array.isArray(data.graph.cachedBounds) ||
         data.graph.cachedBounds.length !== 4 ||
         !Array.from(data.graph.cachedBounds).every(

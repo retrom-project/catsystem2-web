@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 297, "oracle": 149, "differential": 67 },
+    "counts": { "js": 298, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -288,6 +288,7 @@
         "tests/native-string-bank.test.mjs",
         "tests/native-table-registration.test.mjs",
         "tests/native-texture-caps-default.test.mjs",
+        "tests/native-textured-bounds-default.test.mjs",
         "tests/native-token.test.mjs",
         "tests/native-unicode-calculations.test.mjs",
         "tests/native-view-rectangles.test.mjs",
@@ -2466,8 +2467,8 @@
       "unassigned": 117
     },
     "nativeNeedsReview": 305,
-    "runtimeFiles": 488,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 47, "7": 83, "8": 180, "9": 55 },
+    "runtimeFiles": 489,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 180, "9": 55 },
     "fileNeedsReview": 72,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -49754,7 +49755,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "60f9888bc9530be2fa4ea8364ca720aee3a58b1d2319eb4a6f57f64eb18204a5",
+      "sourceSha256": "44fbfa1eba83114d28436e962b016b0efa1e4b58b3ae6357abc5345c2c0181d9",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49767,7 +49768,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.76.mjs",
-      "sourceSha256": "88853a52fc59a8667abc20f6138dde1273903314596fbdb0b7c2fec86d04bfdd",
+      "sourceSha256": "a49a5034950ab68af697610f1373865cfe2eacbe32d29b3ce5757bc240c60293",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49793,7 +49794,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "13689ba15a56dc61f057e620f13bf9afa7613c1fb7b310c11aeffd10256ecbdc",
+      "sourceSha256": "171358904efb20c2ca47cae9070f10d91e516e0fb44d4d140be0457a6ba8a570",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52840,7 +52841,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "acf03556bb3ba167d9f27b58fcf476f0602200573c09d77ae0fb4f06ec3286df",
+      "sourceSha256": "8e551647441b17669d4442d33198df3ede934e7dd08827a188d7861c175bcc05",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -52850,42 +52851,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 397,
+          "line": 404,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
           "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 780,
+          "line": 795,
           "method": "getNativeFeature",
           "feature": "plane-movie-projection",
           "review": "traced",
           "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 1230,
+          "line": 1247,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
           "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 1239,
-          "method": "sendNativeEngine",
-          "feature": null,
-          "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
-        },
-        {
-          "line": 1252,
-          "method": "sendNativeEngine",
-          "feature": null,
-          "review": "traced",
-          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
-        },
-        {
-          "line": 1255,
+          "line": 1256,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
@@ -52899,7 +52886,21 @@
           "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 1313,
+          "line": 1272,
+          "method": "sendNativeEngine",
+          "feature": null,
+          "review": "traced",
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
+        },
+        {
+          "line": 1286,
+          "method": "sendNativeEngine",
+          "feature": null,
+          "review": "traced",
+          "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
+        },
+        {
+          "line": 1330,
           "method": "sendEngine",
           "feature": null,
           "review": "traced",
@@ -54586,7 +54587,7 @@
     },
     {
       "file": "src/native/screen-effect-render.mjs",
-      "sourceSha256": "1028dbabcd6e58d4718187df48b913b20f2330a96c82ad03a10fe1ec9037ca1c",
+      "sourceSha256": "9623b3e7a62cbfb899dab589a98494d24ac68cdd8a08481c968f78979b008392",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -57226,6 +57227,19 @@
     {
       "file": "src/render/native-text.mjs",
       "sourceSha256": "1b10682e694077012e067ef912aa2fca3c4a6317a10ff3bf3120114af4883b76",
+      "domain": 6,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
+      "file": "src/render/native-textured-geometry.mjs",
+      "sourceSha256": "74465d22cb7d2729dcac9c1c23eabe588ebb5cdd43629acb2deadec57fd8ba5c",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

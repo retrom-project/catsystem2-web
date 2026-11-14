@@ -190,7 +190,36 @@ The short default-entry tests exercise actual PLANE creation, rendered triangle
 coordinates, UVs and page identity, plus CPU-owned source pixels and fresh state.
 Their GL API recorder has no rasterizer: checkpoint readback verifies only bytes
 explicitly uploaded to its known backing, not native GPU pixel equivalence.
-Textured dirty bounds still require the distinct source/derived F8/FC and page
-dirty-owner proofs; this caps change does not enable those paths or unknown ABIs.
+The caps policy alone enables neither textured dirty queries nor unknown ABIs.
+Page dirty ownership remains independently pending.
 The SDK max/guard input policy does not establish complete native factory,
 clipping or UV equivalence from the Game tests.
+
+The Game ABI separately registers `graphics.texturedBoundsQuery: 'model-dirty'`;
+the SDK explicitly registers `null` pending its own query and owner proof.
+Only the registered kind2 SimplePlane task owns this query policy; text tasks'
+composed planes retain their existing drawing contract and remain unreviewed.
+Ordinary Game PLANE models keep distinct source and derived dirty markers and
+a derived cached RECT. Source transform writes mark the source; geometry/MOT
+writes and the native color setter mark the derived model, including repeated
+identical color assignments. Source vertex rebuilds retain their existing
+geometry path rather than being treated as an invented F8 writer. An enabled
+query promotes a source marker into the derived marker and immediately clears
+only the source. It unions the old derived RECT, calculates the new bounds from
+the same divided/projected triangles used by drawing, and updates the RECT.
+The derived marker survives queries and failed or paused presentation; successful
+presentation retires that marker even for disabled models, retaining the RECT.
+Known enable changes and normal3/41/68 removal query under the old enable flag.
+The current checkpoint copies both markers, the RECT and the separate transform
+buffers without replaying declarations, bank/macro services or MOT.
+
+This calculation covers ordinary finite2D PLANE geometry with the default screen
+projection and its owned texture layout. Unsupported geometry keeps its owner
+and cached RECT and reports `geometry-domain-unreviewed`. A clean derived marker
+does not prove a clean page: `page-contribution-unreviewed` records that gap,
+without guessing a page contribution or writing the cached RECT. These
+`dirtyQueryGates` are per-query diagnostics passed to presentation, never graph
+or checkpoint fields. Actual full drawing and presentation continue in every
+case. SDK query ownership, per-page dirty upload/clear/present retirement and
+complete textured branch acceptance remain separate gates. The short recorder
+cases establish API, geometry and owner behavior, not native raster equivalence.

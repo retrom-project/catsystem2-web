@@ -344,6 +344,7 @@ export default {
   },
   graphics: {
     textureCapsPolicy: 'virtual-d3d9',
+    texturedBoundsQuery: null,
     resizeRGB24: false,
     compositeWideBase: false,
     preserveRGB24: true,
