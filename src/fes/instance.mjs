@@ -819,8 +819,6 @@ export class FESInstance {
       return this.nativeCommandReturn(this.runtime.restoreMove());
     if (this.runtime && head === 'btnsimulate')
       return this.nativeCommandReturn(this.runtime.buttonSimulate(args));
-    if (this.runtime && head === 'lockactive')
-      return this.nativeCommandReturn(this.runtime.lockActive(args));
     if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
       return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
@@ -1378,7 +1376,7 @@ export class FESInstance {
       default: {
         if (this.runtime) {
           const { selection, object } = this.runtime.commandHead(words[0]);
-          if (!object) return this.nativeCommandReturn(this.runtime.commonHead(words[0]));
+          if (!object) return this.nativeCommandReturn(this.runtime.commonHead(words[0], args));
           if (args[0] === undefined) return {};
           const verb = this.argumentBytes(args[0]);
           const source = this.program.sourceKey

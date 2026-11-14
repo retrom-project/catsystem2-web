@@ -116,9 +116,20 @@ for (const [profile, count, additions] of [
       assert.equal(entry.keyword, word);
       assert.equal(
         entry.semanticLink,
-        word === 'resetactive' ? 'fes.reference.cn.resetactive' : null,
+        word === 'resetactive'
+          ? 'fes.reference.cn.resetactive'
+          : word === 'lockactive'
+            ? 'fes.reference.cn.lockactive'
+            : null,
       );
-      assert.equal(entry.dispatchBinding, word === 'resetactive' ? 'active-reference-null' : null);
+      assert.equal(
+        entry.dispatchBinding,
+        word === 'resetactive'
+          ? 'active-reference-null'
+          : word === 'lockactive'
+            ? 'active-lock-int32'
+            : null,
+      );
       assert.ok(Object.isFrozen(entry));
       assert.ok(Object.isFrozen(entry.nameCrossrefs));
       if (entry.nameCrossrefs.length) linked++;
@@ -140,8 +151,11 @@ for (const [profile, count, additions] of [
     ]);
 
     const ownReview = registration.reviewedBindings[0],
-      otherReview = (profile === sdk ? gameRegistration : sdkRegistration).reviewedBindings[0];
-    assert.equal(registration.reviewedBindings.length, 1);
+      ownLockReview = registration.reviewedBindings[1],
+      otherRegistration = profile === sdk ? gameRegistration : sdkRegistration,
+      otherReview = otherRegistration.reviewedBindings[0],
+      otherLockReview = otherRegistration.reviewedBindings[1];
+    assert.equal(registration.reviewedBindings.length, 2);
     assert.ok(Object.isFrozen(registration.reviewedBindings));
     assert.deepEqual(FES_COMMON_HEAD_BINDING_REVIEWS[ownReview], {
       binding: 'active-reference-null',
@@ -164,6 +178,38 @@ for (const [profile, count, additions] of [
     assert.deepEqual(
       present.entry.nameCrossrefs,
       query(profile, bytes('resetactive')).entry.nameCrossrefs,
+    );
+
+    assert.deepEqual(FES_COMMON_HEAD_BINDING_REVIEWS[ownLockReview], {
+      binding: 'active-lock-int32',
+      operandGetters: 1,
+      returnWord: -3,
+      recordCode: profile === sdk ? 25 : 22,
+      scalar: 'signed-int32',
+      defaultValue: 0,
+    });
+    assert.strictEqual(
+      query(sdk, bytes('lockactive')).entry,
+      query(game, bytes('lockactive')).entry,
+    );
+    const lockPresent = lookupFESCommonHead(unqualified, bytes('lockactive'));
+    assert.equal(lockPresent.kind, 'present');
+    assert.equal(lockPresent.entry.semanticLink, null);
+    assert.equal(lockPresent.entry.dispatchBinding, null);
+    unqualified.reviewedBindings = [ownReview];
+    assert.equal(
+      lookupFESCommonHead(unqualified, bytes('resetactive')).entry.dispatchBinding,
+      'active-reference-null',
+    );
+    assert.equal(lookupFESCommonHead(unqualified, bytes('lockactive')).entry.dispatchBinding, null);
+    unqualified.reviewedBindings = [ownLockReview];
+    assert.equal(
+      lookupFESCommonHead(unqualified, bytes('lockactive')).entry.dispatchBinding,
+      'active-lock-int32',
+    );
+    assert.equal(
+      lookupFESCommonHead(unqualified, bytes('resetactive')).entry.dispatchBinding,
+      null,
     );
 
     const rejects = (change) => {
@@ -207,6 +253,15 @@ for (const [profile, count, additions] of [
     });
     rejects((value) => {
       value.reviewedBindings = [ownReview, ownReview];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [otherLockReview];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [ownLockReview, ownLockReview];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [ownReview, otherLockReview];
     });
   });
 }

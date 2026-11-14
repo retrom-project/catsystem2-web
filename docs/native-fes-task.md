@@ -1224,6 +1224,17 @@ meaning. An empty registry review list leaves the word present but unbound;
 unknown or wrong-registry review IDs are rejected. No profile-name branch
 selects the runtime action.
 
+`lockactive` also uses this route and the separately qualified
+`active-lock-int32` meaning. Its existing optional raw Number reader retains
+both 1024-byte safety boundaries, empty/missing zero and ignored trailing
+operands. The original working-row arguments reach that reader after the two
+head getters and object probe. Numeric `@` keeps the notification's real current
+word, independently of the head's default index or object normalization. Game
+and SDK independently record scalar action22/action25. The existing active-lock
+FIFO and single checkpoint owner remain unchanged; opaque return-3 reaches the
+existing queue drain before the following row, while resetactive's zero return
+still does not flush. Independent String and bare FES domains are unchanged.
+
 Other early global/common routes, whole-row grammar, remaining common bindings,
 conditional/skip control flow and unproven native overflow domains remain
 separate work. The four VM tables, ABI registration/signature statuses and

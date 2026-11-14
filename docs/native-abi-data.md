@@ -111,18 +111,29 @@ only the matching registry's reviewed evidence may qualify a shared meaning.
 An explicit empty list keeps every member present but unbound. Missing lists,
 unknown reviews, duplicates and reviews from the other registry are rejected.
 
-The one reviewed shared meaning is `active-reference-null`, linked to
+One reviewed shared meaning is `active-reference-null`, linked to
 `fes.reference.cn.resetactive`. Separate Game and SDK review records preserve
 their native codes 11 and 14, declared 36-byte reference size and a NULL payload,
 zero operand getters and
-zero return. Both query results reuse one qualified descriptor; the other 133
+zero return. Both query results reuse one qualified descriptor; the other 132
 keywords retain pending semantic links and unbound dispatch. SDK `execjs`,
 `endjs` and `calljs` remain known members regardless of their cross-references.
+
+The second reviewed shared meaning is `active-lock-int32`, linked to
+`fes.reference.cn.lockactive`. Its independent Game/SDK reviews retain one
+optional operand getter, signed int32 scalar/default zero, native record codes
+22/25 and opaque return-3. The original raw Number reader and active-lock FIFO
+remain the consumer; no physical-code translation or checkpoint owner is added.
+Each registry explicitly admits its own review, so omitting either qualification
+leaves that keyword present and unbound. Runtime review identifiers contain no
+original executable address.
 
 The normal consumer queries this data only after the raw object probe misses
 and token0 has passed through its second getter. Reviewed `resetactive` queues
 the existing NULL semantic record and returns zero without flushing or running
-a whole-row evaluator. Known unbound members and absent members retain separate
+a whole-row evaluator. Reviewed lockactive passes the original operand vector
+to its existing reader and preserves return-3 for the queue drain. Known unbound
+members and absent members retain separate
 explicit pending gates. Other early routes, whole-row grammar and
 conditional/skip remain separate work; no VM slot or capability is enabled.
 

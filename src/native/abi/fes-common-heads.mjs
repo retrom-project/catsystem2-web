@@ -176,9 +176,15 @@ const commonBindings = freeze({
     keyword: 'resetactive',
     semanticLink: 'fes.reference.cn.resetactive',
   },
+  'active-lock-int32': {
+    keyword: 'lockactive',
+    semanticLink: 'fes.reference.cn.lockactive',
+  },
 });
 const sdkResetReview = 'sdk74-common-resetactive-null',
-  gameResetReview = 'game76-common-resetactive-null';
+  gameResetReview = 'game76-common-resetactive-null',
+  sdkLockReview = 'sdk74-common-lockactive-int32',
+  gameLockReview = 'game76-common-lockactive-int32';
 export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
   [sdkResetReview]: {
     binding: 'active-reference-null',
@@ -196,6 +202,22 @@ export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
     referenceBytes: 36,
     reference: 'null',
   },
+  [sdkLockReview]: {
+    binding: 'active-lock-int32',
+    operandGetters: 1,
+    returnWord: -3,
+    recordCode: 25,
+    scalar: 'signed-int32',
+    defaultValue: 0,
+  },
+  [gameLockReview]: {
+    binding: 'active-lock-int32',
+    operandGetters: 1,
+    returnWord: -3,
+    recordCode: 22,
+    scalar: 'signed-int32',
+    defaultValue: 0,
+  },
 });
 const boundEntries = freeze(
   Object.fromEntries(
@@ -210,8 +232,8 @@ const boundEntries = freeze(
   ),
 );
 const reviewRegistrations = freeze([
-  { additions: sdkAdditions, reviews: [sdkResetReview] },
-  { additions: gameAdditions, reviews: [gameResetReview] },
+  { additions: sdkAdditions, reviews: [sdkResetReview, sdkLockReview] },
+  { additions: gameAdditions, reviews: [gameResetReview, gameLockReview] },
 ]);
 
 export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
@@ -221,7 +243,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 122,
     complete: true,
     comparison: 'byte-exact-cstring',
-    reviewedBindings: [sdkResetReview],
+    reviewedBindings: [sdkResetReview, sdkLockReview],
   },
   game: {
     shared: sharedNames,
@@ -229,7 +251,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 131,
     complete: true,
     comparison: 'byte-exact-cstring',
-    reviewedBindings: [gameResetReview],
+    reviewedBindings: [gameResetReview, gameLockReview],
   },
 });
 

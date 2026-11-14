@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
+import { fesLabelPayload, fesNotificationMemory } from './fixtures/default-fes-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
@@ -28,9 +28,9 @@ const utf8 = (s) => new TextEncoder().encode(s),
     'a.RELEASE_L': '$15=++$15',
     'b.FOCUS': '$12=++$12',
   };
-async function open(profile, overrides = {}, lateSlots = []) {
+async function open(profile, overrides = {}, lateSlots = [], ownDeclarations = declarations) {
   const source =
-      declarations +
+      ownDeclarations +
       Object.entries({ ...labels, ...overrides })
         .map(([label, body]) => `#${label}\n${body}\nbreak\n`)
         .join(''),
@@ -531,9 +531,11 @@ for (const profile of profiles) {
         beforeRealLookup = lookups.length;
       await notify(h, 'PARAM');
       assert.deepEqual(getters.slice(beforeRealGetter), [
+        { source: utf8('lockactive'), result: utf8('lockactive') },
+        { source: utf8('lockactive'), result: utf8('lockactive') },
         { source: utf8('$str7'), result: utf8('known[(++$10)-1]') },
       ]);
-      assert.deepEqual(numeric.slice(beforeRealNumeric), [utf8('known[(++$10)-1]')]);
+      assert.deepEqual(numeric.slice(beforeRealNumeric), [utf8('-1'), utf8('known[(++$10)-1]')]);
       assert.deepEqual(lookups.slice(beforeRealLookup), [{ nameBytes: knownName, index: 0 }]);
       assert.equal(bankCalls.filter((s) => s === '$str7').length, 1);
       assert.equal(bankCalls.includes('$str8'), false);
@@ -580,7 +582,7 @@ for (const profile of profiles) {
       });
       // This saved source row has a literal operand; SCRIPT configuration is not a new snapshot owner.
       await notify(restored, 'KNOWN');
-      assert.deepEqual(restoredNumeric, [utf8('known[(++$10)-1]')]);
+      assert.deepEqual(restoredNumeric, [utf8('-1'), utf8('known[(++$10)-1]')]);
       assert.deepEqual(restoredLookups, [{ nameBytes: knownName, index: 1 }]);
       assert.equal(next.global(10), 2);
       assert.equal(next.global(30), 2);
@@ -592,6 +594,177 @@ for (const profile of profiles) {
     } finally {
       await restored?.world.close();
       await h.world.close();
+    }
+  });
+}
+
+for (const profile of profiles) {
+  test(`${profile}: lockactive head keeps object priority and binds the reviewed int32 common`, async (t) => {
+    let shadow, h, restored;
+    try {
+      shadow = await open(
+        profile,
+        { COLLISION: 'lockactive getid 40', ALIAS_COLLISION: 'LOCK_ALIAS getid 41' },
+        [],
+        declarations.replace('#DEFINE\n', '#DEFINE\nCPLANE lockactive\n'),
+      );
+      const shadowObject = shadow.get('lockactive'),
+        shadowCalls = [],
+        shadowCommands = [],
+        shadowLock = shadow.runtime.lockActive,
+        shadowCommand = shadow.runtime.command;
+      assert.ok(shadowObject);
+      shadow.world.configuration.scriptReplacements.add(utf8('LOCK_ALIAS'), utf8('lockactive'));
+      t.mock.method(shadow.runtime, 'lockActive', function (args) {
+        shadowCalls.push(args.map((value) => value.slice()));
+        return shadowLock.call(this, args);
+      });
+      t.mock.method(shadow.runtime, 'command', function (verb, selection, args, context) {
+        if (verb === 'getid')
+          shadowCommands.push({
+            nameBytes: selection.nameBytes.slice(),
+            index: selection.index,
+            commandBytes: context.commandBytes.slice(),
+            commandPointer: context.commandPointer,
+            nameAddress: context.objectNameAddress,
+          });
+        return shadowCommand.call(this, verb, selection, args, context);
+      });
+      const expectNameAddress = (at, slot, row) => {
+        const call = shadowCommands[at];
+        assert.deepEqual(call.nameBytes, utf8('lockactive'));
+        assert.equal(call.index, 0);
+        assert.deepEqual(call.commandBytes, utf8(row));
+        assert.equal(shadow.instance.global(slot), call.nameAddress);
+        assert.equal(shadow.world.fesSources.string(call.nameAddress), 'lockactive');
+        assert.equal(shadow.world.fesSources.string(call.commandPointer), row);
+      };
+      await notify(shadow, 'COLLISION');
+      assert.equal(shadowCommands.length, 1);
+      expectNameAddress(0, 40, 'lockactive getid 40');
+      await notify(shadow, 'ALIAS_COLLISION');
+      assert.equal(shadowCommands.length, 2);
+      expectNameAddress(1, 41, 'LOCK_ALIAS getid 41');
+      assert.deepEqual(shadowCalls, []);
+      assert.equal(shadow.input.state.activeLock, 0);
+      await shadow.world.close();
+      shadow = null;
+
+      // This independent World has never declared the common keyword as a family.
+      h = await open(
+        profile,
+        {
+          'b.COMMON': 'LOCK_COMMON $str7 $str8\n$35=++$35',
+          'b.LITERAL': 'lockactive @+(++$10)\n$35=++$35',
+        },
+        [7, 8, 9],
+      );
+      assert.equal(h.get('lockactive'), null);
+      const root = h.instance,
+        bank = h.world.runtime.stringBank(h.world.objects.objects.get(h.world.main.id)),
+        replacements = h.world.configuration.scriptReplacements,
+        getters = [],
+        numeric = [],
+        records = [],
+        returns = [],
+        argument = root.argumentBytes,
+        operand = root.operandValue,
+        lock = h.runtime.lockActive,
+        commandReturn = root.nativeCommandReturn;
+      bank.setBytes(7, utf8('VALUE'));
+      bank.setBytes(8, utf8('++$43'));
+      bank.setBytes(9, new Uint8Array());
+      replacements.add(utf8('LOCK_COMMON'), utf8('lockactive'));
+      replacements.add(utf8('VALUE'), utf8('@+(++$10)'));
+      t.mock.method(root, 'argumentBytes', function (bytes) {
+        const result = argument.call(this, bytes);
+        getters.push({ source: text(bytes), result: text(result) });
+        return result;
+      });
+      t.mock.method(root, 'operandValue', function (bytes) {
+        numeric.push({ bytes: text(bytes), current: this.system('@') });
+        return operand.call(this, bytes);
+      });
+      t.mock.method(h.runtime, 'lockActive', function (args) {
+        const before = h.input.state.activeLock,
+          result = lock.call(this, args);
+        records.push({
+          before,
+          after: h.input.state.activeLock,
+          value: structuredClone(this.pendingRecords.at(-1)),
+          result,
+        });
+        return result;
+      });
+      t.mock.method(root, 'nativeCommandReturn', function (value) {
+        returns.push(value | 0);
+        return commandReturn.call(this, value);
+      });
+      const currentPacket = fesNotificationMemory(utf8('COMMON'), utf8('b'), 1);
+      await h.world.sendEngine(h.id, h.world.main.id, 337, 64, 0, { payload: currentPacket });
+      assert.equal(currentPacket.stringReads, 0);
+      assert.deepEqual(getters, [
+        { source: 'LOCK_COMMON', result: 'lockactive' },
+        { source: 'LOCK_COMMON', result: 'lockactive' },
+        { source: '$str7', result: '@+(++$10)' },
+      ]);
+      assert.deepEqual(numeric, [
+        { bytes: '-1', current: 1 },
+        { bytes: '@+(++$10)', current: 1 },
+      ]);
+      assert.deepEqual(records, [
+        { before: 0, after: 0, value: { operation: 'active-lock', value: 2 }, result: -3 },
+      ]);
+      assert.deepEqual(returns, [-3]);
+      assert.equal(root.global(10), 1);
+      assert.equal(root.global(35), 1);
+      assert.equal(root.global(43), 0);
+      assert.equal(h.input.state.activeLock, 2);
+      assert.deepEqual(h.runtime.pendingRecords, []);
+      assert.equal(root.nativeQueuePending, false);
+      for (const label of ['UNLOCK', 'EMPTY']) {
+        const first = numeric.length;
+        await notify(h, label);
+        assert.deepEqual(
+          numeric.slice(first).map((entry) => entry.bytes),
+          ['-1'],
+        );
+        assert.equal(h.input.state.activeLock, 0);
+        assert.deepEqual(h.runtime.pendingRecords, []);
+      }
+      await notify(h, 'LOCK');
+      assert.equal(h.input.state.activeLock, -2147483648);
+      assert.deepEqual(h.runtime.pendingRecords, []);
+      assert.equal(root.nativeQueuePending, false);
+      const handles = root.collection.objects.map((object) => object.handle),
+        rng = h.world.random.snapshot();
+      restored = await fresh(h);
+      assert.deepEqual(restored.reads, ['case.kcs']);
+      assert.deepEqual(
+        restored.instance.collection.objects.map((object) => object.handle),
+        handles,
+      );
+      assert.deepEqual(restored.world.random.snapshot(), rng);
+      assert.equal(restored.input.state.activeLock, -2147483648);
+      assert.equal(restored.instance.global(10), 1);
+      assert.equal(restored.instance.global(35), 1);
+      assert.deepEqual(restored.instance.runtime.pendingRecords, []);
+      const packet = fesNotificationMemory(utf8('LITERAL'), utf8('b'), 1);
+      await restored.world.sendEngine(restored.id, restored.world.main.id, 337, 64, 0, {
+        payload: packet,
+      });
+      assert.equal(packet.stringReads, 0);
+      assert.equal(restored.input.state.activeLock, 3);
+      assert.equal(restored.instance.global(10), 2);
+      assert.equal(restored.instance.global(35), 2);
+      assert.deepEqual(restored.instance.runtime.pendingRecords, []);
+      assert.equal(restored.instance.nativeQueuePending, false);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(restored.world.nativeEngine, undefined);
+    } finally {
+      await restored?.world.close();
+      await h?.world.close();
+      await shadow?.world.close();
     }
   });
 }
