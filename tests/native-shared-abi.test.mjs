@@ -7,7 +7,7 @@ import { NATIVE_SEMANTICS } from '../src/native/abi/semantics.mjs';
 import { abiForEngineVersion, nativeABI } from '../src/native/abi/index.mjs';
 import { nativeCatalog } from '../src/native/catalog.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
-import { NativeRuntime } from '../src/native/runtime.mjs';
+import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const sdk = nativeABI(sdkRegistration.profile),
@@ -58,7 +58,7 @@ test('profile signature knowledge, encodings and independent observations remain
 
 for (const registration of [sdkRegistration, gameRegistration]) {
   test(`${registration.profile} ordinary World preserves resolved runtime dispatch and diagnostics`, async () => {
-    const world = await dataWorld(registration.profile);
+    const world = await dataWorld(registration.profile, { 'case.kcs': kcsProgram([[59]]) });
     try {
       const task = world.main,
         machine = task.machine,
@@ -123,3 +123,75 @@ test('SDK main447 explicitly binds its existing two-word unwritten FES contract'
     assert.equal(sdk.tables.main.entries[id].name, null);
   }
 });
+
+for (const [id, message] of [
+  [262, 286],
+  [534, 304],
+]) {
+  test(`SDK unknown main${id} rejects before draw side effects while Game recovered sends ${message}`, async () => {
+    for (const registration of [sdkRegistration, gameRegistration]) {
+      const world = await dataWorld(registration.profile, { 'case.kcs': kcsProgram([[59]]) });
+      try {
+        const task = world.main,
+          runtime = world.runtime;
+        assert.equal(task.status, 'finished');
+        const target = await world.objects.create({ kind: 15, parent: task.id }),
+          receiver = world.objects.objects.get(target).implementation,
+          nativeTarget = world.nativeTaskID(target),
+          args = [nativeTarget, 0],
+          sends = [];
+        const send = world.sendNativeEngine;
+        world.sendNativeEngine = function (...args) {
+          sends.push(args.slice(0, 5));
+          return send.apply(this, args);
+        };
+        const capture = () => ({
+          objects: world.objects.snapshot(),
+          graphics: world.graphics.snapshot(),
+          resources: world.resourceCache.snapshot(),
+          handles: runtime.handles.snapshot(),
+          imageBuffers: runtime.imageDataBuffers.snapshot(),
+        });
+        const before = capture();
+        let error, reply;
+        try {
+          reply = await runtime.native('main', id, args, task.machine, task, runtime.scheduler);
+        } catch (failure) {
+          error = failure;
+        }
+        if (registration === sdkRegistration) {
+          assert.deepEqual(
+            { rejected: error?.name, sends },
+            { rejected: 'UnsupportedKCSNative', sends: [] },
+          );
+          assert.ok(error instanceof UnsupportedKCSNative);
+          assert.deepEqual(error.details, {
+            profile: registration.profile,
+            table: 'main',
+            id,
+            task: task.id,
+            script: task.name,
+            pc: task.machine.pc,
+            args,
+            source: task.machine.debug,
+          });
+          assert.deepEqual(capture(), before);
+          assert.equal(runtime.tables.get('main')[id].status, 'unknown');
+          assert.equal(runtime.tables.get('main')[id].argumentWords, null);
+          assert.deepEqual(runtime.tables.get('main')[id].controlCodes, []);
+        } else {
+          assert.equal(error, undefined);
+          assert.deepEqual(reply, { control: 2 });
+          assert.deepEqual(sends, [[nativeTarget, task.id, message, 0, 0]]);
+          assert.equal(runtime.tables.get('main')[id].status, 'recovered');
+          if (id === 262) {
+            assert.equal(receiver.state.pending, false);
+            assert.equal(receiver.state.enabled, false);
+          } else assert.equal(receiver.state.dirty, false);
+        }
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
+  });
+}

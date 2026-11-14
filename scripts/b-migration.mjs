@@ -529,17 +529,20 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
             reasons.push('EXE 挂载与未挂载的注册结果不同，本记录以正常挂载路径为准。');
         } else {
           probeTrace = [];
-          try {
-            await world.runtime.native(
-              'main',
-              entry.id,
-              [],
-              {},
-              { id: 1, name: 'inventory', context: {} },
-              world.runtime.scheduler,
-            );
-          } catch (error) {
-            if (!probeTrace.length) throw error;
+          // Unknown admission is already resolved; no callable fallback owns this slot.
+          if (entry.status !== 'unknown') {
+            try {
+              await world.runtime.native(
+                'main',
+                entry.id,
+                [],
+                { pc: 0, debug: null },
+                { id: 1, name: 'inventory', context: {} },
+                world.runtime.scheduler,
+              );
+            } catch (error) {
+              if (!probeTrace.length) throw error;
+            }
           }
           const claimed = probeTrace.find((probe) => probe.claimed);
           if (claimed) {
@@ -561,7 +564,11 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
             implementation = entry.status === 'unknown' ? 'unknown' : 'unsupported';
             implementationFile = 'src/native/runtime.mjs';
             route = 'NativeRuntime/UnsupportedKCSNative';
-            reasons.push('正常 World 无注册处理器，实际 fallback 链全部返回 undefined。');
+            reasons.push(
+              entry.status === 'unknown'
+                ? '当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。'
+                : '正常 World 无注册处理器，实际 fallback 链全部返回 undefined。',
+            );
           }
         }
       }
@@ -628,6 +635,7 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
             }
           : {}),
         catalogStatus: entry.status,
+        ...(entry.status === 'unknown' ? { runtimeAdmission: 'blocked-unknown' } : {}),
         implementation,
         module: implementationFile,
         domain: phase,

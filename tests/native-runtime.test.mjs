@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { nativeReply } from '../src/kcs.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { memoryGame } from './helpers.mjs';
 
@@ -192,4 +193,119 @@ test('FES execkcs starts every requested script through its task host and resume
     await player.step();
     assert.equal(globals[3], 7);
   }
+});
+
+const sdkProfile = 'sdk-4.01-engine-2.6.1.74';
+
+function assertUnknownDiagnostic(error, runtime, id, args, task) {
+  assert.ok(error instanceof UnsupportedKCSNative);
+  assert.deepEqual(error.details, {
+    profile: runtime.profile,
+    table: 'main',
+    id,
+    task: task.id,
+    script: task.name,
+    pc: task.machine.pc,
+    args,
+    source: task.machine.debug,
+  });
+}
+
+test('unknown admission precedes registered handlers and service preparation', async () => {
+  const runtime = new NativeRuntime({
+    profile: sdkProfile,
+    read: async () => compiled([[59]], [[64, 'known semantic']]),
+    services: { log: (value) => logs.push(value) },
+  });
+  const logs = [],
+    task = await runtime.spawn('admission.kcs');
+  let preparation = 0,
+    handled = 0,
+    error;
+  Object.defineProperty(runtime.services, 'admissionProbe', {
+    enumerable: true,
+    get() {
+      preparation++;
+      return true;
+    },
+  });
+  runtime.register('main', 262, () => {
+    handled++;
+    return nativeReply(2);
+  });
+  assert.equal(runtime.tables.get('main')[262].status, 'unknown');
+  try {
+    runtime.native('main', 262, [7, 1], task.machine, task, runtime.scheduler);
+  } catch (failure) {
+    error = failure;
+  }
+  assert.deepEqual(
+    { rejected: error?.name, preparation, handled },
+    { rejected: 'UnsupportedKCSNative', preparation: 0, handled: 0 },
+  );
+  assertUnknownDiagnostic(error, runtime, 262, [7, 1], task);
+  assert.equal(runtime.tables.get('main')[1].status, 'recovered');
+  assert.equal(nativeABI(sdkProfile).tables.main.entries[1].signature.review, 'needs-review');
+  assert.deepEqual(runtime.native('main', 1, [64], task.machine, task, runtime.scheduler), {
+    control: 2,
+  });
+  assert.deepEqual(logs, ['known semantic']);
+  for (const [table, entries] of runtime.tables) {
+    if (table === 'main') continue;
+    let called = 0;
+    const entry = entries[0],
+      control = entry.controlCodes[0];
+    assert.ok(['recovered', 'declared'].includes(entry.status));
+    runtime.register(table, 0, () => {
+      called++;
+      return nativeReply(control, [1, 3].includes(control) ? 7 : undefined);
+    });
+    assert.equal(
+      runtime.native(table, 0, [], task.machine, task, runtime.scheduler).control,
+      control,
+    );
+    assert.equal(called, 1);
+  }
+  assert.throws(
+    () => new NativeRuntime({ profile: 'unregistered', read: async () => null }),
+    /Unregistered/,
+  );
+});
+
+test('unknown admission precedes the main built-in fallback and resource services', async () => {
+  let released = 0,
+    preparation = 0,
+    error;
+  const runtime = new NativeRuntime({
+    profile: sdkProfile,
+    read: async () => compiled([[59]]),
+    services: {
+      objects: {
+        release() {
+          released++;
+          return true;
+        },
+      },
+    },
+  });
+  const task = await runtime.spawn('fallback.kcs');
+  Object.defineProperty(runtime.services, 'admissionProbe', {
+    enumerable: true,
+    get() {
+      preparation++;
+      return true;
+    },
+  });
+  assert.equal(runtime.tables.get('main')[0x43].status, 'unknown');
+  assert.equal(runtime.handlers.has('main:67'), false);
+  try {
+    runtime.native('main', 0x43, [7], task.machine, task, runtime.scheduler);
+  } catch (failure) {
+    error = failure;
+  }
+  assert.deepEqual(
+    { rejected: error?.name, preparation, released },
+    { rejected: 'UnsupportedKCSNative', preparation: 0, released: 0 },
+  );
+  assertUnknownDiagnostic(error, runtime, 0x43, [7], task);
 });

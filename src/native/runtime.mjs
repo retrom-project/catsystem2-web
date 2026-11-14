@@ -226,6 +226,18 @@ export class NativeRuntime {
     const entry = this.tables.get(table)?.[id];
     if (!Number.isInteger(id) || id < 0 || !entry)
       throw new Error(`Native ID is outside ${this.profile}/${table}: ${id}`);
+    const unsupported = () =>
+      new UnsupportedKCSNative({
+        profile: this.profile,
+        table,
+        id,
+        task: task.id,
+        script: task.name,
+        pc: machine.pc,
+        args,
+        source: machine.debug,
+      });
+    if (entry.status === 'unknown') throw unsupported();
     const key = `${table}:${id}`;
     this.calls.set(key, (this.calls.get(key) || 0) + 1);
     const services = {
@@ -297,17 +309,7 @@ export class NativeRuntime {
       if (reply === undefined) reply = nativeGalleryTable(id, args, machine, services);
     }
     const validate = (value) => {
-      if (value === undefined)
-        throw new UnsupportedKCSNative({
-          profile: this.profile,
-          table,
-          id,
-          task: task.id,
-          script: task.name,
-          pc: machine.pc,
-          args,
-          source: machine.debug,
-        });
+      if (value === undefined) throw unsupported();
       const checked = nativeReply(value.control, value.value, value.wait);
       if (entry.controlCodes.length && !entry.controlCodes.includes(checked.control))
         throw new Error(

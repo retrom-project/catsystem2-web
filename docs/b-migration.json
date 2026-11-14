@@ -2431,7 +2431,7 @@
       {
         "kind": "identity",
         "file": "src/native/runtime.mjs",
-        "line": 336,
+        "line": 338,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -2451,13 +2451,13 @@
     "remainingExeVASelectionSites": 104,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1850,
+      "pure-js": 1848,
       "original-handler": 34,
       "exe-region": 2,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 277,
+      "unknown": 279,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -2466,9 +2466,9 @@
       "5": 223,
       "6": 438,
       "7": 48,
-      "8": 538,
+      "8": 530,
       "9": 37,
-      "unassigned": 117
+      "unassigned": 125
     },
     "nativeNeedsReview": 305,
     "runtimeFiles": 489,
@@ -3651,17 +3651,18 @@
           "hexID": "0x43",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3690,17 +3691,18 @@
           "hexID": "0x45",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3710,17 +3712,18 @@
           "hexID": "0x46",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3730,17 +3733,18 @@
           "hexID": "0x47",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3750,17 +3754,18 @@
           "hexID": "0x48",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3770,17 +3775,18 @@
           "hexID": "0x49",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
-          "module": "src/native/task.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeTask",
-          "registration": "src/native/task.mjs:23",
-          "features": ["task-memory"],
-          "dependencies": ["src/native/task-memory.mjs"],
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
+          "features": [],
+          "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -3890,6 +3896,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -3934,6 +3941,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -3978,6 +3986,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4015,6 +4024,7 @@
           "hexID": "0x52",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -4025,7 +4035,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -4059,6 +4069,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4103,6 +4114,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4147,6 +4159,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4191,6 +4204,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4235,6 +4249,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4279,6 +4294,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4323,6 +4339,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4367,6 +4384,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4411,6 +4429,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4455,6 +4474,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4499,6 +4519,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4543,6 +4564,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4580,6 +4602,7 @@
           "hexID": "0x60",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -4590,7 +4613,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -4600,6 +4623,7 @@
           "hexID": "0x61",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -4610,7 +4634,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -4644,6 +4668,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4688,6 +4713,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4732,6 +4758,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4776,6 +4803,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4820,6 +4848,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4864,6 +4893,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4908,6 +4938,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4952,6 +4983,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -4996,6 +5028,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -5057,6 +5090,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -5101,6 +5135,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -5145,6 +5180,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -6868,6 +6904,7 @@
           "hexID": "0xd0",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "original-handler",
           "module": "src/native/task-dump.mjs",
           "domain": 8,
@@ -7718,6 +7755,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7762,6 +7800,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7806,6 +7845,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7850,6 +7890,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7894,6 +7935,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7938,6 +7980,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7982,6 +8025,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -8026,6 +8070,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -8070,6 +8115,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -8376,6 +8422,7 @@
           "hexID": "0x117",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8386,7 +8433,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8396,6 +8443,7 @@
           "hexID": "0x118",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8406,7 +8454,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8416,6 +8464,7 @@
           "hexID": "0x119",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8426,7 +8475,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8436,6 +8485,7 @@
           "hexID": "0x11a",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8446,7 +8496,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8456,6 +8506,7 @@
           "hexID": "0x11b",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8466,7 +8517,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8533,6 +8584,7 @@
           "hexID": "0x11f",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8543,7 +8595,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8553,6 +8605,7 @@
           "hexID": "0x120",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8563,7 +8616,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8573,6 +8626,7 @@
           "hexID": "0x121",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8583,7 +8637,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8593,6 +8647,7 @@
           "hexID": "0x122",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8603,7 +8658,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8613,6 +8668,7 @@
           "hexID": "0x123",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8623,7 +8679,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8633,6 +8689,7 @@
           "hexID": "0x124",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8643,7 +8700,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -8653,6 +8710,7 @@
           "hexID": "0x125",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -8663,7 +8721,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -9462,6 +9520,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -9506,6 +9565,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -9550,6 +9610,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -9594,6 +9655,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -10007,6 +10069,7 @@
           "hexID": "0x169",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -10017,7 +10080,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -10554,16 +10617,20 @@
           "hexID": "0x189",
           "semanticName": null,
           "catalogStatus": "unknown",
-          "implementation": "pure-js",
-          "module": "src/native/environment.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeEnvironment",
-          "registration": "src/native/environment.mjs:4",
+          "runtimeAdmission": "blocked-unknown",
+          "implementation": "unknown",
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
+            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          ]
         },
         {
           "table": "main",
@@ -10677,16 +10744,20 @@
           "hexID": "0x190",
           "semanticName": null,
           "catalogStatus": "unknown",
-          "implementation": "pure-js",
-          "module": "src/native/environment.mjs",
-          "domain": 8,
-          "route": "NativeRuntime/fallback/nativeEnvironment",
-          "registration": "src/native/environment.mjs:4",
+          "runtimeAdmission": "blocked-unknown",
+          "implementation": "unknown",
+          "module": "src/native/runtime.mjs",
+          "domain": null,
+          "route": "NativeRuntime/UnsupportedKCSNative",
+          "registration": null,
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "reviewReasons": [
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
+            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+          ]
         },
         {
           "table": "main",
@@ -11194,6 +11265,7 @@
           "hexID": "0x1ac",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -11204,7 +11276,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -11435,6 +11507,7 @@
           "hexID": "0x1ba",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -11445,7 +11518,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -11455,6 +11528,7 @@
           "hexID": "0x1bb",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -11465,7 +11539,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -11601,6 +11675,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11650,6 +11725,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11699,6 +11775,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11748,6 +11825,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11797,6 +11875,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11839,6 +11918,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11881,6 +11961,7 @@
             "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
           ],
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11925,6 +12006,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -11962,6 +12044,7 @@
           "hexID": "0x1c9",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -11972,7 +12055,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -12074,6 +12157,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -12118,6 +12202,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -12267,6 +12352,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/mesh.mjs",
           "domain": 6,
@@ -13392,6 +13478,7 @@
           "hexID": "0x215",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -13402,7 +13489,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -13436,6 +13523,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -14197,6 +14285,7 @@
           "hexID": "0x240",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -14207,7 +14296,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -14355,6 +14444,7 @@
           "hexID": "0x249",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -14365,7 +14455,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -14600,6 +14690,7 @@
           "hexID": "0x257",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -14610,7 +14701,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -14620,6 +14711,7 @@
           "hexID": "0x258",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -14630,7 +14722,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -14640,6 +14732,7 @@
           "hexID": "0x259",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -14650,7 +14743,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -15224,6 +15317,7 @@
           "hexID": "0x275",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -15234,7 +15328,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -15724,6 +15818,7 @@
           "hexID": "0x288",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -15734,7 +15829,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -15970,6 +16065,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -16058,6 +16154,7 @@
           "hexID": "0x296",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16068,7 +16165,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16078,6 +16175,7 @@
           "hexID": "0x297",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16088,7 +16186,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16328,6 +16426,7 @@
           "hexID": "0x29d",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16338,7 +16437,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16552,6 +16651,7 @@
           "hexID": "0x2aa",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16562,7 +16662,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16657,6 +16757,7 @@
           "hexID": "0x2b0",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16667,7 +16768,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16677,6 +16778,7 @@
           "hexID": "0x2b1",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16687,7 +16789,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16697,6 +16799,7 @@
           "hexID": "0x2b2",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16707,7 +16810,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16717,6 +16820,7 @@
           "hexID": "0x2b3",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16727,7 +16831,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -16737,6 +16841,7 @@
           "hexID": "0x2b4",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -16747,7 +16852,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19265,6 +19370,7 @@
           "hexID": "0x345",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19275,7 +19381,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19285,6 +19391,7 @@
           "hexID": "0x346",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19295,7 +19402,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19305,6 +19412,7 @@
           "hexID": "0x347",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19315,7 +19423,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19325,6 +19433,7 @@
           "hexID": "0x348",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19335,7 +19444,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19345,6 +19454,7 @@
           "hexID": "0x349",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19355,7 +19465,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19365,6 +19475,7 @@
           "hexID": "0x34a",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19375,7 +19486,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19385,6 +19496,7 @@
           "hexID": "0x34b",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -19395,7 +19507,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -19503,6 +19615,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -19547,6 +19660,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -19795,6 +19909,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -21758,6 +21873,7 @@
           "hexID": "0x3cd",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -21768,7 +21884,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -21955,6 +22071,7 @@
           "hexID": "0x3d7",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -21965,7 +22082,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -21975,6 +22092,7 @@
           "hexID": "0x3d8",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -21985,7 +22103,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -21995,6 +22113,7 @@
           "hexID": "0x3d9",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22005,7 +22124,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22015,6 +22134,7 @@
           "hexID": "0x3da",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22025,7 +22145,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22035,6 +22155,7 @@
           "hexID": "0x3db",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22045,7 +22166,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22346,6 +22467,7 @@
           "hexID": "0x3eb",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22356,7 +22478,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22366,6 +22488,7 @@
           "hexID": "0x3ec",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22376,7 +22499,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22386,6 +22509,7 @@
           "hexID": "0x3ed",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22396,7 +22520,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22431,6 +22555,7 @@
           "hexID": "0x3ef",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22441,7 +22566,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -22451,6 +22576,7 @@
           "hexID": "0x3f0",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -22461,7 +22587,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -26594,6 +26720,7 @@
           "hexID": "0x52",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -26604,7 +26731,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -27159,6 +27286,7 @@
           "hexID": "0x60",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -27169,7 +27297,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -27179,6 +27307,7 @@
           "hexID": "0x61",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -27189,7 +27318,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -30955,6 +31084,7 @@
           "hexID": "0x117",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -30965,7 +31095,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -30975,6 +31105,7 @@
           "hexID": "0x118",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -30985,7 +31116,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -30995,6 +31126,7 @@
           "hexID": "0x119",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -31005,7 +31137,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -31015,6 +31147,7 @@
           "hexID": "0x11a",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -31025,7 +31158,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -31035,6 +31168,7 @@
           "hexID": "0x11b",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -31045,7 +31179,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -31112,6 +31246,7 @@
           "hexID": "0x11f",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -31122,7 +31257,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -31132,6 +31267,7 @@
           "hexID": "0x120",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -31142,7 +31278,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -32631,6 +32767,7 @@
           "hexID": "0x169",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -32641,7 +32778,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -33818,6 +33955,7 @@
           "hexID": "0x1ac",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -33828,7 +33966,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -34059,6 +34197,7 @@
           "hexID": "0x1ba",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -34069,7 +34208,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -34079,6 +34218,7 @@
           "hexID": "0x1bb",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -34089,7 +34229,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -34565,6 +34705,7 @@
           "hexID": "0x1c9",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -34575,7 +34716,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -34870,6 +35011,7 @@
             ]
           },
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "pure-js",
           "module": "src/native/mesh.mjs",
           "domain": 6,
@@ -35995,6 +36137,7 @@
           "hexID": "0x215",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -36005,7 +36148,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -36800,6 +36943,7 @@
           "hexID": "0x240",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -36810,7 +36954,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -36958,6 +37102,7 @@
           "hexID": "0x249",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -36968,7 +37113,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -37203,6 +37348,7 @@
           "hexID": "0x257",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -37213,7 +37359,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -37223,6 +37369,7 @@
           "hexID": "0x258",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -37233,7 +37380,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -37243,6 +37390,7 @@
           "hexID": "0x259",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -37253,7 +37401,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -37827,6 +37975,7 @@
           "hexID": "0x275",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -37837,7 +37986,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -38327,6 +38476,7 @@
           "hexID": "0x288",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -38337,7 +38487,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -38661,6 +38811,7 @@
           "hexID": "0x296",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -38671,7 +38822,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -38681,6 +38832,7 @@
           "hexID": "0x297",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -38691,7 +38843,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -38931,6 +39083,7 @@
           "hexID": "0x29d",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -38941,7 +39094,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39155,6 +39308,7 @@
           "hexID": "0x2aa",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39165,7 +39319,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39260,6 +39414,7 @@
           "hexID": "0x2b0",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39270,7 +39425,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39280,6 +39435,7 @@
           "hexID": "0x2b1",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39290,7 +39446,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39300,6 +39456,7 @@
           "hexID": "0x2b2",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39310,7 +39467,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39320,6 +39477,7 @@
           "hexID": "0x2b3",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39330,7 +39488,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -39340,6 +39498,7 @@
           "hexID": "0x2b4",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -39350,7 +39509,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41868,6 +42027,7 @@
           "hexID": "0x345",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41878,7 +42038,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41888,6 +42048,7 @@
           "hexID": "0x346",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41898,7 +42059,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41908,6 +42069,7 @@
           "hexID": "0x347",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41918,7 +42080,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41928,6 +42090,7 @@
           "hexID": "0x348",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41938,7 +42101,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41948,6 +42111,7 @@
           "hexID": "0x349",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41958,7 +42122,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41968,6 +42132,7 @@
           "hexID": "0x34a",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41978,7 +42143,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -41988,6 +42153,7 @@
           "hexID": "0x34b",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -41998,7 +42164,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44361,6 +44527,7 @@
           "hexID": "0x3cd",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44371,7 +44538,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44534,6 +44701,7 @@
           "hexID": "0x3d7",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44544,7 +44712,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44554,6 +44722,7 @@
           "hexID": "0x3d8",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44564,7 +44733,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44574,6 +44743,7 @@
           "hexID": "0x3d9",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44584,7 +44754,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44594,6 +44764,7 @@
           "hexID": "0x3da",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44604,7 +44775,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44614,6 +44785,7 @@
           "hexID": "0x3db",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44624,7 +44796,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44925,6 +45097,7 @@
           "hexID": "0x3eb",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44935,7 +45108,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44945,6 +45118,7 @@
           "hexID": "0x3ec",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44955,7 +45129,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -44965,6 +45139,7 @@
           "hexID": "0x3ed",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -44975,7 +45150,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45002,6 +45177,7 @@
           "hexID": "0x3ef",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45012,7 +45188,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45022,6 +45198,7 @@
           "hexID": "0x3f0",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45032,7 +45209,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45042,6 +45219,7 @@
           "hexID": "0x3f1",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45052,7 +45230,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45130,6 +45308,7 @@
           "hexID": "0x3f6",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45140,7 +45319,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45150,6 +45329,7 @@
           "hexID": "0x3f7",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45160,7 +45340,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45170,6 +45350,7 @@
           "hexID": "0x3f8",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45180,7 +45361,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45190,6 +45371,7 @@
           "hexID": "0x3f9",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45200,7 +45382,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45210,6 +45392,7 @@
           "hexID": "0x3fa",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45220,7 +45403,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45230,6 +45413,7 @@
           "hexID": "0x3fb",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45240,7 +45424,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45250,6 +45434,7 @@
           "hexID": "0x3fc",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45260,7 +45445,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45270,6 +45455,7 @@
           "hexID": "0x3fd",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45280,7 +45466,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45290,6 +45476,7 @@
           "hexID": "0x3fe",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45300,7 +45487,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45310,6 +45497,7 @@
           "hexID": "0x3ff",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45320,7 +45508,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -45466,6 +45654,7 @@
           "hexID": "0x408",
           "semanticName": null,
           "catalogStatus": "unknown",
+          "runtimeAdmission": "blocked-unknown",
           "implementation": "unknown",
           "module": "src/native/runtime.mjs",
           "domain": null,
@@ -45476,7 +45665,7 @@
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "正常 World 无注册处理器，实际 fallback 链全部返回 undefined。",
+            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
             "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
           ]
         },
@@ -54459,7 +54648,7 @@
     },
     {
       "file": "src/native/runtime.mjs",
-      "sourceSha256": "95202e7f5e4b967793fa865c3fc85886cb0a72de3d343e8fbec82e622af811c6",
+      "sourceSha256": "9f36229b84d3de2ebd15ee3fd5176ac6a4902bfb01fee2591dcae3167a37e738",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

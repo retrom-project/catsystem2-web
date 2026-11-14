@@ -79,6 +79,32 @@ no parallel full table or alternate reader.
 policies, comparison tools and the migration inventory consume this same
 resolved view. Dispatch controls, stubs, unsupported diagnostics, explicit MOT
 argument counts and scalar comparison policies retain their existing behavior.
+The central runtime rejects a resolved `status: 'unknown'` slot before preparing
+bank/resource services, invoking a registered handler or entering a built-in
+fallback. Registration may retain a dormant implementation shared with another
+profile; it does not grant that slot permission to execute. For example, SDK
+main262/534 keep their unknown signatures and cannot reach the default drawing
+handlers, while the Game's explicitly recovered slots retain their message286/304
+behavior. A signature's `review: 'needs-review'` is separate from slot status:
+known recovered/declared calls still follow their existing dispatch, control
+validation and explicit reserved/constant-zero behavior.
+
+Both this early rejection and an unimplemented known call report
+`UnsupportedKCSNative` with the selected profile/table/ID, task, script, guest PC,
+arguments and source debug data. No other profile's shared meaning or observed
+argument count supplies permission for an unknown slot. Unregistered versions
+remain rejected when the runtime resolves its profile.
+
+The migration inventory separately records installed source ownership, dependencies
+and remaining EXE debt. Its implementation classification, `traced` review or
+descriptive render route does not grant a current-profile slot permission to run.
+Every unknown entry carries `runtimeAdmission: 'blocked-unknown'`, including
+installed handlers whose AST ownership and evidence remain recorded while dormant.
+An unknown slot with no installed handler is recorded as centrally blocked without
+executing a fallback probe. Source footprints remain visible independently of ABI
+admission; neither a Game implementation nor an observed SDK call recovers an
+unknown SDK signature.
+
 Signature comparison tools accept resolved ABI JSON, not raw registration
 descriptors. See [structured signatures](native-signatures.md).
 
