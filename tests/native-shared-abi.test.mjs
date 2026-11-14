@@ -128,7 +128,7 @@ for (const [id, message] of [
   [262, 286],
   [534, 304],
 ]) {
-  test(`SDK unknown main${id} rejects before draw side effects while Game recovered sends ${message}`, async () => {
+  test(`ordinary World main${id} sends recovered draw flag ${message} in both profiles`, async () => {
     for (const registration of [sdkRegistration, gameRegistration]) {
       const world = await dataWorld(registration.profile, { 'case.kcs': kcsProgram([[59]]) });
       try {
@@ -138,56 +138,58 @@ for (const [id, message] of [
         const target = await world.objects.create({ kind: 15, parent: task.id }),
           receiver = world.objects.objects.get(target).implementation,
           nativeTarget = world.nativeTaskID(target),
-          args = [nativeTarget, 0],
+          initial = { pending: receiver.state.pending, enabled: receiver.state.enabled },
           sends = [];
         const send = world.sendNativeEngine;
         world.sendNativeEngine = function (...args) {
           sends.push(args.slice(0, 5));
           return send.apply(this, args);
         };
-        const capture = () => ({
-          objects: world.objects.snapshot(),
-          graphics: world.graphics.snapshot(),
-          resources: world.resourceCache.snapshot(),
-          handles: runtime.handles.snapshot(),
-          imageBuffers: runtime.imageDataBuffers.snapshot(),
-        });
-        const before = capture();
-        let error, reply;
-        try {
-          reply = await runtime.native('main', id, args, task.machine, task, runtime.scheduler);
-        } catch (failure) {
-          error = failure;
-        }
-        if (registration === sdkRegistration) {
-          assert.deepEqual(
-            { rejected: error?.name, sends },
-            { rejected: 'UnsupportedKCSNative', sends: [] },
-          );
-          assert.ok(error instanceof UnsupportedKCSNative);
-          assert.deepEqual(error.details, {
-            profile: registration.profile,
-            table: 'main',
+        assert.equal(receiver.state.dirty, true);
+        for (const flag of [0, 0x80000000]) {
+          if (id === 262 && flag) {
+            assert.equal(await world.sendEngine(target, task.id, 304, 0, 0), 0);
+            assert.equal(receiver.state.dirty, false);
+          }
+          const reply = await runtime.native(
+            'main',
             id,
-            task: task.id,
-            script: task.name,
-            pc: task.machine.pc,
-            args,
-            source: task.machine.debug,
-          });
-          assert.deepEqual(capture(), before);
-          assert.equal(runtime.tables.get('main')[id].status, 'unknown');
-          assert.equal(runtime.tables.get('main')[id].argumentWords, null);
-          assert.deepEqual(runtime.tables.get('main')[id].controlCodes, []);
-        } else {
-          assert.equal(error, undefined);
+            [nativeTarget, flag],
+            task.machine,
+            task,
+            runtime.scheduler,
+          );
           assert.deepEqual(reply, { control: 2 });
-          assert.deepEqual(sends, [[nativeTarget, task.id, message, 0, 0]]);
-          assert.equal(runtime.tables.get('main')[id].status, 'recovered');
+          assert.deepEqual(sends.at(-1), [nativeTarget, task.id, message, 0, flag]);
           if (id === 262) {
-            assert.equal(receiver.state.pending, false);
-            assert.equal(receiver.state.enabled, false);
-          } else assert.equal(receiver.state.dirty, false);
+            assert.equal(receiver.state.pending, Boolean(flag));
+            assert.equal(receiver.state.enabled, Boolean(flag));
+            assert.equal(receiver.state.dirty, true);
+          } else {
+            assert.equal(receiver.state.dirty, Boolean(flag));
+            assert.deepEqual(
+              { pending: receiver.state.pending, enabled: receiver.state.enabled },
+              initial,
+            );
+          }
+        }
+        assert.deepEqual(
+          sends,
+          [0, 0x80000000].map((flag) => [nativeTarget, task.id, message, 0, flag]),
+        );
+        const entry = nativeABI(registration.profile).tables.main.entries[id];
+        assert.equal(entry.status, 'recovered');
+        assert.equal(entry.name, id === 262 ? 'draw.setRasterEnabled' : 'draw.setDirty');
+        assert.deepEqual(entry.signature, NATIVE_SEMANTICS.main[id].signature);
+        assert.equal(entry.signature.argumentWords, 2);
+        assert.deepEqual(entry.controlCodes, [2]);
+        assert.equal(entry.signature.result.kind, 'void');
+        assert.equal(entry.signature.resultWritten, false);
+        assert.deepEqual(entry.parameters[1].type, { bits: 32, kind: 'bits' });
+        assert.equal(entry.parameters[1].name, id === 262 ? 'enabled' : 'dirty');
+        if (registration === sdkRegistration) {
+          assert.match(entry.evidence, new RegExp(`SDK-2\\.6\\.1\\.74-main${id}-full-wrapper`));
+          assert.notEqual(entry.evidence, game.tables.main.entries[id].evidence);
         }
       } finally {
         await world.close({ flushFiles: false });
@@ -264,3 +266,56 @@ for (const registration of [sdkRegistration, gameRegistration]) {
     }
   });
 }
+
+test('SDK unknown main264 blocks its installed drawing handler without side effects', async () => {
+  const world = await dataWorld(sdkRegistration.profile, { 'case.kcs': kcsProgram([[59]]) });
+  try {
+    const task = world.main,
+      runtime = world.runtime,
+      target = await world.objects.create({ kind: 15, parent: task.id }),
+      nativeTarget = world.nativeTaskID(target),
+      args = [nativeTarget],
+      sends = [];
+    const send = world.sendNativeEngine;
+    world.sendNativeEngine = function (...args) {
+      sends.push(args.slice(0, 5));
+      return send.apply(this, args);
+    };
+    const capture = () => ({
+      world: world.snapshot(),
+      calls: [...runtime.calls],
+      imageBuffers: runtime.imageDataBuffers.snapshot(),
+    });
+    const before = capture();
+    assert.throws(
+      () => runtime.native('main', 264, args, task.machine, task, runtime.scheduler),
+      (error) => {
+        assert.ok(error instanceof UnsupportedKCSNative);
+        assert.equal(
+          error.message,
+          `Unsupported ${sdkRegistration.profile}/main native 0x108 in ${task.name} at 0x${task.machine.pc.toString(16)}`,
+        );
+        assert.deepEqual(error.details, {
+          profile: sdkRegistration.profile,
+          table: 'main',
+          id: 264,
+          task: task.id,
+          script: task.name,
+          pc: task.machine.pc,
+          args,
+          source: task.machine.debug,
+        });
+        return true;
+      },
+    );
+    assert.equal(runtime.handlers.has('main:264'), true);
+    assert.equal(runtime.tables.get('main')[264].status, 'unknown');
+    assert.equal(runtime.tables.get('main')[264].name, null);
+    assert.equal(runtime.tables.get('main')[264].argumentWords, null);
+    assert.deepEqual(runtime.tables.get('main')[264].controlCodes, []);
+    assert.deepEqual(sends, []);
+    assert.deepEqual(capture(), before);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 789       | 82            | 19            | 119     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 791       | 82            | 19            | 117     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -79,6 +79,24 @@ not independently read for this recovery. Unproved pointer subfields and
 `resultWritten: null` remain unchanged, as do every other slot and the central
 unknown-admission guard.
 
+## SDK drawing flag registrations
+
+SDK main262 and main534 are explicitly recovered from their own complete
+wrappers, independently of the Game. Each takes two VM words, returns control
+`2` and writes no VM value. The existing SDK message registration maps raw
+messages281/299 to canonical286/304; the Game independently sends286/304.
+No signature override or profile-specific implementation branch is needed.
+
+The common descriptive names are `draw.setRasterEnabled(task, enabled)` and
+`draw.setDirty(task, dirty)`. Message286 sets the drawing task's pending/enabled
+flags from the second word's nonzero value and marks it dirty only when nonzero;
+zero does not clear an existing dirty flag. Message304 changes only the dirty
+flag. Both flag parameters remain full 32-bit words, without a boolean type,
+0/1 restriction or clamp. Task handle kind and ownership remain unknown.
+The ordinary World tests exercise the real kind15 receiver and native-ID
+transport in both profiles with zero and a nonzero high-bit word. This recovery
+does not establish original rendering pixels or any other drawing slot.
+
 ## Resolution and consumers
 
 [resolveNativeTables](../src/native/abi/tables.mjs) expands only the registration
@@ -101,9 +119,8 @@ The central runtime rejects a resolved `status: 'unknown'` slot before preparing
 bank/resource services, invoking a registered handler or entering a built-in
 fallback. Registration may retain a dormant implementation shared with another
 profile; it does not grant that slot permission to execute. For example, SDK
-main262/534 keep their unknown signatures and cannot reach the default drawing
-handlers, while the Game's explicitly recovered slots retain their message286/304
-behavior. A signature's `review: 'needs-review'` is separate from slot status:
+main264 keeps its unknown signature and cannot reach its installed drawing
+handler. A signature's `review: 'needs-review'` is separate from slot status:
 known recovered/declared calls still follow their existing dispatch, control
 validation and explicit reserved/constant-zero behavior.
 

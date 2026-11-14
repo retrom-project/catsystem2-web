@@ -9070,7 +9070,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     262: {
-      name: 'draw.setPriority',
+      name: 'draw.setRasterEnabled',
       family: 'draw',
       signature: {
         argumentWords: 2,
@@ -9086,8 +9086,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word priority',
-            name: 'priority',
+            description: 'word raster enabled flag',
+            name: 'enabled',
             type: {
               bits: 32,
               kind: 'bits',
@@ -19339,7 +19339,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     534: {
-      name: 'draw.setMode',
+      name: 'draw.setDirty',
       family: 'draw',
       signature: {
         argumentWords: 2,
@@ -19355,8 +19355,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word mode',
-            name: 'mode',
+            description: 'word dirty flag',
+            name: 'dirty',
             type: {
               bits: 32,
               kind: 'bits',

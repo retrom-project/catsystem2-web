@@ -7998,7 +7998,7 @@
           "id": 262,
           "hexID": "0x106",
           "semanticName": "draw.setRasterEnabled",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.setRasterEnabled",
           "renderRoute": {
             "id": 262,
             "semanticName": "draw.setRasterEnabled",
@@ -8022,8 +8022,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -13496,7 +13495,7 @@
           "id": 534,
           "hexID": "0x216",
           "semanticName": "draw.setDirty",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.setDirty",
           "renderRoute": {
             "id": 534,
             "semanticName": "draw.setDirty",
@@ -13520,8 +13519,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -30663,7 +30661,7 @@
           "id": 262,
           "hexID": "0x106",
           "semanticName": "draw.setRasterEnabled",
-          "catalogSemanticName": "draw.setPriority",
+          "catalogSemanticName": "draw.setRasterEnabled",
           "renderRoute": {
             "id": 262,
             "semanticName": "draw.setRasterEnabled",
@@ -36155,7 +36153,7 @@
           "id": 534,
           "hexID": "0x216",
           "semanticName": "draw.setDirty",
-          "catalogSemanticName": "draw.setMode",
+          "catalogSemanticName": "draw.setDirty",
           "renderRoute": {
             "id": 534,
             "semanticName": "draw.setDirty",
@@ -49944,7 +49942,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "1e0b552436b5186e23d38f1865c05938272ff0fa528ba13db245fb293c581a86",
+      "sourceSha256": "836bb9afca0d49f2a16d4df3ad81bc5dc0b9d79d6e238a6ce1e387c21b16d994",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50009,7 +50007,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "1015612f4f63ad051c970cc045ffa2a3b0ed9ccf1ae369cc8a87874f597c38bb",
+      "sourceSha256": "7830008825885b6517959a33bc9684ffbf92a232cd722307978c139652040717",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
