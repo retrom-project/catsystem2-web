@@ -195,3 +195,72 @@ for (const [id, message] of [
     }
   });
 }
+
+for (const registration of [sdkRegistration, gameRegistration]) {
+  test(`${registration.profile} ordinary World main71 waits for four words and resumes on message or idle`, async () => {
+    for (const delivery of ['message', 'idle']) {
+      const world = await dataWorld(registration.profile, {}, { initialize: false });
+      try {
+        await world.initialize('case.kcs');
+        const task = world.main,
+          machine = task.machine,
+          scheduler = world.runtime.scheduler,
+          owner = world.objects.objects.get(task.id),
+          waitingSP = machine.sp,
+          buffer = () => [240, 244, 248, 252].map((address) => machine.load(address)),
+          initialBuffer = buffer(),
+          neighbours = [machine.load(236), machine.load(256)];
+        assert.equal(world.frame, 1);
+        assert.equal(task.status, 'waiting');
+        assert.deepEqual(machine.waiting, { kind: 'message', address: 240, native: 71 });
+        assert.equal(machine.halted, false);
+        assert.equal(owner.kind, 12);
+        assert.equal(owner.scriptEnabled, 1);
+        assert.equal(world.runtime.calls.get('main:71'), 1);
+        const entry = nativeABI(registration.profile).tables.main.entries[71];
+        assert.equal(entry.status, 'recovered');
+        assert.equal(entry.name, 'task.waitMessage');
+        assert.equal(entry.signature.argumentWords, 1);
+        assert.deepEqual(entry.controlCodes, [4]);
+        assert.equal(entry.signature.resultWritten, null);
+        assert.equal(entry.parameters[0].type.addressSpace, 'unknown');
+        assert.equal(entry.parameters[0].type.direction, 'unknown');
+        if (delivery === 'message') {
+          const words = [world.nativeTaskID(world.root), 0x1357, 0x2468, 0x1020304];
+          assert.deepEqual(await scheduler.send(task.id, words), {
+            accepted: true,
+            result: 0,
+            message: words,
+          });
+          assert.equal(world.frame, 1);
+          assert.deepEqual(buffer(), words);
+          assert.equal(machine.sp, waitingSP + 4);
+          assert.equal(machine.load(machine.sp - 4), 1);
+          assert.equal(task.status, 'finished');
+          assert.equal(machine.waiting, null);
+          assert.equal(machine.halted, true);
+          assert.deepEqual(await scheduler.send(task.id, words), { accepted: false, result: 0 });
+          assert.equal(machine.sp, waitingSP + 4);
+          assert.deepEqual(buffer(), words);
+          await world.tick();
+        } else {
+          await world.tick();
+          assert.deepEqual(buffer(), initialBuffer);
+          assert.equal(machine.sp, waitingSP + 4);
+          assert.equal(machine.load(machine.sp - 4), 0);
+        }
+        assert.equal(world.frame, 2);
+        assert.equal(task.status, 'finished');
+        assert.equal(machine.halted, true);
+        assert.equal(machine.waiting, null);
+        assert.equal(owner.scriptEnabled, 0);
+        assert.equal(world.objects.objects.get(task.id), owner);
+        assert.equal(scheduler.tasks.get(task.id), task);
+        assert.deepEqual([machine.load(236), machine.load(256)], neighbours);
+        assert.equal(world.runtime.calls.get('main:71'), 1);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
+  });
+}

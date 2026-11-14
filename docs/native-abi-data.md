@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 785       | 82            | 19            | 123     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 789       | 82            | 19            | 119     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -60,6 +60,24 @@ an ignored argument list; the game's same slot is `emote.message524`. SDK
 JavaScript slots retain their meanings while the game's corresponding slots
 remain stubs. XML string output retains SDK CP932 versus game UTF-8. These are
 explicit registration differences, not rules inferred from engine age.
+
+## SDK message-wait registration
+
+SDK main `0x47` (`task.waitMessage`) is explicitly recovered from its own
+`0x5291e0` wrapper. It converts its single VM address argument through
+`0x8a6910`, registers the resulting buffer through `0x8a6b30` on the mapped
+Script task's VM at task `+0x70`, and immediately returns control `4`. The
+Game's corresponding wrapper and helpers were checked independently.
+
+The ordinary World producer's `240` is the address of a 16-byte VM destination,
+not a message ID. This normal mapped-VM registration uses the accepted shared
+JS VM protocol: a delivered four-word message writes that destination, pushes
+`1` and resumes; an idle tick pushes `0` and resumes without writing the buffer.
+The SDK's own static evidence closes address conversion, registration and the
+immediate control return. Its original downstream copy/push/resume loop was
+not independently read for this recovery. Unproved pointer subfields and
+`resultWritten: null` remain unchanged, as do every other slot and the central
+unknown-admission guard.
 
 ## Resolution and consumers
 

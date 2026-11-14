@@ -2466,9 +2466,9 @@
       "5": 223,
       "6": 438,
       "7": 48,
-      "8": 530,
+      "8": 531,
       "9": 37,
-      "unassigned": 125
+      "unassigned": 124
     },
     "nativeNeedsReview": 305,
     "runtimeFiles": 489,
@@ -3731,21 +3731,19 @@
           "table": "main",
           "id": 71,
           "hexID": "0x47",
-          "semanticName": null,
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "semanticName": "task.waitMessage",
+          "catalogStatus": "recovered",
           "implementation": "unknown",
-          "module": "src/native/runtime.mjs",
-          "domain": null,
-          "route": "NativeRuntime/UnsupportedKCSNative",
-          "registration": null,
-          "features": [],
-          "dependencies": [],
+          "module": "src/native/task.mjs",
+          "domain": 8,
+          "route": "NativeRuntime/fallback/nativeTask",
+          "registration": "src/native/task.mjs:23",
+          "features": ["task-memory"],
+          "dependencies": ["src/native/task-memory.mjs"],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
           ]
         },
         {
@@ -49946,7 +49944,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "37bb1d1a9103918ce111dd2ac0084c289031c269ad3fa62b395963a1b972fbfe",
+      "sourceSha256": "1e0b552436b5186e23d38f1865c05938272ff0fa528ba13db245fb293c581a86",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
