@@ -480,6 +480,13 @@ export class FESInstance {
     return { x, y, z, alpha, shown };
   }
   rect(o) {
+    if (this.runtime && (o.nativeType === 14 || o.nativeType === 15)) {
+      const x = o.x | 0,
+        y = o.y | 0,
+        right = (x + (o.width | 0)) | 0,
+        bottom = (y + (o.height | 0)) | 0;
+      return { x, y, w: right - x, h: bottom - y };
+    }
     const bounds = this.player.nativeImages?.supports(o)
       ? this.player.nativeInput?.bounds?.(o)
       : null;

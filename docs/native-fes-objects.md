@@ -632,3 +632,29 @@ clickR remains an existing transient field: frame completion clears it and fresh
 restore constructs it as 0. The existing pending snapshot guard covers unfinished
 right actions; no saved queue, field format or event context owner is added.
 Bare right click retains its independent inline behavior.
+
+## Normal public control hit geometry
+
+Normal SCROLL2 (raw14) and SLIDER (raw15) rectangle queries read the current typed
+signed32 RECT represented by their LoadPacket configuration. The query reads x/y
+and the signed32 right/bottom sums, then returns those bounds as x/y/width/height. It performs no metadata lookup, resource allocation, dispatch
+or pending-field consumption. Empty or inverted bounds receive no fallback size.
+
+POS2 only records a pending resource reference. Its current rectangle changes
+when the existing FILE reload consumes that reference and commits the typed
+Rect, before the remaining low task load/query completes. A query neither forces
+that reload nor rolls it back on failure. PL borrows a raw4 plane's local VRAM
+origin for the rendering source; a lifetime PARENT does not add its display
+position to the control's absolute typed rectangle. Public hit keeps its
+existing enable, priority and parent shown admission.
+
+Native Input area binding has its own lifecycle. This getter neither rebinds
+existing areas nor changes the JS registration handler, and establishes no
+original-engine FILE reload behavior. The first-load regression compares actual
+owned areas with the authored RECT; later typed configuration and existing
+native registration remain separate observations.
+
+The normal query uses no legacy areaWidth/areaHeight fallback. Bare geometry and
+all input actions retain their existing bodies. Complete control-hit click,
+slider/slide, drag and keyboard focus movement remain separate gates; a correct
+hit rectangle does not establish those action or callback contracts.

@@ -11,7 +11,9 @@ import { NativeScriptReplacements } from '../src/native/script-replacement.mjs';
 import { BrowserNativeClipboard } from '../src/native/clipboard-browser.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
 import { fesByteView } from '../src/fes/tokens.mjs';
-import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
+import { fesLabelPayload, fesNotificationMemory } from './fixtures/default-fes-world.mjs';
+import { controlFiles } from './fixtures/control-files.mjs';
+import { FESControlDriver } from '../src/native/fes-control-driver.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -23,13 +25,13 @@ const ascii = (value) => new TextEncoder().encode(value),
   text = (value) => (typeof value === 'string' ? value : new TextDecoder().decode(value)),
   filename = 'assets.int/public-press.fes';
 
-async function environment(profile, source) {
+async function environment(profile, source, { controlImages = null } = {}) {
   const scope = startupEnvironment();
   let player;
   try {
     const template = await ordinaryStartupGame(profile, {
         sound: false,
-        files: { 'assets/public-press.fes': source },
+        files: { ...controlImages, 'assets/public-press.fes': source },
       }),
       startup = await template.require('startup.xml'),
       marker = ascii('</INT>'),
@@ -37,7 +39,10 @@ async function environment(profile, source) {
         marker.every((byte, offset) => startup[index + offset] === byte),
       ),
       mount = ascii(
-        '<int02><name>fes</name><int>assets.int</int><ext>fes</ext><dir>assets</dir></int02>',
+        '<int02><name>fes</name><int>assets.int</int><ext>fes</ext><dir>assets</dir></int02>' +
+          (controlImages
+            ? '<int03><name>image</name><int>assets.int</int><ext>hg2</ext><dir>assets</dir></int03>'
+            : ''),
       ),
       bytes = new Uint8Array(startup.length + mount.length);
     assert.ok(at >= 0);
@@ -1980,3 +1985,350 @@ test('bare public right click retains inline field and undefined return', async 
   await player.step();
   assert.equal(player.root.clickR, 0);
 });
+
+const controlHitSource = ascii(
+  '#DEFINE\nPLANE Parent[2]\nPLANE Plane[2]\nSLIDER Slider[2]\nSCROLL2 Scroll[2]\n' +
+    '#OBJECT SIZE POS VRAM DISP\nParent 128,96 30,19 0,0 1\nPlane 128,96 9,17 2,3 1\n' +
+    '#OBJECT FILE PL PARENT POS2 PRI DISP ENABLE\nSlider controls Plane[1] Parent[1] area:7 80 1 1\nScroll controls Plane[1] Parent[1] area:8 90 1 1\n' +
+    '#OBJECT ENABLE\nSlider[0] 0\nScroll[0] 0\n#START\nwait 1\nnext IDLE\n#IDLE\nbreak\n' +
+    '#Slider.PROBE\n@ getid 50\n$51=@\nbreak\n#Scroll.PROBE\n@ getid 50\n$51=@\nbreak\n#NOOP\nbreak\n' +
+    '#RELOAD\nSlider[1] load controls\nScroll[1] load controls\nbreak\n',
+);
+// Independent authored cropped-frame inputs in control-files.mjs, not rect outputs.
+const controlHitBounds = [
+    [16, 12, 88, 24],
+    [104, 12, 116, 76],
+  ],
+  controlHitReferences = [
+    { nameBytes: ascii('Slider'), index: 1 },
+    { nameBytes: ascii('Scroll'), index: 1 },
+  ];
+const controlHitRect = ([x, y, right, bottom]) => ({ x, y, w: right - x, h: bottom - y });
+function controlTrack(world, root, object) {
+  const task = world.controlsFES.validate(root, object),
+    id = task.resource.areas.track,
+    area = world.inputFor(task.record.id).get(id);
+  assert.equal(task.record.parent, root.runtimeID);
+  assert.equal(task.record.kind, object.nativeType + 27);
+  assert.ok(area);
+  return { task, id, area };
+}
+async function controlHitDefinition(h, columns, row) {
+  await h.world.sendEngine(h.id, h.world.main.id, 339, 0, 128, {
+    payload: {
+      string: (address) => {
+        assert.ok(address === 0 || address === 128);
+        return address === 0 ? '#OBJECT ' + columns : row;
+      },
+    },
+  });
+}
+async function controlHitNotify(h, label, name = null, index = 0) {
+  const packet = fesNotificationMemory(ascii(label), name === null ? null : ascii(name), index);
+  await h.world.sendEngine(h.id, h.world.main.id, 337, name === null ? 0 : 64, 0, {
+    payload: packet,
+  });
+  assert.equal(packet.stringReads, 0);
+}
+function observeControlHitSource(t, h, root) {
+  const calls = [],
+    getters = [],
+    produced = [];
+  observeCommands(t, root, h.world, calls, getters);
+  const command = root.runtime.command;
+  t.mock.method(root.runtime, 'command', function (verb, selection, args, context) {
+    if (verb === 'getid') {
+      const spec = controlHitReferences[produced.length],
+        label = text(spec.nameBytes) + '.PROBE',
+        object = root.collection.lookup(spec.nameBytes, 1),
+        arena = h.world.fesSources,
+        row = '@ getid 50',
+        record = arena.programs.get(root.program.sourceKey).blocks[label][0],
+        nameAddress = record.names.get(fesByteView(spec.nameBytes)),
+        rowAddress = record.copies.get(row);
+      assert.equal(object.nativeType, produced.length === 0 ? 15 : 14);
+      assert.deepEqual(selection, spec);
+      assert.deepEqual(root.collection.reference(object), spec);
+      assert.deepEqual(root.nativeContext, { ...spec, current: 1 });
+      assert.equal(root.executingLabel, label);
+      assert.equal(root.executingLine, 1);
+      assert.deepEqual(record.bytes, ascii(row));
+      for (const [address, bytes] of [
+        [nameAddress, spec.nameBytes],
+        [rowAddress, ascii(row)],
+      ]) {
+        assert.ok(
+          Number.isInteger(address) &&
+            address >= arena.base &&
+            address + bytes.length + 1 <= arena.base + arena.used,
+        );
+        assert.deepEqual(arena.read(address, bytes.length + 1), Uint8Array.from([...bytes, 0]));
+      }
+      assert.equal(context.objectNameAddress, nameAddress);
+      assert.equal(context.commandPointer, rowAddress);
+      assert.deepEqual(context.commandBytes, ascii(row));
+      for (const token of ['@', 'getid'])
+        assert.equal(
+          getters.filter(
+            (entry) => entry.label === label && entry.line === 1 && entry.token === token,
+          ).length,
+          1,
+        );
+      produced.push({ label, reference: spec, current: 1, nameAddress, rowAddress });
+    }
+    return command.call(this, verb, selection, args, context);
+  });
+  return {
+    produced,
+    check() {
+      assert.deepEqual(
+        calls.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.objectNameAddress,
+          entry.commandPointer,
+        ]),
+        produced.map((entry) => [
+          entry.reference,
+          entry.current,
+          entry.nameAddress,
+          entry.rowAddress,
+        ]),
+      );
+    },
+  };
+}
+for (const profile of startupProfiles) {
+  test('normal public control hit uses owned typed FILE rectangles: ' + profile, async (t) => {
+    const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+      h = await environment(profile, controlHitSource, {
+        controlImages: { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+      });
+    let fresh;
+    try {
+      const root = await h.load();
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      const objects = controlHitReferences.map((ref) =>
+          root.collection.lookup(ref.nameBytes, ref.index),
+        ),
+        tracks = objects.map((object) => controlTrack(h.world, root, object)),
+        hits = () =>
+          [
+            [20, 16],
+            [110, 20],
+          ].map(([x, y]) => root.player.hit(x, y)),
+        hitReferences = () =>
+          hits().map((hit) => (hit === null ? null : root.collection.reference(hit.o)));
+      assert.deepEqual(
+        objects.map((object) => object.nativeType),
+        [15, 14],
+      );
+      assert.deepEqual(
+        objects.map((object) => [object.areaWidth, object.areaHeight]),
+        [
+          [0, 0],
+          [0, 0],
+        ],
+      );
+      assert.deepEqual(
+        tracks.map(({ task }) => [...task.config.rect]),
+        controlHitBounds,
+      );
+      assert.deepEqual(
+        tracks.map(({ area }) => [...area.bounds]),
+        controlHitBounds,
+      );
+      assert.deepEqual(
+        hitReferences(),
+        controlHitReferences,
+        'typed FILE track rectangles must be reachable by public hit for both controls',
+      );
+
+      const saved = frame(root),
+        rng = h.world.random.snapshot(),
+        queryState = () => ({
+          frame: frame(root),
+          clickL: root.clickL,
+          clickR: root.clickR,
+          scroll: root.scrollPosition,
+          objects: h.world.objects.objects.size,
+          sourceBytes: h.world.fesSources.used,
+          pending: root.player.publicPushPending.size,
+          fields: objects.map((o) => [
+            o.x,
+            o.y,
+            o.width,
+            o.height,
+            o.positionPending,
+            o.filePending,
+            o.value,
+            o.valuePending,
+          ]),
+        });
+      let imageReads = 0,
+        loads = 0;
+      for (const name of ['controls', 'area']) {
+        const resolved = h.game.resolveCategory(name, 'image');
+        assert.notEqual(resolved, null);
+        const file = h.game.lookup(resolved).file,
+          read = file.read;
+        t.mock.method(file, 'read', function (...args) {
+          imageReads++;
+          return read.apply(this, args);
+        });
+      }
+      const load = FESControlDriver.prototype.load;
+      t.mock.method(FESControlDriver.prototype, 'load', function (...args) {
+        loads++;
+        return load.apply(this, args);
+      });
+      const beforeQuery = queryState();
+      assert.deepEqual(
+        objects.map((o) => root.rect(o)),
+        controlHitBounds.map(controlHitRect),
+      );
+      for (const [x, y, reference] of [
+        [16, 12, controlHitReferences[0]],
+        [87.5, 23.5, controlHitReferences[0]],
+        [88, 16, null],
+        [20, 24, null],
+        [104, 12, controlHitReferences[1]],
+        [115.5, 75.5, controlHitReferences[1]],
+        [116, 20, null],
+        [110, 76, null],
+      ]) {
+        const hit = root.player.hit(x, y);
+        assert.deepEqual(hit ? root.collection.reference(hit.o) : null, reference);
+      }
+      assert.deepEqual(queryState(), beforeQuery);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+
+      const observed = observeControlHitSource(t, h, root);
+      for (const ref of controlHitReferences) {
+        await controlHitNotify(h, 'PROBE', text(ref.nameBytes), 1);
+        assert.equal(h.words.get(50), observed.produced.at(-1).nameAddress);
+        assert.equal(h.words.get(51), 1);
+        assert.deepEqual(frame(root), saved);
+      }
+      observed.check();
+      await controlHitDefinition(h, 'PARENT', 'Slider[1] Parent[0]');
+      await controlHitDefinition(h, 'PARENT', 'Scroll[1] Parent[0]');
+      await controlHitDefinition(h, 'POS', 'Parent[0] 33,27');
+      await controlHitDefinition(h, 'POS VRAM', 'Plane[1] 42,25 13,14');
+      await controlHitNotify(h, 'NOOP');
+      for (const object of objects)
+        assert.equal(object.parentHandle, root.collection.lookup(ascii('Parent'), 0).handle);
+      assert.deepEqual(
+        objects.map((o) => root.rect(o)),
+        controlHitBounds.map(controlHitRect),
+      );
+      assert.deepEqual(hitReferences(), controlHitReferences);
+      assert.deepEqual(
+        tracks.map(({ task }) => [task.config.planeX, task.config.planeY]),
+        [
+          [2, 3],
+          [2, 3],
+        ],
+      );
+
+      await controlHitDefinition(h, 'POS2', 'Slider[1] area:8');
+      await controlHitDefinition(h, 'POS2', 'Scroll[1] area:7');
+      assert.deepEqual(
+        objects.map((o) => o.positionPending),
+        [true, true],
+      );
+      await controlHitNotify(h, 'NOOP');
+      assert.deepEqual(
+        objects.map((o) => o.positionPending),
+        [true, true],
+      );
+      assert.deepEqual(
+        objects.map((o) => root.rect(o)),
+        controlHitBounds.map(controlHitRect),
+      );
+      assert.deepEqual(
+        tracks.map(({ task }) => [...task.config.rect]),
+        controlHitBounds,
+      );
+      assert.deepEqual(hitReferences(), controlHitReferences);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      assert.deepEqual(frame(root), saved);
+
+      fresh = await freshCheckpoint(t, h, profile);
+      const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+        fSaved = frame(fRoot),
+        fObjects = controlHitReferences.map((ref) =>
+          fRoot.collection.lookup(ref.nameBytes, ref.index),
+        ),
+        fTracks = fObjects.map((object) => controlTrack(fresh.world, fRoot, object));
+      assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+      assert.deepEqual(
+        fObjects.map((o) => o.positionPending),
+        [true, true],
+      );
+      assert.deepEqual(
+        fObjects.map((o) => fRoot.rect(o)),
+        controlHitBounds.map(controlHitRect),
+      );
+      assert.deepEqual(
+        fTracks.map(({ area }) => [...area.bounds]),
+        controlHitBounds,
+      );
+      assert.deepEqual(
+        [
+          [20, 16],
+          [110, 20],
+        ].map(([x, y]) => fRoot.collection.reference(fRoot.player.hit(x, y).o)),
+        controlHitReferences,
+      );
+      assert.deepEqual(
+        [imageReads, loads],
+        [0, 0],
+        'fresh geometry must not reopen image data or replay control load',
+      );
+      assert.deepEqual(frame(fRoot), fSaved);
+
+      await controlHitNotify(h, 'RELOAD');
+      const swapped = [controlHitBounds[1], controlHitBounds[0]];
+      assert.deepEqual(
+        objects.map((o) => [o.positionPending, o.filePending]),
+        [
+          [false, false],
+          [false, false],
+        ],
+      );
+      assert.deepEqual(
+        objects.map((o) => root.rect(o)),
+        swapped.map(controlHitRect),
+      );
+      assert.deepEqual(
+        objects.map((o) => [...controlTrack(h.world, root, o).task.config.rect]),
+        swapped,
+      );
+      assert.deepEqual(
+        objects.map((o) => [...controlTrack(h.world, root, o).area.bounds]),
+        controlHitBounds,
+      );
+      assert.deepEqual(
+        objects.map((o) => controlTrack(h.world, root, o).id),
+        tracks.map(({ id }) => id),
+      );
+      assert.deepEqual(hitReferences(), [controlHitReferences[1], controlHitReferences[0]]);
+      assert.deepEqual(
+        tracks.map(({ task }) => [task.config.planeX, task.config.planeY]),
+        [
+          [13, 14],
+          [13, 14],
+        ],
+      );
+      assert.deepEqual([imageReads, loads], [4, 2]);
+      assert.deepEqual(frame(root), saved);
+      assert.deepEqual(h.world.random.snapshot(), rng);
+      assert.equal(fresh.world.nativeEngine, undefined);
+      assert.equal(h.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}
