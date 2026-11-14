@@ -33,13 +33,14 @@ export class M2Task extends NativeGraphicTask {
       voiceBank: 0,
       voiceFlags: 0,
     };
-    this.makeGraph({
-      type: 1,
-      width: this.world.game.width,
-      height: this.world.game.height,
-      custom: true,
-      vram: false,
-    });
+    if (!this.world.restoring)
+      this.makeGraph({
+        type: 1,
+        width: this.world.game.width,
+        height: this.world.game.height,
+        custom: true,
+        vram: false,
+      });
     owner.tasks.set(record.id, this);
     this.graphics.tasks.set(record.id, this);
   }

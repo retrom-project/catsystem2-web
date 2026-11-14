@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 305, "oracle": 149, "differential": 67 },
+    "counts": { "js": 306, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -247,6 +247,7 @@
         "tests/native-input-route-context.test.mjs",
         "tests/native-input.test.mjs",
         "tests/native-js-startup.test.mjs",
+        "tests/native-m2-render-sequence-default.test.mjs",
         "tests/native-motion-persistence.test.mjs",
         "tests/native-motion.test.mjs",
         "tests/native-movie-asf-samples.test.mjs",
@@ -50871,7 +50872,7 @@
     },
     {
       "file": "src/native/emote-task.mjs",
-      "sourceSha256": "f07c530f3de4baf5442cd303eb8db0ff5867ed24ff53817d5aeba0d007c3c327",
+      "sourceSha256": "a573fee656164f25c1b585457933183f268326e7d5aaa0bc71b5e9ffbbe58c5d",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50881,7 +50882,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 116,
+          "line": 117,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",

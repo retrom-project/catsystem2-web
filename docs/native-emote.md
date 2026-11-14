@@ -24,3 +24,7 @@ non-PSB image fallback, not PSB textures. Image-only M2 inputs are explicitly
 unsupported by this PSB implementation. The SDK task is a SimplePlane placeholder; its reserved table entries remain
 reserved. Existing oracle fixtures and [M2 evidence](emote-js.md) define the
 observed behavior, including busy timing and retained output after Skip.
+
+World restore retains each M2 graph's render order and the next allocation sequence
+before advancing a frame. Dormant task shells restore their owner mapping and saved
+graph without consuming new render orders; normal task creation still allocates one.
