@@ -429,3 +429,40 @@ for (const registration of [sdkRegistration, gameRegistration]) {
     }
   });
 }
+
+test('registered drawing family inherits reviewed arity and output contracts without admitting other SDK slots', () => {
+  const expected = [
+    [256, 3, 2, false],
+    [257, 13, 2, false],
+    [258, 2, 2, false],
+    [260, 3, 2, false],
+    [263, 3, 2, false],
+    [657, 2, 1, true],
+  ];
+  for (const registration of [sdkRegistration, gameRegistration]) {
+    const entries = nativeABI(registration.profile).tables.main.entries;
+    for (const [id, words, control, written] of expected) {
+      const entry = entries[id],
+        shared = NATIVE_SEMANTICS.main[id];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, shared.name);
+      assert.equal(entry.signature.argumentWords, words);
+      assert.deepEqual(entry.controlCodes, [control]);
+      assert.equal(entry.signature.resultWritten, written);
+      assert.deepEqual(entry.parameters, shared.signature.parameters);
+      assert.deepEqual(entry.signature.result, shared.signature.result);
+      assert.equal(entry.signature.review, shared.signature.review);
+    }
+    assert.deepEqual(entries[257].parameters[10].type, {
+      bits: 32,
+      kind: 'integer',
+      signed: false,
+    });
+    assert.equal(entries[69].signature.resultWritten, true);
+  }
+  for (const id of [259, 261, 264]) {
+    assert.equal(sdk.tables.main.entries[id].status, 'unknown');
+    assert.equal(sdk.tables.main.entries[id].name, null);
+    assert.equal(game.tables.main.entries[id].status, 'recovered');
+  }
+});

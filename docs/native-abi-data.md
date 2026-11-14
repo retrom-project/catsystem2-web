@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 792       | 82            | 19            | 116     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 798       | 82            | 19            | 110     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -103,6 +103,48 @@ This recovery reuses the accepted host transport and valid compiler-call
 contract. It does not establish foreign or uninitialized context, unregistered
 target, unwritten transport scratch, native cookie failure or invalid-memory
 behavior. Other unknown slots remain centrally blocked.
+
+## SDK retained-drawing family registrations
+
+SDK main256,257,258,260,263 and657 are explicitly recovered from their own
+complete wrappers, with the Game wrappers checked separately. The existing
+kind15 message mapping adds5 for SDK commands; it is not an admission rule for
+adjacent native IDs.
+
+| ID  | Existing shared operation | Words | SDK / Game raw message | Control | VM output written |
+| --- | ------------------------- | ----- | ---------------------- | ------- | ----------------- |
+| 256 | draw.initialize           | 3     | 0x112 / 0x117          | 2       | false             |
+| 257 | draw.addBitmap            | 13    | 0x113 / 0x118          | 2       | false             |
+| 258 | draw.remove               | 2     | 0x114 / 0x119          | 2       | false             |
+| 260 | draw.setOutputOffset      | 3     | 0x116 / 0x11b          | 2       | false             |
+| 263 | draw.setEntryShown        | 3     | 0x11a / 0x11f          | 2       | false             |
+| 657 | draw.entryBitmap          | 2     | 0x12e / 0x133          | 1       | true              |
+
+The shared operation and parameter names are corrected against the accepted
+receiver:256 initializes width and height,260 sets signed output x/y offsets,
+263 changes the keyed entry shown flag, and657 returns its entry bitmap.
+These are corrections to common metadata, with no new business behavior or
+per-version implementation branch.
+
+The first five wrappers ignore message-out scratch and leave the VM output
+untouched.657 clears a separate local word, passes its address in lParam, and
+copies that local to the VM output after dispatch. Both wrappers establish its
+shared resultWritten=true; task.send69 remains true and other signature types,
+review fields and Game admissions are unchanged.
+
+The addBitmap wrapper uses a zeroed60-byte temporary. Nonzero bitmap input is
+converted by each engine's own first-DWORD getter; zero input bypasses it.
+Seven transform words retain their bits. Alpha remains an unsigned32-bit
+parameter, with the wrapper clamping it to255; it is not a restricted u8 input.
+The owner member-view getters differ by0x21c/0x41c, but the concrete null-output
+view and60-byte fill paths both produce the same zeroed temporary. This internal
+layout difference needs no additional JavaScript profile business branch.
+
+Normal World regressions keep the original render-source aliases, frame state,
+VM bytes, two-Top task routing, auxiliary bitmap ownership and fresh-World
+assertions. Only these six SDK slots are admitted:259,261,264 and all other
+unknown slots remain blocked. This does not establish arbitrary invalid-memory,
+foreign-context, cookie-failure or general CPU/memset behavior.
 
 ## SDK drawing flag registrations
 

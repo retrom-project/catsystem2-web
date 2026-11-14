@@ -8697,8 +8697,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'u32 capacity',
-            name: 'capacity',
+            description: 'u32 width',
+            name: 'width',
             type: {
               bits: 32,
               kind: 'integer',
@@ -8706,8 +8706,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word flags',
-            name: 'flags',
+            description: 'word height',
+            name: 'height',
             type: {
               bits: 32,
               kind: 'bits',
@@ -9002,7 +9002,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     260: {
-      name: 'draw.setVisible',
+      name: 'draw.setOutputOffset',
       family: 'draw',
       signature: {
         argumentWords: 3,
@@ -9018,16 +9018,16 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word key',
-            name: 'key',
+            description: 'word output x offset',
+            name: 'x',
             type: {
               bits: 32,
               kind: 'bits',
             },
           },
           {
-            description: 'word visible',
-            name: 'visible',
+            description: 'word output y offset',
+            name: 'y',
             type: {
               bits: 32,
               kind: 'bits',
@@ -9103,7 +9103,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     263: {
-      name: 'draw.setValue',
+      name: 'draw.setEntryShown',
       family: 'draw',
       signature: {
         argumentWords: 3,
@@ -9127,8 +9127,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word value',
-            name: 'value',
+            description: 'word shown flag',
+            name: 'shown',
             type: {
               bits: 32,
               kind: 'bits',
@@ -22667,7 +22667,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     657: {
-      name: 'draw.getAuxiliary',
+      name: 'draw.entryBitmap',
       family: 'draw',
       signature: {
         argumentWords: 2,
@@ -22696,7 +22696,7 @@ export const NATIVE_SEMANTICS = freeze({
           description: 'word',
           kind: 'bits',
         },
-        resultWritten: null,
+        resultWritten: true,
         review: 'declared',
       },
     },

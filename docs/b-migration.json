@@ -7727,7 +7727,7 @@
           "id": 256,
           "hexID": "0x100",
           "semanticName": "draw.initialize",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.initialize",
           "renderRoute": {
             "id": 256,
             "semanticName": "draw.initialize",
@@ -7751,8 +7751,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7772,7 +7771,7 @@
           "id": 257,
           "hexID": "0x101",
           "semanticName": "draw.addBitmap",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.addBitmap",
           "renderRoute": {
             "id": 257,
             "semanticName": "draw.addBitmap",
@@ -7796,8 +7795,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7817,7 +7815,7 @@
           "id": 258,
           "hexID": "0x102",
           "semanticName": "draw.remove",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.remove",
           "renderRoute": {
             "id": 258,
             "semanticName": "draw.remove",
@@ -7841,8 +7839,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -7907,7 +7904,7 @@
           "id": 260,
           "hexID": "0x104",
           "semanticName": "draw.setOutputOffset",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.setOutputOffset",
           "renderRoute": {
             "id": 260,
             "semanticName": "draw.setOutputOffset",
@@ -7931,8 +7928,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -8041,7 +8037,7 @@
           "id": 263,
           "hexID": "0x107",
           "semanticName": "draw.setEntryShown",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.setEntryShown",
           "renderRoute": {
             "id": 263,
             "semanticName": "draw.setEntryShown",
@@ -8065,8 +8061,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -16035,7 +16030,7 @@
           "id": 657,
           "hexID": "0x291",
           "semanticName": "draw.entryBitmap",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.entryBitmap",
           "renderRoute": {
             "id": 657,
             "semanticName": "draw.entryBitmap",
@@ -16059,8 +16054,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -30572,7 +30566,7 @@
           "id": 260,
           "hexID": "0x104",
           "semanticName": "draw.setOutputOffset",
-          "catalogSemanticName": "draw.setVisible",
+          "catalogSemanticName": "draw.setOutputOffset",
           "renderRoute": {
             "id": 260,
             "semanticName": "draw.setOutputOffset",
@@ -30704,7 +30698,7 @@
           "id": 263,
           "hexID": "0x107",
           "semanticName": "draw.setEntryShown",
-          "catalogSemanticName": "draw.setValue",
+          "catalogSemanticName": "draw.setEntryShown",
           "renderRoute": {
             "id": 263,
             "semanticName": "draw.setEntryShown",
@@ -38693,7 +38687,7 @@
           "id": 657,
           "hexID": "0x291",
           "semanticName": "draw.entryBitmap",
-          "catalogSemanticName": "draw.getAuxiliary",
+          "catalogSemanticName": "draw.entryBitmap",
           "renderRoute": {
             "id": 657,
             "semanticName": "draw.entryBitmap",
@@ -49941,7 +49935,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "e530265199cf41a03a72561932a7b2b82c64eb3861057ae5527bb42dd2555beb",
+      "sourceSha256": "bd697f542bf8b448fea2719933db977dcbd63c2cd1478a46b989d49e5d5e6fcb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50006,7 +50000,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "30f40205def0bd1abf270e7e065d50f3f701227e0d685a6140d8bec85be4c4f3",
+      "sourceSha256": "e3ad60278b03dcb838e9b341d79e41b7773d1a3241e91669947001a1be5f59c9",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
