@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 802       | 82            | 19            | 106     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 804       | 82            | 19            | 104     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -179,10 +179,9 @@ bindings, control2/no value and an unchanged caller VM snapshot. Packet
 observation delegates to the real transport. This is a normal JS receiver
 acceptance, not execution of the original SDK.
 
-SDK450, 452 and454 retain their unknown admission and cannot execute their
-installed wrappers. In particular the formatter core and exceptional tail of
-450 remain separate evidence work. No other slot, version, type or capability
-is enabled by these two registrations.
+SDK450 retains its unknown admission and cannot execute its installed wrapper.
+Its formatter core and exceptional tail remain separate evidence work. No other
+slot, version, type or capability is enabled by these two registrations.
 
 ## SDK FES update and caller exit-code registrations
 
@@ -201,8 +200,38 @@ Tests use zero, a negative word and a high-bit word with the existing signed
 interpretation; they verify the record and its current object snapshot, leave
 a different FES task's exit code alone and preserve the caller machine snapshot.
 No new width restriction, clamp, implicit target or VM result is introduced.
-SDK450, 452 and454 remain unknown; their installed wrappers gain no admission
-from these two registrations.
+SDK450 remains unknown; its installed wrapper gains no admission from these
+two registrations.
+
+## SDK FES exit-code query and caller context-name copy
+
+SDK main452 (`fes.exitCode`) and main454 (`fes.contextName`) are explicitly
+recovered from their own complete wrappers. Both consume one VM word. Main452
+initializes a local DWORD to -1, sends message23 to the actual target and copies
+that word to the universal VM result, returning control `1`. The independent
+Game wrapper does the same, so the shared main452 `resultWritten` observation is
+corrected in place from unknown to `true`. Its existing signed 32-bit result,
+handle type and declared review stay unchanged; no version signature override
+is needed. Tests query a real kind34 FES before and after its normal `exit 7`,
+then query an actual Script caller after main453 sets zero, a negative word and
+a high-bit DWORD. They check the original result bits and real message23 path.
+
+Main454 translates the caller-owned destination start and copies its actual
+context CString including NUL, returning control `2` without writing a universal
+VM result. The native source context fields have different private offsets
+(SDK +0x1c4, Game +0x2c8), which do not alter the public signature or add runtime
+layout branches. The ordinary JS test supplies a valid ASCII CString through
+Script message26, creates and loads a real child Script, and observes the normal
+parent message25 inheritance into that child's actual scheduler context. The
+copy writes only that caller's allocated guest block, preserving surrounding
+canaries and the rest of its machine snapshot. A subsequent parent name change
+does not replace the child's context. This proves the existing valid owned
+CString domain, not arbitrary buffers, unterminated strings, Unicode support or
+a new pointer/encoding contract. Shared pointer types remain unknown.
+
+Game registration data, other slots, table lengths and the central unknown-slot
+guard are unchanged. SDK450 and455 remain unknown. These are normal JS receiver
+acceptances; they do not claim execution of the original engines.
 
 ## Resolution and consumers
 

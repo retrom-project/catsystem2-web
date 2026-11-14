@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 306, "oracle": 149, "differential": 67 },
+    "counts": { "js": 307, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -278,6 +278,7 @@
         "tests/native-screen-dirty.test.mjs",
         "tests/native-script-replacement.test.mjs",
         "tests/native-sdk-fes-bind-save-admission.test.mjs",
+        "tests/native-sdk-fes-exit-context-admission.test.mjs",
         "tests/native-sdk-fes-update-exit-admission.test.mjs",
         "tests/native-sdk-task-abi.test.mjs",
         "tests/native-shared-abi.test.mjs",
@@ -11826,7 +11827,7 @@
           "table": "main",
           "id": 452,
           "hexID": "0x1c4",
-          "semanticName": null,
+          "semanticName": "fes.exitCode",
           "fesRoute": {
             "id": 452,
             "label": "fes.exitCode",
@@ -11853,11 +11854,7 @@
               }
             ]
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -11915,7 +11912,7 @@
           "table": "main",
           "id": 454,
           "hexID": "0x1c6",
-          "semanticName": null,
+          "semanticName": "fes.contextName",
           "fesRoute": {
             "id": 454,
             "label": "fes.contextName",
@@ -11935,11 +11932,7 @@
             ],
             "consumerRoutes": []
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -49922,7 +49915,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "547a6fcd2f056b11d5abee3a14ef3afeb2971ba6a9847be29cfc62a784f7292e",
+      "sourceSha256": "edb266ed6321755197150a7622ff14ee499112327cc84fb45063bf2a72551064",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49987,7 +49980,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "e3ad60278b03dcb838e9b341d79e41b7773d1a3241e91669947001a1be5f59c9",
+      "sourceSha256": "93878341a925cdefb3b89aec23dc661f7f4e14b1edae778b3a9dae88e3155fb7",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -16296,7 +16296,7 @@ export const NATIVE_SEMANTICS = freeze({
           kind: 'integer',
           signed: true,
         },
-        resultWritten: null,
+        resultWritten: true,
         review: 'declared',
       },
     },
