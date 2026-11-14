@@ -62,7 +62,7 @@ const gameMessages = [
   [351],
 ];
 for (const [profileIndex, profile] of profiles.entries())
-  test(`${profile} all installed FES native wrappers preserve their own packets and control results`, async () => {
+  test(`${profile} all installed FES native wrappers enforce admission and preserve admitted packets and controls`, async (t) => {
     const world = await defaultFESWorld(profile);
     try {
       assert.deepEqual(
@@ -94,6 +94,14 @@ for (const [profileIndex, profile] of profiles.entries())
         }
         return 0;
       };
+      const capture = () => ({
+          messages: messages.slice(),
+          formats: formats.slice(),
+          calls: [...world.runtime.calls],
+          world: world.snapshot(),
+          vm: machine.snapshot(),
+        }),
+        admission = { admitted: 0, unknown: 0 };
       for (const [index, row] of FES_ROUTE_AUDIT.entries()) {
         const args =
           row.id === 0x289 || row.id === 0x28a
@@ -102,17 +110,51 @@ for (const [profileIndex, profile] of profiles.entries())
               ? [512]
               : [target, 256, 320, 3].slice(0, row.words);
         messages.length = formats.length = 0;
-        const reply = await world.runtime.native('main', row.id, args, machine, world.main);
-        assert.equal(reply.control, row.control, row.label);
-        assert.deepEqual(messages, row.messages, row.label);
-        assert.deepEqual(
-          row.messages.map((message) => mapABIMessage(profile, 'control', 'raw', message, 34)),
-          [sdkMessages, gameMessages][profileIndex][index],
-          row.label + ' frozen raw ABI messages',
-        );
-        if (row.id === 0x278) assert.deepEqual(formats, [256, 256]);
-        if (row.id === 0x373) assert.equal(reply.value, 0xfedcba98);
+        const entry = world.runtime.tables.get('main')[row.id];
+        assert.equal(world.runtime.handlers.has('main:' + row.id), true, row.label + ' installed');
+        if (entry.status === 'unknown') {
+          const before = capture();
+          assert.throws(
+            () => world.runtime.native('main', row.id, args, machine, world.main),
+            (error) => {
+              assert.ok(error instanceof Error);
+              assert.equal(error.name, 'UnsupportedKCSNative');
+              assert.equal(
+                error.message,
+                `Unsupported ${profile}/main native 0x${row.id.toString(16)} in ${world.main.name} at 0x${machine.pc.toString(16)}`,
+              );
+              assert.deepEqual(error.details, {
+                profile,
+                table: 'main',
+                id: row.id,
+                task: world.main.id,
+                script: world.main.name,
+                pc: machine.pc,
+                args,
+                source: machine.debug,
+              });
+              return true;
+            },
+            row.label,
+          );
+          assert.deepEqual(capture(), before, row.label + ' blocked before all side effects');
+          admission.unknown++;
+        } else {
+          const reply = await world.runtime.native('main', row.id, args, machine, world.main);
+          assert.equal(reply.control, row.control, row.label);
+          assert.deepEqual(messages, row.messages, row.label);
+          assert.deepEqual(
+            row.messages.map((message) => mapABIMessage(profile, 'control', 'raw', message, 34)),
+            [sdkMessages, gameMessages][profileIndex][index],
+            row.label + ' frozen raw ABI messages',
+          );
+          if (row.id === 0x278) assert.deepEqual(formats, [256, 256]);
+          if (row.id === 0x373) assert.equal(reply.value, 0xfedcba98);
+          admission.admitted++;
+        }
       }
+      assert.equal(admission.admitted + admission.unknown, NATIVE_FES_IDS.length);
+      t.diagnostic('Installed FES admission ' + JSON.stringify(admission));
       assert.equal(world.nativeEngine, undefined);
     } finally {
       await world.close();
