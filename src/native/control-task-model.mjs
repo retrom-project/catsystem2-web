@@ -109,6 +109,59 @@ export function quantizeControlPixel(state) {
   return Math.min(limit, Math.floor((pixel - half) / step) + 1);
 }
 
+function recomputeControlPage(s) {
+  if (s.kind === 42) return;
+  const range = total(s);
+  if (range <= s.pageSize) {
+    s.thumbLength = s.trackLength;
+    s.pixelMaximum = s.kind === 40 ? s.trackStart : s.pixelMinimum;
+  } else {
+    let length = div32(Math.imul(s.pageSize, s.trackLength), range);
+    if (s.kind === 41 && length < s.minimumThumb) length = s.minimumThumb;
+    s.thumbLength = length;
+    s.pixelMaximum = (s.trackLength - length) | 0;
+  }
+  if (s.kind === 40) {
+    s.value = 0;
+    snapControlValue(s);
+  }
+}
+
+// The public FES adapter supplies current typed numbers and owned decoded
+// geometry. All state here is local; projection never drives an input task.
+export function projectControlPointValue(kind, rect, range, geometry, pointer) {
+  if (kind !== 41 && kind !== 42)
+    throw new RangeError('Control point projection requires kind41 or kind42');
+  const left = rect[0] | 0,
+    top = rect[1] | 0,
+    width = ((rect[2] | 0) - left) | 0,
+    height = ((rect[3] | 0) - top) | 0,
+    direction = Number(width < height),
+    thumbLength = kind === 42 ? geometry.thumbSize[direction] | 0 : 0,
+    state = {
+      kind,
+      minimum: range.minimum | 0,
+      maximum: range.maximum | 0,
+      pageSize: range.pageSize | 0,
+      left,
+      top,
+      direction,
+      trackLength: abs32(direction ? height : width),
+      minimumThumb: geometry.minimumThumb | 0,
+      thumbLength,
+      pixelMinimum: 0,
+      pixelMaximum: ((direction ? height : width) - thumbLength) | 0,
+      value: 0,
+      pixel: 0,
+    };
+  recomputeControlPage(state);
+  state.pixel = clampPixel(
+    state,
+    ((pointer[direction] | 0) - div32(state.thumbLength, 2) - origin(state, direction)) | 0,
+  );
+  return quantizeControlPixel(state);
+}
+
 export function createControlTaskState(kind) {
   if (kind !== 40 && kind !== 41 && kind !== 42)
     throw new RangeError(`Unsupported control task kind ${kind}`);
@@ -209,22 +262,7 @@ export class ControlTaskModel {
     await this.service(operation, p, s);
   }
   recomputePage() {
-    const s = this.state;
-    if (s.kind === 42) return;
-    const range = total(s);
-    if (range <= s.pageSize) {
-      s.thumbLength = s.trackLength;
-      s.pixelMaximum = s.kind === 40 ? s.trackStart : s.pixelMinimum;
-    } else {
-      let length = div32(Math.imul(s.pageSize, s.trackLength), range);
-      if (s.kind === 41 && length < s.minimumThumb) length = s.minimumThumb;
-      s.thumbLength = length;
-      s.pixelMaximum = (s.trackLength - length) | 0;
-    }
-    if (s.kind === 40) {
-      s.value = 0;
-      snapControlValue(s);
-    }
+    recomputeControlPage(this.state);
   }
   // Only decoded geometry is accepted: this is not a replacement for HG image
   // loading or SCROLL's three mandatory metadata frames. A resource service

@@ -658,3 +658,34 @@ The normal query uses no legacy areaWidth/areaHeight fallback. Bare geometry and
 all input actions retain their existing bodies. Complete control-hit click,
 slider/slide, drag and keyboard focus movement remain separate gates; a correct
 hit rectangle does not establish those action or callback contracts.
+
+## Normal public control slide numbers
+
+For a live normal SCROLL2 (raw14) or SLIDER (raw15), public slide remains an
+absolute seek with an undefined return. Its projection uses the current typed
+signed32 rectangle and minimum/maximum/pageSize, plus the actual owned kind41 or
+kind42 task's decoded geometry. Direction follows the rectangle, rather than
+the declaration name. SLIDER uses frame0's full canvas size along that axis;
+SCROLL2 uses the decoded cap minimum and current page calculation.
+
+The shared integer projection preserves the native half-threshold quantizer,
+operation order and no-minimum-offset arithmetic. It changes only local plain
+state. It performs no metadata I/O, World/task/resource allocation, task send or capture, and never
+invokes native track press: SCROLL2's native track press is a separate page-step.
+The native model keeps its existing range/rebuild/reset behavior and failures.
+
+An unavailable projection commits no value or event: this covers a dead owner or
+reference, unallocated or unloaded task, missing decoded metadata, and pending
+FILE work. An invalid owned task still fails validation. POS2-only pending work
+is not consumed; page/value pending fields are not flushed by projection.
+
+When the value changes, the typed value setter records notify0 for the existing
+driver, then SCRL_P runs its original synchronous prefix before scrollPosition
+receives the captured object's handle. This preserves synchronous errors and
+successful no-handler/finished behavior, with no repeated event for an unchanged
+value. Later driver consumption remains distinct from the public field commit.
+
+Bare slide and other input actions retain their existing bodies. The whole
+control-hit click and repeated slide actions across a real await or pending tail
+still need their separate FIFO, focus-completion and cancellation contracts.
+Public knob, hover, drag and keyboard movement are not completed by this leaf.

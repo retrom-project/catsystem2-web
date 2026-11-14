@@ -4,6 +4,7 @@ import { readFES } from '../formats/scene.mjs';
 import { includeNames, parseProgram } from './program.mjs';
 import { FESInstance } from './instance.mjs';
 import { NativeFESSourceArena } from '../native/fes-source.mjs';
+import { setFESControlValue } from '../native/fes-control-model.mjs';
 import { tokenizeFESByteLine, fesSourceBytes, fesByteView } from './tokens.mjs';
 import { CGGallery } from '../gallery.mjs';
 import { decodeText } from '../binary.mjs';
@@ -821,8 +822,17 @@ export class FESPlayer {
     return { x: at.x + (o.areaWidth - w) * t, y: at.y + (o.areaHeight - h) / 2, w, h };
   }
   slide(target, x, y) {
-    const { s, o } = target,
-      at = s.placement(o),
+    const { s, o } = target;
+    if (s.runtime && (o.nativeType === 14 || o.nativeType === 15)) {
+      const value = this.nativeControls.projectSlideValue(s, o, x, y);
+      if (value !== null && value !== o.value) {
+        setFESControlValue(o, value, 0);
+        s.event(o, 'SCRL_P');
+        s.scrollPosition = o.handle;
+      }
+      return;
+    }
+    const at = s.placement(o),
       k = this.knob(s, o),
       vertical = o.type === 'SCROLL2';
     const span = o.max - o.min - (vertical ? o.page : 0);

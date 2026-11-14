@@ -2332,3 +2332,229 @@ for (const profile of startupProfiles) {
     }
   });
 }
+
+const controlSlideSource = ascii(
+  [
+    '#DEFINE',
+    'SLIDER Slider[2]',
+    'SCROLL2 Scroll[2]',
+    '#OBJECT FILE POS2 PRI DISP ENABLE',
+    'Slider controls area:8 80 1 1',
+    'Scroll controls area:7 90 1 1',
+    '#OBJECT ENABLE',
+    'Slider[0] 0',
+    'Scroll[0] 0',
+    '#START',
+    'Slider[1] page 10 110',
+    'Slider[1] pos 25',
+    'Scroll[1] page 10 110 20',
+    'Scroll[1] pos 30',
+    'wait 1',
+    'next IDLE',
+    '#IDLE',
+    'break',
+    '#Slider.SCRL_P',
+    '$10=++$10',
+    '$11=@',
+    '$12=_SCRL_P_',
+    'break',
+    '#Scroll.SCRL_P',
+    '$13=++$13',
+    '$14=@',
+    '$15=_SCRL_P_',
+    'break',
+    '#Slider.PROBE',
+    '@ getid 50',
+    '@ getpos 52',
+    '$51=@',
+    'break',
+    '#Scroll.PROBE',
+    '@ getid 50',
+    '@ getpos 52',
+    '$51=@',
+    'break',
+  ].join('\n'),
+);
+for (const profile of startupProfiles) {
+  test('normal public control slide uses decoded typed numbers: ' + profile, async (t) => {
+    const { 'controls.hg2': controls, 'area.hg2': area } = await controlFiles(new Uint8Array()),
+      h = await environment(profile, controlSlideSource, {
+        controlImages: { 'assets/controls.hg2': controls, 'assets/area.hg2': area },
+      });
+    let fresh;
+    try {
+      const root = await h.load();
+      for (let index = 10; index < 16; index++) h.words.set(index, 0);
+      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      const objects = controlHitReferences.map((ref) => root.collection.lookup(ref.nameBytes, 1)),
+        tracks = objects.map((o) => controlTrack(h.world, root, o)),
+        points = [
+          [110, 43],
+          [50, 16],
+        ],
+        saved = frame(root),
+        rng = h.world.random.snapshot(),
+        previousScroll = root.scrollPosition;
+      assert.deepEqual(
+        objects.map((o) => o.nativeType),
+        [15, 14],
+      );
+      assert.deepEqual(
+        objects.map((o) => [o.minimum, o.maximum, o.pageSize]),
+        [
+          [10, 110, 0],
+          [10, 110, 20],
+        ],
+      );
+      assert.deepEqual(
+        tracks.map(({ task }) => [task.model.state.direction, task.model.state.value]),
+        [
+          [1, 25],
+          [0, 30],
+        ],
+      );
+      assert.deepEqual(
+        tracks.map(({ task }) => [...task.config.rect]),
+        [controlHitBounds[1], controlHitBounds[0]],
+      );
+      let imageReads = 0,
+        loads = 0;
+      for (const name of ['controls', 'area']) {
+        const file = h.game.lookup(h.game.resolveCategory(name, 'image')).file,
+          read = file.read;
+        t.mock.method(file, 'read', function (...args) {
+          imageReads++;
+          return read.apply(this, args);
+        });
+      }
+      const load = FESControlDriver.prototype.load;
+      t.mock.method(FESControlDriver.prototype, 'load', function (...args) {
+        loads++;
+        return load.apply(this, args);
+      });
+      const modelBefore = tracks.map(({ task }) => task.model.snapshot());
+      for (const [index, [x, y]] of points.entries()) {
+        const target = root.player.hit(x, y);
+        assert.strictEqual(target.o, objects[index]);
+        assert.deepEqual(root.collection.reference(target.o), controlHitReferences[index]);
+        assert.strictEqual(root.player.slide(target, x, y), undefined);
+      }
+      const pendingBeforeProbe = objects.map((o) => [o.valuePending, o.valueNotify]),
+        modelAfterProjection = tracks.map(({ task }) => task.model.snapshot());
+      const observed = observeControlHitSource(t, h, root),
+        actual = [];
+      for (const ref of controlHitReferences) {
+        await controlHitNotify(h, 'PROBE', text(ref.nameBytes), 1);
+        assert.equal(h.words.get(50), observed.produced.at(-1).nameAddress);
+        assert.equal(h.words.get(51), 1);
+        actual.push(h.words.get(52));
+      }
+      // Independent frame inputs and the original short threshold counts:
+      // Slider: N100/travel56/pixel27 ->48; Scroll: full100/cap80/travel56,
+      // step70/scaled2600 crosses37 thresholds. Neither result adds minimum10.
+      assert.deepEqual(
+        actual,
+        [48, 37],
+        'public slide must project both decoded typed control values',
+      );
+      observed.check();
+      assert.deepEqual(pendingBeforeProbe, [
+        [true, 0],
+        [true, 0],
+      ]);
+      assert.deepEqual(modelAfterProjection, modelBefore);
+      assert.deepEqual(
+        tracks.map(({ task }) => [task.model.state.value, task.model.state.pixel]),
+        [
+          [48, 26],
+          [37, 25],
+        ],
+      );
+      assert.deepEqual(
+        [h.words.get(10), h.words.get(13)],
+        [1, 1],
+        'driver notify0 does not duplicate public callbacks',
+      );
+      assert.deepEqual([h.words.get(11), h.words.get(14)], [1, 1]);
+      assert.deepEqual([h.words.get(12), h.words.get(15)], [previousScroll, objects[0].handle]);
+      assert.equal(root.scrollPosition, objects[1].handle);
+      assert.deepEqual(frame(root), saved);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      // Projection itself must not mutate the actual task before its driver consumes.
+      assert.deepEqual(
+        modelBefore.map((s) => [s.value, s.pixel]),
+        [
+          [25, 14],
+          [30, 21],
+        ],
+      );
+      for (const [index, [x, y]] of points.entries()) {
+        assert.strictEqual(root.player.slide({ s: root, o: objects[index] }, x, y), undefined);
+      }
+      assert.deepEqual([h.words.get(10), h.words.get(13)], [1, 1]);
+      assert.deepEqual(
+        objects.map((o) => o.valuePending),
+        [false, false],
+      );
+      assert.equal(root.scrollPosition, objects[1].handle);
+
+      fresh = await freshCheckpoint(t, h, profile);
+      const fRoot = fresh.world.objects.objects.get(h.id).implementation.player.root,
+        words = fresh.world.runtime.variableBank(fresh.world.main, false),
+        fSaved = frame(fRoot),
+        slider = fRoot.collection.lookup(ascii('Slider'), 1),
+        beforeInput = fRoot.scrollPosition;
+      assert.deepEqual(fSaved, { ...saved, executingLabel: undefined, executingLine: undefined });
+      assert.deepEqual(
+        controlHitReferences.map((ref) => fRoot.collection.lookup(ref.nameBytes, 1).value),
+        [48, 37],
+      );
+      assert.deepEqual([words.get(10), words.get(13)], [1, 1]);
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      // This is a new restored input, after the existing restore-only replay guard.
+      // y75 centers beyond the last pixel: clamp56, N100 -> endpoint100, not48.
+      assert.strictEqual(fRoot.player.slide({ s: fRoot, o: slider }, 110, 75), undefined);
+      assert.equal(slider.value, 100);
+      assert.deepEqual([words.get(10), words.get(11), words.get(12)], [2, 1, beforeInput]);
+      assert.equal(fRoot.scrollPosition, slider.handle);
+      assert.deepEqual(frame(fRoot), fSaved);
+      assert.deepEqual(
+        [imageReads, loads],
+        [0, 0],
+        'a new restored slide uses restored decoded metadata without IO',
+      );
+
+      const fh = { world: fresh.world, id: h.id };
+      await controlHitDefinition(fh, 'POS2', 'Slider[1] area:7');
+      assert.equal(slider.positionPending, true);
+      assert.strictEqual(fRoot.player.slide({ s: fRoot, o: slider }, 110, 43), undefined);
+      assert.equal(
+        slider.value,
+        48,
+        'POS2-only pending does not replace the current vertical rectangle',
+      );
+      assert.equal(slider.positionPending, true);
+      assert.equal(words.get(10), 3);
+      await controlHitDefinition(fh, 'FILE', 'Slider[1] controls');
+      assert.equal(slider.filePending, true);
+      const unavailable = {
+        value: slider.value,
+        count: words.get(10),
+        scroll: fRoot.scrollPosition,
+      };
+      assert.strictEqual(fRoot.player.slide({ s: fRoot, o: slider }, 110, 75), undefined);
+      assert.deepEqual(
+        { value: slider.value, count: words.get(10), scroll: fRoot.scrollPosition },
+        unavailable,
+      );
+      assert.deepEqual([imageReads, loads], [0, 0]);
+      assert.deepEqual(frame(fRoot), fSaved);
+      assert.deepEqual(h.world.random.snapshot(), rng);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(fresh.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}

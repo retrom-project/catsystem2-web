@@ -10,6 +10,7 @@ import {
   setFESControlValue,
 } from './fes-control-model.mjs';
 import { JSControlTask } from './control-task-js.mjs';
+import { projectControlPointValue } from './control-task-model.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { nativeCategoryFilename } from './resource-file.mjs';
@@ -56,6 +57,43 @@ export class FESControlDriver {
     )
       throw new Error('FES control requires its actual owned JS World task');
     return record.implementation;
+  }
+  projectSlideValue(instance, object, x, y) {
+    if (object.nativeType !== 14 && object.nativeType !== 15) return null;
+    const runtime = instance.runtime,
+      record = this.world.objects.objects.get(instance.runtimeID);
+    if (
+      runtime?.world !== this.world ||
+      !instance.player.publicEventLive(instance, runtime, record, object)
+    )
+      return null;
+    const reference = instance.collection.reference(object);
+    if (
+      instance.collection.lookup(reference.nameBytes, reference.index) !== object ||
+      object.nativeTaskID == null
+    )
+      return null;
+    const task = this.validate(instance, object),
+      state = task.model.state,
+      metadata = task.resource.metadata[0];
+    if (
+      object.filePending ||
+      !state.loaded ||
+      metadata?.length !== 9 ||
+      !Number.isInteger(metadata[4]) ||
+      !Number.isInteger(metadata[5]) ||
+      !Number.isInteger(state.minimumThumb)
+    )
+      return null;
+    const left = object.x | 0,
+      top = object.y | 0;
+    return projectControlPointValue(
+      task.kind,
+      [left, top, (left + (object.width | 0)) | 0, (top + (object.height | 0)) | 0],
+      { minimum: object.minimum, maximum: object.maximum, pageSize: object.pageSize },
+      { thumbSize: [metadata[4], metadata[5]], minimumThumb: state.minimumThumb },
+      [x, y],
+    );
   }
   async initialize(instance, object, { restoring = false } = {}) {
     this.state(object);
