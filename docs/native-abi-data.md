@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 798       | 82            | 19            | 110     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 800       | 82            | 19            | 108     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -163,6 +163,26 @@ flag. Both flag parameters remain full 32-bit words, without a boolean type,
 The ordinary World tests exercise the real kind15 receiver and native-ID
 transport in both profiles with zero and a nonzero high-bit word. This recovery
 does not establish original rendering pixels or any other drawing slot.
+
+## SDK FES surface and save-object bindings
+
+SDK main449 (`fes.bindSurface`) and main451 (`fes.setSaveObject`) are explicitly
+recovered from their own complete wrappers, independently of the Game. Each
+reads two VM words, returns control `2` and writes no VM result. SDK raw329/331
+use the existing kind34 mapping to canonical334/336; the Game's own wrappers
+send334/336. Shared signatures and Game registration data remain unchanged.
+
+The ordinary World tests call the real kind34 receiver with native task IDs:
+main449 rebinds two actual Draw surfaces, and main451 stores zero or either of
+two real GlobalFile handles. They verify exact forwarded words, actual receiver
+bindings, control2/no value and an unchanged caller VM snapshot. Packet
+observation delegates to the real transport. This is a normal JS receiver
+acceptance, not execution of the original SDK.
+
+SDK448, 450 and452–454 retain their unknown admission and cannot execute their
+installed wrappers. In particular the formatter core and exceptional tail of
+450 remain separate evidence work. No other slot, version, type or capability
+is enabled by these two registrations.
 
 ## Resolution and consumers
 
