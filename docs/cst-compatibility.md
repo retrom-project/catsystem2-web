@@ -70,8 +70,15 @@ passes the row count in local variable zero. That FES shares its actual Script o
 the accepted configuration starts its row strings at 700. A public click on the second BUTTON returns
 `exitCode = 1`, which the system KCS uses to load and execute the second row's CST. This two-row Game
 integration used real rendering and normal World cleanup; a generic built-in menu does not implement
-that FES. It does not establish SDK readiness, a pending selection restored into a fresh World,
-owner close, cancellation or broader game-supplied scripts. `select2` still needs the documented
+that FES.
+
+The pending choice also restores into a separate World, WebGL context and VM. Its full current
+checkpoint matches before the first tick or render; restore reads immutable main/sscript once each
+without command or RNG replay. The restored FES accepts the same public choice, then reads and
+executes the selected CST as a new command from the unchanged mounted source. Releasing the original
+Script owner removes its VM, child FES and input records without advancing or changing the fresh
+World's full checkpoint. This owner cleanup is not user cancellation. SDK readiness, direct child
+cancellation and broader game-supplied scripts remain unaccepted. `select2` still needs the documented
 alpha-mask/state images.
 
 Primary contracts: [subroutines](https://cs2.suki.jp/manual/scene/reference/unique/subroutine.html),
