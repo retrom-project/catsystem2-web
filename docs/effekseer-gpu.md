@@ -237,15 +237,19 @@ coordinates, UVs and page identity, plus CPU-owned source pixels and fresh state
 Their GL API recorder has no rasterizer: checkpoint readback verifies only bytes
 explicitly uploaded to its known backing, not native GPU pixel equivalence.
 The caps policy alone enables neither textured dirty queries nor unknown ABIs.
-Page dirty ownership remains independently pending.
+Ordinary page dirty ownership is independently established below.
 The SDK max/guard input policy does not establish complete native factory,
 clipping or UV equivalence from the Game tests.
 
-The Game ABI separately registers `graphics.texturedBoundsQuery: 'model-and-pages'`;
-the SDK explicitly registers `null` pending its own query and owner proof.
+Both reviewed ABIs independently register
+`graphics.texturedBoundsQuery: 'model-and-pages'`. The SDK registration is supported
+by its own ordinary rectangle source/derived factory, query, page lookup and
+successful-presentation retirement evidence. Its ordinary factory uses the source
+and derived slots and leaves both independent backend slots empty; their
+consuming cache queries remain outside this bounds policy.
 Only the registered kind2 SimplePlane task owns this query policy; text tasks'
 composed planes retain their existing drawing contract and remain unreviewed.
-Ordinary Game PLANE models keep distinct source and derived dirty markers and
+Ordinary PLANE models in both reviewed versions keep distinct source and derived dirty markers and
 a derived cached RECT. Source transform writes mark the source; geometry/MOT
 writes and the native color setter mark the derived model, including repeated
 identical color assignments. Source vertex rebuilds retain their existing
