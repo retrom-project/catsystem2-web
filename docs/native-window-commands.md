@@ -88,16 +88,23 @@ Worlds drain their owned message queue without constructing a Win32 process.
 The Game language shortcut path below translates its queued keyboard metadata
 into the same command handler.
 
-The following title/close behavior belongs to the original-window integration.
-Its confirmations use the native translated captions/body. `WM_CLOSE`
-cancellation keeps the World alive. Acceptance hides
+Ordinary JavaScript Worlds send application events through their existing Root
+and the canonical D2 router. Each send owns a 24-byte source packet containing
+five event words and padding; its outer sender and flags are zero. The same
+router decodes unfiltered message 11 and task-flags-filtered message 12, including
+children below a nonmatching parent. The normal path does not construct an
+original process, application, Settings, random or task-memory owner. An already
+active original process retains its explicit event-helper path.
+
+Both paths use the existing title/close command sequence and translated
+captions/body. `WM_CLOSE` cancellation keeps the World alive. Acceptance hides
 the view and posts `0x410`, which sends the original filtered Script-disable
 event before requesting teardown. The Engine waits for its active frame,
 releases the task tree, media, native process, rendering and persistent stores,
 then returns the standalone player to its start screen. External disposal also
 cancels a pending browser dialog and waits for that frame to settle.
 
-In that original-window integration, `NativeWindowEvents` executes the
+In the original-process integration, `NativeWindowEvents` executes the
 original `5DC540`/`5DC640` or
 `4B8970`/`4B8A70` packet helpers. Their internal transport CALL targets enter
 the canonical World router. The helpers write five source words and leave the
@@ -108,6 +115,17 @@ are unchanged. Only the SDK's known
 event numbers 156/160 become canonical 158/162 at this boundary. Public
 optional tests run both original profiles through real Script queues and a
 fresh World restore.
+
+The normal-World tests drive Input message 142 and real pointer/idle frames
+before command 40002: event 158 resets the Input owner before the host can cancel
+the close. A pending window command restores into an independent fresh World
+without command, VM-native or RNG replay; normal immutable program/M2 resource
+revalidation remains allowed. Acceptance hides the view, sends filtered event
+162 through real Script handlers, requests quit, and then permits settled World
+cleanup. The source World and its dropped queue cannot affect the fresh owner.
+The host supplies confirmation and view actions, not routing or Script state.
+These cases do not establish resource101 accelerators or additional platform
+services.
 
 The browser host provides modal preferences, persistent game-file import,
 download and deletion, audio controls, version/system information, fullscreen

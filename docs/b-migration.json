@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 316, "oracle": 149, "differential": 67 },
+    "counts": { "js": 317, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -311,6 +311,7 @@
         "tests/native-view-rectangles.test.mjs",
         "tests/native-view.test.mjs",
         "tests/native-window-language-owner.test.mjs",
+        "tests/native-window-normal-events.test.mjs",
         "tests/native-windows-accelerators.test.mjs",
         "tests/native-windows-dib.test.mjs",
         "tests/native-windows-files.test.mjs",
@@ -2344,7 +2345,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/window.mjs",
-        "line": 262,
+        "line": 287,
         "expression": "NATIVE_STARTUP_BLOCKS[world.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2353,7 +2354,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/window.mjs",
-        "line": 320,
+        "line": 345,
         "expression": "NATIVE_WINDOW_COMMAND_CALLBACKS[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2362,7 +2363,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/window.mjs",
-        "line": 321,
+        "line": 346,
         "expression": "NATIVE_STARTUP_BLOCKS[profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -56287,36 +56288,42 @@
     },
     {
       "file": "src/native/window.mjs",
-      "sourceSha256": "5fb3b20900db93465edd494fdab54cc024aed9c1401fc04f26087d8661bcfcf3",
+      "sourceSha256": "48e5ff8a60509fb3b335b43a602ba999c9e046f71f5df26841fc4c7d1b36f48b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 3, "calls": 4, "references": 0 },
-      "dependencyTypes": ["call", "ensureNativeEngine", "getNativeFeature", "in-image-literals"],
+      "dependencyTypes": [
+        "call",
+        "ensureNativeEngine",
+        "getNativeFeature",
+        "in-image-literals",
+        "sendEngine"
+      ],
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 209,
-          "method": "call",
-          "target": "0x713f70",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "line": 232,
-          "method": "call",
-          "target": "0x713f70",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
           "line": 234,
+          "method": "call",
+          "target": "0x713f70",
+          "review": "traced",
+          "reason": "直接使用原 EXE image 范围内的目标。"
+        },
+        {
+          "line": 257,
+          "method": "call",
+          "target": "0x713f70",
+          "review": "traced",
+          "reason": "直接使用原 EXE image 范围内的目标。"
+        },
+        {
+          "line": 259,
           "method": "call",
           "target": "0x713f60",
           "review": "traced",
           "reason": "直接使用原 EXE image 范围内的目标。"
         },
         {
-          "line": 320,
+          "line": 345,
           "method": "call",
           "target": "NATIVE_WINDOW_COMMAND_CALLBACKS[profile]",
           "review": "needs-review",
@@ -56326,21 +56333,28 @@
       "executionSiteCounts": { "call": 4 },
       "indirectSites": [
         {
-          "line": 198,
+          "line": 191,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 223,
           "method": "getNativeFeature",
           "feature": "window-events",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 208,
+          "line": 233,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 231,
+          "line": 256,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -58915,23 +58929,23 @@
         },
         {
           "file": "src/native/window.mjs",
-          "line": 209,
-          "method": "call",
-          "target": "0x713f70",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/window.mjs",
-          "line": 232,
-          "method": "call",
-          "target": "0x713f70",
-          "review": "traced",
-          "reason": "直接使用原 EXE image 范围内的目标。"
-        },
-        {
-          "file": "src/native/window.mjs",
           "line": 234,
+          "method": "call",
+          "target": "0x713f70",
+          "review": "traced",
+          "reason": "直接使用原 EXE image 范围内的目标。"
+        },
+        {
+          "file": "src/native/window.mjs",
+          "line": 257,
+          "method": "call",
+          "target": "0x713f70",
+          "review": "traced",
+          "reason": "直接使用原 EXE image 范围内的目标。"
+        },
+        {
+          "file": "src/native/window.mjs",
+          "line": 259,
           "method": "call",
           "target": "0x713f60",
           "review": "traced",
@@ -58939,7 +58953,7 @@
         },
         {
           "file": "src/native/window.mjs",
-          "line": 320,
+          "line": 345,
           "method": "call",
           "target": "NATIVE_WINDOW_COMMAND_CALLBACKS[profile]",
           "review": "needs-review",

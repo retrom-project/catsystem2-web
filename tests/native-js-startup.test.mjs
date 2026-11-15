@@ -417,7 +417,24 @@ test('encrypted KIF still has its separate prepared/decrypted input diagnostic',
   );
 });
 
-test('ordinary startup retains explicit lazy D8 and unknown ABI boundaries', async () => {
+async function normalWindowEvent(world) {
+  const implementation = world.objects.objects.get(world.main.id).implementation,
+    original = implementation.message,
+    received = [];
+  implementation.message = function (words, context, output) {
+    if (words[1] === 158) received.push({ words: [...words], flags: context.flags });
+    return original.call(this, words, context, output);
+  };
+  try {
+    await world.window.sendEvent(158, 0, 1);
+  } finally {
+    implementation.message = original;
+  }
+  assert.deepEqual(received, [{ words: [0, 158, 0, 1], flags: 0 }]);
+  assert.equal(world.input.idleFrames, 0);
+}
+
+test('ordinary startup routes normal window events and retains unknown ABI boundaries', async () => {
   const environment = startupEnvironment();
   let player;
   try {
@@ -427,10 +444,7 @@ test('ordinary startup retains explicit lazy D8 and unknown ABI boundaries', asy
     await unknown.dispose();
     player = startupPlayer(game, startupProfiles[1]);
     await player.initialize();
-    await assert.rejects(
-      player.world.window.sendEvent(1),
-      /window-events requires initialized original application, Settings and random owners/,
-    );
+    await normalWindowEvent(player.world);
     assert.equal(player.world.nativeEngine, undefined);
     assert.equal(player.world.nativeEngineLoading, undefined);
     assert.deepEqual(player.world.effekseer.threads.snapshot().threads, [
@@ -443,7 +457,7 @@ test('ordinary startup retains explicit lazy D8 and unknown ABI boundaries', asy
 });
 
 for (const profile of startupProfiles)
-  test(`real window event request rejects partial original startup before open or random mutation: ${profile}`, async () => {
+  test(`adapter-only startup routes window events but rejects a partial original owner: ${profile}`, async () => {
     const environment = startupEnvironment();
     let player,
       opens = 0;
@@ -464,10 +478,20 @@ for (const profile of startupProfiles)
       });
       const random = player.random.snapshot(),
         crt = player.world.effekseer.snapshot();
-      await assert.rejects(
-        player.world.window.sendEvent(1, 2, 3),
-        /window-events requires initialized original application, Settings and random owners/,
-      );
+      await normalWindowEvent(player.world);
+      const loading = Object.getOwnPropertyDescriptor(player.world, 'nativeEngineLoading');
+      // An explicit in-flight original owner is a separate failure boundary.
+      // It must reject before trying to open or await a partial process.
+      player.world.nativeEngineLoading = new Promise(() => {});
+      try {
+        await assert.rejects(
+          player.world.window.sendEvent(158, 0, 1),
+          /window-events requires initialized original application, Settings and random owners/,
+        );
+      } finally {
+        if (loading) Object.defineProperty(player.world, 'nativeEngineLoading', loading);
+        else delete player.world.nativeEngineLoading;
+      }
       assert.equal(opens, 0);
       assert.equal(player.world.nativeEngine, undefined);
       assert.equal(player.world.nativeEngineLoading, undefined);

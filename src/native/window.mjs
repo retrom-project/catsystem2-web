@@ -173,6 +173,31 @@ export class NativeWindow {
   async sendEvent(event, w = 0, l = 0, options) {
     const world = this.world;
     if (world.root === undefined || !world.objects.objects.has(world.root)) return 0;
+    if (!world.nativeEngine && !world.nativeEngineLoading) {
+      const { taskType } = options ?? {},
+        data = new Uint8Array(24),
+        view = new DataView(data.buffer);
+      [0, 0, event, w, l].forEach((word, i) => view.setUint32(i * 4, word >>> 0, true));
+      const context = {
+        payload: {
+          load: (at) => view.getUint32(at, true),
+          bytes: (at, size) => data.subarray(at, at + size),
+        },
+        fromHost: true,
+        flags: 0,
+      };
+      // sendEngine accepts World identities and supplies the native Root's
+      // zero sender. The copied source tail is padding; D2 clears decoded flags.
+      await world.sendEngine(
+        world.root,
+        world.root,
+        taskType === undefined ? 11 : 12,
+        taskType ?? 0,
+        0,
+        context,
+      );
+      return Number(context.nativeRouted);
+    }
     if (world.bootstrapOwner) {
       // JS startup does not construct the original window/Settings/random
       // owners. A supplied transitional host must not silently create only
