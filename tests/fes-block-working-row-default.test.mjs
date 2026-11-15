@@ -253,7 +253,18 @@ for (const profile of startupProfiles) {
         return nextApply.call(this, bytes, ...args);
       });
       observe(t, next, nextTrace, nextCommands);
+      const freshInputWord = fresh.world.objects.objects.get(h.id).effectiveFrame >>> 0,
+        resumeInputWord = (freshInputWord + 1) >>> 0;
+      assert.equal(next.nativeFrameWord, freshInputWord);
+      assert.equal(
+        next.commandDelayUntil,
+        resumeInputWord,
+        'the source wait 1 retains its deadline',
+      );
       await fresh.world.sendEngine(h.id, fresh.world.main.id, 333);
+      assert.deepEqual(nextTrace, [], 'same-input 333 cannot consume the restored wait');
+      assert.equal(next.commandDelayUntil, resumeInputWord);
+      await fresh.world.objects.tick(resumeInputWord);
       assert.deepEqual(nextTrace, [
         ['row-bank', '$str1', 'probe getid OTHER'],
         ['macro', 'probe getid OTHER', 'probe getid $str22'],
@@ -351,8 +362,17 @@ for (const profile of startupProfiles) {
       await fresh.world.objects.tick(delay);
       assert.equal(words.get(40), 1);
       assert.deepEqual(next.suspended, [['START', 3]]);
-      assert.equal(next.commandDelayUntil, null);
+      const laterInputWord = (delay + 1) >>> 0;
+      assert.equal(
+        next.commandDelayUntil,
+        laterInputWord,
+        'the following wait 1 arms a new deadline',
+      );
       await fresh.world.sendEngine(h.id, fresh.world.main.id, 333);
+      assert.equal(next.commandDelayUntil, laterInputWord);
+      assert.deepEqual(next.suspended, [['START', 3]]);
+      await fresh.world.objects.tick(laterInputWord);
+      assert.equal(next.commandDelayUntil, null);
       assert.equal(next.label, 'IDLE');
       assert.deepEqual(
         [40, 41, 42, 43, 44, 45, 46, 47].map((index) => words.get(index)),

@@ -248,8 +248,19 @@ for (const profile of startupProfiles) {
       assert.equal(words.get(11), 31);
       strings.setBytes(22, ascii('getid'));
       // Use the actual current rule set after restore; do not assume a dynamic rule persisted.
-      const second = observeVerb(t, next, '$str22', 'getid');
+      const second = observeVerb(t, next, '$str22', 'getid'),
+        freshInputWord = fresh.world.objects.objects.get(h.id).effectiveFrame >>> 0,
+        resumeInputWord = (freshInputWord + 1) >>> 0;
+      assert.equal(next.nativeFrameWord, freshInputWord);
+      assert.equal(
+        next.commandDelayUntil,
+        resumeInputWord,
+        'the source wait 1 retains its deadline',
+      );
       await fresh.world.sendEngine(h.id, fresh.world.main.id, 333);
+      assert.deepEqual(second.trace, [], 'same-input 333 cannot consume the restored wait');
+      assert.equal(next.commandDelayUntil, resumeInputWord);
+      await fresh.world.objects.tick(resumeInputWord);
       assert.deepEqual(second.trace, [
         ['getter', '$str22'],
         ['bank', '$str22', 'getid'],

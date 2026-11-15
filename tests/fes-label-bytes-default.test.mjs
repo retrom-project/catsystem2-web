@@ -301,6 +301,16 @@ for (const profile of startupProfiles) {
       assert.deepEqual(targetCalls, ['$str1', '$str0']);
       assert.deepEqual(scriptCalls, ['LABEL_CALL', 'LABEL_GO']);
       assert.equal(root.label, fesByteView(first));
+      assert.deepEqual(root.suspended, [[fesByteView(first), 0]]);
+      assert.equal(root.commandDelayUntil, null);
+      assert.equal(
+        words.get(59),
+        0,
+        'the native event returns before decoding its transferred target',
+      );
+      assert.equal(words.get(60), 0);
+      // The transfer has no pending wait, so a forced current-input update may enter the target.
+      await h.world.sendEngine(current.id, h.world.main.id, 333);
       assert.deepEqual(root.suspended, [[fesByteView(first), 2]]);
       assert.equal(words.get(57), 1);
       assert.equal(words.get(58), 1);
@@ -353,7 +363,30 @@ for (const profile of startupProfiles) {
       await commonRoute(fresh.world, second, 0);
       assert.deepEqual(commonDelays(next.collection), [21, 11, 10, 0]);
 
+      const freshInputWord = fresh.world.objects.objects.get(current.id).effectiveFrame >>> 0,
+        resumeInputWord = (freshInputWord + 1) >>> 0;
+      assert.equal(next.nativeFrameWord, freshInputWord);
+      assert.equal(
+        next.commandDelayUntil,
+        resumeInputWord,
+        'the target source wait 1 remains armed',
+      );
       await fresh.world.sendEngine(current.id, fresh.world.main.id, 333);
+      assert.equal(nextWords.get(60), 0, 'same-input 333 cannot advance the restored deadline');
+      assert.equal(next.commandDelayUntil, resumeInputWord);
+      const hoverEventsAt = eventInputs.length,
+        focusAfterHover = (1234 * 10 + 1) * 10 + 2;
+      assert.equal(nextWords.get(55), 1234);
+      await fresh.world.objects.tick(resumeInputWord);
+      assert.deepEqual(eventInputs.slice(hoverEventsAt), [
+        {
+          labels: [fesByteView(first) + '.FOCUS', 'left.FOCUS'],
+          owner: { nameBytes: ascii('left'), index: 0 },
+          index: 0,
+        },
+      ]);
+      assert.equal(nextWords.get(55), focusAfterHover);
+      assert.equal(nextWords.get(56), 0);
       assert.equal(nextWords.get(59), 1);
       assert.equal(nextWords.get(60), 1);
       assert.equal(next.label, 'IDLE');
@@ -372,9 +405,10 @@ for (const profile of startupProfiles) {
         payload: notifyMemory,
       });
       assert.equal(nextWords.get(57), 3);
-      const named = memory(ascii('FOCUS'), ascii('left'), 1);
+      const named = memory(ascii('FOCUS'), ascii('left'), 1),
+        focusAfterNamed = focusAfterHover * 10 + 2;
       await fresh.world.sendEngine(current.id, fresh.world.main.id, 337, 64, 0, { payload: named });
-      assert.equal(nextWords.get(55), 12342);
+      assert.equal(nextWords.get(55), focusAfterNamed);
       assert.equal(nextWords.get(56), 1);
       assert.deepEqual(eventInputs.at(-1), {
         labels: ['left.FOCUS'],
@@ -386,7 +420,7 @@ for (const profile of startupProfiles) {
         payload: negativeIndex,
       });
       assert.deepEqual(negativeIndexInputs, [{ labels: ['left.FOCUS'], object: null, index: -1 }]);
-      assert.equal(nextWords.get(55), 123422);
+      assert.equal(nextWords.get(55), focusAfterNamed * 10 + 2);
       assert.equal(nextWords.get(56), 0xffffffff);
       const canonicalJump = memory(a);
       assert.equal(
@@ -413,6 +447,11 @@ for (const profile of startupProfiles) {
         assert.equal(payload.stringReads, 0);
       assert.equal(await next.player.notify('LITERAL'), true);
       assert.equal(nextWords.get(62), 1);
+      assert.equal(next.label, 'literal\\n');
+      assert.deepEqual(next.suspended, [['literal\\n', 0]]);
+      assert.equal(next.commandDelayUntil, null);
+      assert.equal(nextWords.get(63), 0, 'literal raw target also waits for a subsequent update');
+      await fresh.world.sendEngine(current.id, fresh.world.main.id, 333);
       assert.equal(nextWords.get(63), 1);
       assert.equal(next.label, 'literal\\n');
       assert.equal(reads, 1);
