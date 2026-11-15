@@ -36,6 +36,14 @@ must supply the direct file or `null`; the optional game-only
 provider must preserve those same precedence rules. The SDK loader has no
 archive fallback. Existing empty files are successful loads.
 
+`NativeWorld` keeps the physical loose-file read first. Its game fallback passes
+mode 3 to the shared `readNativeResource` provider, preserving temporary files,
+the preload cache, global updates and each registered slot or LST row's
+loose-before-archive order. An earlier row's archive precedes a later row's loose
+file. The fallback does not use the archive-only `GameFiles.readArchive` reader
+or make virtual aliases into physical direct-file hits. The SDK still performs
+only its direct read.
+
 `initialize()` loads SDK table zero from `language.txt`, or game table zero from
 `language_<UI-prefix>.txt` followed by table one from `language.optionTable`.
 That optional filename replaces `%LANG%` with the UI prefix, then `%LANG_M%`

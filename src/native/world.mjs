@@ -183,8 +183,7 @@ export class NativeWorld {
     this.globalStrings = new NativeGlobalStrings({
       profile,
       read: (name) => (this.game.readLoose ? this.game.readLoose(name) : this.game.read(name)),
-      readArchive: (name) =>
-        this.game.readArchive ? this.game.readArchive(name) : Promise.resolve(null),
+      readArchive: (name, mode) => readNativeResource(this, name, mode),
       configuration,
     });
     if (game.nativeResources)
