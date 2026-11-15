@@ -115,6 +115,12 @@ export class FESInstance {
     if (player.runtimeFactory) {
       this.frameOrigin = 0;
       this.nativeFrameWord = 0;
+      this.waitParameters = {
+        frameThreshold: 0,
+        reference: null,
+        privateIndex: 0,
+        tagBytes: new Uint8Array(32),
+      };
       this.runtime = player.runtimeFactory(this);
     }
     if (restoring || this.runtime) return;
@@ -518,8 +524,10 @@ export class FESInstance {
     if (this.runtime) {
       if (!Number.isInteger(frameWord) || frameWord < 0 || frameWord > 0xffffffff)
         throw new TypeError('Native FES frame requires an unsigned input word');
+      frameWord >>>= 0;
       if (this.frameOrigin === 0) this.frameOrigin = (frameWord - 1) >>> 0;
       this.nativeFrameWord = frameWord;
+      return this.tickNative();
     }
     if (this.finished !== null) return;
     if (this.deferredCommandReturn !== null) {
@@ -565,6 +573,34 @@ export class FESInstance {
     this.suspended = null;
     this.run(stack);
   }
+  async tickNative() {
+    if (this.finished !== null) return;
+    if (this.deferredCommandReturn !== null) {
+      const value = this.deferredCommandReturn;
+      this.deferredCommandReturn = null;
+      const { action } = this.nativeCommandReturn(value);
+      if (action === 'suspend') return;
+      if (action === 'flush') {
+        this.decodePending = true;
+        return;
+      }
+    }
+    if (!(await this.runtime.pollWait())) return;
+    const stack = this.suspended || [[this.label, 0]];
+    this.suspended = null;
+    this.run(stack);
+  }
+  commonCommandReturn({ binding, word }, mode) {
+    if (binding === 'native-wait') {
+      if (mode === 'event') return word ? { action: 'event-stop' } : {};
+      const signed = word | 0;
+      if ([-1, -2, -4, -6, -7].includes(signed)) {
+        this.commandDelayUntil = signed;
+        return { action: 'suspend' };
+      }
+    }
+    return this.nativeCommandReturn(word);
+  }
   consumeWaitSkip() {
     if (
       !this.keySkipEnabled ||
@@ -595,7 +631,7 @@ export class FESInstance {
     this.eventObject = o;
     let jumped = false;
     for (const label of labels) {
-      jumped = this.run([[label, 0]], 'event') || jumped;
+      jumped = this.run([[label, 0]], 'event', label) || jumped;
       if (jumped || this.finished !== null) break;
     }
     this.eventObject = current;
@@ -620,17 +656,20 @@ export class FESInstance {
       nativeContext: this.nativeContext,
       executingLabel: this.executingLabel,
       executingLine: this.executingLine,
-      waits: Object.fromEntries(
-        [
-          'waitFrames',
-          'waitMotion',
-          'waitSound',
-          'waitObjects',
-          'transitionUntil',
-          'commandDelayUntil',
-          'deferredCommandReturn',
-        ].map((key) => [key, this[key]]),
-      ),
+      deferredCommandReturn: this.deferredCommandReturn,
+      waits: this.runtime
+        ? null
+        : Object.fromEntries(
+            [
+              'waitFrames',
+              'waitMotion',
+              'waitSound',
+              'waitObjects',
+              'transitionUntil',
+              'commandDelayUntil',
+              'deferredCommandReturn',
+            ].map((key) => [key, this[key]]),
+          ),
     };
     this.suspended = null;
     this.decodePending = false;
@@ -645,7 +684,7 @@ export class FESInstance {
         if (!this.program.blocks[label]) continue;
         handled = true;
         bindContext();
-        jumped = this.run([[label, 0]], 'event') || jumped;
+        jumped = this.run([[label, 0]], 'event', label) || jumped;
         let flushes = 0;
         while (this.decodePending) {
           if (++flushes > 10000) throw new Error(`${this.name}: FES notification decode budget`);
@@ -661,7 +700,7 @@ export class FESInstance {
           }
           await this.flushNativeRecords();
           bindContext();
-          jumped = this.run(continuation, 'event') || jumped;
+          jumped = this.run(continuation, 'event', label) || jumped;
         }
         if (jumped || this.finished !== null) break;
       }
@@ -678,7 +717,9 @@ export class FESInstance {
       if (!jumped && this.finished === null) {
         this.suspended = saved.suspended;
         this.decodePending = saved.decodePending;
-        Object.assign(this, saved.waits);
+        // This reply belongs to the saved JS continuation, not native wait control/parameters.
+        if (this.runtime) this.deferredCommandReturn = saved.deferredCommandReturn;
+        else Object.assign(this, saved.waits);
       }
       // Public adapters observe completion only after this sole owner restores
       // the caller. The returned Promise does not expose synchronous settlement.
@@ -726,7 +767,8 @@ export class FESInstance {
       return { action: 'flush' };
     }
     if (signed === -1) {
-      this.waitMotion = true;
+      if (this.runtime) this.commandDelayUntil = -1;
+      else this.waitMotion = true;
       return { action: 'suspend' };
     }
     if ([-2, -4, -5, -6, -7].includes(signed))
@@ -754,7 +796,7 @@ export class FESInstance {
     if (!jumped && !this.suspended) this.suspended = saved;
     return true;
   }
-  run(stack, mode = 'frame') {
+  run(stack, mode = 'frame', eventLabel = stack?.[0]?.[0]) {
     if (this.runtime?.closed) return false;
     let budget = 20000;
     let jumped = false;
@@ -768,7 +810,7 @@ export class FESInstance {
         this.executingLine = pc + 1;
         let result;
         try {
-          result = this.execute(lines[pc++], lines, pc);
+          result = this.execute(lines[pc++], lines, pc, undefined, mode);
         } catch (error) {
           error.message = `${this.name}#${label}:${pc}: ${error.message}`;
           throw error;
@@ -782,8 +824,23 @@ export class FESInstance {
           stack.push([label, pc], [result.target, 0]);
           break;
         }
+        if (result.action === 'event-stop') return jumped;
         if (result.action === 'return') break;
         if (result.action === 'next') {
+          if (this.runtime && mode === 'event') {
+            // The event cursor is distinct from the main label/command word.
+            // Only a changed formatted label at entry depth transfers the main continuation.
+            if (result.target !== eventLabel && stack.length === 0) {
+              if (!this.program.blocks[result.target])
+                throw new Error(`${this.name}: no FES block ${result.target}`);
+              this.label = result.target;
+              this.suspended = [[result.target, 0]];
+              this.commandDelayUntil = null;
+              return true;
+            }
+            stack.push([result.target, 0]);
+            break;
+          }
           jumped = true;
           stack.length = 0;
           stack.push([result.target, 0]);
@@ -812,7 +869,7 @@ export class FESInstance {
     }
     return pc;
   }
-  execute(line, lines, pc, execution) {
+  execute(line, lines, pc, execution, mode = 'frame') {
     if (this.runtime?.closed) throw new Error('FES runtime owner is closed');
     let bytes = fesSourceBytes(line);
     if (!execution) {
@@ -839,10 +896,16 @@ export class FESInstance {
         truth = this.value(expr) !== 0;
       return rest
         ? truth
-          ? this.execute(fesViewBytes(rest), lines, pc, {
-              bytes: execution.bytes,
-              offset: execution.offset + line.length - rest.length,
-            })
+          ? this.execute(
+              fesViewBytes(rest),
+              lines,
+              pc,
+              {
+                bytes: execution.bytes,
+                offset: execution.offset + line.length - rest.length,
+              },
+              mode,
+            )
           : {}
         : truth
           ? {}
@@ -892,12 +955,15 @@ export class FESInstance {
     switch (head) {
       case 'next':
         if (args[0] === undefined) break;
-        this.label = fesByteView(this.argumentBytes(args[0]));
-        this.waitFrames = 0;
-        this.waitMotion = false;
-        this.waitSound = null;
-        this.waitObjects = null;
-        return { action: 'next', target: this.label };
+        {
+          const target = fesByteView(this.argumentBytes(args[0]));
+          if (!this.runtime || mode !== 'event') this.label = target;
+          this.waitFrames = 0;
+          this.waitMotion = false;
+          this.waitSound = null;
+          this.waitObjects = null;
+          return { action: 'next', target };
+        }
       case 'call': {
         if (args[0] === undefined) break;
         const target = fesByteView(this.argumentBytes(args[0]));
@@ -908,6 +974,7 @@ export class FESInstance {
         return { action: 'call', target };
       }
       case 'wait':
+        if (this.runtime) return this.executeNativeHead(words, args, bytes, execution, pc, mode);
         if (this.executingLabel?.includes('.')) {
           this.diagnostic('wait is not permitted in an event handler');
           return {};
@@ -1316,7 +1383,10 @@ export class FESInstance {
           else if (option === 'cont') this.keySkipContinuous = true;
           else if (option === 'force') {
             this.keySkipForced = args[i + 1] !== undefined ? Boolean(p(++i)) : false;
-            if (this.keySkipForced) this.clickL = -1;
+            if (this.keySkipForced) {
+              this.clickL = -1;
+              if (this.runtime) this.skipPressed = this.skipControl = true;
+            }
           } else this.keySkipEnabled = Boolean(p(i));
         }
         break;
@@ -1422,32 +1492,7 @@ export class FESInstance {
         this.diagnostic(`unimplemented FES command ${head}`);
         break;
       default: {
-        if (this.runtime) {
-          const { selection, object } = this.runtime.commandHead(words[0]);
-          if (!object) return this.nativeCommandReturn(this.runtime.commonHead(words[0], args));
-          if (args[0] === undefined) return {};
-          const verb = this.argumentBytes(args[0]);
-          const source = this.program.sourceKey
-            ? (this.player.nativeSources || this.player.localSources).context(
-                this.program.sourceKey,
-                this.executingLabel || this.label,
-                (this.executingLine || pc) - 1,
-                { ...execution, nameBytes: selection.nameBytes },
-              )
-            : {};
-          this.player.enqueue(
-            this.runtime
-              .command(fesNarrowText(verb), selection, args.slice(1), {
-                ...source,
-                commandBytes: bytes,
-                rawTail: fesRawTail(bytes, 2),
-              })
-              .then((value) => {
-                this.deferredCommandReturn = value;
-              }),
-          );
-          return { action: 'flush' };
-        }
+        if (this.runtime) return this.executeNativeHead(words, args, bytes, execution, pc, mode);
         const objects = this.elements(head);
         if (!objects.length) {
           if (
@@ -1494,6 +1539,32 @@ export class FESInstance {
       }
     }
     return {};
+  }
+  executeNativeHead(words, args, bytes, execution, pc, mode) {
+    const { selection, object } = this.runtime.commandHead(words[0]);
+    if (!object) return this.commonCommandReturn(this.runtime.commonHead(words[0], args), mode);
+    if (args[0] === undefined) return {};
+    const verb = this.argumentBytes(args[0]);
+    const source = this.program.sourceKey
+      ? (this.player.nativeSources || this.player.localSources).context(
+          this.program.sourceKey,
+          this.executingLabel || this.label,
+          (this.executingLine || pc) - 1,
+          { ...execution, nameBytes: selection.nameBytes },
+        )
+      : {};
+    this.player.enqueue(
+      this.runtime
+        .command(fesNarrowText(verb), selection, args.slice(1), {
+          ...source,
+          commandBytes: bytes,
+          rawTail: fesRawTail(bytes, 2),
+        })
+        .then((value) => {
+          this.deferredCommandReturn = value;
+        }),
+    );
+    return { action: 'flush' };
   }
   soundArgument(a) {
     return nativeArgumentDecoder.decode(this.argumentBytes(a));

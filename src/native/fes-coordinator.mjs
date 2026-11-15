@@ -7,6 +7,8 @@ import {
   FES_IMAGE_CONTROL_COMMANDS,
 } from './fes-image-control-commands.mjs';
 import { NativeFESSoundTable } from './fes-sound-table.mjs';
+import { NativeSoundPacket } from './sound.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 import { NativeFESData } from './fes-data.mjs';
 import { installJSControlTasks } from './control-task-js.mjs';
 import { installNativeAreaEffects } from './area-effect.mjs';
@@ -391,11 +393,195 @@ export class FESCoordinator {
       member = nativeFESCommonHead(this.world.profile, bytes),
       name = fesByteView(bytes);
     if (member.kind === 'absent') throw new Error('FES whole-row evaluator is pending: ' + name);
-    if (member.entry.dispatchBinding === 'active-reference-null') return this.resetActive();
-    if (member.entry.dispatchBinding === 'active-lock-int32') return this.lockActive(args);
-    if (member.entry.dispatchBinding !== null)
-      throw new Error('Unsupported FES common binding ' + member.entry.dispatchBinding);
+    const binding = member.entry.dispatchBinding;
+    if (binding === 'active-reference-null') return { binding, word: this.resetActive() };
+    if (binding === 'active-lock-int32') return { binding, word: this.lockActive(args) };
+    if (binding === 'native-wait')
+      return { binding, word: this.wait(args, member.entry.waitPolicy) };
+    if (binding !== null) throw new Error('Unsupported FES common binding ' + binding);
     throw new Error('FES native common handler is pending: ' + name);
+  }
+  waitReference(bytes) {
+    let end = 0;
+    while (end < bytes.length && bytes[end] !== 32 && bytes[end] !== 91) end++;
+    if (!end) return null;
+    const nameBytes = bytes.slice(0, end);
+    if (nameBytes.length > 31)
+      throw new RangeError('FES wait name exceeds its32-byte native destination');
+    let indexBytes = Uint8Array.of(45, 49);
+    if (bytes[end] === 91) {
+      const first = ++end;
+      while (end < bytes.length && bytes[end] !== 32 && bytes[end] !== 93) end++;
+      if (bytes[end] !== 93) return null;
+      if (end === first) throw new Error('FES wait empty index scratch is not implemented');
+      indexBytes = bytes.slice(first, end);
+      if (indexBytes.length > 31)
+        throw new RangeError('FES wait index exceeds its32-byte native destination');
+    }
+    return { nameBytes, index: this.instance.operandValue(indexBytes) | 0 };
+  }
+  wait(args, policy) {
+    const instance = this.instance,
+      parameters = instance.waitParameters,
+      argument = (index) => {
+        if (args[index] === undefined) return null;
+        const bytes = nativeDataString(instance.argumentBytes(args[index]));
+        if (bytes.length >= 2560)
+          throw new RangeError('FES wait operand exceeds its2560-byte temporary');
+        return bytes;
+      };
+    let bytes = argument(0);
+    if (bytes === null) return -1;
+    const selector = fesByteView(bytes);
+    if (policy.selectors.includes(selector)) {
+      if (selector === 'frame') {
+        parameters.frameThreshold = 0;
+        const value = argument(1);
+        if (value !== null) parameters.frameThreshold = instance.operandValue(value) >>> 0;
+        return -2;
+      }
+      if (selector === 'tag') {
+        parameters.frameThreshold = 0;
+        parameters.tagBytes.fill(0);
+        const value = argument(1);
+        if (value !== null) {
+          if (value.length > 31)
+            throw new RangeError('FES wait tag exceeds its32-byte native destination');
+          parameters.tagBytes.set(value);
+        }
+        this.pendingRecords.push({ operation: 'wait-tag', tagBytes: parameters.tagBytes.slice() });
+        return -3;
+      }
+      if (selector === 'privateflag') {
+        parameters.privateIndex = -1;
+        const value = argument(1);
+        if (value !== null) {
+          parameters.privateIndex = instance.operandValue(value) | 0;
+          return -7;
+        }
+      } else if (selector === 'string') {
+        const value = argument(1);
+        if (value !== null) {
+          bytes = value;
+          const reference = this.waitReference(bytes);
+          if (
+            reference &&
+            this.collection.lookup(
+              reference.nameBytes,
+              reference.index === -1 ? 0 : reference.index,
+            )
+          ) {
+            parameters.reference = reference;
+            return -6;
+          }
+        }
+      }
+    } else {
+      const reference = this.waitReference(bytes);
+      if (
+        reference &&
+        this.collection.lookup(reference.nameBytes, reference.index === -1 ? 0 : reference.index)
+      ) {
+        parameters.reference = reference;
+        return -4;
+      }
+    }
+    const value = instance.operandValue(bytes) | 0;
+    return value <= 0 ? 1 : value;
+  }
+  async pollWait() {
+    if (this.closed) return false;
+    const instance = this.instance,
+      control = instance.commandDelayUntil,
+      parameters = instance.waitParameters;
+    if (control === null) return true;
+    const force = () => {
+        for (const root of this.collection.graph.children()) this.motions.requestSkip(root);
+      },
+      frameSkip = () => instance.keySkipEnabled && (instance.skipControl || instance.skipPressed),
+      objectSkip = () =>
+        instance.skipPressed &&
+        (!instance.skipControl || instance.keySkipControlOnly || instance.keySkipEnabled),
+      complete = () => {
+        instance.commandDelayUntil = null;
+        return true;
+      };
+    if (control === -1) {
+      if (![...this.collection.graph.children()].some((root) => this.motions.busy(root)))
+        instance.commandDelayUntil = null;
+      else if (frameSkip()) force();
+      return false; // The native noarg path always reaches this input's frame tail.
+    }
+    if (control === -2) {
+      if ((instance.nativeFrameWord - instance.frameOrigin) >>> 0 >= parameters.frameThreshold)
+        return complete();
+      if (frameSkip()) {
+        force();
+        return complete();
+      }
+      return false;
+    }
+    if (control === -7) {
+      const index = parameters.privateIndex;
+      return index < 0 || index >= 512 || instance.local(index) !== 0 ? complete() : false;
+    }
+    if (control === -4 || control === -6) {
+      if (control === -4 && objectSkip()) return complete();
+      const reference = parameters.reference;
+      if (!reference) throw new Error('Native FES wait has no owned object reference');
+      for (const object of this.collection.selection(reference.nameBytes, reference.index)) {
+        if (!object) continue;
+        if (control === -6) {
+          if (![21, 37].includes(object.nativeType)) continue;
+          const state = this.strings.state(object);
+          if (state.remaining) {
+            if (objectSkip()) state.finish = true;
+            return false;
+          }
+        } else {
+          const busy = soundTypes.has(object.nativeType)
+            ? await this.world.fesSound.busy(instance, object)
+            : object.nativeType === 23
+              ? object.running && (await this.particles.send(instance, object, 318))
+              : this.motions.busy(object);
+          if (this.closed || busy) return false;
+        }
+      }
+      return complete();
+    }
+    if (instance.nativeFrameWord >>> 0 >= control >>> 0) return complete();
+    // Unlike frame/noarg, the original positive-deadline branch does not test the held latch.
+    if (instance.keySkipEnabled && instance.skipPressed) {
+      force();
+      return complete();
+    }
+    return false;
+  }
+  async consumeWaitTag(tagBytes) {
+    const packet = new NativeSoundPacket([], 32);
+    packet.data.set(tagBytes);
+    const instance = this.instance,
+      sound = this.world.fesSound,
+      bank = nativeEngineWord(await sound.send(instance, 215, 0, 0, packet), 'FES wait tag bank');
+    if (bank === 0xffffffff || this.closed) return;
+    const offset = nativeEngineWord(
+      await sound.send(instance, 214, bank, 0, packet),
+      'FES wait tag value',
+    );
+    if (this.closed) return;
+    for (const entry of this.resources.entries) {
+      const object = this.collection.lookup(entry.nameBytes, entry.index);
+      if (!object || !soundTypes.has(object.nativeType)) continue;
+      const state = sound.state(instance, object);
+      if (state.get('bank') >>> 0 !== bank) continue;
+      const sum = ((state.get('startClock') >>> 0) + offset) >>> 0,
+        now = this.world.sound.now(),
+        delta = sum <= now ? 0 : (sum - now) >>> 0;
+      instance.waitParameters.frameThreshold =
+        Math.floor((Math.imul(delta, 60) >>> 0) / 1000) >>> 0;
+      instance.commandDelayUntil = -2;
+      break; // Native resource order and the first matching Sound object own the stamp.
+    }
   }
   elements(token) {
     const ref = this.reference(token),
@@ -594,7 +780,13 @@ export class FESCoordinator {
         await this.instance.player.nativeInput.consumeRestoreMove();
       else if (record.operation === 'button-simulate')
         await this.instance.player.nativeInput.consumeButtonSimulation(record);
-      else if (record.operation === 'active-lock')
+      else if (record.operation === 'wait-tag') {
+        try {
+          await this.consumeWaitTag(record.tagBytes);
+        } finally {
+          record.tagBytes = null;
+        }
+      } else if (record.operation === 'active-lock')
         this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')
         await this.world.sendEngine(

@@ -28,6 +28,11 @@ export class FESMotionDriver {
       if (this.targetFor(current, false)?.busy()) return true;
     return false;
   }
+  // Common wait marks existing scripts; the normal MOT phase consumes the request.
+  requestSkip(object) {
+    for (const current of this.graph.postorder(object))
+      this.targetFor(current, false)?.manager.skip();
+  }
   prepare(object) {
     const idle = !this.busy(object),
       target = this.targetFor(object, true);

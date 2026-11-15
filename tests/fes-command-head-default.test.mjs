@@ -142,10 +142,10 @@ for (const profile of profiles) {
         observed = observe(t, world, root);
       await world.sendEngine(id, world.main.id, 333);
       const suspended = structuredClone(root.suspended),
-        waitFrames = root.waitFrames,
+        waitControl = root.commandDelayUntil,
         frame = root.player.frameCount;
       assert.deepEqual(suspended, [['START', 1]]);
-      assert.equal(waitFrames, 2);
+      assert.equal(waitControl, (root.nativeFrameWord + 2) >>> 0);
       rules.add(ascii('@'), ascii('calljs[1]'));
       observed.state.phase = 'redirect';
       await notify(world, id, 'REDIRECT', 'owner');
@@ -161,7 +161,12 @@ for (const profile of profiles) {
       assert.equal(world.fesSources.string(first.commandPointer), '@ getid 10');
       assert.deepEqual(root.program.blocks['owner.REDIRECT'][0], ascii('@ getid 10'));
       assert.equal(observed.getters.filter(({ token }) => token === '@').length, 1);
-      assert.deepEqual(observed.indices, [{ phase: 'redirect', bytes: '1' }]);
+      assert.deepEqual(observed.indices, [
+        { phase: '', bytes: '-1' },
+        { phase: '', bytes: '-1' },
+        { phase: '', bytes: '2' },
+        { phase: 'redirect', bytes: '1' },
+      ]);
       rules.entries.clear();
       observed.state.phase = 'dynamic';
       await notify(world, id, 'DYNAMIC');
@@ -181,7 +186,7 @@ for (const profile of profiles) {
         ],
       );
       assert.deepEqual(root.suspended, suspended);
-      assert.equal(root.waitFrames, waitFrames);
+      assert.equal(root.commandDelayUntil, waitControl);
       assert.equal(root.player.frameCount, frame);
       assert.equal(root.player.pending.size, 0);
       assert.equal(sourceReads, 1);
@@ -219,7 +224,7 @@ for (const profile of profiles) {
         nextWords = fresh.runtime.variableBank(fresh.main, false),
         following = observe(t, fresh, next);
       assert.deepEqual(next.suspended, suspended);
-      assert.equal(next.waitFrames, waitFrames);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.equal(nextWords.get(20), 1);
       assert.deepEqual(fresh.fesSources.snapshot(), arena);
       assert.deepEqual(
@@ -291,7 +296,7 @@ for (const profile of profiles) {
       assert.equal(following.calls.length, calls);
       assert.deepEqual(next.runtime.pendingRecords, []);
       assert.deepEqual(next.suspended, suspended);
-      assert.equal(next.waitFrames, waitFrames);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.equal(world.nativeEngine, undefined);
       assert.equal(fresh.nativeEngine, undefined);
     } finally {

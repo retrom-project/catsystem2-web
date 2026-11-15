@@ -180,12 +180,29 @@ const commonBindings = freeze({
     keyword: 'lockactive',
     semanticLink: 'fes.reference.cn.lockactive',
   },
+  'native-wait': { keyword: 'wait', semanticLink: 'fes.reference.cn.wait' },
 });
 const sdkResetReview = 'sdk74-common-resetactive-null',
   gameResetReview = 'game76-common-resetactive-null',
   sdkLockReview = 'sdk74-common-lockactive-int32',
-  gameLockReview = 'game76-common-lockactive-int32';
+  gameLockReview = 'game76-common-lockactive-int32',
+  sdkWaitReview = 'sdk74-common-wait-owned-parameters',
+  gameWaitReview = 'game76-common-wait-owned-parameters';
 export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
+  [sdkWaitReview]: {
+    binding: 'native-wait',
+    selectors: ['frame', 'tag'],
+    tagRecordCode: 35,
+    tagBytes: 32,
+    referenceDefaultIndex: -1,
+  },
+  [gameWaitReview]: {
+    binding: 'native-wait',
+    selectors: ['frame', 'tag', 'string', 'privateflag'],
+    tagRecordCode: 32,
+    tagBytes: 32,
+    referenceDefaultIndex: -1,
+  },
   [sdkResetReview]: {
     binding: 'active-reference-null',
     operandGetters: 0,
@@ -232,8 +249,8 @@ const boundEntries = freeze(
   ),
 );
 const reviewRegistrations = freeze([
-  { additions: sdkAdditions, reviews: [sdkResetReview, sdkLockReview] },
-  { additions: gameAdditions, reviews: [gameResetReview, gameLockReview] },
+  { additions: sdkAdditions, reviews: [sdkResetReview, sdkLockReview, sdkWaitReview] },
+  { additions: gameAdditions, reviews: [gameResetReview, gameLockReview, gameWaitReview] },
 ]);
 
 export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
@@ -243,7 +260,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 122,
     complete: true,
     comparison: 'byte-exact-cstring',
-    reviewedBindings: [sdkResetReview, sdkLockReview],
+    reviewedBindings: [sdkResetReview, sdkLockReview, sdkWaitReview],
   },
   game: {
     shared: sharedNames,
@@ -251,7 +268,7 @@ export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
     count: 131,
     complete: true,
     comparison: 'byte-exact-cstring',
-    reviewedBindings: [gameResetReview, gameLockReview],
+    reviewedBindings: [gameResetReview, gameLockReview, gameWaitReview],
   },
 });
 
@@ -317,10 +334,12 @@ export function lookupFESCommonHead(registration, bytes) {
     (!registration.shared.includes(keyword) && !registration.additions.includes(keyword))
   )
     return absent;
-  const qualified = registration.reviewedBindings
-    .map((id) => boundEntries[FES_COMMON_HEAD_BINDING_REVIEWS[id].binding])
-    .find((entry) => entry.keyword === keyword);
-  return freeze({ kind: 'present', entry: qualified ?? FES_COMMON_HEAD_CATALOGUE[keyword] });
+  const review = registration.reviewedBindings
+      .map((id) => FES_COMMON_HEAD_BINDING_REVIEWS[id])
+      .find((item) => boundEntries[item.binding].keyword === keyword),
+    qualified = review && boundEntries[review.binding],
+    entry = review?.binding === 'native-wait' ? { ...qualified, waitPolicy: review } : qualified;
+  return freeze({ kind: 'present', entry: entry ?? FES_COMMON_HEAD_CATALOGUE[keyword] });
 }
 
 // Check the shared data without deriving execution support from a contract's

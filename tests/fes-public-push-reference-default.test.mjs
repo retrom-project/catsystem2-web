@@ -259,7 +259,7 @@ function installClipboard(t, world, id) {
           index: instance.eventIndex,
           label: instance.executingLabel,
           line: instance.executingLine,
-          wait: instance.waitFrames,
+          wait: instance.commandDelayUntil,
         };
       assert.ok(instance.runtime.platform.inFlight);
       assert.equal(instance.player.pending.size, 0);
@@ -272,7 +272,7 @@ function installClipboard(t, world, id) {
       assert.equal(instance.eventIndex, saved.index);
       assert.equal(instance.executingLabel, saved.label);
       assert.equal(instance.executingLine, saved.line);
-      assert.equal(instance.waitFrames, saved.wait);
+      assert.equal(instance.commandDelayUntil, saved.wait);
       reentries.push(saved.object);
     },
   };
@@ -317,7 +317,8 @@ for (const profile of startupProfiles) {
       for (const index of slots) h.words.set(index, [55, 57, 59, 60].includes(index) ? 99 : 0);
       await h.world.sendEngine(h.id, h.world.main.id, 333);
       assert.deepEqual(root.suspended, [['START', 1]]);
-      assert.equal(root.waitFrames, 1);
+      const waitControl = (h.world.objects.objects.get(h.id).effectiveFrame + 1) >>> 0;
+      assert.equal(root.commandDelayUntil, waitControl);
       // Actual typed collection authors, not non-ASCII DEFINE/KEYBLOCK/338 admission.
       const [a0, a1] = collection.create('BUTTON', firstName, 2),
         [b0] = collection.create('BUTTON', secondName, 1);
@@ -402,7 +403,7 @@ for (const profile of startupProfiles) {
         clickL: root.clickL,
         words: slots.map((index) => h.words.get(index)),
         suspended: structuredClone(root.suspended),
-        waitFrames: root.waitFrames,
+        commandDelayUntil: root.commandDelayUntil,
         events: structuredClone(events),
         commands: structuredClone(commands),
         writes: clipboard.writes.slice(),
@@ -420,7 +421,7 @@ for (const profile of startupProfiles) {
       assert.equal(root.player.publicPushPending.size, 0);
       assert.equal(root.player.pending.size, 0);
       assert.deepEqual(root.suspended, [['START', 1]]);
-      assert.equal(root.waitFrames, 1);
+      assert.equal(root.commandDelayUntil, waitControl);
       assert.deepEqual(h.world.random.snapshot(), rng);
       assert.equal(root.player.randomState, playerRandom);
       fresh = await freshCheckpoint(t, h, profile);
@@ -442,7 +443,7 @@ for (const profile of startupProfiles) {
       );
       assertExtras(words, 3);
       assert.deepEqual(next.suspended, [['START', 1]]);
-      assert.equal(next.waitFrames, 1);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.deepEqual(fresh.world.random.snapshot(), rng);
       assert.equal(next.player.randomState, playerRandom);
       observeEvents(t, next, freshEvents);
@@ -481,7 +482,7 @@ for (const profile of startupProfiles) {
       assert.equal(freshClipboard.clipboard.opened, false);
       assert.deepEqual(counters(), [3, 2, 2, 1, 3, 0, 0]);
       assert.deepEqual(next.suspended, [['START', 1]]);
-      assert.equal(next.waitFrames, 1);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.deepEqual(fresh.world.random.snapshot(), rng);
       assert.equal(next.player.randomState, playerRandom);
       const choice = next.collection.lookup(ascii('Choice'), 0),
@@ -497,7 +498,7 @@ for (const profile of startupProfiles) {
       assert.match(freshCommands.at(-1).error, /Unimplemented FES raw6 command m2att/);
       assert.equal(words.get(62), 0);
       assert.deepEqual(next.suspended, [['START', 1]]);
-      assert.equal(next.waitFrames, 1);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.equal(next.player.pending.size, 0);
       assert.equal(next.player.publicPushPending.size, 0);
       assert.deepEqual(fresh.world.random.snapshot(), rng);

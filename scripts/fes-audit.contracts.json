@@ -2126,11 +2126,15 @@
       "id": "fes.reference.cn.wait",
       "domain": "fes-command",
       "names": ["wait"],
-      "status": "partial",
+      "status": "implemented",
       "source": "https://cs2.suki.jp/manual/fes/reference/cn/wait.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Frame/zero, named motion, all-motion/transition and sound waits tested; complete sound lifecycle is pending.",
+      "implementation": "src/native/fes-coordinator.mjs",
+      "evidence": [
+        "tests/fes-common-wait-default.test.mjs",
+        "tests/fes-wait-objects-reference-default.test.mjs",
+        "tests/fes-wait-sound-reference-default.test.mjs"
+      ],
+      "note": "Reviewed SDK74/Game76 normal object-first common wait: caller input deadlines/noarg tail, absolute-origin frame, owned raw selection, real Sound tag FIFO, Game string/privateflag, event tuple effects and cold restore. Bare uses its independent contract; unsafe native scratch/buffer domains and unknown handlers/versions remain gated.",
       "signatures": ["wait (frame/obj)"]
     },
     {

@@ -145,15 +145,13 @@ async function freshCheckpoint(t, h, profile) {
   let waitRestores = 0;
   t.mock.method(FESPlayer.prototype, 'restore', async function (saved) {
     const result = await restore.call(this, saved);
-    if (saved.root?.waitObjects) {
+    if (saved.root?.commandDelayUntil === -4) {
       waitRestores++;
-      assert.deepEqual(this.root.waitObjects, saved.root.waitObjects);
-      this.root.waitObjects.forEach((reference, index) => {
-        assert.notStrictEqual(
-          reference.nameBytes.buffer,
-          saved.root.waitObjects[index].nameBytes.buffer,
-        );
-      });
+      assert.deepEqual(this.root.waitParameters.reference, saved.root.waitParameters.reference);
+      assert.notStrictEqual(
+        this.root.waitParameters.reference.nameBytes.buffer,
+        saved.root.waitParameters.reference.nameBytes.buffer,
+      );
     }
     return result;
   });
@@ -225,11 +223,7 @@ function observeWaitGetters(t, instance, trace) {
     return argument.call(this, token);
   });
 }
-const expectedGetters = () =>
-  Array.from({ length: 3 }, () => [
-    ['elements', firstName],
-    ['getter', firstName],
-  ]).flat();
+const expectedGetters = () => [['getter', firstName]];
 
 for (const profile of startupProfiles) {
   test(`normal named object waits retain raw groups through busy, fresh missing and clear: ${profile}`, async (t) => {
@@ -264,6 +258,7 @@ for (const profile of startupProfiles) {
       assert.equal(a0.key, b0.key);
       assert.equal(a1.key, b1.key);
       const refs = [a0, a1].map((object) => collection.reference(object)),
+        reference = { nameBytes: firstName.slice(), index: -1 },
         trace = [],
         rng = h.world.random.snapshot(),
         playerRandom = root.player.randomState;
@@ -278,20 +273,23 @@ for (const profile of startupProfiles) {
       assert.equal(b0.motionBusy, false);
       assert.equal(b1.motionBusy, false);
       assert.equal(runtime.targetFor(a1, false).manager.records.size, 1);
-      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      await h.world.objects.tick(root.commandDelayUntil);
       assert.deepEqual(trace, expectedGetters());
       assert.equal(a1.x, 75);
       assert.equal(h.words.get(50), 0);
-      assert.deepEqual(root.waitObjects, refs);
+      assert.deepEqual(root.waitParameters.reference, reference);
+      assert.equal(root.commandDelayUntil, -4);
       assert.deepEqual(root.suspended, [['WAIT', 1]]);
-      const savedWait = root.player.snapshot().root.waitObjects,
+      const savedWait = root.player.snapshot().root.waitParameters.reference,
         motionState = runtime.targetFor(a1, false).snapshot();
-      assert.deepEqual(savedWait, refs);
-      savedWait.forEach((reference, index) => {
-        assert.notStrictEqual(reference.nameBytes.buffer, root.waitObjects[index].nameBytes.buffer);
-      });
-      savedWait[0].nameBytes.fill(120);
-      assert.deepEqual(root.waitObjects, refs);
+      assert.deepEqual(savedWait, reference);
+      assert.notStrictEqual(
+        savedWait.nameBytes.buffer,
+        root.waitParameters.reference.nameBytes.buffer,
+      );
+      savedWait.nameBytes.fill(120);
+      assert.deepEqual(root.waitParameters.reference, reference);
+      assert.equal(root.commandDelayUntil, -4);
       fresh = await freshCheckpoint(t, h, profile);
       const next = fresh.world.objects.objects.get(h.id).implementation.player.root,
         nextRuntime = next.runtime,
@@ -300,14 +298,16 @@ for (const profile of startupProfiles) {
         restoredB1 = next.collection.lookup(secondName, 1),
         words = fresh.world.runtime.variableBank(fresh.world.main, false),
         freshTrace = [];
-      assert.deepEqual(next.waitObjects, refs);
+      assert.deepEqual(next.waitParameters.reference, reference);
+      assert.equal(next.commandDelayUntil, -4);
       assert.deepEqual(next.suspended, [['WAIT', 1]]);
       assert.equal(words.get(50), 0);
       assert.equal(restoredA1.motionBusy, true);
       assert.deepEqual(nextRuntime.targetFor(restoredA1, false).snapshot(), motionState);
-      next.waitObjects.forEach((reference, index) => {
-        assert.notStrictEqual(reference.nameBytes.buffer, root.waitObjects[index].nameBytes.buffer);
-      });
+      assert.notStrictEqual(
+        next.waitParameters.reference.nameBytes.buffer,
+        root.waitParameters.reference.nameBytes.buffer,
+      );
       observeWaitGetters(t, next, freshTrace);
       await notify(h.world, h.id, 'PLAY_B');
       assert.equal(b1.motionBusy, true);
@@ -316,21 +316,26 @@ for (const profile of startupProfiles) {
       await h.world.tick();
       assert.equal(
         runtime.targetFor(a1, false).manager.records.values().next().value.instance.skip,
-        true,
+        false,
       );
       assert.equal(
         runtime.targetFor(b1, false).manager.records.values().next().value.instance.skip,
-        true,
+        false,
       );
-      assert.equal(a1.motionBusy, true, 'continue MOT owns completion after skip');
-      assert.deepEqual(root.waitObjects, refs);
-      assert.equal(h.words.get(50), 0);
+      assert.equal(
+        a1.motionBusy,
+        true,
+        'object-wait press completes the wait without stopping its MOT',
+      );
+      assert.deepEqual(root.waitParameters.reference, reference);
+      assert.equal(root.commandDelayUntil, null);
+      assert.equal(h.words.get(50), 1);
       assert.deepEqual(trace, expectedGetters());
       await notify(h.world, h.id, 'STOP_A');
       assert.equal(a1.motionBusy, false);
       assert.equal(b1.motionBusy, true);
       await h.world.tick();
-      assert.equal(root.waitObjects, null);
+      assert.equal(root.commandDelayUntil, null);
       assert.equal(h.words.get(50), 1);
       assert.equal(root.label, 'IDLE');
       assert.deepEqual(trace, expectedGetters());
@@ -340,7 +345,7 @@ for (const profile of startupProfiles) {
       assert.equal(next.collection.lookup(firstName, 1), null);
       assert.strictEqual(next.collection.lookup(firstName, 0), restoredA0);
       await fresh.world.tick();
-      assert.equal(next.waitObjects, null);
+      assert.equal(next.commandDelayUntil, null);
       assert.equal(words.get(50), 1);
       assert.equal(restoredB1.motionBusy, true);
       assert.deepEqual(freshTrace, []);
@@ -350,11 +355,12 @@ for (const profile of startupProfiles) {
       });
       await h.world.sendEngine(h.id, h.world.main.id, 333);
       assert.equal(a1.motionBusy, true);
-      assert.deepEqual(root.waitObjects, refs);
+      assert.deepEqual(root.waitParameters.reference, reference);
+      assert.equal(root.commandDelayUntil, -4);
       assert.deepEqual(root.suspended, [['WAIT', 1]]);
       assert.deepEqual(trace, [...expectedGetters(), ...expectedGetters()]);
       await notify(h.world, h.id, 'CANCEL');
-      assert.equal(root.waitObjects, null);
+      assert.equal(root.commandDelayUntil, null);
       assert.equal(root.waitSound, null);
       assert.equal(root.label, 'IDLE');
       assert.equal(h.words.get(50), 1);

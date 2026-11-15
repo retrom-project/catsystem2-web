@@ -326,24 +326,21 @@ remain. This closes public push target identity and completion; other synchronou
 event entrances, coordinate parents and plane visibility remain separate work.
 
 Normal named object-motion waits retain the selected collection references as
-owned raw name bytes and signed indices. The initial busy check and later frame
-checks resolve those same references through the current collection, so names
-that decode alike do not redirect a wait. A missing saved element is no longer
-busy; the existing frame path clears the completed wait. Snapshot and restore
-copy the reference bytes without replaying source or argument expansion. Bare
-players keep their independent String references. Getter order, skip, next and
-motion completion timing retain their existing behavior.
+owned raw name bytes and a signed selection index. The common wait parser reads
+one operand, probes index0 for a whole-family selection, and retains-1 for later
+polls. It does not expand a group into a second static list of references. Names
+that decode alike remain distinct. The primary common-wait contract below owns
+its getter, skip, next and completion behavior.
 
-Normal named sound waits also retain the selected collection's raw name bytes and
-signed index. The two existing operand getters and first selected object policy
-remain; later busy queries resolve that same reference. The object's filename and
-native sound bank remain separate resource and playback identities. A missing
-waited sound still raises the existing error. Audio completion or STOP releases
-the wait through the existing busy query, while returning events preserve it and
-`next` clears it. Current checkpoints copy the reference bytes without replaying
-FES source or PLAY commands; rebuilding media sources during restore is allowed.
-Bare players retain their independent String references and sound-host policy.
-This closes sound wait identity without extending sound timing or table behavior.
+Normal named object and sound waits use one owned raw reference: its omitted index
+is signed-1, with only the initial existence probe using index0. Every poll resolves
+the current collection again, including the current whole family for-1. Missing
+objects complete the wait. Raw9/10 use their actual Sound busy query; raw23 uses
+the Particle execution query; other objects use their base motion graph. Sound
+filenames, banks and resource handles remain separate from this identity. An
+armed wait completes through its sole normal control field, not by discarding the
+retained parameter bytes. Snapshot copies those bytes; restoring media state does
+not replay FES or PLAY commands. Bare players retain their String wait contract.
 
 ## Literal ASCII hyphen in DEFINE names
 
@@ -547,8 +544,10 @@ are reused, with no new identity or saved-state format.
 Normal public focus and FESInstance.event callbacks borrow the same event frame
 as native notifications. The semantic object's collection reference supplies its
 owned raw name, index and current word; display names and baseName aliases do not
-supply this identity. The existing event owner restores the caller's tuple,
-execution position and wait fields before reporting an internal settled outcome.
+supply this identity. The existing event owner restores the caller's tuple and
+ordinary caller continuation before reporting an internal settled outcome. Normal
+wait control, origin and parameter effects are outside that rollback domain; a
+verified event-to-main label transfer retains its new main continuation.
 
 When an event completes synchronously and no public operation is pending, its
 Boolean result, side effects and any thrown Error stay synchronous. A real
@@ -798,5 +797,59 @@ diagnostic call count. Normal positive command deadlines, `_FRAME_` and
 is initialized to `word - 1` on each frame entry, including a repeated input.
 
 The current input word and origin survive a cold restore without executing FES
-commands. Bare FES players retain their independent step-count clock. This clock
-contract does not register or complete the native common `wait` binding.
+commands. Bare FES players retain their independent step-count clock. Normal entry
+words and saved words are canonical uint32 values, including JavaScript negative zero.
+
+### Reviewed normal common wait
+
+Both registered engines route `wait` through the normal raw object-head lookup
+before common lookup. An actual object named `wait` wins. Common lookup performs
+its own second head getter; the wait operand getter runs once. SDK74 registers
+only `frame` and `tag`; Game76 also registers `string` and `privateflag`. The SDK
+spellings `string` and `privateflag` keep ordinary object/numeric fallback.
+
+`commandDelayUntil` is the sole normal control/deadline owner. Its parameter DTO
+holds an unsigned absolute-origin frame threshold, one owned raw name/signed-index
+reference, a signed private index and owned32-byte NUL tag data. Existing bare
+wait fields are independent. Missing first operand returns-1; numeric values at
+most zero return1; positive results create unsigned input-word deadlines. Noarg
+busy-clear always reaches that input's tail, so guest continuation begins on a
+later input. Other satisfied controls continue during their successful poll.
+`frame` compares u32(input-origin) with the threshold without resetting origin.
+
+When frame, positive or noarg wait polling requests a motion skip, it marks all
+current MOT records in the existing lifetime forest. The request does not advance
+motions, retire records or reset delay; ordinary MOT updates consume those marks.
+The explicit object `stop` command retains its separate immediate update/clear
+contract.
+
+Game private indices outside0..511 complete; valid indices borrow the existing
+native variable context. Game string waits inspect only raw21/37 remaining data
+and use their existing finish request.
+
+Normal skip predicates read the existing press/hold latches without consuming
+them: noarg/frame use enabled&&(hold||press), positive deadlines use enabled&&press,
+and object/string use press&&(!hold||controlOnly||enabled). Noarg force-stop tails
+without an extra control clear. Object skip completes without forcing motion;
+string skip requests finish and remains blocked until the real text owner settles.
+`keyskip force1` sets the same press/hold latches used by real control-key changes;
+force0 does not clear them. The normal tail clears press only when !continuous&& !hold.
+
+TAG queues owned bytes on the existing native FIFO. Its actual Sound task query
+returns bank then tag value through the engine result/output contract. The first
+matching raw9/10 resource supplies its stored start stamp; the existing Sound clock
+supplies the current word. Compute delta from wrapped(stamp+tag), then wrap60\*delta
+before unsigned division by1000. The result arms the existing frame-threshold wait
+without resetting origin. A missing tag bank performs no second query. Popped
+payloads are released once, and a frame TAG re-enters with the identical input word
+after drain; an event cannot borrow this frame deferred flag.
+
+Normal events save only their proven current tuple. A nonzero wait result ends
+the whole current event label, including nested calls, without arming that return
+as the main control. Parameter writes and FIFO records remain visible. The event
+compares its mutable formatted label to its own initial formatted-label snapshot,
+not the main label. Only a changed label at entry depth transfers the main label/
+command continuation and clears control. Cold restore owns copied current DTOs;
+it does not replay FES getters, macros, resource commands or RNG. Empty-index
+uninitialized scratch, unsafe native buffer domains and other unknown handlers/
+versions remain outside this reviewed binding; the normal DEFINE guard remains.

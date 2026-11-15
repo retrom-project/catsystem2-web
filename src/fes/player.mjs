@@ -12,7 +12,7 @@ import { decodeText } from '../binary.mjs';
 function inputFrameWord(value) {
   if (!Number.isInteger(value) || value < 0 || value > 0xffffffff)
     throw new TypeError('Native FES frame requires an unsigned input word');
-  return value;
+  return value >>> 0;
 }
 
 export class FESPlayer {
@@ -220,14 +220,14 @@ export class FESPlayer {
     if (this.error) throw this.error;
   }
   async step(frameWord) {
-    if (this.runtimeFactory) inputFrameWord(frameWord);
+    if (this.runtimeFactory) frameWord = inputFrameWord(frameWord);
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
       await s.flushNativeRecords();
       s.runtime?.beforeStep();
       const tick = async () => {
-        if (s.waitSound !== null) {
+        if (!s.runtime && s.waitSound !== null) {
           const object = s.waitObject(s.waitSound);
           if (!object) {
             const reference = s.runtime
@@ -244,7 +244,8 @@ export class FESPlayer {
           }
           s.waitSound = null;
         }
-        s.tick(frameWord);
+        if (s.runtime) await s.tick(frameWord);
+        else s.tick(frameWord);
       };
       await tick();
       let flushes = 0;
@@ -256,7 +257,9 @@ export class FESPlayer {
         await tick();
       }
       if (!s.keySkipControlOnly || !s.skipControl) s.clickL = 0;
-      if (!s.keySkipContinuous && !s.skipControl && !s.keySkipForced) s.skipPressed = false;
+      if (s.runtime) {
+        if (!s.keySkipContinuous && !s.skipControl) s.skipPressed = false;
+      } else if (!s.keySkipContinuous && !s.skipControl && !s.keySkipForced) s.skipPressed = false;
       s.clickR = 0;
       s.scrollUp = 0;
       s.scrollDown = 0;
@@ -974,6 +977,7 @@ export class FESPlayer {
             ...(s.runtime
               ? {
                   nativeFrameWord: s.nativeFrameWord,
+                  waitParameters: s.waitParameters,
                   nativeContext: {
                     nameBytes: s.nativeContext.nameBytes.slice(),
                     index: s.nativeContext.index,
@@ -1073,6 +1077,34 @@ export class FESPlayer {
         s.nativeContext = nativeContext;
         s.nativeFrameWord = inputFrameWord(saved.nativeFrameWord);
         s.frameOrigin = inputFrameWord(saved.frameOrigin);
+        const parameters = saved.waitParameters,
+          reference = parameters?.reference;
+        if (
+          !parameters ||
+          !(parameters.tagBytes instanceof Uint8Array) ||
+          parameters.tagBytes.length !== 32 ||
+          !Number.isInteger(parameters.privateIndex) ||
+          parameters.privateIndex < -0x80000000 ||
+          parameters.privateIndex > 0x7fffffff ||
+          (reference !== null &&
+            (!reference ||
+              !(reference.nameBytes instanceof Uint8Array) ||
+              reference.nameBytes.length > 31 ||
+              reference.nameBytes.includes(0) ||
+              !Number.isInteger(reference.index) ||
+              reference.index < -0x80000000 ||
+              reference.index > 0x7fffffff))
+        )
+          throw new TypeError('Invalid native FES wait parameter snapshot');
+        s.waitParameters = {
+          frameThreshold: inputFrameWord(parameters.frameThreshold),
+          reference:
+            reference === null
+              ? null
+              : { nameBytes: reference.nameBytes.slice(), index: reference.index | 0 },
+          privateIndex: parameters.privateIndex | 0,
+          tagBytes: parameters.tagBytes.slice(),
+        };
       }
       if (!Array.isArray(saved.keyNames)) throw new TypeError('Invalid FES keyboard name snapshot');
       for (const name of saved.keyNames) {
@@ -1113,7 +1145,7 @@ export class FESPlayer {
         'decodePending',
         'nativeQueuePending',
       ])
-        s[key] = structuredClone(saved[key]);
+        if (!(s.runtime && key === 'frameOrigin')) s[key] = structuredClone(saved[key]);
       if (!s.program.blocks[s.label]) throw new Error('Save refers to missing FES block');
       s.cgGallery = saved.cgGallery ? CGGallery.restore(saved.cgGallery) : null;
       if (!s.runtime)

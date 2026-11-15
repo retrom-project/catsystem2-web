@@ -129,10 +129,10 @@ for (const profile of profiles) {
 
       await world.sendEngine(id, world.main.id, 333);
       const suspended = structuredClone(root.suspended),
-        waitFrames = root.waitFrames,
+        waitControl = root.commandDelayUntil,
         frame = root.player.frameCount;
       assert.deepEqual(suspended, [['START', 1]]);
-      assert.equal(waitFrames, 2);
+      assert.equal(waitControl, (root.nativeFrameWord + 2) >>> 0);
       await notify(world, id, ascii('NULL'));
       // This is a real NULL-name receiver/handler observation, not a constructor shape test.
       assert.deepEqual(observed, [{ label: 'NULL', context: expected(new Uint8Array(), 0) }]);
@@ -183,7 +183,7 @@ for (const profile of profiles) {
         ['missing', 'after', expected(alias, -1)],
       ]);
       assert.deepEqual(root.suspended, suspended);
-      assert.equal(root.waitFrames, waitFrames);
+      assert.equal(root.commandDelayUntil, waitControl);
       assert.equal(root.player.frameCount, frame);
       assert.strictEqual(root.nativeContext, initial);
       assert.equal(root.decodePending, false);
@@ -237,7 +237,7 @@ for (const profile of profiles) {
       assert.deepEqual(tuple(next.nativeContext), expected(new Uint8Array(), 0));
       assert.notStrictEqual(next.nativeContext.nameBytes, savedPlayer.root.nativeContext.nameBytes);
       assert.deepEqual(next.suspended, suspended);
-      assert.equal(next.waitFrames, waitFrames);
+      assert.equal(next.commandDelayUntil, waitControl);
       assert.deepEqual(fresh.fesSources.snapshot(), sources);
       assert.deepEqual(
         [...fresh.objects.objects.values()].map(({ id, kind, parent, creator }) => ({

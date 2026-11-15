@@ -262,12 +262,12 @@ async function freshCheckpoint(t, h, profile) {
   let waitRestores = 0;
   t.mock.method(FESPlayer.prototype, 'restore', async function (saved) {
     const result = await restore.call(this, saved);
-    if (saved.root?.waitSound) {
+    if (saved.root?.commandDelayUntil === -4) {
       waitRestores++;
-      assert.deepEqual(this.root.waitSound, saved.root.waitSound);
+      assert.deepEqual(this.root.waitParameters.reference, saved.root.waitParameters.reference);
       assert.notStrictEqual(
-        this.root.waitSound.nameBytes.buffer,
-        saved.root.waitSound.nameBytes.buffer,
+        this.root.waitParameters.reference.nameBytes.buffer,
+        saved.root.waitParameters.reference.nameBytes.buffer,
       );
     }
     return result;
@@ -361,11 +361,7 @@ function observeWait(t, instance) {
   });
   return { trace, queries, sends };
 }
-const expectedGetters = () =>
-  Array.from({ length: 2 }, () => [
-    ['elements', target],
-    ['getter', target],
-  ]).flat();
+const expectedGetters = () => [['getter', target]];
 
 for (const profile of startupProfiles) {
   test(`normal sound waits retain raw references through real playback and fresh: ${profile}`, async (t) => {
@@ -417,7 +413,7 @@ for (const profile of startupProfiles) {
       assert.equal(h.player.audio.channelState('native:0', h.world.sound.channel(0)).file, file);
       assert.equal(typeof h.world.sound.channel(0).source.onended, 'function');
       const observed = observeWait(t, root);
-      await h.world.sendEngine(h.id, h.world.main.id, 333);
+      await h.world.objects.tick(root.commandDelayUntil);
       assert.deepEqual(observed.trace, expectedGetters());
       assert.deepEqual(root.suspended, [['WAIT', 1]]);
       await h.world.sendEngine(h.id, h.world.main.id, 333);
@@ -426,22 +422,25 @@ for (const profile of startupProfiles) {
         0,
         'the playing raw A must stay waited even though decoded alias B is idle',
       );
-      assert.deepEqual(root.waitSound, reference);
+      assert.deepEqual(root.waitParameters.reference, reference);
       assert.deepEqual(observed.queries, [reference]);
       assert.deepEqual(observed.sends, [{ sender: h.id, target: h.task.soundTaskID, bank: 0 }]);
       assert.deepEqual(observed.trace, expectedGetters());
-      const waiting = root.waitSound;
+      const waiting = root.waitParameters.reference;
       await notify(h.world, h.id, 'PING');
-      assert.strictEqual(root.waitSound, waiting);
+      assert.strictEqual(root.waitParameters.reference, waiting);
       assert.equal(h.words.get(51), 1);
       assert.deepEqual(root.suspended, [['WAIT', 1]]);
       h.context.advance(0.5);
       assert.equal(h.world.sound.playing(0), true);
-      const savedWait = root.player.snapshot().root.waitSound;
+      const savedWait = root.player.snapshot().root.waitParameters.reference;
       assert.deepEqual(savedWait, reference);
-      assert.notStrictEqual(savedWait.nameBytes.buffer, root.waitSound.nameBytes.buffer);
+      assert.notStrictEqual(
+        savedWait.nameBytes.buffer,
+        root.waitParameters.reference.nameBytes.buffer,
+      );
       savedWait.nameBytes.fill(120);
-      assert.deepEqual(root.waitSound, reference);
+      assert.deepEqual(root.waitParameters.reference, reference);
       fresh = await freshCheckpoint(t, h, profile);
       const next = fresh.player.world.objects.objects.get(h.id).implementation.player.root,
         nextWorld = fresh.player.world,
@@ -451,8 +450,11 @@ for (const profile of startupProfiles) {
         restoredB1 = next.collection.lookup(secondName, 1),
         resumed = observeWait(t, next);
       assert.deepEqual(resumed.trace, []);
-      assert.deepEqual(next.waitSound, reference);
-      assert.notStrictEqual(next.waitSound.nameBytes.buffer, root.waitSound.nameBytes.buffer);
+      assert.deepEqual(next.waitParameters.reference, reference);
+      assert.notStrictEqual(
+        next.waitParameters.reference.nameBytes.buffer,
+        root.waitParameters.reference.nameBytes.buffer,
+      );
       assert.deepEqual(next.suspended, [['WAIT', 1]]);
       assert.equal(words.get(50), 0);
       assert.equal(words.get(51), 1);
@@ -475,7 +477,7 @@ for (const profile of startupProfiles) {
         ),
       );
       await h.world.sendEngine(h.id, h.world.main.id, 333);
-      assert.equal(root.waitSound, null);
+      assert.equal(root.commandDelayUntil, null);
       assert.equal(h.words.get(50), 1);
       assert.equal(root.label, 'IDLE');
       assert.equal(h.world.sound.playing(1), true);
@@ -488,7 +490,7 @@ for (const profile of startupProfiles) {
       assert.equal(nextWorld.sound.playing(0), false);
       assert.equal(nextWorld.sound.playing(1), true);
       await nextWorld.sendEngine(h.id, nextWorld.main.id, 333);
-      assert.equal(next.waitSound, null);
+      assert.equal(next.commandDelayUntil, null);
       assert.equal(words.get(50), 1);
       assert.equal(next.label, 'IDLE');
       assert.deepEqual(resumed.trace, [['getter', target]]);
@@ -506,7 +508,7 @@ for (const profile of startupProfiles) {
       ]);
       await nextWorld.sendEngine(h.id, nextWorld.main.id, 333);
       assert.equal(nextWorld.sound.playing(0), true);
-      assert.deepEqual(next.waitSound, reference);
+      assert.deepEqual(next.waitParameters.reference, reference);
       assert.deepEqual(next.suspended, [['WAIT', 1]]);
       assert.deepEqual(resumed.trace, [
         ['getter', target],
@@ -523,14 +525,13 @@ for (const profile of startupProfiles) {
       assert.equal(next.collection.lookup(firstName, 1), null);
       assert.strictEqual(next.collection.lookup(firstName, 0), restoredA0);
       assert.strictEqual(next.collection.lookup(secondName, 1), restoredB1);
-      const missingWait = next.waitSound;
-      await assert.rejects(
-        nextWorld.sendEngine(h.id, nextWorld.main.id, 333),
-        /waiting sound object .* disappeared/,
-      );
-      assert.strictEqual(next.waitSound, missingWait);
-      assert.equal(words.get(50), 1);
-      assert.deepEqual(next.suspended, [['WAIT', 1]]);
+      const missingWait = next.waitParameters.reference;
+      await nextWorld.sendEngine(h.id, nextWorld.main.id, 333);
+      assert.equal(next.commandDelayUntil, null);
+      assert.equal(next.label, 'IDLE');
+      assert.strictEqual(next.waitParameters.reference, missingWait);
+      assert.equal(words.get(50), 2);
+      assert.equal(next.suspended, null);
       assert.deepEqual(resumed.trace, [
         ['getter', target],
         ['getter', target],
@@ -538,10 +539,10 @@ for (const profile of startupProfiles) {
         ['getter', target],
       ]);
       await notify(nextWorld, h.id, 'CANCEL');
-      assert.equal(next.waitSound, null);
+      assert.equal(next.commandDelayUntil, null);
       assert.equal(next.waitObjects, null);
       assert.equal(next.label, 'IDLE');
-      assert.equal(words.get(50), 1);
+      assert.equal(words.get(50), 2);
       assert.equal(nextWorld.sound.playing(1), true);
       assert.deepEqual(resumed.trace, [
         ['getter', target],

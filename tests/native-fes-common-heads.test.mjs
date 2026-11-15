@@ -120,7 +120,9 @@ for (const [profile, count, additions] of [
           ? 'fes.reference.cn.resetactive'
           : word === 'lockactive'
             ? 'fes.reference.cn.lockactive'
-            : null,
+            : word === 'wait'
+              ? 'fes.reference.cn.wait'
+              : null,
       );
       assert.equal(
         entry.dispatchBinding,
@@ -128,7 +130,9 @@ for (const [profile, count, additions] of [
           ? 'active-reference-null'
           : word === 'lockactive'
             ? 'active-lock-int32'
-            : null,
+            : word === 'wait'
+              ? 'native-wait'
+              : null,
       );
       assert.ok(Object.isFrozen(entry));
       assert.ok(Object.isFrozen(entry.nameCrossrefs));
@@ -155,7 +159,7 @@ for (const [profile, count, additions] of [
       otherRegistration = profile === sdk ? gameRegistration : sdkRegistration,
       otherReview = otherRegistration.reviewedBindings[0],
       otherLockReview = otherRegistration.reviewedBindings[1];
-    assert.equal(registration.reviewedBindings.length, 2);
+    assert.equal(registration.reviewedBindings.length, 3);
     assert.ok(Object.isFrozen(registration.reviewedBindings));
     assert.deepEqual(FES_COMMON_HEAD_BINDING_REVIEWS[ownReview], {
       binding: 'active-reference-null',
@@ -212,6 +216,26 @@ for (const [profile, count, additions] of [
       null,
     );
 
+    const ownWaitReview = registration.reviewedBindings[2],
+      otherWaitReview = otherRegistration.reviewedBindings[2],
+      policy = FES_COMMON_HEAD_BINDING_REVIEWS[ownWaitReview];
+    assert.deepEqual(policy, {
+      binding: 'native-wait',
+      selectors: profile === sdk ? ['frame', 'tag'] : ['frame', 'tag', 'string', 'privateflag'],
+      tagRecordCode: profile === sdk ? 35 : 32,
+      tagBytes: 32,
+      referenceDefaultIndex: -1,
+    });
+    assert.notEqual(ownWaitReview, otherWaitReview);
+    assert.strictEqual(query(profile, bytes('wait')).entry.waitPolicy, policy);
+    assert.ok(Object.isFrozen(policy.selectors));
+    assert.equal(lookupFESCommonHead(unqualified, bytes('wait')).entry.dispatchBinding, null);
+    unqualified.reviewedBindings = [ownWaitReview];
+    assert.equal(
+      lookupFESCommonHead(unqualified, bytes('wait')).entry.dispatchBinding,
+      'native-wait',
+    );
+
     const rejects = (change) => {
       const invalid = structuredClone(abi);
       change(invalid.fes.commonHeads);
@@ -253,6 +277,9 @@ for (const [profile, count, additions] of [
     });
     rejects((value) => {
       value.reviewedBindings = [ownReview, ownReview];
+    });
+    rejects((value) => {
+      value.reviewedBindings = [otherWaitReview];
     });
     rejects((value) => {
       value.reviewedBindings = [otherLockReview];
