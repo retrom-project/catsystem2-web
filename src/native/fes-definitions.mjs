@@ -102,8 +102,7 @@ export function compileFESDefinitionColumns(source, { expandToken, report } = {}
   }
   return result;
 }
-export function fesDefinitionTuple(value, index, evaluate) {
-  if (typeof evaluate !== 'function') throw new Error('FES definition numeric context is missing');
+function definitionTupleBytes(value, index) {
   const source = bytes(value);
   let start = 0;
   for (let at = 0; at < index; at++) {
@@ -115,7 +114,12 @@ export function fesDefinitionTuple(value, index, evaluate) {
     component = source.subarray(start, comma < 0 ? source.length : comma);
   if (component.length >= 512)
     throw new RangeError('FES definition numeric component exceeds its512-byte destination');
-  return evaluate(decoder.decode(component)) | 0;
+  return component;
+}
+export function fesDefinitionTuple(value, index, evaluate) {
+  if (typeof evaluate !== 'function') throw new Error('FES definition numeric context is missing');
+  const component = definitionTupleBytes(value, index);
+  return component === undefined ? undefined : evaluate(decoder.decode(component)) | 0;
 }
 
 // This deliberately follows the original byte scanner: space or '[' ends the
@@ -162,7 +166,7 @@ export function fesDefinitionResourceReference(reference) {
 export function readFESDefinitionRecord(
   compiled,
   values,
-  { evaluate, reference, expandToken, targetIndex = 0 } = {},
+  { evaluate, evaluateIDN, reference, expandToken, targetIndex = 0 } = {},
 ) {
   if (typeof evaluate !== 'function' || typeof reference !== 'function')
     throw new Error('FES definition row requires expression and reference services');
@@ -179,7 +183,9 @@ export function readFESDefinitionRecord(
     }
     const field = fieldNames.get(code);
     if (field === undefined) continue; // Explicit header-code default branch.
-    if (['FILE', 'DEFAULT', 'TABLE', 'GROUP'].includes(field)) {
+    if (code === 1 && evaluateIDN !== undefined) {
+      fields.set(field, evaluateIDN(definitionTupleBytes(source, 0)) | 0);
+    } else if (['FILE', 'DEFAULT', 'TABLE', 'GROUP'].includes(field)) {
       fields.set(field, field === 'DEFAULT' ? fesByteView(source) : string(source));
       if (field === 'FILE') record.fileBytes = new Uint8Array(source);
     } else if (
@@ -256,6 +262,9 @@ export class FESDefinitionModel {
   readCompiled(compiled, values, targetIndex = 0) {
     return readFESDefinitionRecord(compiled, values, {
       evaluate: (source) => this.instance.value(source),
+      evaluateIDN: this.instance.runtime
+        ? (source) => this.instance.operandValue(source)
+        : undefined,
       reference: (source) => this.reference(source),
       expandToken: this.expandToken,
       targetIndex,

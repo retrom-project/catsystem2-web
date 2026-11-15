@@ -209,6 +209,15 @@ bytes and evaluate their index once. Bare references retain index-1 only when
 the first declared count exceeds1. Resource setters then parse the first
 colon's integer selector, separately from that object-reference index.
 
+Normal `IDN` (header code1) sends its first comma component as owned narrow
+bytes to the existing numeric operand reader. It inherits the initialized
+context's current word and mode; it does not strip a trailing `%` or apply
+property float/unit scaling. ASCII object references use the existing collection
+and signed index, returning the graph handle on a hit and0 on a miss. The row
+is still evaluated once before group application, and checkpoints retain its
+result without reevaluating the property. Other columns and the independent
+standalone/String tuple provider keep their existing expression contract.
+
 PARENT binds the lifetime graph before the type-specific application. PL and
 external plane IDs remain independent. TABLE16..20 requires an immediate
 owned loader before FILE, so START can query the loaded table. The factory
