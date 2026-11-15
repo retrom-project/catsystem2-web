@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 312, "oracle": 149, "differential": 67 },
+    "counts": { "js": 313, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -284,6 +284,7 @@
         "tests/native-sdk-fes-exit-context-admission.test.mjs",
         "tests/native-sdk-fes-format-admission.test.mjs",
         "tests/native-sdk-fes-update-exit-admission.test.mjs",
+        "tests/native-sdk-settings-menu-admission.test.mjs",
         "tests/native-sdk-task-abi.test.mjs",
         "tests/native-sdk-task-destroy-admission.test.mjs",
         "tests/native-shared-abi.test.mjs",
@@ -2461,13 +2462,13 @@
     "remainingExeVASelectionSites": 104,
     "profileSelectionNeedsReview": 0,
     "implementations": {
-      "pure-js": 1848,
+      "pure-js": 1849,
       "original-handler": 34,
       "exe-region": 2,
       "patch": 0,
       "reserved": 140,
       "constant-zero": 36,
-      "unknown": 279,
+      "unknown": 278,
       "unsupported": 5
     },
     "nativeDomains": {
@@ -2476,11 +2477,11 @@
       "5": 223,
       "6": 438,
       "7": 48,
-      "8": 533,
+      "8": 534,
       "9": 37,
-      "unassigned": 122
+      "unassigned": 121
     },
-    "nativeNeedsReview": 305,
+    "nativeNeedsReview": 304,
     "runtimeFiles": 489,
     "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 180, "9": 55 },
     "fileNeedsReview": 72,
@@ -10613,22 +10614,18 @@
           "table": "main",
           "id": 393,
           "hexID": "0x189",
-          "semanticName": null,
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
-          "implementation": "unknown",
-          "module": "src/native/runtime.mjs",
-          "domain": null,
-          "route": "NativeRuntime/UnsupportedKCSNative",
-          "registration": null,
+          "semanticName": "environment.enableSettingsMenu",
+          "catalogStatus": "recovered",
+          "implementation": "pure-js",
+          "module": "src/native/environment.mjs",
+          "domain": 8,
+          "route": "NativeRuntime/fallback/nativeEnvironment",
+          "registration": "src/native/environment.mjs:4",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": [
-            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
-          ]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -49914,7 +49911,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "f47b7acad21e881d8e14556eca486757eed1a1d43dd24becfe345df2432989e6",
+      "sourceSha256": "ba534c4e0625747c12f9a76c3018e7a724a2dbf7c553ec86c2577d8d1f03532b",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

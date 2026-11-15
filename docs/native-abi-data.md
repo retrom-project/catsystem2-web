@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 806       | 82            | 19            | 102     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 807       | 82            | 19            | 101     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -413,3 +413,20 @@ They cover exact registration boundaries, unknown versus known slots, stubs,
 encoding/result-write differences, independent derived ownership and ordinary
 World runtime dispatch. The authored four/six-word resolver example verifies the
 representation only; it does not register or dynamically compare an old engine.
+
+## SDK settings-menu request
+
+SDK main393 is registered from its own `51B4A0` wrapper and `442080`
+consumer, with the `8F2A20` field getter. The wrapper forwards the full argument
+DWORD as message `0x464` lParam and returns control 2 without writing a VM
+result. The consumer maps zero/nonzero to disabled/enabled for command `0x77`;
+this registration reuses the shared one-word void signature already registered
+by Game76.
+
+The browser contract commits `World.menu` desired state and forwards the request
+through the real `EngineHost.nativeMenuChanged` callback. The two-profile Script
+GCALL test checks zero, one, a negative word and a high-bit word, continued guest
+execution and no result push. This proves the World/Host request boundary, not
+Win32 message-pump timing, GUI acknowledgement or successful OS menu mutation.
+SDK400 and SDK455 remain unknown; main467 remains unknown in both profiles, and
+unregistered engines remain rejected.

@@ -78,28 +78,34 @@ test('the native runtime continues guest instructions after a FES request and ac
   assert.equal(task.machine.pop(), 37);
 });
 
-test('an unknown native reports its exact ABI, arguments and guest PC without inventing a result', async () => {
-  const runtime = new NativeRuntime({
-    profile,
-    read: async () => compiled([[37, 7], [43, 0x189, 4], [59]]),
-  });
-  const task = await runtime.spawn('unknown.kcs');
-  await assert.rejects(runtime.tick(), (error) => {
-    assert.equal(error instanceof UnsupportedKCSNative, true);
-    assert.deepEqual(
-      {
-        profile: error.details.profile,
-        id: error.details.id,
-        script: error.details.script,
-        pc: error.details.pc,
-        args: error.details.args,
-      },
-      { profile, id: 0x189, script: 'unknown.kcs', pc: 6, args: [7] },
-    );
-    return true;
-  });
-  assert.equal(task.status, 'failed');
-  assert.equal(task.machine.sp, 512);
+test('missing native services and unknown slots preserve exact ABI, arguments and guest PC', async () => {
+  for (const [id, status] of [
+    [393, 'recovered'],
+    [467, 'unknown'],
+  ]) {
+    assert.equal(nativeABI(profile).tables.main.entries[id].status, status);
+    const runtime = new NativeRuntime({
+      profile,
+      read: async () => compiled([[37, 7], [43, id, 4], [59]]),
+    });
+    const task = await runtime.spawn('unknown.kcs');
+    await assert.rejects(runtime.tick(), (error) => {
+      assert.equal(error instanceof UnsupportedKCSNative, true);
+      assert.deepEqual(
+        {
+          profile: error.details.profile,
+          id: error.details.id,
+          script: error.details.script,
+          pc: error.details.pc,
+          args: error.details.args,
+        },
+        { profile, id, script: 'unknown.kcs', pc: 6, args: [7] },
+      );
+      return true;
+    });
+    assert.equal(task.status, 'failed');
+    assert.equal(task.machine.sp, 512);
+  }
 });
 
 test('only verified reserved and constant-zero handlers receive the original empty behavior', async () => {
