@@ -212,6 +212,25 @@ async function exerciseDefaultWorld(data) {
   const legal2000 = data.workload === 'legal2000';
   const deviceCycle = data.workload === 'device-loss-restore-sprite';
   const nonprimary = data.workload === 'nonprimary-sprite';
+  const refcap = data.workload === 'fes-refcap-sprite';
+  if (refcap) {
+    let stage = evidence.stage;
+    Object.defineProperty(evidence, 'stage', {
+      enumerable: true,
+      get: () => stage,
+      set(value) {
+        stage = value;
+        console.log('[EFK_DEVICE_PHASE] ' + value);
+      },
+    });
+    check(
+      data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
+        data.effectSHA256 === '68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1' &&
+        data.normalWorldUpdateCount === 4 &&
+        data.trailFixture === null,
+      'Refcap is not the pinned Game Sprite',
+    );
+  }
   check(
     !nonprimary ||
       (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
@@ -778,6 +797,404 @@ async function exerciseDefaultWorld(data) {
     }
     return observed;
   }
+
+  async function renderFESRefcap(world, sender, task, plays, updates) {
+    evidence.stage = 'refcap source setup';
+    const stage = world.stageRenderer,
+      gpu = stage.gpu,
+      gl = gpu.gl,
+      record = world.objects.objects.get(sender),
+      root = record.implementation.player.root,
+      cap = root.collection.lookup(new TextEncoder().encode('cap'), 0),
+      rendering = world.screenEffects.rendering,
+      captures = [],
+      pixels = [],
+      copies = [],
+      packets = [],
+      indexed = [],
+      uploads = [],
+      d6 = [],
+      undo = [];
+    check(root.runtime && cap?.nativeType === 25, 'Normal FILE did not create its raw25 DIFIMAGE');
+    check(cap.difImage.captureRequest === null, 'Capture request was not initially empty');
+    check(
+      gpu === world.getNativeGPU() && gpu.graphicsDevice === world.graphics.device,
+      'Different capture World GPU',
+    );
+    world.graphics.view.configure({
+      virtualWidth: 64,
+      virtualHeight: 64,
+      clientWidth: 64,
+      clientHeight: 48,
+      drawingRectangle: [0, 0, 64, 48],
+    });
+    const previousTarget = gpu.target,
+      previousDepth = previousTarget.depthStencil,
+      previousDrawing = gpu.drawing,
+      capturePhysical = physical(gpu),
+      initialFrame = world.frame;
+    let insideD6 = false,
+      capturePending = 0;
+    const observe = (owner, key, make) => {
+      const original = owner[key],
+        own = Object.hasOwn(owner, key),
+        descriptor = Object.getOwnPropertyDescriptor(owner, key);
+      check(typeof original === 'function', 'Missing refcap observation method ' + key);
+      owner[key] = make(original);
+      undo.push(() => (own ? Object.defineProperty(owner, key, descriptor) : delete owner[key]));
+    };
+    try {
+      // These guards are active only inside the real registered D6 callback.
+      for (const [owner, key] of [
+        [world.game, 'read'],
+        [world.game, 'require'],
+        [world.effekseer, 'play'],
+        [world.effekseer, 'update'],
+        [world.random, 'rand'],
+        [world.random, 'frand'],
+        [world.random.integer, 'seed'],
+        [world.random.real, 'seed'],
+        [world.random.integer, 'nextUint32'],
+        [world.random.real, 'nextUint32'],
+        [Math, 'random'],
+      ])
+        observe(
+          owner,
+          key,
+          (original) =>
+            function (...args) {
+              check(!insideD6, 'Refcap D6 replayed ' + key);
+              return original.apply(this, args);
+            },
+        );
+      observe(
+        world.imagesFES,
+        'capture',
+        (original) =>
+          function (instance, object, request) {
+            // Only the product's normal resource update invokes this delegate.
+            const event = {
+              owner: instance.runtimeID,
+              type: object.nativeType,
+              sameObject: object === cap,
+              minimum: request.minimum,
+              maximum: request.maximum,
+              resource: this.resource(object),
+            };
+            captures.push(event);
+            capturePending++;
+            const result = original.call(this, instance, object, request);
+            result.then(
+              () => {
+                capturePending--;
+              },
+              () => {
+                capturePending--;
+              },
+            );
+            return result;
+          },
+      );
+      observe(
+        stage,
+        'surfacePixels',
+        (original) =>
+          function (id) {
+            const bytes = original.call(this, id);
+            if (capturePending) {
+              const surface = this.surfaces.get(id),
+                target = this.surfaceTargets.get(id),
+                depth = this.surfaceDepths.get(id);
+              pixels.push({
+                id,
+                width: surface.width,
+                height: surface.height,
+                rgba: Array.from(bytes),
+                target,
+                depth,
+              });
+            }
+            return bytes;
+          },
+      );
+      observe(
+        world.graphics.images,
+        'create',
+        (original) =>
+          function (...args) {
+            const id = original.apply(this, args);
+            if (capturePending && args[0] === 64 && args[1] === 48 && args[2] === sender) {
+              const bitmap = this.get(id);
+              let view;
+              observe(
+                bitmap,
+                'pixels',
+                (read) =>
+                  function (...readArgs) {
+                    const value = read.apply(this, readArgs);
+                    // Observe resolution while returning the original value/Promise.
+                    Promise.resolve(value).then(
+                      (bytes) => {
+                        view = bytes;
+                      },
+                      () => {},
+                    );
+                    return value;
+                  },
+              );
+              observe(
+                bitmap,
+                'changed',
+                (changed) =>
+                  function (...changedArgs) {
+                    check(
+                      view instanceof Uint8Array || view instanceof Uint8ClampedArray,
+                      'Capture bitmap pixels were not observed',
+                    );
+                    copies.push({
+                      width: bitmap.width,
+                      height: bitmap.height,
+                      rgba: Array.from(view),
+                    });
+                    return changed.apply(this, changedArgs);
+                  },
+              );
+            }
+            return id;
+          },
+      );
+      observe(
+        task,
+        'drawGPU',
+        (original) =>
+          function (...args) {
+            const cpu = encode(this.manager.snapshot()),
+              expectedTask = structuredClone(this.snapshot()),
+              savedTask = encode(expectedTask),
+              crt = encode(world.effekseer.threads.snapshot()),
+              mt = encode(world.random.snapshot()),
+              frame = world.frame,
+              before = capturePhysical(),
+              states = [...world.graphics.d3dContext.states];
+            check(
+              data.effectSHA256 ===
+                '68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1' &&
+                expectedTask.meshBatch.batch.ringCursor === 0,
+              'Expected Task cursor correction requires the pinned cold Sprite',
+            );
+            // Only the expected snapshot changes: 4 Sprite vertices * 24 CPU bytes.
+            expectedTask.meshBatch.batch.ringCursor = 4 * 24;
+            const expectedTaskEncoded = encode(expectedTask);
+            insideD6 = true;
+            evidence.stage = 'normal FES refcap registered D6';
+            try {
+              const result = original.apply(this, args);
+              const physicalAfter = capturePhysical(),
+                logicalAfter = [...world.graphics.d3dContext.states],
+                managerAfter = encode(this.manager.snapshot()),
+                taskAfter = encode(this.snapshot()),
+                crtAfter = encode(world.effekseer.threads.snapshot()),
+                mtAfter = encode(world.random.snapshot());
+              const diagnostic = {
+                manager: { before: cpu, after: managerAfter, equal: managerAfter === cpu },
+                task: {
+                  before: savedTask,
+                  expected: expectedTaskEncoded,
+                  after: taskAfter,
+                  equal: taskAfter === expectedTaskEncoded,
+                  rawBeforeEqual: taskAfter === savedTask,
+                  expectedCursor: 96,
+                },
+                crt: { before: crt, after: crtAfter, equal: crtAfter === crt },
+                mt: { before: mt, after: mtAfter, equal: mtAfter === mt },
+                frame: { before: frame, after: world.frame, equal: world.frame === frame },
+                physical: { before: encode(before), after: encode(physicalAfter), equal: null },
+                logical: { before: encode(states), after: encode(logicalAfter), equal: null },
+              };
+              evidence.refcapCPUDiagnostic = structuredClone(diagnostic);
+              same(physicalAfter, before, 'Refcap D6 leaked physical state');
+              evidence.refcapCPUDiagnostic.physical.equal = true;
+              same(logicalAfter, states, 'Refcap D6 leaked logical state');
+              evidence.refcapCPUDiagnostic.logical.equal = true;
+              check(
+                managerAfter === cpu && taskAfter === expectedTaskEncoded,
+                'Refcap drawing advanced Task/manager',
+              );
+              check(
+                crtAfter === crt && mtAfter === mt && world.frame === frame,
+                'Refcap drawing advanced CRT/MT/frame',
+              );
+              d6.push({
+                result,
+                frame,
+                fullTypedTaskManagerCRTMTStable: true,
+                expectedColdCursor: 0,
+                expectedCursor: 96,
+                fullTaskMatchesExpectedClone: true,
+                physicalRestored: true,
+                logicalRestored: true,
+              });
+              return result;
+            } finally {
+              insideD6 = false;
+            }
+          },
+      );
+      observe(
+        stage,
+        'drawEffekseer',
+        (original) =>
+          function (packet, image, options) {
+            const target = gpu.target,
+              depth = target.depthStencil;
+            packets.push({
+              vertexCount: packet.vertexCount,
+              indexCount: packet.indexCount,
+              indexStorage: packet.indices.constructor.name,
+              cameraBits: words(packet.camera),
+              projectionBits: words(packet.projection),
+              viewport: Array.from(packet.viewport),
+              sameContext: options.context === world.graphics.d3dContext,
+              sameOwner: target.owner === gpu && depth?.owner === gpu,
+              nonprimary: target !== gpu.primaryTarget,
+              targetWidth: target.width,
+              targetHeight: target.height,
+              depthFormat: depth?.format,
+              alphaTarget: gpu.frameOpaqueTarget === false,
+            });
+            return original.call(this, packet, image, options);
+          },
+      );
+      observe(
+        gl,
+        'drawElements',
+        (original) =>
+          function (...args) {
+            if (insideD6) indexed.push(args);
+            return original.apply(this, args);
+          },
+      );
+      observe(
+        gl,
+        'bufferData',
+        (original) =>
+          function (...args) {
+            const bytes = args[1];
+            if (insideD6 && ArrayBuffer.isView(bytes))
+              uploads.push({
+                target: args[0],
+                storage: bytes.constructor.name,
+                activeElements: args[4] ?? bytes.length,
+                activeBytes: (args[4] ?? bytes.length) * bytes.BYTES_PER_ELEMENT,
+              });
+            return original.apply(this, args);
+          },
+      );
+      evidence.stage = 'normal source label then fifth World tick';
+      root.invoke('CAPTURE');
+      await world.tick();
+      check(
+        world.frame === initialFrame + 1 && plays.length === 1 && updates.length === 5,
+        'Refcap did not use exactly one fifth legal World update',
+      );
+      check(
+        captures.length === 1 &&
+          captures[0].owner === sender &&
+          captures[0].sameObject &&
+          captures[0].type === 25 &&
+          captures[0].minimum === 170 &&
+          captures[0].maximum === 171,
+        'Normal raw25 source request did not reach its real consumer',
+      );
+      check(cap.difImage.captureRequest === null, 'Refcap request remained pending');
+      check(
+        d6.length === 1 && packets.length === 1 && d6[0].result === 1,
+        'Refcap did not invoke the registered kind61 once',
+      );
+      check(
+        pixels.length === 1 && copies.length === 1,
+        'Refcap did not read/copy exactly one real capture',
+      );
+      const raw = pixels[0],
+        copy = copies[0],
+        resource = captures[0].resource;
+      check(
+        raw.width === 64 &&
+          raw.height === 48 &&
+          copy.width === 64 &&
+          copy.height === 48 &&
+          raw.rgba.length === 12288 &&
+          copy.rgba.length === 12288,
+        'Capture or crop dimensions changed',
+      );
+      check(
+        raw.rgba.some((value, i) => i % 4 === 3 && value > 0) &&
+          raw.rgba.some((value, i) => i % 4 === 3 && value === 0),
+        'Capture lacks real Sprite pixels or clear0 alpha background',
+      );
+      for (let y = 0; y < 48; y++)
+        same(
+          copy.rgba.slice(y * 256, (y + 1) * 256),
+          raw.rgba.slice((47 - y) * 256, (48 - y) * 256),
+          'DIF crop/vertical flip differs',
+        );
+      check(
+        resource.owner === sender &&
+          resource.source !== 0 &&
+          resource.ownerInput === 0 &&
+          resource.ownerLayered === false,
+        'Normal DIF capture did not retain its own source',
+      );
+      world.renderSources.get(resource.source);
+      check(
+        rendering.captures.length === 0 &&
+          rendering.prepared === false &&
+          raw.target.destroyed &&
+          raw.depth.destroyed,
+        'DIF did not release its shared capture targets',
+      );
+      check(
+        gpu.target === previousTarget &&
+          previousTarget.depthStencil === previousDepth &&
+          gpu.drawing === previousDrawing,
+        'Normal capture did not restore its prior target/depth',
+      );
+      const error = gl.getError();
+      check(error === 0, 'Normal FES capture GL error ' + error);
+      evidence.stage = 'normal FES refcap complete';
+      return {
+        rawRGBA: raw.rgba,
+        copiedRGBA: copy.rgba,
+        error,
+        captures: captures.map(({ resource: r, ...event }) => ({
+          ...event,
+          resource: {
+            owner: r.owner,
+            source: r.source,
+            ownerInput: r.ownerInput,
+            ownerLayered: r.ownerLayered,
+          },
+        })),
+        packets,
+        indexed,
+        uploads,
+        d6,
+        frame: world.frame,
+        normalUpdates: updates.length,
+        plays: plays.length,
+        taskCameraBits: words(task.camera),
+        taskProjectionBits: words(task.projection),
+        actualCopyFlipEqual: true,
+        releasedCaptureTargets: true,
+        restoredTargetDepth: true,
+        noReplayWithinD6: true,
+        newIndependentFullPixelOracle: false,
+      };
+    } finally {
+      for (const restore of undo.reverse()) restore();
+    }
+  }
+
   async function renderNonprimary(world, task) {
     evidence.stage = 'nonprimary prepare';
     const stage = world.stageRenderer,
@@ -1150,7 +1567,13 @@ async function exerciseDefaultWorld(data) {
         updates: updates.map((x) => ({ owner: x.owner })),
         frame: world.frame,
       };
-    if (nonprimary) {
+    if (refcap) {
+      result = {
+        refcap: await renderFESRefcap(world, sender, task, plays, updates),
+        setup: evidence.setup,
+        freshWorlds: 0,
+      };
+    } else if (nonprimary) {
       result = {
         nonprimary: await renderNonprimary(world, task),
         setup: evidence.setup,
@@ -1242,7 +1665,7 @@ async function exerciseDefaultWorld(data) {
     }
   } catch (error) {
     failure = error;
-    if (deviceCycle || nonprimary) evidence.firstFailure = deviceError(error);
+    if (deviceCycle || nonprimary || refcap) evidence.firstFailure = deviceError(error);
   } finally {
     for (const w of [fresh, world])
       if (w) {
@@ -1253,7 +1676,7 @@ async function exerciseDefaultWorld(data) {
         }
       }
     globalThis.OffscreenCanvas = NativeCanvas;
-    if (deviceCycle || nonprimary) {
+    if (deviceCycle || nonprimary || refcap) {
       evidence.cleanup = {
         attempted: world ? 1 : 0,
         failures: cleanup.map((error) => deviceError(error)),
@@ -1926,4 +2349,141 @@ test('default FES Sprite submits once to a same-owner nonprimary target', async 
   expect(frame.primaryAfter).toEqual(frame.primaryBefore);
   expect(frame.primaryBefore).toHaveLength(12288);
   expect(frame.primaryBefore.every((value, i) => value === [64, 80, 96, 255][i % 4])).toBe(true);
+});
+
+test('normal FES DIFIMAGE refcap consumes its registered Sprite into a same-World capture', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(0);
+  page.setDefaultTimeout(0);
+  page.setDefaultNavigationTimeout(0);
+  const c = defaultReference.cases.find((item) => item.kind === 'sprite'),
+    blocked = [];
+  await page.route('**/*', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url());
+    if (request.isNavigationRequest() && url.pathname === '/') {
+      await route.fulfill({
+        contentType: 'text/html',
+        body: '<!doctype html><title>Normal FES refcap</title>',
+      });
+      return;
+    }
+    if (/\/(?:cs2_debug_key\.dat|[^/]*\.key)(?:$|\?)/i.test(url.pathname)) {
+      blocked.push('excluded protected file class');
+      await route.abort();
+      return;
+    }
+    if (
+      /\/oracle\/|\/native\/engine-process\.mjs|\/ppi\/(?:backend|backend-artifact)\.mjs|unicorn|\.(?:exe|dll|ppi)(?:$|\?)/i.test(
+        url.href,
+      )
+    ) {
+      blocked.push(url.href);
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  });
+  await page.goto('/');
+  const source =
+    defaultReference.fesSource
+      .replace('EFKPLANE fx\n', 'EFKPLANE fx\nDIFIMAGE cap\n')
+      .replace('#START\n', '#OBJECT DISP\ncap 0\n#START\n') +
+    '#CAPTURE\ncap refcap 170 171\nnext IDLE\n';
+  let actual;
+  try {
+    actual = await page.evaluate(exerciseDefaultWorld, {
+      workload: 'fes-refcap-sprite',
+      profile: defaultReference.profile,
+      effectSHA256: c.efkSHA256,
+      canvas: defaultReference.canvas,
+      virtualView: defaultReference.virtualView,
+      viewport: defaultReference.viewport,
+      clearARGB: defaultReference.clearARGB,
+      clearRGBA: defaultReference.clearRGBA,
+      playPosition: defaultReference.playPosition,
+      public57Bits: defaultReference.public57Bits,
+      normalWorldUpdateCount: defaultReference.normalWorldUpdateCount,
+      trailFixture: null,
+      files: {
+        'case.kcs': Array.from(bootKCS),
+        'screen.fes': Array.from(new TextEncoder().encode(source)),
+        'scene.efk': Array.from(Buffer.from(c.efkBase64, 'base64')),
+      },
+    });
+  } catch (error) {
+    await testInfo.attach('refcap-first-fault', {
+      body: Buffer.from(
+        JSON.stringify({
+          progress: await page
+            .evaluate(() => globalThis.__defaultEFKProgress ?? null)
+            .catch(() => null),
+          blocked,
+        }),
+      ),
+      contentType: 'application/json',
+    });
+    throw error;
+  }
+  await testInfo.attach('refcap-evidence', {
+    body: Buffer.from(
+      JSON.stringify({ actual, blocked, sourceSHA256: digest(Buffer.from(source)) }),
+    ),
+    contentType: 'application/json',
+  });
+  const frame = actual.refcap;
+  await testInfo.attach('refcap-raw-rgba', {
+    body: Buffer.from(frame.rawRGBA),
+    contentType: 'application/octet-stream',
+  });
+  await testInfo.attach('refcap-copy-rgba', {
+    body: Buffer.from(frame.copiedRGBA),
+    contentType: 'application/octet-stream',
+  });
+  expect(blocked).toEqual([]);
+  expect(actual.cleanup).toEqual({ attempted: 1, failures: [] });
+  expect(actual.freshWorlds).toBe(0);
+  expect(frame.error).toBe(0);
+  expect(frame.plays).toBe(1);
+  expect(frame.normalUpdates).toBe(5);
+  expect(frame.captures).toHaveLength(1);
+  expect(frame.captures[0]).toMatchObject({
+    type: 25,
+    sameObject: true,
+    minimum: 170,
+    maximum: 171,
+  });
+  expect(frame.packets).toHaveLength(1);
+  expect(frame.packets[0]).toMatchObject({
+    vertexCount: 4,
+    indexCount: 6,
+    indexStorage: 'Uint16Array',
+    viewport: [0, 0, 64, 48, 0, 1],
+    sameContext: true,
+    sameOwner: true,
+    nonprimary: true,
+    targetWidth: 64,
+    targetHeight: 48,
+    depthFormat: 80,
+    alphaTarget: true,
+  });
+  expect(frame.indexed).toEqual([[4, 6, 5123, 0]]);
+  expect(frame.uploads.filter((x) => x.target === 34962)).toEqual([
+    { target: 34962, storage: 'Float32Array', activeElements: 40, activeBytes: 160 },
+  ]);
+  expect(frame.uploads.filter((x) => x.target === 34963)).toEqual([
+    { target: 34963, storage: 'Uint16Array', activeElements: 6, activeBytes: 12 },
+  ]);
+  expect(frame.packets[0].cameraBits).toEqual(c.expectedPacketCameraBits);
+  expect(frame.packets[0].projectionBits).toEqual(defaultReference.TaskProjectionBits);
+  expect(frame.taskCameraBits).toEqual(defaultReference.TaskCameraBits);
+  expect(frame.taskProjectionBits).toEqual(defaultReference.TaskProjectionBits);
+  expect(frame.rawRGBA).toHaveLength(12288);
+  expect(frame.copiedRGBA).toHaveLength(12288);
+  expect(frame.actualCopyFlipEqual).toBe(true);
+  expect(frame.releasedCaptureTargets).toBe(true);
+  expect(frame.restoredTargetDepth).toBe(true);
+  expect(frame.noReplayWithinD6).toBe(true);
+  expect(frame.newIndependentFullPixelOracle).toBe(false);
 });

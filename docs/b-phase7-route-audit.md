@@ -1,14 +1,18 @@
 # 第 7 阶段 FES 分发审阅
 
 本记录只审阅 24 个已安装 KCS FES native 包装器及其默认接收器。
-解释器的对象、定义、命令支持范围由 FES/CST 契约看板另行说明；EFK 仍是阶段 7
-尚未完成的子系统。包装器由 JS 分发不代表这些契约全部完成。
+解释器的对象、定义、命令支持范围由 FES/CST 契约看板另行说明。登记域的 EFK
+默认工厂、四种 geometry、合法 2000、primary device 恢复及同 owner 非 primary
+物理提交已有范围化验收。Game 的普通 DIFIMAGE refcap 命令至 EFK 的 capture、
+实际像素复制、retained source 归属及捕获资源释放也已验收；不据此新增独立全图
+oracle 或启用 SDK。
+包装器由 JS 分发不代表这些契约全部完成。
 
 两份冻结二进制的 native 表对应包装器均已读取完整指令路径：74 的 FES 原消息从
 326 开始，76 从 331 开始；现有 ABI `control` 通道负责转换，23 查询不偏移。
-实现继续使用 canonical 消息，不新增版本或签名表。SDK catalog 的空语义名保留，
-审阅中的描述性 route label 单独登记；未知结构化 parameters/result/controlCodes 等
-元数据不由本记录补写。
+实现继续使用 canonical 消息；共用编号语义表与逐版本差量已显式登记两版 FES
+准入和已恢复签名，SDK catalog 不再沿用早期空语义名说明。描述性 route label
+本身不构成准入证据；未审元数据、未知槽和未登记版本仍不得自动启用。
 
 | Native ID     | 分发行为                                     | Canonical 消息         |
 | ------------- | -------------------------------------------- | ---------------------- |

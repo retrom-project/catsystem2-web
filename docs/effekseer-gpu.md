@@ -350,3 +350,19 @@ this does not generalize alpha-sensitive targets or other formats. Scope exit
 must restore physical state and the primary target/depth; the primary's complete
 authored sentinel readback must remain unchanged. No primary particle draw,
 device reset, fresh World or cross-owner/context support is added by this case.
+
+The normal Game FES capture case loads an owned DIFIMAGE through the existing
+kind34 FILE route. Its source label invokes `cap refcap 170 171`, and a fifth
+legal World update consumes that request after the four established setup updates.
+The registered Sprite callback submits once into the same World's 64x48 Stage
+capture with its format 80 depth, full viewport and clear 0 alpha target. The case
+checks the real 4-vertex/6-index packet, 160 active GPU vertex bytes and 12 index
+bytes, actual RGBA readback, DIF crop/vertical-flip copy and retained source owner.
+Shared capture resources are released and the original target/depth is restored.
+D6 preserves the full manager, CRT, MT, frame and device state. The entire Task
+matches a pre-draw expected clone with only the independently fixed cold Sprite
+batch cursor adjusted from 0 to 4x24 CPU bytes; the actual Task is never edited. The normal
+fifth update is measured separately from drawing. This bridges the FES command to
+EFK capture, without adding a new independent full-pixel oracle: the capture's
+transparent clear, full viewport and flipped copy differ from the opaque A0
+reference. Existing full-reference physical tests remain separate evidence.
