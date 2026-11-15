@@ -307,7 +307,10 @@ for (const profile of startupProfiles) {
       await h.world.sendEngine(h.id, h.world.main.id, 333);
       assert.equal(h.words.get(40), 0);
       assert.deepEqual(root.suspended, [['START', 1]]);
-      assert.equal(root.commandDelayUntil, root.player.frameCount + 1);
+      assert.equal(
+        root.commandDelayUntil,
+        (h.world.objects.objects.get(h.id).effectiveFrame + 1) >>> 0,
+      );
       assert.deepEqual(root.program.blocks.START[0], ascii('$str30'));
       const saved = structuredClone(root.suspended),
         delay = root.commandDelayUntil,
@@ -345,7 +348,7 @@ for (const profile of startupProfiles) {
         words = fresh.world.runtime.variableBank(fresh.world.main, false);
       assert.deepEqual(next.suspended, [['START', 1]]);
       assert.equal(next.commandDelayUntil, delay);
-      await fresh.world.sendEngine(h.id, fresh.world.main.id, 333);
+      await fresh.world.objects.tick(delay);
       assert.equal(words.get(40), 1);
       assert.deepEqual(next.suspended, [['START', 3]]);
       assert.equal(next.commandDelayUntil, null);

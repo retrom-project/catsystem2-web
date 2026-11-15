@@ -68,7 +68,7 @@ break
         };
         if (target === 'plane') {
           h.instance.setGlobal(7, 1);
-          await h.task.player.step();
+          await h.task.player.step(world.objects.objects.get(h.id).effectiveFrame);
         } else await h.task.player.notify('SNAP');
         assert.deepEqual(uploads, [[1, 18]], 'async return0 does not consume the native queue');
         assert.equal(h.task.player.globals[5], 81, 'continuation runs in the same FES frame');
@@ -127,7 +127,7 @@ break
         runtime = task.player.root.runtime;
       assert.equal(runtime.pendingRecords.length, 1);
       assert.equal(task.player.root.nativeQueuePending, true);
-      await task.player.step();
+      await task.player.step(fresh.objects.objects.get(h.id).effectiveFrame);
       assert.equal(runtime.pendingRecords.length, 0);
       assert.equal(task.player.root.nativeQueuePending, false);
       const draw = fresh.graphics.drawTasks.get(h.surface);

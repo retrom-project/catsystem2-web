@@ -778,3 +778,16 @@ values independently; this change adds no checkpoint fields or native keyboard
 equivalence claim. Whole movement selection/value ordering behind an existing
 public tail, complete hover/drag gestures and unsupported types remain separate
 gates.
+
+### Normal FES input clock
+
+Normal FES frame calls use the unsigned word supplied by the native task caller.
+A no-argument task `tick()` and message333 force an update at that record's current
+`effectiveFrame`; neither advances time. `player.frameCount` remains a separate
+diagnostic call count. Normal positive command deadlines, `_FRAME_` and
+`reset_frame` use the supplied word and the owned origin. An origin equal to zero
+is initialized to `word - 1` on each frame entry, including a repeated input.
+
+The current input word and origin survive a cold restore without executing FES
+commands. Bare FES players retain their independent step-count clock. This clock
+contract does not register or complete the native common `wait` binding.

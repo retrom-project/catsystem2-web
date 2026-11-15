@@ -9,6 +9,12 @@ import { tokenizeFESByteLine, fesSourceBytes, fesByteView } from './tokens.mjs';
 import { CGGallery } from '../gallery.mjs';
 import { decodeText } from '../binary.mjs';
 
+function inputFrameWord(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff)
+    throw new TypeError('Native FES frame requires an unsigned input word');
+  return value;
+}
+
 export class FESPlayer {
   constructor(game, images, host = {}, globals = {}, strings = {}) {
     Object.assign(this, {
@@ -213,7 +219,8 @@ export class FESPlayer {
       await Promise.all([...this.pending, ...(commandsOnly ? [] : this.publicPushPending)]);
     if (this.error) throw this.error;
   }
-  async step() {
+  async step(frameWord) {
+    if (this.runtimeFactory) inputFrameWord(frameWord);
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
@@ -237,7 +244,7 @@ export class FESPlayer {
           }
           s.waitSound = null;
         }
-        s.tick();
+        s.tick(frameWord);
       };
       await tick();
       let flushes = 0;
@@ -966,6 +973,7 @@ export class FESPlayer {
             runtime: s.runtime?.snapshot() ?? null,
             ...(s.runtime
               ? {
+                  nativeFrameWord: s.nativeFrameWord,
                   nativeContext: {
                     nameBytes: s.nativeContext.nameBytes.slice(),
                     index: s.nativeContext.index,
@@ -1061,7 +1069,11 @@ export class FESPlayer {
         macros: saved.macros,
         restoring: true,
       });
-      if (s.runtime) s.nativeContext = nativeContext;
+      if (s.runtime) {
+        s.nativeContext = nativeContext;
+        s.nativeFrameWord = inputFrameWord(saved.nativeFrameWord);
+        s.frameOrigin = inputFrameWord(saved.frameOrigin);
+      }
       if (!Array.isArray(saved.keyNames)) throw new TypeError('Invalid FES keyboard name snapshot');
       for (const name of saved.keyNames) {
         if (typeof name !== 'string' || s.keyNames.has(name))

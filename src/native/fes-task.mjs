@@ -169,7 +169,7 @@ export function createNativeFESTask(world, record) {
       world.host.nativeFESLoaded?.(record, this.player, world);
       return true;
     },
-    async tick(_frame, context = {}) {
+    async tick(frameWord = record.effectiveFrame, context = {}) {
       const player = this.player,
         live = () =>
           this.player === player && record.state !== 'releasing' && !player?.root?.runtime?.closed;
@@ -177,7 +177,7 @@ export function createNativeFESTask(world, record) {
       this.variableBank()?.selectContext(this.variableContextKey());
       await input.tick();
       if (!live()) return;
-      await player.step();
+      await player.step(frameWord);
       if (!live()) return;
       await this.syncObjects(context);
       if (live() && player.root.finished !== null) record.exitCode = player.root.finished;
@@ -326,7 +326,7 @@ export function createNativeFESTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 333) {
-        await this.tick(undefined, context);
+        await this.tick(record.effectiveFrame, context);
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 334) {

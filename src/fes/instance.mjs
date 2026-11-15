@@ -112,7 +112,11 @@ export class FESInstance {
       }
     this.nativeDictionary = new NativeDictionary();
     this.keyNames = new Set();
-    if (player.runtimeFactory) this.runtime = player.runtimeFactory(this);
+    if (player.runtimeFactory) {
+      this.frameOrigin = 0;
+      this.nativeFrameWord = 0;
+      this.runtime = player.runtimeFactory(this);
+    }
     if (restoring || this.runtime) return;
     for (const row of program.definitions) {
       const declaration = parseBareFESDefinition(row, (source) => this.tokens(source));
@@ -272,7 +276,9 @@ export class FESInstance {
       _RELEASE_LEFT_: this.releaseLeft ?? 0,
       _RELEASE_RIGHT_: this.releaseRight ?? 0,
       _TOUCH_: this.touch ?? 0,
-      _FRAME_: this.player.frameCount - this.frameOrigin,
+      _FRAME_: this.runtime
+        ? (this.nativeFrameWord - this.frameOrigin) >>> 0
+        : this.player.frameCount - this.frameOrigin,
       _SAVEOBJ_: this.player.saveObject ?? this.player.host.saveObject?.handle,
       _MOUSE_X_: this.player.mouse.x,
       _MOUSE_Y_: this.player.mouse.y,
@@ -508,7 +514,13 @@ export class FESInstance {
       ? this.collection.lookup(reference.nameBytes, reference.index)
       : this.byKey.get(reference);
   }
-  tick() {
+  tick(frameWord) {
+    if (this.runtime) {
+      if (!Number.isInteger(frameWord) || frameWord < 0 || frameWord > 0xffffffff)
+        throw new TypeError('Native FES frame requires an unsigned input word');
+      if (this.frameOrigin === 0) this.frameOrigin = (frameWord - 1) >>> 0;
+      this.nativeFrameWord = frameWord;
+    }
     if (this.finished !== null) return;
     if (this.deferredCommandReturn !== null) {
       const value = this.deferredCommandReturn;
@@ -536,7 +548,8 @@ export class FESInstance {
       this.transitionUntil = this.player.frameCount;
     }
     if (this.commandDelayUntil !== null) {
-      if (this.player.frameCount >>> 0 < this.commandDelayUntil) return;
+      const frame = this.runtime ? this.nativeFrameWord : this.player.frameCount;
+      if (frame >>> 0 < this.commandDelayUntil) return;
       this.commandDelayUntil = null;
     }
     if (this.waitFrames > 0 && --this.waitFrames > 0) return;
@@ -720,7 +733,8 @@ export class FESInstance {
       throw new Error(
         `Native FES return state ${signed} requires its command-specific wait context`,
       );
-    this.commandDelayUntil = (this.player.frameCount + word) >>> 0;
+    const frame = this.runtime ? this.nativeFrameWord : this.player.frameCount;
+    this.commandDelayUntil = (frame + word) >>> 0;
     return { action: 'suspend' };
   }
   async flushNativeRecords() {
@@ -930,7 +944,7 @@ export class FESInstance {
       case 'decode':
         return this.player.pending.size ? { action: 'flush' } : {};
       case 'reset_frame':
-        this.frameOrigin = this.player.frameCount;
+        this.frameOrigin = this.runtime ? this.nativeFrameWord : this.player.frameCount;
         break;
       case 'randtbl': {
         const values = Array.from({ length: Math.max(0, p(3) - p(2) + 1) }, (_, i) => p(2) + i);
