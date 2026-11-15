@@ -211,6 +211,15 @@ async function exerciseDefaultWorld(data) {
     });
   const legal2000 = data.workload === 'legal2000';
   const deviceCycle = data.workload === 'device-loss-restore-sprite';
+  const nonprimary = data.workload === 'nonprimary-sprite';
+  check(
+    !nonprimary ||
+      (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
+        data.effectSHA256 === '68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1' &&
+        data.trailFixture === null &&
+        data.normalWorldUpdateCount === 4),
+    'Nonprimary case is not the pinned opaque Sprite workload',
+  );
   check(
     !deviceCycle ||
       (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
@@ -769,6 +778,179 @@ async function exerciseDefaultWorld(data) {
     }
     return observed;
   }
+  async function renderNonprimary(world, task) {
+    evidence.stage = 'nonprimary prepare';
+    const stage = world.stageRenderer,
+      gpu = stage.gpu,
+      gl = gpu.gl;
+    check(
+      gpu.graphicsDevice === world.graphics.device &&
+        stage.graphicsDevice === world.graphics.device,
+      'Different World device',
+    );
+    const cpu = encode(task.manager.snapshot()),
+      crt = encode(world.effekseer.threads.snapshot()),
+      mt = encode(world.random.snapshot()),
+      frame = world.frame;
+    const [width, height] = data.canvas,
+      initial = new Uint8Array(width * height * 4);
+    for (let i = 0; i < initial.length; i += 4) initial.set(data.clearRGBA, i);
+    let target, depth, observed;
+    const submit = stage.drawEffekseer,
+      draw = gl.drawElements,
+      buffer = gl.bufferData;
+    const packets = [],
+      indexed = [],
+      uploads = [];
+    try {
+      return await withoutReplay(world, async () => {
+        target = gpu.createRenderTarget(width, height, initial);
+        depth = gpu.createDepthStencil(width, height, 75);
+        check(
+          target !== gpu.primaryTarget && target.owner === gpu && depth.owner === gpu,
+          'Nonprimary allocation has another owner',
+        );
+        // Public full initialization precedes beginFrame; no D6 submission is made here.
+        gpu.withRenderTarget(target, () => gpu.clear({ flags: 6 }), { depthStencil: depth });
+        gpu.beginFrame(0xff405060);
+        const primary = gpu.primaryTarget,
+          primaryDepth = primary.depthStencil;
+        const primaryBefore = Array.from(gpu.pixels(primary));
+        const capture = physical(gpu),
+          outerBefore = capture();
+        const states = [...world.graphics.d3dContext.states];
+        stage.drawEffekseer = function (packet, image, options) {
+          packets.push({
+            vertexCount: packet.vertexCount,
+            indexCount: packet.indexCount,
+            indexStorage: packet.indices.constructor.name,
+            cameraBits: words(packet.camera),
+            projectionBits: words(packet.projection),
+            viewport: Array.from(packet.viewport),
+            sameContext: options.context === world.graphics.d3dContext,
+            sameTarget: gpu.target === target && gpu.target.depthStencil === depth,
+            nonprimary: gpu.target !== primary,
+            alphaTarget: gpu.frameOpaqueTarget === false,
+          });
+          return submit.call(this, packet, image, options);
+        };
+        gl.drawElements = function (...args) {
+          indexed.push(args);
+          return draw.apply(this, args);
+        };
+        gl.bufferData = function (...args) {
+          const bytes = args[1];
+          if (ArrayBuffer.isView(bytes))
+            uploads.push({
+              target: args[0],
+              storage: bytes.constructor.name,
+              activeElements: args[4] ?? bytes.length,
+              activeBytes: (args[4] ?? bytes.length) * bytes.BYTES_PER_ELEMENT,
+            });
+          return buffer.apply(this, args);
+        };
+        evidence.stage = 'nonprimary D6';
+        observed = await gpu.withRenderTargetAsync(
+          target,
+          async () => {
+            check(
+              gpu.target === target && target.depthStencil === depth,
+              'Public target/depth scope did not enter',
+            );
+            gl.viewport(...data.viewport.slice(0, 4));
+            gl.depthRange(...data.viewport.slice(4));
+            const insideBefore = capture();
+            const item = world.screenEffects.rendering
+              .currentFrame()
+              .items.find((x) => x.p?.nativeTaskWorldID === task.record.id);
+            check(
+              item?.p.nativeGraph === task.plane.graph &&
+                task.plane.graph.registrationEnabled === true,
+              'Missing normal D6 callback',
+            );
+            await world.screenEffects.rendering.drawRange(170, 171);
+            const insideAfter = capture();
+            same(insideAfter, insideBefore, 'D6 leaked physical state inside the nonprimary scope');
+            same([...world.graphics.d3dContext.states], states, 'D6 leaked logical render state');
+            check(
+              gpu.target === target && target.depthStencil === depth,
+              'D6 changed nonprimary target/depth',
+            );
+            const rgba = Array.from(gpu.pixels(target)),
+              error = gl.getError();
+            check(error === 0, 'Nonprimary actual GL draw failed: ' + error);
+            check(encode(task.manager.snapshot()) === cpu, 'Nonprimary rendering advanced manager');
+            check(
+              encode(world.effekseer.threads.snapshot()) === crt,
+              'Nonprimary rendering advanced CRT',
+            );
+            check(
+              encode(world.random.snapshot()) === mt && world.frame === frame,
+              'Nonprimary rendering advanced MT/World frame',
+            );
+            check(
+              task.meshBatch.ring === task.ring &&
+                task.gpuBackend.gpu === gpu &&
+                task.gpuBackend.stage === stage,
+              'Nonprimary D6 changed Task/Ring/GPU owner',
+            );
+            return {
+              rgba,
+              error,
+              packets,
+              indexed,
+              uploads,
+              frame,
+              population: population(task),
+              stats: { ...task.meshBatch.result },
+              taskCameraBits: words(task.camera),
+              taskProjectionBits: words(task.projection),
+              insideBefore,
+              insideAfter,
+              physicalRestored: true,
+              logicalStatesRestored: true,
+              sameOwner: true,
+              targetDepthShared: true,
+              managerBefore: JSON.parse(cpu),
+              managerAfter: JSON.parse(encode(task.manager.snapshot())),
+            };
+          },
+          { depthStencil: depth },
+        );
+        const outerAfter = capture();
+        same(outerAfter, outerBefore, 'Public nonprimary scope leaked physical state');
+        check(
+          gpu.target === primary && primary.depthStencil === primaryDepth,
+          'Public scope did not restore primary target/depth',
+        );
+        const primaryAfter = Array.from(gpu.pixels(primary));
+        same(primaryAfter, primaryBefore, 'Nonprimary D6 wrote the primary target');
+        Object.assign(observed, {
+          primaryBefore,
+          primaryAfter,
+          outerBefore,
+          outerAfter,
+          primaryRestored: true,
+          primaryUnchanged: true,
+          targetSize: [target.width, target.height],
+          depthFormat: depth.format,
+          nativeTarget: true,
+          noReplay: true,
+        });
+        evidence.frames.nonprimary = observed;
+        return observed;
+      });
+    } finally {
+      stage.drawEffekseer = submit;
+      gl.drawElements = draw;
+      gl.bufferData = buffer;
+      if (gpu.drawing) gpu.endNativeFrame();
+      if (target) gpu.destroyRenderTarget(target);
+      if (depth) gpu.destroyDepthStencil(depth);
+      if (observed)
+        observed.resourcesReleased = target.destroyed === true && depth.destroyed === true;
+    }
+  }
   function deviceError(error, seen = new Set(), depth = 0) {
     if (error == null || typeof error !== 'object') return { value: String(error) };
     if (seen.has(error)) return { cycle: true };
@@ -968,89 +1150,99 @@ async function exerciseDefaultWorld(data) {
         updates: updates.map((x) => ({ owner: x.owner })),
         frame: world.frame,
       };
-    const before = canvases,
-      original = await render(world, task, 'original'),
-      after = canvases;
-    if (deviceCycle) {
-      const device = await restoreSameDevice(world, task, plays, updates);
-      const deviceRestored = await render(world, task, 'device restored');
+    if (nonprimary) {
       result = {
-        original,
-        deviceRestored,
-        device,
+        nonprimary: await renderNonprimary(world, task),
         setup: evidence.setup,
-        canvases: { before, after, restoredAfter: canvases },
         reads: evidence.reads,
-        noResourceCommandStateReplay: true,
-        noRenderSnapshotReads: true,
         freshWorlds: 0,
+        noResourceCommandStateReplay: true,
       };
     } else {
-      const savedTask = task.snapshot(),
-        savedCRT = world.effekseer.threads.snapshot();
-      const savedMT = world.random.snapshot();
-      evidence.stage = 'original snapshot';
-      const checkpoint = await withoutReplay(world, async () => world.snapshot());
-      evidence.stage = 'construct fresh';
-      fresh = await makeDefaultWorld(data, false);
-      check(
-        fresh !== world &&
-          fresh.stageRenderer !== world.stageRenderer &&
-          fresh.stageRenderer.gpu !== world.stageRenderer.gpu &&
-          fresh.graphics.device !== world.graphics.device,
-        'Fresh World reused the old owners',
-      );
-      evidence.stage = 'fresh restore';
-      await withoutReplay(fresh, async () => fresh.restore(structuredClone(checkpoint)), true);
-      const restored = fresh.objects.objects.get(task.record.id).implementation;
-      check(
-        restored !== task && restored.manager !== task.manager && restored.gpuBackend === null,
-        'Restore reused CPU owners or replayed a physical submission',
-      );
-      same(restored.snapshot(), savedTask, 'Fresh Task current bytes differ');
-      same(fresh.effekseer.threads.snapshot(), savedCRT, 'Fresh CRT differs');
-      same(fresh.random.snapshot(), savedMT, 'Fresh MT differs');
-      if (legal2000) {
-        const current = restored.snapshot();
-        evidence.freshState = {
-          task: {
-            saved: await summary(encode(savedTask)),
-            restored: await summary(encode(current)),
-          },
-          manager: {
-            saved: await summary(encode(savedTask.manager)),
-            restored: await summary(encode(current.manager)),
-          },
-          crt: {
-            saved: await summary(encode(savedCRT)),
-            restored: await summary(encode(fresh.effekseer.threads.snapshot())),
-          },
-          mt: {
-            saved: await summary(encode(savedMT)),
-            restored: await summary(encode(fresh.random.snapshot())),
-          },
-          completeTypedNegativeZeroComparison: true,
+      const before = canvases,
+        original = await render(world, task, 'original'),
+        after = canvases;
+      if (deviceCycle) {
+        const device = await restoreSameDevice(world, task, plays, updates);
+        const deviceRestored = await render(world, task, 'device restored');
+        result = {
+          original,
+          deviceRestored,
+          device,
+          setup: evidence.setup,
+          canvases: { before, after, restoredAfter: canvases },
+          reads: evidence.reads,
+          noResourceCommandStateReplay: true,
+          noRenderSnapshotReads: true,
+          freshWorlds: 0,
+        };
+      } else {
+        const savedTask = task.snapshot(),
+          savedCRT = world.effekseer.threads.snapshot();
+        const savedMT = world.random.snapshot();
+        evidence.stage = 'original snapshot';
+        const checkpoint = await withoutReplay(world, async () => world.snapshot());
+        evidence.stage = 'construct fresh';
+        fresh = await makeDefaultWorld(data, false);
+        check(
+          fresh !== world &&
+            fresh.stageRenderer !== world.stageRenderer &&
+            fresh.stageRenderer.gpu !== world.stageRenderer.gpu &&
+            fresh.graphics.device !== world.graphics.device,
+          'Fresh World reused the old owners',
+        );
+        evidence.stage = 'fresh restore';
+        await withoutReplay(fresh, async () => fresh.restore(structuredClone(checkpoint)), true);
+        const restored = fresh.objects.objects.get(task.record.id).implementation;
+        check(
+          restored !== task && restored.manager !== task.manager && restored.gpuBackend === null,
+          'Restore reused CPU owners or replayed a physical submission',
+        );
+        same(restored.snapshot(), savedTask, 'Fresh Task current bytes differ');
+        same(fresh.effekseer.threads.snapshot(), savedCRT, 'Fresh CRT differs');
+        same(fresh.random.snapshot(), savedMT, 'Fresh MT differs');
+        if (legal2000) {
+          const current = restored.snapshot();
+          evidence.freshState = {
+            task: {
+              saved: await summary(encode(savedTask)),
+              restored: await summary(encode(current)),
+            },
+            manager: {
+              saved: await summary(encode(savedTask.manager)),
+              restored: await summary(encode(current.manager)),
+            },
+            crt: {
+              saved: await summary(encode(savedCRT)),
+              restored: await summary(encode(fresh.effekseer.threads.snapshot())),
+            },
+            mt: {
+              saved: await summary(encode(savedMT)),
+              restored: await summary(encode(fresh.random.snapshot())),
+            },
+            completeTypedNegativeZeroComparison: true,
+          };
+        }
+        const freshBefore = canvases,
+          restoredFrame = await render(fresh, restored, 'restored');
+        result = {
+          original,
+          restored: restoredFrame,
+          freshIndependentOwners: true,
+          canvases: { before, after, freshBefore, freshAfter: canvases },
+          setup: evidence.setup,
+          ...(legal2000 ? { freshState: evidence.freshState } : {}),
+          reads: evidence.reads,
+          // Immutable mounted sources are revalidated; resource commands/state never replay.
+          noResourceCommandStateReplay: true,
+          noRenderSnapshotReads: true,
+          restoreReadQuota: evidence.restoreReadQuota,
         };
       }
-      const freshBefore = canvases,
-        restoredFrame = await render(fresh, restored, 'restored');
-      result = {
-        original,
-        restored: restoredFrame,
-        freshIndependentOwners: true,
-        canvases: { before, after, freshBefore, freshAfter: canvases },
-        setup: evidence.setup,
-        ...(legal2000 ? { freshState: evidence.freshState } : {}),
-        reads: evidence.reads,
-        // Immutable mounted sources are revalidated; resource commands/state never replay.
-        noResourceCommandStateReplay: true,
-        noRenderSnapshotReads: true,
-        restoreReadQuota: evidence.restoreReadQuota,
-      };
     }
   } catch (error) {
     failure = error;
-    if (deviceCycle) evidence.firstFailure = deviceError(error);
+    if (deviceCycle || nonprimary) evidence.firstFailure = deviceError(error);
   } finally {
     for (const w of [fresh, world])
       if (w) {
@@ -1061,7 +1253,7 @@ async function exerciseDefaultWorld(data) {
         }
       }
     globalThis.OffscreenCanvas = NativeCanvas;
-    if (deviceCycle) {
+    if (deviceCycle || nonprimary) {
       evidence.cleanup = {
         attempted: world ? 1 : 0,
         failures: cleanup.map((error) => deviceError(error)),
@@ -1596,4 +1788,142 @@ test('default FES Sprite survives a real same-device WebGL loss and restore with
   }
   expect(actual.deviceRestored.rgba).toEqual(actual.original.rgba);
   expect(actual.deviceRestored.frame).toBe(actual.original.frame);
+});
+
+test('default FES Sprite submits once to a same-owner nonprimary target', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(0);
+  page.setDefaultTimeout(0);
+  page.setDefaultNavigationTimeout(0);
+  const c = defaultReference.cases.find((item) => item.kind === 'sprite'),
+    blocked = [];
+  await page.route('**/*', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url());
+    if (request.isNavigationRequest() && url.pathname === '/') {
+      await route.fulfill({
+        contentType: 'text/html',
+        body: '<!doctype html><title>EFK nonprimary</title>',
+      });
+      return;
+    }
+    if (
+      /\/oracle\/|\/native\/engine-process\.mjs|\/ppi\/(?:backend|backend-artifact)\.mjs|unicorn|\.(?:exe|dll|ppi)(?:$|\?)/i.test(
+        url.href,
+      ) ||
+      /(?:^|\/)(?:cs2_debug_key\.dat|[^/]*\.key)(?:$|\?)/i.test(url.pathname)
+    ) {
+      blocked.push(url.href);
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  });
+  await page.goto('/');
+  const preserve = (value) =>
+    testInfo.attach('nonprimary-evidence', {
+      body: Buffer.from(JSON.stringify({ value, blocked })),
+      contentType: 'application/json',
+    });
+  let actual;
+  try {
+    actual = await page.evaluate(exerciseDefaultWorld, {
+      workload: 'nonprimary-sprite',
+      profile: defaultReference.profile,
+      effectSHA256: c.efkSHA256,
+      canvas: defaultReference.canvas,
+      virtualView: defaultReference.virtualView,
+      viewport: defaultReference.viewport,
+      clearARGB: defaultReference.clearARGB,
+      clearRGBA: defaultReference.clearRGBA,
+      playPosition: defaultReference.playPosition,
+      public57Bits: defaultReference.public57Bits,
+      normalWorldUpdateCount: defaultReference.normalWorldUpdateCount,
+      trailFixture: null,
+      restoreResources: [
+        {
+          name: 'case.kcs',
+          bytes: defaultReference.bootKCSBytes,
+          sha256: defaultReference.bootKCSSHA256,
+        },
+        { name: 'scene.efk', bytes: c.efkBytes, sha256: c.efkSHA256 },
+      ],
+      files: {
+        'case.kcs': Array.from(bootKCS),
+        'screen.fes': Array.from(new TextEncoder().encode(defaultReference.fesSource)),
+        'scene.efk': Array.from(Buffer.from(c.efkBase64, 'base64')),
+      },
+    });
+  } catch (error) {
+    await preserve(
+      await page.evaluate(() => globalThis.__defaultEFKProgress ?? null).catch(() => null),
+    );
+    throw error;
+  }
+  await preserve(actual);
+  const frame = actual.nonprimary,
+    expected = inflateSync(Buffer.from(c.rgbaDeflateBase64, 'base64'));
+  await testInfo.attach('nonprimary-rgba', {
+    body: Buffer.from(frame.rgba),
+    contentType: 'application/octet-stream',
+  });
+  expect(blocked).toEqual([]);
+  expect(actual.cleanup).toEqual({ attempted: 1, failures: [] });
+  expect(actual.freshWorlds).toBe(0);
+  expect(actual.reads).toEqual([]);
+  expect(frame.targetSize).toEqual(defaultReference.canvas);
+  expect(frame.depthFormat).toBe(75);
+  expect(
+    frame.resourcesReleased &&
+      frame.primaryRestored &&
+      frame.primaryUnchanged &&
+      frame.sameOwner &&
+      frame.noReplay,
+  ).toBe(true);
+  expect(frame.physicalRestored && frame.logicalStatesRestored && frame.targetDepthShared).toBe(
+    true,
+  );
+  expect(frame.managerAfter).toEqual(frame.managerBefore);
+  expect(frame.population).toEqual(c.population);
+  expect(frame.stats).toMatchObject(c.expected);
+  expect(frame.packets).toHaveLength(1);
+  expect(frame.packets[0]).toMatchObject({
+    vertexCount: c.expected.vertexCount,
+    indexCount: c.expected.indexCount,
+    indexStorage: 'Uint16Array',
+    cameraBits: c.expectedPacketCameraBits,
+    projectionBits: defaultReference.TaskProjectionBits,
+    viewport: defaultReference.viewport,
+    sameContext: true,
+    sameTarget: true,
+    nonprimary: true,
+    alphaTarget: true,
+  });
+  expect(frame.taskCameraBits).toEqual(defaultReference.TaskCameraBits);
+  expect(frame.taskProjectionBits).toEqual(defaultReference.TaskProjectionBits);
+  expect(frame.indexed).toEqual([[4, c.expected.indexCount, 5123, 0]]);
+  expect(frame.uploads.filter((x) => x.target === 34962)).toEqual([
+    {
+      target: 34962,
+      storage: 'Float32Array',
+      activeElements: c.expected.vertexCount * 10,
+      activeBytes: c.expected.vertexCount * 40,
+    },
+  ]);
+  expect(frame.uploads.filter((x) => x.target === 34963)).toEqual([
+    {
+      target: 34963,
+      storage: 'Uint16Array',
+      activeElements: c.expected.indexCount,
+      activeBytes: c.expected.indexCount * 2,
+    },
+  ]);
+  const rgba = Buffer.from(frame.rgba);
+  expect(rgba.length).toBe(12288);
+  expect(digest(rgba)).toBe(c.RGBASHA256);
+  expect(rgba).toEqual(expected);
+  expect(frame.primaryAfter).toEqual(frame.primaryBefore);
+  expect(frame.primaryBefore).toHaveLength(12288);
+  expect(frame.primaryBefore.every((value, i) => value === [64, 80, 96, 255][i % 4])).toBe(true);
 });

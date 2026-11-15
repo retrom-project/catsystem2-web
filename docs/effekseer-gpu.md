@@ -340,3 +340,13 @@ within each generation; no Play, Update, mounted payload or RNG is replayed.
 This completed-frame primary-target scope excludes in-flight loss, failed
 reconstruction and same-owner nonprimary FBO acceptance. Different graphics
 owners/contexts remain outside the same-World entry contract.
+
+The same-owner nonprimary Sprite case creates one RGBA8 target and format75
+Depth24/Stencil8 attachment through the current GPU public API. It initializes
+the attachment before the primary frame, submits the registered D6 callback once
+inside withRenderTargetAsync, and reads pixels from that explicit target. Its
+opaque Sprite and opaque clear use the existing independent full RGBA reference;
+this does not generalize alpha-sensitive targets or other formats. Scope exit
+must restore physical state and the primary target/depth; the primary's complete
+authored sentinel readback must remain unchanged. No primary particle draw,
+device reset, fresh World or cross-owner/context support is added by this case.
