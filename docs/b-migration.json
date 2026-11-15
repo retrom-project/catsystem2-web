@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 309, "oracle": 149, "differential": 67 },
+    "counts": { "js": 310, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -283,6 +283,7 @@
         "tests/native-sdk-fes-format-admission.test.mjs",
         "tests/native-sdk-fes-update-exit-admission.test.mjs",
         "tests/native-sdk-task-abi.test.mjs",
+        "tests/native-sdk-task-destroy-admission.test.mjs",
         "tests/native-shared-abi.test.mjs",
         "tests/native-signature-records.test.mjs",
         "tests/native-signatures.test.mjs",
@@ -2473,9 +2474,9 @@
       "5": 223,
       "6": 438,
       "7": 48,
-      "8": 532,
+      "8": 533,
       "9": 37,
-      "unassigned": 123
+      "unassigned": 122
     },
     "nativeNeedsReview": 305,
     "runtimeFiles": 489,
@@ -3656,21 +3657,19 @@
           "table": "main",
           "id": 67,
           "hexID": "0x43",
-          "semanticName": null,
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "semanticName": "task.destroy",
+          "catalogStatus": "recovered",
           "implementation": "unknown",
-          "module": "src/native/runtime.mjs",
-          "domain": null,
-          "route": "NativeRuntime/UnsupportedKCSNative",
-          "registration": null,
-          "features": [],
-          "dependencies": [],
+          "module": "src/native/task.mjs",
+          "domain": 8,
+          "route": "NativeRuntime/fallback/nativeTask",
+          "registration": "src/native/task.mjs:23",
+          "features": ["task-memory"],
+          "dependencies": ["src/native/task-memory.mjs"],
           "docs": ["docs/native-compatibility.md"],
           "review": "needs-review",
           "reviewReasons": [
-            "当前 ABI 槽被中央准入拒绝；无注册处理器，不执行 fallback 所有权探测。",
-            "catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"
+            "JS 封装经任务消息、图像服务或对象生命周期分派。目标类型/EXE 挂载状态决定是否执行原接收器，不能把整个 ID 判为 pure-js。"
           ]
         },
         {
@@ -49913,7 +49912,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "aba4ad31f1086aa5930c8e4ca2a8b46ee0da79e733f0e571b3e6646c9e6d23a9",
+      "sourceSha256": "510d9c9ac19b8e8eb77af6150f4aad45cf032edd93649c5267a3a7d46ee00ba1",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

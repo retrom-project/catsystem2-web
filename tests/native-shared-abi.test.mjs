@@ -14,10 +14,10 @@ const sdk = nativeABI(sdkRegistration.profile),
   game = nativeABI(gameRegistration.profile);
 
 test('shared semantics do not name or enable explicitly unknown profile slots', () => {
-  assert.equal(NATIVE_SEMANTICS.main[0x43].name, 'task.destroy');
-  assert.equal(sdk.tables.main.entries[0x43].name, null);
-  assert.equal(sdk.tables.main.entries[0x43].status, 'unknown');
-  assert.equal(game.tables.main.entries[0x43].name, 'task.destroy');
+  assert.equal(NATIVE_SEMANTICS.main[0x46].name, 'task.post');
+  assert.equal(sdk.tables.main.entries[0x46].name, null);
+  assert.equal(sdk.tables.main.entries[0x46].status, 'unknown');
+  assert.equal(game.tables.main.entries[0x46].name, 'task.post');
   assert.equal(Object.hasOwn(NATIVE_SEMANTICS.main, 0x52), false);
   assert.deepEqual(sdk.tables.main.entries[0x52].controlCodes, []);
   assert.deepEqual(game.tables.main.entries[0x52].controlCodes, [2]);

@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 805       | 82            | 19            | 103     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 806       | 82            | 19            | 102     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -103,6 +103,37 @@ This recovery reuses the accepted host transport and valid compiler-call
 contract. It does not establish foreign or uninitialized context, unregistered
 target, unwritten transport scratch, native cookie failure or invalid-memory
 behavior. Other unknown slots remain centrally blocked.
+
+## SDK deferred Script destruction registration
+
+SDK main `0x43` (`task.destroy`) is explicitly recovered from its own
+`0x528ea0` wrapper and normal registered Script interface. It takes one target
+word, sends message3 with zero payload and flags, ignores message-out scratch,
+and returns control2 without a universal VM result. The shared signature already
+states `resultWritten=false`; it needs no override or common-data change.
+
+The own SDK Script constructor and vtable bind the existing transport. Exact
+lookup reaches a live target or follows its parent chain to a missing/null
+no-op. A live Script first sends its existing VM delete notification
+`[0xffffffff, 0xffff0006, 0, 0]`, then Base marks the task pending. Repeated requests
+while pending do not notify again. Normal logic visits children before consuming
+that flag, invokes the deleting destructor and skips the deleted Script's own
+VM tick. Destruction nulls the registered ancestor routes, releases actual owned
+children and lets the normal parent walk prune those routes.
+
+The tests use real Script GCALLs, a delegated notification observer and actual
+message-wait continuations. They verify request-before-frame, repeated request,
+child-first destruction/owner cleanup, then the same released ID as a missing
+target; all three GCALLs have control2 and no result push. Zero is not treated as
+a missing task ID. Notification writes in the receiver VM are legitimate effects,
+separate from a native return-value write in the independent caller.
+
+Game registration and runtime implementations remain unchanged; the Game case
+is a control for its existing module contract, not new SDK proof for other
+versions. Private VM, allocator and all-resource destructor internals are outside
+this admission. SDK70 (`task.post`) remains the actual built-in fallback and
+shared-semantic unknown representative; SDK455/467 and unregistered versions
+remain blocked.
 
 ## SDK retained-drawing family registrations
 

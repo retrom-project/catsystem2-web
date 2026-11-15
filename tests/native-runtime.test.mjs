@@ -273,7 +273,7 @@ test('unknown admission precedes registered handlers and service preparation', a
 });
 
 test('unknown admission precedes the main built-in fallback and resource services', async () => {
-  let released = 0,
+  let posted = 0,
     preparation = 0,
     error;
   const runtime = new NativeRuntime({
@@ -281,9 +281,9 @@ test('unknown admission precedes the main built-in fallback and resource service
     read: async () => compiled([[59]]),
     services: {
       objects: {
-        release() {
-          released++;
-          return true;
+        send() {
+          posted++;
+          return 1;
         },
       },
     },
@@ -293,19 +293,19 @@ test('unknown admission precedes the main built-in fallback and resource service
     enumerable: true,
     get() {
       preparation++;
-      return true;
+      return 1;
     },
   });
-  assert.equal(runtime.tables.get('main')[0x43].status, 'unknown');
-  assert.equal(runtime.handlers.has('main:67'), false);
+  assert.equal(runtime.tables.get('main')[0x46].status, 'unknown');
+  assert.equal(runtime.handlers.has('main:70'), false);
   try {
-    runtime.native('main', 0x43, [7], task.machine, task, runtime.scheduler);
+    runtime.native('main', 0x46, [7, 0x1234, 3, 4], task.machine, task, runtime.scheduler);
   } catch (failure) {
     error = failure;
   }
   assert.deepEqual(
-    { rejected: error?.name, preparation, released },
-    { rejected: 'UnsupportedKCSNative', preparation: 0, released: 0 },
+    { rejected: error?.name, preparation, posted },
+    { rejected: 'UnsupportedKCSNative', preparation: 0, posted: 0 },
   );
-  assertUnknownDiagnostic(error, runtime, 0x43, [7], task);
+  assertUnknownDiagnostic(error, runtime, 0x46, [7, 0x1234, 3, 4], task);
 });
