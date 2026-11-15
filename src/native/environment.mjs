@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
+import { readLoopPoints } from './loop-points.mjs';
 
 export function nativeEnvironment(id, args, machine, services = {}) {
   const count = new Map([
@@ -32,13 +33,24 @@ export function nativeEnvironment(id, args, machine, services = {}) {
     if (loaded === undefined) return undefined;
     return nativeReply(1, Number(loaded));
   } else {
-    if (!services.read || !services.format || !services.sound?.primary) return undefined;
+    if (
+      !services.read ||
+      !services.format ||
+      !services.resourceFilename ||
+      !services.sound?.primary
+    )
+      return undefined;
     const file = services.format(args[1], machine);
     return Promise.resolve(services.read(file, 'sound')).then((bytes) => {
       if (bytes) {
         const sound = services.sound.primary();
         if (!sound) throw new Error('Native base task does not expose its sound task');
-        sound.loadLoopPoints(bytes);
+        sound.loadLoopPointRecords(
+          readLoopPoints(bytes).map((record) => ({
+            ...record,
+            file: services.resourceFilename(record.file, 'sound') ?? '',
+          })),
+        );
       } else
         services.diagnostic?.({
           native: id,

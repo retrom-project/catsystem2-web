@@ -71,6 +71,25 @@ or a complete CST draw creation, frame or completion path. The independently
 reviewed SDK wrappers are `528E20` and `528FA0`, with getter `7D5CE0`; the Game
 counterparts are `65A430`, `65A5B0` and `69CD90`.
 
+## Loop-point table registration
+
+Main `0x190` (400) is explicitly registered for SDK 2.6.1.74 and uses the
+shared two-word signature: an ignored raw word and a VM formatted filename.
+Both versions return control 2 without writing or pushing a result word.
+Formatting reads the named VM regions; it does not add GCALL argument words.
+Other unknown SDK slots remain gated.
+
+The table filename and each record's sound name use the existing sound
+resource resolver, including its configured extension and archive prefix.
+A failed record-name resolution leaves an empty name, matching the native
+packet, rather than retaining the unresolved token. Records contain signed
+64-bit start/end values, defaulting to zero and minus one. A finite end must
+exceed the start. Duplicate names update the start and retain the first end.
+The records belong to the existing Sound task and its checkpoint state;
+registration does not create another sound owner or establish audio playback.
+SDK Sound message 196 and Game message 198 already share the registered engine
+message mapping.
+
 ## Base and Top contracts
 
 Both Base builds implement registration 2, destruction request 3, kind 13,
