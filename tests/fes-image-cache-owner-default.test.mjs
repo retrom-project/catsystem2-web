@@ -541,3 +541,192 @@ for (const profile of startupProfiles) {
       }
     });
 }
+
+// Complete owned HG3 frames: ID1 is absent although ordinal1 exists (ID7).
+function pos2GeometryFrames() {
+  const frames = [
+    { id: 3, x: 5, y: 11 },
+    { id: 7, x: 31, y: 37 },
+  ].map(({ id, x, y }) => {
+    const bytes = hg3(2, 1, pixels),
+      view = new DataView(bytes.buffer);
+    view.setUint32(16, id, true);
+    view.setInt32(48, x, true);
+    view.setInt32(52, y, true);
+    view.setInt32(56, 64, true);
+    view.setInt32(60, 64, true);
+    return bytes;
+  });
+  const joined = new Uint8Array(12 + frames.reduce((n, bytes) => n + bytes.length - 12, 0));
+  joined.set(frames[0].subarray(0, 12));
+  let at = 12;
+  for (const [index, bytes] of frames.entries()) {
+    const body = bytes.slice(12);
+    new DataView(body.buffer).setUint32(0, index + 1 < frames.length ? body.length : 0, true);
+    joined.set(body, at);
+    at += body.length;
+  }
+  return joined;
+}
+
+for (const profile of startupProfiles) {
+  test(`default POS2 missing geometry resets position without aborting image owners: ${profile}`, async (t) => {
+    const missingSource =
+        '#DEFINE\nDIFIMAGE face[3]\n#OBJECT POS POS2 DISP PRI\nface 17,23 absent.hg3:1 0 15\n#START\n\\60 = 73\nbreak\n',
+      selectorSource =
+        '#DEFINE\nIMAGE sample\nIMAGE anchor\n#OBJECT FILE IDN POS POS2 DISP PRI\nsample tile.hg3 0 17,23 geometry.hg3:1 0 20\nanchor tile.hg3 0 0,0 geometry.hg3:7 0 21\n#START\n\\61 = 89\nbreak\n',
+      h = await environment(profile, {
+        'assets.int/missing-pos2.fes': ascii(missingSource),
+        'assets.int/selector-pos2.fes': ascii(selectorSource),
+        'assets.int/geometry.hg3': pos2GeometryFrames(),
+      });
+    let fresh;
+    try {
+      const world = h.world,
+        buffers = world.runtime.imageDataBuffers,
+        pointers = [],
+        observed = [],
+        requests = [],
+        create = buffers.createPointer,
+        geometry = world.imagesFES.geometry,
+        candidates = h.game.nativeCandidates;
+      t.mock.method(buffers, 'createPointer', function (...args) {
+        const pointer = create.apply(this, args);
+        pointers.push(pointer);
+        return pointer;
+      });
+      t.mock.method(world.imagesFES, 'geometry', function (instance, object, reference) {
+        observed.push({
+          type: object.nativeType,
+          key: object.key,
+          x: object.x,
+          y: object.y,
+          name: reference.name,
+          index: reference.index,
+        });
+        return geometry.call(this, instance, object, reference);
+      });
+      t.mock.method(h.game, 'nativeCandidates', function (path, mode) {
+        if (/\.(?:fes|hg3)$/.test(path)) requests.push([path, mode]);
+        return candidates.call(this, path, mode);
+      });
+
+      const first = await task(world, 'assets.int/missing-pos2.fes'),
+        root = first.task.player.root,
+        faces = [0, 1, 2].map((index) => root.byKey.get(`face[${index}]`));
+      // Primary functional oracle: the ordinary kind34 FILE/drain completed,
+      // consumed the missing POS2 request and reached the real guest assignment.
+      assert.equal(root.local(60), 73);
+      assert.deepEqual(
+        faces.map((object) => [object.nativeType, object.x, object.y]),
+        [
+          [25, 0, 0],
+          [25, 0, 0],
+          [25, 0, 0],
+        ],
+      );
+      assert.deepEqual(
+        observed.filter((row) => row.type === 25),
+        [0, 1, 2].map((index) => ({
+          type: 25,
+          key: `face[${index}]`,
+          x: 17,
+          y: 23,
+          name: 'absent.hg3',
+          index: 1,
+        })),
+      );
+      for (const object of faces) {
+        assert.equal(object.positionPending, false);
+        assert.equal(object.dirty, false);
+        assert.equal(object.imageResource.bitmap, 0, 'No replacement pixels were invented');
+        assert.equal(object.imageResource.source, 0);
+      }
+
+      const second = await task(world, 'assets.int/selector-pos2.fes'),
+        images = second.task.player.root,
+        sample = images.byKey.get('sample'),
+        anchor = images.byKey.get('anchor'),
+        bitmapHandle = sample.nativeImageHandle,
+        bitmap = world.graphics.images.get(bitmapHandle);
+      assert.equal(images.local(61), 89);
+      assert.equal(sample.nativeType, 2);
+      assert.deepEqual([sample.x, sample.y], [0, 0], 'ID1 miss does not select ordinal1/ID7');
+      assert.deepEqual([anchor.x, anchor.y], [31, 37], 'The actual ID7 metadata is available');
+      assert.deepEqual(
+        observed.filter((row) => row.key === 'sample'),
+        [{ type: 2, key: 'sample', x: 17, y: 23, name: 'geometry.hg3', index: 1 }],
+      );
+      assert.equal(sample.positionPending, false);
+      assert.equal(anchor.positionPending, false);
+      assert.ok(bitmapHandle > 0);
+      assert.equal(bitmap.state.width, 2);
+      assert.equal(bitmap.state.height, 1);
+      assert.deepEqual(
+        Array.from(await bitmap.pixels()),
+        Array.from(pixels),
+        'FILE pixels survive a missing geometry ID',
+      );
+      assert.ok(pointers.length > 0);
+      for (const pointer of pointers) assert.equal(buffers.owns(pointer), false);
+      assert.equal(first.cache.entries.size, 0);
+      assert.equal(second.cache.entries.size, 0);
+      assert.ok(
+        requests.some(([path]) => path === 'assets.int/geometry.hg3'),
+        'Real image I/O was observed',
+      );
+      const settledRequests = requests.slice();
+      await world.sendEngine(first.id, world.main.id, 333);
+      await world.sendEngine(second.id, world.main.id, 333);
+      assert.deepEqual(requests, settledRequests, 'Consumed POS2/FILE requests do not replay');
+      assert.equal(sample.nativeImageHandle, bitmapHandle);
+
+      defineCheckpointPixels(world);
+      const checkpoint = await h.player.snapshot(),
+        beforeRestore = requests.slice();
+      fresh = new CatSystem2({
+        game: h.game,
+        nativeProfile: profile,
+        canvas: new StartupCanvas(),
+        audioContext: { currentTime: 0, close: async () => {} },
+        transitionalExe: {
+          open() {
+            throw new Error('POS2 restore must not open the original');
+          },
+        },
+      });
+      await fresh.initialize({ checkpoint });
+      assert.notStrictEqual(fresh.world, world);
+      assert.equal(fresh.world.nativeEngine, undefined);
+      assert.deepEqual(requests, beforeRestore, 'Restore reuses settled FES/image state');
+      const restoredFirst = fresh.world.objects.objects.get(first.id).implementation.player.root,
+        restoredSecond = fresh.world.objects.objects.get(second.id).implementation.player.root;
+      for (let index = 0; index < 3; index++) {
+        const object = restoredFirst.byKey.get(`face[${index}]`);
+        assert.deepEqual([object.x, object.y, object.positionPending], [0, 0, false]);
+      }
+      assert.deepEqual(
+        [
+          restoredSecond.byKey.get('sample').x,
+          restoredSecond.byKey.get('sample').y,
+          restoredSecond.byKey.get('sample').positionPending,
+        ],
+        [0, 0, false],
+      );
+      assert.deepEqual(
+        [restoredSecond.byKey.get('anchor').x, restoredSecond.byKey.get('anchor').y],
+        [31, 37],
+      );
+      await world.objects.release(first.id);
+      await world.objects.release(second.id);
+      assert.equal(world.objects.objects.has(first.id), false);
+      assert.equal(world.objects.objects.has(second.id), false);
+      for (const pointer of pointers) assert.equal(buffers.owns(pointer), false);
+      assert.equal(fresh.world.objects.objects.has(first.id), true, 'Fresh owners are independent');
+      assert.equal(fresh.world.objects.objects.has(second.id), true);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}

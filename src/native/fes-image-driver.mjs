@@ -346,9 +346,9 @@ export class FESImages {
     if (!reference || (size ? !object.sizePending : !object.positionPending)) return;
     if (!size) object.positionPending = false;
     const v = await this.geometry(instance, object, reference);
-    // Native cached geometry leaves caller words unchanged on a missing file.
-    // No known geometry can be invented from uninitialized locals.
-    if (!v)
+    // Both registered POS2 helpers initialize their coordinate outputs to zero
+    // before resolving data or metadata. SIZE2 retains its separate behavior.
+    if (!v && size)
       throw new Error(
         `FES ${size ? 'SIZE2' : 'POS2'} resource geometry is unavailable: ${reference.name}`,
       );
@@ -360,8 +360,8 @@ export class FESImages {
         object.auxiliaryHeight = (object.height - 8) | 0;
       }
     } else {
-      const x = f(v.getInt32(0, true)),
-        y = f(v.getInt32(4, true));
+      const x = f(v === null ? 0 : v.getInt32(0, true)),
+        y = f(v === null ? 0 : v.getInt32(4, true));
       if (object.x !== x || object.y !== y) {
         object.x = x;
         object.y = y;

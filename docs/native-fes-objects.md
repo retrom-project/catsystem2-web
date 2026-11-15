@@ -865,3 +865,12 @@ command continuation and clears control. Cold restore owns copied current DTOs;
 it does not replay FES getters, macros, resource commands or RNG. Empty-index
 uninitialized scratch, unsafe native buffer domains and other unknown handlers/
 versions remain outside this reviewed binding; the normal DEFINE guard remains.
+
+Image-driver POS2 uses the registered SDK74/Game76 helpers' initialized signed
+coordinate outputs: missing encoded data or an unsuccessful metadata lookup
+consumes position0,0 through the ordinary changed-position, dirty and publication
+path. A metadata selector is a frame ID, not its ordinal. The default-entry
+regression covers actual DIFIMAGE missing-file requests and an IMAGE with loaded
+FILE pixels and a missing geometry ID. Cache/provider/metadata exceptions still
+propagate and temporary descriptor ownership is released in finally. This leaf
+keeps SIZE2, FILE loading and bitmap contents unchanged.
