@@ -11,6 +11,7 @@ import { FESInstance } from '../src/fes/instance.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
 import { fesByteView } from '../src/fes/tokens.mjs';
+import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import {
   startupProfiles,
   StartupCanvas,
@@ -344,3 +345,164 @@ test('bare terminators and normal literal semicolons use the same owned raw-row 
     await h.close();
   }
 });
+
+for (const profile of startupProfiles) {
+  test(`normal CIMAGE FIFO keeps old wrappers through same-name SIZE and fresh restore: ${profile}`, async (t) => {
+    const contents = `#DEFINE
+CIMAGE same
+#OBJECT SIZE COLOR
+same 1,1 0xff112233
+#START
+break
+#RESIZE
+same[0] size 3 2
+$41=++$41
+break
+`,
+      h = await environment(profile, contents);
+    let fresh,
+      restoring = false,
+      reads = 0,
+      allocations = 0,
+      initializations = 0;
+    try {
+      const current = await task(h.world),
+        words = h.world.runtime.variableBank(h.world.main, false),
+        file = h.game.lookup(filename).file,
+        read = file.read.bind(file),
+        initialize = FESCoordinator.prototype.initialize,
+        allocate = FESCoordinator.prototype.allocateEntry;
+      t.mock.method(file, 'read', (...args) => {
+        if (restoring) throw new Error('CIMAGE FIFO restore reread FES source');
+        reads++;
+        return read(...args);
+      });
+      t.mock.method(FESCoordinator.prototype, 'initialize', function (...args) {
+        if (restoring) throw new Error('CIMAGE FIFO restore replayed initialization');
+        initializations++;
+        return initialize.apply(this, args);
+      });
+      t.mock.method(FESCoordinator.prototype, 'allocateEntry', function (...args) {
+        if (restoring) throw new Error('CIMAGE FIFO restore replayed resource allocation');
+        allocations++;
+        return allocate.apply(this, args);
+      });
+      await h.world.sendEngine(current.id, h.world.main.id, 332, 0, 0, {
+        payload: { string: () => filename },
+      });
+      await h.world.sendEngine(current.id, h.world.main.id, 333);
+      const root = current.implementation.player.root,
+        runtime = root.runtime,
+        collection = runtime.collection,
+        old = collection.lookup(ascii('same'), 0),
+        first = runtime.resources.entries[0],
+        visits = [],
+        visit = runtime.visitEntry;
+      assert.equal(old.nativeType, 1);
+      assert.equal(first.image.owner, current.id);
+      assert.equal(first.image, old.imageResource);
+      assert.deepEqual(
+        [
+          h.world.graphics.images.get(first.image.bitmap).width,
+          h.world.graphics.images.get(first.image.bitmap).height,
+        ],
+        [1, 1],
+      );
+      t.mock.method(runtime, 'visitEntry', function (entry, object, ...args) {
+        visits.push([entry.id, object.handle]);
+        return visit.call(this, entry, object, ...args);
+      });
+      await collection.remove(old);
+      const [replacement] = collection.create('CIMAGE', ascii('same'), 1, { scalar: true });
+      assert.notEqual(replacement.handle, old.handle);
+      assert.equal(replacement.nativeType, 1);
+      assert.equal(collection.count('same'), 1);
+      assert.equal(first.image.closed, false);
+      assert.equal(runtime.resources.entries.length, 1);
+      assert.equal(collection.peekPending().object, replacement);
+      assert.deepEqual(collection.peekPending().nameBytes, ascii('same'));
+      assert.equal(collection.peekPending().index, 0);
+      assert.equal(words.get(41), 0);
+      await h.world.sendEngine(current.id, h.world.main.id, 337, 0, 0, {
+        payload: fesLabelPayload(() => ascii('RESIZE')),
+      });
+      assert.equal(words.get(41), 1, 'real RESIZE source ran once');
+      assert.deepEqual([replacement.width, replacement.height], [3, 2]);
+      assert.deepEqual(visits, [[first.id, replacement.handle]]);
+      assert.deepEqual(
+        [
+          h.world.graphics.images.get(first.image.bitmap).width,
+          h.world.graphics.images.get(first.image.bitmap).height,
+        ],
+        [3, 2],
+        'the retained entry wrapper consumes SIZE for the new same-key CIMAGE',
+      );
+      assert.equal(runtime.resources.entries.length, 1);
+      assert.equal(collection.peekPending().object, replacement);
+      visits.length = 0;
+      await h.world.sendEngine(current.id, h.world.main.id, 333);
+      const second = runtime.resources.entries[1];
+      assert.equal(runtime.resources.entries.length, 2);
+      assert.deepEqual(visits, [
+        [first.id, replacement.handle],
+        [second.id, replacement.handle],
+      ]);
+      assert.notEqual(first.image, second.image);
+      assert.equal(second.image.owner, current.id);
+      assert.equal(replacement.imageResource, second.image);
+      assert.equal(second.image.bitmap, 0, 'SIZE was already consumed by the earlier entry');
+      assert.equal(runtime.images.currentBitmap(replacement), 0);
+      assert.equal(collection.peekPending(), null);
+      assert.equal(words.get(41), 1);
+      assert.deepEqual([reads, initializations, allocations], [1, 1, 2]);
+      const savedResources = runtime.resources.snapshot();
+      defineCheckpointPixels(h.world);
+      const checkpoint = await h.player.snapshot();
+      restoring = true;
+      fresh = new CatSystem2({
+        game: h.game,
+        nativeProfile: profile,
+        canvas: new StartupCanvas(),
+        audioContext: { currentTime: 0, close: async () => {} },
+        transitionalExe: {
+          open() {
+            throw new Error('No original during CIMAGE FIFO restore');
+          },
+        },
+      });
+      await fresh.initialize({ checkpoint });
+      const next = fresh.world.objects.objects.get(current.id).implementation.player.root.runtime,
+        restored = next.collection.lookup(ascii('same'), 0);
+      assert.notEqual(fresh.world, h.world);
+      assert.notEqual(restored, replacement);
+      assert.equal(restored.handle, replacement.handle);
+      assert.deepEqual(next.resources.snapshot(), savedResources);
+      assert.notEqual(next.resources.entries[0].image, first.image);
+      assert.notEqual(next.resources.entries[1].image, second.image);
+      assert.equal(restored.imageResource, next.resources.entries[1].image);
+      assert.equal(next.images.currentBitmap(restored), 0);
+      assert.deepEqual(
+        [
+          fresh.world.graphics.images.get(next.resources.entries[0].image.bitmap).width,
+          fresh.world.graphics.images.get(next.resources.entries[0].image.bitmap).height,
+        ],
+        [3, 2],
+      );
+      assert.equal(fresh.world.runtime.variableBank(fresh.world.main, false).get(41), 1);
+      assert.deepEqual([reads, initializations, allocations], [1, 1, 2]);
+      restoring = false;
+      await collection.remove(replacement);
+      await h.world.sendEngine(current.id, h.world.main.id, 333);
+      assert.equal(runtime.resources.entries.length, 0);
+      assert.equal(first.image.closed, true);
+      assert.equal(second.image.closed, true);
+      assert.equal(next.resources.entries.length, 2, 'the fresh World retains independent entries');
+      assert.deepEqual([...root.player.unsupportedCommands], []);
+      assert.equal(h.world.nativeEngine, undefined);
+      assert.equal(fresh.world.nativeEngine, undefined);
+    } finally {
+      await fresh?.dispose();
+      await h.close();
+    }
+  });
+}

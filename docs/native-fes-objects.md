@@ -196,6 +196,16 @@ Snapshot saves declaration and actual types, first counts, live typed state,
 parent handles, the monotonic handle counter and pending keys. Fresh restore
 rebuilds prototypes and links without replaying declarations or resource
 initialization. These standalone semantics are covered by short public tests.
+
+Normal default-entry checks also cover deleting and recreating the same CIMAGE
+byte-name/index before resource synchronization. An existing FIFO entry keeps its
+valid image wrapper and resolves the replacement object; a real SIZE command
+updates that retained wrapper. A later initialization request adds an independent
+wrapper, which remains empty after the earlier entry consumes SIZE. The object's
+current bitmap getter uses the latest wrapper. Fresh-World checks preserve both
+entries without replaying source or allocation. This same-family path does not
+cover a stale STRING entry with a NULL image wrapper and nonzero work gates, or
+other cross-family layout reuse.
 Default FESInstance factory/selection/restore and the implicit `_TOPOBJ_`
 identity remain coordinated integration work; no D7 removal is claimed here.
 
