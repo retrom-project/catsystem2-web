@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 810       | 82            | 19            | 98      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 811       | 82            | 19            | 97      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -492,3 +492,23 @@ and Game registration remain unchanged. SDK104/455/467, unregistered versions
 and other unknown slots remain guarded. This does not establish missing or
 nonresponding-model scratch values, malformed packets, alternative backends,
 inherited-position corner paths or rendered pixels.
+
+## Visibility main92
+
+Main92 `plane.setVisible(task, visible)` takes a native task ID and one raw
+DWORD visibility flag. SDK513C80 sends its raw message45; Game6415A0 sends47.
+Both map to canonical Plane47 with wParam0 and flags1, skip target zero, and
+return control2 without writing a VM result. Zero pauses and hides the Plane;
+a nonzero word unpauses and shows it. Registration still follows the existing
+parent lookup and enable rules; input behavior is unchanged.
+
+The ordinary D2 flags are observable through a real Base with two loaded Plane
+children: an unhandled Base forwards the visibility request to its immediate
+children, while a handled Plane leaves its sibling unchanged. Real Script GCALL
+coverage in both registered profiles checks hide/show, a high-bit nonzero flag,
+null-target continuation, unchanged caller words and canaries, and no VM result
+push. The existing graphs, geometry and render order are retained. SDK92 is
+explicitly recovered from its own wrapper and receiver; common signatures,
+Game admission, D2 and all other receivers remain unchanged. SDK104/455/467,
+Game467 and unregistered versions remain guarded. These checks do not claim
+rendered pixels, malformed packets, or inherited-position corner behavior.

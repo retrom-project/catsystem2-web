@@ -705,3 +705,221 @@ for (const profile of rectangleProfiles)
       await scene.close();
     }
   });
+
+const visibilityProgram = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, 0],
+  [43, 92, 8],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, [0x13, 132]],
+  [43, 92, 8],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main92 GCALL broadcasts visibility through real Base children without a VM result`, async () => {
+    const scene = await dataWorld(profile, {
+      'case.kcs': kcsProgram([[59]]),
+      'rectangle.kcs': visibilityProgram,
+    });
+    try {
+      const branch = await scene.objects.create({
+          kind: 0,
+          parent: scene.root,
+          nativeID: 0x005c005c,
+          name: 'visibility branch',
+        }),
+        aID = await scene.objects.create({
+          kind: 2,
+          parent: branch,
+          nativeID: 0x005c0101,
+          name: 'visibility plane A',
+        }),
+        bID = await scene.objects.create({
+          kind: 2,
+          parent: branch,
+          nativeID: 0x005c0102,
+          name: 'visibility plane B',
+        }),
+        a = scene.objects.objects.get(aID).implementation,
+        b = scene.objects.objects.get(bID).implementation,
+        branchNative = scene.nativeTaskID(branch),
+        aNative = scene.nativeTaskID(aID),
+        bNative = scene.nativeTaskID(bID),
+        saved = [];
+      assert.notEqual(branchNative, branch);
+      assert.notEqual(aNative, aID);
+      assert.notEqual(bNative, bID);
+      for (const [id, plane, color] of [
+        [aNative, a, 0x80112233],
+        [bNative, b, 0x40445566],
+      ]) {
+        await scene.sendNativeEngine(id, scene.main.id, 42, 0, 0, {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(20.5),
+            floatBits(12.25),
+            0,
+            0,
+            color,
+          ]),
+        });
+        // Loading preserves the native paused/unregistered initial state.
+        // Establish display through the actual public receiver before GCALL92.
+        await scene.sendNativeEngine(id, scene.main.id, 47, 0, 1);
+        assert.equal(plane.graph.registrationEnabled, true);
+        assert.equal(plane.state.renderPaused, false);
+        assert.equal(plane.state.shown, true);
+        saved.push({
+          graph: plane.graph,
+          rect: [...plane.state.rect],
+          colors: [...plane.graph.colors],
+          base: motionVector(plane.graph.kx2, MOTION_ABI.base),
+        });
+      }
+      const order = scene.graphics.renderSequence,
+        deliveries = [],
+        outer = [],
+        calls = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine;
+      for (const id of [branch, aID, bID]) {
+        const record = scene.objects.objects.get(id),
+          implementation = record.implementation,
+          original = implementation.message;
+        implementation.message = function (words, context, ...rest) {
+          if (words[1] === 47)
+            deliveries.push([record.nativeID, words[1], words[2], words[3], context.flags]);
+          return original.call(this, words, context, ...rest);
+        };
+      }
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 92) calls.push({ args: [...args[0]], reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (target, sender, message, w, l, context) {
+        if (message === 47)
+          outer.push({
+            target,
+            sender,
+            message,
+            w,
+            l,
+            flags: context.flags,
+            afterNullMarker: scene.objects.machine(sender).load(512),
+          });
+        return send.call(this, target, sender, message, w, l, context);
+      };
+      const hide = await rectangleCaller(scene);
+      hide.machine.store(128, branchNative);
+      hide.machine.store(132, 0);
+      hide.machine.bytes(800, 16).fill(0xa5);
+      await scene.runtime.scheduler.execute(hide.task);
+      assert.equal(hide.machine.load(512), 73, 'The zero target continued without dispatch');
+      assert.equal(hide.machine.load(516), 89, 'The visibility GCALL continued');
+      // Own flags1 on an unhandled Base reaches both actual loaded Plane children.
+      assert.equal(a.state.shown, false, 'The earlier child is hidden by the real Base GCALL');
+      assert.equal(b.state.shown, false);
+      for (const plane of [a, b]) {
+        assert.equal(plane.state.renderPaused, true);
+        assert.equal(plane.graph.registrationEnabled, false);
+      }
+      rectangleContinuation(hide);
+      const show = await rectangleCaller(scene),
+        shownWord = 0x80000000;
+      show.machine.store(128, branchNative);
+      show.machine.store(132, shownWord);
+      show.machine.bytes(800, 16).fill(0xa5);
+      await scene.runtime.scheduler.execute(show.task);
+      for (const plane of [a, b]) {
+        assert.equal(plane.state.shown, true, 'A nonzero word restores visibility');
+        assert.equal(plane.state.renderPaused, false);
+        assert.equal(plane.graph.registrationEnabled, true);
+      }
+      rectangleContinuation(show);
+      const direct = await rectangleCaller(scene);
+      direct.machine.store(128, aNative);
+      direct.machine.store(132, 0);
+      direct.machine.bytes(800, 16).fill(0xa5);
+      await scene.runtime.scheduler.execute(direct.task);
+      assert.equal(a.state.shown, false);
+      assert.equal(a.state.renderPaused, true);
+      assert.equal(a.graph.registrationEnabled, false);
+      assert.equal(b.state.shown, true, 'A handled Plane request does not reach its sibling');
+      assert.equal(b.state.renderPaused, false);
+      assert.equal(b.graph.registrationEnabled, true);
+      rectangleContinuation(direct);
+      assert.deepEqual(deliveries, [
+        ...[branchNative, aNative, bNative].map((receiver) => [receiver, 47, 0, 0, 1]),
+        ...[branchNative, aNative, bNative].map((receiver) => [receiver, 47, 0, shownWord, 1]),
+        [aNative, 47, 0, 0, 1],
+      ]);
+      assert.deepEqual(
+        outer,
+        [hide, show, direct].map((caller, i) => ({
+          target: i === 2 ? aNative : branchNative,
+          sender: caller.task.id,
+          message: 47,
+          w: 0,
+          l: i === 1 ? shownWord : 0,
+          flags: 1,
+          afterNullMarker: 73,
+        })),
+      );
+      assert.deepEqual(
+        calls.map((call) => call.args),
+        [
+          [0, 0],
+          [branchNative, 0],
+          [0, 0],
+          [branchNative, shownWord],
+          [0, 0],
+          [aNative, 0],
+        ],
+      );
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: 6 }, () => ({ control: 2 })),
+      );
+      for (const [caller, target, visible] of [
+        [hide, branchNative, 0],
+        [show, branchNative, shownWord],
+        [direct, aNative, 0],
+      ]) {
+        assert.equal(caller.machine.load(128), target);
+        assert.equal(caller.machine.load(132), visible);
+        assert.deepEqual([...caller.machine.bytes(800, 16)], Array(16).fill(0xa5));
+      }
+      assert.equal(scene.graphics.renderSequence, order, 'Visibility does not allocate a graph');
+      for (const [plane, before] of [
+        [a, saved[0]],
+        [b, saved[1]],
+      ]) {
+        assert.strictEqual(plane.graph, before.graph);
+        assert.deepEqual(plane.state.rect, before.rect);
+        assert.deepEqual(plane.graph.colors, before.colors);
+        assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.base), before.base);
+      }
+      const entry = nativeABI(profile).tables.main.entries[92];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.setVisible');
+      assert.equal(entry.signature.argumentWords, 2);
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.parameters[1].type.bits, 32);
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      for (const id of [104, 455, 467])
+        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await scene.close();
+    }
+  });
