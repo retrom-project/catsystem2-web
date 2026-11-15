@@ -3,6 +3,7 @@
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 
 export const NATIVE_INPUT_COMMAND_CONTRACTS = Object.freeze(
   [
@@ -112,7 +113,22 @@ export class NativeInputCommands {
 export function installNativeInputCommands(world) {
   world.registerNativeFeature('input-commands', (engine) => new NativeInputCommands(engine, world));
   for (const { id } of NATIVE_INPUT_COMMAND_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('input-commands')).apply(id, args, machine, task),
-    );
+    world.runtime.register('main', id, async (args, machine, task) => {
+      if (id === 0x3a9 && !world.nativeEngine && !world.nativeEngineLoading) {
+        const input = nativeEngineWord(
+          await world.sendNativeEngine(
+            0,
+            task.id,
+            nativeABI(world.profile).messages.movieInput.query,
+            0,
+            0,
+            { flags: 0 },
+          ),
+          'Input task root query',
+        );
+        await world.sendNativeEngine(input, task.id, 157, 0, 0, { flags: 0 });
+        return nativeReply(2);
+      }
+      return (await world.getNativeFeature('input-commands')).apply(id, args, machine, task);
+    });
 }

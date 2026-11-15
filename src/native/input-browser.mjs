@@ -103,8 +103,10 @@ export function createNativeInputBrowserServices(world, record, input, options =
           : 0;
     },
     cancelWheel: async () => {
-      const device = await world.getNativeFeature('input-device');
-      await device.control('wheelCancel');
+      if (world.nativeEngine || world.nativeEngineLoading) {
+        const device = await world.getNativeFeature('input-device');
+        await device.control('wheelCancel');
+      }
       bindings()?.cancelWheel();
     },
     notifyCursor: (visible) =>

@@ -1,15 +1,25 @@
 # Plane registration, input-owner query, bitmap mask and wheel reset
 
-Main `5F`, `6B`, `18A` and `3A9` execute their complete original wrappers. Root queries
+Main `5F`, `6B` and `18A` execute their complete original wrappers. Root queries
 use the caller's Top namespace; SDK's Root range remains distinct from its
 ordinary two-slot message offset. Source bitmap aliases share their original
 backing, and the wrapper passes that actual pointer to the plane's alpha-mask
 service. The mask helper runs in the original engine and owns a separate copy
 of the resulting packed bits.
 
-`3A9` resolves the Top's InputTask and invokes its wheel-cancel service. This
-executes the actual window device helper, clearing both native wheel counters
-and the corresponding pending browser wheel pulses. `6B` preserves raw active
+In a normal World, `3A9` queries the caller's actual Top for its InputTask, then
+sends that task the wheel-cancel message. Both envelopes keep zero flags, wParam
+and lParam; the transport results are ignored and control 2 leaves the VM result
+unwritten. The InputTask's service clears its existing browser wheel bindings.
+The Root query uses each ABI's own message number and returns the actual native
+task ID, including zero, independently from the transport's routed status.
+
+When an original engine or its loading owner already exists, `3A9` retains the
+complete original wrapper and actual window device helper, clearing both native
+wheel counters and the pending browser wheel pulses. An adapter alone does not
+open an original process. The ordinary path requires a complete owned Root/Input
+graph whose Root has native ID 0 in the caller's namespace; it does not replace an unwritten original query's interface-pointer alias
+with a fabricated zero or pointer. `6B` preserves raw active
 words and the original unwritten-stack result when the receiver does not write
 an output; no Boolean or default-zero result is substituted.
 
