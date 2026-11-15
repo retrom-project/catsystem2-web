@@ -206,8 +206,9 @@ current bitmap getter uses the latest wrapper. Fresh-World checks preserve both
 entries without replaying source or allocation. This same-family path does not
 cover a stale STRING entry with a NULL image wrapper and nonzero work gates, or
 other cross-family layout reuse.
-Default FESInstance factory/selection/restore and the implicit `_TOPOBJ_`
-identity remain coordinated integration work; no D7 removal is claimed here.
+Default-entry integration is covered only by the explicitly accepted SDK74/Game76
+tests, including their factory, reference, restore and `_TOPOBJ_` paths; other
+families and unsafe cross-family reuse remain open.
 
 ## Typed definitions and frozen applicability
 
@@ -261,7 +262,8 @@ These independently tested models retain the evidenced74/76 behavior. The
 contract inventory must record manual-versus-frozen differences and ABI
 applicability separately from real missing implementations. They do not
 create an unversioned extension API or establish another engine version.
-Default factory/definition entry integration remains pending and counted.
+Default factory/definition entry coverage follows the limited default-entry scope
+above.
 
 ## Normal DEFINE zero count
 
