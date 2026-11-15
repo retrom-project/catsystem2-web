@@ -1591,9 +1591,9 @@ export async function nativeGraphics(id, args, machine, task, world) {
     }
     case 0x58: {
       const p = packet();
-      await send(61, 0, 0, p);
+      await send(61, 0, 0, p, 1);
       p.store(8, args[1]);
-      await send(49, 0, 0, p);
+      await send(49, 0, 0, p, 1);
       return done();
     }
     case 0x59: {

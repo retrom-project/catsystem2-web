@@ -436,3 +436,272 @@ for (const profile of rectangleProfiles) {
     }
   });
 }
+
+const priorityProgram = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, floatBits(-1234.5)],
+  [43, 88, 8],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, [0x13, 132]],
+  [43, 88, 8],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main88 GCALL broadcasts priority through real Base children without a VM result`, async () => {
+    const scene = await dataWorld(profile, {
+      'case.kcs': kcsProgram([[59]]),
+      'rectangle.kcs': priorityProgram,
+    });
+    try {
+      const branch = await scene.objects.create({
+          kind: 0,
+          parent: scene.root,
+          nativeID: 0x00580058,
+          name: 'priority branch',
+        }),
+        aID = await scene.objects.create({
+          kind: 2,
+          parent: branch,
+          nativeID: 0x00580101,
+          name: 'priority plane A',
+        }),
+        bID = await scene.objects.create({
+          kind: 2,
+          parent: branch,
+          nativeID: 0x00580102,
+          name: 'priority plane B',
+        }),
+        a = scene.objects.objects.get(aID).implementation,
+        b = scene.objects.objects.get(bID).implementation,
+        branchNative = scene.nativeTaskID(branch),
+        aNative = scene.nativeTaskID(aID),
+        bNative = scene.nativeTaskID(bID),
+        initialA = [10.5, 20.25, 5000],
+        initialB = [30.5, -40.25, 6000],
+        geometry = [];
+      assert.notEqual(branchNative, branch);
+      assert.notEqual(aNative, aID);
+      assert.notEqual(bNative, bID);
+      for (const [id, plane, vector, color] of [
+        [aNative, a, initialA, 0x80112233],
+        [bNative, b, initialB, 0x40445566],
+      ]) {
+        await scene.sendNativeEngine(id, scene.main.id, 42, 0, 0, {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(20.5),
+            floatBits(12.25),
+            0,
+            0,
+            color,
+          ]),
+        });
+        await scene.sendNativeEngine(id, scene.main.id, 49, 0, 0, {
+          payload: new NativeGraphicsPacket(vector.map(floatBits)),
+        });
+        assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.base), vector);
+        geometry.push({
+          graph: plane.graph,
+          rect: [...plane.state.rect],
+          colors: [...plane.graph.colors],
+        });
+      }
+      const order = scene.graphics.renderSequence,
+        deliveries = [],
+        queried = [],
+        writes = [],
+        outer = [],
+        calls = [],
+        observerErrors = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine;
+      for (const id of [branch, aID, bID]) {
+        const record = scene.objects.objects.get(id),
+          implementation = record.implementation,
+          original = implementation.message;
+        implementation.message = function (words, context, ...rest) {
+          if ([61, 49].includes(words[1])) {
+            deliveries.push({
+              receiver: record.nativeID,
+              message: words[1],
+              flags: context.flags,
+              payload: context.payload,
+            });
+            if (words[1] === 49)
+              writes.push({
+                receiver: record.nativeID,
+                words: [0, 4, 8].map((at) => context.payload.load(at)),
+              });
+          }
+          const reply = original.call(this, words, context, ...rest);
+          if (record.kind === 2 && words[1] === 61)
+            reply.then(
+              () =>
+                queried.push({
+                  receiver: record.nativeID,
+                  words: [0, 4, 8].map((at) => context.payload.load(at)),
+                }),
+              () => observerErrors.push(record.nativeID),
+            );
+          return reply;
+        };
+      }
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 88) calls.push({ args: [...args[0]], reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (target, sender, message, w, l, context) {
+        if ([61, 49].includes(message))
+          outer.push({
+            target,
+            sender,
+            message,
+            w,
+            l,
+            flags: context.flags,
+            afterNullMarker: scene.objects.machine(sender).load(512),
+          });
+        return send.call(this, target, sender, message, w, l, context);
+      };
+      const first = await rectangleCaller(scene),
+        priority = 9000.75;
+      first.machine.store(128, branchNative);
+      first.machine.store(132, floatBits(priority));
+      first.machine.bytes(800, 16).fill(0xa5);
+      await scene.runtime.scheduler.execute(first.task);
+      assert.equal(
+        first.machine.load(512),
+        73,
+        'The zero-target request continued without dispatch',
+      );
+      assert.equal(first.machine.load(516), 89, 'The real priority GCALL completed');
+      // Native flags1 reads A then B through the real unhandled Base. The same
+      // vector packet is then written to both children with only z replaced.
+      const expected = [30.5, -40.25, priority];
+      assert.deepEqual(
+        motionVector(a.graph.kx2, MOTION_ABI.base),
+        expected,
+        'The real earlier plane receives the last responding sibling x/y and the new priority',
+      );
+      assert.deepEqual(motionVector(b.graph.kx2, MOTION_ABI.base), expected);
+      assert.equal(scene.graphics.stage.planes[a.stageKey].priority, priority);
+      assert.equal(scene.graphics.stage.planes[b.stageKey].priority, priority);
+      assert.deepEqual(queried, [
+        { receiver: aNative, words: initialA.map(floatBits) },
+        { receiver: bNative, words: initialB.map(floatBits) },
+      ]);
+      assert.deepEqual(
+        deliveries.map(({ receiver, message, flags }) => [receiver, message, flags]),
+        [
+          [branchNative, 61, 1],
+          [aNative, 61, 1],
+          [bNative, 61, 1],
+          [branchNative, 49, 1],
+          [aNative, 49, 1],
+          [bNative, 49, 1],
+        ],
+      );
+      for (const delivery of deliveries)
+        assert.strictEqual(delivery.payload, deliveries[0].payload);
+      assert.deepEqual(
+        writes,
+        [branchNative, aNative, bNative].map((receiver) => ({
+          receiver,
+          words: expected.map(floatBits),
+        })),
+      );
+      assert.equal(first.machine.load(128), branchNative);
+      assert.equal(first.machine.load(132), floatBits(priority));
+      assert.deepEqual([...first.machine.bytes(800, 16)], Array(16).fill(0xa5));
+      rectangleContinuation(first);
+
+      const direct = await rectangleCaller(scene),
+        directPriority = -2000.5;
+      direct.machine.store(128, aNative);
+      direct.machine.store(132, floatBits(directPriority));
+      direct.machine.bytes(800, 16).fill(0xa5);
+      await scene.runtime.scheduler.execute(direct.task);
+      assert.deepEqual(motionVector(a.graph.kx2, MOTION_ABI.base), [30.5, -40.25, directPriority]);
+      assert.deepEqual(
+        motionVector(b.graph.kx2, MOTION_ABI.base),
+        expected,
+        'A handled plane request does not broadcast to its sibling',
+      );
+      assert.equal(scene.graphics.stage.planes[a.stageKey].priority, directPriority);
+      assert.equal(scene.graphics.stage.planes[b.stageKey].priority, priority);
+      assert.deepEqual(
+        deliveries.slice(6).map(({ receiver, message, flags }) => [receiver, message, flags]),
+        [
+          [aNative, 61, 1],
+          [aNative, 49, 1],
+        ],
+      );
+      assert.strictEqual(deliveries[6].payload, deliveries[7].payload);
+      assert.deepEqual(
+        outer,
+        [first, direct].flatMap((caller, i) =>
+          [61, 49].map((message) => ({
+            target: i ? aNative : branchNative,
+            sender: caller.task.id,
+            message,
+            w: 0,
+            l: 0,
+            flags: 1,
+            afterNullMarker: 73,
+          })),
+        ),
+      );
+      assert.deepEqual(
+        calls.map((call) => call.args),
+        [
+          [0, floatBits(-1234.5)],
+          [branchNative, floatBits(priority)],
+          [0, floatBits(-1234.5)],
+          [aNative, floatBits(directPriority)],
+        ],
+      );
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: 4 }, () => ({ control: 2 })),
+      );
+      assert.deepEqual([...direct.machine.bytes(800, 16)], Array(16).fill(0xa5));
+      assert.equal(direct.machine.load(128), aNative);
+      assert.equal(direct.machine.load(132), floatBits(directPriority));
+      rectangleContinuation(direct);
+      assert.deepEqual(observerErrors, []);
+      assert.equal(
+        scene.graphics.renderSequence,
+        order,
+        'Priority does not create or replace a graph',
+      );
+      for (const [plane, saved] of [
+        [a, geometry[0]],
+        [b, geometry[1]],
+      ]) {
+        assert.strictEqual(plane.graph, saved.graph);
+        assert.deepEqual(plane.state.rect, saved.rect);
+        assert.deepEqual(plane.graph.colors, saved.colors);
+      }
+      const entry = nativeABI(profile).tables.main.entries[88];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.signature.argumentWords, 2);
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.parameters[1].type.kind, 'float');
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      for (const id of [104, 455, 467])
+        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await scene.close();
+    }
+  });

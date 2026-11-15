@@ -4277,7 +4277,7 @@
           "id": 88,
           "hexID": "0x58",
           "semanticName": "plane.setPriority",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "plane.setPriority",
           "renderRoute": {
             "id": 88,
             "semanticName": "plane.setPriority",
@@ -4301,8 +4301,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -49910,7 +49909,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "dc56f9f3315e2736ad7ce615d6fd17bb01c2ac5024fde29466db83fe19782261",
+      "sourceSha256": "c559d765d4ae1320a55d13864c0330c7982671bbae35dbb9c8273b3780425571",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53009,7 +53008,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "1c2668f7f7250f4b59b67858759bdaf03c9c122c89f190a86584e1f68e0497bc",
+      "sourceSha256": "43925b73157025be16971f55bd2bd798ffce0a48c66ac41bb474c4f4a709b85f",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

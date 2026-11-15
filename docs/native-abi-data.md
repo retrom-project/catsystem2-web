@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 809       | 82            | 19            | 99      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 810       | 82            | 19            | 98      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -472,3 +472,23 @@ unregistered profiles are rejected. The four rows live once in
 [accelerator-rows.mjs](../src/native/accelerator-rows.mjs), outside the native-slot
 catalog. This enables no VM slot or unknown version. The separate language
 accelerator capability remains Game-only; SDK language rows stay disabled.
+
+## Priority main88
+
+Main88 `plane.setPriority(task, z)` takes a native task ID and one f32 priority
+word. Both registered wrappers return control 2 without writing a VM result;
+target zero skips delivery. The SDK's raw messages 59 and 47 map to the Game's
+canonical 61 and 49: read the three-word base vector, replace only z, then write
+the same packet back. Both sends retain their original flags value 1.
+
+A handled Plane stops ordinary D2 propagation. An unhandled Base with loaded
+Plane children visits its ordered immediate children with the shared vector
+packet: the last responding child supplies x/y for the subsequent priority
+write to those children. This normal hierarchy behavior is covered through real
+Script GCALL, Base/Plane services, guest continuation, memory canaries and void
+stack behavior in both registered profiles. SDK88 is explicitly recovered from
+its own wrapper and receiver evidence; the already matching common signature
+and Game registration remain unchanged. SDK104/455/467, unregistered versions
+and other unknown slots remain guarded. This does not establish missing or
+nonresponding-model scratch values, malformed packets, alternative backends,
+inherited-position corner paths or rendered pixels.
