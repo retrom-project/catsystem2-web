@@ -327,3 +327,16 @@ Play, Update, sample RNG, or replay resource commands/state. Both actual normal
 and fresh RGBA outputs must equal the independent full reference. This case does
 not establish over-capacity behavior, performance, device loss/reset or nonprimary
 target acceptance; unregistered versions and slots remain disabled.
+
+The Sprite device-cycle acceptance uses the existing default FES World and its
+public Task51/571 Play setup, rather than adding a FES Play-parser claim. One real
+WEBGL_lose_context loss/restore cycle retains that World, GPU, device, Task and
+logical primary target/depth. The restored canvas event starts shared-owner
+reconstruction; ready follows resource validation and a new generation. The case
+requires new valid physical resources, full typed Task/manager/CRT/MT stability
+during reconstruction, and two actual D6 submissions whose complete RGBA bytes
+equal the independent Sprite reference. Per-pass physical state is restored
+within each generation; no Play, Update, mounted payload or RNG is replayed.
+This completed-frame primary-target scope excludes in-flight loss, failed
+reconstruction and same-owner nonprimary FBO acceptance. Different graphics
+owners/contexts remain outside the same-World entry contract.

@@ -210,6 +210,15 @@ async function exerciseDefaultWorld(data) {
       return Object.is(x, -0) ? { negativeZero: true } : x;
     });
   const legal2000 = data.workload === 'legal2000';
+  const deviceCycle = data.workload === 'device-loss-restore-sprite';
+  check(
+    !deviceCycle ||
+      (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
+        data.effectSHA256 === '68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1' &&
+        data.trailFixture === null &&
+        data.normalWorldUpdateCount === 4),
+    'Device cycle is not the pinned Sprite workload',
+  );
   check(
     !legal2000 ||
       (data.profile === 'nekopara-vol3-engine-2.6.1.76' &&
@@ -619,6 +628,162 @@ async function exerciseDefaultWorld(data) {
       if (gpu.drawing) gpu.endNativeFrame();
     }
   }
+  async function restoreSameDevice(world, task, plays, updates) {
+    const stage = world.stageRenderer,
+      gpu = stage.gpu,
+      gl = gpu.gl,
+      canvas = gpu.canvas,
+      device = world.graphics.device,
+      target = gpu.primaryTarget,
+      depth = gpu.primaryDepthStencil,
+      backend = task.gpuBackend,
+      generation = device.generation;
+    check(
+      device.ready && !gpu.drawing && gpu.resourcesReady(),
+      'Device cycle requires a settled frame',
+    );
+    const extension = gl.getExtension('WEBGL_lose_context');
+    check(extension !== null, 'WEBGL_lose_context is unavailable');
+    const state = () => ({
+      task: task.snapshot(),
+      crt: world.effekseer.threads.snapshot(),
+      mt: world.random.snapshot(),
+      frame: world.frame,
+      plays: plays.length,
+      updates: updates.length,
+      canvases,
+    });
+    const before = encode(state());
+    const checks = [
+      ['program', (value) => gl.isProgram(value)],
+      ['vertexArray', (value) => gl.isVertexArray(value)],
+      ['buffer', (value) => gl.isBuffer(value)],
+      ['effekseerIndexBuffer', (value) => gl.isBuffer(value)],
+      ['targetTexture', (value) => gl.isTexture(value)],
+      ['framebuffer', (value) => gl.isFramebuffer(value)],
+      ['depthStencil', (value) => gl.isRenderbuffer(value)],
+    ];
+    const handles = Object.fromEntries(checks.map(([name]) => [name, gpu[name]]));
+    const observed = (evidence.device = {
+      generationBefore: generation,
+      statuses: [],
+      events: [],
+      resourcesBefore: Object.fromEntries(
+        checks.map(([name, valid]) => [name, valid(handles[name])]),
+      ),
+      cpuBefore: JSON.parse(before),
+    });
+    let lostListener, restoredListener;
+    const lost = new Promise((resolve) => {
+      lostListener = (event) => {
+        observed.events.push({
+          type: event.type,
+          sameCanvas: event.target === canvas,
+          defaultPrevented: event.defaultPrevented,
+        });
+        resolve();
+      };
+      canvas.addEventListener('webglcontextlost', lostListener, { once: true });
+    });
+    const restored = new Promise((resolve) => {
+      restoredListener = (event) => {
+        observed.events.push({ type: event.type, sameCanvas: event.target === canvas });
+        resolve();
+      };
+      canvas.addEventListener('webglcontextrestored', restoredListener, { once: true });
+    });
+    const unobserve = device.observe((current) =>
+      observed.statuses.push({ status: current.status, generation: current.generation }),
+    );
+    try {
+      await withoutReplay(world, async () => {
+        evidence.stage = 'real canvas context loss';
+        extension.loseContext();
+        await lost;
+        check(gl.isContextLost() && device.status === 'lost', 'Real loss did not reach the device');
+        check(device.generation === generation, 'Loss advanced the resource generation');
+        check(
+          target.contentValid === false && depth.validMask === 0,
+          'Loss retained valid target content',
+        );
+        check(encode(state()) === before, 'Context loss changed CPU state');
+        // Finish lost-event dispatch before requesting restoration.
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        evidence.stage = 'real canvas context restore';
+        extension.restoreContext();
+        await restored;
+        check(await device.settled(), 'Restored device did not finish reconstruction');
+        check(
+          device.ready && device.error === null && gpu.resourcesReady(),
+          'Resources are not ready',
+        );
+        check(
+          device.generation === generation + 1,
+          'Rebuild did not produce exactly one generation',
+        );
+        check(
+          world.stageRenderer === stage &&
+            stage.gpu === gpu &&
+            gpu.gl === gl &&
+            gpu.canvas === canvas &&
+            gpu.graphicsDevice === device &&
+            stage.graphicsDevice === device &&
+            gpu.primaryTarget === target &&
+            gpu.primaryDepthStencil === depth &&
+            target.depthStencil === depth &&
+            task.gpuBackend === backend,
+          'Rebuild replaced a logical World/device/Task/target owner',
+        );
+        check(
+          target.contentValid === false && depth.validMask === 0,
+          'Rebuild restored stale contents',
+        );
+        const after = encode(state());
+        observed.cpuAfter = JSON.parse(after);
+        check(after === before, 'Reconstruction changed full Task/CRT/MT state');
+        observed.resourcesAfter = Object.fromEntries(
+          checks.map(([name, valid]) => [name, valid(gpu[name])]),
+        );
+        observed.resourcesReplaced = Object.fromEntries(
+          checks.map(([name]) => [name, gpu[name] !== handles[name]]),
+        );
+        observed.oldResourcesInvalid = Object.fromEntries(
+          checks.map(([name, valid]) => [name, !valid(handles[name])]),
+        );
+        check(
+          Object.values(observed.resourcesBefore).every(Boolean) &&
+            Object.values(observed.resourcesAfter).every(Boolean) &&
+            Object.values(observed.resourcesReplaced).every(Boolean) &&
+            Object.values(observed.oldResourcesInvalid).every(Boolean),
+          'Rebuild did not replace the complete shared GL resource set',
+        );
+        observed.generationAfter = device.generation;
+        observed.sameLogicalOwners = true;
+        observed.fullTypedNegativeZeroCPUComparison = true;
+        observed.noReplay = true;
+      });
+    } finally {
+      unobserve();
+      canvas.removeEventListener('webglcontextlost', lostListener);
+      canvas.removeEventListener('webglcontextrestored', restoredListener);
+    }
+    return observed;
+  }
+  function deviceError(error, seen = new Set(), depth = 0) {
+    if (error == null || typeof error !== 'object') return { value: String(error) };
+    if (seen.has(error)) return { cycle: true };
+    if (depth >= 16) return { truncated: true, name: error.name, message: error.message };
+    seen.add(error);
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      ...(error.cause === undefined ? {} : { cause: deviceError(error.cause, seen, depth + 1) }),
+      ...(Array.isArray(error.errors)
+        ? { errors: error.errors.map((item) => deviceError(item, seen, depth + 1)) }
+        : {}),
+    };
+  }
   async function setupLegal2000(world, plays, updates) {
     const sourceRead = world.game.read,
       reads = [];
@@ -806,66 +971,86 @@ async function exerciseDefaultWorld(data) {
     const before = canvases,
       original = await render(world, task, 'original'),
       after = canvases;
-    const savedTask = task.snapshot(),
-      savedCRT = world.effekseer.threads.snapshot();
-    const savedMT = world.random.snapshot();
-    evidence.stage = 'original snapshot';
-    const checkpoint = await withoutReplay(world, async () => world.snapshot());
-    evidence.stage = 'construct fresh';
-    fresh = await makeDefaultWorld(data, false);
-    check(
-      fresh !== world &&
-        fresh.stageRenderer !== world.stageRenderer &&
-        fresh.stageRenderer.gpu !== world.stageRenderer.gpu &&
-        fresh.graphics.device !== world.graphics.device,
-      'Fresh World reused the old owners',
-    );
-    evidence.stage = 'fresh restore';
-    await withoutReplay(fresh, async () => fresh.restore(structuredClone(checkpoint)), true);
-    const restored = fresh.objects.objects.get(task.record.id).implementation;
-    check(
-      restored !== task && restored.manager !== task.manager && restored.gpuBackend === null,
-      'Restore reused CPU owners or replayed a physical submission',
-    );
-    same(restored.snapshot(), savedTask, 'Fresh Task current bytes differ');
-    same(fresh.effekseer.threads.snapshot(), savedCRT, 'Fresh CRT differs');
-    same(fresh.random.snapshot(), savedMT, 'Fresh MT differs');
-    if (legal2000) {
-      const current = restored.snapshot();
-      evidence.freshState = {
-        task: { saved: await summary(encode(savedTask)), restored: await summary(encode(current)) },
-        manager: {
-          saved: await summary(encode(savedTask.manager)),
-          restored: await summary(encode(current.manager)),
-        },
-        crt: {
-          saved: await summary(encode(savedCRT)),
-          restored: await summary(encode(fresh.effekseer.threads.snapshot())),
-        },
-        mt: {
-          saved: await summary(encode(savedMT)),
-          restored: await summary(encode(fresh.random.snapshot())),
-        },
-        completeTypedNegativeZeroComparison: true,
+    if (deviceCycle) {
+      const device = await restoreSameDevice(world, task, plays, updates);
+      const deviceRestored = await render(world, task, 'device restored');
+      result = {
+        original,
+        deviceRestored,
+        device,
+        setup: evidence.setup,
+        canvases: { before, after, restoredAfter: canvases },
+        reads: evidence.reads,
+        noResourceCommandStateReplay: true,
+        noRenderSnapshotReads: true,
+        freshWorlds: 0,
+      };
+    } else {
+      const savedTask = task.snapshot(),
+        savedCRT = world.effekseer.threads.snapshot();
+      const savedMT = world.random.snapshot();
+      evidence.stage = 'original snapshot';
+      const checkpoint = await withoutReplay(world, async () => world.snapshot());
+      evidence.stage = 'construct fresh';
+      fresh = await makeDefaultWorld(data, false);
+      check(
+        fresh !== world &&
+          fresh.stageRenderer !== world.stageRenderer &&
+          fresh.stageRenderer.gpu !== world.stageRenderer.gpu &&
+          fresh.graphics.device !== world.graphics.device,
+        'Fresh World reused the old owners',
+      );
+      evidence.stage = 'fresh restore';
+      await withoutReplay(fresh, async () => fresh.restore(structuredClone(checkpoint)), true);
+      const restored = fresh.objects.objects.get(task.record.id).implementation;
+      check(
+        restored !== task && restored.manager !== task.manager && restored.gpuBackend === null,
+        'Restore reused CPU owners or replayed a physical submission',
+      );
+      same(restored.snapshot(), savedTask, 'Fresh Task current bytes differ');
+      same(fresh.effekseer.threads.snapshot(), savedCRT, 'Fresh CRT differs');
+      same(fresh.random.snapshot(), savedMT, 'Fresh MT differs');
+      if (legal2000) {
+        const current = restored.snapshot();
+        evidence.freshState = {
+          task: {
+            saved: await summary(encode(savedTask)),
+            restored: await summary(encode(current)),
+          },
+          manager: {
+            saved: await summary(encode(savedTask.manager)),
+            restored: await summary(encode(current.manager)),
+          },
+          crt: {
+            saved: await summary(encode(savedCRT)),
+            restored: await summary(encode(fresh.effekseer.threads.snapshot())),
+          },
+          mt: {
+            saved: await summary(encode(savedMT)),
+            restored: await summary(encode(fresh.random.snapshot())),
+          },
+          completeTypedNegativeZeroComparison: true,
+        };
+      }
+      const freshBefore = canvases,
+        restoredFrame = await render(fresh, restored, 'restored');
+      result = {
+        original,
+        restored: restoredFrame,
+        freshIndependentOwners: true,
+        canvases: { before, after, freshBefore, freshAfter: canvases },
+        setup: evidence.setup,
+        ...(legal2000 ? { freshState: evidence.freshState } : {}),
+        reads: evidence.reads,
+        // Immutable mounted sources are revalidated; resource commands/state never replay.
+        noResourceCommandStateReplay: true,
+        noRenderSnapshotReads: true,
+        restoreReadQuota: evidence.restoreReadQuota,
       };
     }
-    const freshBefore = canvases,
-      restoredFrame = await render(fresh, restored, 'restored');
-    result = {
-      original,
-      restored: restoredFrame,
-      freshIndependentOwners: true,
-      canvases: { before, after, freshBefore, freshAfter: canvases },
-      setup: evidence.setup,
-      ...(legal2000 ? { freshState: evidence.freshState } : {}),
-      reads: evidence.reads,
-      // Immutable mounted sources are revalidated; resource commands/state never replay.
-      noResourceCommandStateReplay: true,
-      noRenderSnapshotReads: true,
-      restoreReadQuota: evidence.restoreReadQuota,
-    };
   } catch (error) {
     failure = error;
+    if (deviceCycle) evidence.firstFailure = deviceError(error);
   } finally {
     for (const w of [fresh, world])
       if (w) {
@@ -876,6 +1061,13 @@ async function exerciseDefaultWorld(data) {
         }
       }
     globalThis.OffscreenCanvas = NativeCanvas;
+    if (deviceCycle) {
+      evidence.cleanup = {
+        attempted: world ? 1 : 0,
+        failures: cleanup.map((error) => deviceError(error)),
+      };
+      if (result) result.cleanup = evidence.cleanup;
+    }
   }
   if (failure) {
     if (cleanup.length) failure.cleanup = cleanup;
@@ -1232,4 +1424,176 @@ test('default FES legal2000 submits through its World GPU and a true fresh World
   }
   expect(actual.restored.rgba).toEqual(actual.original.rgba);
   expect(actual.restored.frame).toBe(actual.original.frame);
+});
+
+test('default FES Sprite survives a real same-device WebGL loss and restore without replay', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(0);
+  page.setDefaultTimeout(0);
+  page.setDefaultNavigationTimeout(0);
+  const c = defaultReference.cases.find((item) => item.kind === 'sprite');
+  expect(c?.efkSHA256).toBe('68b67a0b4dd3939010d45e32716edca8d2a2656c2ff18c1749cfc20329531de1');
+  const blocked = [];
+  await page.route('**/*', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url());
+    if (request.isNavigationRequest() && url.pathname === '/') {
+      await route.fulfill({
+        contentType: 'text/html',
+        body: '<!doctype html><title>EFK device cycle</title>',
+      });
+      return;
+    }
+    if (
+      /\/oracle\/|\/native\/engine-process\.mjs|\/ppi\/(?:backend|backend-artifact)\.mjs|unicorn|\.(?:exe|dll|ppi)(?:$|\?)/i.test(
+        url.href,
+      ) ||
+      /(?:^|\/)(?:cs2_debug_key\.dat|[^/]*\.key)(?:$|\?)/i.test(url.pathname)
+    ) {
+      blocked.push(url.href);
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  });
+  await page.goto('/');
+  async function preserve(value) {
+    await testInfo.attach('device-cycle-evidence', {
+      body: Buffer.from(JSON.stringify({ value, blocked })),
+      contentType: 'application/json',
+    });
+    const frames =
+      value?.frames ??
+      (value ? { original: value.original, deviceRestored: value.deviceRestored } : {});
+    for (const [name, frame] of Object.entries(frames))
+      if (frame?.rgba)
+        await testInfo.attach('device-cycle-' + name + '-rgba', {
+          body: Buffer.from(frame.rgba),
+          contentType: 'application/octet-stream',
+        });
+  }
+  let actual;
+  try {
+    actual = await page.evaluate(exerciseDefaultWorld, {
+      workload: 'device-loss-restore-sprite',
+      profile: defaultReference.profile,
+      effectSHA256: c.efkSHA256,
+      canvas: defaultReference.canvas,
+      virtualView: defaultReference.virtualView,
+      viewport: defaultReference.viewport,
+      clearARGB: defaultReference.clearARGB,
+      playPosition: defaultReference.playPosition,
+      public57Bits: defaultReference.public57Bits,
+      normalWorldUpdateCount: defaultReference.normalWorldUpdateCount,
+      trailFixture: null,
+      restoreResources: [
+        {
+          name: 'case.kcs',
+          bytes: defaultReference.bootKCSBytes,
+          sha256: defaultReference.bootKCSSHA256,
+        },
+        { name: 'scene.efk', bytes: c.efkBytes, sha256: c.efkSHA256 },
+      ],
+      files: {
+        'case.kcs': Array.from(bootKCS),
+        'screen.fes': Array.from(new TextEncoder().encode(defaultReference.fesSource)),
+        'scene.efk': Array.from(Buffer.from(c.efkBase64, 'base64')),
+      },
+    });
+  } catch (error) {
+    const partial = await page
+      .evaluate(() => globalThis.__defaultEFKProgress ?? null)
+      .catch(() => null);
+    await preserve(partial);
+    throw error;
+  }
+  await preserve(actual);
+  expect(blocked).toEqual([]);
+  expect(actual.cleanup).toEqual({ attempted: 1, failures: [] });
+  expect(actual.freshWorlds).toBe(0);
+  expect(actual.reads).toEqual([]);
+  expect(actual.noResourceCommandStateReplay && actual.noRenderSnapshotReads).toBe(true);
+  expect(actual.canvases.before).toBe(actual.canvases.after);
+  expect(actual.canvases.restoredAfter).toBe(actual.canvases.after);
+  expect(actual.device.statuses).toEqual([
+    { status: 'lost', generation: actual.device.generationBefore },
+    { status: 'not-reset', generation: actual.device.generationBefore },
+    { status: 'rebuilding', generation: actual.device.generationBefore },
+    { status: 'ready', generation: actual.device.generationBefore + 1 },
+  ]);
+  expect(actual.device.events).toEqual([
+    { type: 'webglcontextlost', sameCanvas: true, defaultPrevented: true },
+    { type: 'webglcontextrestored', sameCanvas: true },
+  ]);
+  expect(actual.device.generationAfter).toBe(actual.device.generationBefore + 1);
+  expect(
+    actual.device.sameLogicalOwners &&
+      actual.device.fullTypedNegativeZeroCPUComparison &&
+      actual.device.noReplay,
+  ).toBe(true);
+  expect(actual.device.cpuAfter).toEqual(actual.device.cpuBefore);
+  for (const field of [
+    'resourcesBefore',
+    'resourcesAfter',
+    'resourcesReplaced',
+    'oldResourcesInvalid',
+  ]) {
+    expect(Object.keys(actual.device[field])).toEqual([
+      'program',
+      'vertexArray',
+      'buffer',
+      'effekseerIndexBuffer',
+      'targetTexture',
+      'framebuffer',
+      'depthStencil',
+    ]);
+    expect(Object.values(actual.device[field])).toEqual([true, true, true, true, true, true, true]);
+  }
+  const expected = inflateSync(Buffer.from(c.rgbaDeflateBase64, 'base64'));
+  expect(expected.length).toBe(12288);
+  expect(digest(expected)).toBe('bfbdce0cb9470460c214489eb9b075b72993914ad807de12fbe2fbb28f95e41c');
+  for (const frame of [actual.original, actual.deviceRestored]) {
+    expect(frame.population).toEqual(c.population);
+    expect(frame.stats).toMatchObject(c.expected);
+    expect(frame.packets).toHaveLength(1);
+    expect(frame.packets[0]).toMatchObject({
+      vertexCount: c.expected.vertexCount,
+      indexCount: c.expected.indexCount,
+      indexStorage: 'Uint16Array',
+      cameraBits: c.expectedPacketCameraBits,
+      projectionBits: defaultReference.TaskProjectionBits,
+      viewport: defaultReference.viewport,
+      sameContext: true,
+      sameTarget: true,
+    });
+    expect(frame.taskCameraBits).toEqual(defaultReference.TaskCameraBits);
+    expect(frame.taskProjectionBits).toEqual(defaultReference.TaskProjectionBits);
+    expect(frame.indexed).toEqual([[4, c.expected.indexCount, 5123, 0]]);
+    expect(frame.uploads.filter((item) => item.target === 34962)).toHaveLength(1);
+    expect(frame.uploads.filter((item) => item.target === 34963)).toHaveLength(1);
+    expect(frame.uploads.find((item) => item.target === 34962)).toMatchObject({
+      storage: 'Float32Array',
+      activeElements: c.expected.vertexCount * 10,
+      activeBytes: c.expected.vertexCount * 40,
+    });
+    expect(frame.uploads.find((item) => item.target === 34963)).toMatchObject({
+      storage: 'Uint16Array',
+      activeElements: c.expected.indexCount,
+      activeBytes: c.expected.indexCount * 2,
+    });
+    expect(frame.managerSnapshots.after).toEqual(frame.managerSnapshots.before);
+    expect(frame.physicalRestored && frame.logicalStatesRestored && frame.targetDepthShared).toBe(
+      true,
+    );
+    const rgba = Buffer.from(frame.rgba);
+    expect(digest(rgba)).toBe(c.RGBASHA256);
+    expect(rgba).toEqual(expected);
+    let changed = 0;
+    for (let i = 0; i < rgba.length; i += 4)
+      if (!rgba.subarray(i, i + 4).equals(Buffer.from(defaultReference.clearRGBA))) changed++;
+    expect(changed).toBe(117);
+  }
+  expect(actual.deviceRestored.rgba).toEqual(actual.original.rgba);
+  expect(actual.deviceRestored.frame).toBe(actual.original.frame);
 });
