@@ -31,6 +31,10 @@ fixture，不在定位过程中替换，也不把私有资源和原始反编译�
 FES 标签切换可能在同一帧继续执行，不能自行补一帧。CST 由原 system KCS 持续驱动，
 加载 CST 不是把后续解释工作切给一个游戏专用 ScenePlayer 的边界。
 
+VM 的 `steps` 保留在 checkpoint 和诊断中。native 返回 control 5 后等待并从同一 PC 重试，
+这次挂起尝试不增加 guest steps；跳回自身的 JMP 仍正常计数，HALT 仍不计入。
+`run.executed` 和 scheduler `used` 的尝试预算保持原状，仍包含 I/O 重试和 HALT。
+
 声音和影片问题记录实际解码、通道、位置、音量、tag/lv、播放/暂停及完成事件。
 缺失资源、浏览器解码失败与正常播放结束是不同结果，必须按原语义区分。
 

@@ -381,6 +381,7 @@ export class KCSMachine {
       this.push(checked.value);
     }
     if (checked.control === 5) {
+      this.steps--;
       this.sp += count;
       next = instructionPC;
     }
