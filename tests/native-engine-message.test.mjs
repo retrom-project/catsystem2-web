@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from '../src/native/engine-message.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import {
   engineMessageFixture,
   engineMessageWorld,
@@ -231,4 +232,104 @@ test('unregister retains NULL entries until the separate frame sweep, including 
   assert.equal(messages.registry(nested).has(1), true);
   messages.pruneNullRoutes(nested);
   assert.equal(messages.allocateNativeID(5), 1);
+});
+
+test('enclosed messages reset decoded flags without changing caller bytes or ordinary message flags', async () => {
+  for (const profile of [game, sdk])
+    for (const envelope of [11, 12]) {
+      const world = await dataWorld(profile);
+      try {
+        const branch = await world.objects.create({
+            kind: 0,
+            parent: world.root,
+            name: 'Nonmatching parent',
+          }),
+          nested = await world.spawnScript('case.kcs', { parent: branch }),
+          scripts = [world.main, nested],
+          seen = [],
+          data = new Uint8Array(24),
+          view = new DataView(data.buffer),
+          innerFlags = 0xa5a5f00d,
+          outerFlags = 0x13572468;
+        [0x11111111, 0x22222222, 162, 0x33333333, 0x44444444, innerFlags].forEach((word, i) =>
+          view.setUint32(i * 4, word, true),
+        );
+        const callerBytes = data.slice(),
+          payload = {
+            load: (at) => view.getUint32(at, true),
+            bytes: (at, count) => data.subarray(at, at + count),
+          },
+          context = { payload, flags: outerFlags };
+        for (const script of scripts) {
+          const record = world.objects.objects.get(script.id),
+            implementation = record.implementation,
+            original = implementation.message;
+          assert.equal(record.scriptEnabled, 1);
+          implementation.message = async function (words, incoming, output) {
+            const observation = {
+              id: record.id,
+              words: [...words],
+              context: incoming,
+              flags: incoming.flags,
+            };
+            seen.push(observation);
+            observation.result = await original.call(this, words, incoming, output);
+            return observation.result;
+          };
+        }
+        const reply = await world.engineMessages.dispatch(
+          world.root,
+          world.main.id,
+          envelope,
+          envelope === 12 ? 12 : 0,
+          0,
+          context,
+        );
+        // Real Script receivers have run before observing the protocol field.
+        for (const script of scripts) {
+          const record = world.objects.objects.get(script.id);
+          assert.equal(record.scriptEnabled, 0);
+          assert.equal(record.implementation.machine.executionMode, 0);
+        }
+        assert.equal(context.flags, 0);
+        const received = seen.filter((entry) => entry.words[1] === 162);
+        assert.deepEqual(
+          new Set(received.map((entry) => entry.id)),
+          new Set(scripts.map((script) => script.id)),
+        );
+        for (const entry of received) {
+          assert.equal(entry.context, context);
+          assert.equal(entry.flags, 0);
+          assert.equal(entry.result, NATIVE_UNWRITTEN_WORD);
+          assert.deepEqual(entry.words, [
+            world.nativeTaskID(world.main.id),
+            162,
+            0x33333333,
+            0x44444444,
+          ]);
+        }
+        // The unfiltered walk also visits the real no-audio Sound receiver.
+        assert.equal(reply.result, envelope === 11 ? 0 : NATIVE_UNWRITTEN_WORD);
+        assert.deepEqual(data, callerBytes);
+        assert.equal(view.getUint32(20, true), innerFlags);
+        const ordinary = { flags: outerFlags },
+          direct = await world.engineMessages.dispatch(
+            world.main.id,
+            world.main.id,
+            17,
+            0,
+            0,
+            ordinary,
+          );
+        assert.equal(ordinary.flags, outerFlags);
+        assert.equal(direct.result, NATIVE_UNWRITTEN_WORD);
+        const last = seen.at(-1);
+        assert.equal(last.context, ordinary);
+        assert.equal(last.flags, outerFlags);
+        assert.equal(last.words[1], 17);
+        assert.equal(world.nativeEngine, undefined);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
 });

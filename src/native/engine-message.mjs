@@ -612,6 +612,7 @@ export class NativeEngineMessages {
         embedded = Array.from({ length: 6 }, (_, i) => readWord(memory, packet[4] + i * 4));
       embedded[0] = idOf(record);
       embedded[1] = packet[1];
+      embedded[5] = 0;
       embedded.senderWorldID = packet.senderWorldID;
       let control = 1;
       if (packet[2] === 11 || record.flags >>> 0 === packet[3])

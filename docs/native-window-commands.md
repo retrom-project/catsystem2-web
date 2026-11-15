@@ -100,8 +100,11 @@ cancels a pending browser dialog and waits for that frame to settle.
 In that original-window integration, `NativeWindowEvents` executes the
 original `5DC540`/`5DC640` or
 `4B8970`/`4B8A70` packet helpers. Their internal transport CALL targets enter
-the canonical World router. Their sixth packet word is retained from native
-memory, rather than supplied as an invented flags value. Only the SDK's known
+the canonical World router. The helpers write five source words and leave the
+sixth as undefined scratch padding. The router reads all 24 bytes into a decoded
+copy and explicitly resets the receiver's flags to zero for both envelope
+messages 11 and 12, without changing the source bytes. Ordinary message flags
+are unchanged. Only the SDK's known
 event numbers 156/160 become canonical 158/162 at this boundary. Public
 optional tests run both original profiles through real Script queues and a
 fresh World restore.

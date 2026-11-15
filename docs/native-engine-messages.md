@@ -15,6 +15,16 @@ may ignore the sentinel. An absent task and a handled message without output
 must not become an invented zero. Dispatch preserves the caller's context
 object and writes `nativeUnhandled` back to it.
 
+Enclosed messages 11 and 12 read a 24-byte source packet into a separate decoded
+packet. Both replace its destination and sender, and reset its decoded flags to
+zero before delivering it. Message 12 filters each receiver by its task flags
+and still visits children of a nonmatching parent. The caller's source bytes,
+including the sixth word, remain unchanged. The native window helpers leave
+that source word as undefined scratch padding; it is not the receiver's flags.
+Ordinary messages retain their supplied flags. The envelope does not initialize
+the output word: receivers retain their normal output behavior, so a write by
+one receiver remains visible when a later receiver leaves it untouched.
+
 ## Identity and route maps
 
 `record.id` is the World's internal identity. `nativeID` is the engine number;
