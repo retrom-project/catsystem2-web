@@ -7,6 +7,10 @@ import { KCSMachine, floatBits } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 
 function world() {
   const objects = new NativeObjects(),
@@ -203,3 +207,232 @@ test('native graph snapshots own their bytes and restore actual loaded geometry'
   assert.notEqual(a.graph.kx2, b.graph.kx2);
   assert.equal(second.world.graphics.attachment(h).display, true);
 });
+
+const rectangleProfiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const rectangleSentinel = 0x24681357;
+const rectangleColor = 0x80112233;
+
+function rectangleProgram(nullFirst = false) {
+  const call = (target, width, height, color) => [
+    [37, target],
+    [37, floatBits(width)],
+    [37, floatBits(height)],
+    [37, color],
+    [43, 79, 16],
+  ];
+  return kcsProgram([
+    [37, rectangleSentinel],
+    ...(nullFirst ? [...call(0, 111, 222, 0xffaabbcc), [37, 73], [38, [0x13, 512]]] : []),
+    ...call(
+      [0x13, 128],
+      nullFirst ? 20.5 : 30.75,
+      nullFirst ? 12.25 : 15.5,
+      nullFirst ? rectangleColor : 0x40fedcba,
+    ),
+    [37, 89],
+    [38, [0x13, 516]],
+    [59],
+  ]);
+}
+
+async function rectangleCaller(scene) {
+  const id = await scene.objects.create({
+      kind: 12,
+      parent: scene.main.id,
+      name: 'rectangle caller',
+    }),
+    record = scene.objects.objects.get(id);
+  await record.implementation.loadScript('rectangle.kcs');
+  const task = record.implementation.task;
+  assert.strictEqual(scene.runtime.scheduler.tasks.get(id), task);
+  return { record, task, machine: task.machine, initialSP: task.machine.sp };
+}
+
+function rectangleDeclaration(profile) {
+  const entry = nativeABI(profile).tables.main.entries[79];
+  assert.equal(entry.status, 'recovered');
+  assert.equal(entry.signature.argumentWords, 4);
+  assert.deepEqual(entry.controlCodes, [2]);
+  assert.equal(entry.signature.result.kind, 'void');
+  assert.equal(entry.signature.resultWritten, false);
+  for (const id of [78, 104, 467])
+    assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+  assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+}
+
+function rectangleContinuation(caller) {
+  const { machine, initialSP } = caller;
+  assert.equal(machine.load(516), 89, 'The real guest continued after the void rectangle call');
+  assert.equal(machine.halted, true);
+  assert.equal(machine.pop(), rectangleSentinel, 'Control 2 does not push a native result');
+  assert.equal(machine.sp, initialSP);
+  assert.deepEqual([...machine.bytes(800, 8)], Array(8).fill(0xa5));
+}
+
+for (const profile of rectangleProfiles) {
+  test(`${profile} main79 GCALL creates a colored rectangle and skips target zero`, async () => {
+    const scene = await dataWorld(profile, {
+      'case.kcs': kcsProgram([[59]]),
+      'rectangle.kcs': rectangleProgram(true),
+    });
+    try {
+      const id = await scene.objects.create({
+          kind: 2,
+          parent: scene.main.id,
+          nativeID: 0x004f004f,
+          name: 'colored rectangle',
+        }),
+        record = scene.objects.objects.get(id),
+        target = scene.nativeTaskID(id),
+        plane = record.implementation,
+        caller = await rectangleCaller(scene),
+        packets = [],
+        calls = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine;
+      assert.notEqual(target, id, 'A native target ID is distinct from its World record ID');
+      assert.equal(target, 0x004f004f);
+      const order = scene.graphics.renderSequence;
+      caller.machine.store(128, target);
+      caller.machine.bytes(800, 8).fill(0xa5);
+      scene.runtime.native = function (table, number, ...args) {
+        const reply = native.call(this, table, number, ...args);
+        if (table === 'main' && number === 79) calls.push({ args: [...args[0]], reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (receiver, sender, message, w, l, context) {
+        if (message === 42) {
+          assert.equal(caller.machine.load(512), 73, 'Target zero completed before the only send');
+          packets.push({
+            receiver,
+            sender,
+            message,
+            w,
+            l,
+            flags: context.flags,
+            scalars: [0, 4, 8, 12, 16].map((offset) => context.payload.load(offset)),
+            argb: context.payload.load(28),
+          });
+        }
+        return send.call(this, receiver, sender, message, w, l, context);
+      };
+      await scene.runtime.scheduler.execute(caller.task);
+      assert.equal(plane.graph.type, 2);
+      assert.equal(plane.graph.width, 20.5);
+      assert.equal(plane.graph.height, 12.25);
+      assert.deepEqual(plane.graph.colors, [rectangleColor]);
+      assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
+      assert.equal(plane.state.drawType, 2);
+      assert.strictEqual(scene.graphics.graphs.get(target), plane.graph);
+      assert.equal(scene.graphics.renderSequence, order + 1, 'Null target allocated no graph');
+      assert.deepEqual(packets, [
+        {
+          receiver: target,
+          sender: caller.task.id,
+          message: 42,
+          w: 0,
+          l: 0,
+          flags: 0,
+          scalars: [0, 0, 0, floatBits(20.5), floatBits(12.25)],
+          argb: rectangleColor,
+        },
+      ]);
+      assert.deepEqual(
+        calls.map((call) => call.args),
+        [
+          [0, floatBits(111), floatBits(222), 0xffaabbcc],
+          [target, floatBits(20.5), floatBits(12.25), rectangleColor],
+        ],
+      );
+      assert.deepEqual(await Promise.all(calls.map((call) => call.reply)), [
+        { control: 2 },
+        { control: 2 },
+      ]);
+      rectangleContinuation(caller);
+      rectangleDeclaration(profile);
+    } finally {
+      await scene.close();
+    }
+  });
+
+  test(`${profile} main79 GCALL removes the previous rectangle before rejecting modes zero and two`, async () => {
+    const scene = await dataWorld(profile, {
+      'case.kcs': kcsProgram([[59]]),
+      'rectangle.kcs': rectangleProgram(),
+    });
+    try {
+      const id = await scene.objects.create({
+          kind: 2,
+          parent: scene.main.id,
+          nativeID: 0x004f0050,
+          name: 'replace rectangle',
+        }),
+        target = scene.nativeTaskID(id),
+        plane = scene.objects.objects.get(id).implementation;
+      assert.notEqual(target, id);
+      for (const mode of [0, 2]) {
+        await scene.sendNativeEngine(target, scene.main.id, 84, 0, 1);
+        await scene.sendNativeEngine(target, scene.main.id, 42, 0, 0, {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(20.5),
+            floatBits(12.25),
+            0,
+            0,
+            rectangleColor,
+          ]),
+        });
+        assert.equal(plane.graph.type, 2, 'A real old colored model exists before replacement');
+        assert.deepEqual(plane.graph.colors, [rectangleColor]);
+        await scene.sendNativeEngine(target, scene.main.id, 84, 0, mode);
+        assert.equal(plane.state.vramType, mode);
+        const retained = structuredClone({
+            rect: plane.state.rect,
+            drawType: plane.state.drawType,
+            shapeWords: plane.state.shapeWords,
+          }),
+          old = plane.graph,
+          order = scene.graphics.renderSequence,
+          caller = await rectangleCaller(scene);
+        caller.machine.store(128, target);
+        caller.machine.bytes(800, 8).fill(0xa5);
+        await scene.runtime.scheduler.execute(caller.task);
+        assert.equal(plane.graph, null, `Mode ${mode} removes the old model without replacement`);
+        assert.equal(scene.graphics.graphs.has(target), false);
+        assert.equal(Object.hasOwn(scene.graphics.stage.planes, plane.stageKey), false);
+        assert.equal(
+          scene.graphics.renderSequence,
+          order,
+          'A rejected mode allocates no render order',
+        );
+        assert.deepEqual(
+          {
+            rect: plane.state.rect,
+            drawType: plane.state.drawType,
+            shapeWords: plane.state.shapeWords,
+          },
+          retained,
+        );
+        assert.equal(plane.state.vramType, mode);
+        assert.notStrictEqual(plane.graph, old);
+        rectangleContinuation(caller);
+      }
+      await scene.sendNativeEngine(target, scene.main.id, 84, 0, 1);
+      const caller = await rectangleCaller(scene);
+      caller.machine.store(128, target);
+      caller.machine.bytes(800, 8).fill(0xa5);
+      await scene.runtime.scheduler.execute(caller.task);
+      assert.equal(plane.graph.type, 2, 'A later mode-one input creates a new real model');
+      assert.equal(plane.graph.width, 30.75);
+      assert.equal(plane.graph.height, 15.5);
+      assert.deepEqual(plane.graph.colors, [0x40fedcba]);
+      assert.deepEqual(plane.state.rect, [0, 0, 30.75, 15.5]);
+      rectangleContinuation(caller);
+      rectangleDeclaration(profile);
+    } finally {
+      await scene.close();
+    }
+  });
+}

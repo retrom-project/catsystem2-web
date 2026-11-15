@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 807       | 82            | 19            | 101     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 809       | 82            | 19            | 99      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -443,5 +443,22 @@ through the real `EngineHost.nativeMenuChanged` callback. The two-profile Script
 GCALL test checks zero, one, a negative word and a high-bit word, continued guest
 execution and no result push. This proves the World/Host request boundary, not
 Win32 message-pump timing, GUI acknowledgement or successful OS menu mutation.
-SDK400 and SDK455 remain unknown; main467 remains unknown in both profiles, and
+SDK455 remains unknown; main467 remains unknown in both profiles, and
 unregistered engines remain rejected.
+
+## Colored rectangle main79
+
+The common main79 meaning is `plane.createColoredRectangle(target, width, height,
+argb)`: a native task ID, two f32 dimensions and one ARGB word. It is not a bitmap
+assignment. Both registered wrappers take four words, return control 2 and leave
+the VM result unwritten. Target zero skips message delivery. The SDK wrapper's
+raw plane message 40 maps to the Game wrapper's canonical message 42.
+
+Both own plane receivers remove the previous target model before creation. Only
+plane mode 1 creates the solid model and publishes its dimensions, draw type and
+shape words. Modes 0 and 2 remove the old graph without a replacement, retaining
+those task fields; a later mode-1 request can create a new model. The SDK slot is
+explicitly recovered from its own wrapper and receiver evidence. Other unknown
+slots, including SDK104 and main467, remain guarded. The packet's two unused
+original scratch words carry no value claim; this contract does not establish
+pixels, other backends or malformed/OOM behavior.

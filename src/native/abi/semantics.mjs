@@ -2854,41 +2854,40 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     79: {
-      name: 'plane.assignBitmap',
+      name: 'plane.createColoredRectangle',
       family: 'plane',
       signature: {
         argumentWords: 4,
         controlCodes: [2],
         parameters: [
           {
-            description: 'handle task',
-            name: 'task',
-            type: {
-              handleKind: 'unknown',
-              kind: 'handle',
-              ownership: 'unknown',
-            },
-          },
-          {
-            description: 'handle bitmap',
-            name: 'bitmap',
-            type: {
-              handleKind: 'unknown',
-              kind: 'handle',
-              ownership: 'unknown',
-            },
-          },
-          {
-            description: 'word flags',
-            name: 'flags',
+            description: 'u32 native task ID (zero skips delivery)',
+            name: 'target',
             type: {
               bits: 32,
-              kind: 'bits',
+              kind: 'integer',
+              signed: false,
             },
           },
           {
-            description: 'word selector',
-            name: 'selector',
+            description: 'f32 width',
+            name: 'width',
+            type: {
+              bits: 32,
+              kind: 'float',
+            },
+          },
+          {
+            description: 'f32 height',
+            name: 'height',
+            type: {
+              bits: 32,
+              kind: 'float',
+            },
+          },
+          {
+            description: 'ARGB color word',
+            name: 'argb',
             type: {
               bits: 32,
               kind: 'bits',

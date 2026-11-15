@@ -775,8 +775,14 @@ export class NativeGraphicTask {
       }
       case 42: {
         this.unregisterGraph();
+        const mode = this.state.vramType;
+        if (mode !== 1) {
+          this.graph = null;
+          this.sync();
+        }
         const numbers = floats(l, 5),
           color = load(l + 28);
+        if (mode !== 1) return 0;
         this.state.shapeWords = Array.from({ length: 8 }, (_, i) => load(l + i * 4));
         this.makeGraph({
           type: 2,
