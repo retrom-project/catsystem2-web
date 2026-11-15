@@ -9,7 +9,6 @@ import {
   until,
   clickNativeButton,
   pixels,
-  startupWindow,
   normalStartupWindow,
   guardNormalOriginalCPU,
   normalLanguagePreferences,
@@ -39,21 +38,19 @@ async function loadGame(page, beforeStart) {
 }
 
 async function startGame(page) {
-  await loadGame(page);
-  expect(await startupWindow(page)).toEqual({
-    handle: 1,
+  await loadGame(page, guardNormalOriginalCPU);
+  const startup = await normalStartupWindow(page);
+  expect(startup).toMatchObject({
+    ordinary: true,
     client: [1280, 720],
-    nativeTitle: true,
-    inputOwner: true,
-    acceleratorCount: 11,
-    applicationHook: true,
-    displayOwner: true,
+    inputAliases: true,
+    ownerKinds: [11, 13],
+    soundCapacity: [64, 64, 64],
     graphicsOwner: true,
-    graphicsWorker: false,
-    graphicsTasks: true,
-    soundBankCount: 64,
-    soundWorker: true,
+    schedulerFrame: true,
   });
+  expect(startup.title).toBe(startup.configuredTitle);
+  expect(startup.acceleratorRows).toHaveLength(11);
 }
 
 test('the original game accelerators select the main and secondary languages after a fresh World', async ({
