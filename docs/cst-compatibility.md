@@ -64,9 +64,15 @@ resource. Disabled styles `0`, `1`, `2` apply to `select`; their appearance belo
 `host.selectionClosed(state)` releases the displayed selection. `host.undoPoint(request)` owns the
 full engine checkpoint used by the most recent choice or explicit `undo` command.
 
-`fselect` must run the selected game-supplied FES. The SDK selection FES receives the number of rows in
-local variable zero and reads numbered strings beginning at 700. A generic built-in menu is not an
-implementation of that FES. `select2` additionally needs the documented alpha-mask/state images.
+`fselect` must run the selected game-supplied FES. The verified Game 2.6.1.76 normal
+`NativeWorld` and system-KCS path creates a registered kind34 FES, loads the supplied script and
+passes the row count in local variable zero. That FES shares its actual Script owner's string bank;
+the accepted configuration starts its row strings at 700. A public click on the second BUTTON returns
+`exitCode = 1`, which the system KCS uses to load and execute the second row's CST. This two-row Game
+integration used real rendering and normal World cleanup; a generic built-in menu does not implement
+that FES. It does not establish SDK readiness, a pending selection restored into a fresh World,
+owner close, cancellation or broader game-supplied scripts. `select2` still needs the documented
+alpha-mask/state images.
 
 Primary contracts: [subroutines](https://cs2.suki.jp/manual/scene/reference/unique/subroutine.html),
 [selection and image selection](https://cs2.suki.jp/manual/scene/reference/unique/select.html),

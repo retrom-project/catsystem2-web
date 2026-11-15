@@ -1073,9 +1073,9 @@
       "names": ["fselect"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/scene/reference/unique/fselect.html",
-      "implementation": "src/scene.mjs; src/stage.mjs",
+      "implementation": "src/native/world.mjs; src/native/scene-data.mjs; src/native/fes-task.mjs; src/scene.mjs; src/stage.mjs",
       "evidence": ["tests/scene-contracts.test.mjs"],
-      "note": "Consumes real compiled rows and serializes selection waiting state; actual chosen FES, string-700 parameter binding and native rendering require host acceptance.",
+      "note": "Game76 normal kind34 FES/local0/strings700 and BUTTON exit1 -> second CST verified; SDK, fresh, owner close, cancel and broader scripts remain unaccepted.",
       "signatures": ["fselect (script)"]
     },
     {
