@@ -12,7 +12,6 @@ import { browserVirtualKey } from './input-bindings.mjs';
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
 import { matchNativeAcceleratorRows } from './accelerator-rows.mjs';
 
-const LANGUAGE_PROFILE = 'nekopara-vol3-engine-2.6.1.76';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
     119, 40045, 40002, 40008, 40009, 40012, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
@@ -71,7 +70,12 @@ export class NativeWindow {
   }
   get languageAccelerators() {
     const world = this.world;
-    if (world.profile !== LANGUAGE_PROFILE || world.closed || world.disposalRequested) return [];
+    if (
+      !nativeABI(world.profile).capabilities.windowLanguageAccelerators ||
+      world.closed ||
+      world.disposalRequested
+    )
+      return [];
     const rows = [],
       counts = [0, 0];
     for (const entry of world.configuration.language.entries)
@@ -101,7 +105,12 @@ export class NativeWindow {
   }
   refreshLanguageMenu() {
     const world = this.world;
-    if (world.profile !== LANGUAGE_PROFILE || world.closed || world.disposalRequested) return;
+    if (
+      !nativeABI(world.profile).capabilities.windowLanguageAccelerators ||
+      world.closed ||
+      world.disposalRequested
+    )
+      return;
     const { language } = world.configuration;
     for (let command = 40065; command <= 40094; command++)
       world.host.nativeMenuChecked?.(command, false);
@@ -118,7 +127,12 @@ export class NativeWindow {
     const engine = this.world.nativeEngine,
       owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
       key = browserVirtualKey(event);
-    if ((!owner && this.world.profile !== LANGUAGE_PROFILE) || !key || event.metaKey) return null;
+    if (
+      (!owner && !nativeABI(this.world.profile).capabilities.windowLanguageAccelerators) ||
+      !key ||
+      event.metaKey
+    )
+      return null;
     const modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
       extended =
         /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(

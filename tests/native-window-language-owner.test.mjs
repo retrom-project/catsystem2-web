@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NATIVE_ABIS, nativeABI, validateABI } from '../src/native/abi/index.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -20,7 +21,7 @@ const startup = () =>
       '</language>',
   );
 const event = (code, key, extra = {}) => ({ code, key, shiftKey: true, ...extra });
-async function fixture(initialize = true) {
+async function fixture(initialize = true, fixtureProfile = profile) {
   const files = { 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) };
   for (const [prefix, value] of [
     ['en', 'English'],
@@ -34,19 +35,19 @@ async function fixture(initialize = true) {
     reads = [],
     checks = [],
     configuration = new NativeConfiguration({
-      profile,
+      profile: fixtureProfile,
       startup: startup(),
       uiLanguage: 1033,
       preferences: xml('<language><id><UI>0</UI><main>2</main><sub>0</sub></id></language>'),
     }),
     random = new ParticleRandom(19, 23),
     world = new NativeWorld({
-      profile,
+      profile: fixtureProfile,
       game,
       images: {},
       configuration,
       random,
-      motionLibrary: new MotionLibrary(game, { profile, random }),
+      motionLibrary: new MotionLibrary(game, { profile: fixtureProfile, random }),
       storage: { read: async () => null, write: async () => true },
       host: { nativeMenuChecked: (command, checked) => checks.push([command, checked]) },
     });
@@ -241,5 +242,36 @@ test('Game pending language shortcuts restore into a fresh World without replay 
   } finally {
     await source.world.close({ flushFiles: false });
     await fresh.world.close({ flushFiles: false });
+  }
+});
+
+test('language accelerators require an explicit per-version capability and stay disabled for the SDK', async () => {
+  const sdk = 'sdk-4.01-engine-2.6.1.74',
+    { world, checks } = await fixture(true, sdk);
+  try {
+    const packet = keydown(world, event('KeyJ', 'J'));
+    await world.tick();
+    assert.equal(packet, null);
+    assert.equal(world.inputBindings.browserKeys.get('KeyJ'), 74);
+    assert.equal(world.configuration.language, undefined);
+    assert.deepEqual(world.window.languageAccelerators, []);
+    world.window.refreshLanguageMenu();
+    assert.deepEqual(checks, []);
+    assert.equal(world.nativeEngine, undefined);
+    assert.equal(nativeABI(sdk).capabilities.windowLanguageAccelerators, false);
+    assert.equal(nativeABI(profile).capabilities.windowLanguageAccelerators, true);
+    for (const abi of Object.values(NATIVE_ABIS)) {
+      const missing = structuredClone(abi);
+      delete missing.capabilities.windowLanguageAccelerators;
+      assert.throws(() => validateABI(missing), /Invalid ABI behavior data/);
+    }
+    for (const value of [null, 0, 'true']) {
+      const invalid = structuredClone(nativeABI(sdk));
+      invalid.capabilities.windowLanguageAccelerators = value;
+      assert.throws(() => validateABI(invalid), /Invalid ABI behavior data/);
+    }
+    assert.throws(() => nativeABI('unregistered'), /provide reviewed per-version ABI data/);
+  } finally {
+    await world.close({ flushFiles: false });
   }
 });

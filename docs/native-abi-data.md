@@ -61,6 +61,17 @@ JavaScript slots retain their meanings while the game's corresponding slots
 remain stubs. XML string output retains SDK CP932 versus game UTF-8. These are
 explicit registration differences, not rules inferred from engine age.
 
+## Language keyboard capability
+
+`capabilities.windowLanguageAccelerators` is a mandatory boolean owned by each
+version registration: Game 2.6.1.76 explicitly enables its proved language
+keyboard producer, while SDK 2.6.1.74 explicitly disables it. Missing or
+nonboolean values fail ABI validation. NativeWindow reads this capability;
+configuration language support, dynamic menus and legacy startup layout do
+not implicitly grant it. Unregistered profiles remain rejected. This covers
+core language input and derived checked notifications, not resource101 base
+shortcuts, SDK language rows or the outstanding production Host/UI consumer.
+
 ## SDK message-wait registration
 
 SDK main `0x47` (`task.waitMessage`) is explicitly recovered from its own

@@ -125,6 +125,7 @@ function validateBehavior(abi) {
       'cubeFlipGridHeightProduct',
       'steam',
       'windowReturnTitle',
+      'windowLanguageAccelerators',
       'broadcast',
       'recordQueues',
       'unicodeOutput',

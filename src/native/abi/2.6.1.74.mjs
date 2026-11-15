@@ -216,6 +216,7 @@ export default {
     embeddedJavaScript: true,
     steam: false,
     windowReturnTitle: false,
+    windowLanguageAccelerators: false,
     broadcast: false,
     recordQueues: false,
     unicodeOutput: false,
