@@ -128,6 +128,12 @@ export class BootHost {
     return nativeReply(2);
   }
 }
+function nativeFormatAddress(region, digits, machine) {
+  let offset = 0;
+  for (let i = 0; i < digits.length; i++) offset = (offset * 10 + digits.charCodeAt(i) - 48) >>> 0;
+  return (region === 'H' ? offset | 0x80000000 : offset + (region === 'L' ? machine.fp : 0)) >>> 0;
+}
+
 export function formatNative(text, m, depth = 0) {
   if (depth > 32) throw new Error('KCS native format recursion');
   let output = '';
@@ -141,9 +147,9 @@ export function formatNative(text, m, depth = 0) {
       i += 2;
       continue;
     }
-    const match = /^%([-+ #0]*)(\d*)(?:\.(\d+))?([diuoxXsfF])\[([LGH])(\d+)\]/.exec(text.slice(i));
+    const match = /^%([-+ #0]*)(\d*)(?:\.(\d+))?([diuoxXsfF])\[([LGH])(\d*)\]/.exec(text.slice(i));
     if (!match) {
-      if (/^%[^[\]\r\n]*\[[LGH]\d+\]/.test(text.slice(i)))
+      if (/^%[^[\]\r\n]*\[[LGH]\d*\]/.test(text.slice(i)))
         throw new Error(`Unsupported native format conversion at ${text.slice(i, i + 64)}`);
       output += text[i++];
       continue;
@@ -153,8 +159,7 @@ export function formatNative(text, m, depth = 0) {
       precision = precisionText === undefined ? undefined : Number(precisionText);
     if (width > 65536 || (precision !== undefined && precision > 100))
       throw new Error('KCS native format output bound');
-    const address =
-      (Number(offsetText) + (region === 'L' ? m.fp : region === 'H' ? 0x80000000 : 0)) >>> 0;
+    const address = nativeFormatAddress(region, offsetText, m);
     let value,
       prefix = '';
     if (type === 's') {
@@ -245,8 +250,7 @@ export function formatNativeBytes(source, m, depth = 0) {
       continue;
     }
     const [, flags, widthText, precisionText, type, region, offsetText] = match,
-      offset = Number(offsetText) >>> 0,
-      address = (region === 'H' ? offset | 0x80000000 : offset + (region === 'L' ? m.fp : 0)) >>> 0;
+      address = nativeFormatAddress(region, offsetText, m);
     if (type === 's') {
       const bytes = [];
       for (let at = address; ; at = (at + 1) >>> 0) {

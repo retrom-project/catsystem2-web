@@ -13,10 +13,18 @@ CRTs preserve zero for `%#.0o` and consume `%F` without an output field.
 Unsupported CRT conversions and nonfinite or very large float spellings are
 diagnosed; they remain gaps, not successfully formatted values.
 
-`scripts/verify-native-format.mjs` executes the complete original formatter,
-pointer translator and actual CRT `sprintf`, with **7,628 comparisons per
-profile**. It compares every output and canary byte for numeric fields,
-recursive strings, the three address domains, UTF-8, CP932 and invalid bytes.
+Both text and byte formatters accumulate each decimal selector digit as a
+wrapping unsigned 32-bit word; an empty index selects zero. Global selectors
+use that word, local selectors add the current frame base, and shared selectors
+set its high bit. Long decimal indices therefore select the same VM bytes
+without losing precision through a whole-number JavaScript conversion.
+
+The existing `scripts/verify-native-format.mjs` report records **7,628
+comparisons per profile** through the complete original formatter, pointer
+translator and CRT. Its finite cases compare every output and canary byte for
+numeric fields, recursive strings, the three address domains, UTF-8, CP932 and
+invalid bytes. This selector correction adds public JS regressions; it does not
+rerun that native matrix, establish unrestricted CRT behavior, or admit native450.
 
 ## Basic string operations
 
