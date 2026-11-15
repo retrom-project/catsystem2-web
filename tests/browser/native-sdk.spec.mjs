@@ -10,7 +10,8 @@ import {
   startupWindow,
 } from './native-game-input.mjs';
 
-const sourceIdentity = 'fe2025130e0f8f7e776eb96b3df004f3f46e65e7fefbe3b6a7cdd5e239a2f217';
+// Current key-free SDK fixture; the native engine/profile identity is unchanged.
+const sourceIdentity = 'b30209ee1e149609f960b1beb82036029513d89c1bb3d49635634d4ccb25b272';
 const profile = 'sdk-4.01-engine-2.6.1.74';
 
 async function writeSetup(page, logLimit) {
