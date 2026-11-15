@@ -16235,7 +16235,7 @@ export const NATIVE_SEMANTICS = freeze({
           description: 'bool',
           kind: 'boolean',
         },
-        resultWritten: null,
+        resultWritten: true,
         review: 'declared',
       },
     },

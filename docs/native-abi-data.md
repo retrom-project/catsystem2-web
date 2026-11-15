@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 804       | 82            | 19            | 104     | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 805       | 82            | 19            | 103     | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -179,9 +179,7 @@ bindings, control2/no value and an unchanged caller VM snapshot. Packet
 observation delegates to the real transport. This is a normal JS receiver
 acceptance, not execution of the original SDK.
 
-SDK450 retains its unknown admission and cannot execute its installed wrapper.
-Its formatter core and exceptional tail remain separate evidence work. No other
-slot, version, type or capability is enabled by these two registrations.
+No other slot, version, type or capability is enabled by these two registrations.
 
 ## SDK FES update and caller exit-code registrations
 
@@ -200,8 +198,7 @@ Tests use zero, a negative word and a high-bit word with the existing signed
 interpretation; they verify the record and its current object snapshot, leave
 a different FES task's exit code alone and preserve the caller machine snapshot.
 No new width restriction, clamp, implicit target or VM result is introduced.
-SDK450 remains unknown; its installed wrapper gains no admission from these
-two registrations.
+These two registrations do not enable any other slot.
 
 ## SDK FES exit-code query and caller context-name copy
 
@@ -230,8 +227,38 @@ CString domain, not arbitrary buffers, unterminated strings, Unicode support or
 a new pointer/encoding contract. Shared pointer types remain unknown.
 
 Game registration data, other slots, table lengths and the central unknown-slot
-guard are unchanged. SDK450 and455 remain unknown. These are normal JS receiver
+guard are unchanged. SDK455 remains unknown. These are normal JS receiver
 acceptances; they do not claim execution of the original engines.
+
+## SDK FES formatted jump
+
+SDK main450 (`fes.jump(task, formatLabel)`) is explicitly recovered from its own
+complete wrapper. It takes two VM words, formats a temporary narrow CString and
+sends SDK raw330 through the existing kind34 mapping to canonical335; the Game's
+own wrapper independently sends335. The public operands are the task and caller's
+format source. There is no guest string-destination operand. Message335 selects
+a real loaded FES block and returns whether it exists.
+
+Both complete wrappers initialize their local result to zero and copy that
+local DWORD to the universal VM result. Their normal cookie tail preserves
+control `1`. The shared main450 `resultWritten` observation is therefore
+corrected from unknown to `true`, without changing its existing boolean result,
+unknown pointer/handle fields, declared review, Game registration or other slots.
+The accepted bounded original formatter comparison covers24 selected supported
+rows per engine, including full output/NUL/canaries. It corroborates that finite
+formatter domain; it is not an unrestricted CRT or exception-path proof.
+
+Ordinary World tests use real kind34/FESCoordinator receivers and a normally
+loaded Script caller. They verify caller-owned ASCII format sources/canaries,
+the exact temporary335 packet bytes and NUL, selected and missing labels, and a
+following real Coordinator marker. A direct control1 reply leaves the caller VM
+snapshot unchanged. Executing the actual Script GCALL then pushes the successful
+and missing-label boolean results onto its VM stack; the direct reply alone is
+not claimed as an applied VM write. Unsupported conversions still raise explicit
+errors before a jump packet is sent. No malformed/oversized, arbitrary encoding,
+unterminated pointer or unknown-version domain is enabled by this registration.
+SDK455 and467 remain unknown representatives; central unknown admission remains
+unchanged.
 
 ## Resolution and consumers
 

@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 308, "oracle": 149, "differential": 67 },
+    "counts": { "js": 309, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -280,6 +280,7 @@
         "tests/native-script-replacement.test.mjs",
         "tests/native-sdk-fes-bind-save-admission.test.mjs",
         "tests/native-sdk-fes-exit-context-admission.test.mjs",
+        "tests/native-sdk-fes-format-admission.test.mjs",
         "tests/native-sdk-fes-update-exit-admission.test.mjs",
         "tests/native-sdk-task-abi.test.mjs",
         "tests/native-shared-abi.test.mjs",
@@ -11732,7 +11733,7 @@
           "table": "main",
           "id": 450,
           "hexID": "0x1c2",
-          "semanticName": null,
+          "semanticName": "fes.jump",
           "fesRoute": {
             "id": 450,
             "label": "fes.jump",
@@ -11759,11 +11760,7 @@
               }
             ]
           },
-          "metadataNotes": [
-            "This frozen catalog has no semantic name; the descriptive route label is separate and the ABI signature metadata remains unchanged."
-          ],
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/fes.mjs",
           "domain": 7,
@@ -49916,7 +49913,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "edb266ed6321755197150a7622ff14ee499112327cc84fb45063bf2a72551064",
+      "sourceSha256": "aba4ad31f1086aa5930c8e4ca2a8b46ee0da79e733f0e571b3e6646c9e6d23a9",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49981,7 +49978,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "93878341a925cdefb3b89aec23dc661f7f4e14b1edae778b3a9dae88e3155fb7",
+      "sourceSha256": "7705fca09d7fb6f725ff4c9d3ecfee02072ed5867a5ac53e45ee6a62a98df2a0",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -118,7 +118,7 @@ test('SDK main447 explicitly binds its existing two-word unwritten FES contract'
   assert.deepEqual(entry.observedArgumentWords, [2]);
   assert.match(entry.evidence, /SDK-2\.6\.1\.74-main447-full-wrapper/);
   assert.notEqual(entry.evidence, gameEntry.evidence);
-  for (const id of [455, 450]) {
+  for (const id of [455, 467]) {
     assert.equal(sdk.tables.main.entries[id].status, 'unknown');
     assert.equal(sdk.tables.main.entries[id].name, null);
   }
