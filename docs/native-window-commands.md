@@ -81,18 +81,24 @@ the browser. Raw traces and original executable bytes remain ignored.
 
 ## Browser execution
 
-The World runs the original `kcWindow` loop. Its application window calls
-SDK `442A30` or game `531670` for messages `0x469..0x46C`. The callback
-posts its resulting `WM_COMMAND` to the same queue as other window
-messages. Title and close confirmations use the native translated
-captions/body. `WM_CLOSE` cancellation keeps the World alive. Acceptance hides
+An initialized original window uses its `kcWindow` loop. Its application
+window calls SDK `442A30` or game `531670` for messages `0x469..0x46C`,
+posting the resulting `WM_COMMAND` to its window queue. Ordinary JavaScript
+Worlds drain their owned message queue without constructing a Win32 process.
+The Game language shortcut path below translates its queued keyboard metadata
+into the same command handler.
+
+The following title/close behavior belongs to the original-window integration.
+Its confirmations use the native translated captions/body. `WM_CLOSE`
+cancellation keeps the World alive. Acceptance hides
 the view and posts `0x410`, which sends the original filtered Script-disable
 event before requesting teardown. The Engine waits for its active frame,
 releases the task tree, media, native process, rendering and persistent stores,
 then returns the standalone player to its start screen. External disposal also
 cancels a pending browser dialog and waits for that frame to settle.
 
-`NativeWindowEvents` executes the original `5DC540`/`5DC640` or
+In that original-window integration, `NativeWindowEvents` executes the
+original `5DC540`/`5DC640` or
 `4B8970`/`4B8A70` packet helpers. Their internal transport CALL targets enter
 the canonical World router. Their sixth packet word is retained from native
 memory, rather than supplied as an invented flags value. Only the SDK's known
@@ -122,3 +128,49 @@ native Script waits until OK or Escape dismisses the message. The output
 word remains untouched and the wrapper returns control 2. Other USER32
 message boxes keep their separate platform boundaries.
 [Microsoft MessageBoxW reference](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw).
+
+## Game language shortcuts in an ordinary World
+
+For the registered Game 2.6.1.76 profile, NativeWindow derives its language
+accelerators from the current configuration entries' `accel` and `accelsub`.
+Zero keys are omitted; each entry contributes main then sub, with independent
+packed counters starting at zero. The command is 40075 plus the main counter
+or 40085 plus the sub counter. Stored flags gain the virtual-key bit. If any
+configured key exists, the last row is character `N`, flags4, command40085 plus
+the number of nonzero sub keys. That suffix is not a special "none" value:
+when it is a valid language index the normal sub-language handler selects it.
+An all-zero configuration adds no language rows. Resource101's base shortcuts
+are outside this typed owner; they are not fabricated from test expectations.
+
+The browser's existing keydown producer retains modifiers and translated
+character alongside the physical key message. The ordinary queue owns a copy
+and translates it when the next World frame consumes it. An unmatched key
+continues through InputBindings, the sole key/device state owner. The typed
+and Win32 boundaries share the same row matcher, including first match,
+virtual-key versus character rules and Alt handling.
+
+WM_COMMAND takes its low word. UI40065..40074 and main40075..40084 accept only
+valid indexes; sub40085..40094 maps an out-of-range index to FFFFFFFF. Existing
+command/applyNativeLanguage remains the configuration and global-string
+update authority. Core derives notifications to the optional
+`host.nativeMenuChecked` hook from those fields: clear all thirty language
+items, then mark UI, main and sub in order. A sub FFFFFFFF marks command40085
+plus the configured language count.
+
+This is a custom-host notification seam. The production EngineHost and app do
+not yet consume it to display language check marks; that D8 browser/menu
+consumer remains open. EngineHost's existing `nativeMenuChanged` integration
+does not implement this checked hook. The World tests collect notifications
+and verify real configuration/resource results; they do not exercise a
+browser menu view. This leaf does not complete browser platform startup.
+
+Only pending keyboard metadata is checkpointed in the current World queue;
+the table and checked-notification values derive from restored configuration,
+with no parallel language state or old snapshot reader. A fresh World restores the
+queue without executing a command, loading language/options tables or drawing
+random values. Normal immutable-program and nullable M2 configuration
+revalidation remain part of the existing restore contract. Closing the source
+World drops pending window messages and prevents later keyboard callbacks;
+a fresh owner remains independent. This covers the registered Game's language
+rows, not SDK accelerators, the resource base rows, other profiles or complete
+platform startup. Unknown VM slots retain their explicit admission guards.

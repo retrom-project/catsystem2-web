@@ -735,8 +735,13 @@ export class NativeWorld {
     }
     this.markConfigurationDirty();
     if (this.nativeEngine) await refreshNativeLanguageMenu(this.nativeEngine);
+    if (!this.window.opened) this.window.refreshLanguageMenu();
   }
   async processWindowMessages(context = {}) {
+    if (this.closed || this.disposalRequested) {
+      this.windowMessages.length = 0;
+      return;
+    }
     if (this.window.opened) {
       const exit = await runNativeWindowPump(this.nativeEngine, this.window.handle, {
         handles: (message, wParam) =>
@@ -751,7 +756,12 @@ export class NativeWorld {
     let processed = 0;
     while (this.windowMessages.length && !this.disposalRequested) {
       if (++processed > 10000) throw new Error('Native window message queue did not settle');
-      await this.dispatchWindowMessage(this.windowMessages.shift(), context);
+      const message = this.windowMessages.shift(),
+        command = this.window.keyboardCommand(message);
+      await this.dispatchWindowMessage(
+        command === null ? message : { message: 0x111, wParam: 0x10000 | command, lParam: 0 },
+        context,
+      );
     }
   }
   async dispatchWindowMessage(message, context = {}) {
@@ -1105,6 +1115,8 @@ export class NativeWorld {
       throw new Error('Native world close requires a settled frame');
     this.dispatchContext.assertSettled();
     this.effekseer.assertSettled();
+    this.disposalRequested = true;
+    this.windowMessages.length = 0;
     const errors = [],
       attempt = async (operation) => {
         try {

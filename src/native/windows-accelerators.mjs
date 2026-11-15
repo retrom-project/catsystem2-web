@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // The resource uses eight-byte records; x86 ACCEL structures use six.
 import { Binary } from '../binary.mjs';
+import { matchNativeAcceleratorRows } from './accelerator-rows.mjs';
 
 const FIRST_HANDLE = 0x5c000000;
 const INVALID_ACCELERATOR = 1403;
 const INVALID_PARAMETER = 87;
 const INVALID_WINDOW = 1400;
-const VIRTUAL_KEY = 1;
-const ALT = 0x10;
-const MODIFIERS = 0x1c;
 const WS_DISABLED = 0x08000000;
 const WS_MINIMIZE = 0x20000000;
 
@@ -98,22 +96,7 @@ export class NativeWindowsAccelerators {
     return 1;
   }
   match(handle, message, key, data, modifiers = this.readModifiers?.() ?? 0) {
-    const rows = this.tables.get(handle)?.rows;
-    if (!rows) return null;
-    const character = message === 0x102 || message === 0x106;
-    if (!character && message !== 0x100 && message !== 0x104) return null;
-    for (const [flags, code, command] of rows) {
-      if (code !== key) continue;
-      if (flags & VIRTUAL_KEY) {
-        if (!character && (flags & MODIFIERS) === (modifiers & MODIFIERS)) return command;
-      } else if (
-        character
-          ? (flags & ALT) === (modifiers & ALT)
-          : flags & ALT && (data & 0x21000000) === 0x20000000
-      )
-        return command;
-    }
-    return null;
+    return matchNativeAcceleratorRows(this.tables.get(handle)?.rows, message, key, data, modifiers);
   }
   async translate(target, table, at) {
     if (!target || !at || !this.tables.has(table)) return 0;

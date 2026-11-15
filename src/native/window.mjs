@@ -10,6 +10,9 @@ import {
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { browserVirtualKey } from './input-bindings.mjs';
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
+import { matchNativeAcceleratorRows } from './accelerator-rows.mjs';
+
+const LANGUAGE_PROFILE = 'nekopara-vol3-engine-2.6.1.76';
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
     119, 40045, 40002, 40008, 40009, 40012, 40021, 40034, 40027, 40057, 40011, 40041, 40019, 40037,
@@ -26,6 +29,7 @@ export class NativeWindow {
     return this.world.nativeEngine?.kernel?.windowViews.windows.has(this.handle) ?? false;
   }
   post(message, wParam = 0, lParam = 0, keyboard) {
+    if (this.world.closed || this.world.disposalRequested) return;
     if (this.opened) {
       if (
         !this.world.nativeEngine.kernel.messageQueue.post(
@@ -43,6 +47,7 @@ export class NativeWindow {
       message: message >>> 0,
       wParam: wParam >>> 0,
       lParam: lParam >>> 0,
+      ...(keyboard === undefined ? {} : { keyboard: { ...keyboard } }),
     });
   }
   handlesBrowserMessage(message, wParam) {
@@ -64,14 +69,57 @@ export class NativeWindow {
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
   }
+  get languageAccelerators() {
+    const world = this.world;
+    if (world.profile !== LANGUAGE_PROFILE || world.closed || world.disposalRequested) return [];
+    const rows = [],
+      counts = [0, 0];
+    for (const entry of world.configuration.language.entries)
+      for (const [index, name] of ['accel', 'accelsub'].entries()) {
+        const [key, flags] = entry[name];
+        if (key) rows.push([(flags | 1) & 255, key & 65535, 40075 + index * 10 + counts[index]++]);
+      }
+    // The native dynamic branch appends this character row only if at least
+    // one configured key exists. Its packed suffix is not a "none" sentinel.
+    if (rows.length) rows.push([4, 78, 40085 + counts[1]]);
+    return rows;
+  }
+  keyboardCommand({ message, wParam, lParam, keyboard }) {
+    if (!keyboard || this.opened) return null;
+    const rows = this.languageAccelerators,
+      command = matchNativeAcceleratorRows(rows, message, wParam, lParam, keyboard.modifiers);
+    if (command !== null) return command;
+    if ((message === 0x100 || message === 0x104) && keyboard.character !== null)
+      return matchNativeAcceleratorRows(
+        rows,
+        message + 2,
+        keyboard.character,
+        lParam,
+        keyboard.modifiers,
+      );
+    return null;
+  }
+  refreshLanguageMenu() {
+    const world = this.world;
+    if (world.profile !== LANGUAGE_PROFILE || world.closed || world.disposalRequested) return;
+    const { language } = world.configuration;
+    for (let command = 40065; command <= 40094; command++)
+      world.host.nativeMenuChecked?.(command, false);
+    for (const [index, field] of ['ui', 'main', 'sub'].entries()) {
+      const selected =
+        language[field] === 0xffffffff && field === 'sub'
+          ? language.entries.length
+          : language[field];
+      world.host.nativeMenuChecked?.(40065 + index * 10 + selected, true);
+    }
+  }
   keyboardShortcut(event) {
+    if (this.world.closed || this.world.disposalRequested) return null;
     const engine = this.world.nativeEngine,
       owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
       key = browserVirtualKey(event);
-    if (!owner || !key || event.metaKey) return null;
-    const table = engine.process.load(owner + 12),
-      accelerators = engine.kernel.accelerators,
-      modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
+    if ((!owner && this.world.profile !== LANGUAGE_PROFILE) || !key || event.metaKey) return null;
+    const modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
       extended =
         /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(
           event.code,
@@ -85,15 +133,19 @@ export class NativeWindow {
           : virtualKeyCharacter(key, modifiers, {
               capsLock: Boolean(event.getModifierState?.('CapsLock')),
               numLock: Boolean(event.getModifierState?.('NumLock')),
-            });
-    // Predict browser default handling now. The original loop translates
-    // the queued key and, where applicable, its later character message.
-    if (
-      accelerators.match(table, message, key, data, modifiers) !== null ||
-      (character !== null &&
-        accelerators.match(table, message + 2, character, data, modifiers) !== null)
-    )
-      return [message, key, data, { modifiers, character }];
+            }),
+      keyboard = { modifiers, character };
+    if (owner) {
+      const table = engine.process.load(owner + 12),
+        accelerators = engine.kernel.accelerators;
+      if (
+        accelerators.match(table, message, key, data, modifiers) !== null ||
+        (character !== null &&
+          accelerators.match(table, message + 2, character, data, modifiers) !== null)
+      )
+        return [message, key, data, keyboard];
+    } else if (this.keyboardCommand({ message, wParam: key, lParam: data, keyboard }) !== null)
+      return [message, key, data, keyboard];
     return null;
   }
   text(value) {
