@@ -23,16 +23,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -584,7 +577,7 @@ for (const profile of profiles)
           () => fresh.sendEngine(h.id, fresh.main.id, 19),
           'text',
         );
-        assert.equal(task.player.root.global(60), 1);
+        assert.equal(task.player.root.global(60), 2, 'the whole-row miss keeps its continuation');
         assert.equal(
           await task.player.root.runtime.command(
             'delete',

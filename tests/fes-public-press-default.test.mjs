@@ -232,7 +232,7 @@ const source = ascii(
     'break',
     '#SyncFail.PUSH_L',
     '$2=++$2',
-    'K2B_UNKNOWN_HEAD',
+    'fw_hash',
     'break',
     '#SyncFail.RELEASE_L',
     '$3=++$3',
@@ -242,7 +242,7 @@ const source = ascii(
     'break',
     '#ReleaseFail.RELEASE_L',
     '$5=++$5',
-    'K2B_RELEASE_UNKNOWN',
+    'fw_hash',
     'break',
     '#AsyncFail.PUSH_L',
     '$6=++$6',
@@ -523,7 +523,7 @@ for (const profile of startupProfiles) {
         () => fPlayer.press(),
         (error) => {
           assert.strictEqual(error, synchronousError);
-          assert.match(error.message, /FES whole-row evaluator is pending: K2B_UNKNOWN_HEAD/);
+          assert.match(error.message, /FES native common handler is pending: fw_hash/);
           return true;
         },
       );
@@ -539,7 +539,7 @@ for (const profile of startupProfiles) {
         () => fPlayer.press(),
         (error) => {
           assert.strictEqual(error, synchronousError);
-          assert.match(error.message, /FES whole-row evaluator is pending: K2B_RELEASE_UNKNOWN/);
+          assert.match(error.message, /FES native common handler is pending: fw_hash/);
           return true;
         },
       );
@@ -961,8 +961,8 @@ const clickBlocks = {
   'CloseHit.FOCUS': ['clipboard (:close-hit)', '$26=++$26', 'break'],
   'CloseHit.PUSH_L': ['$27=++$27', 'break'],
   'CloseHit.RELEASE_L': ['$28=++$28', 'break'],
-  'BadU.UNFOCUS': ['$29=++$29', 'K2_CLICK_UNKNOWN_U', 'break'],
-  'BadF.FOCUS': ['$30=++$30', 'K2_CLICK_UNKNOWN_F', 'break'],
+  'BadU.UNFOCUS': ['$29=++$29', 'fw_hash', 'break'],
+  'BadF.FOCUS': ['$30=++$30', 'fw_hash', 'break'],
   'AsyncBadU.UNFOCUS': ['$31=++$31', '@ m2att', '$32=++$32', 'break'],
   'AsyncBadF.FOCUS': ['$33=++$33', '@ m2att', '$34=++$34', 'break'],
   'Decline.FOCUS': ['clipboard (:decline-click)', 'break'],
@@ -1398,7 +1398,7 @@ for (const profile of startupProfiles) {
           () => clickAt(root, get('Plain')),
           (error) => {
             assert.strictEqual(error, synchronousError);
-            assert.match(error.message, /FES whole-row evaluator is pending: K2_CLICK_UNKNOWN_U/);
+            assert.match(error.message, /FES native common handler is pending: fw_hash/);
             return true;
           },
         );
@@ -1413,7 +1413,7 @@ for (const profile of startupProfiles) {
           () => clickAt(root, badF),
           (error) => {
             assert.strictEqual(error, synchronousError);
-            assert.match(error.message, /FES whole-row evaluator is pending: K2_CLICK_UNKNOWN_F/);
+            assert.match(error.message, /FES native common handler is pending: fw_hash/);
             return true;
           },
         );
@@ -1511,10 +1511,10 @@ const rightBlocks = {
   'Kill.RELEASE_R': ['$17=++$17', 'break'],
   'Close.PUSH_R': ['clipboard (:right-close)', '$18=++$18', 'break'],
   'Close.RELEASE_R': ['$19=++$19', 'break'],
-  'SyncFail.PUSH_R': ['$20=++$20', 'RIGHT_UNKNOWN_PUSH', 'break'],
+  'SyncFail.PUSH_R': ['$20=++$20', 'fw_hash', 'break'],
   'SyncFail.RELEASE_R': ['$21=++$21', 'break'],
   'ReleaseFail.PUSH_R': ['$22=++$22', 'break'],
-  'ReleaseFail.RELEASE_R': ['$23=++$23', 'RIGHT_UNKNOWN_RELEASE', 'break'],
+  'ReleaseFail.RELEASE_R': ['$23=++$23', 'fw_hash', 'break'],
   'AsyncFail.PUSH_R': ['$24=++$24', '@ m2att', '$25=++$25', 'break'],
   'AsyncFail.RELEASE_R': ['$26=++$26', 'break'],
   'AsyncRelease.PUSH_R': ['$27=++$27', 'break'],
@@ -1859,8 +1859,8 @@ for (const profile of startupProfiles) {
           }
         });
         for (const [name, pattern, slots] of [
-          ['SyncFail', /FES whole-row evaluator is pending: RIGHT_UNKNOWN_PUSH/, [20, 21]],
-          ['ReleaseFail', /FES whole-row evaluator is pending: RIGHT_UNKNOWN_RELEASE/, [22, 23]],
+          ['SyncFail', /FES native common handler is pending: fw_hash/, [20, 21]],
+          ['ReleaseFail', /FES native common handler is pending: fw_hash/, [22, 23]],
         ]) {
           const object = get(name);
           fes.focus({ s: root, o: object });

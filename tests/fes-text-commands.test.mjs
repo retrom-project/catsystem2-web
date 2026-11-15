@@ -17,16 +17,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -332,8 +325,12 @@ break
       assert.equal(headRecord.nativeType, 0);
       const beforeMissing = instance.global(10);
       await expectMissingHead(instance, () => query('MISSING'), 'mixed[99]');
-      assert.equal(instance.global(10), beforeMissing);
-      assert.equal(instance.global(60), 0);
+      assert.equal(
+        instance.global(10),
+        beforeMissing + 1,
+        'the final whole-row root increments once',
+      );
+      assert.equal(instance.global(60), 1);
       assert.equal(instance.local(0), 23);
       await query('ISDRAW');
       assert.equal(

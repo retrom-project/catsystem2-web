@@ -22,16 +22,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -208,10 +201,16 @@ for (const profile of profiles) {
         }
       }
       instance.setGlobal(10, 0);
-      const beforeMissingFaces = objects.map((object) => faces(world, object));
+      const beforeMissingFaces = objects.map((object) => faces(world, object)),
+        beforeMissingZero = instance.global(0);
       await expectMissingHead(instance, () => h.task.player.notify('MISSING'), 'mixed[1]');
       assert.equal(instance.global(10), 0);
-      assert.equal(instance.global(60), 0);
+      assert.equal(
+        instance.global(0) | 0,
+        (beforeMissingZero + 1) | 0,
+        'the final root uses missing IGNORED as the global index, not the orphaned literal10',
+      );
+      assert.equal(instance.global(60), 1);
       assert.equal(
         await instance.runtime.command(
           'layout',

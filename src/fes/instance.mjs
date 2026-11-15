@@ -1542,7 +1542,8 @@ export class FESInstance {
   }
   executeNativeHead(words, args, bytes, execution, pc, mode) {
     const { selection, object } = this.runtime.commandHead(words[0]);
-    if (!object) return this.commonCommandReturn(this.runtime.commonHead(words[0], args), mode);
+    if (!object)
+      return this.commonCommandReturn(this.runtime.commonHead(words[0], args, bytes), mode);
     if (args[0] === undefined) return {};
     const verb = this.argumentBytes(args[0]);
     const source = this.program.sourceKey

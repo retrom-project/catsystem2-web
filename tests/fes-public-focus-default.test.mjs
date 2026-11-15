@@ -192,7 +192,7 @@ const source = ascii(
     'break',
     '#Choice.SYNC_FAIL',
     '$58=++$58',
-    'K2_UNKNOWN_HEAD',
+    'fw_hash',
     'break',
     '#Choice.ASYNC_FAIL',
     '$59=++$59',
@@ -407,7 +407,7 @@ for (const profile of startupProfiles) {
           () => fRoot.event(fFirst, 'SYNC_FAIL'),
           (error) => {
             assert.strictEqual(error, synchronousError);
-            assert.match(error.message, /FES whole-row evaluator is pending: K2_UNKNOWN_HEAD/);
+            assert.match(error.message, /FES native common handler is pending: fw_hash/);
             return true;
           },
         );

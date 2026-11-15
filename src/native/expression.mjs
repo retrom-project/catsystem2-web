@@ -121,7 +121,7 @@ const pair = (b, trail) =>
   ((trail >= 0x40 && trail <= 0x7e) || (trail >= 0x80 && trail <= 0xfc));
 
 function tokenize(text, contextValue) {
-  const bytes = encodeCP932(text),
+  const bytes = text instanceof Uint8Array ? text : encodeCP932(text),
     tokens = [];
   const add = (kind, id, value = 0, name) => {
     if (tokens.length >= 256) throw new Error('Native expression token capacity exceeded');
@@ -290,7 +290,9 @@ export function evaluateNativeExpression(text, bank, context = {}) {
   if (!text) return 0;
   const privateWords =
     context.privateWords === undefined ? bank.privateWords : context.privateWords;
-  const tree = parse(tokenize(text, bank.contextValue));
+  const tree = parse(
+    tokenize(text, context.contextValue === undefined ? bank.contextValue : context.contextValue),
+  );
   const value = (ref) => {
     if (ref.region) {
       const words = ref.region === 'global' ? bank.words : privateWords;

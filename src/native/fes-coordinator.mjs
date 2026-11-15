@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // One FES collection owns semantic objects, motion and requested resources.
 import { evaluate } from '../fes/expression.mjs';
+import { evaluateNativeExpression } from './expression.mjs';
 import { fesByteView, fesSourceBytes } from '../fes/tokens.mjs';
 import {
   FESImageControlCommands,
@@ -388,11 +389,26 @@ export class FESCoordinator {
     if (object && collection.count(nameBytes) === 1) selection.index = 0;
     return { selection, object };
   }
-  commonHead(token, args) {
+  commonHead(token, args, row) {
     const bytes = nativeDataString(this.instance.argumentBytes(token)),
       member = nativeFESCommonHead(this.world.profile, bytes),
       name = fesByteView(bytes);
-    if (member.kind === 'absent') throw new Error('FES whole-row evaluator is pending: ' + name);
+    if (member.kind === 'absent') {
+      const instance = this.instance,
+        record = this.world.objects.objects.get(instance.player.nativeOwner),
+        bank = record && this.world.runtime.variableBank(record, false),
+        privateContext = instance.player.nativeVariableContext(instance);
+      if (!bank || !privateContext)
+        throw new Error('FES whole-row evaluation requires its owning variable context');
+      // The original common-table miss evaluates the working row, not either
+      // expanded head. Its numeric result does not become the row's control word.
+      evaluateNativeExpression(row, bank, {
+        privateWords: privateContext.words,
+        contextValue: instance.nativeContext.current,
+        lookup: (name, index) => instance.valueLookup(encodeCP932(name), index),
+      });
+      return { binding: null, word: 0 };
+    }
     const binding = member.entry.dispatchBinding;
     if (binding === 'active-reference-null') return { binding, word: this.resetActive() };
     if (binding === 'active-lock-int32') return { binding, word: this.lockActive(args) };

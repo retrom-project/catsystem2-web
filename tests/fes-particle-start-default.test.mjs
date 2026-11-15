@@ -15,16 +15,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -238,8 +231,8 @@ for (const profile of profiles) {
       assert.equal(traces.length, 3);
       await expectMissingHead(h.instance, () => notify(h, 'MISSING'), 'p[99]');
       assert.equal(traces.length, 3);
-      assert.equal(h.instance.global(20), 0);
-      assert.equal(h.instance.global(42), 0);
+      assert.equal(h.instance.global(20), 0, 'the orphaned value is outside the final root');
+      assert.equal(h.instance.global(42), 1);
       assert.deepEqual(messages, []);
       assert.equal(
         await h.runtime.command(

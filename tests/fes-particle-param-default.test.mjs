@@ -15,16 +15,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -268,8 +261,8 @@ for (const profile of profiles) {
       messages.length = 0;
       const traceCount = traces.length;
       await expectMissingHead(h.instance, () => notify(h, 'EMPTY'), 'p[99]');
-      assert.equal(h.instance.global(22), 4);
-      assert.equal(h.instance.global(42), 0);
+      assert.equal(h.instance.global(22), 5, 'the final whole-row root increments its global');
+      assert.equal(h.instance.global(42), 1);
       assert.equal(traces.length, traceCount);
       assert.deepEqual(messages, []);
       assert.equal(
@@ -277,8 +270,8 @@ for (const profile of profiles) {
         0,
       );
       parsed(traces.at(-1), [0], [99]);
-      assert.equal(h.instance.global(22), 5);
-      assert.equal(h.instance.global(42), 0, 'normal missing head never reaches the following row');
+      assert.equal(h.instance.global(22), 6);
+      assert.equal(h.instance.global(42), 1, 'the direct wrapper does not repeat the continuation');
       assert.deepEqual(messages, []);
       await notify(h, 'OTHER');
       parsed(traces.at(-1), [0], [0]);

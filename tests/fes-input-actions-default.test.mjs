@@ -20,16 +20,9 @@ async function expectMissingHead(instance, invoke, head) {
     return argument.call(this, token, ...args);
   };
   try {
-    await assert.rejects(
+    await assert.doesNotReject(
       async () => invoke(),
-      (error) => {
-        assert.equal(
-          error.message.endsWith('FES whole-row evaluator is pending: ' + head),
-          true,
-          error.message,
-        );
-        return true;
-      },
+      'a missing native record follows whole-row arithmetic',
     );
   } finally {
     instance.argumentBytes = argument;
@@ -157,10 +150,10 @@ for (const profile of profiles) {
       for (const verb of ['noact', 'setact']) {
         const bare = await open(profile, { DO: verb + ' single' });
         try {
-          await assert.rejects(
-            notify(bare, 'DO'),
-            new RegExp('FES whole-row evaluator is pending: ' + verb),
-          );
+          await expectMissingHead(bare.instance, () => notify(bare, 'DO'), verb);
+          assert.deepEqual(bare.instance.runtime.pendingRecords, []);
+          assert.equal(bare.instance.defaultButton, null);
+          assert.equal(bare.input.state.focus, null);
         } finally {
           await bare.world.close();
         }
@@ -240,8 +233,8 @@ for (const profile of profiles) {
       await notify(h, 'MANY');
       assert.equal(h.instance.global(10), 1);
       await expectMissingHead(h.instance, () => notify(h, 'MISSING'), 'many[9]');
-      assert.equal(h.instance.global(10), 1);
-      assert.equal(h.instance.global(60), 0);
+      assert.equal(h.instance.global(10), 2, 'the whole-row final root increments once');
+      assert.equal(h.instance.global(60), 1);
       // The wrapper's missing-target behavior is independent of normal head admission.
       assert.equal(
         await h.instance.runtime.command('noact', { nameBytes: utf8('many'), index: 9 }, [
@@ -249,17 +242,17 @@ for (const profile of profiles) {
         ]),
         0,
       );
-      assert.equal(h.instance.global(10), 2);
+      assert.equal(h.instance.global(10), 3);
       await expectMissingHead(h.instance, () => notify(h, 'NEGATIVE'), 'many[-2]');
-      assert.equal(h.instance.global(10), 2);
-      assert.equal(h.instance.global(60), 0);
+      assert.equal(h.instance.global(10), 4);
+      assert.equal(h.instance.global(60), 2);
       assert.equal(
         await h.instance.runtime.command('setact', { nameBytes: utf8('many'), index: -2 }, [
           utf8('++$10'),
         ]),
         0,
       );
-      assert.equal(h.instance.global(10), 3);
+      assert.equal(h.instance.global(10), 5);
       assert.deepEqual(
         h.instance.runtime.pendingRecords.map((r) => reference(r.reference)),
         [['single', 0]],
@@ -343,15 +336,15 @@ for (const profile of profiles) {
       await notify(h, 'WRONG');
       assert.equal(h.instance.global(10), 1);
       await expectMissingHead(h.instance, () => notify(h, 'HOLE'), 'many[1]');
-      assert.equal(h.instance.global(10), 1);
-      assert.equal(h.instance.global(60), 0);
+      assert.equal(h.instance.global(10), 2);
+      assert.equal(h.instance.global(60), 1);
       assert.equal(
         await h.instance.runtime.command('noact', { nameBytes: utf8('many'), index: 1 }, [
           utf8('++$10'),
         ]),
         0,
       );
-      assert.equal(h.instance.global(10), 2);
+      assert.equal(h.instance.global(10), 3);
       // This existing JS lookup route returns a real BASE/raw0 top object.
       // It is separate from the ordinary native tuple-map missing-record gate.
       const top = h.instance.collection.lookup(utf8('_TOPOBJ_'), 0),
@@ -396,8 +389,8 @@ for (const profile of profiles) {
       ]);
       assert.deepEqual(h.instance.nativeContext, savedContext);
       assert.equal(h.instance.collection.lookup(utf8('_TOPOBJ_'), 0), top);
-      assert.equal(h.instance.global(60), 1, 'native0 runs the real top handler continuation');
-      assert.equal(h.instance.global(10), 3);
+      assert.equal(h.instance.global(60), 2, 'native0 runs the real top handler continuation');
+      assert.equal(h.instance.global(10), 4);
       assert.deepEqual(h.instance.runtime.pendingRecords, []);
       assert.equal(h.instance.defaultButton, null);
       assert.equal(h.input.state.focus, null);

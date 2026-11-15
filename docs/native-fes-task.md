@@ -1208,10 +1208,18 @@ An object hit retains the reviewed token1 getter, original working row/source
 position, opaque return, wait and fresh ownership. Only an object miss fetches
 token0 a second time from the same original working row. The registered common
 catalogue then distinguishes a reviewed handler binding, a known native member
-whose handler is pending and an absent member whose whole-row evaluator is
-pending. The latter two fail explicitly. A reviewed handler's zero return is
-terminal for that command and continues the row loop without whole-row
-evaluation. SDK `calljs`, `endjs` and `execjs` remain known, unbound members.
+whose handler is pending and an absent member. A known unbound member still fails
+explicitly. Only a genuine catalogue miss evaluates the original working-row
+bytes through the existing mode0 integer evaluator; neither expanded head is
+written back, and this stage does not run bank or SCRIPT replacement again. It
+uses the current FES owner's global bank, actual private words and raw object
+lookup, with the notification current word supplied for that call. The evaluator's
+numeric result is discarded and the row returns native control0, including when
+the row contains an undeclared object name; real variable side effects still run.
+A reviewed handler's zero return is terminal and never triggers this evaluator.
+SDK `calljs`, `endjs` and `execjs` remain known, unbound members. This closes the
+ordinary `meswnd` missing-object row, not keyword mode1 or all malformed/overflow
+grammar. Snapshots retain existing bank/context owners and do not evaluate rows.
 
 `resetactive` now uses this object-first route: a real object with that raw name
 receives its object verb; only a miss can select the reviewed common handler.

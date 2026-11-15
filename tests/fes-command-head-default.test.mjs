@@ -253,36 +253,31 @@ for (const profile of profiles) {
       assert.equal(next.collection.lookup(ascii('calljs'), 1), null);
       const calls = following.calls.length;
       following.state.phase = 'common-miss';
-      await assert.rejects(
-        notify(fresh, id, 'MISS'),
-        profile.startsWith('sdk-')
-          ? /FES native common handler is pending: calljs/
-          : /FES whole-row evaluator is pending: calljs/,
-      );
+      const sdk = profile.startsWith('sdk-');
+      if (sdk)
+        await assert.rejects(
+          notify(fresh, id, 'MISS'),
+          /FES native common handler is pending: calljs/,
+        );
+      else await notify(fresh, id, 'MISS');
       assert.deepEqual(
         following.getters.filter(({ phase }) => phase === 'common-miss').map(({ token }) => token),
         ['calljs', 'calljs'],
       );
       assert.equal(following.calls.length, calls);
-      assert.equal(nextWords.get(24), 0);
+      assert.equal(nextWords.get(24), sdk ? 0 : 1);
       following.state.phase = 'index-miss';
-      await assert.rejects(
-        notify(fresh, id, 'MISSINDEX'),
-        /FES whole-row evaluator is pending: unknown/,
-      );
+      await notify(fresh, id, 'MISSINDEX');
       assert.equal(nextWords.get(20), 3);
       assert.deepEqual(
         following.indices.filter(({ phase }) => phase === 'index-miss'),
         [{ phase: 'index-miss', bytes: '++$20' }],
       );
-      assert.equal(nextWords.get(24), 0);
+      assert.equal(nextWords.get(24), sdk ? 1 : 2);
       following.state.phase = 'missing-context';
       const packet = fesNotificationMemory(ascii('MISSINGCTX'), ascii('lost'), -1);
       following.state.packet = packet;
-      await assert.rejects(
-        notify(fresh, id, 'MISSINGCTX', 'lost', -1, packet),
-        /FES whole-row evaluator is pending: @/,
-      );
+      await notify(fresh, id, 'MISSINGCTX', 'lost', -1, packet);
       assert.equal(packet.bytes(64, 1)[0], 0x78);
       assert.deepEqual(
         following.probes.filter(({ phase }) => phase === 'missing-context'),
@@ -292,7 +287,7 @@ for (const profile of profiles) {
         ({ phase }) => phase === 'missing-context',
       ))
         assert.deepEqual(context, { nameBytes: ascii('lost'), index: -1, current: -1 });
-      assert.equal(nextWords.get(24), 0);
+      assert.equal(nextWords.get(24), sdk ? 2 : 3);
       assert.equal(following.calls.length, calls);
       assert.deepEqual(next.runtime.pendingRecords, []);
       assert.deepEqual(next.suspended, suspended);
