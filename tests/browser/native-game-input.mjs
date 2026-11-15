@@ -269,3 +269,237 @@ export function startupWindow(page) {
     };
   });
 }
+
+// The normal projections below read real owners and the production app's DOM.
+// startupWindow above deliberately retains its separate original-oracle contract.
+export function normalStartupWindow(page) {
+  return page.evaluate(() => {
+    const e = window.catSystem2,
+      world = e.world,
+      top = world.objects.objects.get(world.root),
+      input = world.objects.objects.get(top.implementation.input),
+      sound = world.objects.objects.get(top.implementation.sound);
+    return {
+      ordinary: world.nativeEngine === undefined && world.nativeEngineLoading === undefined,
+      client: [world.graphics.view.clientWidth, world.graphics.view.clientHeight],
+      title: document.title,
+      configuredTitle: world.globalStrings.get(world.configuration.getField('application.title')),
+      inputAliases:
+        world.inputFor(world.root) === input.implementation.inputState &&
+        e.inputBindings === world.inputBindings &&
+        e.inputBindings.input === world.input,
+      ownerKinds: [input.kind, sound.kind],
+      soundCapacity: [
+        world.sound.bankCount,
+        world.sound.device.length,
+        sound.implementation.controls.length,
+      ],
+      graphicsOwner:
+        world.graphics.texturePages?.stage === world.stageRenderer &&
+        e.stageRenderer === world.stageRenderer,
+      schedulerFrame: world.frame === world.runtime.scheduler.frame,
+      // This is the actual base101+language consumer getter, never language.length+4.
+      acceleratorRows: world.window.acceleratorRows.map((row) => [...row]),
+    };
+  });
+}
+
+export function normalLanguagePreferences(page) {
+  return page.evaluate(() => {
+    const { world } = window.catSystem2,
+      language = world.configuration.language,
+      view = (field) => {
+        const select = document.getElementById(`language-${field}`),
+          option = select?.selectedOptions[0];
+        return { value: select?.value, selected: option?.selected ?? false };
+      };
+    return {
+      ui: language.ui,
+      main: language.main,
+      sub: language.sub,
+      keys: language.entries.map(({ accel, accelsub }) => [accel[0], accelsub[0]]),
+      flags: language.entries.map(({ accel, accelsub }) => [accel[1], accelsub[1]]),
+      prefixes: language.entries.map(({ prefix }) => prefix),
+      optionTable: language.optionTable,
+      configuredOptionsFilename: world.globalStrings.optionFilename(),
+      optionsFilename: world.globalStrings.filenames.get(1),
+      optionsFilenamePresent: world.globalStrings.filenames.has(1),
+      optionsTablePresent: world.globalStrings.tables.has(1),
+      optionSampleValue: world.globalStrings.tables.get(1)?.get('#8001-0001A#'),
+      optionMissingKeyAbsent: [...world.globalStrings.tables.values()].every(
+        (table) => !table.has('$__NORMAL_OPTIONS_CALLER_CANARY__$'),
+      ),
+      // A miss returns the nonempty literal AFTER its leading key, not the key.
+      optionMissingLookup: world.globalStrings.get(
+        '$__NORMAL_OPTIONS_CALLER_CANARY__$owned literal after key',
+      ),
+      uiVisible: !document.getElementById('language-controls').hidden,
+      mainView: view('main'),
+      subView: view('sub'),
+    };
+  });
+}
+
+export function observeNormalLanguageInput(page) {
+  return page.evaluate(async () => {
+    const { CatSystem2 } = await import('/src/engine.mjs'),
+      trace = {
+        worlds: [],
+        posts: [],
+        commands: [],
+        reloads: [],
+        restoreCalls: [],
+        restoring: false,
+      },
+      observe = (world) => {
+        if (trace.worlds.includes(world)) return;
+        const owner = trace.worlds.length;
+        trace.worlds.push(world);
+        const post = world.window.post,
+          command = world.window.command,
+          reload = world.globalStrings.reload;
+        world.window.post = function (message, w = 0, l = 0, keyboard) {
+          trace.posts.push({
+            owner,
+            message,
+            wParam: w,
+            lParam: l,
+            ...(keyboard === undefined ? {} : { keyboard: { ...keyboard } }),
+          });
+          return post.call(this, message, w, l, keyboard);
+        };
+        world.window.command = function (...args) {
+          trace.commands.push({ owner, command: args[0] & 65535 });
+          if (trace.restoring) trace.restoreCalls.push({ owner, method: 'command' });
+          return command.apply(this, args);
+        };
+        world.globalStrings.reload = function (...args) {
+          const attempt = {
+              owner,
+              id: args[0] | 0,
+              filename: args[1],
+              settled: false,
+              result: null,
+              error: null,
+            },
+            rejected = (error) => {
+              attempt.settled = true;
+              attempt.error = {
+                name: error?.name ?? typeof error,
+                message: error?.message ?? String(error),
+              };
+            };
+          trace.reloads.push(attempt);
+          if (trace.restoring) trace.restoreCalls.push({ owner, method: 'language reload' });
+          try {
+            const originalResult = reload.apply(this, args);
+            if (originalResult && typeof originalResult.then === 'function')
+              originalResult.then((result) => {
+                attempt.settled = true;
+                attempt.result = result;
+              }, rejected);
+            else {
+              attempt.settled = true;
+              attempt.result = originalResult;
+            }
+            // The real caller still receives the exact original Promise/value.
+            return originalResult;
+          } catch (error) {
+            rejected(error);
+            throw error;
+          }
+        };
+        for (const [object, name, kind] of [
+          [world.window, 'sendEvent', 'sendEvent'],
+          [world.runtime, 'native', 'VM native'],
+          [world.random.integer, 'nextUint32', 'MT integer'],
+          [world.random.real, 'nextUint32', 'MT real'],
+        ]) {
+          const original = object[name];
+          object[name] = function (...args) {
+            if (trace.restoring) trace.restoreCalls.push({ owner, method: kind });
+            return original.apply(this, args);
+          };
+        }
+      };
+    const create = CatSystem2.prototype.createNativeWorld;
+    CatSystem2.prototype.createNativeWorld = function (...args) {
+      const world = create.apply(this, args);
+      observe(world);
+      return world;
+    };
+    window.normalLanguageObservation = trace;
+  });
+}
+
+export function freshNormalLanguageWorld(page) {
+  return page.evaluate(async () => {
+    const e = window.catSystem2,
+      previous = e.world,
+      saved = await e.snapshot(),
+      trace = window.normalLanguageObservation;
+    trace.restoring = true;
+    try {
+      await e.restore(saved);
+    } finally {
+      trace.restoring = false;
+    }
+    const world = e.world,
+      current = world.snapshot(),
+      same = (a, b) => JSON.stringify(a) === JSON.stringify(b),
+      owner = trace.worlds.indexOf(world);
+    return {
+      fresh:
+        world !== previous &&
+        world.main !== previous.main &&
+        world.main.machine.memory.buffer !== previous.main.machine.memory.buffer,
+      sourceReleased:
+        previous.closed &&
+        previous.objects.objects.size === 0 &&
+        previous.runtime.scheduler.tasks.size === 0 &&
+        previous.runtime.handles.records.size === 0,
+      currentAliases:
+        e.nativeRuntime === world.runtime &&
+        e.nativeConfiguration === world.configuration &&
+        e.inputBindings === world.inputBindings &&
+        e.stageRenderer === world.stageRenderer &&
+        e.random === world.random,
+      immediateFrame: world.frame,
+      savedFrame: saved.world.frame,
+      languageSame: same(
+        current.configuration.fields.language,
+        saved.world.configuration.fields.language,
+      ),
+      globalStringsSame: same(current.globalStrings, saved.world.globalStrings),
+      randomSame: same(current.random, saved.world.random),
+      freshRestoreCalls: trace.restoreCalls.filter((entry) => entry.owner === owner),
+      // Source teardown is separately observable; it is not fresh command replay.
+      sourceTeardownCalls: trace.restoreCalls.filter((entry) => entry.owner !== owner),
+    };
+  });
+}
+
+export function normalLanguageInputTrace(page) {
+  return page.evaluate(() => {
+    const trace = window.normalLanguageObservation;
+    return {
+      owner: trace.worlds.indexOf(window.catSystem2.world),
+      posts: trace.posts,
+      commands: trace.commands,
+      reloads: trace.reloads,
+    };
+  });
+}
+
+// Install before this case's #start, before the first real initialize/tick.
+// Other pages retain the original oracle path and its unmodified helper.
+export function guardNormalOriginalCPU(page) {
+  return page.evaluate(async () => {
+    const { NativeWorld } = await import('/src/native/world.mjs');
+    NativeWorld.prototype.ensureNativeEngine = function () {
+      throw new Error(
+        `Normal Game startup attempted original CPU via ensureNativeEngine (${this.profile})`,
+      );
+    };
+  });
+}

@@ -10,18 +10,25 @@ import {
   clickNativeButton,
   pixels,
   startupWindow,
+  normalStartupWindow,
+  guardNormalOriginalCPU,
+  normalLanguagePreferences,
+  observeNormalLanguageInput,
+  freshNormalLanguageWorld,
+  normalLanguageInputTrace,
 } from './native-game-input.mjs';
 
 const sourceIdentity = '8d0be9228af81fa38872e7e2474f4bd0b9a33b4ef0fb8558cb60d9b45c7c8533';
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 const firstSceneParticle = 'ptclpi\\em_note.ppi';
 
-async function startGame(page) {
+async function loadGame(page, beforeStart) {
   const response = await page.request.get('/game.json');
   expect(response.ok(), 'Mount the frozen private game on CAT2_GAME_URL').toBe(true);
   expect((await response.json()).identity).toBe(sourceIdentity);
   await frameClock(page);
   await page.goto('/');
+  if (beforeStart) await beforeStart(page);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
@@ -29,6 +36,10 @@ async function startGame(page) {
     { polling: 100, timeout: 180_000 },
   );
   expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
+}
+
+async function startGame(page) {
+  await loadGame(page);
   expect(await startupWindow(page)).toEqual({
     handle: 1,
     client: [1280, 720],
@@ -48,59 +59,186 @@ async function startGame(page) {
 test('the original game accelerators select the main and secondary languages after a fresh World', async ({
   page,
 }) => {
-  await startGame(page);
-  const preferences = () =>
-    page.evaluate(() => {
-      const { world } = window.catSystem2,
-        { main, sub, entries } = world.configuration.language,
-        { process, kernel } = world.nativeEngine,
-        menu = process.load(process.load(0xbafa80 + 36) + 8);
-      return {
-        main,
-        sub,
-        keys: entries.map(({ accel, accelsub }) => [accel[0], accelsub[0]]),
-        selected: [40075 + main, 40085 + (sub === 0xffffffff ? entries.length : sub)].map(
-          (command) => Boolean(kernel.windowMenus.commandLocation(menu, command)?.entry.state & 8),
-        ),
-      };
-    });
-  const initial = await preferences(),
+  const optionCalls = (trace) =>
+      trace.reloads.filter((entry) => entry.owner === trace.owner && entry.id === 1),
+    expectOptions = (preferences, main) => {
+      expect(preferences).toMatchObject({
+        optionMissingKeyAbsent: true,
+        optionMissingLookup: 'owned literal after key',
+      });
+      if (main === 0)
+        expect(preferences).toMatchObject({
+          configuredOptionsFilename: 'config.int/gamelangtbl_en.txt',
+          optionsFilename: 'config.int/gamelangtbl_en.txt',
+          optionsFilenamePresent: true,
+          optionsTablePresent: true,
+          optionSampleValue: 'The Second First Step',
+        });
+      else if (main === 1)
+        expect(preferences).toMatchObject({
+          configuredOptionsFilename: 'config.int/gamelangtbl_jp.txt',
+          optionsFilename: undefined,
+          optionsFilenamePresent: false,
+          optionsTablePresent: false,
+        });
+      // CN/other initial states are reported, not relabelled as EN/JP coverage.
+    };
+  // Observe the real initial loader too, including a genuinely missing JP table.
+  await loadGame(page, async (page) => {
+    await guardNormalOriginalCPU(page);
+    await observeNormalLanguageInput(page);
+  });
+  const startup = await normalStartupWindow(page);
+  expect(startup).toMatchObject({
+    ordinary: true,
+    client: [1280, 720],
+    inputAliases: true,
+    ownerKinds: [11, 13],
+    soundCapacity: [64, 64, 64],
+    graphicsOwner: true,
+    schedulerFrame: true,
+  });
+  expect(startup.title).toBe(startup.configuredTitle);
+  expect(startup.acceleratorRows).toHaveLength(11);
+  const preferences = () => normalLanguagePreferences(page),
+    initial = await preferences(),
     target = initial.main === 0 ? 1 : 0,
-    [key, subKey] = initial.keys[target];
+    [key, subKey] = initial.keys[target],
+    before = await normalLanguageInputTrace(page),
+    initialOptionCalls = optionCalls(before);
+  // These are actual source8d declarations, not values borrowed from an owned fixture.
+  expect(initial.keys).toEqual([
+    [69, 69],
+    [74, 74],
+    [67, 67],
+  ]);
+  expect(initial.flags).toEqual([
+    [0, 4],
+    [0, 4],
+    [0, 4],
+  ]);
+  expect(initial.prefixes).toEqual(['en', 'jp', 'cn']);
+  expect(initial.optionTable).toBe('config.int/gamelangtbl_%LANG_M%.txt');
+  expectOptions(initial, initial.main);
+  if (initial.main === 0 || initial.main === 1)
+    expect(initialOptionCalls.at(-1)).toMatchObject({
+      id: 1,
+      filename: `config.int/gamelangtbl_${initial.prefixes[initial.main]}.txt`,
+      settled: true,
+      result: initial.main === 0,
+      error: null,
+    });
   await page.keyboard.press('Key' + String.fromCharCode(key));
   await step(page, 2);
-  expect(await preferences()).toMatchObject({ main: target, selected: [true, true] });
+  const main = await preferences(),
+    afterMain = await normalLanguageInputTrace(page);
+  expect(main).toMatchObject({
+    main: target,
+    uiVisible: true,
+    mainView: { value: String(target), selected: true },
+    subView: { value: String(initial.sub >>> 0), selected: true },
+  });
+  expectOptions(main, target);
+  expect(optionCalls(afterMain).slice(initialOptionCalls.length)).toEqual([
+    {
+      owner: afterMain.owner,
+      id: 1,
+      filename: `config.int/gamelangtbl_${initial.prefixes[target]}.txt`,
+      settled: true,
+      result: target === 0,
+      error: null,
+    },
+  ]);
   await page.keyboard.press('Shift+Key' + String.fromCharCode(subKey));
   await step(page, 2);
-  expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
-  expect(
-    await page.evaluate(async () => {
-      const e = window.catSystem2,
-        previous = e.world;
-      await e.restore(await e.snapshot());
-      return (
-        e.world !== previous &&
-        previous.nativeEngine.closed &&
-        !previous.nativeEngine.refs.applicationGraphics
-      );
-    }),
-  ).toBe(true);
-  expect(await startupWindow(page)).toMatchObject({
-    graphicsOwner: true,
-    graphicsWorker: false,
-    graphicsTasks: true,
+  const secondary = await preferences();
+  expect(secondary).toMatchObject({
+    main: target,
+    sub: target,
+    uiVisible: true,
+    mainView: { value: String(target), selected: true },
+    subView: { value: String(target), selected: true },
   });
-  expect(await preferences()).toMatchObject({ main: target, sub: target, selected: [true, true] });
+  expectOptions(secondary, target);
+  expect((await normalLanguageInputTrace(page)).reloads).toEqual(afterMain.reloads);
+  const restored = await freshNormalLanguageWorld(page);
+  expect(restored).toMatchObject({
+    fresh: true,
+    sourceReleased: true,
+    currentAliases: true,
+    languageSame: true,
+    globalStringsSame: true,
+    randomSame: true,
+    freshRestoreCalls: [],
+  });
+  expect(restored.immediateFrame).toBe(restored.savedFrame);
+  const freshStartup = await normalStartupWindow(page);
+  expect(freshStartup).toMatchObject({
+    ordinary: true,
+    graphicsOwner: true,
+    inputAliases: true,
+    ownerKinds: [11, 13],
+    soundCapacity: [64, 64, 64],
+    schedulerFrame: true,
+  });
+  expect(freshStartup.acceleratorRows).toHaveLength(11);
+  const fresh = await preferences();
+  expect(fresh).toMatchObject({
+    main: target,
+    sub: target,
+    uiVisible: true,
+    mainView: { value: String(target), selected: true },
+    subView: { value: String(target), selected: true },
+  });
+  expectOptions(fresh, target);
+  const freshTrace = await normalLanguageInputTrace(page);
+  expect(optionCalls(freshTrace)).toEqual([]);
+  expect(freshTrace.reloads).toEqual(afterMain.reloads);
   await page.keyboard.press('Shift+KeyN');
   await step(page, 2);
+  const trace = await normalLanguageInputTrace(page),
+    shiftN = trace.posts
+      .filter((entry) => entry.owner === trace.owner && entry.wParam === 78)
+      .at(-1);
+  expect(shiftN).toMatchObject({
+    message: 0x100,
+    wParam: 78,
+    keyboard: { modifiers: 4, character: 78 },
+  });
   expect(
-    await page.evaluate(() => window.catSystem2.world.nativeEngine.kernel.messageQueue.last),
-  ).toMatchObject({ message: 0x102, wParam: 78, keyboard: { modifiers: 4 } });
-  expect(await preferences()).toMatchObject({
+    trace.commands.filter((entry) => entry.owner === trace.owner && entry.command === 40088),
+  ).toHaveLength(1);
+  const ended = await preferences();
+  expect(ended).toMatchObject({
     main: target,
     sub: 0xffffffff,
-    selected: [true, true],
+    uiVisible: true,
+    mainView: { value: String(target), selected: true },
+    subView: { value: String(0xffffffff), selected: true },
   });
+  expectOptions(ended, target);
+  expect(optionCalls(trace)).toEqual([]);
+  expect(trace.reloads).toEqual(afterMain.reloads);
+  console.log(
+    'normal language coverage',
+    JSON.stringify({
+      initialMain: initial.main,
+      target,
+      initialOptions: {
+        filename: initial.optionsFilename,
+        tablePresent: initial.optionsTablePresent,
+      },
+      englishSampleReached: initial.main === 0 || target === 0,
+      japaneseMissingReloadReached: trace.reloads.some(
+        (entry) =>
+          entry.id === 1 &&
+          entry.filename === 'config.int/gamelangtbl_jp.txt' &&
+          entry.settled &&
+          entry.result === false,
+      ),
+      reloads: trace.reloads,
+    }),
+  );
 });
 
 async function sceneParticle(page, draw = false) {
