@@ -525,7 +525,7 @@ test('Windows language messages retain range gates, repeated option reloads and 
     language = current.configuration.language,
     calls = [],
     titles = [],
-    read = current.game.read.bind(current.game);
+    reload = current.globalStrings.reload;
   Object.assign(language, {
     entries: [{ prefix: 'en' }, { prefix: 'jp' }],
     default: 0,
@@ -535,9 +535,9 @@ test('Windows language messages retain range gates, repeated option reloads and 
     optionTable: 'option_%LANG%_%LANG_M%.txt',
   });
   current.configuration.setField('application.title', '$title$fallback');
-  current.game.read = (name) => {
-    calls.push(name);
-    return read(name);
+  current.globalStrings.reload = function (...args) {
+    calls.push(args[1]);
+    return reload.apply(this, args);
   };
   current.host.nativeTitleChanged = (title) => titles.push(title);
   try {
