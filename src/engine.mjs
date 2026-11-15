@@ -197,6 +197,7 @@ export class CatSystem2 {
     this.audio = this.world.audio;
     this.stageRenderer = this.world.stageRenderer;
     this.inputBindings = this.world.inputBindings;
+    this.world.window.refreshLanguageMenu();
     const task = this.world.main;
     if (!task) return;
     const bank = this.nativeRuntime.variableBank(task, false);

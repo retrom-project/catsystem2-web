@@ -69,8 +69,12 @@ keyboard producer, while SDK 2.6.1.74 explicitly disables it. Missing or
 nonboolean values fail ABI validation. NativeWindow reads this capability;
 configuration language support, dynamic menus and legacy startup layout do
 not implicitly grant it. Unregistered profiles remain rejected. This covers
-core language input and derived checked notifications, not resource101 base
-shortcuts, SDK language rows or the outstanding production Host/UI consumer.
+core language input and derived checked notifications. The standalone Game
+consumer binds these through EngineHost, Core and the browser app; see
+[Game language controls](native-window-commands.md#game-language-shortcuts-in-an-ordinary-world).
+Resource101 base shortcuts and SDK language routing retain separate gates.
+This consumer does not establish Retrom integration or complete platform
+startup.
 
 ## SDK message-wait registration
 

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
-import { hg3, kcsProgram } from '../helpers.mjs';
+import { hg3, kcsProgram, kif } from '../helpers.mjs';
+import { startupVersionImage, startupXML } from '../fixtures/ordinary-startup.mjs';
 
 const sdkProfile = 'sdk-4.01-engine-2.6.1.74',
   gameProfile = 'nekopara-vol3-engine-2.6.1.76';
@@ -2563,4 +2564,447 @@ test('JS save slots and scene checkpoints survive an IndexedDB-backed browser re
     checkpoint: [12345, 'checkpoint text'],
     exe: false,
   });
+});
+
+test('production app routes Game language keyboard and selects through its current World across fresh restore', async ({
+  page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('owned-language-game'),
+    text = (value) => new TextEncoder().encode(value),
+    files = {
+      // This existing owned builder emits version-resource metadata, not executable code.
+      'authored.exe': startupVersionImage('2.6.1.76'),
+      'startup.xml': startupXML(
+        gameProfile,
+        `
+        <APP><title>$title$Owned language game</title></APP>
+        <SCREEN><width>64</width><height>48</height><v_width>64</v_width><v_height>48</v_height><fps>60</fps></SCREEN>
+        <SCRIPT><start>main.kcs</start></SCRIPT>
+        <INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01></INT>
+        <language><default>0</default><OPTTABLE>options_%LANG_M%.txt</OPTTABLE>
+          <L00><code>1033</code><prefix>en</prefix><lang>English</lang><accel>A</accel><accelsub>X</accelsub></L00>
+          <L01><code>1041</code><prefix>jp</prefix><lang>Japanese</lang><accel>B</accel><accelsub>Y</accelsub></L01>
+          <L02><code>1036</code><prefix>fr</prefix><lang>French</lang><accel>C</accel><accelsub>Z</accelsub></L02>
+        </language>`,
+      ),
+      'config.int': kif([['gamedef.xml', startupXML(gameProfile, '')]]),
+      // Allocate the real variable bank, then yield through the normal GCALL every frame.
+      'main.kcs': kcsProgram([
+        [37, 64],
+        [43, 0xd1, 4],
+        [43, 0x41, 0],
+        [41, 17],
+      ]),
+      ...Object.fromEntries(
+        ['en', 'jp', 'fr'].flatMap((language) => [
+          [
+            `language_${language}.txt`,
+            text(`$title$\r\nOwned ${language}\r\n$UI$\r\nui-${language}\r\n`),
+          ],
+          [`options_${language}.txt`, text(`$CHOICE$\r\nchoice-${language}\r\n`)],
+        ]),
+      ),
+    };
+  await mkdir(directory, { recursive: true });
+  for (const [name, bytes] of Object.entries(files))
+    await writeFile(resolve(directory, name), bytes);
+  let failure, cleanupFailure;
+  try {
+    await page.goto('/');
+    await expect(page.locator('#language-controls')).toBeHidden();
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByRole('button', { name: 'Open game folder' }).click();
+    await (await chooser).setFiles(directory);
+    await page.evaluate(async () => {
+      while (globalThis.catSystem2?.mode !== 'running') {
+        if (!document.getElementById('error').hidden)
+          throw new Error(document.getElementById('error').textContent);
+        await new Promise(requestAnimationFrame);
+      }
+      const engine = globalThis.catSystem2,
+        source = engine.world,
+        state = {
+          source,
+          worlds: [source],
+          commands: [],
+          publications: [],
+          reads: [],
+          reloads: [],
+          nativeDuringRestore: [],
+          rngDuringRestore: [],
+          rngOwners: new WeakMap(),
+          saved: null,
+          immediate: null,
+          restoring: false,
+          capture: false,
+          phases: [],
+        };
+      const budget = () => {
+        if (source.frame > 60)
+          throw new Error(`Source World exceeded 60 full frames: ${source.frame}`);
+        if (engine.world !== source && engine.world.frame - state.saved.world.frame > 60)
+          throw new Error('Fresh World exceeded 60 full frames');
+      };
+      state.phase = (name) => {
+        budget();
+        state.phases.push({ name, sourceFrame: source.frame, currentFrame: engine.world.frame });
+        console.log('language-ui phase', name);
+      };
+      state.wait = async (predicate, name) => {
+        for (let turn = 0; turn < 60; turn++) {
+          budget();
+          if (!document.getElementById('error').hidden)
+            throw new Error(document.getElementById('error').textContent);
+          if (predicate()) return;
+          await new Promise(requestAnimationFrame);
+        }
+        throw new Error(`Language case did not reach ${name} in 60 public frame turns`);
+      };
+      state.settled = () => !engine.world.running && !engine.world.frameSettled;
+      state.values = () =>
+        ['ui', 'main', 'sub'].map(
+          (field) => document.getElementById(`language-${field}`)?.value ?? null,
+        );
+      state.same = function same(a, b, path = '$') {
+        if (Object.is(a, b)) return null;
+        if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return path;
+        if (a.constructor !== b.constructor) return `${path}.constructor`;
+        if (a instanceof ArrayBuffer) return same(new Uint8Array(a), new Uint8Array(b), path);
+        if (a instanceof Map || a instanceof Set) return same([...a], [...b], path);
+        const ak = Object.keys(a),
+          bk = Object.keys(b);
+        if (ak.length !== bk.length || ak.some((key, i) => key !== bk[i])) return `${path}.keys`;
+        for (const key of ak) {
+          const difference = same(a[key], b[key], `${path}.${key}`);
+          if (difference !== null) return difference;
+        }
+        return null;
+      };
+      const observe = (world) => {
+        const owner = state.worlds.indexOf(world),
+          command = world.window.command,
+          reload = world.globalStrings.reload,
+          native = world.runtime.native;
+        state.rngOwners.set(world, { integer: world.random.integer, real: world.random.real });
+        for (const stream of ['integer', 'real']) {
+          const generator = world.random[stream],
+            next = generator.nextUint32;
+          generator.nextUint32 = function (...args) {
+            if (state.restoring) state.rngDuringRestore.push({ owner, stream });
+            return next.apply(this, args);
+          };
+        }
+        world.window.command = function (word) {
+          state.commands.push({ owner, command: word & 65535, restoring: state.restoring });
+          return command.call(this, word);
+        };
+        world.globalStrings.reload = function (...args) {
+          if (state.restoring) state.reloads.push({ owner, args });
+          return reload.apply(this, args);
+        };
+        world.runtime.native = function (...args) {
+          if (state.restoring)
+            state.nativeDuringRestore.push({ owner, table: args[0], id: args[1] });
+          return native.apply(this, args);
+        };
+      };
+      observe(source);
+      const create = engine.createNativeWorld;
+      engine.createNativeWorld = function (...args) {
+        const world = create.apply(this, args);
+        state.worlds.push(world);
+        observe(world);
+        return world;
+      };
+      for (const method of ['read', 'readNative', 'readLoose', 'readArchive']) {
+        const original = engine.game[method];
+        if (typeof original !== 'function') continue;
+        engine.game[method] = function (...args) {
+          if (state.restoring) state.reads.push({ method, name: args[0] });
+          return original.apply(this, args);
+        };
+      }
+      if (typeof engine.host.nativeMenuChecked === 'function') {
+        const checked = engine.host.nativeMenuChecked;
+        engine.host.nativeMenuChecked = function (...args) {
+          state.publications.push({ args, restoring: state.restoring });
+          return checked.apply(this, args);
+        };
+      }
+      const snapshot = engine.snapshot;
+      engine.snapshot = function (...args) {
+        const result = snapshot.apply(this, args);
+        if (state.capture)
+          result.then(
+            (saved) => {
+              state.saved = saved;
+            },
+            () => {},
+          );
+        return result;
+      };
+      const restore = engine.restore;
+      engine.restore = function (...args) {
+        state.restoring = true;
+        state.physicalInputSame = state.same(
+          source.inputBindings.snapshot(),
+          state.saved.world.inputBindings,
+        );
+        const result = restore.apply(this, args);
+        result.then(
+          () => {
+            try {
+              const world = engine.world;
+              state.immediate = {
+                frame: world.frame,
+                difference: state.same(state.saved.world, world.snapshot()),
+                selections: state.values(),
+                aliases:
+                  engine.nativeConfiguration === world.configuration &&
+                  engine.inputBindings === world.inputBindings &&
+                  engine.nativeRuntime === world.runtime,
+                sourceClosed:
+                  source.closed &&
+                  source.objects.objects.size === 0 &&
+                  source.runtime.scheduler.tasks.size === 0,
+                fresh:
+                  world !== source &&
+                  world.main !== source.main &&
+                  world.configuration !== source.configuration,
+                rngIdentity:
+                  world.random !== source.random &&
+                  world.random.integer === state.rngOwners.get(world).integer &&
+                  world.random.real === state.rngOwners.get(world).real,
+                commands: state.commands.filter((entry) => entry.restoring),
+                publications: state.publications.filter((entry) => entry.restoring),
+              };
+            } catch (error) {
+              state.restoreObservationError = error.message;
+            } finally {
+              state.restoring = false;
+            }
+          },
+          () => {
+            state.restoring = false;
+          },
+        );
+        return result;
+      };
+      globalThis.languageUI = state;
+      state.phase('cold-ready');
+    });
+    // Trusted keyboard input enters the production app listener and its owned frame queue.
+    await page.keyboard.press('b');
+    const result = await page.evaluate(async () => {
+      const engine = globalThis.catSystem2,
+        state = globalThis.languageUI,
+        check = (value, message) => {
+          if (!value) throw new Error(message);
+        },
+        count = (owner, command) =>
+          state.commands.filter((entry) => entry.owner === owner && entry.command === command)
+            .length,
+        choose = (field, value) => {
+          const select = document.getElementById(`language-${field}`);
+          select.value = String(value);
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+      await state.wait(
+        () => state.settled() && engine.world.configuration.language.main === 1,
+        'keyboard command',
+      );
+      check(count(0, 40076) === 1, 'The keyboard command must run once');
+      check(
+        engine.world.globalStrings.get('$CHOICE$') === 'choice-jp',
+        'Keyboard did not load its options table',
+      );
+      state.phase('keyboard-config-resource');
+      check(
+        !document.getElementById('language-controls')?.hidden &&
+          state.values().join(',') === '0,1,4294967295',
+        'Production language controls did not reflect the real keyboard change',
+      );
+      check(!engine.world.nativeEngine, 'Owned startup must remain ordinary JavaScript');
+      check(engine.world.main.machine.halted === false, 'Owned KCS must still be yielding');
+      choose('ui', 2);
+      await state.wait(
+        () => state.settled() && engine.world.configuration.language.ui === 2,
+        'UI selection',
+      );
+      check(
+        count(0, 40067) === 1 && state.values()[0] === '2',
+        'UI select must queue one command and derive its checked value',
+      );
+      check(
+        engine.world.globalStrings.get('$UI$') === 'ui-fr',
+        'UI select did not reload the real language table',
+      );
+      choose('sub', 1);
+      await state.wait(
+        () => state.settled() && engine.world.configuration.language.sub === 1,
+        'secondary selection',
+      );
+      check(
+        count(0, 40086) === 1 && state.values()[2] === '1',
+        'Secondary select must queue one command',
+      );
+      state.phase('selects-config-resource');
+      state.capture = true;
+      document.getElementById('screen').dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'c',
+          code: 'KeyC',
+          keyCode: 67,
+          bubbles: true,
+        }),
+      );
+      // The app drains input then export before its next step, so this is a real pending queue checkpoint.
+      document.getElementById('export').click();
+      await state.wait(
+        () => state.settled() && state.saved && engine.world.configuration.language.main === 2,
+        'pending checkpoint and source continuation',
+      );
+      state.capture = false;
+      check(
+        state.saved.world.windowMessages.length === 1,
+        'Checkpoint must contain the produced keyboard message',
+      );
+      check(
+        state.saved.world.configuration.fields.language.main === 1,
+        'Checkpoint must precede the pending language command',
+      );
+      check(
+        count(0, 40077) === 1 && state.values()[1] === '2',
+        'Source must consume the queued command once',
+      );
+      const { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
+        bytes = await serializeCheckpoint(state.saved, engine.checkpointLimit),
+        transfer = new DataTransfer(),
+        input = document.getElementById('save-file');
+      transfer.items.add(
+        new File([bytes], 'language.cs2save', { type: 'application/octet-stream' }),
+      );
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      await state.wait(() => state.immediate || state.restoreObservationError, 'fresh import');
+      check(!state.restoreObservationError, state.restoreObservationError);
+      const immediate = state.immediate;
+      check(
+        immediate.fresh && immediate.aliases && immediate.sourceClosed && state.worlds.length === 2,
+        'Restore must bind a separate real World and close the source',
+      );
+      check(
+        state.physicalInputSame === null,
+        `Fixture physical input changed before restore: ${state.physicalInputSame}`,
+      );
+      check(
+        immediate.frame === state.saved.world.frame && immediate.difference === null,
+        `Fresh full World DTO differs before any warm frame: ${immediate.difference}`,
+      );
+      check(
+        immediate.selections.join(',') === '2,1,1',
+        'Core fresh binding must publish saved selections before the pending command',
+      );
+      check(
+        immediate.commands.length === 0 &&
+          state.nativeDuringRestore.length === 0 &&
+          state.reloads.length === 0,
+        'Fresh binding replayed a command, guest native or language loader',
+      );
+      check(
+        immediate.rngIdentity && state.rngDuringRestore.length === 0,
+        'Fresh restore must retain the observed MT streams without drawing either one',
+      );
+      check(
+        immediate.publications.length === 33,
+        'Fresh bind must publish one derived checked set',
+      );
+      check(
+        !state.reads.some(({ name }) => /^(?:language_|options_)/i.test(name)),
+        'Restore reread a present language/options payload',
+      );
+      state.phase('fresh-zero-warm');
+      await state.wait(
+        () => state.settled() && engine.world.configuration.language.main === 2,
+        'fresh pending command',
+      );
+      check(
+        count(1, 40077) === 1 && state.values().join(',') === '2,2,1',
+        'Fresh pending command must run exactly once',
+      );
+      check(
+        engine.world.globalStrings.get('$CHOICE$') === 'choice-fr',
+        'Fresh command did not load its selected options',
+      );
+      const before = state.values(),
+        publications = state.publications.length;
+      state.source.window.refreshLanguageMenu();
+      state.source.window.post(0x111, 40075);
+      check(
+        state.same(before, state.values()) === null &&
+          publications === state.publications.length &&
+          state.source.windowMessages.length === 0,
+        'A closed source owner changed the fresh UI or queue',
+      );
+      state.phase('fresh-command-and-old-close');
+      return {
+        profile: engine.world.profile,
+        sourceFrames: state.source.frame,
+        freshFrames: engine.world.frame - state.saved.world.frame,
+        commands: state.commands,
+        restoreReads: state.reads,
+        rngDuringRestore: state.rngDuringRestore,
+        immediate: { ...immediate, publications: immediate.publications.length },
+        selections: state.values(),
+      };
+    });
+    expect(result.profile).toBe(gameProfile);
+    expect(result.sourceFrames).toBeLessThanOrEqual(60);
+    expect(result.freshFrames).toBeGreaterThan(0);
+    expect(result.freshFrames).toBeLessThanOrEqual(60);
+    expect(result.selections).toEqual(['2', '2', '1']);
+    await testInfo.attach('language-consumer-result', {
+      body: JSON.stringify(result, null, 2),
+      contentType: 'application/json',
+    });
+  } catch (error) {
+    failure = error;
+  } finally {
+    try {
+      await page.evaluate(async () => {
+        await globalThis.catSystem2?.dispose();
+      });
+    } catch (error) {
+      cleanupFailure = error;
+    }
+    const progress = await page
+      .evaluate(() => {
+        const state = globalThis.languageUI;
+        return (
+          state && {
+            phases: state.phases,
+            commands: state.commands,
+            reads: state.reads,
+            reloads: state.reloads,
+            nativeDuringRestore: state.nativeDuringRestore,
+            rngDuringRestore: state.rngDuringRestore,
+            sourceFrame: state.source.frame,
+            worldCount: state.worlds.length,
+            sourceClosed: state.source.closed,
+            freshClosed: globalThis.catSystem2.world.closed,
+          }
+        );
+      })
+      .catch(() => null);
+    await testInfo.attach('language-consumer-cleanup', {
+      body: JSON.stringify(
+        { progress, firstFailure: failure?.message, cleanupFailure: cleanupFailure?.message },
+        null,
+        2,
+      ),
+      contentType: 'application/json',
+    });
+  }
+  if (failure) throw failure;
+  if (cleanupFailure) throw cleanupFailure;
 });

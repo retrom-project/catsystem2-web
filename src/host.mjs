@@ -170,6 +170,9 @@ export class EngineHost {
   nativeMenuChanged(id, enabled) {
     this.engine.onNativeMenuChanged?.(id, enabled);
   }
+  nativeMenuChecked(id, checked) {
+    this.engine.onNativeMenuChecked?.(id, checked);
+  }
   soundControl(channel, args) {
     this.engine.audio.control(channel, args);
   }

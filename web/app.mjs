@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { GameFiles } from '../src/files.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { CatSystem2 } from './transitional-entry.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 const $ = (id) => document.getElementById(id),
@@ -34,6 +35,45 @@ const enqueue = (action) =>
       }
     }),
   );
+function updateLanguageControls(current = engine) {
+  if (current !== engine) return;
+  const world = current?.world,
+    language = world?.configuration.language,
+    visible = Boolean(
+      world &&
+        nativeABI(world.profile).capabilities.windowLanguageAccelerators &&
+        !world.closed &&
+        !world.disposalRequested &&
+        language?.entries.length,
+    );
+  $('language-controls').hidden = !visible;
+  if (!visible) return;
+  for (const [group, field] of ['ui', 'main', 'sub'].entries()) {
+    const select = $(`language-${field}`),
+      choices = language.entries.slice(0, 10).map((entry, index) => ({
+        value: index,
+        name: entry.lang || entry.prefix,
+        command: 40065 + group * 10 + index,
+      }));
+    if (field === 'sub')
+      choices.push({
+        value: 0xffffffff,
+        name: 'None',
+        command: language.entries.length < 10 ? 40085 + language.entries.length : null,
+      });
+    select.replaceChildren(
+      ...choices.map(({ value, name, command }) => {
+        const option = document.createElement('option');
+        option.value = String(value);
+        option.textContent = name;
+        if (command !== null) option.dataset.command = String(command);
+        option.disabled = command === null || world.menu.get(command) === false;
+        return option;
+      }),
+    );
+    select.value = String(language[field] >>> 0);
+  }
+}
 function updateStatus(state) {
   const nativeReady = Boolean(
     engine?.world && state.mode === 'running' && engine.activeFES()?.root,
@@ -55,6 +95,7 @@ async function launch(getGame) {
     await engine?.dispose();
   }
   $('error').hidden = true;
+  $('language-controls').hidden = true;
   $('start').disabled = true;
   $('status').textContent = 'Loading game resources…';
   const audioContext = new AudioContext();
@@ -72,8 +113,15 @@ async function launch(getGame) {
         $('welcome').hidden = false;
         $('start').disabled = false;
         $('status').textContent = 'Game closed';
+        updateLanguageControls();
       },
     });
+    const current = engine,
+      languageMenuChanged = (command) => {
+        if (command >= 40065 && command <= 40094) updateLanguageControls(current);
+      };
+    current.onNativeMenuChanged = languageMenuChanged;
+    current.onNativeMenuChecked = languageMenuChanged;
     engine.onError = fail;
     globalThis.catSystem2 = engine;
     await engine.initialize();
@@ -87,6 +135,7 @@ async function launch(getGame) {
     requestAnimationFrame(loop);
   } catch (e) {
     fail(e);
+    $('language-controls').hidden = true;
     $('start').disabled = false;
     await audioContext.close();
   }
@@ -114,6 +163,19 @@ async function loop(now) {
 $('start').onclick = () => launch(() => GameFiles.fromHTTP('/game.json'));
 $('open').onclick = () => $('folder').click();
 $('folder').onchange = () => launch(() => GameFiles.fromFileList($('folder').files));
+for (const field of ['ui', 'main', 'sub'])
+  $(`language-${field}`).onchange = () => {
+    const current = engine,
+      world = current?.world,
+      option = $(`language-${field}`).selectedOptions[0];
+    if (!running || !world || option?.disabled || !option?.dataset.command) return;
+    const command = Number(option.dataset.command);
+    enqueue(() => {
+      if (engine !== current || current.world !== world || world.closed || world.disposalRequested)
+        return updateLanguageControls();
+      world.window.post(0x111, command);
+    }).catch(() => {});
+  };
 $('next').onclick = () => enqueue(() => engine.advance()).catch(() => {});
 $('settings').onclick = () =>
   enqueue(() =>

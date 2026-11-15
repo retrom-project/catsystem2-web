@@ -157,12 +157,25 @@ update authority. Core derives notifications to the optional
 items, then mark UI, main and sub in order. A sub FFFFFFFF marks command40085
 plus the configured language count.
 
-This is a custom-host notification seam. The production EngineHost and app do
-not yet consume it to display language check marks; that D8 browser/menu
-consumer remains open. EngineHost's existing `nativeMenuChanged` integration
-does not implement this checked hook. The World tests collect notifications
-and verify real configuration/resource results; they do not exercise a
-browser menu view. This leaf does not complete browser platform startup.
+EngineHost forwards checked notifications separately from enabled-menu
+notifications. The standalone browser app displays Interface, Main text and
+Secondary text selects when the registered `windowLanguageAccelerators`
+capability supports the live World. Their selected values
+derive from `configuration.language`; enabled options derive from the existing
+World menu state. A selection queues one existing WM_COMMAND, and the normal
+World frame applies it. The controls are hidden without a supported World.
+They do not reproduce an operating-system menu or add another language map.
+
+Core publishes the derived checked state when binding a cold or restored
+World. Fresh binding does not execute a pending keyboard command or reload
+language/options tables. The app reads its current World when receiving a
+notification, and queued UI actions retain their original World identity.
+A closed source World cannot change the fresh owner's selections. The public
+browser case loads an owned Game-profile folder through the actual app,
+checks keyboard and select commands, then imports its checkpoint through a
+new World before the next frame consumes the saved keyboard message. This
+covers the production browser consumer, not complete platform startup or the
+original process, accelerator resource, workers and operating-system menus.
 
 Only pending keyboard metadata is checkpointed in the current World queue;
 the table and checked-notification values derive from restored configuration,
