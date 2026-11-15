@@ -1,5 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 // ACCEL row matching shared by the typed window and the Win32 boundary.
+// Resource type9/id101 has the same four rows in both registered engines.
+// The resource terminator bit is stripped by the existing 8B-to-6B parser.
+export const NATIVE_WINDOW_BASE_ACCELERATORS = Object.freeze([
+  Object.freeze([19, 112, 40021]),
+  Object.freeze([19, 13, 40012]),
+  Object.freeze([19, 115, 40002]),
+  Object.freeze([3, 45, 40030]),
+]);
+
 const VIRTUAL_KEY = 1,
   ALT = 0x10,
   MODIFIERS = 0x1c;

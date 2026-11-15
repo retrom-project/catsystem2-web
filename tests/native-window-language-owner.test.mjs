@@ -21,7 +21,7 @@ const startup = () =>
       '</language>',
   );
 const event = (code, key, extra = {}) => ({ code, key, shiftKey: true, ...extra });
-async function fixture(initialize = true, fixtureProfile = profile) {
+async function fixture(initialize = true, fixtureProfile = profile, fixtureStartup) {
   const files = { 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) };
   for (const [prefix, value] of [
     ['en', 'English'],
@@ -36,7 +36,7 @@ async function fixture(initialize = true, fixtureProfile = profile) {
     checks = [],
     configuration = new NativeConfiguration({
       profile: fixtureProfile,
-      startup: startup(),
+      startup: fixtureStartup ?? startup(),
       uiLanguage: 1033,
       preferences: xml('<language><id><UI>0</UI><main>2</main><sub>0</sub></id></language>'),
     }),
@@ -273,5 +273,213 @@ test('language accelerators require an explicit per-version capability and stay 
     assert.throws(() => nativeABI('unregistered'), /provide reviewed per-version ABI data/);
   } finally {
     await world.close({ flushFiles: false });
+  }
+});
+
+function baseWindowHost(world) {
+  const state = { actions: [], modes: [], commands: [], writes: [] },
+    command = world.window.command,
+    write = world.storage.write;
+  world.host.nativeWindowAction = async (action, owner) => {
+    assert.equal(owner, world);
+    assert.ok(['minimize', 'confirm-close'].includes(action.type));
+    state.actions.push(action.type);
+    return action.type === 'confirm-close' ? false : undefined;
+  };
+  world.host.nativeWindowMessage = async (message, owner) => {
+    assert.equal(owner, world);
+    assert.equal(message.message, 0x467);
+    state.modes.push(message.lParam);
+    // This is the declared platform fullscreen result, as in the window tests.
+    world.configuration.screen.fullscreen = message.lParam;
+  };
+  world.window.command = function (word) {
+    state.commands.push(word & 0xffff);
+    return command.call(this, word);
+  };
+  world.storage.write = function (name, bytes) {
+    state.writes.push(name);
+    return write.call(this, name, bytes);
+  };
+  return state;
+}
+const alt = (code, key, extra = {}) =>
+  event(code, key, { shiftKey: false, altKey: true, ...extra });
+
+test('registered base101 shortcuts route all four commands through normal World input with strict modifiers', async () => {
+  for (const current of ['sdk-4.01-engine-2.6.1.74', profile]) {
+    const { world } = await fixture(true, current),
+      host = baseWindowHost(world);
+    try {
+      keydown(world, alt('F1', 'F1'));
+      await world.tick();
+      // Observe actual consumption before asking for any new table metadata.
+      assert.deepEqual(host.actions, ['minimize']);
+      assert.deepEqual(world.window.acceleratorRows.slice(0, 4), [
+        [19, 112, 40021],
+        [19, 13, 40012],
+        [19, 115, 40002],
+        [3, 45, 40030],
+      ]);
+      assert.equal(nativeABI(current).capabilities.windowBaseAccelerators, true);
+      const fullscreen = Boolean(world.configuration.screen.fullscreen);
+      keydown(world, alt('Enter', 'Enter'));
+      await world.tick();
+      assert.equal(Boolean(world.configuration.screen.fullscreen), !fullscreen);
+      assert.deepEqual(host.modes, [Number(!fullscreen)]);
+      keydown(world, alt('F4', 'F4'));
+      await world.tick();
+      assert.deepEqual(host.actions, ['minimize', 'confirm-close']);
+      assert.equal(world.quitRequested, undefined);
+      assert.equal(Boolean(world.configuration.authorMode), false);
+      keydown(world, event('Insert', 'Insert', { shiftKey: false }));
+      await world.tick();
+      assert.deepEqual(host.commands, [40021, 40012, 40002, 40030]);
+      assert.deepEqual(
+        host.writes.filter((name) => /^cap\d+\.bmp$/.test(name)),
+        [],
+      );
+      // Insert traversed the actual menuBitmap author-mode guard; no GPU claim.
+      for (const input of [
+        event('F1', 'F1', { shiftKey: false }),
+        alt('F1', 'F1', { ctrlKey: true }),
+        event('Insert', 'Insert'),
+      ]) {
+        assert.equal(keydown(world, input), null);
+        await world.tick();
+        assert.equal(host.commands.length, 4);
+      }
+      assert.equal(world.inputBindings.browserKeys.get('Insert'), 45);
+      if (current.startsWith('sdk-')) {
+        assert.deepEqual(world.window.languageAccelerators, []);
+        assert.equal(world.window.acceleratorRows.length, 4);
+      } else
+        assert.deepEqual(world.window.acceleratorRows.slice(4), world.window.languageAccelerators);
+      assert.equal(world.nativeEngine, undefined);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  }
+  for (const abi of Object.values(NATIVE_ABIS)) {
+    const missing = structuredClone(abi);
+    delete missing.capabilities.windowBaseAccelerators;
+    assert.throws(() => validateABI(missing), /Invalid ABI behavior data/);
+    for (const value of [null, 0, 'true']) {
+      const invalid = structuredClone(abi);
+      invalid.capabilities.windowBaseAccelerators = value;
+      assert.throws(() => validateABI(invalid), /Invalid ABI behavior data/);
+    }
+    const disabled = structuredClone(abi);
+    disabled.capabilities.windowBaseAccelerators = false;
+    assert.doesNotThrow(() => validateABI(disabled));
+  }
+  assert.throws(() => nativeABI('unregistered'), /provide reviewed per-version ABI data/);
+});
+
+test('Game base101 rows precede colliding language rows and pending base keys restore without replay', async () => {
+  const collision = xml(
+      '<language><default>0</default><OPTTABLE>options_%LANG_M%.txt</OPTTABLE>' +
+        '<L00><code>1033</code><prefix>en</prefix><lang>English</lang><accelsub>XS</accelsub></L00>' +
+        '<L01><code>1041</code><prefix>jp</prefix><lang>Japanese</lang><accel>pA</accel></L01>' +
+        '<L02><code>1036</code><prefix>fr</prefix><lang>French</lang><accel>FS</accel><accelsub>CS</accelsub></L02>' +
+        '</language>',
+    ),
+    source = await fixture(true, profile, collision),
+    fresh = await fixture(false),
+    sourceHost = baseWindowHost(source.world),
+    freshHost = baseWindowHost(fresh.world);
+  try {
+    const fullscreen = Boolean(source.world.configuration.screen.fullscreen),
+      packet = keydown(source.world, alt('Enter', 'Enter'));
+    if (packet) packet[3].modifiers = 0;
+    const pending = source.world.snapshot(),
+      immutable = structuredClone(pending),
+      restores = [],
+      reads = [],
+      rngCalls = [];
+    const trap = (object, name) => {
+      const descriptor = Object.getOwnPropertyDescriptor(object, name);
+      restores.push(() =>
+        descriptor ? Object.defineProperty(object, name, descriptor) : delete object[name],
+      );
+      object[name] = () => {
+        throw new Error(`restore replayed ${name}`);
+      };
+    };
+    for (const method of ['read', 'require']) {
+      const original = fresh.world.game[method],
+        descriptor = Object.getOwnPropertyDescriptor(fresh.world.game, method);
+      restores.push(() => Object.defineProperty(fresh.world.game, method, descriptor));
+      fresh.world.game[method] = async (name) => {
+        assert.equal(name, ['main.kcs', 'm2view.cnf'][reads.length]);
+        reads.push(name);
+        const bytes = await original.call(fresh.world.game, name);
+        if (name === 'main.kcs') assert.deepEqual(bytes, fresh.files['main.kcs']);
+        else assert.equal(bytes, null);
+        return bytes;
+      };
+    }
+    trap(fresh.world.window, 'command');
+    trap(fresh.world.runtime, 'native');
+    for (const name of ['integer', 'real']) {
+      const stream = fresh.world.random[name],
+        descriptor = Object.getOwnPropertyDescriptor(stream, 'nextUint32');
+      restores.push(() =>
+        descriptor
+          ? Object.defineProperty(stream, 'nextUint32', descriptor)
+          : delete stream.nextUint32,
+      );
+      stream.nextUint32 = () => {
+        rngCalls.push(name);
+        throw new Error('restore consumed RNG');
+      };
+    }
+    try {
+      await fresh.world.restore(pending);
+    } finally {
+      for (const restore of restores.reverse()) restore();
+    }
+    assert.deepEqual(reads, ['main.kcs', 'm2view.cnf']);
+    assert.deepEqual(rngCalls, []);
+    assert.deepEqual(freshHost.commands, []);
+    assert.deepEqual(freshHost.modes, []);
+    const before = fresh.world.snapshot();
+    for (const field of [
+      'frame',
+      'runtime',
+      'configuration',
+      'random',
+      'inputBindings',
+      'windowMessages',
+    ])
+      assert.deepEqual(before[field], pending[field], `fresh ${field} before a warm frame`);
+    await source.world.close({ flushFiles: false });
+    source.world.window.post(0x111, 40012);
+    await source.world.processWindowMessages();
+    assert.deepEqual(sourceHost.commands, []);
+    assert.deepEqual(source.world.windowMessages, []);
+    await fresh.world.tick();
+    assert.equal(Boolean(fresh.world.configuration.screen.fullscreen), !fullscreen);
+    assert.deepEqual(freshHost.commands, [40012]);
+    assert.deepEqual(freshHost.modes, [Number(!fullscreen)]);
+    const rows = fresh.world.window.acceleratorRows;
+    assert.deepEqual(rows.slice(4), fresh.world.window.languageAccelerators);
+    assert.ok(rows.some((row) => row[0] === 17 && row[1] === 112 && row[2] === 40075));
+    const main = fresh.world.configuration.language.main;
+    keydown(fresh.world, alt('F1', 'F1'));
+    await fresh.world.tick();
+    assert.deepEqual(freshHost.actions, ['minimize']);
+    assert.equal(fresh.world.configuration.language.main, main);
+    assert.deepEqual(freshHost.commands, [40012, 40021]);
+    keydown(fresh.world, event('KeyF', 'F'));
+    await fresh.world.tick();
+    assert.equal(fresh.world.configuration.language.main, 1);
+    assert.equal(fresh.world.globalStrings.get('$CHOICE$'), 'Japanese option');
+    checkedPass(fresh.checks, [40065, 40076, 40085]);
+    assert.deepEqual(pending, immutable);
+    assert.equal(fresh.world.nativeEngine, undefined);
+  } finally {
+    await source.world.close({ flushFiles: false });
+    await fresh.world.close({ flushFiles: false });
   }
 });

@@ -150,6 +150,28 @@ word remains untouched and the wrapper returns control 2. Other USER32
 message boxes keep their separate platform boundaries.
 [Microsoft MessageBoxW reference](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw).
 
+## Base shortcuts in an ordinary World
+
+Both registered engines explicitly enable the shared resource101 table.
+`world.window.acceleratorRows` exposes the same `[flags,key,command]` rows used by
+the normal keyboard matcher: base rows first, then the Game's current language
+rows. No persistent second table is stored. SDK contributes no language rows;
+missing capability data and unregistered profiles do not inherit this table.
+
+| Key       | Command | Existing receiver                           |
+| --------- | ------- | ------------------------------------------- |
+| Alt+F1    | 40021   | platform minimize action                    |
+| Alt+Enter | 40012   | platform fullscreen request/result          |
+| Alt+F4    | 40002   | preparation, then normal close confirmation |
+| Insert    | 40030   | screen-capture menu operation               |
+
+Modifier and character rules use the existing shared matcher, including first
+match. Tests drive actual keyboard metadata through the queue and command
+handler, check the host boundaries, and restore a pending key into a fresh
+World without command/VM/RNG replay. Insert coverage here is its real
+`authorMode=false` guard and command routing; it does not establish GPU image
+capture. Physical browser/OS actions retain their separate host acceptance.
+
 ## Game language shortcuts in an ordinary World
 
 For the registered Game 2.6.1.76 profile, NativeWindow derives its language
@@ -160,8 +182,8 @@ or 40085 plus the sub counter. Stored flags gain the virtual-key bit. If any
 configured key exists, the last row is character `N`, flags4, command40085 plus
 the number of nonzero sub keys. That suffix is not a special "none" value:
 when it is a valid language index the normal sub-language handler selects it.
-An all-zero configuration adds no language rows. Resource101's base shortcuts
-are outside this typed owner; they are not fabricated from test expectations.
+An all-zero configuration adds no language rows. The independently recovered
+resource101 base rows precede these language rows in `acceleratorRows`.
 
 The browser's existing keydown producer retains modifiers and translated
 character alongside the physical key message. The ordinary queue owns a copy

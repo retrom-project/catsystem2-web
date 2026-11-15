@@ -462,3 +462,13 @@ explicitly recovered from its own wrapper and receiver evidence. Other unknown
 slots, including SDK104 and main467, remain guarded. The packet's two unused
 original scratch words carry no value claim; this contract does not establish
 pixels, other backends or malformed/OOM behavior.
+
+## Base window accelerators
+
+`capabilities.windowBaseAccelerators` is a required boolean. SDK2.6.1.74 and
+Game2.6.1.76 explicitly enable the independently recovered resource101 table;
+new registrations must declare their own value. Missing/non-boolean fields and
+unregistered profiles are rejected. The four rows live once in
+[accelerator-rows.mjs](../src/native/accelerator-rows.mjs), outside the native-slot
+catalog. This enables no VM slot or unknown version. The separate language
+accelerator capability remains Game-only; SDK language rows stay disabled.

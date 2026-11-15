@@ -10,7 +10,10 @@ import {
 import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { browserVirtualKey } from './input-bindings.mjs';
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
-import { matchNativeAcceleratorRows } from './accelerator-rows.mjs';
+import {
+  matchNativeAcceleratorRows,
+  NATIVE_WINDOW_BASE_ACCELERATORS,
+} from './accelerator-rows.mjs';
 
 const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 40037]),
   commands = new Set([
@@ -68,6 +71,16 @@ export class NativeWindow {
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
   }
+  get acceleratorRows() {
+    const world = this.world;
+    if (world.closed || world.disposalRequested) return [];
+    return [
+      ...(nativeABI(world.profile).capabilities.windowBaseAccelerators
+        ? NATIVE_WINDOW_BASE_ACCELERATORS
+        : []),
+      ...this.languageAccelerators,
+    ];
+  }
   get languageAccelerators() {
     const world = this.world;
     if (
@@ -90,7 +103,7 @@ export class NativeWindow {
   }
   keyboardCommand({ message, wParam, lParam, keyboard }) {
     if (!keyboard || this.opened) return null;
-    const rows = this.languageAccelerators,
+    const rows = this.acceleratorRows,
       command = matchNativeAcceleratorRows(rows, message, wParam, lParam, keyboard.modifiers);
     if (command !== null) return command;
     if ((message === 0x100 || message === 0x104) && keyboard.character !== null)
@@ -127,12 +140,7 @@ export class NativeWindow {
     const engine = this.world.nativeEngine,
       owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
       key = browserVirtualKey(event);
-    if (
-      (!owner && !nativeABI(this.world.profile).capabilities.windowLanguageAccelerators) ||
-      !key ||
-      event.metaKey
-    )
-      return null;
+    if ((!owner && !this.acceleratorRows.length) || !key || event.metaKey) return null;
     const modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
       extended =
         /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(

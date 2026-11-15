@@ -249,6 +249,7 @@ export default {
     embeddedJavaScript: false,
     steam: true,
     windowReturnTitle: true,
+    windowBaseAccelerators: true,
     windowLanguageAccelerators: true,
     broadcast: true,
     recordQueues: true,
