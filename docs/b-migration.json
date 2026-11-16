@@ -1496,7 +1496,7 @@
       {
         "kind": "guard",
         "file": "src/native/task-dump.mjs",
-        "line": 23,
+        "line": 25,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2290,7 +2290,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/task-dump.mjs",
-        "line": 25,
+        "line": 27,
         "expression": "NATIVE_ENGINE_MESSAGE_LAYOUTS[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2299,7 +2299,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/task-dump.mjs",
-        "line": 30,
+        "line": 32,
         "expression": "this.sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -6925,7 +6925,7 @@
           "module": "src/native/task-dump.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/task-dump.mjs:131",
+          "registration": "src/native/task-dump.mjs:133",
           "features": ["task-dump"],
           "dependencies": ["src/native/task-dump.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -25069,7 +25069,7 @@
         },
         {
           "name": "task-dump",
-          "registration": "src/native/task-dump.mjs:130",
+          "registration": "src/native/task-dump.mjs:132",
           "modules": [],
           "dependencies": []
         },
@@ -29550,7 +29550,7 @@
           "module": "src/native/task-dump.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/task-dump.mjs:131",
+          "registration": "src/native/task-dump.mjs:133",
           "features": ["task-dump"],
           "dependencies": ["src/native/task-dump.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -48517,7 +48517,7 @@
         },
         {
           "name": "task-dump",
-          "registration": "src/native/task-dump.mjs:130",
+          "registration": "src/native/task-dump.mjs:132",
           "modules": [],
           "dependencies": []
         },
@@ -55573,7 +55573,7 @@
     },
     {
       "file": "src/native/task-dump.mjs",
-      "sourceSha256": "3b5ba6a1936a7518de18d52cb4cfaeee9a8ebff2f737f56ea4e60fed39aaffd1",
+      "sourceSha256": "b4c0ad914470754d1f8de6419de3f5a2d3abb5b321af21e810b134ecabd983c7",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 4, "calls": 3, "references": 0 },
@@ -55588,28 +55588,28 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 40,
+          "line": 42,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
           "reason": "SDK task dump 将已核验的 EXE send call rel32 改写为宿主 trap。"
         },
         {
-          "line": 69,
+          "line": 71,
           "method": "callFromHost",
           "target": "this.layout.root",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 105,
+          "line": 107,
           "method": "callFromHost",
           "target": "this.spec.address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 106,
+          "line": 108,
           "method": "call",
           "target": "this.spec.address",
           "review": "needs-review",
@@ -55619,30 +55619,37 @@
       "executionSiteCounts": { "direct-code-write": 1, "callFromHost": 2, "call": 1 },
       "indirectSites": [
         {
-          "line": 67,
+          "line": 69,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 77,
+          "line": 79,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 87,
+          "line": 89,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 132,
+          "line": 135,
           "method": "getNativeFeature",
           "feature": "task-dump",
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 154,
+          "method": "sendNativeEngine",
+          "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         }
@@ -60799,7 +60806,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 40,
+          "line": 42,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
@@ -61000,7 +61007,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 40,
+          "line": 42,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
@@ -61008,7 +61015,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 69,
+          "line": 71,
           "method": "callFromHost",
           "target": "this.layout.root",
           "review": "needs-review",
@@ -61016,7 +61023,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 105,
+          "line": 107,
           "method": "callFromHost",
           "target": "this.spec.address",
           "review": "needs-review",
@@ -61024,7 +61031,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 106,
+          "line": 108,
           "method": "call",
           "target": "this.spec.address",
           "review": "needs-review",

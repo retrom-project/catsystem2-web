@@ -1,7 +1,14 @@
 # Native task tree dump
 
-Main `D0` takes one KCS format address. It executes at Game `643A30` and
-SDK `52A1A0`. Both wrappers format the filename in the original VM, combine
+Main `D0` takes one KCS format address. Its recovered Game path uses the
+ordinary VM formatter and actual source header, then sends the same packet
+through the live Root namespace. The Root has no file/output side effect;
+control 1 still pushes the evidenced zero word. It does not invent a CSS
+writer or browser log. Cold World restore preserves the VM and task graph
+without replaying the request. SDK `D0` remains unknown and blocked.
+
+Explicit original owners retain Game `643A30` and SDK `52A1A0` as independent
+physical oracles. Both wrappers format the filename in the original VM, combine
 the two WORDs at KCS header offsets 8 and 10 into the script version, and send
 that version and the filename to native task ID zero in the caller's
 namespace. Both return control 1 with a zero word, including when delivery or

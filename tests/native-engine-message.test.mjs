@@ -5,6 +5,8 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from '../src/native/engine-message.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   engineMessageFixture,
   engineMessageWorld,
@@ -332,4 +334,100 @@ test('enclosed messages reset decoded flags without changing caller bytes or ord
         await world.close({ flushFiles: false });
       }
     }
+});
+
+test('ordinary Game D0 formats the actual header packet, pushes its native zero and restores without a file or replay', async () => {
+  const source = kcsProgram(
+    [[37, 0x13579bdf], [37, 73], [38, 512], [37, 256], [43, 0xd0, 4], [43, 0x41, 0], [59]],
+    [[256, '木-%d[G512].css']],
+  );
+  new DataView(source.buffer).setUint16(8, 2, true);
+  const writes = [],
+    storage = {
+      read: async () => null,
+      write: async (name) => {
+        writes.push(name);
+        return true;
+      },
+    },
+    first = await dataWorld(game, { 'case.kcs': source }, { initialize: false, storage }),
+    fresh = await dataWorld(game, { 'case.kcs': source }, { initialize: false, storage }),
+    packets = [],
+    restoredPackets = [];
+  const observe = (world, output) => {
+    const send = world.sendNativeEngine;
+    world.sendNativeEngine = function (target, sender, message, w, l, context) {
+      if (message === 36)
+        output.push({
+          target,
+          sender,
+          message,
+          w,
+          l,
+          flags: context.flags,
+          filename: [...context.payload.bytes(l, encodeCP932('木-73.css\0').length)],
+        });
+      return send.call(this, target, sender, message, w, l, context);
+    };
+  };
+  observe(first, packets);
+  observe(fresh, restoredPackets);
+  try {
+    await first.initialize('case.kcs');
+    const machine = first.main.machine;
+    assert.deepEqual(packets, [
+      {
+        target: 0,
+        sender: first.main.id,
+        message: 36,
+        w: 0x20000,
+        l: 0,
+        flags: 0,
+        filename: [...encodeCP932('木-73.css\0')],
+      },
+    ]);
+    assert.equal(machine.load(machine.sp - 4), 0);
+    assert.equal(machine.load(machine.sp - 8), 0x13579bdf);
+    assert.equal(
+      writes.some((name) => name.endsWith('.css')),
+      false,
+    );
+    assert.equal(first.nativeEngine, undefined);
+    const dto = structuredClone(first.snapshot());
+    let draws = 0;
+    for (const stream of [fresh.random.integer, fresh.random.real]) {
+      const next = stream.nextUint32;
+      stream.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    await fresh.restore(structuredClone(dto));
+    assert.deepEqual(fresh.snapshot(), dto);
+    assert.deepEqual(restoredPackets, []);
+    assert.equal(draws, 0);
+    assert.deepEqual(
+      await fresh.runtime.native('main', 0xd0, [256], fresh.main.machine, fresh.main),
+      { control: 1, value: 0 },
+    );
+    assert.equal(restoredPackets.length, 1);
+    assert.deepEqual(restoredPackets[0], packets[0]);
+    assert.equal(
+      writes.some((name) => name.endsWith('.css')),
+      false,
+    );
+  } finally {
+    await fresh.close();
+    await first.close();
+  }
+  const unknown = await dataWorld(sdk);
+  try {
+    assert.throws(
+      () => unknown.runtime.native('main', 0xd0, [0], unknown.main.machine, unknown.main),
+      (error) => error.details?.id === 0xd0 && error.details.profile === sdk,
+    );
+    assert.equal(unknown.nativeEngine, undefined);
+  } finally {
+    await unknown.close();
+  }
 });
