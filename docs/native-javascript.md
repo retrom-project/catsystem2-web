@@ -33,7 +33,11 @@ with the real Script sender, w zero, raw l and transport flags zero, without an
 output word. This retained field is not reinterpreted as a Boolean or running flag.
 `3D0` formats the function name and copies the calling KCS Script's selected live
 CP932 strings into one guest string array; absent indices become empty strings,
-and a nonpositive signed count produces an empty array. A loaded owner accepts
+and a nonpositive signed count produces an empty array. Each converted string must
+fit the native 4096-byte UTF8 output window including NUL, so ordinary calls accept
+at most 4095 UTF8 bytes per string. Larger values fail before the guest callback;
+the native helper leaves that scratch buffer unwritten on overflow, so neither
+an empty/truncated value nor arbitrary scratch bytes are treated as valid input. A loaded owner accepts
 that explicit call even after `cfExit` stopped future GameLoop callbacks. Only
 nonnegative integer indexing and readonly `length` on these arrays are supported;
 general JavaScript arrays and arbitrary object properties remain unsupported.

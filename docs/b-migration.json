@@ -55153,7 +55153,7 @@
     },
     {
       "file": "src/native/sdk-javascript-normal.mjs",
-      "sourceSha256": "040a7de2fc87762984f87dbabecbf31cfe929bcb61c848e221dd94fe11c00c9a",
+      "sourceSha256": "5f12f4a50f3bd2583329291d629613f8abad095cce4eb9617289fadff096fa41",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55161,14 +55161,14 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 228,
+          "line": 230,
           "method": "call",
           "target": "name",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 263,
+          "line": 265,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",
@@ -55206,7 +55206,7 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 362,
+          "line": 364,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -61043,7 +61043,7 @@
         },
         {
           "file": "src/native/sdk-javascript-normal.mjs",
-          "line": 228,
+          "line": 230,
           "method": "call",
           "target": "name",
           "review": "needs-review",
@@ -61051,7 +61051,7 @@
         },
         {
           "file": "src/native/sdk-javascript-normal.mjs",
-          "line": 263,
+          "line": 265,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",

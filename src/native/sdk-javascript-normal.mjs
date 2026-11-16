@@ -222,6 +222,8 @@ export class NormalSDKJavaScriptTask {
   async callFunction(name, values) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     if (!this.loaded) return;
+    if (values.some((value) => new TextEncoder().encode(value).byteLength >= 4096))
+      throw new RangeError('JavaScript string exceeds the native 4096-byte conversion window');
     const machine = this.machine;
     await this.drain(
       machine,

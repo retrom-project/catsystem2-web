@@ -590,3 +590,49 @@ test('normal JavaScript foreign GCALL passes a live string array and restores al
     await world.close();
   }
 });
+
+test('normal JavaScript foreign strings reject unwritten bytes beyond the native UTF8 window', async () => {
+  const program = kcsProgram(
+      [[37, 0], [37, 800], [37, 100], [37, 1], [43, 976, 16], [59]],
+      [[800, 'Accept']],
+    ),
+    first = fixture(
+      'var received, count=0; function Accept(values) { ++count; received=values; } function GameLoop(frame) {}',
+      { 'limit.kcs': program },
+    ),
+    { world } = first;
+  try {
+    await world.initialize('main.kcs');
+    const owner = task(world),
+      implementation = owner.implementation,
+      invoke = async (value) => {
+        const caller = await world.spawnScript('limit.kcs', { parent: owner.id });
+        world.runtime.stringBank(caller).set(100, value);
+        await world.runtime.scheduler.execute(caller);
+      },
+      machine = implementation.machine,
+      received = machine.cell(0, 'received'),
+      count = machine.cell(0, 'count');
+    for (const value of ['x'.repeat(4095), '日'.repeat(1365)]) {
+      assert.equal(new TextEncoder().encode(value).length, 4095);
+      await invoke(value);
+      assert.deepEqual(machine.state.cells[received], [value]);
+    }
+    assert.equal(machine.state.cells[count], 2);
+    const before = implementation.snapshot();
+    for (const value of ['x'.repeat(4096), '日'.repeat(1366)]) {
+      assert.ok(new TextEncoder().encode(value).length >= 4096);
+      await assert.rejects(invoke(value), /native 4096-byte conversion window/);
+      assert.deepEqual(
+        implementation.snapshot(),
+        before,
+        'No undefined native scratch or truncated value becomes a guest argument',
+      );
+    }
+    assert.equal(machine.state.cells[count], 2);
+    assert.equal(first.events.original, 0);
+    assert.equal(world.nativeEngine, undefined);
+  } finally {
+    await world.close();
+  }
+});
