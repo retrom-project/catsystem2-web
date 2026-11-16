@@ -232,14 +232,22 @@ async function freshAtSameFrame(page) {
 async function waitForButton(page, key) {
   for (let attempt = 0; attempt < 30; attempt++) {
     if (
-      await page.evaluate(
-        (key) =>
-          window.catSystem2
+      await page.evaluate((key) => {
+        const engine = window.catSystem2,
+          candidate = engine
             .activeFES()
             ?.candidates()
-            .some(({ o }) => o.key === key),
-        key,
-      )
+            .find(({ o }) => o.key === key);
+        if (
+          !candidate ||
+          !Number.isInteger(candidate.s.runtimeID) ||
+          !Number.isInteger(candidate.o.nativeInputTaskID)
+        )
+          return false;
+        const input = engine.world.inputFor(candidate.s.runtimeID);
+        if (!input?.get(candidate.o.nativeInputTaskID)) return false;
+        return !(input.warp && (input.warp.remaining | 0) > 0);
+      }, key)
     )
       return;
     await step(page, 6);
