@@ -1,7 +1,7 @@
 # Plane registration, input-owner query, bitmap mask and wheel reset
 
-Main `5F` executes its complete original wrapper. With an explicit original
-engine or loading owner, `18A` retains its original wrapper and mask helper.
+With an explicit original engine or loading owner, `5F` retains its complete
+original wrapper, and `18A` retains its original wrapper and mask helper.
 Root queries use the caller's Top namespace; SDK's Root range remains distinct
 from its ordinary two-slot message offset. Original bitmap aliases share their
 backing, and the wrapper passes its first DWORD to the plane's alpha-mask
@@ -23,6 +23,22 @@ its own copy, and clearing it leaves the prior World unchanged. The normal
 GCALL tests cover this owned 32BPP domain; the already reviewed 24BPP helper
 domain is unchanged. No second bitmap table, new codec or automatic original
 backend is introduced.
+
+In a normal World, `5F` skips target0 before reading its second argument or
+sending a packet. For an owned loaded SimplePlane (kind2) in the caller's
+zero-ID Top namespace, it sends canonical89 (SDK raw87), with the caller's
+native task ID in wParam, the literal second DWORD in lParam and transport
+flags0. The existing Graph receiver derives the hit rectangle and priority
+from its model/MOT state and retains the literal binding word; movement updates
+the existing region without changing its priority or sequence. Control2 never
+pushes a VM result, and the ignored local reply slot is not the universal output.
+
+This finite normal path does not interpret that literal as a kind6 BasePlane
+RECT pointer or certify nonzero-Top namespaces. These unreviewed receiver/owner
+domains are rejected, and unloaded kind2 geometry keeps the existing explicit
+error. The retained region flags are opaque JS metadata, separate from transport
+or Input filtering flags. No new Graph/Input owner, ABI status or original
+backend fallback is introduced.
 
 In a normal World, `3A9` queries the caller's actual Top for its InputTask, then
 sends that task the wheel-cancel message. Both envelopes keep zero flags, wParam

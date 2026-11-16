@@ -137,6 +137,19 @@ export function installNativeInputCommands(world) {
         await world.sendNativeEngine(args[0], task.id, 97, 0, args[1], { flags: 0 });
         return nativeReply(2);
       }
+      if (id === 0x5f && !world.nativeEngine && !world.nativeEngineLoading) {
+        if (args[0] === 0) return nativeReply(2);
+        const top = world.engineMessages.closestTop(task.id);
+        if (top?.nativeID !== 0)
+          throw new Error('Native graph input registration requires an owned zero-ID Top');
+        const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+        if (target?.kind !== 2)
+          throw new Error('Native graph input registration requires a reviewed Graph receiver');
+        await world.sendNativeEngine(args[0], task.id, 89, world.nativeTaskID(task.id), args[1], {
+          flags: 0,
+        });
+        return nativeReply(2);
+      }
       return (await world.getNativeFeature('input-commands')).apply(id, args, machine, task);
     });
 }
