@@ -1249,9 +1249,9 @@
       "names": ["strn"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/scene/reference/unique/strn.html",
-      "implementation": "src/scene.mjs; src/stage.mjs",
-      "evidence": ["tests/scene-contracts.test.mjs"],
-      "note": "Numeric conversion works; documented delayed text expansion after variable-based conversion requires native queue parity.",
+      "implementation": "src/native/scene-data.mjs; src/native/bank.mjs; src/native/standard.mjs; src/native/string-bank.mjs; src/scene.mjs",
+      "evidence": ["tests/native-scene-data.test.mjs", "tests/scene-contracts.test.mjs"],
+      "note": "Normal system KCS selects/evaluates index and optional value at dispatch, formats a signed decimal word and stores owned bytes; raw CST read-ahead and cold continuation are tested in both profiles. An omitted value is0. Standalone ScenePlayer still converts immediately and does not reproduce the complete system-script queue/cache policy.",
       "signatures": ["strn [str no] [no]"]
     },
     {
@@ -3179,9 +3179,9 @@
       "names": ["move", "mcmove"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/move.html",
-      "implementation": "src/fes",
-      "evidence": [],
-      "note": "Linear state motion exists; SDK relative/absolute SUBCOMMAND coercion and continuous KX2 motion remain unverified.",
+      "implementation": "src/native/fes-motion-driver.mjs; src/motion/definitions.mjs; src/fes",
+      "evidence": ["tests/fes-missing-motion.test.mjs", "tests/motion-contracts.test.mjs"],
+      "note": "Normal movement uses the header's actual KCS through the shared typed MOT executor, including relative/absolute register conversion and cold continuation. The independent bare fallback also has linear motion. Complete external header variants and unsafe numeric cases are not established by the reviewed finite programs.",
       "signatures": ["[obj] move [frame] [x] (y) (z)", "[obj] mcmove [frame] [x] (y) (z)"]
     },
     {
@@ -3556,9 +3556,9 @@
       "names": ["stop"],
       "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/reference/co/stop.html",
-      "implementation": "src/fes; src/native/fes-coordinator.mjs; src/native/fes-effekseer-driver.mjs",
-      "evidence": ["tests/fes-effekseer-default.test.mjs"],
-      "note": "Stops continuous motions only; complete continuous KX2 motion scheduling is missing. Registered76 EFK stop preserves its original quirk: after motion stop it sets the same value1 as play and dispatches571, rather than inventing task572 behavior. Actual EFK GPU drawing remains unimplemented.",
+      "implementation": "src/native/fes-motion-driver.mjs; src/native/fes-coordinator.mjs; src/native/fes-effekseer-driver.mjs",
+      "evidence": ["tests/fes-motion-driver.test.mjs", "tests/fes-effekseer-default.test.mjs"],
+      "note": "Normal stop marks the lifetime subtree skipped, forces child-first frame0 MOT updates, then clears only the selected root manager/delay; a child may remain active if its real script ignores skip. Dual-profile packet/continuation and registered76 EFK behavior have separate evidence. Complete host-stop side effects outside the reviewed typed families remain unverified.",
       "signatures": ["[obj] stop"]
     },
     {
@@ -3864,11 +3864,16 @@
       "id": "fes.syntax.SUBCOMMAND",
       "domain": "fes-syntax",
       "names": ["#SUBCOMMAND"],
-      "status": "missing",
+      "status": "partial",
       "source": "https://cs2.suki.jp/manual/fes/code/h_include.html",
-      "implementation": "src/fes",
-      "evidence": ["tests/fes-contracts.test.mjs"],
-      "note": "Parsed definitions are retained; a generic KX2 motion executor/coercion is not implemented.",
+      "implementation": "src/motion/definitions.mjs; src/native/fes-motion-driver.mjs; src/native/fes-coordinator.mjs; src/fes/object.mjs",
+      "evidence": [
+        "tests/fes-contracts.test.mjs",
+        "tests/fes-missing-motion.test.mjs",
+        "tests/fes-motion-driver.test.mjs",
+        "tests/motion-contracts.test.mjs"
+      ],
+      "note": "The shared executor converts typed registers from cached KX2 state and runs the selected real KCS, with group0 for oneshot/continue, script-owned completion, subtree busy gating and cold restore without output replay. Reviewed virtual-family packets do not prove every external header, unsupported type or unsafe numeric input.",
       "signatures": []
     },
     {

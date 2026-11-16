@@ -55,7 +55,7 @@ export function document() {
     '',
     'Source identities: [official FES reference](https://cs2.suki.jp/manual/fes/reference/ref_abc.html), [official object command reference](https://cs2.suki.jp/manual/fes/reference/ref_obj.html), [official object types](https://cs2.suki.jp/manual/fes/code/object.html), [official CST reference](https://cs2.suki.jp/manual/scene/reference/contents.html). CatSystemKit is an incomplete implementation reference; FelineSystem2 code is not used.',
     '',
-    'Unsupported FES verbs and initialization columns are located diagnostics. Undeclared object targets are not synthesized as IMAGE objects. Unknown expression identifiers are errors, rather than fabricated zero values. Native arithmetic exceptions, input edge cases and full KX2/custom SUBCOMMAND execution still need native differential evidence.',
+    'Unsupported FES verbs and initialization columns are located diagnostics. Undeclared object targets are not synthesized as IMAGE objects. Normal whole-row expressions preserve their reviewed native lookup and miss rules; the independent bare evaluator retains its own diagnostics. The normal coordinator executes typed KX2/custom SUBCOMMAND programs through the shared MOT manager. Evidence for a reviewed family and input range does not establish arbitrary external headers, unsupported types or unsafe numeric cases.',
     '',
     '## Counts',
     '',

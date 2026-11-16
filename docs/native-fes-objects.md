@@ -1,9 +1,11 @@
 # JavaScript FES object models
 
-Phase 7 is replacing the FES producer records and drivers. The independent
-modules below are verified models; they do not yet replace the production
-family entry, constructors or restore path. The migration inventory continues
-to count those original consumers until the entry switch removes them.
+The registered kind34 FES task uses the JavaScript object collection,
+coordinator and typed resource drivers below for construction, execution and
+cold restore. Each family retains its reviewed ABI and input boundaries;
+registration of an unknown type, version or native slot does not follow from
+sharing one model. Explicit original-engine adapters remain separate consumers
+and are still recorded in the migration inventory.
 
 | Model                       | Responsibility                                                                         |
 | --------------------------- | -------------------------------------------------------------------------------------- |
@@ -81,8 +83,16 @@ Restore rebuilds managers and clocks without applying their cached working
 output over the separately restored current object fields. The public authored
 tests compare complete original state packets and real MOT execution, check
 shared RNG continuation, and reconstruct a new graph and target registry.
-Production World integration and its complete rendering/input tests remain
-phase-7 work.
+The normal World coordinator uses this same driver and typed registry.
+`tests/fes-missing-motion.test.mjs` covers actual default-World admission,
+missing/cache/present scripts and cold continuation in both profiles. The
+separate renderer/input contracts retain their own evidence and finite scopes.
+
+Custom SUBCOMMAND definitions use `motion/definitions.mjs` to convert their
+typed registers from the cached KX2 base, then execute the selected real KCS
+through the same manager. `oneshot` and `continue` declarations keep group0;
+their program determines completion. An arbitrary external header or unsafe
+numeric case is not proved by the reviewed packets and authored programs.
 
 ## Encoded image cache
 

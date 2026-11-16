@@ -14,7 +14,8 @@ import {
   NativeSceneHistory,
   nativeSceneData,
 } from '../src/native/scene-data.mjs';
-import { translation } from './helpers.mjs';
+import { kcsProgram, translation } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 function cst(blocks, packed = true) {
   const lines = blocks.flat(),
@@ -280,3 +281,136 @@ test('history string substitution snapshots only referenced values and expands o
   nativeSceneData(0x151, [handle, 0, 9, 0], m, services);
   assert.equal(m.string(0), 'Astored $str4 Blate C');
 });
+
+function queuedNumberProgram() {
+  const token = 1024,
+    index = 1536,
+    value = 1540,
+    instructions = [
+      [43, 0x41, 0],
+      [21, [0x13, value], 0],
+      [60],
+      [37, token],
+      [37, 256],
+      [37, 1],
+      [43, 0x207, 12],
+      [45],
+      [37, token],
+      [43, 0xd5, 4],
+      [38, [0x13, index]],
+      [37, token],
+      [37, 256],
+      [37, 2],
+      [43, 0x207, 12],
+      [39, 0],
+      [37, token],
+      [43, 0xd5, 4],
+      [38, [0x13, value]],
+    ],
+    formatPC = instructions.reduce((size, row) => size + 1 + (row.length - 1) * 5, 0);
+  instructions[15][1] = formatPC;
+  instructions.push(
+    [37, token],
+    [37, 2048],
+    [43, 0x0e, 8],
+    [45],
+    [37, [0x13, index]],
+    [37, token],
+    [43, 0x114, 8],
+    [43, 0x41, 0],
+    [41, 11],
+  );
+  return kcsProgram(instructions, [[2048, '%d[G1540]']]);
+}
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} queued CST numeric strings evaluate at dispatch and survive a cold World`, async () => {
+    // Owned KCS composes the same selector/evaluator/formatter/string-bank
+    // boundary as sscript strn; private source bytecode is never executed here.
+    const files = {
+        'queued.kcs': queuedNumberProgram(),
+        'queued.cst': cst([
+          [
+            [0x30, 'strn $1 $2'],
+            [0x20, 'value=$str7'],
+            [0x30, 'strn 9'],
+          ],
+        ]),
+      },
+      world = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const main = world.main;
+      await world.runtime.native('main', 0xd1, [16], main.machine, main);
+      const bank = world.runtime.variableBank(main, false),
+        strings = world.runtime.stringBank(main);
+      bank.set(1, 5);
+      bank.set(2, 12);
+      strings.set(5, 'untouched');
+      strings.set(7, 'before');
+      const task = await world.spawnScript('queued.kcs', { parent: main.id, initialExecute: true }),
+        m = task.machine,
+        call = (id, args) => world.runtime.native('main', id, args, m, task),
+        scene = (await call(0x143, [])).value;
+      assert.equal(task.status, 'yielded');
+      m.writeString('queued.cst', 128);
+      assert.equal((await call(0x145, [scene, 128])).value, 1);
+      await call(0x147, [scene, 256, 0, 0]);
+      await call(0x147, [scene, 512, 0, 1]);
+      assert.equal(m.string(256), 'strn $1 $2');
+      assert.equal(m.string(512), 'value=$str7');
+      assert.equal(strings.get(7), 'before');
+      bank.set(1, 7);
+      bank.set(2, -19);
+      const saved = structuredClone(world.snapshot());
+      fresh = await dataWorld(profile, files, { initialize: false });
+      const calls = [],
+        reads = [],
+        native = fresh.runtime.native,
+        read = fresh.game.read;
+      fresh.runtime.native = function (...args) {
+        calls.push(args[1]);
+        return native.apply(this, args);
+      };
+      fresh.game.read = function (...args) {
+        reads.push(args[0]);
+        return read.apply(this, args);
+      };
+      await fresh.restore(saved);
+      assert.deepEqual(fresh.snapshot(), saved, 'fresh restore does not execute queued commands');
+      assert.deepEqual(calls, []);
+      // Game's existing M2 owner reopens its immutable configuration when an
+      // initialized owner is rebound; the stored CST body is not reloaded.
+      assert.ok(reads.every((name) => ['case.kcs', 'queued.kcs', 'm2view.cnf'].includes(name)));
+      assert.equal(reads.includes('queued.cst'), false);
+      assert.deepEqual(fresh.random.snapshot(), world.random.snapshot());
+      const restored = fresh.runtime.scheduler.tasks.get(task.id),
+        restoredStrings = fresh.runtime.stringBank(restored, false);
+      assert.equal(restoredStrings.get(7), 'before');
+      assert.equal(restored.machine.string(512), 'value=$str7');
+      await fresh.runtime.scheduler.execute(restored);
+      assert.deepEqual(calls, [0x207, 0xd5, 0x207, 0xd5, 0x0e, 0x114, 0x41]);
+      assert.equal(restoredStrings.get(5), 'untouched');
+      assert.equal(restoredStrings.get(7), '-19');
+      assert.equal(strings.get(7), 'before', 'fresh string bank is independently owned');
+      assert.equal(restored.machine.string(512), 'value=$str7');
+      await fresh.runtime.native('main', 0x116, [512], restored.machine, restored);
+      assert.equal(restored.machine.string(512), 'value=-19');
+      await fresh.runtime.native('main', 0x147, [scene, 256, 0, 2], restored.machine, restored);
+      await fresh.runtime.scheduler.execute(restored);
+      assert.equal(
+        restoredStrings.get(9),
+        '0',
+        'an omitted numeric argument uses the script default',
+      );
+      assert.equal(restoredStrings.get(7), '-19');
+      assert.equal(fresh.nativeEngine, undefined);
+      assert.equal(world.nativeEngine, undefined);
+      await fresh.runtime.native('main', 0x144, [scene], restored.machine, restored);
+      assert.throws(() => fresh.runtime.handles.get(scene), /released/);
+    } finally {
+      await fresh?.close({ flushFiles: false });
+      await world.close({ flushFiles: false });
+    }
+  });
+}

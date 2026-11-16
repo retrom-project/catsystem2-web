@@ -10,6 +10,30 @@ and the frozen SDK 4.01. Compiled SDK scenes are additional evidence: labels com
 resources, and a selection table consists of consecutive command records after its selection command.
 SDK/private scripts and raw native comparisons remain in ignored `.local/fes-audit/`.
 
+## Normal command owner
+
+Normal Core startup runs the mounted main/system KCS programs in `NativeWorld`.
+Those programs read CST records through `NativeSceneData` and decide when to
+dispatch each command. The independent `ScenePlayer` described below has its
+own command loop; its immediate numeric conversion does not determine normal
+system-KCS queue timing.
+
+Both registered system scripts implement `strn` by selecting its second token,
+evaluating the destination index, then selecting and evaluating the optional
+third token. An omitted value becomes zero. The script formats that signed
+word as decimal text and copies the bytes into the shared numbered string bank.
+There is no additional wait or separate `strn` queue inside that function.
+Earlier CST reads retain their raw bytes; later expansion observes the string
+bank when its actual consumer runs.
+
+The owned dual-profile regression in `tests/native-scene-data.test.mjs` reads
+command and message records before changing the variables, restores a fresh
+World with the pending KCS continuation, and then verifies dispatch-time index
+and value evaluation, signed formatting, deferred text expansion and the missing
+value default. It executes only authored KCS and CST inputs. Restore rebinds
+immutable KCS resources and the initialized Game M2 configuration; it neither
+rereads the stored CST body nor executes the pending commands or RNG.
+
 ## Variables and expressions
 
 `ScenePlayer(game, host, globals, strings)` shares the caller's numeric and string objects with other
@@ -25,9 +49,10 @@ increment/decrement, compound shifts and logical short circuits retain their sid
 Unknown identifiers and malformed variable indices are errors.
 
 String variables expand in command arguments, speaker names and message text. A log message freezes
-its expanded original text so subsequent string changes cannot alter history. The documented native
-queue/cache delay for `strn` with a numeric-variable source still needs differential validation; the
-current immediate conversion is recorded as partial.
+its expanded original text so subsequent string changes cannot alter history. Independent
+`ScenePlayer.strn` converts immediately in that command loop. It does not reproduce the system
+script's complete read-ahead queue, so standalone queue/cache parity remains outside its evidence.
+The normal system-KCS boundary is described above.
 
 Primary contracts: [numeric domains](https://cs2.suki.jp/manual/scene/begin/2_var.html),
 [operators](https://cs2.suki.jp/manual/scene/begin/3_num.html),
