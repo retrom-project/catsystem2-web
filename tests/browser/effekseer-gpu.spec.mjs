@@ -3,6 +3,15 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { inflateSync } from 'node:zlib';
 
+async function routeDefaultWorldFixture(page) {
+  const body = await readFile(
+    new URL('../fixtures/effekseer/default-world-browser.mjs', import.meta.url),
+  );
+  await page.route('**/tests/fixtures/effekseer/default-world-browser.mjs', (route) =>
+    route.fulfill({ body, contentType: 'text/javascript' }),
+  );
+}
+
 test('independent EFK typed GPU backend matches its frozen D3D programmable profile', async ({
   page,
 }) => {
@@ -1722,6 +1731,7 @@ for (const c of defaultReference.cases) {
         }
         await route.continue();
       });
+      await routeDefaultWorldFixture(page);
       await page.goto('/');
       async function preserve(value) {
         await testInfo.attach('default-' + c.kind + '-evidence', {
@@ -1899,6 +1909,7 @@ test('default FES legal2000 submits through its World GPU and a true fresh World
     }
     await route.continue();
   });
+  await routeDefaultWorldFixture(page);
   await page.goto('/');
   async function preserve(value) {
     const body = Buffer.from(JSON.stringify({ value, blocked }));
@@ -2072,6 +2083,7 @@ test('default FES Sprite survives a real same-device WebGL loss and restore with
     }
     await route.continue();
   });
+  await routeDefaultWorldFixture(page);
   await page.goto('/');
   async function preserve(value) {
     await testInfo.attach('device-cycle-evidence', {
@@ -2243,6 +2255,7 @@ test('default FES Sprite submits once to a same-owner nonprimary target', async 
     }
     await route.continue();
   });
+  await routeDefaultWorldFixture(page);
   await page.goto('/');
   const preserve = (value) =>
     testInfo.attach('nonprimary-evidence', {
@@ -2385,6 +2398,7 @@ test('normal FES DIFIMAGE refcap consumes its registered Sprite into a same-Worl
     }
     await route.continue();
   });
+  await routeDefaultWorldFixture(page);
   await page.goto('/');
   const source =
     defaultReference.fesSource
