@@ -3048,3 +3048,257 @@ for (const profile of rectangleProfiles)
       await scene.close();
     }
   });
+
+const positionCode = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, floatBits(111)],
+  [37, floatBits(222)],
+  [37, floatBits(333)],
+  [37, 0x80000000],
+  [43, 84, 20],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, [0x13, 136]],
+  [37, [0x13, 140]],
+  [37, [0x13, 144]],
+  [37, [0x13, 132]],
+  [43, 84, 20],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+async function positionCaller(scene, nativeID, target, selector, values) {
+  const id = await scene.objects.create({
+      kind: 12,
+      parent: scene.main.id,
+      nativeID,
+      name: 'position caller',
+    }),
+    record = scene.objects.objects.get(id);
+  await record.implementation.loadScript('rectangle.kcs');
+  const task = record.implementation.task,
+    machine = task.machine;
+  assert.strictEqual(scene.runtime.scheduler.tasks.get(id), task);
+  assert.equal(scene.nativeTaskID(id), nativeID);
+  assert.notEqual(id, nativeID);
+  machine.store(128, target);
+  machine.store(132, selector);
+  values.forEach((v, i) => machine.store(136 + i * 4, floatBits(v)));
+  machine.bytes(800, 8).fill(0xa5);
+  return { record, task, machine, initialSP: machine.sp };
+}
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main84 GCALL writes real child positions with raw selectors and cold owner isolation`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'rectangle.kcs': positionCode },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const base = await scene.objects.create({
+          kind: 0,
+          parent: scene.root,
+          nativeID: 0x00840001,
+          name: 'position base',
+        }),
+        target = scene.nativeTaskID(base),
+        ids = [],
+        planes = [];
+      assert.notEqual(base, target);
+      for (const [i, name] of ['A', 'B', 'unloaded C'].entries()) {
+        const id = await scene.objects.create({
+          kind: 2,
+          parent: base,
+          nativeID: 0x00840010 + i * 16,
+          name,
+        });
+        ids.push(id);
+        planes.push(scene.objects.objects.get(id).implementation);
+        if (i < 2)
+          await scene.sendNativeEngine(scene.nativeTaskID(id), scene.main.id, 41, 0, 0, {
+            payload: new NativeGraphicsPacket([
+              0,
+              0,
+              0,
+              floatBits(32),
+              floatBits(16),
+              32,
+              1,
+              0xffffffff,
+            ]),
+          });
+      }
+      const vector = (plane, selected = false) =>
+          motionVector(selected ? plane.graph.textureTransform : plane.graph.kx2, MOTION_ABI.pos),
+        initial = [
+          [10.5, 20.25, 30.5],
+          [40.5, -50.25, 60.75],
+        ],
+        texture = [
+          [1.5, 2.5, 3.5],
+          [-5.5, 6.5, 7.5],
+        ];
+      for (let i = 0; i < 2; i++)
+        for (const [selector, values] of [
+          [0, initial[i]],
+          [1, texture[i]],
+        ])
+          await scene.sendNativeEngine(scene.nativeTaskID(ids[i]), scene.main.id, 51, selector, 0, {
+            payload: new NativeGraphicsPacket(values.map(floatBits)),
+          });
+      assert.equal(planes[2].graph, null);
+      const unloaded = structuredClone(planes[2].state),
+        traces = [],
+        replies = [],
+        received = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native,
+        frame = scene.frame;
+      for (const plane of planes) {
+        const message = plane.message;
+        plane.message = function (words, context) {
+          if (words[1] === 51)
+            received.push({ senderNativeID: words[0], senderWorldID: context.nativeSenderWorldID });
+          return message.call(this, words, context);
+        };
+      }
+      scene.runtime.native = function (table, number, ...args) {
+        const reply = native.call(this, table, number, ...args);
+        if (table === 'main' && number === 84) replies.push(reply);
+        return reply;
+      };
+      scene.sendNativeEngine = function (destination, sender, number, w, l, context) {
+        let trace;
+        if (number === 51) {
+          trace = {
+            destination,
+            sender,
+            number,
+            w,
+            l,
+            flags: context.flags,
+            words: [0, 4, 8].map((at) => context.payload.load(at)),
+          };
+          traces.push(trace);
+        }
+        const reply = send.call(this, destination, sender, number, w, l, context);
+        if (trace) trace.reply = reply;
+        return reply;
+      };
+      const geometry = [42.5, -17.25, -0],
+        first = await positionCaller(scene, 0x00840200, target, 0, geometry);
+      await scene.runtime.scheduler.execute(first.task);
+      for (let i = 0; i < 2; i++) {
+        assert.deepEqual(
+          vector(planes[i]),
+          geometry,
+          'The real Base sender must reach both loaded child position owners',
+        );
+        assert.deepEqual(vector(planes[i], true), texture[i]);
+        assert.equal(Object.is(vector(planes[i])[2], -0), true);
+      }
+      assert.equal(first.machine.load(512), 73);
+      rectangleContinuation(first);
+      assert.equal(traces.length, 1, 'Target zero did not send a message');
+      assert.deepEqual(
+        received,
+        Array.from({ length: 3 }, () => ({
+          senderNativeID: 0x00840200,
+          senderWorldID: first.task.id,
+        })),
+      );
+      assert.deepEqual(traces[0].words, geometry.map(floatBits));
+      assert.deepEqual(
+        [
+          traces[0].destination,
+          traces[0].sender,
+          traces[0].number,
+          traces[0].w,
+          traces[0].l,
+          traces[0].flags,
+        ],
+        [target, first.task.id, 51, 0, 0, 1],
+      );
+      assert.equal(typeof traces[0].reply.then, 'function');
+      const selected = [-23.5, 99.25, 222.5],
+        high = await positionCaller(scene, 0x00840210, target, 0x80000000, selected);
+      await scene.runtime.scheduler.execute(high.task);
+      for (let i = 0; i < 2; i++) {
+        assert.deepEqual(vector(planes[i]), geometry);
+        assert.deepEqual(vector(planes[i], true), selected);
+      }
+      assert.equal(high.machine.load(512), 73);
+      rectangleContinuation(high);
+      assert.equal(traces.length, 2);
+      assert.deepEqual(
+        received.slice(3),
+        Array.from({ length: 3 }, () => ({
+          senderNativeID: 0x00840210,
+          senderWorldID: high.task.id,
+        })),
+      );
+      assert.deepEqual(traces[1].words, selected.map(floatBits));
+      assert.deepEqual(
+        [
+          traces[1].destination,
+          traces[1].sender,
+          traces[1].number,
+          traces[1].w,
+          traces[1].l,
+          traces[1].flags,
+        ],
+        [target, high.task.id, 51, 0x80000000, 0, 1],
+      );
+      assert.deepEqual(
+        await Promise.all(replies),
+        Array.from({ length: 4 }, () => ({ control: 2 })),
+      );
+      assert.deepEqual(planes[2].state, unloaded);
+      assert.equal(
+        scene.frame,
+        frame,
+        'Public Script execution did not introduce a World warm tick',
+      );
+      const declaration = nativeABI(profile).tables.main.entries[84];
+      assert.equal(declaration.status, 'recovered');
+      assert.equal(declaration.name, 'plane.setPosition');
+      assert.equal(declaration.signature.argumentWords, 5);
+      assert.deepEqual(declaration.controlCodes, [2]);
+      assert.equal(declaration.signature.resultWritten, false);
+      for (const id of [109, 110, 339, 340, 341, 467])
+        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      const saved = scene.snapshot(),
+        decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));
+      fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.runtime.native = () => {
+        throw new Error('Position restore replayed a guest command');
+      };
+      for (const random of [fresh.random.integer, fresh.random.real])
+        random.nextUint32 = () => {
+          throw new Error('Position restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(
+        fresh.snapshot(),
+        saved,
+        'Full DTO equality is checked before any warm frame',
+      );
+      const restored = ids.map((id) => fresh.objects.objects.get(id).implementation);
+      assert.notStrictEqual(restored[0].graph.kx2, planes[0].graph.kx2);
+      assert.deepEqual(vector(restored[0]), geometry);
+      assert.deepEqual(vector(restored[1], true), selected);
+      assert.equal(restored[2].graph, null);
+      await scene.objects.release(base);
+      assert.equal(scene.objects.objects.has(ids[0]), false);
+      assert.equal(fresh.objects.objects.has(ids[0]), true);
+      assert.deepEqual(vector(restored[0]), geometry);
+      assert.deepEqual(vector(restored[1], true), selected);
+      assert.equal(scene.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await scene.close();
+    }
+  });

@@ -744,3 +744,15 @@ unknown bytes, known slices cannot expose their backing storage, and constructor
 stores and float consumers reject implicit conversion of unwritten words to zero.
 Only the ordinary loaded model domain is claimed. Other backends, rare entries
 without a selected model and other unreviewed SDK slots remain outside this leaf.
+
+SDK Main84 independently recovers `plane.setPosition(task,x,y,z,coordinateMode)`.
+The SDK and Game wrappers both skip target zero before reading the remaining
+words, send canonical51 with the unchanged DWORD selector and three raw float32
+coordinates, and explicitly set transport flags1. Control2 does not write a VM
+result. Only SDK84 is newly admitted (822 recovered,86 unknown). The shared name,
+signature, Game registration, existing zero-target gate and position/MOT receiver
+remain unchanged. Real Base-to-child routing updates the existing loaded ordinary
+models; the selected primary/texture positions and both task identity domains
+remain distinct. Cold full DTO restoration does not replay commands or RNG.
+This finite leaf adds no other SDK slot, backend, inherited-position corner,
+native dirty-layout or official tutorial acceptance claim.

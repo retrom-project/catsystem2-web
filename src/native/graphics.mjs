@@ -1609,7 +1609,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(68);
       return done();
     case 0x54:
-      await send(51, args[4], 0, packet(args.slice(1, 4)));
+      await send(51, args[4], 0, packet(args.slice(1, 4)), 1);
       return done();
     case 0x55: {
       if (!args[0]) return done();
