@@ -38,7 +38,9 @@ export function installGraphicsOracle(world) {
       return task;
     });
   const renderer = world.screenEffects?.rendering;
-  for (const method of ['drawRange', 'prepareModels', 'paused'])
+  // The explicit native page view uses its original frame driver, not the
+  // ordinary renderer's JS texture-page dirty retirement.
+  for (const method of ['render', 'drawRange', 'prepareModels', 'paused'])
     if (renderer) renderer[method] = NativeScreenEffectRenderer.prototype[method].bind(renderer);
   if (!world.initialize) return world;
   const initialize = world.initialize.bind(world);
