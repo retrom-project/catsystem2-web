@@ -506,3 +506,75 @@ for (const [profile, codeHex] of [
       );
     }
   });
+
+for (const profile of startupProfiles)
+  test(`cold Core startup restores pending device state while live restore retains its current owner: ${profile}`, async (t) => {
+    const environment = startupEnvironment();
+    let player,
+      fresh,
+      opens = 0,
+      ticks = 0,
+      calls = 0;
+    try {
+      const game = await ordinaryStartupGame(profile, { sound: false }),
+        options = {
+          game,
+          canvas: new StartupCanvas(),
+          audioContext: { currentTime: 0, close: async () => {} },
+          nativeProfile: profile,
+          randomSeed: 77,
+          transitionalExe: {
+            open() {
+              opens++;
+              throw new Error('Unexpected original input restore');
+            },
+          },
+        };
+      player = new CatSystem2(options);
+      await player.initialize();
+      player.touchContact(7, 20, 30, 'down');
+      player.inputBindings.keyboard({ code: 'KeyA', keyCode: 65 }, true);
+      const checkpoint = await player.snapshot();
+      t.mock.method(NativeMT19937.prototype, 'nextUint32', () => {
+        throw new Error('Input restore must not draw MT');
+      });
+      fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
+      const create = fresh.createNativeWorld;
+      fresh.createNativeWorld = function (...args) {
+        const world = create.apply(this, args),
+          tick = world.tick,
+          native = world.runtime.native;
+        world.tick = function (...values) {
+          ticks++;
+          return tick.apply(this, values);
+        };
+        world.runtime.native = function (...values) {
+          calls++;
+          return native.apply(this, values);
+        };
+        return world;
+      };
+      await fresh.initialize({ checkpoint: structuredClone(checkpoint) });
+      assert.deepEqual(await fresh.snapshot(), checkpoint);
+      assert.notEqual(fresh.inputBindings.contacts, player.inputBindings.contacts);
+      assert.equal(ticks, 0);
+      assert.equal(calls, 0);
+      fresh.touchContact(9, 21, 31, 'down');
+      fresh.inputBindings.keyboard({ code: 'KeyB', keyCode: 66 }, true);
+      const currentDevice = fresh.inputBindings.snapshot();
+      await fresh.restore(structuredClone(checkpoint));
+      assert.deepEqual(fresh.inputBindings.snapshot(), currentDevice);
+      assert.deepEqual(await fresh.snapshot(), {
+        ...checkpoint,
+        world: { ...checkpoint.world, inputBindings: currentDevice },
+      });
+      assert.deepEqual(await player.snapshot(), checkpoint);
+      assert.equal(ticks, 0);
+      assert.equal(calls, 0);
+      assert.equal(opens, 0);
+    } finally {
+      await fresh?.dispose();
+      await player?.dispose();
+      environment.restore();
+    }
+  });

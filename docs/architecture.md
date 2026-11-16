@@ -55,6 +55,9 @@ main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列�
 资源检查后，76 的构造在之前；76 后续 author 的 clock reset 会覆盖 explicit seed。
 fresh checkpoint restore 使用保存的当前 Config/Sound/MT/CRT 状态，不重读启动资源或
 凭据元数据，不重播播种、author 32 次整数抽样或首帧。
+冷初始化同时恢复保存的完整输入状态，包括未消费事件与接触点；它不会用尚未运行的
+placeholder device 覆盖 checkpoint。已运行 Core 的普通 `restore` 仍保留当前浏览器
+device owner 的活输入，保持按键和接触连续性；两种入口都不增加热身帧。
 
 EXE 在这条路径仅供 ABI 版本和命名资源数据读取。普通启动用 JS Blowfish 读取
 KEY_CODE/KEY、V_CODE/DATA 与 V_CODE2/DATA；V_CODE 缺失跳过比较，存在则按注册 ABI

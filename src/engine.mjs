@@ -147,7 +147,7 @@ export class CatSystem2 {
     this.nativeFES = new Map();
     this.world = this.createNativeWorld();
     if (checkpoint) {
-      await this.restore(checkpoint);
+      await this.restore(checkpoint, { preserveInput: false });
       this.onState(this.status());
       return;
     }
@@ -713,7 +713,7 @@ export class CatSystem2 {
         : null,
     };
   }
-  async restore(saved) {
+  async restore(saved, { preserveInput = true } = {}) {
     if (this.world) {
       if (
         saved?.format !== 'catsystem2-web' ||
@@ -747,7 +747,7 @@ export class CatSystem2 {
       }
       previousAudio.stopAll();
       this.world = next;
-      next.inputBindings.adopt(previous.inputBindings);
+      if (preserveInput) next.inputBindings.adopt(previous.inputBindings);
       this.nativeRuntime = next.runtime;
       this.nativeFES.clear();
       for (const record of next.objects.objects.values())

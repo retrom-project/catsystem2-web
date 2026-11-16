@@ -458,21 +458,13 @@ for (const profile of Object.keys(handlers)) {
             }
           }
           fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
-          const create = fresh.createNativeWorld;
-          let liveBindings;
-          fresh.createNativeWorld = function (...args) {
-            const world = create.apply(this, args);
-            liveBindings ??= world.inputBindings.snapshot();
-            return world;
-          };
           await fresh.initialize({ checkpoint: structuredClone(saved) });
           assert.equal(fresh.nativeProfile, profile);
           assert.deepEqual(fresh.nativeModule, saved.world.nativeModule);
-          // Core.restore adopts the actual current device bindings, unlike
-          // bare World.restore. Verify that source independently, and compare
-          // every other saved field without omitting input from the DTO.
-          assert.deepEqual(fresh.inputBindings.snapshot(), liveBindings);
-          assert.deepEqual(fresh.world.snapshot(), { ...saved.world, inputBindings: liveBindings });
+          // Cold initialization restores the saved device, including pending
+          // contacts and events. A live Core.restore has a separate owner.
+          assert.deepEqual(fresh.inputBindings.snapshot(), saved.world.inputBindings);
+          assert.deepEqual(fresh.world.snapshot(), saved.world);
           assert.notEqual(
             first.world.closed,
             true,
