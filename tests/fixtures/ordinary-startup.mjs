@@ -412,9 +412,15 @@ export function startupXML(profile, body) {
 
 export async function ordinaryStartupGame(
   profile,
-  { files = {}, startup = '', sound = true } = {},
+  { files = {}, startup = '', sound = true, includeOwnedVerificationCode = true } = {},
 ) {
-  const { ['sound.xml']: soundOverride, ...looseFiles } = files,
+  // This test fixture authors public APP input, not an inferred engine default.
+  // Explicit test code keeps its original bytes; missing-input tests opt out.
+  const ownedCode =
+      includeOwnedVerificationCode && !/<v_code(?:\s|>)/i.test(startup)
+        ? '<v_code>open_cs2</v_code>'
+        : '',
+    { ['sound.xml']: soundOverride, ...looseFiles } = files,
     mountedSound = Object.hasOwn(files, 'sound.xml')
       ? soundOverride
       : startupXML(
@@ -425,7 +431,7 @@ export async function ordinaryStartupGame(
       'startup.xml': startupXML(
         profile,
         `
-      <APP><title>$title$Fallback</title></APP>
+      <APP><title>$title$Fallback</title>${ownedCode}</APP>
       <SCREEN><width>64</width><height>48</height><v_width>128</v_width><v_height>96</v_height><fps>60</fps></SCREEN>
       <SCRIPT><start>main.kcs</start></SCRIPT>
       <INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01></INT>

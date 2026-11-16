@@ -6,7 +6,7 @@ opens a native process. Only the two registered ABIs are enabled.
 
 | Input               | Current behavior                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `APP/v_code`        | Exact owned native XML text bytes via `nativeXMLTextBytes`, without Unicode re-encoding, trim or entity substitution; explicit ABI narrow encoding (74 CP932, 76 UTF-8), first NUL, default `open_cs2` only when absent. The original 260-byte field overflow is diagnosed at 260 bytes, not truncated.                                                                                                                                                      |
+| `APP/v_code`        | Exact owned native XML text bytes via `nativeXMLTextBytes`, without Unicode re-encoding, trim or entity substitution; explicit ABI narrow encoding (74 CP932, 76 UTF-8), first NUL. An absent element requires own reviewed ABI `defaultCodeBytes`; an unknown default is diagnosed. The original 260-byte field overflow is diagnosed at 260 bytes, not truncated.                                                                                          |
 | `KEY_CODE/KEY`      | Missing, zero-size, failed backing read, or size >512 retains `open_cs2`. For 1..511 bytes XOR CD, then use first NUL. Empty effective key and original size512 unsafe domain are diagnosed. No 56-byte modern limit; only first72 bytes can affect this schedule.                                                                                                                                                                                           |
 | `V_CODE/DATA`       | Missing skips compare. Present zero-size/read error fails. Decrypt two LE32 words per block into size+8 zeros, no IV/padding removal. Nonaligned input leaves output zero. Game compares C bytes; this SDK wrapper unconditionally writes `open_cs2\0` over output before comparison. That difference is explicit ABI data, not inherited by unknown versions.                                                                                               |
 | `V_CODE2/DATA`      | Same real lookup/read/decrypt and failure behavior; no invented Settings+262 state because current decrypted JS VFS has no consumer. Encrypted KIF remains rejected independently.                                                                                                                                                                                                                                                                           |
@@ -53,3 +53,14 @@ consumer was connected. SDK FA40 and its Unicode-equivalent CP932 EEEF remain
 different CRC inputs; Game UTF-8 also reaches CRC as its original normalized
 bytes. The derived `text` view is never used to regenerate startup code bytes.
 Element-name alias lookup is outside that text ownership proof.
+
+`APP/v_code` defaults are separate from the public `KEY_CODE` fallback and the
+SDK decrypted-output overwrite. Neither proves this Settings default. The current
+registered data does not specify `startup.verification.defaultCodeBytes`, so its
+ordinary entry requires an explicit APP value. A future reviewed default is a
+JSON byte array, preserving narrow aliases and the first NUL without a Unicode
+roundtrip; an empty array is a known empty default, and an omitted field is unknown.
+The registered profiles and native slots are unchanged. Owned test startup
+creators explicitly author their public APP bytes; actual mounted game XML is
+never injected or rewritten to bypass a missing default. This restriction does
+not claim that either original engine lacks a compiled default.

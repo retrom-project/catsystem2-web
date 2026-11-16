@@ -40,7 +40,7 @@ test('ordinary renderless Plane movies decode through the production Host and re
         [
           ...startupXML(
             profile,
-            '<APP><title>Owned Plane movies</title></APP><SCREEN><width>64</width><height>48</height><v_width>64</v_width><v_height>48</v_height><fps>60</fps></SCREEN><SCRIPT><start>main.kcs</start></SCRIPT><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01><int02><name>movie</name><int>movie.int</int><ext>avi</ext></int02><int03><name>veff</name><int>veff.int</int><ext>avi</ext></int03></INT>',
+            '<APP><title>Owned Plane movies</title><v_code>open_cs2</v_code></APP><SCREEN><width>64</width><height>48</height><v_width>64</v_width><v_height>48</v_height><fps>60</fps></SCREEN><SCRIPT><start>main.kcs</start></SCRIPT><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01><int02><name>movie</name><int>movie.int</int><ext>avi</ext></int02><int03><name>veff</name><int>veff.int</int><ext>avi</ext></int03></INT>',
           ),
         ],
       ],
@@ -588,7 +588,7 @@ test('browser window services apply native preferences, manage real save files, 
       profile = 'sdk-4.01-engine-2.6.1.74',
       file = (bytes) => new BlobFile(new Blob([bytes])),
       xml =
-        '<?xml version="1.0" encoding="Shift_JIS"?><document><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
+        '<?xml version="1.0" encoding="Shift_JIS"?><document><APP><v_code>open_cs2</v_code></APP><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><INT><int00><name>kcs</name><ext>kcs</ext></int00></INT><SCRIPT><start>main.kcs</start></SCRIPT></document>',
       game = new GameFiles(
         new Map([
           ...window.publicNativeFixtures.get(profile).files,
@@ -2840,7 +2840,7 @@ test('production app routes Game language keyboard and selects through its curre
       'startup.xml': startupXML(
         gameProfile,
         `
-        <APP><title>$title$Owned language game</title></APP>
+        <APP><title>$title$Owned language game</title><v_code>open_cs2</v_code></APP>
         <SCREEN><width>64</width><height>48</height><v_width>64</v_width><v_height>48</v_height><fps>60</fps></SCREEN>
         <SCRIPT><start>main.kcs</start></SCRIPT>
         <INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01></INT>

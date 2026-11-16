@@ -15,10 +15,21 @@ export function nativeStartupSeed(clock) {
   return words.reduce((sum, word, index) => (index === 2 ? sum : (sum + word) >>> 0), 0);
 }
 
-export function nativeStartupCode(document, encoding) {
-  const node = document && findNativeXML(document, 'APP/v_code'),
-    bytes = node ? nativeXMLTextBytes(node) : new TextEncoder().encode('open_cs2'),
-    nul = bytes.indexOf(0),
+export function nativeStartupCode(document, verification) {
+  const encoding = verification?.codeEncoding;
+  if (!['cp932', 'utf8'].includes(encoding))
+    throw new Error('Startup code requires its reviewed narrow encoding');
+  const node = document && findNativeXML(document, 'APP/v_code');
+  let bytes;
+  if (node) bytes = nativeXMLTextBytes(node);
+  else {
+    const defaults = verification.defaultCodeBytes;
+    if (!Array.isArray(defaults)) throw new Error('Startup code default is not reviewed');
+    if (defaults.some((byte) => !Number.isInteger(byte) || byte < 0 || byte > 255))
+      throw new Error('Startup code default requires narrow bytes');
+    bytes = Uint8Array.from(defaults);
+  }
+  const nul = bytes.indexOf(0),
     code = bytes.subarray(0, nul < 0 ? bytes.length : nul);
   if (node && node.encoding !== (encoding === 'utf8' ? 'UTF-8' : 'Shift_JIS'))
     throw new Error('Startup v_code does not match its registered narrow encoding');

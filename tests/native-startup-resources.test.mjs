@@ -316,7 +316,7 @@ test('startup code uses native XML raw text, explicit narrow encoding, first NUL
         startupXML(profile, '<APP><v_code> 猫 </v_code></APP>'),
         abi.xmlEncoding,
       ),
-      code = nativeStartupCode(node, abi.startup.verification.codeEncoding);
+      code = nativeStartupCode(node, abi.startup.verification);
     assert.deepEqual(
       [...code],
       abi.startup.verification.codeEncoding === 'cp932'
@@ -329,7 +329,7 @@ test('startup code uses native XML raw text, explicit narrow encoding, first NUL
       root = new NativeXMLNode('document', abi.xmlEncoding, new Uint8Array(), [
         new NativeXMLNode('APP', abi.xmlEncoding, new Uint8Array(), [value]),
       ]);
-    assert.deepEqual([...nativeStartupCode(root, abi.startup.verification.codeEncoding)], [65]);
+    assert.deepEqual([...nativeStartupCode(root, abi.startup.verification)], [65]);
   }
 });
 
@@ -474,7 +474,10 @@ for (const [profile, codeHex] of [
         owner = player;
       },
       after(player) {
-        assert.deepEqual(nativeStartupCode(player.world.startupDocument, encoding), raw);
+        assert.deepEqual(
+          nativeStartupCode(player.world.startupDocument, nativeABI(profile).startup.verification),
+          raw,
+        );
         assert.equal(
           findNativeXML(player.world.startupDocument, 'APP/v_code').text,
           new TextDecoder(nativeABI(profile).xmlEncoding).decode(raw),
@@ -574,6 +577,53 @@ for (const profile of startupProfiles)
       assert.equal(opens, 0);
     } finally {
       await fresh?.dispose();
+      await player?.dispose();
+      environment.restore();
+    }
+  });
+
+for (const profile of startupProfiles)
+  test(`ordinary startup never substitutes an unreviewed APP code default: ${profile}`, async () => {
+    const environment = startupEnvironment();
+    let player;
+    let opens = 0;
+    try {
+      const game = await ordinaryStartupGame(profile, {
+        sound: false,
+        includeOwnedVerificationCode: false,
+      });
+      player = new CatSystem2({
+        game,
+        canvas: new StartupCanvas(),
+        audioContext: { currentTime: 0, close: async () => {} },
+        nativeProfile: profile,
+        randomSeed: 77,
+        transitionalExe: {
+          open() {
+            opens++;
+            throw new Error('Missing APP code must not enter original CPU');
+          },
+        },
+      });
+      await assert.rejects(player.initialize(), /Startup code default is not reviewed/);
+      assert.equal(opens, 0);
+      const abi = nativeABI(profile),
+        verification = abi.startup.verification;
+      assert.deepEqual(
+        nativeStartupCode(null, { ...verification, defaultCodeBytes: [] }),
+        new Uint8Array(),
+      );
+      assert.deepEqual(
+        [...nativeStartupCode(null, { ...verification, defaultCodeBytes: [0xfa, 0x40, 0, 66] })],
+        [0xfa, 0x40],
+        'reviewed defaults retain raw narrow aliases and the first NUL',
+      );
+      for (const bad of [null, false, 0, 'open_cs2', [-1], [256], [1.5]]) {
+        const invalid = structuredClone(abi);
+        invalid.startup.verification.defaultCodeBytes = bad;
+        assert.throws(() => validateABI(invalid), /startup code default bytes/);
+      }
+    } finally {
       await player?.dispose();
       environment.restore();
     }

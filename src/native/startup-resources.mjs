@@ -88,7 +88,7 @@ function cString(bytes) {
 export async function checkNativeStartupResources(world) {
   const { game, profile } = world,
     abi = nativeABI(profile),
-    code = nativeStartupCode(world.startupDocument, abi.startup.verification.codeEncoding),
+    code = nativeStartupCode(world.startupDocument, abi.startup.verification),
     author = await checkNativeStartupAuthor(world, code);
   for (const file of game.names?.('exe') ?? []) {
     const bytes = await game.require(file);

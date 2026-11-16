@@ -215,6 +215,14 @@ function validateBehavior(abi) {
     root.soundReset > 0xffffffff
   )
     throw new Error(`Invalid ABI Root protocol ${abi.id}`);
+  if (
+    Object.hasOwn(startup.verification, 'defaultCodeBytes') &&
+    (!Array.isArray(startup.verification.defaultCodeBytes) ||
+      startup.verification.defaultCodeBytes.some(
+        (byte) => !Number.isInteger(byte) || byte < 0 || byte > 255,
+      ))
+  )
+    throw new Error(`Invalid ABI startup code default bytes ${abi.id}`);
   validateFESCommonHeads(fes.commonHeads);
 }
 

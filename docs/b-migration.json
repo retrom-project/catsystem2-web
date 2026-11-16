@@ -49955,7 +49955,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "343457f1ad1c277e8524c3699a3ec8958e45852fffae68c9a2d1e341d87a2b53",
+      "sourceSha256": "48f516850ea996489c7b185a1488c897c27c25a8394c7baa40d3ff26f729e3de",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55469,7 +55469,7 @@
     },
     {
       "file": "src/native/startup-author.mjs",
-      "sourceSha256": "fdaf01801e40b60b93d8ca53ccf1493c1d1889ceec5f0bcf976f56244da750e7",
+      "sourceSha256": "4e0cffb2548bfd11d2d74a6a1ec4a0be0214fc257bd5f78cd68d186c96fd042e",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55508,7 +55508,7 @@
     },
     {
       "file": "src/native/startup-resources.mjs",
-      "sourceSha256": "2eb1425cbd5d1fad3aa79f875776978e1048953e6fe2a3846c2d27628127ad20",
+      "sourceSha256": "37271bc0bd58ee11c3fa147aaf8d032798fd491866cc952d4db64e55d213fc87",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
