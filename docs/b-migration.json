@@ -49728,7 +49728,7 @@
     },
     {
       "file": "src/javascript/machine.mjs",
-      "sourceSha256": "7d26ff103a80b1aa9da453d1a256d8df8f512e9f6e2ff8d86be9bf19f09525de",
+      "sourceSha256": "db221535b118e49b3b8c46d4d1f885b026c85af0bb2a5a9f73e5d75975588e4f",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55105,7 +55105,7 @@
     },
     {
       "file": "src/native/sdk-javascript-normal.mjs",
-      "sourceSha256": "9cb10c8ec9efba1c0ff476f12c419dc34bdd2a520a551aa9714ca8f3bdfb509a",
+      "sourceSha256": "12f77af7664e5601f859aca1cd08ec1d1244b358bc16a33a5db6304b160b98b6",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55113,7 +55113,7 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 196,
+          "line": 219,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",
@@ -60952,7 +60952,7 @@
         },
         {
           "file": "src/native/sdk-javascript-normal.mjs",
-          "line": 196,
+          "line": 219,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",

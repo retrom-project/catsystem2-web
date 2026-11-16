@@ -42,7 +42,7 @@ export class JavaScriptMachine {
     const cell = this.cell(environment, name);
     if (cell !== -1) return this.state.cells[cell];
     if (name === 'undefined') return undefined;
-    if (['cfExit', 'cfIsExecMotion', 'CsImage', 'CsPlane', 'CsSound'].includes(name))
+    if (['cfExit', 'cfIsExecMotion', 'cfLog', 'CsImage', 'CsPlane', 'CsSound'].includes(name))
       return { host: name };
     throw scriptError('Unsupported JavaScript host import', location, name);
   }
@@ -287,6 +287,7 @@ export class JavaScriptMachine {
             !(
               (Number.isInteger(value.closure) && state.closures[value.closure]) ||
               value.host === 'cfExit' ||
+              value.host === 'cfLog' ||
               value.host === 'CsImage' ||
               value.host === 'CsPlane' ||
               value.host === 'CsSound' ||

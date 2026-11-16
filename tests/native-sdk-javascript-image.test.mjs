@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NativeWorld } from '../src/native/world.mjs';
+import { EngineHost } from '../src/host.mjs';
 import { NormalSDKJavaScriptTask } from '../src/native/sdk-javascript-normal.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -1260,5 +1261,127 @@ test('normal SDK selected Plane motion queries stay pure across aliases and fres
     NormalSDKJavaScriptTask.prototype.host = originalHost;
     await first.world.close();
     await fresh.world.close();
+  }
+});
+
+function logSink(f) {
+  const engine = { steam: null, nativeLog: [] },
+    host = new EngineHost(engine),
+    bytes = [];
+  f.world.host.nativeDebugOutput = function (...args) {
+    bytes.push(args[0].slice());
+    return host.nativeDebugOutput(...args);
+  };
+  return { engine, host, bytes };
+}
+test('normal SDK cfLog uses the real explicit debug sink and restores aliases without replay', async () => {
+  const source =
+    'var logger=cfLog, result=logger("literal"), second=cfLog("con"+"cat"); function GameLoop(frame){ if(frame===3) cfLog("frame"); }';
+  const first = fixture(source),
+    fresh = fixture(source),
+    one = logSink(first),
+    two = logSink(fresh);
+  try {
+    await first.world.initialize('main.kcs');
+    await first.world.tick();
+    assert.deepEqual(one.engine.nativeLog, ['literal', 'concat']);
+    assert.deepEqual(
+      one.bytes.map((x) => Array.from(x)),
+      [
+        [108, 105, 116, 101, 114, 97, 108],
+        [99, 111, 110, 99, 97, 116],
+      ],
+    );
+    assert.equal(cell(first.world, 'result'), undefined);
+    assert.equal(cell(first.world, 'second'), undefined);
+    const dto = structuredClone(first.world.snapshot());
+    assertData(dto);
+    let draws = 0;
+    for (const generator of [fresh.world.random.integer, fresh.world.random.real]) {
+      const next = generator.nextUint32;
+      generator.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    await fresh.world.restore(structuredClone(dto));
+    assert.deepEqual(fresh.world.snapshot(), dto);
+    assert.deepEqual(two.engine.nativeLog, []);
+    assert.deepEqual(fresh.events.reads, ['main.kcs']);
+    assert.deepEqual(fresh.events.native, []);
+    assert.deepEqual(fresh.events.packets, []);
+    assert.equal(draws, 0);
+    assert.deepEqual(cell(fresh.world, 'logger'), { host: 'cfLog' });
+    await first.world.tick();
+    await fresh.world.tick();
+    await first.world.tick();
+    await fresh.world.tick();
+    assert.deepEqual(one.engine.nativeLog, ['literal', 'concat', 'frame']);
+    assert.deepEqual(two.engine.nativeLog, ['frame']);
+    await first.world.objects.release(task(first.world).id);
+    assert.equal(task(fresh.world).implementation.running, true);
+  } finally {
+    await first.world.close();
+    await fresh.world.close();
+  }
+});
+test('normal SDK cfLog rejects absent capability and closes an actual pending sink once', async () => {
+  for (const argument of ['"missing"', '"%s"', '"\\0"', '"é"']) {
+    const f = fixture('cfLog(' + argument + '); function GameLoop(frame){}');
+    if (argument !== '"missing"') logSink(f);
+    try {
+      await assert.rejects(f.world.initialize('main.kcs'), (error) => {
+        assert.match(error.message, /Unsupported JavaScript host import.*cfLog/s);
+        assert.equal(error.location.source, 'image.js');
+        return true;
+      });
+    } finally {
+      await f.world.close();
+    }
+  }
+  const f = fixture('var after=0;cfLog("pending");after++;function GameLoop(frame){}'),
+    sink = logSink(f);
+  let permit,
+    enter,
+    calls = 0;
+  const blocked = new Promise((resolve) => {
+      permit = resolve;
+    }),
+    entered = new Promise((resolve) => {
+      enter = resolve;
+    });
+  const original = f.world.host.nativeDebugOutput;
+  f.world.host.nativeDebugOutput = function (...args) {
+    calls++;
+    original.apply(this, args);
+    enter();
+    return blocked;
+  };
+  let initialization;
+  try {
+    initialization = f.world.initialize('main.kcs');
+    await Promise.race([
+      entered,
+      initialization.then(() => {
+        throw new Error('no pending log');
+      }),
+    ]);
+    const record = task(f.world),
+      implementation = record.implementation;
+    assert.deepEqual(sink.engine.nativeLog, ['pending']);
+    assert.equal(calls, 1);
+    assert.equal(cell(f.world, 'after'), 0);
+    assertData(implementation.machine.state.waiting);
+    assert.throws(() => f.world.snapshot(), /settled|pending|callback/);
+    await f.world.objects.release(record.id);
+    permit(42);
+    await assert.rejects(initialization, /owner is closed/);
+    assert.equal(implementation.machine, null);
+    assert.equal(calls, 1);
+    assert.deepEqual(sink.engine.nativeLog, ['pending']);
+    assert.equal(f.world.objects.objects.has(record.id), false);
+  } finally {
+    permit();
+    await f.world.close();
   }
 });

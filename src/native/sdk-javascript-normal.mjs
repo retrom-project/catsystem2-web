@@ -123,6 +123,21 @@ export class NormalSDKJavaScriptTask {
         location,
       );
     }
+    if (name === 'cfLog') {
+      if (
+        args.length !== 1 ||
+        typeof args[0] !== 'string' ||
+        args[0].length >= 500 ||
+        /[\u0080-\uffff\0%]/.test(args[0]) ||
+        typeof this.world.host.nativeDebugOutput !== 'function'
+      )
+        throw scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'cfLog requires its explicit debug sink and one bounded ASCII string',
+        );
+      return { wait: { log: args[0] } };
+    }
     if (name === 'cfIsExecMotion') {
       if (args.length === 1) return { value: this.planes.selectedBusy(args[0], location) };
       if (args.length)
@@ -174,13 +189,21 @@ export class NormalSDKJavaScriptTask {
   async drain(machine, result) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     while (result.status === 'waiting') {
-      const value = await (Object.hasOwn(result.request, 'sound')
-        ? this.sounds.complete(result.request)
-        : Object.hasOwn(result.request, 'plane')
-          ? this.planes.complete(result.request)
-          : Object.hasOwn(result.request, 'motion')
-            ? this.planes.completeMotion(result.request)
-            : this.images.complete(result.request));
+      let value;
+      if (Object.hasOwn(result.request, 'log')) {
+        // Keep the real sink's synchronous call/exception or original Promise.
+        // Only its completion is awaited; no function or Promise enters the DTO.
+        await this.world.runtime.services.nativeDebugOutput(
+          new TextEncoder().encode(result.request.log),
+        );
+      } else
+        value = await (Object.hasOwn(result.request, 'sound')
+          ? this.sounds.complete(result.request)
+          : Object.hasOwn(result.request, 'plane')
+            ? this.planes.complete(result.request)
+            : Object.hasOwn(result.request, 'motion')
+              ? this.planes.completeMotion(result.request)
+              : this.images.complete(result.request));
       if (this.closed) throw new Error('JavaScript image owner is closed');
       machine.resumeHost(value);
       result = machine.run((...args) => this.host(...args));

@@ -246,3 +246,22 @@ close; a late continuation cannot revive the closed host or guest. World/SoundTa
 shutdown performs the real device/channel cleanup. Owned-WAV unit coverage uses
 the real AudioMixer/device pipeline with a PCM-reading WebAudio test context; it
 does not claim physical browser audio or the complete official SDK tutorial.
+
+## Explicit normal debug output
+
+Normal SDK `cfLog` accepts one ASCII string, including a guest concatenation,
+with no percent/NUL and fewer than500 encoded bytes. It returns `undefined`.
+This is an explicit `world.host.nativeDebugOutput` capability: the existing
+World service forwards the bytes once to the actual Host. Production EngineHost
+uses its bounded nativeLog array; there is no second logger, default noop or
+console substitute. A missing sink or unsupported argument gives a located error.
+
+The host method and World forwarding service retain their original synchronous
+exception/return or Promise. The VM stores only a pure-data pending log request,
+awaits the original operation once, discards its result and resumes the guest.
+A close during that wait cannot revive its machine or emit again. Settled fresh
+restore retains callable aliases without replaying logs, source, commands or RNG.
+The native SDK's default three debug gates and exact IAT identity remain unproved;
+this explicit capability does not enable ABI unicodeOutput or establish default
+native debug-window equivalence. Non-ASCII/format/long-string/general V8 arguments
+remain outside the finite host domain.
