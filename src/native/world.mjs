@@ -85,7 +85,13 @@ import { installNativeConfigurationQueries } from './configuration-query.mjs';
 import { nativeDataString } from './data-text.mjs';
 import { installNativeScalarMath } from './scalar-math.mjs';
 import { installNativeInputCommands } from './input-commands.mjs';
-import { installNativeRegistry } from './registry.mjs';
+import {
+  installNativeRegistry,
+  snapshotNativeRegistry,
+  restoreNativeRegistry,
+  flushNativeRegistry,
+  closeNativeRegistry,
+} from './registry.mjs';
 import { installNativeRectangles } from './rectangles.mjs';
 import { installNativeImageFiles } from './image-file.mjs';
 import { installNativeImageComposites } from './image-composite.mjs';
@@ -1026,6 +1032,7 @@ export class NativeWorld {
       soundConfiguration: this.soundConfiguration.snapshot(),
       fesSources: this.fesSources.snapshot(),
       nativeEngine: this.nativeEngine?.snapshot() ?? null,
+      platformRegistry: snapshotNativeRegistry(this),
       globalStrings: this.globalStrings.snapshot(),
       random: this.random.snapshot(),
       inputBindings: this.inputBindings?.snapshot() ?? null,
@@ -1056,6 +1063,7 @@ export class NativeWorld {
     }
     this.frame = state.frame;
     this.root = state.root;
+    await restoreNativeRegistry(this, state.platformRegistry);
     await this.runtime.restore(state.runtime);
     const bankSelections = new Map(
       [...this.runtime.handles.records]
@@ -1133,6 +1141,7 @@ export class NativeWorld {
     await attempt(() => this.text.close());
     if (flushFiles) await attempt(() => this.flushConfiguration());
     await attempt(() => this.runtime.services.files.closeAll({ flush: flushFiles }));
+    await attempt(() => closeNativeRegistry(this));
     await attempt(() => this.m2?.close({ flushFiles }));
     await attempt(() => this.particles.close());
     await attempt(() => this.movies.close());
@@ -1156,5 +1165,6 @@ export class NativeWorld {
     if (this.running) throw new Error('Native world flush requires a settled frame');
     await this.flushConfiguration();
     await this.runtime.services.files.flushAll();
+    await flushNativeRegistry(this);
   }
 }

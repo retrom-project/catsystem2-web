@@ -1,9 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
-// The engine's four registry wrappers execute unchanged. Only the browser's
-// private HKCU hive and its Win32 byte/handle boundary are supplied here.
+// One browser HKCU hive backs ordinary VM calls and the explicit original
+// engine's Win32 byte/handle boundary.
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { registryDecodeANSI, registryEncodeANSI } from './registry-codepage.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { formatNativeAt } from '../kcs.mjs';
+import { decodeWindowsCP932 } from '../ppi/windows-multibyte.mjs';
+import {
+  nativeDataArgument,
+  nativeDataCString,
+  nativeDataMapped,
+  nativeDataString,
+} from './data-text.mjs';
 
 export const NATIVE_REGISTRY_CONTRACTS = Object.freeze(
   [
@@ -46,14 +55,20 @@ const unhex = (value) => {
 
 export class NativeRegistry {
   static async open(engine, options = {}) {
-    const registry = new NativeRegistry(engine, options);
-    await registry.load();
+    const registry = options.world
+      ? await ordinaryRegistry(options.world)
+      : new NativeRegistry(engine, options);
+    if (!options.world) await registry.load();
+    if (registry.engine && registry.engine !== engine)
+      throw new Error('Registry is already attached to another engine');
+    registry.engine = engine;
+    registry.process = engine.process;
     registry.installWindows();
     engine.registerFeature('registry', registry);
     return registry;
   }
   constructor(engine, { read, write, world } = {}) {
-    Object.assign(this, { engine, process: engine.process, read, write, world });
+    Object.assign(this, { engine, process: engine?.process, read, write, world });
     this.keys = new Map([
       ['', new Map()],
       ['SOFTWARE', new Map()],
@@ -61,6 +76,7 @@ export class NativeRegistry {
     this.handles = new Map();
     this.nextHandle = 0x52000000;
     this.dirty = false;
+    this.pending = new Set();
   }
   async load() {
     const bytes = await this.read?.();
@@ -122,26 +138,46 @@ export class NativeRegistry {
     return { error: 0, handle: result, created };
   }
   async setValue(handle, name, type, pointer, count, wide) {
-    const key = this.key(handle),
-      p = this.process;
+    return this.setBytes(
+      handle,
+      name,
+      type,
+      count,
+      wide,
+      (offset, size) => this.process.read(pointer + offset, size),
+      Boolean(pointer),
+    );
+  }
+  async setBytes(handle, name, type, count, wide, read, mapped = true) {
+    const key = this.key(handle);
     if (!key) return 6;
     if (key.root !== HKCU || !(key.access & 2)) return 5;
-    if (!pointer && count) return 998;
+    if (!mapped && count) return 998;
     let size = count;
     if (size && strings.has(type)) {
       if (wide) {
         const units = Math.floor(size / 2),
-          before = p.read(pointer + units * 2 - 2, 2),
-          after = p.read(pointer + units * 2, 2);
+          before = read(units * 2 - 2, 2),
+          after = read(units * 2, 2);
         if ((before[0] || before[1]) && !after[0] && !after[1]) size += 2;
-      } else if (p.read(pointer + size - 1, 1)[0] && !p.read(pointer + size, 1)[0]) size++;
+      } else if (read(size - 1, 1)[0] && !read(size, 1)[0]) size++;
     }
-    let data = size ? p.read(pointer, size).slice() : new Uint8Array();
+    let data = size ? read(0, size).slice() : new Uint8Array();
     if (!wide && strings.has(type)) data = wideBytes(registryDecodeANSI(data));
     this.keys.get(key.path).set(fold(name), { type, data });
     this.dirty = true;
     await this.flush();
     return 0;
+  }
+  valueBytes(handle, name, wide) {
+    const key = this.key(handle);
+    if (!key) return { error: 6 };
+    if (!(key.access & 1)) return { error: 5 };
+    const value = key.root === HKCU ? this.keys.get(key.path)?.get(fold(name)) : null;
+    if (!value) return { error: 2 };
+    const bytes =
+      !wide && strings.has(value.type) ? registryEncodeANSI(wideText(value.data)) : value.data;
+    return { error: 0, type: value.type, bytes };
   }
   queryValue(handle, name, type, data, size, wide) {
     const p = this.process,
@@ -153,11 +189,9 @@ export class NativeRegistry {
     if (!wide) {
       if (type) p.store(type, 0);
     }
-    if (!(key.access & 1)) return 5;
-    const value = key.root === HKCU ? this.keys.get(key.path)?.get(fold(name)) : null;
-    if (!value) return 2;
-    let bytes = value.data;
-    if (!wide && strings.has(value.type)) bytes = registryEncodeANSI(wideText(bytes));
+    const value = this.valueBytes(handle, name, wide);
+    if (value.error) return value.error;
+    const bytes = value.bytes;
     if (type) p.store(type, value.type);
     if (size) p.store(size, bytes.length);
     if (!data) return 0;
@@ -174,6 +208,75 @@ export class NativeRegistry {
     )
       p.zero(data + bytes.length, unit);
     return 0;
+  }
+  applyOrdinary(id, args, machine) {
+    const pending = this.executeOrdinary(id, args, machine);
+    this.pending.add(pending);
+    pending.then(
+      () => this.pending.delete(pending),
+      () => this.pending.delete(pending),
+    );
+    return pending;
+  }
+  async executeOrdinary(id, args, machine) {
+    const spec = byID.get(id);
+    if (!spec) return undefined;
+    const words = Array.from({ length: spec.words }, (_, i) =>
+        nativeDataArgument(args, machine, i),
+      ),
+      wide = nativeABI(this.world.profile).capabilities.unicodeOutput,
+      decode = wide ? decodeWindowsCP932 : registryDecodeANSI,
+      format = (address) => decode(nativeDataString(formatNativeAt(address, machine))),
+      writing = id === 0xc2 || id === 0xc3,
+      opened = this.open(
+        HKCU,
+        `Software\\${format(words[0])}`,
+        writing ? 0x20006 : 0x20019,
+        writing,
+      );
+    if (opened.error) return nativeReply(1, 0);
+    try {
+      await this.flush();
+      const name = format(words[1]);
+      if (!writing) {
+        const value = this.valueBytes(opened.handle, name, wide);
+        if (value.error) return nativeReply(1, 0);
+        const { bytes, type } = value;
+        if (id === 0xc0) return nativeReply(1, Number(bytes.length <= 4));
+        const address = words[2] >>> 0,
+          capacity = words[3] >>> 0;
+        if (!nativeDataMapped(machine, address)) return nativeReply(1, bytes.length);
+        if (capacity < bytes.length) return nativeReply(1, 0);
+        machine.bytes(address, bytes.length).set(bytes);
+        if (
+          bytes.length &&
+          strings.has(type) &&
+          (wide ? bytes.length <= (capacity - 2) >>> 0 : capacity > bytes.length) &&
+          (wide
+            ? bytes.length < 2 || bytes[bytes.length - 2] || bytes[bytes.length - 1]
+            : bytes[bytes.length - 1])
+        )
+          machine.bytes((address + bytes.length) >>> 0, wide ? 2 : 1).fill(0);
+        return nativeReply(1, bytes.length);
+      }
+      let result;
+      if (id === 0xc2) {
+        const bytes = new Uint8Array(4);
+        new DataView(bytes.buffer).setUint32(0, words[2] >>> 0, true);
+        result = await this.setBytes(opened.handle, name, 4, 4, wide, (offset, size) =>
+          bytes.subarray(offset, offset + size),
+        );
+      } else {
+        const address = words[2] >>> 0,
+          count = nativeDataCString(machine, address).length;
+        result = await this.setBytes(opened.handle, name, 1, count, wide, (offset, size) =>
+          machine.bytes((address + offset) >>> 0, size),
+        );
+      }
+      return nativeReply(1, Number(result === 0));
+    } finally {
+      this.handles.delete(opened.handle);
+    }
   }
   installWindows() {
     const p = this.process,
@@ -254,10 +357,12 @@ export class NativeRegistry {
     }
   }
   snapshot() {
+    if (this.pending.size) throw new Error('Registry checkpoint requires a settled call');
     return {
       keys: structuredClone([...this.keys]),
       handles: [...this.handles],
       nextHandle: this.nextHandle,
+      dirty: this.dirty,
     };
   }
   restoreKeys(rows, persistent = false) {
@@ -290,15 +395,19 @@ export class NativeRegistry {
       throw new Error('Invalid registry handles');
     this.handles = new Map(state.handles);
     this.nextHandle = state.nextHandle;
-    this.dirty = false;
+    if (typeof state.dirty !== 'boolean') throw new Error('Invalid registry persistence state');
+    this.dirty = state.dirty;
   }
   async close() {
+    await Promise.allSettled([...this.pending]);
     await this.flush();
     this.handles.clear();
   }
 }
 
 export function installNativeRegistry(world) {
+  world.platformRegistry = null;
+  world.platformRegistryLoading = null;
   world.registerNativeFeature('registry', (engine) => {
     if (!world.storage?.readPlatform || !world.storage?.writePlatform)
       throw new Error('Registry requires persistent browser platform storage');
@@ -309,7 +418,50 @@ export function installNativeRegistry(world) {
     });
   });
   for (const { id } of NATIVE_REGISTRY_CONTRACTS)
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('registry')).apply(id, args, machine, task),
-    );
+    world.runtime.register('main', id, async (args, machine, task) => {
+      if (world.nativeEngine || world.nativeEngineLoading)
+        return (await world.getNativeFeature('registry')).apply(id, args, machine, task);
+      return (await ordinaryRegistry(world)).applyOrdinary(id, args, machine);
+    });
+}
+
+function ordinaryRegistry(world) {
+  if (world.closed || world.disposalRequested) throw new Error('Registry World is closed');
+  if (!world.storage?.readPlatform || !world.storage?.writePlatform)
+    throw new Error('Registry requires persistent browser platform storage');
+  if (!world.platformRegistryLoading)
+    world.platformRegistryLoading = (async () => {
+      const registry = new NativeRegistry(null, {
+        world,
+        read: () => world.storage.readPlatform('windows-hkcu'),
+        write: (bytes) => world.storage.writePlatform('windows-hkcu', bytes),
+      });
+      await registry.load();
+      if (world.closed || world.disposalRequested) throw new Error('Registry World is closed');
+      world.platformRegistry = registry;
+      return registry;
+    })().catch((error) => {
+      world.platformRegistryLoading = null;
+      throw error;
+    });
+  return world.platformRegistryLoading;
+}
+export function snapshotNativeRegistry(world) {
+  if (world.platformRegistryLoading && !world.platformRegistry)
+    throw new Error('Registry checkpoint requires its platform load to settle');
+  return world.platformRegistry &&
+    world.nativeEngine?.features.get('registry') !== world.platformRegistry
+    ? world.platformRegistry.snapshot()
+    : null;
+}
+export async function restoreNativeRegistry(world, state) {
+  if (state !== null) (await ordinaryRegistry(world)).restore(state);
+}
+export async function flushNativeRegistry(world) {
+  if (world.platformRegistryLoading) await (await world.platformRegistryLoading).flush();
+}
+export async function closeNativeRegistry(world) {
+  if (!world.platformRegistryLoading) return;
+  const registry = await world.platformRegistryLoading;
+  if (world.nativeEngine?.features.get('registry') !== registry) await registry.close();
 }

@@ -1,6 +1,13 @@
 # Native registry interfaces
 
-The four original main-table wrappers run inside the shared engine process.
+Ordinary Worlds run the four registered GCALLs against the existing per-game
+HKCU hive, using real VM bytes and the shared byte formatter. They do not open
+an executable or create a substitute process. An explicit original engine
+that already exists or is loading keeps its original wrapper path; when
+attached after ordinary use, it borrows the same hive rather than loading a
+second map. The original executable and Win32 oracle tests remain separate.
+
+The explicit original-owner comparison runs the four original main-table wrappers.
 The SDK uses ANSI registry APIs; the game build converts its formatted names
 from CP932 and calls their Unicode counterparts. The executable, formatter,
 VM translator and wrapper control flow remain mounted inputs.
@@ -45,10 +52,15 @@ creation and disposition semantics follow the measured API boundary and
 The feature factory awaits `readPlatform('windows-hkcu')` before returning.
 Successful key/value mutations await `writePlatform` in the same per-game
 platform namespace. Storage errors propagate; an unsuccessful flush remains
-dirty for retry. Hive data are invisible to native file enumeration and slot
+dirty for retry, including after a settled checkpoint and cold restore. Hive data are invisible to native file enumeration and slot
 files. Open capabilities survive a checkpoint; the ordinary persistent hive
 contains keys and values only. During restore the completed platform load is
 replaced synchronously by the saved hive, so a late read cannot overwrite it.
+A checkpoint rejects an outstanding registry call or initial platform load.
+Close waits for already started ordinary calls, flushes pending data and closes
+their capabilities. An unused ordinary hive does not read platform storage.
+Ordinary World DTOs retain this owner directly; an attached original feature
+retains it in that feature's existing checkpoint instead of duplicating it.
 
 The registry ANSI boundary uses a measured NT CP932 codec. It preserves lone
 lead-byte handling, private-use mappings, default characters and best-fit

@@ -9,6 +9,7 @@ import { NativeRegistry } from '../src/native/registry.mjs';
 import { registryDecodeANSI, registryEncodeANSI } from '../src/native/registry-codepage.mjs';
 import { configurationQueryMachine } from './fixtures/configuration-query-fixture.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
+import { NativeWorld as OrdinaryWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -370,3 +371,232 @@ test(
     }
   },
 );
+
+function ordinaryRegistryFixture(profile, platform, quiet = false) {
+  const call = (id, args, out) => [
+      ...args.map((x) => [37, x]),
+      [43, id, args.length * 4],
+      [38, out],
+    ],
+    operations = [
+      [37, 17],
+      [38, 0],
+      [37, 9],
+      [38, 4],
+      [37, 0x13579bdf],
+      ...(!quiet
+        ? [
+            ...call(0xc2, [512, 640, 0x80000000], 256),
+            ...call(0xc0, [512, 640], 260),
+            ...call(0xc1, [512, 640, 832, 4], 264),
+            ...call(0xc3, [512, 704, 768], 268),
+            [37, 0xa5a5a5a5],
+            [38, 848],
+            [37, 0xa5a5a5a5],
+            [38, 852],
+            ...call(0xc1, [512, 704, 848, 8], 272),
+            ...call(0xc0, [512, 704], 276),
+          ]
+        : []),
+      [37, 2048],
+      [43, 0x47, 4],
+      [59],
+    ],
+    game = memoryGame({
+      'main.kcs': kcsProgram(operations, [
+        [512, 'RetromNormal\\%d[G0]'],
+        [640, 'value_%d[G4]'],
+        [704, 'literal'],
+        [768, 'ABC'],
+      ]),
+    }),
+    configuration = new NativeConfiguration({ profile }),
+    random = new ParticleRandom(19, 23),
+    events = { reads: [], writes: [], native: [], cpu: 0 },
+    world = new OrdinaryWorld({
+      game,
+      profile,
+      configuration,
+      random,
+      images: {},
+      host: {},
+      motionLibrary: new MotionLibrary(game, { profile, random }),
+      storage: {
+        read: async () => null,
+        write: async () => true,
+        async readPlatform(name) {
+          events.reads.push(name);
+          return platform.get(name)?.slice() ?? null;
+        },
+        async writePlatform(name, bytes) {
+          events.writes.push(name);
+          platform.set(name, bytes.slice());
+        },
+      },
+    });
+  world.ensureNativeEngine = () => {
+    events.cpu++;
+    throw new Error('ordinary registry attempted original CPU');
+  };
+  const native = world.runtime.native;
+  world.runtime.native = function (...args) {
+    events.native.push(args[1]);
+    return native.apply(this, args);
+  };
+  return { world, events };
+}
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`ordinary registry GCALLs retain raw bytes, persistence and cold World ownership in ${profile}`, async () => {
+    const platform = new Map(),
+      first = ordinaryRegistryFixture(profile, platform),
+      fresh = ordinaryRegistryFixture(profile, platform),
+      cold = ordinaryRegistryFixture(profile, platform, true);
+    try {
+      await first.world.initialize('main.kcs');
+      const machine = first.world.main.machine,
+        sdk = profile.startsWith('sdk-');
+      assert.deepEqual(
+        [256, 260, 264, 268, 272, 276].map((x) => machine.load(x)),
+        [1, 1, 4, 1, sdk ? 4 : 3, 1],
+      );
+      assert.deepEqual(machine.bytes(832, 4), Uint8Array.of(0, 0, 0, 128));
+      assert.deepEqual(
+        machine.bytes(848, 8),
+        Uint8Array.from(
+          sdk ? [65, 66, 67, 0, 165, 165, 165, 165] : [65, 66, 67, 0, 0, 165, 165, 165],
+        ),
+      );
+      assert.equal(machine.load(machine.sp - 4), 0x13579bdf);
+      assert.deepEqual(first.events.native, [0xc2, 0xc0, 0xc1, 0xc3, 0xc1, 0xc0, 0x47]);
+      assert.deepEqual(first.events.reads, ['windows-hkcu']);
+      assert.equal(
+        first.events.writes.length,
+        3,
+        'key creation and each value write persist through the existing hive',
+      );
+      assert.equal(first.world.platformRegistry.handles.size, 0);
+      const dto = structuredClone(first.world.snapshot());
+      let rng = 0;
+      for (const stream of [fresh.world.random.integer, fresh.world.random.real]) {
+        const next = stream.nextUint32;
+        stream.nextUint32 = function (...args) {
+          rng++;
+          return next.apply(this, args);
+        };
+      }
+      await fresh.world.restore(structuredClone(dto));
+      assert.deepEqual(fresh.world.snapshot(), dto);
+      assert.deepEqual(fresh.events.reads, ['windows-hkcu']);
+      assert.deepEqual(fresh.events.writes, []);
+      assert.deepEqual(fresh.events.native, []);
+      assert.equal(rng, 0);
+      assert.notEqual(first.world.platformRegistry.keys, fresh.world.platformRegistry.keys);
+      const task = fresh.world.main,
+        m = task.machine;
+      m.bytes(900, 8).fill(0xa5);
+      assert.deepEqual(
+        await fresh.world.runtime.native('main', 0xc1, [512, 640, 900, 3], m, task),
+        { control: 1, value: 0 },
+      );
+      assert.deepEqual(m.bytes(900, 8), new Uint8Array(8).fill(0xa5));
+      assert.deepEqual(
+        await fresh.world.runtime.native('main', 0xc1, [512, 640, 0x7f000000, 0], m, task),
+        { control: 1, value: 4 },
+      );
+      assert.deepEqual(await fresh.world.runtime.native('main', 0xc2, [512, 640, 7], m, task), {
+        control: 1,
+        value: 1,
+      });
+      await first.world.runtime.native('main', 0xc1, [512, 640, 936, 4], machine, first.world.main);
+      assert.equal(
+        machine.load(936),
+        0x80000000,
+        'fresh hive mutation does not share the prior World',
+      );
+      await cold.world.initialize('main.kcs');
+      assert.deepEqual(cold.events.reads, [], 'unused registry does not read platform storage');
+      const cm = cold.world.main.machine;
+      assert.deepEqual(
+        await cold.world.runtime.native('main', 0xc1, [512, 640, 936, 4], cm, cold.world.main),
+        { control: 1, value: 4 },
+      );
+      assert.equal(cm.load(936), 7, 'a new ordinary World reads the real persisted value');
+      assert.equal(first.events.cpu + fresh.events.cpu + cold.events.cpu, 0);
+    } finally {
+      await first.world.close();
+      await fresh.world.close();
+      await cold.world.close();
+    }
+  });
+}
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`ordinary registry settles IO and retains failed persistence across cold restore in ${profile}`, async () => {
+    const platform = new Map(),
+      first = ordinaryRegistryFixture(profile, platform, true),
+      fresh = ordinaryRegistryFixture(profile, platform, true);
+    const readEntered = Promise.withResolvers(),
+      readAllowed = Promise.withResolvers(),
+      writeEntered = Promise.withResolvers(),
+      writeAllowed = Promise.withResolvers();
+    let pending;
+    const originalWrite = first.world.storage.writePlatform;
+    try {
+      await first.world.initialize('main.kcs');
+      const read = first.world.storage.readPlatform,
+        write = originalWrite;
+      first.world.storage.readPlatform = async function (...args) {
+        readEntered.resolve();
+        await readAllowed.promise;
+        return read.apply(this, args);
+      };
+      let writes = 0;
+      first.world.storage.writePlatform = async function (...args) {
+        if (++writes === 1) {
+          writeEntered.resolve();
+          await writeAllowed.promise;
+        }
+        return write.apply(this, args);
+      };
+      const task = first.world.main,
+        machine = task.machine;
+      pending = first.world.runtime.native('main', 0xc2, [512, 640, 7], machine, task);
+      await readEntered.promise;
+      assert.throws(() => first.world.snapshot(), /platform load to settle/);
+      readAllowed.resolve();
+      await writeEntered.promise;
+      assert.throws(() => first.world.snapshot(), /settled call/);
+      writeAllowed.resolve();
+      assert.deepEqual(await pending, { control: 1, value: 1 });
+      assert.equal(writes, 2);
+      assert.equal(first.world.platformRegistry.handles.size, 0);
+      const failure = new Error('owned registry write failed');
+      first.world.storage.writePlatform = () => Promise.reject(failure);
+      await assert.rejects(
+        first.world.runtime.native('main', 0xc2, [512, 640, 9], machine, task),
+        (error) => error === failure,
+      );
+      assert.equal(first.world.platformRegistry.dirty, true);
+      assert.equal(first.world.platformRegistry.handles.size, 0);
+      const dto = structuredClone(first.world.snapshot());
+      await fresh.world.restore(structuredClone(dto));
+      assert.deepEqual(fresh.world.snapshot(), dto);
+      assert.equal(fresh.world.platformRegistry.dirty, true);
+      assert.deepEqual(fresh.events.writes, []);
+      await fresh.world.flush();
+      assert.equal(fresh.world.platformRegistry.dirty, false);
+      const values = JSON.parse(new TextDecoder().decode(platform.get('windows-hkcu'))).keys;
+      assert.equal(
+        values.find(([name]) => name === 'SOFTWARE\\RETROMNORMAL\\17')[1][0][2],
+        '09000000',
+      );
+      assert.equal(first.events.cpu + fresh.events.cpu, 0);
+    } finally {
+      readAllowed.resolve();
+      writeAllowed.resolve();
+      await pending?.catch(() => {});
+      first.world.storage.writePlatform = originalWrite;
+      await first.world.close();
+      await fresh.world.close();
+    }
+  });
+}
