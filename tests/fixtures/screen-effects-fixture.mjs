@@ -82,6 +82,7 @@ export class ScreenVectorGPU {
       owner: this,
       width,
       height,
+      contentValid: rgba !== undefined,
       bytes: rgba?.slice() ?? new Uint8Array(width * height * 4),
     };
   }
@@ -113,12 +114,14 @@ export class ScreenVectorGPU {
     }
   }
   clear({ flags, color = 0 }) {
-    if (flags & 1)
+    if (flags & 1) {
       for (let at = 0; at < this.target.bytes.length; at += 4)
         this.target.bytes.set(
           [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24],
           at,
         );
+      this.target.contentValid = true;
+    }
   }
   drawGeometry(geometry) {
     if (!geometry.length) return;
@@ -133,8 +136,35 @@ export class ScreenVectorGPU {
   pixels(target = this.primaryTarget) {
     return target.bytes.slice();
   }
+  snapshotRenderTarget(target = this.primaryTarget) {
+    if (target.owner !== this || target.destroyed)
+      throw new Error('Render target belongs to a different or closed fixture GPU');
+    const contentValid = target.contentValid === true;
+    return {
+      width: target.width,
+      height: target.height,
+      contentValid,
+      rgba: contentValid ? this.pixels(target) : null,
+    };
+  }
+  restoreRenderTarget(target, frame) {
+    if (target.owner !== this || target.destroyed)
+      throw new Error('Render target belongs to a different or closed fixture GPU');
+    if (frame.width !== target.width || frame.height !== target.height)
+      throw new Error('Render-target checkpoint dimensions differ');
+    if (
+      typeof frame.contentValid !== 'boolean' ||
+      (frame.contentValid
+        ? !(frame.rgba instanceof Uint8Array) || frame.rgba.length !== target.bytes.length
+        : frame.rgba !== null)
+    )
+      throw new TypeError('Invalid fixture render-target checkpoint');
+    if (frame.contentValid) this.uploadRenderTarget(target, frame);
+    else target.contentValid = false;
+  }
   uploadRenderTarget(target, frame) {
     target.bytes.set(frame.rgba);
+    target.contentValid = true;
   }
   releaseTextureFrame() {}
   destroyRenderTarget(target) {
