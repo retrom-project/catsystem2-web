@@ -11,11 +11,13 @@ export function createNativeInputBrowserServices(world, record, input, options =
   return {
     poll: async () => {
       const pending = bindings()?.touchEvents;
-      if (pending?.length) {
-        const device = await world.getNativeFeature('input-device');
-        while (pending.length) await device.touch([pending.shift()]);
-      }
-      await world.nativeEngine?.features.get('input-device')?.poll();
+      if (world.nativeEngine || world.nativeEngineLoading) {
+        if (pending?.length) {
+          const device = await world.getNativeFeature('input-device');
+          while (pending.length) await device.touch([pending.shift()]);
+        }
+        await world.nativeEngine?.features.get('input-device')?.poll();
+      } else bindings()?.pollTouch();
       bindings()?.sync(input);
       input.foreground = foreground();
     },
@@ -90,17 +92,18 @@ export function createNativeInputBrowserServices(world, record, input, options =
       await world.nativeEngine?.features.get('input-device')?.control('joypad', enabled);
     },
     killTouch: async () => {
-      const device = await world.getNativeFeature('input-device');
-      await device.control('touchReset');
-      if (bindings()) bindings().touchActive = false;
+      if (world.nativeEngine || world.nativeEngineLoading) {
+        const device = await world.getNativeFeature('input-device');
+        await device.control('touchReset');
+        if (bindings()) bindings().touchActive = false;
+      } else bindings()?.killTouch();
     },
     touchHold: async (enabled) => {
-      const device = await world.getNativeFeature('input-device');
-      await device.control('touchEnable', enabled);
-      if (bindings())
-        bindings().touchHoldEnabled = enabled
-          ? world.configuration.getField('application.touch')
-          : 0;
+      if (world.nativeEngine || world.nativeEngineLoading) {
+        const device = await world.getNativeFeature('input-device');
+        await device.control('touchEnable', enabled);
+      }
+      bindings()?.touchHold(enabled);
     },
     cancelWheel: async () => {
       if (world.nativeEngine || world.nativeEngineLoading) {

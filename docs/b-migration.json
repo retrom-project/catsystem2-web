@@ -1453,7 +1453,7 @@
       {
         "kind": "guard",
         "file": "src/native/input-browser.mjs",
-        "line": 124,
+        "line": 127,
         "expression": "world.profile.startsWith('sdk-')",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2139,7 +2139,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/input-browser.mjs",
-        "line": 130,
+        "line": 133,
         "expression": "sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2148,7 +2148,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/input-browser.mjs",
-        "line": 140,
+        "line": 143,
         "expression": "sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2485,8 +2485,8 @@
       "unassigned": 120
     },
     "nativeNeedsReview": 302,
-    "runtimeFiles": 498,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 189, "9": 55 },
+    "runtimeFiles": 499,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 190, "9": 55 },
     "fileNeedsReview": 77,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -53326,7 +53326,7 @@
     },
     {
       "file": "src/native/input-bindings.mjs",
-      "sourceSha256": "e9232f838643df53ae9e4bc46f5186c9112debf4f9e0ce94f1687e0bc4fb9460",
+      "sourceSha256": "d2a3d2573a84d38d87e4081aeb06d7d8aaecc44500398fc361be65fdac09ed08",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53339,7 +53339,7 @@
     },
     {
       "file": "src/native/input-browser.mjs",
-      "sourceSha256": "1b75b22a4d90af4a6a425f630bc48f3510f8a7c825272811a56447e545da688c",
+      "sourceSha256": "ea2b73f5ef9ebdd0c79e78367f8becfe9894b00c8696cb2a482c125b3272d8d6",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 4, "calls": 0, "references": 0 },
@@ -53354,49 +53354,49 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 15,
+          "line": 16,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 93,
+          "line": 96,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 98,
+          "line": 103,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 107,
+          "line": 110,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 113,
+          "line": 116,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 121,
+          "line": 124,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 156,
+          "line": 159,
           "method": "getNativeFeature",
           "feature": "input-device",
           "review": "needs-review",
@@ -53628,6 +53628,19 @@
       "executionSiteCounts": { "callFromHost": 1, "call": 11 },
       "indirectSites": [],
       "review": "needs-review"
+    },
+    {
+      "file": "src/native/input-touch.mjs",
+      "sourceSha256": "8a2a1cc30b02ab226960a210618fd2584142164c95f7e6a23bf5f9ba4f3b018d",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-input.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
     },
     {
       "file": "src/native/input.mjs",
@@ -56886,7 +56899,7 @@
     },
     {
       "file": "src/native/windows-rectangles.mjs",
-      "sourceSha256": "8ba1020cc860c8a910f801b4c07a4ebef213ba19d1075e6678ef31f4fb8587bf",
+      "sourceSha256": "0a7ffd8cf11b9b053a56cd92e3a5da54a557749bf004812db2e9910a936cde73",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

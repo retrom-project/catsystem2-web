@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Browser devices feed the four binding slots of each native logical key.
 // KEYCUSTOMIZE/KEY owns the actual bindings; names and menu labels do not.
+import { createNativeTouchState, pollNativeTouch } from './input-touch.mjs';
+
 const categories = ['keyboard', 'mouse', 'joypad', 'touch'];
 const sources = [1, 2, 4, 8];
 const keyCodes = {
@@ -79,7 +81,8 @@ export class NativeInputBindings {
     // The original window's script gate starts enabled. WinMain loads the
     // separate user preference after these browser bindings already exist.
     this.joypadEnabled = 1;
-    this.touchHoldEnabled = 0;
+    this.touchHoldEnabled = configuration.getField?.('application.touch') ?? 0;
+    this.touchState = createNativeTouchState(this.touchHoldEnabled);
     this.touchActive = false;
     this.inside = 0;
   }
@@ -214,6 +217,7 @@ export class NativeInputBindings {
     this.nativeEvents = this.nativeMode ? [{ category: 'reset' }] : [];
     this.touchEvents = [];
     this.contacts.clear();
+    this.touchState = createNativeTouchState(this.touchState.manager !== null);
     this.touchActive = false;
     this.pulses = [];
     this.browserKeys.clear();
@@ -239,10 +243,25 @@ export class NativeInputBindings {
     for (const code of [6, 7]) this.apply('mouse', code, false, 16);
   }
   killTouch() {
+    this.touchState.slots.clear();
     this.touchActive = false;
-    this.events = this.events.filter((e) => e.category !== 'touch');
-    for (const code of this.down.touch) this.apply('touch', code, false);
-    this.down.touch.clear();
+  }
+  touchHold(enabled) {
+    this.touchHoldEnabled = enabled ? this.configuration.getField('application.touch') : 0;
+  }
+  pollTouch() {
+    const { activation, code } = pollNativeTouch(
+      this.touchState,
+      this.touchEvents,
+      this.touchHoldEnabled,
+    );
+    this.touchActive = this.touchState.slots.size > 0;
+    if (activation) this.pointerActivation = true;
+    if (code >= 2 && code <= 13) {
+      const key = code + 0xf2;
+      this.mouseState[key >>> 5] |= 1 << (key & 31);
+      this.apply('mouse', key, true, 2);
+    }
   }
   setJoypad(enabled) {
     this.joypadEnabled = enabled >>> 0;
@@ -262,6 +281,11 @@ export class NativeInputBindings {
     return this.sampled[index * 4 + slot];
   }
   finishFrame() {
+    if (!this.nativeMode)
+      for (let code = 0xf4; code <= 0xff; code++) {
+        this.mouseState[code >>> 5] &= ~(1 << (code & 31));
+        this.apply('mouse', code, false, 2);
+      }
     this.sampled.set(this.live);
     this.sync();
   }

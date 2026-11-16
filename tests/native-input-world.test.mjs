@@ -1,12 +1,21 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createNativeTouchState, pollNativeTouch } from '../src/native/input-touch.mjs';
+import { nativeRectangleUnion } from '../src/native/windows-rectangles.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { CatSystem2 } from '../src/engine.mjs';
+import {
+  ordinaryStartupGame,
+  StartupCanvas,
+  startupEnvironment,
+} from './fixtures/ordinary-startup.mjs';
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   const create = () => {
@@ -168,3 +177,387 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     }
   });
 }
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} ordinary Core touch gestures preserve the real device state across cold restore`, async () => {
+    const environment = startupEnvironment(),
+      players = [],
+      observations = new Map();
+    let opens = 0;
+    const create = async (touch, checkpoint) => {
+      const game = await ordinaryStartupGame(profile, {
+          sound: false,
+          startup: `<APP><touch>${touch}</touch></APP>`,
+        }),
+        player = new CatSystem2({
+          game,
+          canvas: new StartupCanvas(),
+          audioContext: { currentTime: 0, close: async () => {} },
+          nativeProfile: profile,
+          randomSeed: 77,
+          uiLanguage: 0x409,
+          transitionalExe: {
+            open() {
+              opens++;
+              throw new Error('Ordinary touch attempted original CPU execution');
+            },
+          },
+        }),
+        original = player.createNativeWorld;
+      players.push(player);
+      player.createNativeWorld = function (...args) {
+        const world = original.apply(this, args),
+          inputTask = world.inputTask,
+          rows = [];
+        observations.set(world, rows);
+        world.inputTask = function (...parameters) {
+          const implementation = inputTask.apply(this, parameters),
+            service = implementation.inputState.services,
+            poll = service.poll;
+          service.poll = function (...pollArgs) {
+            const result = poll.apply(this, pollArgs);
+            result.then(
+              () =>
+                rows.push({
+                  sampled: world.inputBindings.sampled.slice(),
+                  live: world.inputBindings.live.slice(),
+                  bitmap: world.inputBindings.mouseState.slice(),
+                  repeat: world.inputBindings.repeat.slice(),
+                  activation: world.inputBindings.pointerActivation,
+                }),
+              () => {},
+            );
+            return result;
+          };
+          return implementation;
+        };
+        return world;
+      };
+      await player.initialize(checkpoint ? { checkpoint } : undefined);
+      return player;
+    };
+    try {
+      const player = await create(3),
+        world = player.world,
+        row = world.configuration.keys.rows[27],
+        contact = (id, phase, x = 20, y = 30) => player.touchContact(id, x, y, phase),
+        last = () => observations.get(world).at(-1);
+      assert.equal(world.configuration.getField('application.touch'), 3);
+      row.enabled = 1;
+      row.touch.set([0xf4, 0xf5, 0xf9, 0]);
+      row.mouse.fill(0);
+      row.rep_touch.set([13, 17, 19, 0]);
+      contact(7, 'down');
+      await player.step();
+      assert.equal(last().activation, true);
+      contact(7, 'up');
+      await player.step();
+      assert.deepEqual(Array.from(last().sampled.slice(108, 112)), [0, 0, 0, 0]);
+      for (const id of [7, 9]) contact(id, 'down');
+      await player.step();
+      for (const id of [7, 9]) contact(id, 'up');
+      await player.step();
+      assert.deepEqual(Array.from(last().sampled.slice(108, 112)), [2, 0, 0, 0]);
+      assert.equal(last().bitmap[7] & (1 << 20), 1 << 20);
+      assert.equal(last().repeat[27], 13);
+      assert.equal(world.inputBindings.live[108], 0);
+      assert.equal(world.inputBindings.mouseState[7] & (1 << 20), 0);
+      for (const id of [7, 9, 11]) contact(id, 'down');
+      await player.step();
+      for (const id of [7, 9, 11]) contact(id, 'up');
+      await player.step();
+      assert.deepEqual(Array.from(last().sampled.slice(108, 112)), [0, 2, 0, 0]);
+      contact(7, 'down', 20, 30);
+      contact(7, 'move', 20.5, 30);
+      await player.step();
+      const checkpoint = await player.snapshot(),
+        originalRandom = world.random.snapshot(),
+        fresh = await create(3, structuredClone(checkpoint)),
+        copy = fresh.world;
+      assert.deepEqual(await fresh.snapshot(), checkpoint);
+      assert.equal(observations.get(copy).length, 0, 'Restore must not poll or recognize touch');
+      assert.notEqual(copy.inputBindings.contacts, world.inputBindings.contacts);
+      assert.notEqual(copy.inputBindings.touchState, world.inputBindings.touchState);
+      assert.deepEqual(copy.random.snapshot(), originalRandom);
+      fresh.touchContact(7, 21, 30, 'up');
+      await fresh.step();
+      assert.deepEqual(
+        Array.from(observations.get(copy).at(-1).sampled.slice(108, 112)),
+        [0, 0, 2, 0],
+      );
+      assert.deepEqual(world.random.snapshot(), originalRandom);
+      assert.equal(
+        world.inputBindings.contacts.size,
+        1,
+        'Fresh contact must not change the source',
+      );
+      contact(7, 'up', 21, 30);
+      await player.step();
+      assert.deepEqual(await fresh.snapshot(), await player.snapshot());
+      await player.dispose();
+      assert.equal(world.closed, true);
+      fresh.touchContact(8, 22, 30, 'down');
+      await fresh.step();
+      assert.equal(copy.inputBindings.contacts.has(8), true);
+      assert.equal(world.inputBindings.contacts.size, 0);
+      const inputRecord = copy.objects.objects.get(
+          copy.objects.objects.get(copy.root).implementation.input,
+        ),
+        control = (message, l = 0) =>
+          copy.sendEngine(inputRecord.id, copy.main.id, message, 0, l, { flags: 0 });
+      await control(156, 0);
+      assert.equal(copy.inputBindings.touchHoldEnabled, 0);
+      await control(155);
+      assert.equal(copy.inputBindings.touchActive, false);
+      assert.equal(copy.inputBindings.touchState.slots.size, 0);
+      await control(156, 1);
+      assert.equal(copy.inputBindings.touchHoldEnabled, 3);
+      // A reset discards the physical ID mapping, not the manager or key masks.
+      fresh.touchContact(8, 22, 30, 'up');
+      await fresh.step();
+      assert.equal(copy.inputBindings.touchState.slots.size, 0);
+      const absent = await create(0),
+        absentWorld = absent.world,
+        absentInput = absentWorld.objects.objects.get(
+          absentWorld.objects.objects.get(absentWorld.root).implementation.input,
+        );
+      absentWorld.configuration.setField('application.touch', 5);
+      await absentWorld.sendEngine(absentInput.id, absentWorld.main.id, 156, 0, 1, { flags: 0 });
+      absent.touchContact(1, 5, 6, 'down');
+      await absent.step();
+      assert.equal(absentWorld.inputBindings.touchHoldEnabled, 5);
+      assert.equal(
+        absentWorld.inputBindings.touchState.manager,
+        null,
+        'Late enable must not construct a missing startup manager',
+      );
+      assert.equal(opens, 0);
+      for (const current of players) assert.equal(current.world.nativeEngine, undefined);
+    } finally {
+      for (const player of players.reverse()) await player.dispose();
+      environment.restore();
+    }
+  });
+}
+
+test('ordinary touch direction results preserve all registered numeric codes and the unresolved code15', () => {
+  const cases = [
+    [
+      [
+        [1, 4],
+        [1, 2],
+        [1, 1],
+      ],
+      4,
+    ],
+    [
+      [
+        [1, 1],
+        [1, 3],
+        [1, 4],
+      ],
+      5,
+    ],
+    [
+      [
+        [4, 1],
+        [2, 1],
+        [1, 1],
+      ],
+      6,
+    ],
+    [
+      [
+        [1, 1],
+        [3, 1],
+        [4, 1],
+      ],
+      7,
+    ],
+    [
+      [
+        [1, 1],
+        [4, 1],
+        [1, 1],
+      ],
+      8,
+    ],
+    [
+      [
+        [4, 1],
+        [1, 1],
+        [4, 1],
+      ],
+      9,
+    ],
+    [
+      [
+        [1, 1],
+        [1, 4],
+        [1, 1],
+      ],
+      10,
+    ],
+    [
+      [
+        [1, 4],
+        [1, 1],
+        [1, 4],
+      ],
+      11,
+    ],
+    [
+      [
+        [2, 1],
+        [1, 1],
+        [4, 1],
+        [2, 1],
+      ],
+      12,
+    ],
+    [
+      [
+        [1, 2],
+        [1, 1],
+        [1, 4],
+        [1, 2],
+      ],
+      13,
+    ],
+    [
+      [
+        [1, 1],
+        [4, 1],
+        [2.5, 1],
+      ],
+      15,
+    ],
+  ];
+  for (const [path, expected] of cases) {
+    const state = createNativeTouchState(1),
+      events = path.map(([x, y], index) => ({
+        id: 33,
+        x,
+        y,
+        phase: index === 0 ? 'down' : index === path.length - 1 ? 'up' : 'move',
+      })),
+      result = pollNativeTouch(state, events, 1);
+    assert.equal(result.code, expected);
+    assert.equal(result.activation, true);
+    assert.equal(events.length, 0);
+    assert.equal(state.slots.size, 0);
+    assert.equal(pollNativeTouch(state, [], 1).code, expected === 15 ? 15 : 0);
+  }
+});
+
+test('ordinary touch uses the shared signed rectangle union against pinned independent Wine vectors', async () => {
+  const golden = JSON.parse(
+      await readFile(new URL('./fixtures/native-rectangles-golden.json', import.meta.url)),
+    ),
+    cases = golden.cases.filter((row) => row.operation === 'UnionRect');
+  assert.equal(cases.length, 363);
+  for (const [index, row] of cases.entries()) {
+    const a = row.a.slice(),
+      b = row.b.slice();
+    assert.deepEqual(
+      nativeRectangleUnion(a, b).map((word) => word >>> 0),
+      row.output.slice(1, 5),
+      'whole signed result/' + index,
+    );
+    assert.deepEqual(a, row.a);
+    assert.deepEqual(b, row.b);
+  }
+});
+
+test('ordinary Core blur fully releases touch recognizers while retaining the original manager and current gate', async () => {
+  const environment = startupEnvironment();
+  let opens = 0;
+  try {
+    for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+      const players = [];
+      const create = async (touch) => {
+        const player = new CatSystem2({
+          game: await ordinaryStartupGame(profile, {
+            sound: false,
+            startup: `<APP><touch>${touch}</touch></APP>`,
+          }),
+          canvas: new StartupCanvas(),
+          audioContext: { currentTime: 0, close: async () => {} },
+          nativeProfile: profile,
+          randomSeed: 77,
+          transitionalExe: {
+            open() {
+              opens++;
+              throw new Error('Blur must not open original CPU');
+            },
+          },
+        });
+        players.push(player);
+        await player.initialize();
+        return player;
+      };
+      try {
+        const player = await create(3),
+          world = player.world,
+          bindings = player.inputBindings,
+          row = world.configuration.keys.rows[27],
+          samples = [],
+          service = world.input.services,
+          poll = service.poll;
+        row.enabled = 1;
+        row.touch.set([0xf4, 0, 0, 0]);
+        row.mouse.fill(0);
+        service.poll = function (...args) {
+          const result = poll.apply(this, args);
+          result.then(
+            () => samples.push(bindings.sampled[108]),
+            () => {},
+          );
+          return result;
+        };
+        player.touchContact(99, 20, 30, 'down');
+        await player.step();
+        assert.equal(bindings.touchState.slots.get(99), 0);
+        assert.equal(bindings.touchState.manager.one.armed, true);
+        world.configuration.setField('application.touch', 0);
+        // web/app's blur handler calls this exact public owner operation.
+        bindings.releaseAll();
+        assert.equal(bindings.touchHoldEnabled, 3);
+        assert.notEqual(bindings.touchState.manager, null);
+        assert.equal(bindings.touchState.slots.size, 0);
+        assert.equal(bindings.touchState.manager.points.length, 0);
+        for (const name of ['three', 'unused', 'two', 'stroke', 'one']) {
+          assert.equal(bindings.touchState.manager[name].armed, false);
+          assert.equal(bindings.touchState.manager[name].result, 0);
+          assert.equal(bindings.touchState.manager[name].available, 1);
+        }
+        assert.equal(bindings.contacts.size, 0);
+        assert.equal(bindings.touchEvents.length, 0);
+        player.touchContact(200, 20, 30, 'down');
+        await player.step();
+        assert.equal(bindings.touchState.slots.get(200), 0);
+        assert.equal(bindings.touchState.manager.two.armed, false);
+        player.touchContact(200, 20, 30, 'up');
+        await player.step();
+        assert.equal(samples.at(-1), 0);
+        for (const id of [201, 202]) player.touchContact(id, 20, 30, 'down');
+        await player.step();
+        for (const id of [201, 202]) player.touchContact(id, 20, 30, 'up');
+        await player.step();
+        assert.equal(samples.at(-1), 2);
+        assert.equal(bindings.live[108], 0);
+        const absent = await create(0);
+        absent.world.configuration.setField('application.touch', 5);
+        await absent.world.input.services.touchHold(1);
+        absent.inputBindings.releaseAll();
+        assert.equal(absent.inputBindings.touchHoldEnabled, 5);
+        assert.equal(absent.inputBindings.touchState.manager, null);
+        assert.equal(opens, 0);
+      } finally {
+        for (const player of players.reverse()) await player.dispose();
+      }
+    }
+  } finally {
+    environment.restore();
+  }
+});

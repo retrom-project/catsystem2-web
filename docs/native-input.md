@@ -1,9 +1,9 @@
 # Native input contracts
 
-The input implementation uses the two frozen engine images in
-[references.json](../references.json). It does not start either executable.
-The reviewed regions execute in the shared original-engine process; browser
-events supply window and device services.
+Ordinary Core input runs through its shared browser bindings and typed InputTask.
+The two registered profiles in [references.json](../references.json) retain
+explicit original-engine adapters for the independent physical object/Win32
+oracle. Supplying a browser touch event does not open either original engine.
 
 | Engine              | InputTask constructor | Frame    | Message handler | Physical-device constructor | Window handler |
 | ------------------- | --------------------- | -------- | --------------- | --------------------------- | -------------- |
@@ -52,10 +52,11 @@ The script's joystick gate starts enabled, independently of the user's
 bindings are constructed. Polling requires both gates; a later preference
 change does not override an explicit script disable. Both gates are saved.
 
-[NativeInputDevice](../src/native/input-device.mjs) constructs the original
-physical device and window objects. Main input-device pointer queries return
+[NativeInputDevice](../src/native/input-device.mjs), used by explicit original
+owners, constructs the original physical device and window objects. Main input-device pointer queries return
 that real object. Keyboard, mouse and wheel queues execute its original window
-handler. Touch contacts execute original WM_TOUCH decoding and gesture code.
+handler. In that oracle path, touch contacts execute original WM_TOUCH decoding
+and gesture code.
 Joystick events enter the original joystick callback; browser Gamepad API values
 supply the physical state. The device's native heap, queues and pointer identity
 restore with the shared process. Each Top reads the same device in task order,
@@ -68,6 +69,34 @@ The browser's pointer-lock, OS cursor and modal prompt behavior remain platform
 boundaries. Native pointer warp's original task-local coordinate assignment is
 preserved separately. APP/touch is an original startup word, default zero, and
 controls native touch enablement.
+
+The ordinary [touch recognizers](../src/native/input-touch.mjs) consume the same
+public Core contact queue through the current InputTask's real poll. The initial
+APP/touch word decides whether this window owns a manager; a later script enable
+copies the current raw APP/touch word without creating a missing startup manager.
+Contacts use the first free 0..63 slot and signed hundredth-pixel coordinates.
+The five registered recognizers keep their actual order: three-contact release,
+unused callback, two-contact release, stroke, and one-contact release. Pending
+higher-priority recognizers block lower results. A single contact activates the
+pointer but emits no gesture key; results 2..13 emit 0xF4..0xFF through the mouse
+callback's source 2, retaining touch-map preference and repeat words. The real
+frame-end phase releases those keys before copying live masks to sampled masks.
+A stroke's raw squared threshold is 1024; signed rectangle union and integer
+thirds determine its ten directional results. Result 15 remains unresolved and
+is not silently converted into a key or a successful reset.
+
+The browser's public full-release/blur operation clears queued contacts, slots
+and all gesture state together with the logical input. It preserves whether the
+initial window had a manager and the current raw enable word; changing APP/touch
+does not retroactively add or remove that owner. This is distinct from Input 155,
+which clears the physical ID mapping and active count without clearing logical
+keys, gesture vectors or recognizer state. Input 156 changes the raw
+script touch gate. Pending contacts, slot identities, recognizers, bounds and
+input masks are ordinary data in the one Bindings DTO. A cold Core restores them
+without polling, re-gesturing, drawing RNG or adding a warm frame; a live Core
+restore keeps its currently attached device. Windows title-bar drag messages and
+raw C++ device pointers remain separate physical platform boundaries. No OS menu,
+window dragging or synthetic native device pointer is supplied by this path.
 
 Input alpha masks sample the bitmap canvas rectangle through its offset-aware
 color getter. Twenty-four-bit colors have no alpha and yield an empty mask;

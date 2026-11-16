@@ -1,5 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
 // USER32 rectangle operations shared by text, image and native control regions.
+export function nativeRectangleUnion(a, b) {
+  const empty = (r) => r[0] >= r[2] || r[1] >= r[3];
+  return empty(a) && empty(b)
+    ? [0, 0, 0, 0]
+    : empty(a)
+      ? b.slice()
+      : empty(b)
+        ? a.slice()
+        : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
+}
+
 export function nativeRectangleDefinitions(process) {
   const p = process,
     definitions = new Map(),
@@ -41,25 +52,7 @@ export function nativeRectangleDefinitions(process) {
     ];
     return putRect(out, empty(result) ? [0, 0, 0, 0] : result);
   });
-  def('UnionRect', 3, ([out, a, b]) => {
-    a = rect(a);
-    b = rect(b);
-    return putRect(
-      out,
-      empty(a) && empty(b)
-        ? [0, 0, 0, 0]
-        : empty(a)
-          ? b
-          : empty(b)
-            ? a
-            : [
-                Math.min(a[0], b[0]),
-                Math.min(a[1], b[1]),
-                Math.max(a[2], b[2]),
-                Math.max(a[3], b[3]),
-              ],
-    );
-  });
+  def('UnionRect', 3, ([out, a, b]) => putRect(out, nativeRectangleUnion(rect(a), rect(b))));
   def('OffsetRect', 3, ([out, x, y]) => {
     putRect(
       out,
