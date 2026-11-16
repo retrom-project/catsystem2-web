@@ -129,26 +129,53 @@ after review of a stage gate.
 Set `CATSYSTEM2_TICK_PROFILE` to an ignored directory to sample fixed logo,
 title, early/late dialogue and model-change frame batches in the three NEKOPARA
 cases. Each capture contains a CDP CPU profile and read-only host summaries.
-`CATSYSTEM2_FRAME_METRICS=1` additionally records the full tick/step/render clock.
+`CATSYSTEM2_FRAME_METRICS=1` additionally records the existing frame driver's
+full tick/step/render clock.
 
 ```sh
 CATSYSTEM2_TICK_PROFILE=.local/perf/route CATSYSTEM2_FRAME_METRICS=1 npm run test:route -- --grep 'main route reaches'
 ```
 
-Call counters are installed only for sampled batches and restored afterwards.
-They include emulator entries/time, JS-to-WASM calls, memory mapping changes,
-invalidation requests and read/write bytes. Read/write totals include all host
-transfers, so they are upper bounds on projection copies. Instruction/TB counts
-and actual invalidated TB counts are unavailable from these host observations.
+The observer delegates each production `Core.step`, `Core.render`, `World.tick`
+and snapshot call once, with the original receiver, returned value or Promise,
+and thrown/rejected error. `nativeGameFrame` retains its profiling envelope;
+it awaits CDP start/stop around the existing frame driver without adding frames.
+`window.nativePerformance.attach()` can attach to an already-created ordinary
+Core for normal RAF observations. Step/render also attach a newly restored World
+before calling the production method. No process, private heap, feature service,
+World tick, resource read or RNG draw is created by attaching the observer.
 
-Live guest bytes sum the existing allocation map. Samples include title,
-frames577/1061 and periodic frames, plus collection sizes and the ten slowest
-ticks. The sample array is bounded to forty entries. Raw profiles stay outside
-Git. Measurements use the existing JavaScript boundaries and allocation map.
+Each timing has separate lifetime and recent-window summaries. Lifetime includes
+call count, total, mean and maximum elapsed milliseconds. The recent window keeps
+at most 256 settled calls per method and reports count, mean, nearest-rank p95
+and maximum. Failed calls remain measured; observation errors are reported
+separately. The two populations are labeled rather than mixing a lifetime mean
+with a recent p95. An empty population has null durations.
 
-The native particle case completed its full visible-particle, fresh-World restore
-and continuation assertions with the transitional capacity policy. It uses the
-original full-case timeout and its own functional frame bounds.
+Ordinary snapshots report current World objects/tasks, handle counts by type,
+resident bitmap-data RGBA bytes without counting bitmap aliases twice, graphics,
+audio and movie counts. Unavailable collections are null. RGBA bytes are a lower
+bound and exclude encoded sources, canvases, GPU memory and audio buffers.
+Chrome's optional `performance.memory` supplies JS heap used/total/limit when
+available; other browsers report null, never invented zero bytes. Conditions
+record the clock, bounded sample size, frame driver, user agent, device memory
+availability and renderer class. These are method timings: controlled headless
+frame batches alone do not establish 60 fps. Final scene measurements also need
+actual presentation cadence, machine/renderer and sampling conditions.
+
+CPU/process counters are present only for an existing explicit original owner
+and only sampled during the selected batches. They include emulator entries/time,
+JS-to-WASM calls, maps, invalidations and read/write bytes; wrappers are restored
+afterwards. These are oracle statistics, separate from ordinary JS measurements.
+Host transfers are upper bounds on projection copies; instruction/TB counts and
+actual invalidated TB counts remain unavailable. Missing CPU counters do not
+independently prove that no CPU code executed.
+
+Samples include title, frames 577/1061 and periodic frames, plus the ten slowest
+ticks. Snapshots are bounded to forty entries and raw profiles stay outside Git.
+Observations do not change the case's functional frame bounds or timeout.
+The earlier native particle acceptance used the explicit original owner's
+transitional capacity; it is a separate historical functional result.
 
 ### Diagnostic log retention
 
