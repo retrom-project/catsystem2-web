@@ -1532,7 +1532,15 @@ export async function nativeGraphics(id, args, machine, task, world) {
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();
   }
-  if (!args[0] && id !== 0x68 && id !== 0x69 && id !== 0x6a && id !== 0x350 && id !== 0x351)
+  if (
+    !args[0] &&
+    id !== 0x68 &&
+    id !== 0x69 &&
+    id !== 0x6a &&
+    id !== 0x6c &&
+    id !== 0x350 &&
+    id !== 0x351
+  )
     return [0x59, 0x62].includes(id) ? value(0) : done();
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>

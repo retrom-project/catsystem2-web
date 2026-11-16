@@ -5075,7 +5075,7 @@
           "id": 108,
           "hexID": "0x6c",
           "semanticName": "plane.setInputReturn",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "plane.setInputReturn",
           "renderRoute": {
             "id": 108,
             "semanticName": "plane.setInputReturn",
@@ -5099,8 +5099,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -27704,7 +27703,7 @@
           "id": 108,
           "hexID": "0x6c",
           "semanticName": "plane.setInputReturn",
-          "catalogSemanticName": "plane.setMode",
+          "catalogSemanticName": "plane.setInputReturn",
           "renderRoute": {
             "id": 108,
             "semanticName": "plane.setInputReturn",
@@ -49936,7 +49935,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "227ba488f284e15dcb052e2e66e16ea2fc7f9fe2b26a3644f020aa95ab010d59",
+      "sourceSha256": "826dc7cbd3ada4df3cf431ff1b1417a2e1b1af463c371239bf0216ca02b3785d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50001,7 +50000,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "4e3bf2d50e5b95e6ae9556f7c4b5584ea5c89cb41a4a3c7ae2344aaa50f1aff8",
+      "sourceSha256": "6cebacb82c185521208cbeddb865f5f878881811aac7510781740b9a9def9bc0",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53035,7 +53034,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "0485baa5cd67965abaea38ad73ec9a3bc04fa2cdb7842e2d91857baf901ff38f",
+      "sourceSha256": "06bd1ad603eeb0cad9f1c3e5a8c1ceb18ddc549fb97cde68623e5ec19fdbf796",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53143,7 +53142,7 @@
           "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 1539,
+          "line": 1547,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",

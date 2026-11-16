@@ -3899,7 +3899,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     108: {
-      name: 'plane.setMode',
+      name: 'plane.setInputReturn',
       family: 'plane',
       signature: {
         argumentWords: 2,
@@ -3915,8 +3915,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word mode',
-            name: 'mode',
+            description: '32-bit return word',
+            name: 'value',
             type: {
               bits: 32,
               kind: 'bits',

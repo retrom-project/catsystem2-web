@@ -1479,7 +1479,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
       assert.equal(nativeABI(profile).tables.main.entries[97].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
       assert.equal(base.state.receiver !== -1, true);
     } finally {
@@ -1717,7 +1717,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await fresh?.close();
@@ -1943,7 +1943,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await missing?.close();
@@ -2188,7 +2188,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await missing?.close();
@@ -2410,8 +2410,165 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
       assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[97].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await fresh?.close();
+      await scene.close();
+      assert.equal(scene.graphics.tasks.size, 0);
+      if (fresh) assert.equal(fresh.graphics.tasks.size, 0);
+    }
+  });
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main108 GCALL preserves the owned raw return word and poll-clear lifecycle`, async () => {
+    const files = {
+        'case.kcs': kcsProgram([[59]]),
+        'return.kcs': inputEnableProgram(108, 2),
+      },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const baseID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x006c0108,
+          name: 'return Base',
+        }),
+        planeID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x006c0208,
+          name: 'return Plane',
+        }),
+        siblingID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x006c0308,
+          name: 'return sibling',
+        });
+      const base = scene.objects.objects.get(baseID).implementation,
+        plane = scene.objects.objects.get(planeID).implementation,
+        sibling = scene.objects.objects.get(siblingID).implementation;
+      await scene.sendNativeEngine(scene.nativeTaskID(planeID), scene.main.id, 42, 0, 0, {
+        payload: new NativeGraphicsPacket([0, 0, 0, floatBits(7), floatBits(5), 0, 0, 0xff102030]),
+      });
+      const siblingBefore = sibling.snapshot(),
+        graph = plane.graph,
+        input = base.input,
+        inputBefore = input.snapshot(),
+        frame = scene.frame,
+        outer = [],
+        calls = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native;
+      scene.sendNativeEngine = function (...args) {
+        if (args[2] === 94)
+          outer.push([args[0], args[1], args[2], args[3], args[4], args[5]?.flags]);
+        return send.apply(this, args);
+      };
+      scene.runtime.native = function (table, id, ...args) {
+        const result = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 108)
+          calls.push({ words: [...args[0]], caller: args[2].id, result });
+        return result;
+      };
+      for (const id of [baseID, planeID]) {
+        const target = scene.objects.objects.get(id).implementation,
+          targetNative = scene.nativeTaskID(id);
+        assert.notEqual(targetNative, id);
+        assert.equal(
+          target.state.receiver,
+          -1,
+          'the native store does not require Input registration',
+        );
+        for (const value of [0, 1, 0x80000000, 0xffffffff]) {
+          const caller = await inputEnableInvoke(scene, 'return.kcs', [targetNative, value]);
+          assert.equal(target.state.changed, value);
+          assert.equal(
+            await scene.sendNativeEngine(targetNative, caller.task.id, 6, 0, 0, { flags: 0 }),
+            value,
+          );
+          assert.equal(target.state.changed, 0);
+          assert.equal(
+            await scene.sendNativeEngine(targetNative, caller.task.id, 6, 0, 0, { flags: 0 }),
+            0,
+          );
+        }
+      }
+      const count = outer.length;
+      await inputEnableInvoke(scene, 'return.kcs', [0, 0x80000000]);
+      assert.equal(
+        outer.length,
+        count + 1,
+        'zero dispatches normally; no Root response is invented',
+      );
+      assert.equal(outer.at(-1)[0], 0);
+      for (let i = 0; i < calls.length; i++)
+        assert.deepEqual(outer[i], [
+          calls[i].words[0],
+          calls[i].caller,
+          94,
+          0,
+          calls[i].words[1],
+          0,
+        ]);
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.result)),
+        calls.map(() => ({ control: 2 })),
+      );
+      assert.deepEqual(sibling.snapshot(), siblingBefore);
+      assert.deepEqual(input.snapshot(), inputBefore, 'the return word does not mutate Input');
+      assert.strictEqual(plane.graph, graph);
+      assert.equal(scene.frame, frame);
+
+      await inputEnableInvoke(scene, 'return.kcs', [scene.nativeTaskID(baseID), 0x80000000]);
+      const checkpoint = structuredClone(scene.snapshot());
+      fresh = await dataWorld(profile, files, { initialize: false });
+      let replay = 0,
+        draws = 0;
+      const execute = fresh.runtime.scheduler.execute,
+        freshNative = fresh.runtime.native;
+      fresh.runtime.scheduler.execute = function (...args) {
+        replay++;
+        return execute.apply(this, args);
+      };
+      fresh.runtime.native = function (...args) {
+        replay++;
+        return freshNative.apply(this, args);
+      };
+      for (const stream of [fresh.random.integer, fresh.random.real]) {
+        const next = stream.nextUint32;
+        stream.nextUint32 = function (...args) {
+          draws++;
+          return next.apply(this, args);
+        };
+      }
+      await fresh.restore(structuredClone(checkpoint));
+      assert.equal(replay, 0);
+      assert.equal(draws, 0);
+      assert.deepEqual(fresh.snapshot(), checkpoint, 'full DTO matches before a warm frame');
+      const restored = fresh.objects.objects.get(baseID).implementation;
+      assert.notEqual(restored, base);
+      assert.equal(restored.state.changed, 0x80000000);
+      const caller = await inputEnableInvoke(fresh, 'return.kcs', [
+        fresh.nativeTaskID(baseID),
+        0xffffffff,
+      ]);
+      assert.equal(
+        await fresh.sendNativeEngine(fresh.nativeTaskID(baseID), caller.task.id, 6, 0, 0, {
+          flags: 0,
+        }),
+        0xffffffff,
+      );
+      assert.equal(restored.state.changed, 0);
+      assert.deepEqual(scene.snapshot(), checkpoint, 'the source owner is isolated');
+      assert.equal(nativeABI(profile).tables.main.entries[108].name, 'plane.setInputReturn');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[455].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      for (const current of [scene, fresh])
+        assert.ok(!current.nativeEngine && !current.nativeEngineLoading);
     } finally {
       await fresh?.close();
       await scene.close();

@@ -697,3 +697,22 @@ continuation/canaries, cold fullDTO restoration without call replay, fresh
 isolation and close cleanup are checked. The supported owned ordinary Plane
 domain does not certify arbitrary native pointers or every render family or
 pixel variant. All other native admissions and signatures remain unchanged.
+
+## SDK Main108 input return word
+
+The independently recovered SDK Main108 wrapper accepts a native task ID and a
+raw 32-bit return word, sends canonical94 with w0/flags0 even for target0, and
+returns control2 without writing a VM result. Its own Base receiver stores the
+whole word in its existing return/changed state; normal message4/5/6 polls return
+it and clear it. This is separate from Input registration, enable/active/hover
+state and model dirtiness. The existing normal receiver is reused. A zero-target
+send preserves normal namespace routing without inventing a Root response.
+
+The shared catalog label is corrected from `plane.setMode` to
+`plane.setInputReturn(task,value)` with the existing two-word/raw32/void signature.
+Only SDK108 is newly admitted (818 recovered,90 unknown); the Game's existing
+admission remains. Main109/110 and all other unknown slots/profiles retain their
+guards. Real dual-ABI GCALL tests cover raw high words, unregistered Base and
+loaded SimplePlane owners, poll/clear, zero transport, cold full DTO restoration
+and owner isolation. This short coverage does not claim a completed official SDK
+tutorial or a new long-case pass.
