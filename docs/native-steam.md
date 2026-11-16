@@ -45,7 +45,16 @@ Steam Video interface for a side effect, ignores both its return and output,
 and reads the engine's raw broadcast flag only when its author-mode setting is
 nonzero. A missing Steam singleton bypasses that setting gate. Menu command
 `40096` toggles the actual engine flag; its checkmark refresh is author-mode
-gated. The flag remains part of the native process checkpoint.
+gated. Game owner initialization `7148F0 → 7126D0` explicitly stores zero at
+`712820` in owner `+27EC4`; `713F60` and `713F70` write/read that entire DWORD.
+The ordinary `NativeWindow` owns this raw flag and checkpoints it in
+`World.window.broadcastFlag`, independently of Steam provider availability and
+its ignored query result. A menu event uses logical-not of the old word, and
+fresh restoration neither queries Steam nor replays the menu. Invalid saved
+words fail before any task is restored. Only an existing explicit original
+engine owner/loading uses the original getter/setter and process checkpoint;
+the SDK profile still has no broadcast capability. The original verifier
+identifies its already-open engine as that explicit owner.
 `scripts/verify-native-broadcast.mjs` compares 267 outcomes using the original
 helper, full menu toggle/refresh and the main `41E` return-title request.
 The latter posts window message `468`, which reaches the canonical Script

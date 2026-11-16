@@ -66,6 +66,7 @@ p.store(menu + 4, app);
 p.store(task + 120, 0x3456);
 const world = {
     profile,
+    nativeEngine: engine,
     configuration: { authorMode: 0 },
     ensureNativeEngine: async () => engine,
     host: { nativeMenuChecked: (...args) => modelChecks.push(args) },

@@ -7,6 +7,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { FESPlayer } from '../src/fes/player.mjs';
 
 test('failed Steam initialization retains its singleton and does not retry or invent platform availability', async () => {
   let attempts = 0;
@@ -141,4 +142,113 @@ test('World KCS and FES share one Steam cache across fresh checkpoint restoratio
     await steam.close();
   }
   assert.equal(shutdown, 1);
+});
+
+test('ordinary Game broadcast state follows actual FES queries, menu toggles and fresh-world checkpoints without an EXE', async () => {
+  let queries = 0;
+  const steam = new NativeSteam({
+      isBroadcasting: async () => {
+        queries++;
+        return false;
+      },
+    }),
+    first = make(steam),
+    fresh = make(steam),
+    rejected = make(steam),
+    checks = [];
+  for (const world of [first, fresh, rejected]) {
+    world.ensureNativeEngine = () => {
+      throw new Error('Ordinary broadcast attempted original CPU execution');
+    };
+    world.host.nativeMenuChecked = (...args) => checks.push(args);
+  }
+  const query = async (world) => {
+    const globals = {},
+      player = new FESPlayer(
+        memoryGame({
+          'broadcast.fes': new TextEncoder().encode(
+            '#START\nsteam_isbroadcast 7\nnext WAIT\n#WAIT\n',
+          ),
+        }),
+        {},
+        world.fesHost(world.objects.objects.get(world.main.id)),
+        globals,
+      );
+    await player.start('broadcast');
+    await player.step();
+    return globals[7];
+  };
+  try {
+    await first.initialize('main.kcs');
+    first.configuration.authorMode = 1;
+    assert.equal(await query(first), 0, 'The actual constructor initializes the raw flag to zero');
+    assert.equal(queries, 1);
+    first.window.post(0x111, 0xabcd0000 | 40096);
+    await first.processWindowMessages();
+    assert.deepEqual(checks, [[40096, true]]);
+    assert.equal(await query(first), 1, 'The platform observation result is ignored');
+    assert.equal(queries, 2);
+    first.configuration.authorMode = 0;
+    assert.equal(await query(first), 0, 'An allocated manager uses the author gate');
+    assert.equal(queries, 3);
+    const absent = new NativeSteam(null);
+    first.steamService = absent;
+    assert.equal(await query(first), 1, 'A missing singleton bypasses the author gate');
+    assert.equal(queries, 3);
+    first.steamService = steam;
+    first.window.post(0x111, 40096);
+    await first.processWindowMessages();
+    assert.deepEqual(
+      checks,
+      [[40096, true]],
+      'Toggling still changes state without refreshing a gated checkmark',
+    );
+    first.configuration.authorMode = 1;
+    assert.equal(await query(first), 0);
+    first.window.post(0x111, 40096);
+    await first.processWindowMessages();
+    const saved = structuredClone(first.snapshot()),
+      beforeQueries = queries;
+    assert.equal(saved.window.broadcastFlag, 1);
+    await first.close({ flushFiles: false });
+    const reads = [],
+      load = fresh.runtime.scheduler.load;
+    fresh.runtime.scheduler.load = function (...args) {
+      reads.push(args[0]);
+      return load.apply(this, args);
+    };
+    await fresh.restore(structuredClone(saved));
+    assert.deepEqual(fresh.snapshot(), saved, 'The entire DTO is present before a warm frame');
+    assert.equal(queries, beforeQueries, 'Restoration does not replay the platform query or menu');
+    assert.deepEqual(reads, ['main.kcs'], 'Only the immutable scheduler program is rebound');
+    assert.equal(fresh.frame, saved.frame);
+    assert.equal(fresh.nativeEngine, undefined);
+    assert.equal(await query(fresh), 1);
+    first.window.post(0x111, 40096);
+    assert.equal(first.windowMessages.length, 0, 'The old closed owner cannot queue a new toggle');
+    const invalid = structuredClone(saved);
+    invalid.window.broadcastFlag = -1;
+    await assert.rejects(rejected.restore(invalid), /broadcast.*checkpoint/i);
+    assert.equal(rejected.objects.objects.size, 0);
+    assert.equal(rejected.nativeEngine, undefined);
+    const raw = structuredClone(saved);
+    raw.window.broadcastFlag = 0x80000000;
+    await rejected.restore(raw);
+    assert.equal(await rejected.window.broadcast(), 0x80000000, 'The window returns the raw DWORD');
+    assert.equal(
+      await query(rejected),
+      -2147483648,
+      'FES setGlobal preserves its signed32 storage',
+    );
+    rejected.window.post(0x111, 40096);
+    await rejected.processWindowMessages();
+    assert.equal(
+      await query(rejected),
+      0,
+      'The actual menu toggle writes logical-not of the old raw word',
+    );
+  } finally {
+    for (const world of [first, fresh, rejected]) await world.close({ flushFiles: false });
+    await steam.close();
+  }
 });

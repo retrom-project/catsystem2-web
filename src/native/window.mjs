@@ -22,6 +22,21 @@ const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 4003
 export class NativeWindow {
   constructor(world) {
     this.world = world;
+    // The original Game owner constructor712820 initializes this raw DWORD.
+    this.broadcastFlag = 0;
+  }
+  snapshot() {
+    return { broadcastFlag: this.broadcastFlag };
+  }
+  restore(state) {
+    if (
+      !state ||
+      !Number.isInteger(state.broadcastFlag) ||
+      state.broadcastFlag < 0 ||
+      state.broadcastFlag > 0xffffffff
+    )
+      throw new Error('Invalid broadcast window checkpoint');
+    this.broadcastFlag = state.broadcastFlag;
   }
   get handle() {
     // One browser game view is the application's virtual Win32 window.
@@ -238,8 +253,11 @@ export class NativeWindow {
       await world.steamService.observeBroadcastQuery();
       if (!world.configuration.authorMode) return 0;
     }
-    const engine = await world.ensureNativeEngine();
-    return engine.call(0x713f70, [], engine.refs.owner);
+    if (world.nativeEngine || world.nativeEngineLoading) {
+      const engine = await world.ensureNativeEngine();
+      return engine.call(0x713f70, [], engine.refs.owner);
+    }
+    return this.broadcastFlag;
   }
   async command(word) {
     const command = word & 0xffff,
@@ -261,10 +279,13 @@ export class NativeWindow {
       return true;
     }
     if (command === 40096 && nativeABI(world.profile).capabilities.windowReturnTitle) {
-      const engine = await world.ensureNativeEngine(),
-        old = await engine.call(0x713f70, [], engine.refs.owner),
+      let next;
+      if (world.nativeEngine || world.nativeEngineLoading) {
+        const engine = await world.ensureNativeEngine(),
+          old = await engine.call(0x713f70, [], engine.refs.owner);
         next = Number(!old);
-      await engine.call(0x713f60, [next], engine.refs.owner);
+        await engine.call(0x713f60, [next], engine.refs.owner);
+      } else next = this.broadcastFlag = Number(!this.broadcastFlag);
       if (world.configuration.authorMode) world.host.nativeMenuChecked?.(40096, Boolean(next));
       return true;
     }

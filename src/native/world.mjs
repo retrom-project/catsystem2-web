@@ -1021,6 +1021,7 @@ export class NativeWorld {
       main: this.main.id,
       menu: [...this.menu],
       windowMessages: structuredClone(this.windowMessages),
+      window: this.window.snapshot(),
       configurationDirty: this.configurationDirty,
       runtime: this.runtime.snapshot(),
       graphics: this.graphics.snapshot(),
@@ -1051,6 +1052,7 @@ export class NativeWorld {
   async restore(state) {
     if (this.running || this.objects.objects.size)
       throw new Error('Native world restore requires a fresh, idle world');
+    this.window.restore(state.window);
     const module = nativeModuleMetadata(this.profile, state.nativeModule);
     if (
       this.nativeModule &&
