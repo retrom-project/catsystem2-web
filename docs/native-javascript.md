@@ -3,7 +3,7 @@
 The ordinary SDK kind 55 owner executes a finite JavaScript subset using a
 tokenizer, compiler and data-only instruction interpreter. It does not pass
 source to `eval`, `Function`, an embedded V8 or another JavaScript engine.
-KCS creates the real task with `42`, links its calling Script with `3CE`, and
+KCS creates the real task with `42`, links its calling Script banks and drawing target with `3CE`, and
 loads through the `javascript` resource category with `3CF`. Link and load
 retain control 2 with no VM output. Link creates the actual kind 6 base
 image-plane child named `js base button`; it is not a second Input owner.
@@ -11,15 +11,14 @@ The link then sends the actual rectangle/ancestor-depth packet and enables
 that child's region through its existing typed Input owner. Both messages keep
 transport flags 1; the rectangle's sixth word is separate Input metadata.
 
-This first slice supports function and `var` declarations, lexical function
+The normal interpreter supports function and `var` declarations, lexical function
 expressions and closures, parameters, return, assignment, increment,
 arithmetic, strict equality, conditional blocks and calls. Structural tokens
 are distinguished from quoted strings, including keyword and delimiter text.
 Function declarations directly in a program or function body are hoisted;
 block and conditional function declarations fail with a source span rather
-than applying unreviewed Annex B semantics. The `CsImage` constructor and its
-finite member-call slice are described below. The other host import is `cfExit`
-from a running callback, with an
+than applying unreviewed Annex B semantics. Finite Image/Plane/Sound methods, the explicit debug sink and motion queries are
+described below. `cfExit` from a running callback accepts an
 integer first argument or no argument (code zero). It updates the exit code and
 clears running, then returns `undefined` normally: the current JavaScript call
 continues, while subsequent logic frames do not call `GameLoop` again.
@@ -27,12 +26,14 @@ continues, while subsequent logic frames do not call `GameLoop` again.
 successful program execution and its exit completion, rather than writable
 emulations of process fields. Unsupported syntax and host imports fail with
 the source filename and span. Relinking, reloading, missing-source behavior,
-`3D0`/`3EE`, arbitrary host waits, and the official tutorial's plane/sound,
-position, display and MOT APIs remain outside this finite slice.
+`3D0`/`3EE` and arbitrary guest-scheduled host waits remain outside this finite
+implementation. Supported host methods do not imply general V8 or complete SDK
+API coverage; the official tutorial retains its separate integration gate.
 
 Checkpoints retain the program, lexical cells and closure references as data.
-Fresh restore does not execute source or callbacks, reload resources, or borrow
-the old World's mutable cells. Snapshots require a completed callback; an
+Fresh restore does not execute JavaScript source/callbacks, reload selector images,
+or borrow the old World's mutable cells. Required immutable audio/MOT preloads are
+accounted separately by their existing owners. Snapshots require a completed callback; an
 instruction-budget pause is not a finished frame. Close discards this task's
 VM and links while Base destruction releases its child. Closing clears the
 loaded/running state immediately. Source IO that completes after close is
@@ -61,7 +62,8 @@ source span. It does not emulate arbitrary V8 numeric coercion or modulo convers
 `undefined`; unsupported methods and argument forms fail with a source span.
 Image mode keeps the original base-anchor adjustment and normalizes the output
 bitmap's offsets and canvas to its physical extent. Scene mode preserves those
-source extents. No position, display, plane, animation or drawing API is enabled.
+source extents. Loading alone does not publish a drawable; the finite pose and
+Draw-target methods below opt into that path.
 
 A host load suspends the data interpreter at its call continuation. Only the
 adapter awaits the real IO Promise; its result resumes that call once, before
@@ -71,13 +73,12 @@ existing real bitmap outputs; fresh restore does not construct, reload, execute
 source, publish commands or draw RNG values.
 
 Without `setPlane`, the original CsImage virtual callback returns before its
-raw `113`/`11C`/`126` draw publications. This leaf therefore creates no drawable.
-Close still sends SDK raw `114` (Script canonical `278`) with the real calling
-Script target, JavaScript sender, context slot and flags zero. The ordinary
-Script/Base drawing consumer remains unimplemented; an unhandled transport
-result is not deletion success. Returning the local slot and releasing its owned
-bitmap are separate operations and do occur. The borrowed Script is retained;
-nonzero borrowed planes are outside this slice. IO completing after owner close
+raw `113`/`11C`/`126` draw publications, so an unbound Image creates no drawable.
+Close sends SDK raw `114` to its actual linked target with the real JavaScript
+sender, context slot and flags zero. A calling-Script target maps to canonical278
+and remains unhandled; that result is not deletion success. A Draw target maps to
+canonical281 and deletes its real alias. Slot return and owned-bitmap release are
+separate operations. Borrowed Script/Draw/Plane owners are retained. IO completing after owner close
 releases its output instead of resurrecting the object or continuing its guest.
 
 ## Original engine oracle
@@ -127,20 +128,23 @@ receiver returns the allocated SDK bank without a crossfade offset, and the
 original object sends volume and play to that bank. In Chromium the official
 sample decodes and plays `bgm.int/bgm01.ogg` on its allocated channel.
 
-The official tutorial browser test enters through the original title and
-choice menus. Its original `CsPlane` moves while the soundtrack plays. The
-test restores mid-motion into a fresh process with the same rendered pixels,
-verifies the plane advances and hides at the end of its 300-frame motion,
-then waits for the original sound stop fade and the return to the scene.
+The normal official-tutorial browser gate enters through real title and choice
+menus, checks moving Plane pixels and the actual soundtrack, restores mid-motion
+into a fresh World, and retains its 300-frame completion/fade/scene-return/removal
+assertions. Physical pointer observations remain in the explicit original-owner
+helper. Host unit coverage is not a pass of that full browser gate.
 
-The finite normal SDK host also accepts `new CsPlane(width, height, u, v, priority)`
-with five signed32 integers and positive dimensions. Omitted arguments and other
-methods, including motion methods, remain unsupported with source spans. The own
+## Ordinary CsPlane children
+
+The finite normal SDK host accepts `new CsPlane(width, height, u, v, priority)`
+with five signed32 integers and positive dimensions. Omitted constructor arguments
+remain unsupported with source spans; finite methods are described below. The own
 constructor creates a real kind2 child under the kind55 controller, not under its
 borrowed calling Script. The returned native task ID is resolved separately from
 its World ID. For nonzero child IDs, existing graphics packets create a VRAM type1 graph and preserve the
 independent w1 texture-position and w0 physical vectors, and start with display0.
-This does not create a solid-rectangle substitute or implement CsImage.setPlane.
+This creates a VRAM Plane rather than a solid-rectangle substitute; explicit
+CsImage binding uses the Draw target described below.
 
 Plane host references use the existing NativeHandles registry and point to actual
 World children. Graph/MOT/Input state stays in its existing authority. Constructor
@@ -149,9 +153,8 @@ creation is pending releases the late child before any guest continuation. Close
 preserves the native child-ID0 guard; for nonzero IDs it sends canonical3. It
 releases the actual owned child while retaining the borrowed Script.
 Settled fresh restore validates both CsImage and CsPlane references and restores
-actual graph state without source, image, command or RNG replay. This finite leaf
-does not establish arbitrary V8 conversion, default constructor arguments, motion
-execution, or the official scene's complete drawing path.
+actual graph state without source, image, command or RNG replay. Constructor coverage does not establish arbitrary V8 conversion, default arguments
+or the official scene's complete drawing path; finite motion is specified next.
 
 ## Finite CsPlane motion and Context busy query
 
