@@ -7,10 +7,14 @@ import {
   until,
   clickNativeButton,
   pixels,
-  startupWindow,
+  normalStartupWindow,
+  guardNormalOriginalCPU,
 } from './native-game-input.mjs';
 
-// Current key-free SDK fixture; the native engine/profile identity is unchanged.
+// This suite explicitly observes the normal Core/World/DOM contract. Physical
+// observations remain in native-sdk-original-oracles.mjs, pending an explicitly
+// owned original startup entry; they are never selected by if(nativeEngine).
+// Current key-free SDK fixture; the engine/profile identity is unchanged.
 const sourceIdentity = 'b30209ee1e149609f960b1beb82036029513d89c1bb3d49635634d4ccb25b272';
 const profile = 'sdk-4.01-engine-2.6.1.74';
 
@@ -40,6 +44,46 @@ async function writeSetup(page, logLimit) {
   );
 }
 
+// Observe real owners before initialization; all wrappers return the original result.
+async function observeNormalSDKWorlds(page) {
+  await page.evaluate(async () => {
+    const { CatSystem2 } = await import('/src/engine.mjs'),
+      trace = { worlds: [], restoring: false, calls: [], commands: [] },
+      create = CatSystem2.prototype.createNativeWorld;
+    CatSystem2.prototype.createNativeWorld = function (...args) {
+      const world = create.apply(this, args),
+        owner = trace.worlds.length;
+      trace.worlds.push(world);
+      for (const [object, name, method] of [
+        [world.window, 'post', 'window post'],
+        [world.window, 'command', 'window command'],
+        [world.window, 'sendEvent', 'window event'],
+        [world.runtime, 'native', 'VM native'],
+        [world.runtime.scheduler, 'execute', 'script execute'],
+        [world.random.integer, 'nextUint32', 'MT integer'],
+        [world.random.real, 'nextUint32', 'MT real'],
+      ]) {
+        const original = object[name];
+        object[name] = function (...parameters) {
+          if (method === 'window command')
+            trace.commands.push({ owner, command: parameters[0] & 65535 });
+          if (trace.restoring) trace.calls.push({ owner, method });
+          return original.apply(this, parameters);
+        };
+      }
+      return world;
+    };
+    window.normalSDKObservation = trace;
+  });
+}
+async function normalSDKCommands(page) {
+  return page.evaluate(() => {
+    const trace = window.normalSDKObservation,
+      owner = trace.worlds.indexOf(window.catSystem2.world);
+    return trace.commands.filter((entry) => entry.owner === owner).map((entry) => entry.command);
+  });
+}
+
 async function startSDK(page) {
   const response = await page.request.get('/game.json');
   expect(response.ok(), 'Mount the frozen SDK system directory on CAT2_SDK_URL').toBe(true);
@@ -47,6 +91,8 @@ async function startSDK(page) {
   await frameClock(page);
   await page.goto('/');
   await writeSetup(page, 647);
+  await guardNormalOriginalCPU(page);
+  await observeNormalSDKWorlds(page);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
@@ -54,37 +100,74 @@ async function startSDK(page) {
     { polling: 100, timeout: 180_000 },
   );
   expect(await state(page)).toMatchObject({ error: '', profile, source: sourceIdentity });
-  expect(await startupWindow(page)).toEqual({
-    handle: 1,
+  const startup = await normalStartupWindow(page);
+  expect(startup).toMatchObject({
+    ordinary: true,
     client: [800, 600],
-    nativeTitle: true,
-    inputOwner: true,
-    acceleratorCount: 4,
-    applicationHook: true,
-    displayOwner: true,
+    inputAliases: true,
+    ownerKinds: [11, 13],
+    soundCapacity: [32, 32, 32],
     graphicsOwner: true,
-    graphicsWorker: false,
-    graphicsTasks: true,
-    soundBankCount: 32,
-    soundWorker: true,
+    schedulerFrame: true,
   });
+  expect(startup.title).toBe(startup.configuredTitle);
+  expect(startup.acceleratorRows).toEqual([
+    [19, 112, 40021],
+    [19, 13, 40012],
+    [19, 115, 40002],
+    [3, 45, 40030],
+  ]);
 }
 
 async function restoreFresh(page) {
-  expect(
-    await page.evaluate(async () => {
-      const engine = window.catSystem2,
-        old = engine.world;
-      await engine.restore(await engine.snapshot());
-      await engine.render();
-      return (
-        engine.world !== old &&
-        engine.world.nativeEngine.refs.nativeOwner &&
-        old.nativeEngine.closed &&
-        !old.nativeEngine.refs.applicationGraphics
-      );
-    }),
-  ).toBe(true);
+  const restored = await page.evaluate(async () => {
+    const engine = window.catSystem2,
+      old = engine.world,
+      saved = await engine.snapshot(),
+      trace = window.normalSDKObservation,
+      callStart = trace.calls.length;
+    trace.restoring = true;
+    try {
+      await engine.restore(saved);
+    } finally {
+      trace.restoring = false;
+    }
+    const world = engine.world,
+      owner = trace.worlds.indexOf(world),
+      current = world.snapshot(),
+      calls = trace.calls.slice(callStart);
+    // Capture the first restored DTO before render or any frame execution.
+    return {
+      fresh:
+        world !== old &&
+        world.main !== old.main &&
+        world.main.machine.memory.buffer !== old.main.machine.memory.buffer,
+      oldReleased:
+        old.closed &&
+        old.objects.objects.size === 0 &&
+        old.runtime.scheduler.tasks.size === 0 &&
+        old.runtime.handles.records.size === 0,
+      ordinary: world.nativeEngine === undefined && world.nativeEngineLoading === undefined,
+      aliases:
+        engine.nativeRuntime === world.runtime &&
+        engine.nativeConfiguration === world.configuration &&
+        engine.inputBindings === world.inputBindings &&
+        engine.stageRenderer === world.stageRenderer &&
+        engine.random === world.random,
+      frame: world.frame,
+      savedFrame: saved.world.frame,
+      current,
+      saved: saved.world,
+      freshCalls: calls.filter((entry) => entry.owner === owner),
+      oldCleanupCalls: calls.filter((entry) => entry.owner !== owner),
+    };
+  });
+  expect(restored).toMatchObject({ fresh: true, oldReleased: true, ordinary: true, aliases: true });
+  expect(restored.frame).toBe(restored.savedFrame);
+  expect(restored.current).toEqual(restored.saved);
+  expect(restored.freshCalls).toEqual([]);
+  // Old-owner teardown is recorded separately, never relabelled as fresh replay.
+  await page.evaluate(() => window.catSystem2.render());
 }
 
 test('the original SDK accelerator consumes Alt+Enter and leaves bare Enter with native input', async ({
@@ -110,13 +193,13 @@ test('the original SDK accelerator consumes Alt+Enter and leaves bare Enter with
     await page.keyboard.up('Enter');
     await page.keyboard.up('Alt');
   };
+  const beforeToggle = await normalSDKCommands(page);
   await toggle();
   expect(await enter()).toEqual({ held: 0, fullscreen: true });
-  expect(
-    await page.evaluate(() => window.catSystem2.world.nativeEngine.kernel.messageQueue.last),
-  ).toMatchObject({ message: 0x104, wParam: 13, keyboard: { modifiers: 16 } });
+  expect((await normalSDKCommands(page)).slice(beforeToggle.length)).toEqual([40012]);
   await toggle();
   expect(await enter()).toEqual({ held: 0, fullscreen: false });
+  expect((await normalSDKCommands(page)).slice(beforeToggle.length)).toEqual([40012, 40012]);
   await restoreFresh(page);
   await page.keyboard.press('Alt+F1');
   const frame = step(page, 2);
@@ -131,7 +214,7 @@ test('the original SDK accelerator consumes Alt+Enter and leaves bare Enter with
 async function freshAtSameFrame(page) {
   const before = await state(page),
     image = await pixels(page),
-    nativeWindow = await startupWindow(page);
+    normalWindow = await normalStartupWindow(page);
   expect(image.colors).toBeGreaterThan(32);
   await restoreFresh(page);
   // Host call history and heap instrumentation are observations, not checkpoint state.
@@ -142,7 +225,7 @@ async function freshAtSameFrame(page) {
   }
   expect(restored).toEqual(before);
   expect(await pixels(page)).toEqual(image);
-  expect(await startupWindow(page)).toEqual(nativeWindow);
+  expect(await normalStartupWindow(page)).toEqual(normalWindow);
   return image;
 }
 
@@ -171,30 +254,10 @@ test('official SDK starts with saved setup and restores the title and tutorial c
   page.on('pageerror', (error) => errors.push(error.message));
   await startSDK(page);
   expect(
-    await page.evaluate(() => {
-      const { nativeEngine: engine, configuration } = window.catSystem2.world,
-        { owner, settings, defaultSettings, nativeOwner } = engine.refs;
-      return {
-        nativeOwner,
-        distinctSettings: owner < settings && settings < defaultSettings,
-        nativeFontEnumeration: engine.kernel.calls.get('gdi32.dll!EnumFontFamiliesA'),
-        executableResources: engine.kernel.calls.get('kernel32.dll!FreeResource'),
-        com: engine.kernel.comDepth,
-        nativeRandom: Boolean(engine.refs.randomOwner),
-        nativeLocalTime: engine.kernel.calls.get('kernel32.dll!GetLocalTime'),
-        logLimit: new DataView(configuration.blocks[1].buffer).getUint32(9 * 4, true),
-      };
-    }),
-  ).toEqual({
-    nativeOwner: true,
-    distinctSettings: true,
-    nativeFontEnumeration: 2,
-    executableResources: 3,
-    com: 2, // WinMain and the original CsSound owner both initialize the application apartment.
-    nativeRandom: true,
-    nativeLocalTime: 2,
-    logLimit: 647,
-  });
+    await page.evaluate(() =>
+      new DataView(window.catSystem2.world.configuration.blocks[1].buffer).getUint32(9 * 4, true),
+    ),
+  ).toBe(647);
   await until(page, 'title#WAIT', 360);
   await writeSetup(page, 389);
   const title = await freshAtSameFrame(page);
@@ -264,6 +327,9 @@ async function advanceSDKDialogue(page) {
   await step(page, 6);
 }
 
+// The normal kind55 owner is not implemented by this author change. Keep this
+// original pointer lifecycle exact; normal execution remains blocked until its
+// genuine owner and lifecycle observer are separately implemented. No fake flags.
 const sdkJavaScriptState = (page) =>
   page.evaluate(() => {
     const { world, audio } = window.catSystem2,
