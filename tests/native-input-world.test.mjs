@@ -10,6 +10,7 @@ import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import {
   ordinaryStartupGame,
@@ -561,3 +562,67 @@ test('ordinary Core blur fully releases touch recognizers while retaining the or
     environment.restore();
   }
 });
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} ordinary pointer-only requests require explicit original ownership without changing owned VM data`, async () => {
+    const world = await dataWorld(profile),
+      features = [];
+    try {
+      const feature = world.getNativeFeature;
+      world.getNativeFeature = function (...args) {
+        features.push(args[0]);
+        return feature.apply(this, args);
+      };
+      const task = world.main,
+        machine = task.machine,
+        call = (id, args, caller = task) =>
+          world.runtime.native('main', id, args, caller.machine, caller),
+        physical = /explicit original-engine ownership/;
+      machine.store(0, 0x73abcdef);
+      machine.store(4, 0x19badace);
+      await assert.rejects(world.input.message(91, 0, 0, { payload: machine }), physical);
+      await assert.rejects(call(0x4a, [0]), physical);
+      const top = await world.objects.create({
+          kind: 1,
+          nativeID: 1,
+          name: 'Pointer boundary Top',
+        }),
+        inner = await world.spawnScript('case.kcs', { parent: top });
+      assert.equal(world.objects.objects.get(top).nativeID, 1);
+      await assert.rejects(call(0x191, [1], inner), physical);
+      await assert.rejects(
+        world.sendEngine(task.id, task.id, 174, 0, 0, { payload: machine }),
+        physical,
+      );
+      world.runtime.sceneData(task, true);
+      assert.ok(task.context.sceneData);
+      await assert.rejects(
+        world.sendEngine(task.id, task.id, 175, 0, 4, { payload: machine }),
+        physical,
+      );
+      await assert.rejects(call(0x23b, [world.nativeTaskID(task.id), 0x60000000]), physical);
+      assert.equal(machine.load(0), 0x73abcdef);
+      assert.equal(machine.load(4), 0x19badace);
+      assert.deepEqual(
+        features,
+        [],
+        'Normal requests must fail before acquiring an original feature',
+      );
+      const address = world.runtime.vmDataAddress(task.id, machine),
+        memory = world.runtime.imageDataBuffers.process,
+        packets = [],
+        send = world.sendNativeEngine;
+      assert.equal(memory.contains(address, 4), true);
+      world.sendNativeEngine = function (...args) {
+        packets.push(args.slice(0, 5));
+        return send.apply(this, args);
+      };
+      assert.deepEqual(await call(0x23b, [world.nativeTaskID(task.id), address]), { control: 2 });
+      assert.deepEqual(packets.at(-1), [world.nativeTaskID(task.id), task.id, 445, 0, 0x73abcdef]);
+      assert.deepEqual(features, []);
+      assert.equal(world.nativeEngine, undefined);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+}

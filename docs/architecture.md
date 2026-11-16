@@ -180,3 +180,11 @@ Steam 账号状态、系统剪贴板等外部服务不会由游戏 checkpoint �
 引擎仓库拥有源码、测试和 standalone 产物。当前不修改 runtime Provider、Target、adapter
 或生产 lock。独立实现验收之后，再完成入口探测、内容加载、输入生命周期、checkpoint、
 缓存、发行及 Retrom 产品中的真实验收。
+
+普通 API 不会为物理对象指针请求隐式创建原进程。Root 类型查询保留的 caller 指针、
+Script 174 的 C++ 解释器指针和 Script 175 的 CST reader/history 指针都要求已经明确存在
+original owner；它们不等同 Script 163/D0 的真实 VM 数据借用地址。Script 23B 继续通过
+唯一 NativeBufferMemory 读取拥有或借用的字节；外部未拥有地址只能由明确原 owner 读取。
+没有 SceneData 的 175仍写实际空指针，未加载解释器的 174仍保留原未写回行为。
+这些边界是尚未实现的普通物理布局域，不代表对应 C++布局已正常化；不会伪造 0、句柄、
+第二 heap或通过普通 loading/restoring状态打开原后端。显式原 oracle 保留原物理分支。

@@ -93,6 +93,10 @@ export function nativeTask(id, args, machine, task, services) {
             if (value !== NATIVE_UNWRITTEN_WORD) return result(nativeEngineWord(value));
             // The original wrapper passes its initialized caller pointer as
             // the reply word. A routed receiver can leave that word intact.
+            if (!world.nativeEngine && !world.nativeEngineLoading)
+              throw new Error(
+                'A retained Root query caller pointer requires explicit original-engine ownership',
+              );
             return then(
               world.getNativeFeature('task-memory').then((memory) => memory.pointer(task.id)),
               result,

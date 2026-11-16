@@ -133,3 +133,11 @@ polling, restore in a fresh process, then execute native destruction. Authored
 public input, binding, control and World tests additionally verify independent
 Top namespaces, captures and pending browser events after restore. These tests
 do not establish equivalence with every physical controller or OS dialog.
+
+Physical object pointer requests are a separate oracle contract. Input91 returns
+an actual original kcInput object; an unwritten Root-to-Input query can retain
+its initialized physical caller pointer. Those paths require an already explicit
+original engine owner (or the explicit device-pointer provider). A normal request
+fails before acquiring an original feature; it does not manufacture zero, a
+World/native ID or an ordinary resource handle as a C++ object address. Complete
+owned0-key Root/Input queries and ordinary pointer coordinates remain unchanged.

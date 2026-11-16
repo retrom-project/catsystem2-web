@@ -417,11 +417,16 @@ export function createNativeScriptTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       if (id === 174) {
-        if (this.task)
+        if (this.task) {
+          if (!world.nativeEngine && !world.nativeEngineLoading)
+            throw new Error(
+              'A physical KCS interpreter pointer requires explicit original-engine ownership',
+            );
           memory().store(
             lParam,
             (await world.getNativeFeature('task-memory')).vmPointer(record.id),
           );
+        }
         return NATIVE_UNWRITTEN_WORD;
       }
       if (id === 172 || id === 173) {
@@ -507,6 +512,10 @@ export function createNativeScriptTask(world, record) {
       }
       if (id === 175) {
         const handle = record.context.sceneData;
+        if (handle && !world.nativeEngine && !world.nativeEngineLoading)
+          throw new Error(
+            'Physical CST reader/history pointers require explicit original-engine ownership',
+          );
         const [reader, history] = handle
           ? await (await world.getNativeFeature('scene-memory')).pointers(handle)
           : [0, 0];
@@ -599,9 +608,14 @@ export function installNativeScripts(world) {
       let value = 0;
       if (id === 0x23b && args[1]) {
         const memory = world.runtime.imageDataBuffers.process;
-        value = memory.contains(args[1], 4)
-          ? memory.load(args[1])
-          : (await world.ensureNativeEngine()).process.load(args[1]);
+        if (memory.contains(args[1], 4)) value = memory.load(args[1]);
+        else {
+          if (!world.nativeEngine && !world.nativeEngineLoading)
+            throw new Error(
+              'An external Script data address requires explicit original-engine ownership',
+            );
+          value = (await world.ensureNativeEngine()).process.load(args[1]);
+        }
       }
       await world.sendNativeEngine(args[0], task.id, message, 0, value);
       return nativeReply(2);

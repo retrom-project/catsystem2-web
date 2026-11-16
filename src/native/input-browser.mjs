@@ -156,6 +156,10 @@ export function createNativeInputBrowserServices(world, record, input, options =
     },
     devicePointer: async () => {
       if (options.devicePointer) return options.devicePointer();
+      if (!world.nativeEngine && !world.nativeEngineLoading)
+        throw new Error(
+          'A physical Input device pointer requires explicit original-engine ownership',
+        );
       return (await world.getNativeFeature('input-device')).pointer();
     },
   };
