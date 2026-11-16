@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from '../src/native/engine-message.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
@@ -430,4 +431,95 @@ test('ordinary Game D0 formats the actual header packet, pushes its native zero 
   } finally {
     await unknown.close();
   }
+});
+
+test('enclosed graphics packets reject unwritten operands while replacing ignored padding', async () => {
+  for (const profile of [game, sdk])
+    for (const envelope of [11, 12]) {
+      const world = await dataWorld(profile);
+      try {
+        const record = world.objects.objects.get(world.main.id),
+          original = record.implementation.message,
+          seen = [];
+        record.implementation.message = function (words, context, output) {
+          seen.push({ words: [...words], context, flags: context.flags });
+          return original.call(this, words, context, output);
+        };
+        for (const index of [2, 3, 4]) {
+          const words = [0x11111111, 0x22222222, 162, 0x80000000, 0xffffffff, 0xa5a5f00d];
+          words[index] = undefined;
+          const payload = new NativeGraphicsPacket(words, { unwritten: [index] }),
+            before = structuredClone(world.snapshot()),
+            context = { payload, flags: 0x13572468 };
+          await assert.rejects(
+            world.engineMessages.dispatch(
+              world.root,
+              world.main.id,
+              envelope,
+              envelope === 12 ? 12 : 0,
+              0,
+              context,
+            ),
+            /Enclosed message.*initialized 32-bit output word/,
+          );
+          assert.deepEqual(world.snapshot(), before);
+          assert.deepEqual(seen, []);
+          assert.equal(record.scriptEnabled, 1);
+          assert.equal(context.flags, 0x13572468);
+          assert.deepEqual(
+            Array.from({ length: 6 }, (_, i) => payload.load(i * 4)),
+            words,
+          );
+        }
+        const words = [undefined, undefined, 162, 0x80000000, 0xffffffff, undefined],
+          payload = new NativeGraphicsPacket(words, { unwritten: [0, 1, 5] }),
+          reads = [],
+          context = {
+            flags: 0x13572468,
+            payload: {
+              load(at) {
+                reads.push(at);
+                return payload.load(at);
+              },
+            },
+          };
+        await world.engineMessages.dispatch(
+          world.root,
+          world.main.id,
+          envelope,
+          envelope === 12 ? 12 : 0,
+          0,
+          context,
+        );
+        assert.equal(record.scriptEnabled, 0);
+        assert.equal(record.implementation.machine.executionMode, 0);
+        assert.equal(seen.length, 1);
+        assert.deepEqual(seen[0].words, [
+          world.nativeTaskID(world.main.id),
+          162,
+          0x80000000,
+          0xffffffff,
+        ]);
+        assert.equal(seen[0].context, context);
+        assert.equal(seen[0].flags, 0);
+        assert.deepEqual(
+          [...new Set(reads)].sort((a, b) => a - b),
+          [0, 4, 8, 12, 16, 20],
+        );
+        assert.deepEqual(
+          Array.from({ length: 6 }, (_, i) => payload.load(i * 4)),
+          words,
+        );
+        const short = new DataView(new ArrayBuffer(20));
+        await assert.rejects(
+          world.engineMessages.dispatch(world.root, world.main.id, envelope, 0, 0, {
+            payload: { load: (at) => short.getUint32(at, true) },
+          }),
+          RangeError,
+        );
+        assert.equal(world.nativeEngine, undefined);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
 });

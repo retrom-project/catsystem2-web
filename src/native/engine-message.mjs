@@ -57,7 +57,7 @@ const putBytes = (memory, address, bytes) => {
   else throw new Error('Native task message requires writable sender memory');
 };
 const readWord = (memory, address) => {
-  if (typeof memory.load === 'function') return memory.load(address) >>> 0;
+  if (typeof memory.load === 'function') return memory.load(address);
   const bytes = bytesAt(memory, address, 4);
   return new DataView(bytes.buffer, bytes.byteOffset, 4).getUint32(0, true);
 };
@@ -610,6 +610,8 @@ export class NativeEngineMessages {
     if (packet[2] === 11 || packet[2] === 12) {
       const memory = this.memory(packet.senderWorldID, context),
         embedded = Array.from({ length: 6 }, (_, i) => readWord(memory, packet[4] + i * 4));
+      for (const i of [2, 3, 4])
+        embedded[i] = nativeEngineWord(embedded[i], `Enclosed message word ${i}`);
       embedded[0] = idOf(record);
       embedded[1] = packet[1];
       embedded[5] = 0;

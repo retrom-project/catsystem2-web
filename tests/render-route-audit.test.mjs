@@ -21,8 +21,12 @@ for (const profile of Object.keys(NATIVE_ABIS))
         handles: new NativeHandles(),
         register: (_table, id, handler) => handlers.set(id, handler),
       },
-      sendNativeEngine(_target, _sender, message) {
+      sendNativeEngine(_target, _sender, message, _w, _l, context) {
         messages.push(message);
+        if (message === 61)
+          [0x3f800000, 0x40000000, 0x40400000].forEach((word, i) =>
+            context.payload.store(i * 4, word),
+          );
         return 0;
       },
     };

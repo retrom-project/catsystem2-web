@@ -24,6 +24,10 @@ that source word as undefined scratch padding; it is not the receiver's flags.
 Ordinary messages retain their supplied flags. The envelope does not initialize
 the output word: receivers retain their normal output behavior, so a write by
 one receiver remains visible when a later receiver leaves it untouched.
+All six source words must remain addressable. Explicitly unwritten destination,
+sender and flags padding is allowed because the decoder replaces those fields.
+The decoded message, w and l must be initialized DWORDs; an unwritten operand is
+rejected before invoking any receiver, rather than becoming a numeric zero.
 
 ## Identity and route maps
 

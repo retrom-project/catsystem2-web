@@ -51217,7 +51217,7 @@
     },
     {
       "file": "src/native/engine-message.mjs",
-      "sourceSha256": "1f479c2fc98d0bbb26141610061956f5be4071300d6feb289716f3931c7d896d",
+      "sourceSha256": "89eaf8d28b0b3637db26c29290bc6737b738855e97e35132dd6a110bc8ba2e8c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 18, "calls": 0, "references": 0 },
@@ -51227,7 +51227,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 667,
+          "line": 669,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
