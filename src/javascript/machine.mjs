@@ -88,7 +88,7 @@ export class JavaScriptMachine {
     )
       throw new Error('Invalid JavaScript host continuation');
     state.waiting = null;
-    frame.stack.push(value);
+    frame.stack.push(Object.hasOwn(waiting, 'assignmentValue') ? waiting.assignmentValue : value);
   }
   run(host, budget = 100000) {
     const { state } = this;
@@ -201,6 +201,20 @@ export class JavaScriptMachine {
             throw scriptError('Unsupported JavaScript syntax', location, 'constructor');
           const result = complete(host({ construct: target.host }, args, location), frame);
           if (result) return result;
+          break;
+        }
+        case 'member-set': {
+          const assigned = stack.pop(),
+            receiver = stack.pop();
+          const result = complete(
+            host({ receiver, member: arg, assignment: true }, [assigned], location),
+            frame,
+          );
+          if (result) {
+            state.waiting.assignmentValue = assigned;
+            return result;
+          }
+          stack[stack.length - 1] = assigned;
           break;
         }
         case 'member-call': {

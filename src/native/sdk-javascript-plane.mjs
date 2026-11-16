@@ -39,6 +39,37 @@ export class SDKJavaScriptPlanes {
   }
   host(operation, args, location) {
     this.checkOpen();
+    if (operation.member === 'setPos' || operation.member === 'setDisp') {
+      const valid =
+        operation.member === 'setPos'
+          ? args.length <= 3 &&
+            args.every((value) => typeof value === 'number' && Number.isFinite(Math.fround(value)))
+          : args.length <= 1 && (!args.length || [false, true, 0, 1].includes(args[0]));
+      if (!valid)
+        throw scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'CsPlane finite pose arguments',
+        );
+      const plane = this.world.runtime.handles.get(
+        operation.receiver.hostObject,
+        'javascript-plane',
+      );
+      this.child(plane, true);
+      if (this.busy(plane))
+        throw scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'CsPlane pose while motion is active',
+        );
+      return {
+        wait: {
+          planeState: operation.receiver.hostObject,
+          operation: operation.member,
+          args: [...args],
+        },
+      };
+    }
     if (operation.member === 'motMove') {
       const valid =
         Array.isArray(args) &&
@@ -247,6 +278,28 @@ export class SDKJavaScriptPlanes {
       await registry.get(plane.motion);
       this.checkOpen();
     }
+  }
+  async completeState(request) {
+    this.checkOpen();
+    const plane = this.world.runtime.handles.get(request.planeState, 'javascript-plane'),
+      state = this.modelState(plane);
+    if (request.operation === 'setPos') {
+      const position = motionVector(state, MOTION_ABI.pos);
+      request.args.forEach((value, i) => {
+        position[i] = Math.fround(value);
+      });
+      setMotionVector(state, MOTION_ABI.pos, position);
+    } else if (request.operation === 'setDisp') {
+      if (request.args.length)
+        new DataView(state.buffer, state.byteOffset, state.byteLength).setUint32(
+          MOTION_ABI.display,
+          Number(Boolean(request.args[0])),
+          true,
+        );
+    } else throw new Error('Invalid JavaScript Plane pose continuation');
+    await this.publish(plane, state);
+    if (plane.motion !== undefined) this.manager(plane).base.set(state);
+    return undefined;
   }
   async complete(request) {
     this.checkOpen();

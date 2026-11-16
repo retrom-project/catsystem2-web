@@ -10,6 +10,7 @@ import { canonicalMessage } from './control-task.mjs';
 import { SDKJavaScriptImages } from './sdk-javascript-image.mjs';
 import { SDKJavaScriptPlanes } from './sdk-javascript-plane.mjs';
 import { SDKJavaScriptSounds } from './sdk-javascript-sound.mjs';
+import { NativeGraphicsPacket } from './graphics-task.mjs';
 
 const decoder = new TextDecoder('shift_jis', { fatal: true });
 
@@ -40,14 +41,34 @@ export class NormalSDKJavaScriptTask {
   }
   async attach(caller, owner) {
     if (this.link) throw new Error('JavaScript relinking is outside the ordinary execution slice');
-    if (this.world.resolveTaskID(owner, caller.id) !== caller.id)
-      throw new Error('JavaScript link requires its calling Script owner');
+    const targetID = this.world.resolveTaskID(owner, caller.id),
+      target = this.world.objects.objects.get(targetID);
+    if (
+      !target ||
+      (target.kind !== 15 && targetID !== caller.id) ||
+      target.namespace !== this.record.namespace
+    )
+      throw new Error('JavaScript link requires its calling Script or owned Draw target');
     this.world.runtime.stringBank(caller);
     this.link = {
       script: caller.id,
+      target: targetID,
+      offset: null,
       strings: caller.context.stringBank,
       variables: caller.context.variableBank || 0,
     };
+    if (target.kind === 15) {
+      const packet = new NativeGraphicsPacket([0xffffffff, 0xffffffff]);
+      await this.world.sendNativeEngine(
+        target.nativeID,
+        this.record.id,
+        canonicalMessage(this.world.profile, 15, 279),
+        0,
+        4,
+        { flags: 0, payload: packet },
+      );
+      this.link.offset = [packet.load(0) | 0, packet.load(4) | 0];
+    }
     const name = Uint8Array.from([...encodeCP932('js base button'), 0]),
       payload = {
         bytes(address, size) {
@@ -116,6 +137,12 @@ export class NormalSDKJavaScriptTask {
         !['javascript-image', 'javascript-plane', 'javascript-sound'].includes(record.type)
       )
         throw scriptError('Unsupported JavaScript host import', location, 'invalid host reference');
+      if (name.assignment && (record.type !== 'javascript-image' || name.member !== 'disp'))
+        throw scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'unknown host property assignment',
+        );
       if (record.type === 'javascript-sound') return this.sounds.host(name, args, location);
       return (record.type === 'javascript-plane' ? this.planes : this.images).host(
         name,
@@ -199,11 +226,13 @@ export class NormalSDKJavaScriptTask {
       } else
         value = await (Object.hasOwn(result.request, 'sound')
           ? this.sounds.complete(result.request)
-          : Object.hasOwn(result.request, 'plane')
-            ? this.planes.complete(result.request)
-            : Object.hasOwn(result.request, 'motion')
-              ? this.planes.completeMotion(result.request)
-              : this.images.complete(result.request));
+          : Object.hasOwn(result.request, 'planeState')
+            ? this.planes.completeState(result.request)
+            : Object.hasOwn(result.request, 'plane')
+              ? this.planes.complete(result.request)
+              : Object.hasOwn(result.request, 'motion')
+                ? this.planes.completeMotion(result.request)
+                : this.images.complete(result.request));
       if (this.closed) throw new Error('JavaScript image owner is closed');
       machine.resumeHost(value);
       result = machine.run((...args) => this.host(...args));
@@ -219,7 +248,10 @@ export class NormalSDKJavaScriptTask {
       machine.call('GameLoop', [frame >>> 0], (...args) => this.host(...args)),
     );
     // Native 50FA7F still runs this object phase after this callback's cfExit.
-    if (!this.closed) await this.planes.tick(frame >>> 0);
+    if (!this.closed) {
+      await this.planes.tick(frame >>> 0);
+      await this.images.tick(this.link);
+    }
   }
   snapshot() {
     return {
@@ -238,6 +270,18 @@ export class NormalSDKJavaScriptTask {
         this.world.objects.objects.get(state.child)?.kind !== 6
       )
         throw new Error('Invalid JavaScript linked owner checkpoint');
+      const target = this.world.objects.objects.get(state.link.target);
+      if (
+        !target ||
+        target.namespace !== this.record.namespace ||
+        (target.kind !== 15 && target.id !== script.id) ||
+        (target.kind === 15
+          ? !Array.isArray(state.link.offset) ||
+            state.link.offset.length !== 2 ||
+            !state.link.offset.every(Number.isInteger)
+          : state.link.offset !== null)
+      )
+        throw new Error('Invalid JavaScript linked drawing target checkpoint');
       this.world.runtime.handles.get(state.link.strings, 'string-bank');
       if (state.link.variables)
         this.world.runtime.handles.get(state.link.variables, 'variable-bank');

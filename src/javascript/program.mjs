@@ -228,9 +228,11 @@ class Parser {
       left = { type: 'binary', operator: token.value, left, right, location: token.location };
     }
     if (!minimum && this.accept('=')) {
-      if (left.type !== 'identifier') this.fail(this.token, 'assignment target');
+      if (left.type !== 'identifier' && left.type !== 'member')
+        this.fail(this.token, 'assignment target');
       left = {
-        type: 'assignment',
+        type: left.type === 'member' ? 'member-assignment' : 'assignment',
+        ...(left.type === 'member' ? { target: left.target } : {}),
         name: left.name,
         value: this.expression(),
         location: left.location,
@@ -358,6 +360,11 @@ export function compileJavaScript(source, name) {
         case 'assignment':
           expression(node.value);
           emit('set', node.name, where);
+          break;
+        case 'member-assignment':
+          expression(node.target);
+          expression(node.value);
+          emit('member-set', node.name, where);
           break;
         case 'increment':
           emit('increment', { name: node.name, prefix: node.prefix }, where);

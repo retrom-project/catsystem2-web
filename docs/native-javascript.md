@@ -265,3 +265,39 @@ The native SDK's default three debug gates and exact IAT identity remain unprove
 this explicit capability does not enable ABI unicodeOutput or establish default
 native debug-window equivalence. Non-ASCII/format/long-string/general V8 arguments
 remain outside the finite host domain.
+
+## Owned Draw target and finite Image/Plane pose
+
+The normal link keeps its calling Script/bank owner distinct from the resolved
+kind15 drawing target. A real Draw target is queried for its initialized output
+offset; the older calling-Script data-only domain remains supported. CsImage
+publishes exclusively through the existing Draw bitmap/alias consumer, with
+canonical280 bind,289 clip,299 layer and281 deletion. Script tasks gain no new
+drawable table. The first clip precedes bind and is a no-op for a missing entry,
+as in the own SDK receiver; Draw's existing behavior is preserved.
+
+`image.setPlane(plane)` borrows a live same-context CsPlane with a real nonzero
+child/model. Its fixed UV origin and extent determine the clip and image origin;
+the Plane's physical position remains its existing Graph/MOT authority. Image
+load preserves scene/image base conventions, and object tick emits the native
+60-byte bitmap descriptor only when dirty. `image.setPlane()` removes the actual
+Draw alias and returns its slot, without releasing the borrowed Plane/Draw/Script.
+Rebinding after detach and arbitrary/external Plane lifetime are outside this
+finite domain. Normal owner cleanup closes Images before Planes, matching the
+proved ownership without claiming native Plane destruction automatically detaches.
+
+Image and idle Plane `setPos` accept zero to three finite float32 numbers, keeping
+omitted components. `setDisp` accepts an optional boolean or0/1. These methods
+return `undefined`; active-MOT pose overrides and general V8/string forms remain
+unsupported. Plane methods publish through existing physical Graph packets and
+leave MOT to the existing manager. The Image `disp` property is independently
+proved to write its raw0/1 display/dirty fields; finite member assignment uses a
+located host setter and returns the original RHS, including through pure-data
+host waits. Unknown properties and general JavaScript objects remain unsupported.
+
+Actual Draw aliases, typed borrowed references, position/display/dirty and the
+caller banks restore with the full settled DTO before a warm frame, without
+source/image/native-command/RNG replay. Detach and close use actual Draw deletion
+and NativeImages reference counts; they do not destroy borrowed owners or revive
+late I/O. Owned tiny-HG3 tests check literal packets and actual bitmap pixels,
+separately from the original SDK tutorial's still-required integration gate.

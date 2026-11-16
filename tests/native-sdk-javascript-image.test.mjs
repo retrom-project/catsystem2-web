@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NativeWorld } from '../src/native/world.mjs';
 import { EngineHost } from '../src/host.mjs';
+import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { NormalSDKJavaScriptTask } from '../src/native/sdk-javascript-normal.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -28,20 +29,37 @@ const program = [
   '}',
 ].join('\n');
 
-function fixture(source = program, delay = false) {
+function fixture(source = program, delay = false, drawing = false) {
   const own = [37, [0x14, 64]],
     target = [37, [0x14, 68]],
     start = [
       [37, sentinel],
       [43, 0x44, 0],
       [38, 64],
+      ...(drawing
+        ? [
+            [37, 15],
+            own,
+            [37, 320],
+            [43, 0x42, 12],
+            [38, 72],
+            [37, [0x14, 72]],
+            [37, 12],
+            [37, 9],
+            [43, 0x100, 12],
+            [37, [0x14, 72]],
+            [37, 0],
+            [37, 0],
+            [43, 0x104, 12],
+          ]
+        : []),
       [37, 55],
       own,
       [37, 256],
       [43, 0x42, 12],
       [38, 68],
       target,
-      own,
+      drawing ? [37, [0x14, 72]] : own,
       [43, 0x3ce, 8],
       target,
       [37, 288],
@@ -54,6 +72,7 @@ function fixture(source = program, delay = false) {
         [
           [256, 'Owned image JS'],
           [288, 'image.js'],
+          ...(drawing ? [[320, 'Owned Draw target']] : []),
         ],
       ),
       'image.js': new TextEncoder().encode(source),
@@ -1383,5 +1402,211 @@ test('normal SDK cfLog rejects absent capability and closes an actual pending si
   } finally {
     permit();
     await f.world.close();
+  }
+});
+
+const drawingProgram = [
+  'var img=new CsImage(), alias=img, pl=new CsPlane(6,4,2,1,7);',
+  'var bound=img.setPlane(pl); img.setBaseType("scene"); var result=img.load("plain.hg3");',
+  'var moved=img.setPos(4,4), shown=img.setDisp(true); pl.setDisp(1); pl.setPos(-4);',
+  'var assigned=(img.disp=1), hidden;',
+  'function GameLoop(frame){if(frame===3) hidden=(img.disp=0);}',
+  'function detach(){img.setPlane();}',
+  'function rebind(){img.setPlane(pl);}',
+  'function invalid(){img.unknown=0;}',
+].join('\n');
+function drawingTask(world) {
+  return world.graphics.drawTasks.get(
+    world.resolveTaskID(world.main.machine.load(72), world.main.id),
+  );
+}
+function drawPackets(world) {
+  const packets = [],
+    original = world.sendNativeEngine;
+  world.sendNativeEngine = function (...args) {
+    const [target, sender, id, w, l, context] = args;
+    if ([280, 281, 289, 299].includes(id))
+      packets.push({
+        target,
+        sender,
+        id,
+        w,
+        l,
+        flags: context?.flags,
+        words: context?.payload
+          ? Array.from({ length: id === 280 ? 15 : 4 }, (_, i) => context.payload.load(l + i * 4))
+          : null,
+      });
+    return original.apply(this, args);
+  };
+  return packets;
+}
+async function invokeImageGuest(world, name) {
+  const implementation = task(world).implementation,
+    machine = implementation.machine;
+  await implementation.drain(
+    machine,
+    machine.call(name, [], (...args) => implementation.host(...args)),
+  );
+}
+test('normal SDK CsImage publishes through its real Draw target and finite Plane pose', async () => {
+  const f = fixture(drawingProgram + ' function assign(){assigned=(img.disp=1);}', false, true),
+    packets = drawPackets(f.world);
+  try {
+    await f.world.initialize('main.kcs');
+    await f.world.tick();
+    const draw = drawingTask(f.world),
+      image = hostImageByName(f.world, 'img'),
+      owner = task(f.world),
+      plane = f.world.runtime.handles.get(cell(f.world, 'pl').hostObject, 'javascript-plane');
+    assert.equal(owner.implementation.link.script, f.world.main.id);
+    assert.equal(owner.implementation.link.target, draw.record.id);
+    assert.notEqual(owner.implementation.link.script, owner.implementation.link.target);
+    assert.equal(draw.record.kind, 15);
+    assert.equal(image.plane, cell(f.world, 'pl').hostObject);
+    for (const name of ['bound', 'moved', 'shown']) assert.equal(cell(f.world, name), undefined);
+    assert.equal(cell(f.world, 'assigned'), 1);
+    assert.deepEqual(cell(f.world, 'img'), cell(f.world, 'alias'));
+    assert.deepEqual(
+      f.world.graphics.attachment(f.world.nativeTaskID(plane.child)).pos,
+      [-4, 0, 0],
+    );
+    assert.equal(f.world.graphics.attachment(f.world.nativeTaskID(plane.child)).display, true);
+    const entry = draw.state.renderer.items.find(
+      (x) => x.key === (owner.nativeID | (image.slot << 16)) >>> 0,
+    );
+    assert.deepEqual(entry.position, [6, 5]);
+    assert.deepEqual(entry.base, [5, 6]);
+    assert.equal(entry.visible, true);
+    assert.deepEqual(
+      entry.clip,
+      [0, 0, 12, 9],
+      'own native initial clip before bind is a missing-entry no-op',
+    );
+    assert.equal(entry.layer, 0);
+    assert.equal(
+      f.world.graphics.images.get(entry.image).dataHandle,
+      f.world.graphics.images.get(image.bitmap).dataHandle,
+    );
+    const expected = new Uint8ClampedArray(12 * 9 * 4);
+    expected.set(red, (3 * 12 + 4) * 4);
+    assert.deepEqual(
+      flipBitmapRows(await f.world.graphics.images.get(draw.state.renderer.bitmap).pixels(), 12, 9),
+      expected,
+    );
+    const ownPackets = packets.filter((x) => x.sender === owner.id);
+    assert.deepEqual(
+      ownPackets.map((x) => x.id),
+      [289, 280, 299],
+    );
+    assert.deepEqual(ownPackets[0].words, [2, 1, 8, 5]);
+    assert.deepEqual(ownPackets[1].words, [
+      image.bitmap,
+      0,
+      0,
+      0,
+      floatBits(6),
+      floatBits(5),
+      floatBits(5),
+      floatBits(6),
+      0,
+      floatBits(1),
+      floatBits(1),
+      255,
+      1,
+      0,
+      0,
+    ]);
+    assert.equal(
+      ownPackets.every(
+        (x) => x.target === draw.record.nativeID && x.flags === 0 && x.w === image.slot,
+      ),
+      true,
+    );
+    const implementation = owner.implementation,
+      machine = implementation.machine;
+    const waiting = machine.call('assign', [], (...args) => implementation.host(...args));
+    assert.equal(waiting.status, 'waiting');
+    assert.equal(machine.state.waiting.assignmentValue, 1);
+    assertData(machine.state.waiting);
+    assert.throws(() => f.world.snapshot(), /settled|pending|callback/);
+    await implementation.drain(machine, waiting);
+    assert.equal(cell(f.world, 'assigned'), 1);
+    await f.world.tick();
+    assert.equal(cell(f.world, 'hidden'), 0);
+    assert.equal(draw.state.renderer.items[0].visible, false);
+    assert.deepEqual(draw.state.renderer.items[0].clip, [2, 1, 8, 5]);
+    assert.deepEqual(
+      flipBitmapRows(await f.world.graphics.images.get(draw.state.renderer.bitmap).pixels(), 12, 9),
+      new Uint8ClampedArray(12 * 9 * 4),
+    );
+    await assert.rejects(
+      invokeImageGuest(f.world, 'invalid'),
+      /Unsupported JavaScript host import/,
+    );
+    assert.equal(f.events.original, 0);
+  } finally {
+    await f.world.close();
+  }
+});
+function hostImageByName(world, name) {
+  return world.runtime.handles.get(cell(world, name).hostObject, 'javascript-image');
+}
+test('normal SDK CsImage Draw aliases cold restore and detach without releasing borrowed owners', async () => {
+  const first = fixture(drawingProgram, false, true),
+    fresh = fixture(drawingProgram, false, true);
+  try {
+    await first.world.initialize('main.kcs');
+    await first.world.tick();
+    const dto = structuredClone(first.world.snapshot());
+    assertData(dto);
+    let draws = 0;
+    for (const generator of [fresh.world.random.integer, fresh.world.random.real]) {
+      const next = generator.nextUint32;
+      generator.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    await fresh.world.restore(structuredClone(dto));
+    assert.deepEqual(fresh.world.snapshot(), dto);
+    assert.deepEqual(fresh.events.reads, ['main.kcs']);
+    assert.deepEqual(fresh.events.native, []);
+    assert.deepEqual(fresh.events.packets, []);
+    assert.equal(draws, 0);
+    const sourceDraw = drawingTask(first.world),
+      draw = drawingTask(fresh.world),
+      image = hostImageByName(fresh.world, 'img'),
+      bitmap = image.bitmap;
+    assert.notEqual(sourceDraw.state, draw.state);
+    assert.notEqual(sourceDraw.state.renderer.items, draw.state.renderer.items);
+    assert.equal(
+      fresh.world.graphics.images.get(draw.state.renderer.items[0].image).dataHandle,
+      fresh.world.graphics.images.get(bitmap).dataHandle,
+    );
+    await first.world.objects.release(task(first.world).id);
+    assert.equal(sourceDraw.state.renderer.items.length, 0);
+    assert.equal(first.world.objects.objects.has(sourceDraw.record.id), true);
+    assert.equal(draw.state.renderer.items.length, 1);
+    await invokeImageGuest(fresh.world, 'detach');
+    assert.equal(draw.state.renderer.items.length, 0);
+    assert.equal(image.slot, 0);
+    assert.equal(image.plane, 0);
+    assert.deepEqual(
+      await fresh.world.graphics.images.get(bitmap).pixels(),
+      Uint8ClampedArray.from(red),
+    );
+    await assert.rejects(
+      invokeImageGuest(fresh.world, 'rebind'),
+      /Unsupported JavaScript host import/,
+    );
+    await fresh.world.objects.release(task(fresh.world).id);
+    assert.equal(fresh.world.objects.objects.has(draw.record.id), true);
+    assert.equal(fresh.world.objects.objects.has(fresh.world.main.id), true);
+    assert.throws(() => fresh.world.graphics.images.get(bitmap), /image|handle/i);
+    assert.equal(first.events.original + fresh.events.original, 0);
+  } finally {
+    await first.world.close();
+    await fresh.world.close();
   }
 });
