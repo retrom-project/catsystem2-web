@@ -41,7 +41,7 @@ function declaration(profile) {
     assert.match(entry.evidence, /SDK-2\.6\.1\.74-main67-full-wrapper/);
     assert.notEqual(entry.evidence, nativeABI(profiles[1]).tables.main.entries[67].evidence);
   }
-  for (const id of [70, 455, 467])
+  for (const id of [70, 361, 467])
     assert.equal(nativeABI(profiles[0]).tables.main.entries[id].status, 'unknown');
 }
 
