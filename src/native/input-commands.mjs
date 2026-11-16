@@ -114,7 +114,7 @@ export function installNativeInputCommands(world) {
   world.registerNativeFeature('input-commands', (engine) => new NativeInputCommands(engine, world));
   for (const { id } of NATIVE_INPUT_COMMAND_CONTRACTS)
     world.runtime.register('main', id, async (args, machine, task) => {
-      if (id === 0x3a9 && !world.nativeEngine && !world.nativeEngineLoading) {
+      if ((id === 0x6b || id === 0x3a9) && !world.nativeEngine && !world.nativeEngineLoading) {
         const input = nativeEngineWord(
           await world.sendNativeEngine(
             0,
@@ -126,6 +126,10 @@ export function installNativeInputCommands(world) {
           ),
           'Input task root query',
         );
+        if (id === 0x6b) {
+          const value = await world.sendNativeEngine(input, task.id, 133, args[0], 0, { flags: 0 });
+          return nativeReply(1, nativeEngineWord(value, 'Input active word query'));
+        }
         await world.sendNativeEngine(input, task.id, 157, 0, 0, { flags: 0 });
         return nativeReply(2);
       }
