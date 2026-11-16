@@ -327,17 +327,20 @@ async function advanceSDKDialogue(page) {
   await step(page, 6);
 }
 
-// The normal kind55 owner is not implemented by this author change. Keep this
-// original pointer lifecycle exact; normal execution remains blocked until its
-// genuine owner and lifecycle observer are separately implemented. No fake flags.
+// Normal lifecycle belongs to the real kind55 VM owner. Physical pointer
+// observations remain in the separately authorized original-owner oracle.
 const sdkJavaScriptState = (page) =>
-  page.evaluate(() => {
+  page.evaluate(async () => {
+    const { NormalSDKJavaScriptTask } = await import('/src/native/sdk-javascript-normal.mjs');
     const { world, audio } = window.catSystem2,
-      engine = world.nativeEngine,
       tasks = world.objects.objects,
       task = [...tasks.values()].find((record) => record.kind === 55),
-      plane = [...tasks.values()].find((record) => record.parent === task?.id && record.kind === 2),
-      pointer = task?.implementation.pointer,
+      implementation = task?.implementation;
+    if (task && !(implementation instanceof NormalSDKJavaScriptTask))
+      throw new Error('SDK JavaScript lifecycle requires the normal kind55 owner');
+    const plane = [...tasks.values()].find(
+        (record) => record.parent === task?.id && record.kind === 2,
+      ),
       source = [...world.runtime.scheduler.tasks.values()].find(
         (record) => record.name === 'sscript',
       ),
@@ -347,8 +350,8 @@ const sdkJavaScriptState = (page) =>
     return {
       frame: world.frame,
       task: task?.id ?? null,
-      loaded: pointer ? engine.process.load(pointer + 140) : 0,
-      running: pointer ? engine.process.load(pointer + 144) : 0,
+      loaded: task ? Number(implementation.loaded) : 0,
+      running: task ? Number(implementation.running) : 0,
       plane: plane?.id ?? null,
       position: graph?.pos ?? null,
       shown: graph?.display ?? false,

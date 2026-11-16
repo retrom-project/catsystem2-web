@@ -82,3 +82,33 @@ export async function restoreOriginalSDKFresh(page) {
     }),
   ).toBe(true);
 }
+
+// Preserve the original physical lifecycle observer for an explicit original owner.
+export async function originalSDKJavaScriptState(page) {
+  await requireOriginalOwner(page);
+  return page.evaluate(() => {
+    const { world, audio } = window.catSystem2,
+      engine = world.nativeEngine,
+      tasks = world.objects.objects,
+      task = [...tasks.values()].find((record) => record.kind === 55),
+      plane = [...tasks.values()].find((record) => record.parent === task?.id && record.kind === 2),
+      pointer = task?.implementation.pointer,
+      source = [...world.runtime.scheduler.tasks.values()].find(
+        (record) => record.name === 'sscript',
+      ),
+      sceneText = source && world.runtime.stringBank(source, false)?.get(1000),
+      graph = plane && world.graphics.attachment(plane.nativeID),
+      channel = [...audio.channels.values()].find(({ file }) => file === 'bgm.int/bgm01.ogg');
+    return {
+      frame: world.frame,
+      task: task?.id ?? null,
+      loaded: pointer ? engine.process.load(pointer + 140) : 0,
+      running: pointer ? engine.process.load(pointer + 144) : 0,
+      plane: plane?.id ?? null,
+      position: graph?.pos ?? null,
+      shown: graph?.display ?? false,
+      playing: Boolean(channel?.playing && channel.source && channel.buffer),
+      returned: Boolean(sceneText?.includes('シーンに戻りました')),
+    };
+  });
+}
