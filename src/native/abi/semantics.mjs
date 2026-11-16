@@ -3841,7 +3841,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     106: {
-      name: 'plane.setToneTable',
+      name: 'plane.setInputActive',
       family: 'plane',
       signature: {
         argumentWords: 2,
@@ -3857,12 +3857,11 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'handle table',
-            name: 'table',
+            description: 'word active',
+            name: 'active',
             type: {
-              handleKind: 'unknown',
-              kind: 'handle',
-              ownership: 'unknown',
+              bits: 32,
+              kind: 'bits',
             },
           },
         ],

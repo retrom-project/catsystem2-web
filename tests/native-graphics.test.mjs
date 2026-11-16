@@ -120,7 +120,7 @@ test('plane input switches use active/enabled/source and forward engine events t
   assert.equal(region.active, 0);
   await nativeGraphics(0x69, [h, 1], machine, task, scene);
   await nativeGraphics(0x6a, [h, 1], machine, task, scene);
-  assert.equal(region.active, true);
+  assert.equal(region.active, 1);
   scene.input.source = 16;
   assert.equal((await nativeGraphics(0x6d, [h], machine, task, scene)).value, 2);
   await nativeGraphics(0x350, [h, 0], machine, task, scene);
@@ -1479,9 +1479,246 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
       assert.equal(nativeABI(profile).tables.main.entries[97].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[106].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
       assert.equal(base.state.receiver !== -1, true);
+    } finally {
+      await fresh?.close();
+      await scene.close();
+      if (simpleID !== undefined) {
+        assert.equal(input?.get(simpleID), null);
+        assert.equal(freshInput?.get(simpleID) ?? null, null);
+      }
+    }
+  });
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main106 GCALL preserves raw active words for all matching input owners`, async () => {
+    const files = {
+        'case.kcs': kcsProgram([[59]]),
+        'bind-input.kcs': inputEnableProgram(104, 7),
+        'active-input.kcs': inputEnableProgram(106, 2),
+      },
+      scene = await dataWorld(profile, files);
+    let fresh, input, freshInput, simpleID;
+    try {
+      const baseID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x006a0106,
+          name: 'active Base',
+        }),
+        unboundID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x006a0306,
+          name: 'unbound active Base',
+        });
+      simpleID = await scene.objects.create({
+        kind: 2,
+        parent: scene.root,
+        nativeID: 0x006a0206,
+        name: 'active SimplePlane',
+      });
+      const baseNative = scene.nativeTaskID(baseID),
+        simpleNative = scene.nativeTaskID(simpleID),
+        simple = scene.objects.objects.get(simpleID).implementation,
+        high = 0x80000006;
+      assert.notEqual(baseNative, baseID);
+      assert.notEqual(simpleNative, simpleID);
+      assert.equal(scene.objects.objects.get(scene.root).nativeID, 0);
+      await scene.sendNativeEngine(simpleNative, scene.main.id, 42, 0, 0, {
+        payload: new NativeGraphicsPacket([
+          0,
+          0,
+          0,
+          floatBits(20.5),
+          floatBits(12.25),
+          0,
+          0,
+          0x80667788,
+        ]),
+      });
+      await inputEnableInvoke(scene, 'bind-input.kcs', [baseNative, 3, 4, 30, 20, 700, 0]);
+      await inputEnableInvoke(scene, 'bind-input.kcs', [simpleNative, 1, 2, 3, 4, 500, 0]);
+      input = scene.inputFor(baseID);
+      assert.strictEqual(input, scene.inputFor(simpleID));
+      const baseRegion = input.get(baseID),
+        simpleRegion = input.get(simpleID),
+        graph = simple.graph,
+        geometry = structuredClone({ rect: simple.state.rect, colors: graph.colors }),
+        frame = scene.frame,
+        order = scene.graphics.renderSequence,
+        outer = [],
+        received = [],
+        inner = [],
+        calls = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine,
+        message = input.message;
+      assert.equal(baseRegion.active, 0);
+      assert.equal(simpleRegion.active, 0);
+      assert.equal(input.changed, false);
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 106)
+          calls.push({ args: [...args[0]], sender: args[2].id, reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (target, sender, number, w, l, context) {
+        if (number === 93) outer.push([target, sender, number, w, l, context.flags]);
+        return send.call(this, target, sender, number, w, l, context);
+      };
+      Object.defineProperty(input, 'message', {
+        configurable: true,
+        value: function (number, w, l, context) {
+          if (number === 132) inner.push([number, w, l, context?.flags]);
+          return message.call(this, number, w, l, context);
+        },
+      });
+      for (const id of [scene.root, baseID, simpleID, unboundID]) {
+        const record = scene.objects.objects.get(id),
+          original = record.implementation.message;
+        record.implementation.message = function (words, context, ...rest) {
+          if (words[1] === 93)
+            received.push([id, ...words, context.nativeSenderWorldID, context.flags]);
+          return original.call(this, words, context, ...rest);
+        };
+      }
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, high]);
+      assert.equal(baseRegion.active, high, 'Main106 preserves the complete active DWORD');
+      assert.equal(simpleRegion.active, 0);
+      assert.deepEqual(inner, [[132, baseID, high, 0]]);
+      const duplicate = input.register({
+        owner: baseID,
+        receiver: baseRegion.receiver,
+        bounds: [3, 4, 33, 24],
+        priority: -1,
+      });
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, 0x12345678]);
+      assert.equal(baseRegion.active, 0x12345678);
+      assert.equal(duplicate.active, 0x12345678, 'Every matching owner receives the raw word');
+      await inputEnableInvoke(scene, 'active-input.kcs', [simpleNative, 0x87654321]);
+      assert.equal(simpleRegion.active, 0x87654321);
+      assert.equal(baseRegion.active, 0);
+      assert.equal(duplicate.active, 0);
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, 0]);
+      assert.equal(simpleRegion.active, 0x87654321, 'Zero does not clear another owner');
+      assert.equal(baseRegion.active, 0);
+      assert.equal(duplicate.active, 0);
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, high]);
+      assert.equal(baseRegion.active, high);
+      assert.equal(duplicate.active, high);
+      assert.equal(simpleRegion.active, 0);
+      await inputEnableInvoke(scene, 'active-input.kcs', [simpleNative, high]);
+      assert.equal(
+        simpleRegion.active,
+        high,
+        'Loaded SimplePlane delegates to the same Input setter',
+      );
+      assert.equal(baseRegion.active, 0);
+      assert.equal(duplicate.active, 0);
+      assert.equal(baseRegion.enabled, 1);
+      assert.equal(simpleRegion.enabled, 1);
+      assert.equal(input.changed, false, 'Setting active does not mark Input changed');
+      const checkpoint = structuredClone(scene.snapshot());
+      fresh = await dataWorld(profile, files, { initialize: false });
+      let restoring = true,
+        replay = 0;
+      const execute = fresh.runtime.scheduler.execute,
+        freshNative = fresh.runtime.native;
+      fresh.runtime.scheduler.execute = function (...args) {
+        if (restoring) replay++;
+        return execute.apply(this, args);
+      };
+      fresh.runtime.native = function (...args) {
+        if (restoring) replay++;
+        return freshNative.apply(this, args);
+      };
+      await fresh.restore(structuredClone(checkpoint));
+      restoring = false;
+      assert.equal(replay, 0, 'Cold restore replays no native call or guest');
+      assert.deepEqual(
+        fresh.snapshot(),
+        checkpoint,
+        'No warm frame is needed after true fresh restore',
+      );
+      freshInput = fresh.inputFor(baseID);
+      assert.notStrictEqual(freshInput, input);
+      assert.notStrictEqual(freshInput.get(simpleID), simpleRegion);
+      await inputEnableInvoke(fresh, 'active-input.kcs', [baseNative, 0x7fffffff]);
+      assert.equal(freshInput.get(baseID).active, 0x7fffffff);
+      assert.equal(freshInput.get(simpleID).active, 0);
+      assert.deepEqual(
+        scene.snapshot(),
+        checkpoint,
+        'Fresh input does not mutate the source owner',
+      );
+      while (input.get(baseID)) input.unregister(baseID);
+      let at = inner.length;
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, high]);
+      assert.equal(input.get(baseID), null);
+      assert.equal(
+        simpleRegion.active,
+        0,
+        'A bound missing owner still clears nonmatching records',
+      );
+      assert.deepEqual(inner.slice(at), [[132, baseID, high, 0]]);
+      await inputEnableInvoke(scene, 'active-input.kcs', [simpleNative, 27]);
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, 0]);
+      assert.equal(
+        simpleRegion.active,
+        27,
+        'A missing owner with zero preserves other active words',
+      );
+      at = inner.length;
+      await inputEnableInvoke(scene, 'active-input.kcs', [scene.nativeTaskID(unboundID), high]);
+      assert.deepEqual(inner.slice(at), [], 'An unbound receiver never calls Input');
+      assert.equal(simpleRegion.active, 27);
+      const zero = await inputEnableInvoke(scene, 'active-input.kcs', [0, high]);
+      assert.deepEqual(outer.at(-1), [0, zero.task.id, 93, 0, high, 0]);
+      assert.deepEqual(received.at(-1), [
+        scene.root,
+        zero.record.nativeID,
+        93,
+        0,
+        high,
+        zero.task.id,
+        0,
+      ]);
+      assert.equal(simpleRegion.active, 27);
+      assert.equal(calls.length, outer.length);
+      assert.equal(calls.length, received.length);
+      for (let i = 0; i < calls.length; i++) {
+        const call = calls[i],
+          [target, active] = call.args,
+          sender = scene.objects.objects.get(call.sender),
+          owner = scene.resolveTaskID(target, call.sender);
+        assert.deepEqual(outer[i], [target, call.sender, 93, 0, active, 0]);
+        assert.deepEqual(received[i], [owner, sender.nativeID, 93, 0, active, call.sender, 0]);
+      }
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: calls.length }, () => ({ control: 2 })),
+      );
+      assert.strictEqual(simple.graph, graph);
+      assert.deepEqual({ rect: simple.state.rect, colors: graph.colors }, geometry);
+      assert.equal(scene.graphics.renderSequence, order);
+      assert.equal(scene.frame, frame);
+      assert.equal(fresh.frame, frame);
+      assert.ok(!scene.nativeEngine && !scene.nativeEngineLoading);
+      assert.ok(!fresh.nativeEngine && !fresh.nativeEngineLoading);
+      const entry = nativeABI(profile).tables.main.entries[106];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.setInputActive');
+      assert.equal(entry.signature.argumentWords, 2);
+      assert.equal(entry.signature.parameters[1].name, 'active');
+      assert.deepEqual(entry.signature.parameters[1].type, { bits: 32, kind: 'bits' });
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await fresh?.close();
       await scene.close();

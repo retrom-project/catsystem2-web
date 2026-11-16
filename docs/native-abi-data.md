@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 813       | 82            | 19            | 95      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 814       | 82            | 19            | 94      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -559,7 +559,7 @@ flags0. They dispatch legitimate task0 as well; control2 leaves the VM output
 unwritten. The existing Main97 catalog label `plane.setColor` is unchanged;
 both per-version Main97 entries remain unknown. Only SDK105 is newly admitted;
 other slots, signatures, table lengths and version gates stay unchanged,
-including SDK106/455/467 and Game467 unknown.
+including SDK108/455/467 and Game467 unknown.
 
 The bound Base receiver and loaded SimplePlane delegate to the existing Input
 owner service. Input134 preserves the raw enabled DWORD on the first matching
@@ -575,3 +575,29 @@ Base and loaded SimplePlane enabled words, duplicate and removed registrations,
 legitimate task0 dispatch, literal messages, void stack/canaries, fresh checkpoint
 isolation and owner cleanup. These are ordinary JS receiver contracts, not a claim
 about native stack addresses, pixels or all Plane/Input operations.
+
+## Main106 input active word
+
+Main106 is `plane.setInputActive(task, active)`, independently established by
+SDK515640 and Game648E70. Both wrappers dispatch legitimate task0 and send
+SDK raw91/Game93 to canonical93 with w0, l equal to the full active DWORD and
+transport flags0. Control2 leaves the VM output unwritten. The previous table
+handle description is corrected in the shared catalog; no extra handle table or
+compatibility reader is introduced. Only SDK106 is newly admitted.
+
+A bound Base receiver delegates to the existing Input132 owner service; loaded
+SimplePlane reaches that same receiver. Every matching owner record receives
+the complete active DWORD. A nonzero word also clears nonmatching owners, even
+when no matching registration remains. Zero leaves other owners unchanged.
+An unbound receiver never calls Input. This operation does not change enabled
+or the Input changed flag. Existing World owner identity, region storage,
+snapshot and close authorities remain in use.
+
+Real dual-profile Script GCALLs cover Main104 binding, Base and loaded SimplePlane,
+high and zero active words, duplicates, missing versus unbound owners, literal
+sender/message/control and canaries, legitimate task0 dispatch, cold fullDTO fresh
+restore without replay, isolated subsequent input and ordinary owner cleanup.
+The prior Main105 business control and input-switch control remain covered. All
+other slots, signatures, table lengths and version gates remain unchanged;
+SDK108/455/467 and Game467 stay unknown. No pixels, physical stack addresses or
+unreviewed Plane behavior are claimed.
