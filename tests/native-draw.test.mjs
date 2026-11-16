@@ -7,6 +7,7 @@ import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
@@ -866,3 +867,235 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.equal(scene.graphics.drawTasks.size, 0);
     }
   });
+
+const clipGCALLCode = kcsProgram([
+  [37, forceOutputSentinel],
+  ...[128, 132, 136, 140, 144, 148].map((at) => [37, [0x13, at]]),
+  [43, 339, 24],
+  [37, 73],
+  [38, [0x13, 512]],
+  [59],
+]);
+async function clipGCALL(world, record, words) {
+  await record.implementation.loadScript('clip.kcs');
+  const task = record.implementation.task,
+    machine = task.machine,
+    sp = machine.sp;
+  words.forEach((word, i) => machine.store(128 + i * 4, word));
+  machine.bytes(800, 8).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.halted, true);
+  assert.equal(machine.load(512), 73);
+  assert.equal(machine.pop(), forceOutputSentinel);
+  assert.equal(machine.sp, sp);
+  assert.deepEqual([...machine.bytes(800, 8)], Array(8).fill(0xa5));
+}
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(
+    profile + ' main339 GCALL preserves clipping reset, equality and cold bitmap ownership',
+    async () => {
+      const files = { 'case.kcs': kcsProgram([[59]]), 'clip.kcs': clipGCALLCode },
+        scene = await dataWorld(profile, files);
+      let fresh;
+      try {
+        const surfaceID = await scene.objects.create({
+            kind: 15,
+            parent: scene.main.id,
+            nativeID: 0x01530001,
+          }),
+          target = scene.nativeTaskID(surfaceID),
+          draw = scene.graphics.drawTasks.get(surfaceID),
+          callerID = await scene.objects.create({
+            kind: 12,
+            parent: scene.main.id,
+            nativeID: 0x153,
+            name: 'clip caller',
+          }),
+          caller = scene.objects.objects.get(callerID),
+          rawKey = 0x80000007,
+          entryKey = 0x00070153;
+        assert.notEqual(surfaceID, target);
+        assert.notEqual(callerID, 0x153);
+        await caller.implementation.loadScript('clip.kcs');
+        await scene.runtime.native('main', 0x100, [target, 4, 3], scene.main.machine, scene.main);
+        await scene.runtime.native('main', 0x104, [target, 0, 0], scene.main.machine, scene.main);
+        const image = scene.graphics.images.create(3, 2, scene.main.id);
+        await scene.graphics.images.get(image).fill(0, 0, 3, 2, 0xff123456);
+        await scene.runtime.native(
+          'main',
+          0x101,
+          [target, rawKey, image, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0],
+          caller.implementation.task.machine,
+          caller.implementation.task,
+        );
+        await scene.graphics.images.release(image);
+        const item = draw.entry(entryKey);
+        assert.ok(item, 'the retained key combines native sender and the low selector word');
+        const retained = await scene.retainedDraw.ensure(draw, entryKey),
+          retainedState = () => structuredClone(scene.renderSources.get(retained.source)),
+          traces = [],
+          receipts = [],
+          send = scene.sendNativeEngine,
+          native = scene.runtime.native,
+          receive = scene.objects.objects.get(surfaceID).implementation.message;
+        scene.sendNativeEngine = function (destination, sender, id, w, l, context = {}) {
+          const trace =
+            id === 289
+              ? {
+                  destination,
+                  sender,
+                  id,
+                  w,
+                  l,
+                  flags: context.flags ?? 0,
+                  rect: context.payload
+                    ? [0, 4, 8, 12].map((at) => context.payload.load(at))
+                    : null,
+                }
+              : null;
+          if (trace) traces.push(trace);
+          const result = send.call(this, destination, sender, id, w, l, context);
+          if (trace) trace.result = result;
+          return result;
+        };
+        scene.objects.objects.get(surfaceID).implementation.message = function (words, context) {
+          if (words[1] === 289) receipts.push([...words]);
+          return receive.call(this, words, context);
+        };
+        const replies = [];
+        scene.runtime.native = function (table, id, ...args) {
+          const result = native.call(this, table, id, ...args);
+          if (table === 'main' && id === 339) replies.push(result);
+          return result;
+        };
+        const call = (destination, x, y, width, height) =>
+          clipGCALL(scene, caller, [destination, rawKey, x, y, width, height]);
+        await call(target, 1, 0, 1, 2);
+        assert.deepEqual(draw.entry(entryKey).clip, [1, 0, 2, 2]);
+        assert.deepEqual(receipts.at(-1), [0x153, 289, rawKey, 0]);
+        assert.deepEqual(
+          traces.at(-1).rect,
+          [1, 0, 2, 2],
+          'the wrapper writes exactly the four RECT words before dispatch',
+        );
+        assert.deepEqual(
+          [traces[0].destination, traces[0].sender, traces[0].w, traces[0].flags],
+          [target, callerID, rawKey, 0],
+        );
+        assert.equal(typeof traces[0].result.then, 'function');
+        await draw.render();
+        const clipped = [
+          0, 0, 0, 0, 18, 52, 86, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 52, 86, 255, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+        assert.deepEqual([...(await drawPixels(scene, surfaceID))], clipped);
+        await call(target, 0, 0, 0, 0);
+        assert.deepEqual(
+          draw.entry(entryKey).clip,
+          [0, 0, 4, 3],
+          'empty RECT resets to the renderer range',
+        );
+        await draw.render();
+        const full = [
+          18, 52, 86, 255, 18, 52, 86, 255, 18, 52, 86, 255, 0, 0, 0, 0, 18, 52, 86, 255, 18, 52,
+          86, 255, 18, 52, 86, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+        assert.deepEqual([...(await drawPixels(scene, surfaceID))], full);
+        const equalDraw = draw.snapshot(),
+          equalSource = retainedState();
+        await call(target, 0, 0, 4, 3);
+        assert.deepEqual(
+          draw.snapshot(),
+          equalDraw,
+          'equal raw RECT is a no-op before invalidation',
+        );
+        assert.deepEqual(
+          retainedState(),
+          equalSource,
+          'equal RECT does not revise the retained source',
+        );
+        await call(target, 0, 0, 0, 0);
+        assert.equal(
+          draw.state.renderer.dirtyRects.length,
+          2,
+          'raw empty differs from stored full before normalization',
+        );
+        await draw.render();
+        const nullBefore = draw.snapshot();
+        await scene.sendNativeEngine(target, callerID, 289, rawKey, 0);
+        assert.deepEqual(
+          draw.snapshot(),
+          nullBefore,
+          'the null RECT path resets without manager invalidation',
+        );
+        const unknownBefore = { draw: draw.snapshot(), source: retainedState() },
+          partial = new NativeGraphicsPacket([0, 0, undefined, 3], { unwritten: [2] });
+        await assert.rejects(
+          scene.sendNativeEngine(target, callerID, 289, rawKey, 0, { payload: partial }),
+          /Draw clip RECT has no initialized 32-bit output word/,
+        );
+        assert.deepEqual({ draw: draw.snapshot(), source: retainedState() }, unknownBefore);
+        await scene.sendNativeEngine(target, callerID, 289, 8, 0, { payload: partial });
+        assert.deepEqual(
+          { draw: draw.snapshot(), source: retainedState() },
+          unknownBefore,
+          'a missing entry is checked before its RECT is read',
+        );
+        await call(target, 0x7ffffffe, 0xfffffff9, 3, 2);
+        assert.deepEqual(traces.at(-1).rect, [0x7ffffffe, 0xfffffff9, 0x80000001, 0xfffffffb]);
+        assert.deepEqual(
+          draw.entry(entryKey).clip,
+          [0, 0, 4, 3],
+          'wrapped/inverted signed RECT follows the empty branch',
+        );
+        await draw.render();
+        const untouched = { draw: draw.snapshot(), source: retainedState() };
+        await call(0, 1, 2, 3, 4);
+        await call(0x7fffffff, 1, 2, 3, 4);
+        assert.deepEqual(
+          traces.slice(-2).map((x) => [x.destination, x.sender, x.w, x.flags]),
+          [
+            [0, callerID, rawKey, 0],
+            [0x7fffffff, callerID, rawKey, 0],
+          ],
+        );
+        assert.deepEqual({ draw: draw.snapshot(), source: retainedState() }, untouched);
+        assert.deepEqual(
+          await Promise.all(replies),
+          Array.from({ length: 7 }, () => ({ control: 2 })),
+        );
+        const dto = scene.snapshot(),
+          decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
+        fresh = await dataWorld(profile, files, { initialize: false });
+        fresh.runtime.native = () => {
+          throw new Error('Clip cold restore replayed a native command');
+        };
+        for (const stream of [fresh.random.integer, fresh.random.real])
+          stream.nextUint32 = () => {
+            throw new Error('Clip cold restore replayed RNG');
+          };
+        await fresh.restore(decoded);
+        assert.deepEqual(fresh.snapshot(), dto, 'the entire DTO agrees without a warm frame');
+        assert.deepEqual([...(await drawPixels(fresh, surfaceID))], full);
+        const restored = fresh.graphics.drawTasks.get(surfaceID);
+        assert.notStrictEqual(restored.state.renderer, draw.state.renderer);
+        await fresh.sendNativeEngine(target, callerID, 289, rawKey, 0, {
+          payload: new NativeGraphicsPacket([1, 0, 2, 1]),
+        });
+        assert.deepEqual(restored.entry(entryKey).clip, [1, 0, 2, 1]);
+        assert.deepEqual(draw.entry(entryKey).clip, [0, 0, 4, 3]);
+        await restored.render();
+        assert.deepEqual([...(await drawPixels(scene, surfaceID))], full);
+        await scene.objects.release(surfaceID);
+        assert.equal(fresh.objects.objects.has(surfaceID), true);
+        assert.deepEqual(restored.entry(entryKey).clip, [1, 0, 2, 1]);
+        assert.equal(scene.nativeEngine, undefined);
+        assert.equal(fresh.nativeEngine, undefined);
+      } finally {
+        await fresh?.close();
+        await scene.close();
+        assert.equal(scene.graphics.drawTasks.size, 0);
+        if (fresh) assert.equal(fresh.graphics.drawTasks.size, 0);
+      }
+    },
+  );

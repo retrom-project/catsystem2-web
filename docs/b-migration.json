@@ -9501,7 +9501,7 @@
           "id": 339,
           "hexID": "0x153",
           "semanticName": "draw.clip",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.setClip",
           "renderRoute": {
             "id": 339,
             "semanticName": "draw.clip",
@@ -9525,8 +9525,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -49935,7 +49934,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "95d96a137ae255e4b062b04d317796c923366722d55cb6ce1350354d1decd883",
+      "sourceSha256": "a89f40cc6e0c868a9a201228a5b23e20955428819d1dd300dcef44a5b69026ed",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50767,7 +50766,7 @@
     },
     {
       "file": "src/native/draw-task.mjs",
-      "sourceSha256": "367df0569a53c2b2d210f6f39e3f664a259a67444a009b43e48aff546dd65697",
+      "sourceSha256": "d1dfce0b9fc2fb1104cc6800f2e3c6896cf042d2b93a2a35c4cb9ba9b260dd26",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50791,28 +50790,28 @@
           "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 217,
+          "line": 225,
           "method": "getNativeFeature",
           "feature": "graphics-platform",
           "review": "traced",
           "reason": "Explicit remaining consumer factory: SDK bitmap/view records and media decoder (8). Registration/construction does not run the original graphics worker. See the named non-native projections."
         },
         {
-          "line": 307,
+          "line": 315,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
           "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 317,
+          "line": 325,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",
           "reason": "Traced JS task routing and factories: ordinary render receivers are JS. Controls 40/41/42 are JS; SDK kind55 (8) retains its explicit message/lifecycle boundary."
         },
         {
-          "line": 596,
+          "line": 604,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "traced",

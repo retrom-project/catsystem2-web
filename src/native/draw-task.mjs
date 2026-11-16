@@ -166,13 +166,21 @@ export class NativeDrawTask {
       case 289: {
         const item = this.entry(key);
         if (item) {
-          this.mark(item);
-          item.clip =
+          const rect =
             l || payload
-              ? Array.from({ length: 4 }, (_, i) => load(l + i * 4) | 0)
+              ? Array.from(
+                  { length: 4 },
+                  (_, i) => nativeEngineWord(load(l + i * 4), 'Draw clip RECT') | 0,
+                )
+              : null;
+          if (rect?.every((word, i) => word === item.clip[i])) return 0;
+          if (rect) this.mark(item);
+          item.clip =
+            rect && rect[0] < rect[2] && rect[1] < rect[3]
+              ? rect
               : [0, 0, this.state.renderer.width, this.state.renderer.height];
           await this.retained()?.clip(this, key, item.clip);
-          this.mark(item);
+          if (rect) this.mark(item);
         }
         return 0;
       }

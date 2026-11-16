@@ -122,3 +122,21 @@ VM result/stack, real base visibility, replacement and close. Full checkpoint
 codec restore into a fresh World agrees before a warm frame and replays no
 native command or RNG. These focused tests do not claim the SDK tutorial case
 or an unobserved target's native task kind has passed.
+
+Main 153 (draw.setClip) takes the native Draw target, raw entry selector
+and signed32 x/y/width/height. SDK51CEE0 and Game6448A0 each write the
+complete16-byte RECT [x,y,x+width,y+height], with DWORD addition wrapping,
+then send canonical289 with the raw selector as w and transport flags0.
+Target0 is sent; control2 leaves the VM result unwritten. SDK339 is admitted
+independently of the existing Game slot.
+
+The existing Draw entry is found before reading the rectangle. A repeated
+raw RECT equal to the stored clip changes neither clip nor dirty bounds.
+Otherwise, old bounds are invalidated and an empty or inverted signed RECT
+restores [0,0,rendererWidth,rendererHeight]; visible new bounds are then
+invalidated. Equality is checked before empty normalization: an empty RECT
+still follows the invalidation path when the current stored range is full.
+A direct message with a null RECT follows the native setter branch without
+the manager's before/after invalidation. Required RECT words must be defined
+before any state change; a missing entry reads none. The existing retained
+source, bitmap, snapshot and close owners remain responsible for their data.
