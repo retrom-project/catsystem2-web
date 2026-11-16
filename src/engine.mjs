@@ -85,7 +85,9 @@ export class CatSystem2 {
     this.random = new ParticleRandom(randomSeed);
   }
   async initialize({ checkpoint } = {}) {
-    this.nativeProfile = await selectNativeProfile(this.game, this.requestedNativeProfile);
+    const selected = await selectNativeProfile(this.game, this.requestedNativeProfile);
+    this.nativeProfile = selected.profile;
+    this.nativeModule = selected.module;
     this.motionLibrary = new MotionLibrary(this.game, {
       profile: this.nativeProfile,
       random: this.random,
@@ -157,6 +159,7 @@ export class CatSystem2 {
       host: this.host,
       profile: this.nativeProfile,
       startupDocument: startup,
+      nativeModule: this.nativeModule,
       bootstrapOwner: {
         executableResources: true,
         embeddedJavaScript: nativeABI(this.nativeProfile).capabilities.embeddedJavaScript,
@@ -186,6 +189,7 @@ export class CatSystem2 {
     return world;
   }
   bindNativeBanks() {
+    this.nativeModule = this.world.nativeModule;
     this.world.refreshTitle();
     this.world.graphics.cursor.changed();
     this.world.movies.activate();

@@ -105,6 +105,7 @@ import { initializeNativeStartupInputs, initializeNativeStartupSound } from './s
 import { NativeDispatchContext } from './dispatch-context.mjs';
 import { createEffekseerTask } from '../effekseer/task.mjs';
 import { binaryIdentity } from '../identity.mjs';
+import { nativeModuleMetadata } from './profile.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 import { EffekseerWorld, EFFEKSEER_FRAME_EXECUTOR } from '../effekseer/world.mjs';
 
@@ -116,6 +117,7 @@ export class NativeWorld {
     images,
     host,
     profile,
+    nativeModule = null,
     configuration,
     soundConfiguration,
     storage,
@@ -146,6 +148,7 @@ export class NativeWorld {
       transitionalExe,
     });
     this.dispatchContext = new NativeDispatchContext();
+    this.nativeModule = nativeModuleMetadata(profile, nativeModule);
     this.effekseer = new EffekseerWorld({
       dispatch: this.dispatchContext,
       hasNativeProcess: () => !!(this.nativeEngine || this.nativeEngineLoading),
@@ -1033,6 +1036,10 @@ export class NativeWorld {
       fesSources: this.fesSources.snapshot(),
       nativeEngine: this.nativeEngine?.snapshot() ?? null,
       platformRegistry: snapshotNativeRegistry(this),
+      nativeModule: this.nativeModule && {
+        name: this.nativeModule.name,
+        resource: this.nativeModule.resource.slice(),
+      },
       globalStrings: this.globalStrings.snapshot(),
       random: this.random.snapshot(),
       inputBindings: this.inputBindings?.snapshot() ?? null,
@@ -1044,6 +1051,18 @@ export class NativeWorld {
   async restore(state) {
     if (this.running || this.objects.objects.size)
       throw new Error('Native world restore requires a fresh, idle world');
+    const module = nativeModuleMetadata(this.profile, state.nativeModule);
+    if (
+      this.nativeModule &&
+      (!module ||
+        this.nativeModule.name !== module.name ||
+        this.nativeModule.resource.length !== module.resource.length ||
+        this.nativeModule.resource.some((byte, i) => byte !== module.resource[i]))
+    )
+      throw new Error('Checkpoint main module differs from its selected source');
+    if (module && typeof this.game.has === 'function' && !this.game.has(module.name))
+      throw new Error('Checkpoint main module is not mounted');
+    this.nativeModule = module;
     if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');

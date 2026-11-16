@@ -57,12 +57,12 @@ test('ABI selection is exact and reports unknown, missing and conflicting engine
     require: async (name) => records[name],
   });
   const sdkProfile = 'sdk-4.01-engine-2.6.1.74';
-  assert.equal(
-    await selectNativeProfile(
-      source({ 'cs2_open.exe': sdk, 'StView.exe': versionImage('1.0.0.0') }),
-    ),
-    sdkProfile,
+  const selected = await selectNativeProfile(
+    source({ 'cs2_open.exe': sdk, 'StView.exe': versionImage('1.0.0.0') }),
   );
+  assert.equal(selected.profile, sdkProfile);
+  assert.equal(selected.module.name, 'cs2_open.exe');
+  assert.deepEqual(selected.module.resource, sdk.subarray(600, 692));
   await assert.rejects(
     selectNativeProfile(source({ 'unknown.exe': unknown })),
     /unknown.exe.*2.6.1.99.*reviewed per-version ABI data/,
@@ -77,7 +77,26 @@ test('ABI selection is exact and reports unknown, missing and conflicting engine
     /a.exe.*copy.exe/,
   );
   await assert.rejects(selectNativeProfile(source({}), 'unregistered'), /Unregistered.*ABI/);
-  assert.equal(await selectNativeProfile(source({}), sdkProfile), sdkProfile);
+  assert.deepEqual(await selectNativeProfile(source({}), sdkProfile), {
+    profile: sdkProfile,
+    module: null,
+  });
+  assert.deepEqual(await selectNativeProfile({}, sdkProfile), {
+    profile: sdkProfile,
+    module: null,
+  });
+  assert.equal(
+    (await selectNativeProfile(source({ 'cs2_open.exe': sdk }), sdkProfile)).module.name,
+    'cs2_open.exe',
+  );
+  assert.deepEqual(
+    await selectNativeProfile(source({ 'a.exe': sdk, 'copy.exe': sdk }), sdkProfile),
+    { profile: sdkProfile, module: null },
+  );
+  assert.deepEqual(await selectNativeProfile(source({ 'unknown.exe': unknown }), sdkProfile), {
+    profile: sdkProfile,
+    module: null,
+  });
   for (const name of ['toString', 'constructor', '__proto__'])
     await assert.rejects(selectNativeProfile(source({}), name), /Unregistered.*ABI/);
 });

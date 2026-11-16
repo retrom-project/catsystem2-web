@@ -35,6 +35,12 @@ Automatic selection requires one executable with an exactly registered engine
 version. Unknown-only, missing and multiple matching candidates report the
 observed filenames and versions. A utility executable with an unrelated version
 can coexist with the selected engine. An explicit profile must also be registered.
+Selection returns that profile together with the selected module name and its
+version-resource bytes. Engine and World carry this same data through cold
+checkpoints; no executable mapping, original process or heap is introduced.
+Explicit profiles can still initialize owned games without an executable. If
+there is no uniquely identified matching module, only a query that requires
+that module reports its absence.
 
 Unresolved semantic names retain their explicit review state. Registration
 preserves every existing declaration and does not infer a contract from another
@@ -512,13 +518,18 @@ the last existing byte, then writes the formatted CP932 bytes and CRLF. A
 two-profile KCS test covers creation, this overwrite on a second write after
 restoration, read-only failure, and handle closure.
 
-Module version query `1BC` executes the SDK `51B8F0` and game `6502A0`
-wrappers and their complete version-string parsers. Both read the actual main
-image name and localized `FileVersion` resource through
-[Win32 version imports](native-windows-platform.md). Four original DWORD
-writes preserve their order even when the VM destinations alias. A KCS
-program covers the actual wrappers, live VM addresses and aliased output in a
-fresh World on both fixed executables.
+Module version query `1BC` reads the first translation's localized `FileVersion`
+from the actual module selected at initialization. Its ordinary path uses the
+shared version-resource parser and preserves comma-before-dot splitting,
+integer conversion, low 16-bit components and the four ordered DWORD writes,
+including aliased VM destinations. Missing translation or FileVersion data
+leaves the original zeroed result; missing module authority is an error. An
+initial numeric component that leaves native scratch unwritten, or a component
+exceeding its 64-character scratch, remains explicitly unsupported rather than
+inventing a value. Real KCS calls cover both ABIs, independent fixed and string
+versions, unsigned words, aliases and cold restoration without query replay.
+Explicit original owners retain SDK `51B8F0` and game `6502A0` and the
+[Win32 version imports](native-windows-platform.md) as independent oracles.
 
 The [matrix/vector family](native-vector-matrix.md), `CC..CF` and `15E..166`,
 executes JavaScript with explicit f32 intermediate rounding and a World-owned

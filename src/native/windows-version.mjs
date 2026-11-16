@@ -28,7 +28,7 @@ function versionNode(data, start, limit) {
   return null;
 }
 
-function queryVersionResource(bytes, subBlock) {
+export function queryVersionResource(bytes, subBlock) {
   const data = new Binary(bytes, 'Win32 version resource');
   let node = versionNode(data, 0, bytes.length);
   if (node?.key !== 'VS_VERSION_INFO') return null;

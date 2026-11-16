@@ -60,6 +60,10 @@ export function readPEVersionResource(bytes) {
 export function readEngineVersion(bytes) {
   const resource = readPEVersionResource(bytes);
   if (!resource) return null;
+  return readResourceEngineVersion(resource);
+}
+
+function readResourceEngineVersion(resource) {
   const value = new Binary(resource, 'VS_VERSION_INFO');
   const length = value.u16(0),
     valueLength = value.u16(2);
@@ -78,19 +82,63 @@ export function readEngineVersion(bytes) {
   return [ms >>> 16, ms & 65535, ls >>> 16, ls & 65535].join('.');
 }
 
+// Only version-resource data crosses into an ordinary World, never executable
+// mappings, a process or its heap. Each World owns its immutable metadata copy.
+export function nativeModuleMetadata(profile, module) {
+  if (module === null) return null;
+  if (
+    !module ||
+    typeof module.name !== 'string' ||
+    !module.name ||
+    module.name.includes('\0') ||
+    !(module.resource instanceof Uint8Array) ||
+    readResourceEngineVersion(module.resource) !== nativeABI(profile).engineVersion
+  )
+    throw new Error('Invalid or unregistered main module metadata');
+  return { name: module.name, resource: module.resource.slice() };
+}
+
 export async function selectNativeProfile(game, explicit) {
-  if (explicit) return nativeABI(explicit).profile;
+  if (explicit) {
+    const profile = nativeABI(explicit).profile,
+      names = typeof game.names === 'function' ? game.names('exe') : [];
+    let module = null;
+    // Explicit profiles still support owned games with no executable. Do not
+    // guess among multiple modules or scan unrelated files to establish one.
+    if (names.length === 1) {
+      const bytes = await game.require(names[0]);
+      try {
+        if (readEngineVersion(bytes) === nativeABI(profile).engineVersion)
+          module = nativeModuleMetadata(profile, {
+            name: names[0],
+            resource: readPEVersionResource(bytes),
+          });
+      } catch {
+        // An unrelated/malformed module does not revoke the explicit profile.
+        // 1BC will report that its actual main-module authority is unavailable.
+      }
+    }
+    return { profile, module };
+  }
   const found = [],
     observed = [];
   for (const name of game.names('exe')) {
-    const version = readEngineVersion(await game.require(name));
+    const bytes = await game.require(name),
+      version = readEngineVersion(bytes);
     observed.push({ name, version });
     const abi = Object.values(NATIVE_ABIS).find((candidate) => candidate.engineVersion === version);
-    if (abi) found.push({ name, abi });
+    if (abi) found.push({ name, abi, resource: readPEVersionResource(bytes) });
   }
   if (found.length !== 1)
     throw new Error(
       `A unique supported CatSystem2 executable version is required. Found ${JSON.stringify(observed)}. Provide an explicit registered ABI or reviewed per-version ABI data.`,
     );
-  return found[0].abi.profile;
+  const selected = found[0];
+  return {
+    profile: selected.abi.profile,
+    module: nativeModuleMetadata(selected.abi.profile, {
+      name: selected.name,
+      resource: selected.resource,
+    }),
+  };
 }
