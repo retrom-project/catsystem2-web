@@ -33,6 +33,13 @@ storage defined. No coverage-region model is inferred. Normal complete frame
 production can run on a ready device and define its output; undefined contents
 are not a global device-loss condition.
 
+Color-target checkpoints preserve explicit content validity through the GPU owner.
+Undefined targets save no pixel bytes and perform no readback, upload or Clear.
+Restoring that marker invalidates any old defined contents of the destination;
+a ready device alone cannot revive them. Defined color snapshots use owned RGBA
+bytes and the normal full-target upload. Screen-effect backbuffer checkpoints
+carry this same validity marker, including Worlds saved before their first draw.
+
 D3D9 distinguishes `D3DERR_DEVICELOST` (`0x88760868`) from
 `D3DERR_DEVICENOTRESET` (`0x88760869`). The original effect task tests those actual
 values; its pending reset callbacks and child-draw order remain separate work.

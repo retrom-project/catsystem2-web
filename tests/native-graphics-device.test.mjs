@@ -3,6 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeGraphicsDevice } from '../src/native/graphics-device.mjs';
 import { ParticlesGL } from '../src/render/particles-gl.mjs';
+import { StageRenderer } from '../src/render/stage.mjs';
+import { NativeScreenEffectRenderer } from '../src/native/screen-effect-render.mjs';
 import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import {
@@ -392,4 +394,58 @@ test('validity-components: stencil-enabled typed drawing uses depth-only attachm
     assert.ok(call.enabled.has('DEPTH_TEST'));
     assert.ok(call.enabled.has('STENCIL_TEST'));
   }
+});
+
+// This recorder proves content ownership/definedness and GL calls, not pixels.
+test('screen checkpoints restore undefined targets without reading or reviving old color storage', () => {
+  const make = () => {
+    const { gpu, target, calls } = recorder(),
+      stage = new StageRenderer();
+    stage.gpu = gpu;
+    const renderer = new NativeScreenEffectRenderer({
+      world: { stageRenderer: stage, getNativeGPU: () => gpu },
+    });
+    return { gpu, target, calls, renderer };
+  };
+  const source = make(),
+    saved = structuredClone(source.renderer.snapshot());
+  assert.deepEqual(saved.backbuffer, {
+    width: 4,
+    height: 4,
+    contentValid: false,
+    pixels: null,
+  });
+  assert.equal(source.calls.length, 0, 'undefined storage is not read or cleared');
+
+  const fresh = make();
+  fresh.renderer.restore(structuredClone(saved));
+  assert.deepEqual(fresh.renderer.snapshot(), saved);
+  assert.equal(fresh.target.contentValid, false);
+  assert.throws(() => fresh.gpu.pixels(), /undefined/);
+  assert.equal(fresh.calls.length, 0, 'fresh restore performs no GL read/upload/clear');
+
+  fresh.gpu.uploadRenderTarget(fresh.target, {
+    width: 4,
+    height: 4,
+    rgba: new Uint8Array(64).fill(73),
+  });
+  assert.equal(fresh.target.contentValid, true);
+  fresh.calls.length = 0;
+  fresh.renderer.restore(structuredClone(saved));
+  assert.equal(fresh.target.contentValid, false, 'undefined replaces already-valid color storage');
+  assert.throws(() => fresh.gpu.pixels(), /undefined/);
+  assert.equal(fresh.calls.length, 0, 'invalidating old storage does not manufacture pixel values');
+
+  source.gpu.uploadRenderTarget(source.target, {
+    width: 4,
+    height: 4,
+    rgba: new Uint8Array(64),
+  });
+  const valid = structuredClone(source.renderer.snapshot());
+  assert.equal(valid.backbuffer.contentValid, true);
+  assert.equal(source.calls.filter(([name]) => name === 'readPixels').length, 1);
+  fresh.renderer.restore(valid);
+  assert.equal(fresh.target.contentValid, true);
+  assert.equal(fresh.calls.filter(([name]) => name === 'texSubImage2D').length, 1);
+  assert.deepEqual(fresh.renderer.snapshot(), valid);
 });

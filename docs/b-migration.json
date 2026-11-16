@@ -54855,7 +54855,7 @@
     },
     {
       "file": "src/native/screen-effect-render.mjs",
-      "sourceSha256": "1bbe7f81fbbd69a5afcf8e140c3e4352bbe46fa6aaa65c3a06a30d528bcdc324",
+      "sourceSha256": "7c220ad94a410039826b6c2623eaa3de05358e08894a53f5c9bfe2fd93bb5078",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -57708,7 +57708,7 @@
     },
     {
       "file": "src/render/particles-gl.mjs",
-      "sourceSha256": "1dea2832c0bfb888bc9806383a6838ed7e72946f40b8a549ef9a078919573a3d",
+      "sourceSha256": "68255ea4f18591adab2b45b13ac1fd58469a98d948f6135c71f41f14790d71da",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

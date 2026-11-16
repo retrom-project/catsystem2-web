@@ -371,13 +371,16 @@ export class NativeScreenEffectRenderer {
   snapshot() {
     if (this.busy || this.frame)
       throw new Error('Cannot checkpoint an unsettled screen capture or render');
+    const gpu = this.gpu,
+      backbuffer = gpu && gpu.snapshotRenderTarget(gpu.primaryTarget);
     return {
       dirtyCurrent: [...this.dirtyCurrent],
       dirtyPrevious: [...this.dirtyPrevious],
-      backbuffer: this.gpu && {
-        width: this.gpu.primaryTarget.width,
-        height: this.gpu.primaryTarget.height,
-        pixels: encodeSparseBytes(this.gpu.pixels(this.gpu.primaryTarget)),
+      backbuffer: backbuffer && {
+        width: backbuffer.width,
+        height: backbuffer.height,
+        contentValid: backbuffer.contentValid,
+        pixels: backbuffer.contentValid ? encodeSparseBytes(backbuffer.rgba) : null,
       },
       captures: [...this.captures],
       prepared: this.prepared,
@@ -399,12 +402,18 @@ export class NativeScreenEffectRenderer {
     this.prepared = state.prepared;
     this.stage.restoreSurfaces(state.surfaces);
     this.stage.depthFormat = state.depthFormat;
-    if (state.backbuffer && this.gpu)
-      this.gpu.uploadRenderTarget(this.gpu.primaryTarget, {
-        width: state.backbuffer.width,
-        height: state.backbuffer.height,
-        rgba: decodeSparseBytes(state.backbuffer.pixels),
-      });
+    if (state.backbuffer) {
+      if (!state.backbuffer.contentValid && state.backbuffer.pixels !== null)
+        throw new Error('Undefined backbuffer checkpoint contains pixel data');
+      const gpu = this.gpu;
+      if (gpu)
+        gpu.restoreRenderTarget(gpu.primaryTarget, {
+          width: state.backbuffer.width,
+          height: state.backbuffer.height,
+          contentValid: state.backbuffer.contentValid,
+          rgba: state.backbuffer.contentValid ? decodeSparseBytes(state.backbuffer.pixels) : null,
+        });
+    }
     if (this.stage.frameDepth) this.gpu.destroyDepthStencil(this.stage.frameDepth);
     this.stage.frameDepth = null;
     this.stage.savedFrameDepth = null;

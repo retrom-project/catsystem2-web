@@ -746,6 +746,35 @@ export class ParticlesGL {
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
   }
+  snapshotRenderTarget(target = this.primaryTarget) {
+    this.requireDevice();
+    if (target.owner !== this || target.destroyed)
+      throw new Error('Native target belongs to a different or closed graphics device');
+    const contentValid = target.contentValid === true;
+    return {
+      width: target.width,
+      height: target.height,
+      contentValid,
+      rgba: contentValid ? this.pixels(target) : null,
+    };
+  }
+  restoreRenderTarget(target, frame) {
+    this.requireDevice();
+    if (target.owner !== this || target.destroyed)
+      throw new Error('Native target belongs to a different or closed graphics device');
+    if (frame.width !== target.width || frame.height !== target.height)
+      throw new Error('Native render-target checkpoint dimensions differ');
+    if (
+      typeof frame.contentValid !== 'boolean' ||
+      (frame.contentValid
+        ? !(frame.rgba instanceof Uint8Array) ||
+          frame.rgba.byteLength !== target.width * target.height * 4
+        : frame.rgba !== null)
+    )
+      throw new TypeError('Invalid native render-target content checkpoint');
+    if (frame.contentValid) this.uploadRenderTarget(target, frame);
+    else target.contentValid = false;
+  }
   requireTargetContent(target) {
     this.requireDevice();
     if (target.owner !== this || target.destroyed)
