@@ -29480,7 +29480,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     848: {
-      name: 'plane.setFilter',
+      name: 'plane.setInputHoverEnabled',
       family: 'plane',
       signature: {
         argumentWords: 2,
@@ -29496,8 +29496,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word filter',
-            name: 'filter',
+            description: 'word enabled',
+            name: 'enabled',
             type: {
               bits: 32,
               kind: 'bits',

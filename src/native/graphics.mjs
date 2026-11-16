@@ -1191,7 +1191,14 @@ export class NativeGraphicTask {
       }
       case 95:
         return this.input?.source === 16 ? 2 : (this.input?.source ?? 0);
-      case 98:
+      case 98: {
+        if (this.state.receiver !== -1) {
+          if (!this.input?.message)
+            throw new Error('Native plane input hover service is unavailable');
+          await this.input.message(135, this.record.id, l, { flags: context.flags ?? 0 });
+        }
+        return 0;
+      }
       case 99: {
         const region = this.input?.get(this.record.id);
         if (this.state.receiver !== -1 && region) {
@@ -1525,7 +1532,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();
   }
-  if (!args[0] && id !== 0x68 && id !== 0x69 && id !== 0x6a)
+  if (!args[0] && id !== 0x68 && id !== 0x69 && id !== 0x6a && id !== 0x350)
     return [0x59, 0x62].includes(id) ? value(0) : done();
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>

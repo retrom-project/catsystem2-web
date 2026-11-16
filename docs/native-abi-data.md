@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 814       | 82            | 19            | 94      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 815       | 82            | 19            | 93      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -601,3 +601,33 @@ The prior Main105 business control and input-switch control remain covered. All
 other slots, signatures, table lengths and version gates remain unchanged;
 SDK108/455/467 and Game467 stay unknown. No pixels, physical stack addresses or
 unreviewed Plane behavior are claimed.
+
+## Main848 input hover word
+
+The actual SDK cold-start fault at main848 triggered this recovery. Own
+SDK5156D0 and Game648F00 independently establish `plane.setInputHoverEnabled`
+with two words, task and enabled. The second word remains32-bit bits. Both
+wrappers dispatch legitimate task0 and send SDK raw96/Game98 to canonical98
+with w0, l equal to the complete enabled DWORD and transport flags0. Control2
+leaves VM output unwritten. Only SDK848 is newly admitted;106 was recovered
+earlier from its own proof, not observed as a cold-start fault.
+
+A bound Base receiver delegates to existing Input135; loaded SimplePlane
+reaches that same receiver. The first matching region's hover word receives
+the complete DWORD, and Input is marked changed even when no matching owner
+remains. An unbound receiver skips Input. Neither active, enabled nor another
+owner's hover word is rewritten. Own SDK4C47D0 and Game5E8440 consume region+2C
+as a zero/nonzero gate for hover selection and enter7/leave8. The shared
+setFilter/filter description is corrected without changing word widths or
+inventing a shader filter. Native version-specific hover selection details
+and all other Input/Plane services remain outside this change.
+
+Real dual-profile Script GCALLs use actual104 binding and Base/loaded SimplePlane
+owners. They cover high and zero words, first-owner duplicate behavior,
+active/enabled preservation, a real removed registration marking changed from
+its independently false baseline, unbound and legitimate task0 dispatch,
+literal sender/flags, VMvoid/canaries, cold fullDTO restore without replay,
+fresh isolation and ordinary close cleanup. The affected old input control now
+expects raw0; canonical99 and its drag behavior remain unchanged. No original
+CPU, native stack-address, rendered-pixel or complete platform parity is claimed.
+All other slots, signatures, version gates and table lengths stay unchanged.
