@@ -212,3 +212,37 @@ releases its managers and real children without force-running a final position;
 late MOT I/O cannot publish a new manager or revive the guest. Other official
 classes, selector queries, methods, platform effects and pixel parity remain
 outside this finite host contract.
+
+## Finite CsSound through the shared SoundTask
+
+The normal SDK kind55 host supports `new CsSound()`, `load(filename, category)`,
+`play()` / `play(signed32LoopCount)` and `stop()`. Load takes two bounded CStrings
+with an explicit nonempty `bgm`, `se`, `voice` or `sysvoice` category. Play defaults
+to one and preserves the signed argument's DWORD bits; stop has no fade argument.
+All methods return `undefined`. Empty-category filename inference, general V8
+conversions, inherited volume methods and other Sound APIs remain unsupported.
+
+Construction queries the actual zero-ID Root for its existing SoundTask. Its
+native task ID and allocated bank index are separate domains; bank0 is valid and
+missing loads retain `0xffffffff`. The host sends the existing group query and
+280-byte allocated-stream packet, then volume/play or stop packets with flags0.
+SoundTask, AudioMixer, its decoder cache and actual device/channel own playback.
+No Task child, second bank/cache, substitute channel or timer is introduced.
+
+Play reads the live canonical configuration's master-prederived words0..2 and
+master/category mute flags. `sysvoice` aliases voice. It retains the native signed
+low32 multiply/divide by100 for the object's default volume100; it does not derive
+again, consult the hierarchical Sound tree or copy the VOICE master into the
+independent Sound device factor. Existing SoundTask stop owns its ten-logic-frame
+fade and later stop; the host supplies no replacement scheduler.
+
+Typed host references and aliases restore into a fresh World with the complete
+settled DTO and zero warm frames. Immutable audio preload during Sound restore is
+accounted separately from zero JavaScript/native-command/RNG replay. Host state
+contains no Promise, function, AudioBuffer or physical address. Closing the JS
+owner drops its host references, without stopping or releasing the shared bank.
+The SoundTask may legitimately complete an outstanding decode or fade after that
+close; a late continuation cannot revive the closed host or guest. World/SoundTask
+shutdown performs the real device/channel cleanup. Owned-WAV unit coverage uses
+the real AudioMixer/device pipeline with a PCM-reading WebAudio test context; it
+does not claim physical browser audio or the complete official SDK tutorial.

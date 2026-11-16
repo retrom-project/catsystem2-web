@@ -9,6 +9,7 @@ import { nativeEngineWord } from './engine-message.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { SDKJavaScriptImages } from './sdk-javascript-image.mjs';
 import { SDKJavaScriptPlanes } from './sdk-javascript-plane.mjs';
+import { SDKJavaScriptSounds } from './sdk-javascript-sound.mjs';
 
 const decoder = new TextDecoder('shift_jis', { fatal: true });
 
@@ -24,6 +25,7 @@ export class NormalSDKJavaScriptTask {
       closed: false,
       images: new SDKJavaScriptImages(world, record),
       planes: new SDKJavaScriptPlanes(world, record),
+      sounds: new SDKJavaScriptSounds(world, record),
     });
     record.exitCode ??= -1;
   }
@@ -95,6 +97,7 @@ export class NormalSDKJavaScriptTask {
   host(name, args, location) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     if (name && typeof name === 'object') {
+      if (name.construct === 'CsSound') return this.sounds.host(name, args, location);
       if (name.construct)
         return (name.construct === 'CsPlane' ? this.planes : this.images).host(
           name,
@@ -110,9 +113,10 @@ export class NormalSDKJavaScriptTask {
       if (
         !record ||
         record.value.owner !== this.record.id ||
-        !['javascript-image', 'javascript-plane'].includes(record.type)
+        !['javascript-image', 'javascript-plane', 'javascript-sound'].includes(record.type)
       )
         throw scriptError('Unsupported JavaScript host import', location, 'invalid host reference');
+      if (record.type === 'javascript-sound') return this.sounds.host(name, args, location);
       return (record.type === 'javascript-plane' ? this.planes : this.images).host(
         name,
         args,
@@ -170,11 +174,13 @@ export class NormalSDKJavaScriptTask {
   async drain(machine, result) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     while (result.status === 'waiting') {
-      const value = await (Object.hasOwn(result.request, 'plane')
-        ? this.planes.complete(result.request)
-        : Object.hasOwn(result.request, 'motion')
-          ? this.planes.completeMotion(result.request)
-          : this.images.complete(result.request));
+      const value = await (Object.hasOwn(result.request, 'sound')
+        ? this.sounds.complete(result.request)
+        : Object.hasOwn(result.request, 'plane')
+          ? this.planes.complete(result.request)
+          : Object.hasOwn(result.request, 'motion')
+            ? this.planes.completeMotion(result.request)
+            : this.images.complete(result.request));
       if (this.closed) throw new Error('JavaScript image owner is closed');
       machine.resumeHost(value);
       result = machine.run((...args) => this.host(...args));
@@ -218,25 +224,33 @@ export class NormalSDKJavaScriptTask {
     this.child = state.child;
     this.machine = state.machine === null ? null : JavaScriptMachine.restore(state.machine);
     const images = [],
-      planes = [];
+      planes = [],
+      sounds = [];
     for (const value of this.machine?.state.cells ?? []) {
       if (value?.hostObject === undefined) continue;
       const record = this.world.runtime.handles.records.get(value.hostObject);
       if (
         !record ||
         record.value.owner !== this.record.id ||
-        !['javascript-image', 'javascript-plane'].includes(record.type)
+        !['javascript-image', 'javascript-plane', 'javascript-sound'].includes(record.type)
       )
         throw new Error('Invalid JavaScript host reference checkpoint');
-      (record.type === 'javascript-image' ? images : planes).push(value);
+      (record.type === 'javascript-image'
+        ? images
+        : record.type === 'javascript-plane'
+          ? planes
+          : sounds
+      ).push(value);
     }
     this.images.validate(images);
     this.planes.validate(planes);
+    this.sounds.validate(sounds);
     await this.planes.restoreMotions();
   }
   async close() {
     this.closed = true;
     const errors = [];
+    this.sounds.close();
     try {
       await this.images.close(this.link);
     } catch (error) {
