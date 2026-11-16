@@ -152,3 +152,51 @@ Settled fresh restore validates both CsImage and CsPlane references and restores
 actual graph state without source, image, command or RNG replay. This finite leaf
 does not establish arbitrary V8 conversion, default constructor arguments, motion
 execution, or the official scene's complete drawing path.
+
+## Finite CsPlane motion and Context busy query
+
+The normal SDK kind55 host supports `CsPlane.motMove(duration, x, y, z)`
+and the no-argument `cfIsExecMotion()`. Duration is a signed32 integer,
+default30; the selected MOT script clamps values below1 to1. Coordinates are
+finite float32 numbers or omitted current values. The result is `undefined`,
+not a native pointer or a manager handle. Selector arguments to the global
+query, general V8 coercions/string shorthand, other curves and `cfWait` remain
+explicitly unsupported. This slice does not run the complete official tutorial.
+
+Own callback539790 first updates the actual object at its owner's native frame,
+then samples physical position and freezes target-minus-current registers before
+resource I/O. Physical canonical51/w0 is separate from constructor texture51/w1.
+The constructor still creates real type1 VRAM with display0; motion does not make
+it a solid rectangle or implicitly display it. Motion requires the existing real
+nonzero owned child and retains the strict missing-model boundary.
+
+The exact `mot.int/motMove.kcs` resource is loaded through
+`readNativeResource(world, name, 3)` on a MotionLibrary cache miss. The optional
+reader seam shares its existing decoded-script Map; callers without an explicit
+reader preserve their category/default path. Missing or empty script data adds
+no motion; arbitrary I/O or parse errors propagate. No substitute interpolation,
+loaded flag, fake busy state, second geometry model or original CPU fallback is
+used. Existing NativeMotionRegistry/Manager/Instance own actual KCS records and
+execution; the private SDK script is retained only as ignored proof, while
+maintained tests construct their own semantic KCS fixture.
+
+The global query scans the current Context's supported type1 objects and reads
+real manager activity. It is independent of Graph kind numbers and of a supplied
+single Plane; the current CsImage slice has an empty manager and no enabled MOT
+methods. Ordinary tick order is GameLoop followed by object motion/publication,
+including the callback that called `cfExit`. Later stopped callbacks do not tick.
+The native same-frame pre-update is preserved; FES forest traversal or a generic
+same-frame suppression rule is not substituted. Frame0 retains the manager's
+real startTick sentinel behavior, rather than using elapsed values as World
+frame values.
+
+Snapshots retain the typed Plane/child/manager ownership links and actual
+manager/instance state. Cold restore preloads required immutable MOT code through
+the same mode3 cache-miss seam before restoring the existing manager, without
+replaying JavaScript, image reads, native commands or RNG draws. That permitted
+MOT bytecode read is recorded separately from zero warm frames. Unknown,
+cross-owner and duplicate manager references fail validation. Closing the owner
+releases its managers and real children without force-running a final position;
+late MOT I/O cannot publish a new manager or revive the guest. Other official
+classes, selector queries, methods, platform effects and pixel parity remain
+outside this finite host contract.

@@ -28,12 +28,14 @@ export class MotionLibrary {
       );
     return this.scripts.get(key);
   }
-  async optional(name) {
+  async optional(name, { read } = {}) {
     const key = name.toLowerCase().replace(/\.kcs$/, '');
     if (this.scripts.has(key)) return this.scripts.get(key);
-    const bytes = this.game.readCategory
-      ? await this.game.readCategory(name, 'mot')
-      : await this.game.read(`${key}.kcs`);
+    const bytes = read
+      ? await read(name)
+      : this.game.readCategory
+        ? await this.game.readCategory(name, 'mot')
+        : await this.game.read(`${key}.kcs`);
     // The original MOT manager returns zero before parsing a zero-size file.
     if (!bytes || bytes.byteLength === 0) return null;
     const script = await readKCS(bytes);

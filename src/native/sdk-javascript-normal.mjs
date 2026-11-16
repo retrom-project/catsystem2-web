@@ -119,6 +119,23 @@ export class NormalSDKJavaScriptTask {
         location,
       );
     }
+    if (name === 'cfIsExecMotion') {
+      if (args.length)
+        throw scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'cfIsExecMotion selectors',
+        );
+      // These are the current Context's supported type1 objects, not Graph kinds.
+      // CsImage has no enabled MOT methods; its accepted constructor leaves its
+      // manager empty. CsPlane uses its real object-local manager below.
+      for (const record of this.world.runtime.handles.records.values()) {
+        if (record.value?.owner !== this.record.id) continue;
+        if (record.type === 'javascript-plane' && this.planes.busy(record.value))
+          return { value: true };
+      }
+      return { value: false };
+    }
     if (
       name !== 'cfExit' ||
       !this.loaded ||
@@ -154,7 +171,9 @@ export class NormalSDKJavaScriptTask {
     while (result.status === 'waiting') {
       const value = await (Object.hasOwn(result.request, 'plane')
         ? this.planes.complete(result.request)
-        : this.images.complete(result.request));
+        : Object.hasOwn(result.request, 'motion')
+          ? this.planes.completeMotion(result.request)
+          : this.images.complete(result.request));
       if (this.closed) throw new Error('JavaScript image owner is closed');
       machine.resumeHost(value);
       result = machine.run((...args) => this.host(...args));
@@ -169,6 +188,8 @@ export class NormalSDKJavaScriptTask {
       machine,
       machine.call('GameLoop', [frame >>> 0], (...args) => this.host(...args)),
     );
+    // Native 50FA7F still runs this object phase after this callback's cfExit.
+    if (!this.closed) await this.planes.tick(frame >>> 0);
   }
   snapshot() {
     return {
@@ -177,7 +198,7 @@ export class NormalSDKJavaScriptTask {
       machine: this.machine?.snapshot() ?? null,
     };
   }
-  restore(state) {
+  async restore(state) {
     if (state.link) {
       const script = this.world.runtime.scheduler.tasks.get(state.link.script);
       if (
@@ -210,6 +231,7 @@ export class NormalSDKJavaScriptTask {
     }
     this.images.validate(images);
     this.planes.validate(planes);
+    await this.planes.restoreMotions();
   }
   async close() {
     this.closed = true;
