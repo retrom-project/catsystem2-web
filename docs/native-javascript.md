@@ -132,3 +132,23 @@ choice menus. Its original `CsPlane` moves while the soundtrack plays. The
 test restores mid-motion into a fresh process with the same rendered pixels,
 verifies the plane advances and hides at the end of its 300-frame motion,
 then waits for the original sound stop fade and the return to the scene.
+
+The finite normal SDK host also accepts `new CsPlane(width, height, u, v, priority)`
+with five signed32 integers and positive dimensions. Omitted arguments and other
+methods, including motion methods, remain unsupported with source spans. The own
+constructor creates a real kind2 child under the kind55 controller, not under its
+borrowed calling Script. The returned native task ID is resolved separately from
+its World ID. For nonzero child IDs, existing graphics packets create a VRAM type1 graph and preserve the
+independent w1 texture-position and w0 physical vectors, and start with display0.
+This does not create a solid-rectangle substitute or implement CsImage.setPlane.
+
+Plane host references use the existing NativeHandles registry and point to actual
+World children. Graph/MOT/Input state stays in its existing authority. Constructor
+service waits use the existing pure-data VM continuation; closing the owner while
+creation is pending releases the late child before any guest continuation. Close
+preserves the native child-ID0 guard; for nonzero IDs it sends canonical3. It
+releases the actual owned child while retaining the borrowed Script.
+Settled fresh restore validates both CsImage and CsPlane references and restores
+actual graph state without source, image, command or RNG replay. This finite leaf
+does not establish arbitrary V8 conversion, default constructor arguments, motion
+execution, or the official scene's complete drawing path.

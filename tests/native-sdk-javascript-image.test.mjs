@@ -4,6 +4,7 @@ import test from 'node:test';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { authoredHG3 } from './fixtures/hg3.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
@@ -490,6 +491,247 @@ test('normal SDK kind55 rejects late source IO without reviving its closed owner
       [...f.world.runtime.handles.records.keys()],
       handles,
       'late source creates no handle',
+    );
+    assert.equal(f.events.original, 0);
+  } finally {
+    release();
+    await initialization?.catch(() => {});
+    await f.world.close();
+  }
+});
+
+function hostPlane(world, name = 'plane') {
+  return world.runtime.handles.get(cell(world, name).hostObject, 'javascript-plane');
+}
+function planeTask(world, name = 'plane') {
+  return world.objects.objects.get(hostPlane(world, name).child);
+}
+function observePlanePackets(world) {
+  const events = [],
+    send = world.sendNativeEngine;
+  world.sendNativeEngine = function (...args) {
+    const [target, sender, id, w, l, context] = args;
+    const count = id === 41 ? 8 : [49, 51, 66].includes(id) ? 3 : id === 57 ? 16 : 0;
+    events.push({
+      target,
+      sender,
+      id,
+      w,
+      l,
+      flags: context?.flags,
+      words:
+        count && context?.payload?.load
+          ? Array.from({ length: count }, (_, i) => context.payload.load(l + i * 4))
+          : null,
+    });
+    return send.apply(this, args);
+  };
+  return events;
+}
+
+test('normal SDK CsPlane creates real VRAM children with independent constructor vectors', async () => {
+  const f = fixture(
+    'var plane = new CsPlane(800,600,0,0,0), alias = plane; var offset = new CsPlane(9,7,3,-2,11); function GameLoop(frame) { if (frame === 2) { if (plane === alias) cfExit(42); } }',
+  );
+  const packets = observePlanePackets(f.world);
+  try {
+    await f.world.initialize('main.kcs');
+    const owner = task(f.world),
+      first = planeTask(f.world),
+      second = planeTask(f.world, 'offset');
+    assert.equal(first.kind, 2);
+    assert.equal(second.kind, 2);
+    assert.notEqual(first.id, second.id);
+    assert.equal(
+      first.parent,
+      owner.id,
+      'self creation is under the kind55 owner, not its borrowed Script',
+    );
+    assert.equal(second.parent, owner.id);
+    assert.equal(first.creator, owner.id);
+    assert.equal(first.name, 'JS Plane');
+    assert.equal(f.world.objects.objects.has(f.world.main.id), true);
+    assert.deepEqual(cell(f.world, 'plane'), cell(f.world, 'alias'));
+    const graph = first.implementation.graph,
+      other = second.implementation.graph;
+    assert.ok(graph && other, 'the real Plane receiver must allocate its graphs');
+    assert.deepEqual(
+      [graph.type, graph.vram, graph.width, graph.height, graph.registrationEnabled],
+      [1, true, 800, 600, false],
+    );
+    assert.equal(first.implementation.state.shown, false);
+    assert.equal(f.world.graphics.tasks.get(first.id), first.implementation);
+    assert.deepEqual(motionVector(other.kx2, MOTION_ABI.base), [0, 0, 11]);
+    assert.deepEqual(motionVector(other.kx2, MOTION_ABI.pos), [0, 0, 0]);
+    assert.deepEqual(motionVector(other.textureTransform, MOTION_ABI.pos), [3, -2, 0]);
+    assert.notEqual(
+      other.kx2,
+      other.textureTransform,
+      'VRAM w1 must not alias its physical transform',
+    );
+    const published = packets.filter(
+      (x) => x.target === second.nativeID && [41, 51, 49, 66, 57, 59, 47].includes(x.id),
+    );
+    assert.deepEqual(
+      published.map((x) => [x.sender, x.id, x.w, x.l, x.flags]),
+      [
+        [owner.id, 41, 0, 0, 0],
+        [owner.id, 51, 1, 0, 0],
+        [owner.id, 51, 0, 0, 0],
+        [owner.id, 49, 0, 0, 0],
+        [owner.id, 66, 0, 0, 0],
+        [owner.id, 57, 0, 0, 0],
+        [owner.id, 59, 1, 4294967295, 0],
+        [owner.id, 47, 0, 0, 0],
+      ],
+    );
+    assert.deepEqual(
+      published[0].words,
+      [0, 0, 1093664768, 1091567616, 1088421888, 32, 1, 4294967295],
+    );
+    assert.deepEqual(published[1].words, [1077936128, 3221225472, 0]);
+    assert.deepEqual(published[2].words, [0, 0, 0]);
+    assert.deepEqual(published[3].words, [0, 0, 1093664768]);
+    assert.deepEqual(published[4].words, [1065353216, 1065353216, 1065353216]);
+    assert.deepEqual(
+      published[5].words,
+      [1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216],
+    );
+    assert.equal(f.world.main.machine.load(f.world.main.machine.sp - 4), sentinel);
+    await f.world.tick();
+    assert.equal(task(f.world).exitCode, 42);
+    await f.world.objects.release(owner.id);
+    for (const child of [first, second]) {
+      assert.equal(f.world.objects.objects.has(child.id), false);
+      assert.equal(f.world.graphics.tasks.has(child.id), false);
+      assert.equal(f.world.graphics.graphs.has(child.nativeID), false);
+    }
+    assert.equal(f.world.objects.objects.has(f.world.main.id), true);
+    assert.equal(
+      [...f.world.runtime.handles.records.values()].some((x) => x.type === 'javascript-plane'),
+      false,
+    );
+    assert.equal(f.events.original, 0);
+  } finally {
+    await f.world.close();
+  }
+});
+
+test('normal SDK CsPlane restores mixed host aliases without replay and isolates owners', async () => {
+  const first = fixture(
+    'var plane = new CsPlane(9,7,3,-2,11), alias = plane; var image = new CsImage(), imageAlias = image; var result = image.load("plain.hg3"); function GameLoop(frame) { if (frame === 3) { if (plane === alias) { if (image === imageAlias) { if (result === true) cfExit(42); } } } }',
+  );
+  const fresh = fixture(),
+    invalid = fixture();
+  try {
+    await first.world.initialize('main.kcs');
+    await first.world.tick();
+    const checkpoint = structuredClone(first.world.snapshot());
+    assertData(checkpoint);
+    let draws = 0;
+    for (const generator of [fresh.world.random.integer, fresh.world.random.real]) {
+      const next = generator.nextUint32;
+      generator.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    await fresh.world.restore(structuredClone(checkpoint));
+    assert.deepEqual(
+      fresh.world.snapshot(),
+      checkpoint,
+      'mixed aliases and actual Plane graphs restore with zero warm frames',
+    );
+    assert.deepEqual(fresh.events.reads, ['main.kcs']);
+    assert.deepEqual(fresh.events.native, []);
+    assert.deepEqual(fresh.events.packets, []);
+    assert.equal(draws, 0);
+    assert.deepEqual(cell(fresh.world, 'plane'), cell(fresh.world, 'alias'));
+    assert.deepEqual(cell(fresh.world, 'image'), cell(fresh.world, 'imageAlias'));
+    assert.notEqual(
+      planeTask(first.world).implementation.graph,
+      planeTask(fresh.world).implementation.graph,
+    );
+    const corrupt = structuredClone(checkpoint);
+    const ownerDTO = corrupt.objects.objects.find((x) => x.kind === 55);
+    ownerDTO.data.machine.cells[task(first.world).implementation.machine.cell(0, 'plane')] = {
+      hostObject: 2147483647,
+    };
+    await assert.rejects(
+      invalid.world.restore(corrupt),
+      /JavaScript.*host|JavaScript.*reference|handle/i,
+      'unknown mixed host references must not be silently filtered',
+    );
+    await first.world.tick();
+    await fresh.world.tick();
+    assert.equal(task(first.world).exitCode, 42);
+    assert.equal(task(fresh.world).exitCode, 42);
+    const child = planeTask(fresh.world),
+      bitmap = hostImage(fresh.world).bitmap;
+    await first.world.objects.release(task(first.world).id);
+    assert.equal(fresh.world.objects.objects.get(child.id), child);
+    assert.deepEqual(
+      await fresh.world.graphics.images.get(bitmap).pixels(),
+      Uint8ClampedArray.from(red),
+    );
+    await fresh.world.objects.release(task(fresh.world).id);
+    assert.equal(fresh.world.objects.objects.has(child.id), false);
+    assert.equal(fresh.world.objects.objects.has(fresh.world.main.id), true);
+    assert.equal(first.events.original + fresh.events.original + invalid.events.original, 0);
+  } finally {
+    await first.world.close();
+    await fresh.world.close();
+    await invalid.world.close();
+  }
+});
+
+test('normal SDK CsPlane cancels its real pending child creation when the owner closes', async () => {
+  const f = fixture(
+    'var plane = new CsPlane(9,7,3,-2,11); var after = 1; function GameLoop(frame) { cfExit(42); }',
+  );
+  const original = f.world.objects.factories.get(2);
+  let enter, release;
+  const entered = new Promise((resolve) => {
+      enter = resolve;
+    }),
+    blocked = new Promise((resolve) => {
+      release = resolve;
+    });
+  let created,
+    calls = 0,
+    initialization;
+  f.world.objects.factories.set(2, function (...args) {
+    const value = original.apply(this, args);
+    calls++;
+    created = args[0];
+    enter();
+    return blocked.then(() => value);
+  });
+  try {
+    initialization = f.world.initialize('main.kcs');
+    await Promise.race([
+      entered,
+      initialization.then(() => {
+        throw new Error('constructor did not enter its real child factory');
+      }),
+    ]);
+    const owner = task(f.world),
+      implementation = owner.implementation;
+    assert.equal(calls, 1);
+    assert.equal(cell(f.world, 'after'), undefined);
+    assert.throws(() => f.world.snapshot(), /settled|pending|callback/);
+    await f.world.objects.release(owner.id);
+    assert.equal(f.world.objects.objects.has(f.world.main.id), true);
+    release();
+    await assert.rejects(initialization, /JavaScript.*owner is closed/);
+    assert.equal(implementation.machine, null);
+    assert.equal(implementation.loaded, false);
+    assert.equal(implementation.running, false);
+    assert.equal(f.world.objects.objects.has(created.id), false);
+    assert.equal(f.world.graphics.tasks.has(created.id), false);
+    assert.equal(
+      [...f.world.runtime.handles.records.values()].some((x) => x.type === 'javascript-plane'),
+      false,
     );
     assert.equal(f.events.original, 0);
   } finally {

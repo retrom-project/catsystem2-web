@@ -42,7 +42,7 @@ export class JavaScriptMachine {
     const cell = this.cell(environment, name);
     if (cell !== -1) return this.state.cells[cell];
     if (name === 'undefined') return undefined;
-    if (name === 'cfExit' || name === 'CsImage') return { host: name };
+    if (name === 'cfExit' || name === 'CsImage' || name === 'CsPlane') return { host: name };
     throw scriptError('Unsupported JavaScript host import', location, name);
   }
   set(environment, name, value, location) {
@@ -192,7 +192,7 @@ export class JavaScriptMachine {
         case 'construct': {
           const args = stack.splice(stack.length - arg, arg),
             target = stack.pop();
-          if (target?.host !== 'CsImage')
+          if (target?.host !== 'CsImage' && target?.host !== 'CsPlane')
             throw scriptError('Unsupported JavaScript syntax', location, 'constructor');
           const result = complete(host({ construct: target.host }, args, location), frame);
           if (result) return result;
@@ -283,6 +283,7 @@ export class JavaScriptMachine {
               (Number.isInteger(value.closure) && state.closures[value.closure]) ||
               value.host === 'cfExit' ||
               value.host === 'CsImage' ||
+              value.host === 'CsPlane' ||
               (Number.isSafeInteger(value.hostObject) && value.hostObject > 0)
             )))
       )

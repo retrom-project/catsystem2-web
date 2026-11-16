@@ -8,6 +8,7 @@ import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs'
 import { nativeEngineWord } from './engine-message.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { SDKJavaScriptImages } from './sdk-javascript-image.mjs';
+import { SDKJavaScriptPlanes } from './sdk-javascript-plane.mjs';
 
 const decoder = new TextDecoder('shift_jis', { fatal: true });
 
@@ -22,6 +23,7 @@ export class NormalSDKJavaScriptTask {
       child: null,
       closed: false,
       images: new SDKJavaScriptImages(world, record),
+      planes: new SDKJavaScriptPlanes(world, record),
     });
     record.exitCode ??= -1;
   }
@@ -92,7 +94,31 @@ export class NormalSDKJavaScriptTask {
   }
   host(name, args, location) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
-    if (name && typeof name === 'object') return this.images.host(name, args, location);
+    if (name && typeof name === 'object') {
+      if (name.construct)
+        return (name.construct === 'CsPlane' ? this.planes : this.images).host(
+          name,
+          args,
+          location,
+        );
+      const reference = name.receiver,
+        record =
+          reference &&
+          Object.keys(reference).length === 1 &&
+          Number.isSafeInteger(reference.hostObject) &&
+          this.world.runtime.handles.records.get(reference.hostObject);
+      if (
+        !record ||
+        record.value.owner !== this.record.id ||
+        !['javascript-image', 'javascript-plane'].includes(record.type)
+      )
+        throw scriptError('Unsupported JavaScript host import', location, 'invalid host reference');
+      return (record.type === 'javascript-plane' ? this.planes : this.images).host(
+        name,
+        args,
+        location,
+      );
+    }
     if (
       name !== 'cfExit' ||
       !this.loaded ||
@@ -126,7 +152,9 @@ export class NormalSDKJavaScriptTask {
   async drain(machine, result) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     while (result.status === 'waiting') {
-      const value = await this.images.complete(result.request);
+      const value = await (Object.hasOwn(result.request, 'plane')
+        ? this.planes.complete(result.request)
+        : this.images.complete(result.request));
       if (this.closed) throw new Error('JavaScript image owner is closed');
       machine.resumeHost(value);
       result = machine.run((...args) => this.host(...args));
@@ -167,14 +195,40 @@ export class NormalSDKJavaScriptTask {
     this.link = state.link && { ...state.link };
     this.child = state.child;
     this.machine = state.machine === null ? null : JavaScriptMachine.restore(state.machine);
-    this.images.validate(this.machine?.state.cells ?? []);
+    const images = [],
+      planes = [];
+    for (const value of this.machine?.state.cells ?? []) {
+      if (value?.hostObject === undefined) continue;
+      const record = this.world.runtime.handles.records.get(value.hostObject);
+      if (
+        !record ||
+        record.value.owner !== this.record.id ||
+        !['javascript-image', 'javascript-plane'].includes(record.type)
+      )
+        throw new Error('Invalid JavaScript host reference checkpoint');
+      (record.type === 'javascript-image' ? images : planes).push(value);
+    }
+    this.images.validate(images);
+    this.planes.validate(planes);
   }
   async close() {
     this.closed = true;
-    await this.images.close(this.link);
+    const errors = [];
+    try {
+      await this.images.close(this.link);
+    } catch (error) {
+      errors.push(error);
+    }
+    try {
+      await this.planes.close();
+    } catch (error) {
+      errors.push(error);
+    }
     this.machine = null;
     this.link = null;
     this.child = null;
+    if (errors.length === 1) throw errors[0];
+    if (errors.length) throw new AggregateError(errors, 'JavaScript host cleanup failed');
   }
 }
 
