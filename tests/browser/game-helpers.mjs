@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import { expect } from '@playwright/test';
-import { frameClock, until, clickNativeButton, step } from './native-game-input.mjs';
+import {
+  frameClock,
+  until,
+  clickNativeButton,
+  step,
+  guardNormalOriginalCPU,
+} from './native-game-input.mjs';
 export async function clickGame(page, x, y) {
   await page.locator('#screen').scrollIntoViewIfNeeded();
   const rect = await page.locator('#screen').boundingBox();
@@ -68,6 +74,7 @@ export async function launch(page, { preferences = '' } = {}) {
         storage.close();
       }
     }, `<?xml version="1.0" encoding="UTF-8"?><document>${preferences}</document>`);
+  await guardNormalOriginalCPU(page);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,

@@ -2,7 +2,13 @@
 // Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from './native-performance.mjs';
 import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
-import { hoverNativeButton, step, until, progressAcceptance } from './native-game-input.mjs';
+import {
+  hoverNativeButton,
+  step,
+  until,
+  progressAcceptance,
+  guardNormalOriginalCPU,
+} from './native-game-input.mjs';
 
 test.afterEach(async ({ page }, info) => {
   if (info.status !== info.expectedStatus && !page.isClosed())
@@ -123,6 +129,7 @@ async function runGame(page) {
   await noError(page);
 
   await page.reload();
+  await guardNormalOriginalCPU(page);
   await page.click('#start');
   await page.waitForFunction(
     () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
