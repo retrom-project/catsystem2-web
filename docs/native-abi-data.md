@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 815       | 82            | 19            | 93      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 816       | 82            | 19            | 92      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -631,3 +631,36 @@ fresh isolation and ordinary close cleanup. The affected old input control now
 expects raw0; canonical99 and its drag behavior remain unchanged. No original
 CPU, native stack-address, rendered-pixel or complete platform parity is claimed.
 All other slots, signatures, version gates and table lengths stay unchanged.
+
+## Main849 input drag word
+
+The SDK cold-start main849 fault is recovered from its own SDK515700 and
+Game648F30 wrappers. `plane.setInputDragEnabled` takes a task and a complete
+32-bit enabled word. Both wrappers admit task0, send SDKraw97/Game99 to
+canonical99 with w0, l equal to that word and transport flags0, and return
+control2 without writing VM output. Only SDK849 gains admission.
+
+The own Base branches forward to SDK Input151/Game Input153, canonical153,
+using the same owner's identity, the original word and inherited flags. The
+first matching region receives the complete DWORD at field+40. Found, missing
+and empty paths leave Input.changed untouched. An unbound receiver skips
+Input. Loaded SimplePlane reaches this same Base receiver through its own
+out-of-range fallback.
+
+Own frame calls to SDK4C4410/Game5E8080 establish the role: field+40 is tested
+for zero/nonzero, independently of the region mask at+10 whose bit2 admits
+drag routing. Enabled at+28 and the registered rectangle provide separate
+gates before message6 is sent to the owner. The enable word is stored without
+Boolean or mask conversion. The catalog's reference-capture label and the
+existing route-audit label are corrected from this producer/consumer chain.
+
+Real dual-profile GCALLs cover Base and loaded SimplePlane, high/zero words,
+first-owner duplicates, unchanged active/enabled/hover words and dirtiness,
+missing/unbound receivers and legitimate task0 dispatch. A high word with
+bit2 clear still admits the actual drag service when the separate region
+mask has bit2; zero suppresses that owner. Literal packet IDs/flags, VM
+continuation and canaries, cold fullDTO restore without call replay, fresh
+isolation and ordinary close are checked. The existing Input153 authority,
+canonical98 and every other slot/signature/version gate remain unchanged.
+The supported normal owner domain does not certify arbitrary native pointer
+layouts, all drag/frame variants or complete platform parity.

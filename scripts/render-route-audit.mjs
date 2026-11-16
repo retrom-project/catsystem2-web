@@ -31,7 +31,7 @@ const routes = {
     [0x6d, 'plane.inputSource', [95]],
     [0x6e, 'plane.setInputReceiver', [96]],
     [0x350, 'plane.setInputHoverEnabled', [98]],
-    [0x351, 'plane.setDragEnabled', [99]],
+    [0x351, 'plane.setInputDragEnabled', [99]],
     [0x157, 'plane.size', [75]],
     [0x158, 'plane.setMatrix', [57]],
     [0x159, 'plane.bounds', [76]],

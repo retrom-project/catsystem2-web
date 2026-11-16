@@ -1200,10 +1200,10 @@ export class NativeGraphicTask {
         return 0;
       }
       case 99: {
-        const region = this.input?.get(this.record.id);
-        if (this.state.receiver !== -1 && region) {
-          region[id === 98 ? 'hoverEnabled' : 'dragEnabled'] = Boolean(l);
-          this.input.changed = true;
+        if (this.state.receiver !== -1) {
+          if (!this.input?.message)
+            throw new Error('Native plane input drag service is unavailable');
+          await this.input.message(153, this.record.id, l, { flags: context.flags ?? 0 });
         }
         return 0;
       }
@@ -1532,7 +1532,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();
   }
-  if (!args[0] && id !== 0x68 && id !== 0x69 && id !== 0x6a && id !== 0x350)
+  if (!args[0] && id !== 0x68 && id !== 0x69 && id !== 0x6a && id !== 0x350 && id !== 0x351)
     return [0x59, 0x62].includes(id) ? value(0) : done();
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>

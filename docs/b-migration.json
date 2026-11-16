@@ -19599,11 +19599,11 @@
           "table": "main",
           "id": 849,
           "hexID": "0x351",
-          "semanticName": "plane.setDragEnabled",
-          "catalogSemanticName": null,
+          "semanticName": "plane.setInputDragEnabled",
+          "catalogSemanticName": "plane.setInputDragEnabled",
           "renderRoute": {
             "id": 849,
-            "semanticName": "plane.setDragEnabled",
+            "semanticName": "plane.setInputDragEnabled",
             "module": "src/native/graphics.mjs",
             "messages": [99],
             "receiver": "kind 2 → NativeGraphicTask.message; kind 6 → JS BasePlane subset",
@@ -19624,8 +19624,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -42255,11 +42254,11 @@
           "table": "main",
           "id": 849,
           "hexID": "0x351",
-          "semanticName": "plane.setDragEnabled",
-          "catalogSemanticName": "plane.setReferenceCapture",
+          "semanticName": "plane.setInputDragEnabled",
+          "catalogSemanticName": "plane.setInputDragEnabled",
           "renderRoute": {
             "id": 849,
-            "semanticName": "plane.setDragEnabled",
+            "semanticName": "plane.setInputDragEnabled",
             "module": "src/native/graphics.mjs",
             "messages": [99],
             "receiver": "kind 2 → NativeGraphicTask.message; kind 6 → JS BasePlane subset",
@@ -49937,7 +49936,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "bb614fdc70da8951b34268e8db42ab63f348b9fbee87ddefe8af035b81c05a7c",
+      "sourceSha256": "103dd64b101c84f8fda50051aeeffa7e79aa66d74023e1e78dc98556110f40fb",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50002,7 +50001,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "6d61c58492627d911f56903e3da9d84248e1fec74901206dfcfd885411e2b5c1",
+      "sourceSha256": "4e3bf2d50e5b95e6ae9556f7c4b5584ea5c89cb41a4a3c7ae2344aaa50f1aff8",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53036,7 +53035,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "1ec35588c2ad10da3b5e59453ad90638f5af490d9ad9d482859f854d4e0c6a35",
+      "sourceSha256": "7f27876e523af5e78e30d70a60f0c2e179a37ba3fbd85bfbc892424fbda4581f",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

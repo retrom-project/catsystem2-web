@@ -126,7 +126,7 @@ test('plane input switches use active/enabled/source and forward engine events t
   await nativeGraphics(0x350, [h, 0], machine, task, scene);
   await nativeGraphics(0x351, [h, 0], machine, task, scene);
   assert.equal(region.hoverEnabled, 0);
-  assert.equal(region.dragEnabled, false);
+  assert.equal(region.dragEnabled, 0);
   await plane.message([1, 7, 10, 20]);
   assert.equal(await plane.message([1, 4, 3, 1]), 1);
   assert.equal(await plane.message([1, 4, 3, 0]), 0);
@@ -1937,6 +1937,251 @@ for (const profile of rectangleProfiles)
       const entry = nativeABI(profile).tables.main.entries[848];
       assert.equal(entry.status, 'recovered');
       assert.equal(entry.name, 'plane.setInputHoverEnabled');
+      assert.equal(entry.signature.argumentWords, 2);
+      assert.equal(entry.signature.parameters[1].name, 'enabled');
+      assert.deepEqual(entry.signature.parameters[1].type, { bits: 32, kind: 'bits' });
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await missing?.close();
+      await fresh?.close();
+      await scene.close();
+      if (simpleID !== undefined) {
+        assert.equal(input?.get(simpleID), null);
+        assert.equal(freshInput?.get(simpleID) ?? null, null);
+      }
+    }
+  });
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main849 GCALL preserves the raw drag word on its first owned input region`, async () => {
+    const files = {
+        'case.kcs': kcsProgram([[59]]),
+        'bind-input.kcs': inputEnableProgram(104, 7),
+        'drag-input.kcs': inputEnableProgram(849, 2),
+        'active-input.kcs': inputEnableProgram(106, 2),
+      },
+      scene = await dataWorld(profile, files);
+    let fresh, missing, input, freshInput, simpleID;
+    try {
+      const baseID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x03510849,
+          name: 'drag Base',
+        }),
+        unboundID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x03510349,
+          name: 'unbound drag Base',
+        });
+      simpleID = await scene.objects.create({
+        kind: 2,
+        parent: scene.root,
+        nativeID: 0x03510249,
+        name: 'drag SimplePlane',
+      });
+      const baseNative = scene.nativeTaskID(baseID),
+        simpleNative = scene.nativeTaskID(simpleID),
+        simple = scene.objects.objects.get(simpleID).implementation,
+        high = 0x80000351;
+      assert.notEqual(baseNative, baseID);
+      assert.notEqual(simpleNative, simpleID);
+      assert.equal(scene.objects.objects.get(scene.root).nativeID, 0);
+      await scene.sendNativeEngine(simpleNative, scene.main.id, 42, 0, 0, {
+        payload: new NativeGraphicsPacket([
+          0,
+          0,
+          0,
+          floatBits(20.5),
+          floatBits(12.25),
+          0,
+          0,
+          0x80778899,
+        ]),
+      });
+      await inputEnableInvoke(scene, 'bind-input.kcs', [baseNative, 0, 0, 0, 0, 700, 0]);
+      await inputEnableInvoke(scene, 'bind-input.kcs', [simpleNative, 1, 2, 3, 4, 500, 0]);
+      input = scene.inputFor(baseID);
+      assert.strictEqual(input, scene.inputFor(simpleID));
+      const baseRegion = input.get(baseID),
+        simpleRegion = input.get(simpleID),
+        graph = simple.graph,
+        geometry = structuredClone({ rect: simple.state.rect, colors: graph.colors }),
+        frame = scene.frame,
+        order = scene.graphics.renderSequence,
+        dragEvents = [],
+        outer = [],
+        received = [],
+        inner = [],
+        calls = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine,
+        message = input.message;
+      assert.equal(baseRegion.dragEnabled, 1);
+      assert.equal(simpleRegion.dragEnabled, 1);
+      assert.equal(input.changed, false);
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 849)
+          calls.push({ args: [...args[0]], sender: args[2].id, reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (target, sender, number, w, l, context) {
+        if (number === 99) outer.push([target, sender, number, w, l, context.flags]);
+        return send.call(this, target, sender, number, w, l, context);
+      };
+      Object.defineProperty(input, 'message', {
+        configurable: true,
+        value: function (number, w, l, context) {
+          if (number === 153) inner.push([number, w, l, context?.flags]);
+          return message.call(this, number, w, l, context);
+        },
+      });
+      for (const id of [scene.root, baseID, simpleID, unboundID]) {
+        const record = scene.objects.objects.get(id),
+          original = record.implementation.message;
+        record.implementation.message = function (words, context, ...rest) {
+          if (words[1] === 99)
+            received.push([id, ...words, context.nativeSenderWorldID, context.flags]);
+          if (id === baseID && words[1] === 6) dragEvents.push([...words]);
+          return original.call(this, words, context, ...rest);
+        };
+      }
+      await inputEnableInvoke(scene, 'drag-input.kcs', [baseNative, high]);
+      assert.equal(baseRegion.dragEnabled, high, 'Main849 preserves the complete drag DWORD');
+      assert.equal(input.changed, false, 'Input153 does not mark changed on a found owner');
+      assert.equal(baseRegion.hoverEnabled, 1);
+      assert.equal(high & 2, 0, 'The stored enable word is not the region mask');
+      assert.equal(baseRegion.mask, 7);
+      assert.deepEqual(inner, [[153, baseID, high, 0]]);
+      await input.drag();
+      assert.equal(dragEvents.length, 1, 'Nonzero field40 admits the actual drag service');
+      assert.deepEqual(dragEvents[0].slice(1), [6, 4, 12]);
+      await inputEnableInvoke(scene, 'drag-input.kcs', [baseNative, 0]);
+      await input.drag();
+      assert.equal(dragEvents.length, 1, 'Zero field40 suppresses that owner drag route');
+      await inputEnableInvoke(scene, 'drag-input.kcs', [baseNative, high]);
+      const duplicate = input.register({
+        owner: baseID,
+        receiver: baseRegion.receiver,
+        bounds: [3, 4, 33, 24],
+        priority: -1,
+      });
+      await inputEnableInvoke(scene, 'active-input.kcs', [baseNative, 0x13572468]);
+      let at = inner.length;
+      await inputEnableInvoke(scene, 'drag-input.kcs', [baseNative, 0]);
+      assert.equal(baseRegion.dragEnabled, 0);
+      assert.equal(duplicate.dragEnabled, 1, 'Only the first matching drag word is written');
+      assert.equal(baseRegion.active, 0x13572468, 'Hover zero does not clear active');
+      assert.equal(duplicate.active, 0x13572468);
+      assert.equal(baseRegion.enabled, 1);
+      assert.deepEqual(inner.slice(at), [[153, baseID, 0, 0]]);
+      await inputEnableInvoke(scene, 'drag-input.kcs', [simpleNative, high]);
+      assert.equal(simpleRegion.dragEnabled, high, 'SimplePlane reaches the same Input153 setter');
+      assert.equal(simpleRegion.active, 0);
+      assert.equal(simpleRegion.enabled, 1);
+      assert.equal(simpleRegion.hoverEnabled, 1);
+      assert.equal(baseRegion.dragEnabled, 0, 'Another owner is not rewritten');
+      await inputEnableInvoke(scene, 'drag-input.kcs', [baseNative, high]);
+      assert.equal(duplicate.dragEnabled, 1);
+      assert.equal(input.changed, false, 'Raw zero/high/duplicate updates leave changed false');
+      const checkpoint = structuredClone(scene.snapshot());
+      fresh = await dataWorld(profile, files, { initialize: false });
+      let restoring = true,
+        replay = 0;
+      const execute = fresh.runtime.scheduler.execute,
+        freshNative = fresh.runtime.native;
+      fresh.runtime.scheduler.execute = function (...args) {
+        if (restoring) replay++;
+        return execute.apply(this, args);
+      };
+      fresh.runtime.native = function (...args) {
+        if (restoring) replay++;
+        return freshNative.apply(this, args);
+      };
+      await fresh.restore(structuredClone(checkpoint));
+      restoring = false;
+      assert.equal(replay, 0, 'Cold restore does not replay a native or guest call');
+      assert.deepEqual(fresh.snapshot(), checkpoint, 'The true fresh owner needs no warm frame');
+      freshInput = fresh.inputFor(simpleID);
+      assert.notStrictEqual(freshInput, input);
+      assert.notStrictEqual(freshInput.get(simpleID), simpleRegion);
+      await inputEnableInvoke(fresh, 'drag-input.kcs', [simpleNative, 0]);
+      assert.equal(freshInput.get(simpleID).dragEnabled, 0);
+      assert.equal(freshInput.get(baseID).active, 0x13572468);
+      assert.deepEqual(
+        scene.snapshot(),
+        checkpoint,
+        'Fresh input leaves the source owner unchanged',
+      );
+      // A separate actual World supplies an independently false changed baseline.
+      // No live changed field is manually reset to manufacture this missing-owner guard.
+      missing = await dataWorld(profile, files);
+      const missingID = await missing.objects.create({
+          kind: 6,
+          parent: missing.root,
+          nativeID: 0x03510449,
+          name: 'removed drag registration',
+        }),
+        missingNative = missing.nativeTaskID(missingID);
+      await inputEnableInvoke(missing, 'bind-input.kcs', [missingNative, 1, 1, 8, 8, 10, 0]);
+      const missingInput = missing.inputFor(missingID);
+      assert.equal(missingInput.unregister(missingID), true);
+      assert.equal(missingInput.changed, false);
+      await inputEnableInvoke(missing, 'drag-input.kcs', [missingNative, high]);
+      assert.equal(missingInput.get(missingID), null);
+      assert.equal(
+        missingInput.changed,
+        false,
+        'A bound missing owner does not mark Input changed',
+      );
+      assert.equal(
+        missing.objects.objects.get(missingID).implementation.state.receiver !== -1,
+        true,
+      );
+      at = inner.length;
+      await inputEnableInvoke(scene, 'drag-input.kcs', [scene.nativeTaskID(unboundID), high]);
+      assert.deepEqual(inner.slice(at), [], 'An unbound receiver never accesses Input');
+      const zero = await inputEnableInvoke(scene, 'drag-input.kcs', [0, high]);
+      assert.deepEqual(outer.at(-1), [0, zero.task.id, 99, 0, high, 0]);
+      assert.deepEqual(received.at(-1), [
+        scene.root,
+        zero.record.nativeID,
+        99,
+        0,
+        high,
+        zero.task.id,
+        0,
+      ]);
+      assert.equal(calls.length, outer.length);
+      assert.equal(calls.length, received.length);
+      for (let i = 0; i < calls.length; i++) {
+        const call = calls[i],
+          [target, enabled] = call.args,
+          sender = scene.objects.objects.get(call.sender),
+          owner = scene.resolveTaskID(target, call.sender);
+        assert.deepEqual(outer[i], [target, call.sender, 99, 0, enabled, 0]);
+        assert.deepEqual(received[i], [owner, sender.nativeID, 99, 0, enabled, call.sender, 0]);
+      }
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: calls.length }, () => ({ control: 2 })),
+      );
+      assert.strictEqual(simple.graph, graph);
+      assert.deepEqual({ rect: simple.state.rect, colors: graph.colors }, geometry);
+      assert.equal(scene.graphics.renderSequence, order);
+      assert.equal(scene.frame, frame);
+      assert.equal(fresh.frame, frame);
+      for (const current of [scene, fresh, missing])
+        assert.ok(!current.nativeEngine && !current.nativeEngineLoading);
+      const entry = nativeABI(profile).tables.main.entries[849];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.setInputDragEnabled');
       assert.equal(entry.signature.argumentWords, 2);
       assert.equal(entry.signature.parameters[1].name, 'enabled');
       assert.deepEqual(entry.signature.parameters[1].type, { bits: 32, kind: 'bits' });

@@ -29513,7 +29513,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     849: {
-      name: 'plane.setReferenceCapture',
+      name: 'plane.setInputDragEnabled',
       family: 'plane',
       signature: {
         argumentWords: 2,
@@ -29529,8 +29529,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word flags',
-            name: 'flags',
+            description: 'word enabled',
+            name: 'enabled',
             type: {
               bits: 32,
               kind: 'bits',
