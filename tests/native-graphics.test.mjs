@@ -12,6 +12,7 @@ import { kcsProgram } from './helpers.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeInput } from '../src/native/input.mjs';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 function world() {
   const objects = new NativeObjects(),
@@ -257,7 +258,7 @@ function rectangleDeclaration(profile) {
   assert.deepEqual(entry.controlCodes, [2]);
   assert.equal(entry.signature.result.kind, 'void');
   assert.equal(entry.signature.resultWritten, false);
-  for (const id of [78, 455, 467])
+  for (const id of [109, 455, 467])
     assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
   assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
 }
@@ -700,7 +701,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.kind, 'float');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [78, 455, 467])
+      for (const id of [109, 455, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -918,7 +919,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.bits, 32);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [78, 455, 467])
+      for (const id of [109, 455, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -1213,7 +1214,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[6].name, 'bindingWord');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [78, 455, 467])
+      for (const id of [109, 455, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -2574,5 +2575,187 @@ for (const profile of rectangleProfiles)
       await scene.close();
       assert.equal(scene.graphics.tasks.size, 0);
       if (fresh) assert.equal(fresh.graphics.tasks.size, 0);
+    }
+  });
+
+const texturedRectangleCode = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, floatBits(111)],
+  [37, floatBits(222)],
+  [43, 78, 12],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, floatBits(20.5)],
+  [37, floatBits(12.25)],
+  [43, 78, 12],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main78 GCALL preserves textured factory modes and cold model ownership`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'rectangle.kcs': texturedRectangleCode },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const id = await scene.objects.create({
+          kind: 2,
+          parent: scene.main.id,
+          nativeID: 0x004e004e,
+          name: 'textured rectangle',
+        }),
+        target = scene.nativeTaskID(id),
+        plane = scene.objects.objects.get(id).implementation,
+        siblingID = await scene.objects.create({ kind: 2, parent: scene.main.id }),
+        sibling = scene.objects.objects.get(siblingID).implementation,
+        siblingBefore = structuredClone(sibling.state),
+        packets = [],
+        replies = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native;
+      let current;
+      assert.notEqual(target, id);
+      scene.runtime.native = function (table, number, ...args) {
+        const reply = native.call(this, table, number, ...args);
+        if (table === 'main' && number === 78) replies.push(reply);
+        return reply;
+      };
+      scene.sendNativeEngine = function (destination, sender, message, w, l, context) {
+        if (message === 41) {
+          assert.equal(current.machine.load(512), 73, 'The zero target returned before this send');
+          packets.push({
+            destination,
+            sender,
+            message,
+            w,
+            l,
+            flags: context.flags,
+            words: Array.from({ length: 8 }, (_, i) => context.payload.load(i * 4)),
+          });
+        }
+        return send.call(this, destination, sender, message, w, l, context);
+      };
+      const words = [0, 0, 0, floatBits(20.5), floatBits(12.25), 32, 1, 0xffffffff],
+        invoke = async (destination = target) => {
+          current = await rectangleCaller(scene);
+          current.machine.store(128, destination);
+          current.machine.bytes(800, 8).fill(0xa5);
+          await scene.runtime.scheduler.execute(current.task);
+          rectangleContinuation(current);
+          assert.deepEqual(packets.at(-1), {
+            destination,
+            sender: current.task.id,
+            message: 41,
+            w: 0,
+            l: 0,
+            flags: 0,
+            words,
+          });
+          return current;
+        },
+        order = scene.graphics.renderSequence;
+      await invoke();
+      assert.equal(packets.length, 1, 'Target zero creates and sends nothing');
+      assert.equal(scene.graphics.renderSequence, order + 1);
+      assert.equal(plane.graph.type, 1);
+      assert.equal(plane.graph.vram, true);
+      assert.equal(plane.graph.width, 20.5);
+      assert.equal(plane.graph.height, 12.25);
+      assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
+      assert.equal(plane.state.drawType, 1);
+      assert.deepEqual(plane.state.shapeWords, words);
+      assert.strictEqual(scene.graphics.graphs.get(target), plane.graph);
+      const output = scene.graphics.stage.planes[plane.stageKey];
+      assert.equal(output.width, 20.5);
+      assert.equal(output.height, 12.25);
+      assert.strictEqual(output.nativeGraph, plane.graph);
+
+      for (const mode of [0, 2]) {
+        await scene.sendNativeEngine(target, scene.main.id, 84, 0, mode);
+        const retained = structuredClone({
+            rect: plane.state.rect,
+            drawType: plane.state.drawType,
+            shapeWords: plane.state.shapeWords,
+          }),
+          previous = plane.graph,
+          sequence = scene.graphics.renderSequence;
+        await invoke();
+        assert.equal(plane.graph, null, `Mode ${mode} removes the old model without replacement`);
+        assert.equal(scene.graphics.graphs.has(target), false);
+        assert.equal(Object.hasOwn(scene.graphics.stage.planes, plane.stageKey), false);
+        assert.equal(scene.graphics.renderSequence, sequence);
+        assert.deepEqual(
+          {
+            rect: plane.state.rect,
+            drawType: plane.state.drawType,
+            shapeWords: plane.state.shapeWords,
+          },
+          retained,
+        );
+        assert.equal(plane.state.vramType, mode);
+        await scene.sendNativeEngine(target, scene.main.id, 84, 0, 1);
+        await invoke();
+        assert.notStrictEqual(plane.graph, previous);
+        assert.equal(plane.graph.type, 1);
+        assert.deepEqual(plane.state.shapeWords, words);
+      }
+      const sequence = scene.graphics.renderSequence;
+      await invoke(0x7f780078);
+      assert.equal(
+        scene.graphics.renderSequence,
+        sequence,
+        'A missing native target owns no model',
+      );
+      assert.deepEqual(sibling.state, siblingBefore);
+      assert.deepEqual(
+        await Promise.all(replies),
+        replies.map(() => ({ control: 2 })),
+      );
+      const declaration = nativeABI(profile).tables.main.entries[78];
+      assert.equal(declaration.status, 'recovered');
+      assert.equal(declaration.name, 'plane.texturedRectangle');
+      assert.equal(declaration.signature.argumentWords, 3);
+      assert.deepEqual(declaration.controlCodes, [2]);
+      assert.equal(declaration.signature.result.kind, 'void');
+      assert.equal(declaration.signature.resultWritten, false);
+      for (const field of declaration.signature.parameters.slice(1))
+        assert.deepEqual(field.type, { kind: 'float', bits: 32 });
+      for (const unknown of [109, 110, 339, 340, 341, 467])
+        assert.equal(
+          nativeABI(rectangleProfiles[0]).tables.main.entries[unknown].status,
+          'unknown',
+        );
+
+      const saved = scene.snapshot(),
+        encoded = await serializeCheckpoint(saved),
+        decoded = await deserializeCheckpoint(encoded);
+      fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.runtime.native = () => {
+        throw new Error('Textured model restore replayed a native call');
+      };
+      for (const random of [fresh.random.integer, fresh.random.real])
+        random.nextUint32 = () => {
+          throw new Error('Textured model restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), saved, 'Full DTO equality is checked before a warm frame');
+      const restored = fresh.objects.objects.get(id).implementation;
+      assert.notStrictEqual(restored.graph, plane.graph);
+      assert.notStrictEqual(restored.state.shapeWords, plane.state.shapeWords);
+      assert.deepEqual(restored.state.shapeWords, words);
+      assert.equal(restored.graph.width, 20.5);
+      assert.equal(restored.graph.height, 12.25);
+      await scene.objects.release(id);
+      assert.equal(scene.graphics.graphs.has(target), false);
+      assert.equal(fresh.graphics.graphs.has(target), true);
+      assert.deepEqual(restored.state.shapeWords, words);
+      assert.equal(scene.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await scene.close();
     }
   });

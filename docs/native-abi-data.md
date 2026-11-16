@@ -716,3 +716,13 @@ guards. Real dual-ABI GCALL tests cover raw high words, unregistered Base and
 loaded SimplePlane owners, poll/clear, zero transport, cold full DTO restoration
 and owner isolation. This short coverage does not claim a completed official SDK
 tutorial or a new long-case pass.
+
+Main78 is independently recovered for the SDK. Its own wrapper and the Game
+wrapper take a native task ID and two raw float32 dimensions, skip target zero,
+and send the existing `plane.texturedRectangle` message41. The eight-word
+payload is `[0,0,0,widthBits,heightBits,32,1,FFFFFFFF]`; control2 writes no VM
+result. This is a textured model using the existing graphics authority, rather
+than a new bitmap-handle constructor. Ordinary mode1 replaces the old model
+and retains all eight words. Modes0/2 remove the old model while keeping its
+rectangle, draw type and retained packet fields. Other backend modes, Base-only
+primitive targets and unreviewed SDK slots are outside this finite admission.

@@ -2811,37 +2811,35 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     78: {
-      name: 'plane.createBitmap',
+      name: 'plane.texturedRectangle',
       family: 'plane',
       signature: {
         argumentWords: 3,
         controlCodes: [2],
         parameters: [
           {
-            description: 'handle task',
-            name: 'task',
+            description: 'u32 native task ID (zero skips delivery)',
+            name: 'target',
             type: {
-              handleKind: 'unknown',
-              kind: 'handle',
-              ownership: 'unknown',
+              bits: 32,
+              kind: 'integer',
+              signed: false,
             },
           },
           {
-            description: 'u32 width',
+            description: 'f32 width',
             name: 'width',
             type: {
               bits: 32,
-              kind: 'integer',
-              signed: false,
+              kind: 'float',
             },
           },
           {
-            description: 'u32 height',
+            description: 'f32 height',
             name: 'height',
             type: {
               bits: 32,
-              kind: 'integer',
-              signed: false,
+              kind: 'float',
             },
           },
         ],
