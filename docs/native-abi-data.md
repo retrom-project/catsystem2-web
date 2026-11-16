@@ -756,3 +756,18 @@ models; the selected primary/texture positions and both task identity domains
 remain distinct. Cold full DTO restoration does not replay commands or RNG.
 This finite leaf adds no other SDK slot, backend, inherited-position corner,
 native dirty-layout or official tutorial acceptance claim.
+
+SDK Main101 independently recovers the existing `plane.setScale` declaration
+(823 recovered,85 unknown). Both native wrappers take the target, three raw
+float32 components and an unchanged DWORD selector, skip target0, and send
+canonical66 with flags0. They explicitly initialize a fourth packet word to
+float32 one; the normal producer retains those four known words. The receiver
+forces geometry selector0 for itself and inherited scale notifications, so an
+incoming nonzero selector does not choose a texture scale. Existing model/MOT
+owners and receiver66/67 behavior are unchanged. Control2 writes no VM result;
+the native transport out aliases the argv parameter slot instead.
+
+The fourth-word correction preserves the native packet-byte contract. It does
+not assert a previous geometry/pixel defect, a dirty-layout equivalence or a
+completed official tutorial. All other SDK slots, Game declarations, shared
+signatures, flags, zero-target gates and unknown-version guards remain intact.

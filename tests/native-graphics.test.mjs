@@ -3302,3 +3302,229 @@ for (const profile of rectangleProfiles)
       await scene.close();
     }
   });
+
+const scaleCode = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, floatBits(111)],
+  [37, floatBits(222)],
+  [37, floatBits(333)],
+  [37, 0x80000000],
+  [43, 101, 20],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, [0x13, 136]],
+  [37, [0x13, 140]],
+  [37, [0x13, 144]],
+  [37, [0x13, 132]],
+  [43, 101, 20],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main101 GCALL retains native scale packet bytes and geometry ownership through cold restore`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'rectangle.kcs': scaleCode },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const targetID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x01010001,
+          name: 'scale plane',
+        }),
+        target = scene.nativeTaskID(targetID),
+        ids = [targetID],
+        planes = [scene.graphics.get(targetID)];
+      assert.notEqual(targetID, target);
+      for (const [i, name] of ['inherited', 'independent'].entries()) {
+        const id = await scene.objects.create({
+          kind: 2,
+          parent: targetID,
+          nativeID: 0x01010010 + i * 16,
+          name,
+        });
+        ids.push(id);
+        planes.push(scene.graphics.get(id));
+      }
+      for (const id of ids)
+        await scene.sendNativeEngine(scene.nativeTaskID(id), scene.main.id, 41, 0, 0, {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(12),
+            floatBits(8),
+            32,
+            1,
+            0xffffffff,
+          ]),
+        });
+      await scene.sendNativeEngine(scene.nativeTaskID(ids[1]), scene.main.id, 53, 0, 0, {
+        payload: new NativeGraphicsPacket([floatBits(1), floatBits(2), 0]),
+      });
+      assert.equal(planes[1].state.inheritPosition, true);
+      assert.equal(planes[2].state.inheritPosition, false);
+      const vector = (plane, texture = false) =>
+          motionVector(texture ? plane.graph.textureTransform : plane.graph.kx2, MOTION_ABI.scale),
+        textureBefore = planes.map((plane) => vector(plane, true)),
+        independentBefore = vector(planes[2]),
+        traces = [],
+        received = [],
+        replies = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native,
+        originalMessage = planes[0].message;
+      planes[0].message = function (words, context) {
+        if (words[1] === 66) received.push([words[0], context.nativeSenderWorldID, context.flags]);
+        return originalMessage.call(this, words, context);
+      };
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 101) replies.push(reply);
+        return reply;
+      };
+      scene.sendNativeEngine = function (destination, sender, id, w, l, context) {
+        let trace;
+        if (id === 66) {
+          trace = {
+            destination,
+            sender,
+            id,
+            w,
+            l,
+            flags: context.flags,
+            words: [0, 4, 8, 12].map((at) => context.payload.load(at)),
+          };
+          traces.push(trace);
+        }
+        const reply = send.call(this, destination, sender, id, w, l, context);
+        if (trace) trace.reply = reply;
+        return reply;
+      };
+      const firstValues = [2.5, 3.25, 4.5],
+        first = await positionCaller(scene, 0x01010100, target, 0, firstValues);
+      await scene.runtime.scheduler.execute(first.task);
+      assert.deepEqual(vector(planes[0]), firstValues);
+      assert.deepEqual(vector(planes[1]), firstValues);
+      assert.deepEqual(vector(planes[2]), independentBefore);
+      assert.deepEqual(
+        planes.map((plane) => vector(plane, true)),
+        textureBefore,
+      );
+      assert.equal(first.machine.load(512), 73);
+      rectangleContinuation(first);
+      assert.equal(traces.length, 1, 'Native target zero skips the producer and transport');
+      // Both native wrappers explicitly write the homogeneous fourth word.
+      assert.deepEqual(traces[0].words, [...firstValues.map(floatBits), 0x3f800000]);
+      assert.deepEqual(
+        [
+          traces[0].destination,
+          traces[0].sender,
+          traces[0].id,
+          traces[0].w,
+          traces[0].l,
+          traces[0].flags,
+        ],
+        [target, first.task.id, 66, 0, 0, 0],
+      );
+      assert.deepEqual(received, [[0x01010100, first.task.id, 0]]);
+      assert.equal(typeof traces[0].reply.then, 'function');
+      const highValues = [-1.5, 4.25, 2.5],
+        high = await positionCaller(scene, 0x01010110, target, 0x80000000, highValues);
+      await scene.runtime.scheduler.execute(high.task);
+      assert.deepEqual(
+        vector(planes[0]),
+        highValues,
+        'Base66 forces geometry selector0 for itself',
+      );
+      assert.deepEqual(vector(planes[1]), highValues);
+      assert.deepEqual(vector(planes[2]), independentBefore);
+      assert.deepEqual(
+        planes.map((plane) => vector(plane, true)),
+        textureBefore,
+      );
+      rectangleContinuation(high);
+      assert.deepEqual(traces[1].words, [...highValues.map(floatBits), 0x3f800000]);
+      assert.deepEqual([traces[1].w, traces[1].flags], [0x80000000, 0]);
+      assert.deepEqual(received[1], [0x01010110, high.task.id, 0]);
+      const base = await scene.objects.create({
+          kind: 0,
+          parent: scene.root,
+          nativeID: 0x01010200,
+        }),
+        baseChild = await scene.objects.create({ kind: 2, parent: base, nativeID: 0x01010210 });
+      await scene.sendNativeEngine(scene.nativeTaskID(baseChild), scene.main.id, 41, 0, 0, {
+        payload: new NativeGraphicsPacket([
+          0,
+          0,
+          0,
+          floatBits(12),
+          floatBits(8),
+          32,
+          1,
+          0xffffffff,
+        ]),
+      });
+      const child = scene.graphics.get(baseChild),
+        old = vector(child),
+        negative = await positionCaller(
+          scene,
+          0x01010300,
+          scene.nativeTaskID(base),
+          0,
+          [7.5, 8.5, 9.5],
+        );
+      await scene.runtime.scheduler.execute(negative.task);
+      rectangleContinuation(negative);
+      assert.deepEqual(
+        vector(child),
+        old,
+        'This existing unhandled Base route has flags0 without fallback child traversal',
+      );
+      assert.deepEqual(
+        await Promise.all(replies),
+        Array.from({ length: 6 }, () => ({ control: 2 })),
+      );
+      const entry = nativeABI(profile).tables.main.entries[101];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.setScale');
+      assert.equal(entry.signature.argumentWords, 5);
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.resultWritten, false);
+      for (const id of [102, 103, 109, 110, 467])
+        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      const dto = scene.snapshot(),
+        decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
+      fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.runtime.native = () => {
+        throw new Error('Scale restore replayed a native command');
+      };
+      for (const stream of [fresh.random.integer, fresh.random.real])
+        stream.nextUint32 = () => {
+          throw new Error('Scale restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), dto, 'The entire DTO agrees before any warm tick');
+      const restored = ids.map((id) => fresh.graphics.get(id));
+      assert.notStrictEqual(restored[0].graph.kx2, planes[0].graph.kx2);
+      assert.deepEqual(vector(restored[0]), highValues);
+      assert.deepEqual(vector(restored[1]), highValues);
+      assert.deepEqual(
+        restored.map((plane) => vector(plane, true)),
+        textureBefore,
+      );
+      await scene.objects.release(targetID);
+      assert.equal(scene.objects.objects.has(ids[1]), false);
+      assert.equal(fresh.objects.objects.has(ids[1]), true);
+      assert.deepEqual(vector(restored[0]), highValues);
+      assert.equal(scene.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await scene.close();
+    }
+  });

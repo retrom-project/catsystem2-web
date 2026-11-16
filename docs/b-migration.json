@@ -4796,7 +4796,7 @@
           "id": 101,
           "hexID": "0x65",
           "semanticName": "plane.setScale",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "plane.setScale",
           "renderRoute": {
             "id": 101,
             "semanticName": "plane.setScale",
@@ -4820,8 +4820,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -49939,7 +49938,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "289b191889a9f2e98062aa63bf0f69c0ca33103592346f8946d3cfc7a6407aee",
+      "sourceSha256": "7c62446f0a51d900f26a23ff22730665aad07148167d68419789b83a1e4c114c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53038,7 +53037,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "f11bdb1bfbb6555cd7d02af7bac602e42e297a13336210fc1d0514103ff81bca",
+      "sourceSha256": "412bf98b8e338fbf1ccd372cfe76b387cf51036096ed1e41033428b8bb8c73db",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

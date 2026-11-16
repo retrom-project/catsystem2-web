@@ -1083,7 +1083,7 @@ export class NativeGraphicTask {
         this.sync();
         return 0;
       case 66:
-        // 6774E0 always selects the geometry graph, ignoring message wParam.
+        // Base66 passes selector0 to 6774E0 regardless of the incoming wParam.
         if (this.graph) {
           setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
           this.markBoundsDirty();
@@ -1671,7 +1671,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(59, args[2], args[1]);
       return done();
     case 0x65:
-      await send(66, args[4], 0, packet(args.slice(1, 4)));
+      await send(66, args[4], 0, packet([...args.slice(1, 4), floatBits(1)]));
       return done();
     case 0x66:
       await send(77, 0, args[1]);
