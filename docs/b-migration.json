@@ -2263,7 +2263,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/script-message-box.mjs",
-        "line": 102,
+        "line": 105,
         "expression": "NATIVE_SCRIPT_MESSAGE_BOX[world.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -11566,7 +11566,7 @@
           "module": "src/native/script-message-box.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-message-box.mjs:108",
+          "registration": "src/native/script-message-box.mjs:111",
           "features": ["script-message-box"],
           "dependencies": ["src/native/script-message-box.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -25003,7 +25003,7 @@
         },
         {
           "name": "script-message-box",
-          "registration": "src/native/script-message-box.mjs:106",
+          "registration": "src/native/script-message-box.mjs:109",
           "modules": [],
           "dependencies": []
         },
@@ -34224,7 +34224,7 @@
           "module": "src/native/script-message-box.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-message-box.mjs:108",
+          "registration": "src/native/script-message-box.mjs:111",
           "features": ["script-message-box"],
           "dependencies": ["src/native/script-message-box.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -48451,7 +48451,7 @@
         },
         {
           "name": "script-message-box",
-          "registration": "src/native/script-message-box.mjs:106",
+          "registration": "src/native/script-message-box.mjs:109",
           "modules": [],
           "dependencies": []
         },
@@ -54842,7 +54842,7 @@
     },
     {
       "file": "src/native/script-message-box.mjs",
-      "sourceSha256": "a85f420837ac25ed85fe80fe8f562c062802ff6e656b921cb718aa883cc7a5b8",
+      "sourceSha256": "29dd6e33427a64c5996d17d35518b9f6593de3d97f361e60969d8ee6b8e3770c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 6, "calls": 2, "references": 0 },
@@ -54850,14 +54850,14 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 73,
+          "line": 76,
           "method": "callFromHost",
           "target": "this.layout.handler",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 74,
+          "line": 77,
           "method": "call",
           "target": "this.layout.handler",
           "review": "needs-review",
@@ -54867,14 +54867,14 @@
       "executionSiteCounts": { "callFromHost": 1, "call": 1 },
       "indirectSites": [
         {
-          "line": 60,
+          "line": 63,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 109,
+          "line": 113,
           "method": "getNativeFeature",
           "feature": "script-message-box",
           "review": "needs-review",
@@ -57532,7 +57532,7 @@
     },
     {
       "file": "src/ppi/windows-multibyte.mjs",
-      "sourceSha256": "6f6e425756875244c89362e5e350d202d084d13f30af6d454bed6eef0d63e4c8",
+      "sourceSha256": "07601686bbdb7779013c3652f8ef4f54fd232911c13929e841a06643325321af",
       "domain": 9,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -60970,7 +60970,7 @@
         },
         {
           "file": "src/native/script-message-box.mjs",
-          "line": 73,
+          "line": 76,
           "method": "callFromHost",
           "target": "this.layout.handler",
           "review": "needs-review",
@@ -60978,7 +60978,7 @@
         },
         {
           "file": "src/native/script-message-box.mjs",
-          "line": 74,
+          "line": 77,
           "method": "call",
           "target": "this.layout.handler",
           "review": "needs-review",

@@ -142,12 +142,20 @@ disposal while a dialog is open. The public browser case changes native
 preferences, imports a real file, cancels and accepts exit, checks task-tree
 release and reopens the same game to verify persisted preferences and files.
 
-Main `1BD` shows a modal script message. SDK `51B460` and game `64FDB0`
-execute the original formatter and emit their original caption. Only their
-`MessageBoxA/W` call is supplied by the browser. Both pass `MB_OK`; the
-native Script waits until OK or Escape dismisses the message. The output
-word remains untouched and the wrapper returns control 2. Other USER32
-message boxes keep their separate platform boundaries.
+Main `1BD` formats a modal script message through the current VM's byte
+formatter and waits for the real `nativeWindowAction` browser service. It keeps
+the `system error` caption and `MB_OK` behavior: OK or Escape dismisses the
+message. SDK uses its existing MessageBoxA decoding boundary; Game first uses
+the shared `MultiByteToWideChar(932, 1)` decoder. Their invalid CP932 input rules
+remain distinct. A missing host service or an invalid acknowledgement fails;
+there is no default success or original-engine fallback. Control is 2 and no
+VM output word is written. A settled fresh checkpoint does not replay a dialog;
+a modal request still in progress is not a completed script frame.
+
+When an explicit original engine already exists or is loading, SDK `51B460`
+and Game `64FDB0` still execute their original formatter and MessageBoxA/W
+call boundary. Their physical oracle assertions remain separate. Other USER32
+message boxes keep their own platform boundaries.
 [Microsoft MessageBoxW reference](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw).
 
 ## Base shortcuts in an ordinary World

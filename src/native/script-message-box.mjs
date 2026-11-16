@@ -5,6 +5,9 @@ import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { registryDecodeANSI } from './registry-codepage.mjs';
+import { formatNativeAt } from '../kcs.mjs';
+import { nativeDataString } from './data-text.mjs';
+import { decodeWindowsCP932 } from '../ppi/windows-multibyte.mjs';
 
 export const NATIVE_SCRIPT_MESSAGE_BOX = Object.freeze({
   'sdk-4.01-engine-2.6.1.74': {
@@ -105,7 +108,17 @@ export function installNativeScriptMessageBox(world) {
     'script-message-box',
     (engine) => new NativeScriptMessageBox(engine, world, layout),
   );
-  world.runtime.register('main', 0x1bd, async (args, machine, task) =>
-    (await world.getNativeFeature('script-message-box')).invoke(args, machine, task),
-  );
+  world.runtime.register('main', 0x1bd, async (args, machine, task) => {
+    if (world.nativeEngine || world.nativeEngineLoading)
+      return (await world.getNativeFeature('script-message-box')).invoke(args, machine, task);
+    const bytes = nativeDataString(formatNativeAt(args[0] ?? machine.nativeArgument(0), machine)),
+      message = layout.wide ? decodeWindowsCP932(bytes) : registryDecodeANSI(bytes),
+      result = await world.window.action('script-message-box', {
+        caption: 'system error',
+        message,
+      });
+    if (result !== 0 && result !== 1)
+      throw new TypeError('Script MessageBox requires a Win32 IDOK or failure result');
+    return nativeReply(2);
+  });
 }

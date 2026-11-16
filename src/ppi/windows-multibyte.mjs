@@ -35,6 +35,12 @@ function decodeCP932(bytes, composite) {
   return { tokens, invalid };
 }
 
+// The engine's narrow-to-wide helpers use CP932 with MB_PRECOMPOSED, without
+// a process allocation. Keep the same decoder as the shared Win32 import.
+export function decodeWindowsCP932(bytes) {
+  return decodeCP932(bytes, false).tokens.join('');
+}
+
 function decodeUTF8(bytes) {
   const tokens = [];
   let invalid = false;
