@@ -771,3 +771,28 @@ The fourth-word correction preserves the native packet-byte contract. It does
 not assert a previous geometry/pixel defect, a dirty-layout equivalence or a
 completed official tutorial. All other SDK slots, Game declarations, shared
 signatures, flags, zero-target gates and unknown-version guards remain intact.
+
+SDK Main93 and341 are independently registered from their complete own
+wrappers, bringing this SDK to826 recovered and82 unknown slots. Main93 uses
+five words: native target, three raw float32 angles and an unchanged DWORD
+selector. Target0 skips before the other operands. Its canonical55 send uses
+flags1 so the actual Top route can visit loaded children even when the target
+Base has no model. The existing selected model and rotation/MOT receivers own
+the update; the wrapper authors three vector words, without introducing a
+fourth script argument or a physical stack-cookie byte contract. Control2
+writes no VM result.
+
+Main341 is `draw.clear`. It sends canonical291 even for target0, with w/l/flags0,
+and returns control2 without a VM result. Its initialized local transport output
+is separate from the guest result. The existing Draw receiver removes retained
+entries and clears its bitmap, then reinserts its base image when enabled. A
+Draw without a renderer leaves its state alone. This shared name corrects the
+previous `draw.pop` catalog label; the route validator already uses `draw.clear`.
+It does not change the existing Game clear behavior or receiver lifecycle.
+
+True dual ABI GCALL checks cover raw selectors, real child models and bitmap
+pixels, missing/zero routes, VM stack canaries and complete settled checkpoint
+restoration before any warm tick. Restored commands and RNG are not replayed,
+and owners remain isolated through close. AuthorMode-dependent279/281 and the
+unproved688 receiver remain unknown; no conditional CFG census item enables a
+slot or another engine version.

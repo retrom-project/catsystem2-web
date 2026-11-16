@@ -4514,7 +4514,7 @@
           "id": 93,
           "hexID": "0x5d",
           "semanticName": "plane.setRotation",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "plane.setRotation",
           "renderRoute": {
             "id": 93,
             "semanticName": "plane.setRotation",
@@ -4538,8 +4538,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -9592,7 +9591,7 @@
           "id": 341,
           "hexID": "0x155",
           "semanticName": "draw.clear",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.clear",
           "renderRoute": {
             "id": 341,
             "semanticName": "draw.clear",
@@ -9616,8 +9615,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -32251,7 +32249,7 @@
           "id": 341,
           "hexID": "0x155",
           "semanticName": "draw.clear",
-          "catalogSemanticName": "draw.pop",
+          "catalogSemanticName": "draw.clear",
           "renderRoute": {
             "id": 341,
             "semanticName": "draw.clear",
@@ -49938,7 +49936,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "5c6e6168bc52a8511d09bca6226dcd4ed55d1b5038bd2baacdbed5f2f5e94173",
+      "sourceSha256": "5d0dd0ebe8762c8febd432d5877d4e1c771c425f305d88edd2577dbe8d727e99",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50003,7 +50001,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "3d9da3beb02c40ae4f331223ecc068b0f8a73b865b992642a7676656aecd269c",
+      "sourceSha256": "0ad051aafd38f045ab9b3ed1d2edf7252bde1cea6861a8710bce16b1ae041163",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53037,7 +53035,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "f70e979b0690c7fc624703a81924874431a1a9f31ae9176ddaba43b0f36cab94",
+      "sourceSha256": "fef07373b5700a0e2c388f4f0ac27526a8985e807af1f8ee95dcdaf7609fae8e",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

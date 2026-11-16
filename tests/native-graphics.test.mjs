@@ -2725,7 +2725,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.resultWritten, false);
       for (const field of declaration.signature.parameters.slice(1))
         assert.deepEqual(field.type, { kind: 'float', bits: 32 });
-      for (const unknown of [109, 110, 339, 340, 341, 467])
+      for (const unknown of [109, 110, 339, 340, 361, 467])
         assert.equal(
           nativeABI(rectangleProfiles[0]).tables.main.entries[unknown].status,
           'unknown',
@@ -3521,6 +3521,182 @@ for (const profile of rectangleProfiles)
       assert.equal(scene.objects.objects.has(ids[1]), false);
       assert.equal(fresh.objects.objects.has(ids[1]), true);
       assert.deepEqual(vector(restored[0]), highValues);
+      assert.equal(scene.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await scene.close();
+    }
+  });
+
+const rotationCode = kcsProgram([
+  [37, rectangleSentinel],
+  [37, 0],
+  [37, floatBits(111)],
+  [37, floatBits(222)],
+  [37, floatBits(333)],
+  [37, 0x80000000],
+  [43, 93, 20],
+  [37, 73],
+  [38, [0x13, 512]],
+  [37, [0x13, 128]],
+  [37, [0x13, 136]],
+  [37, [0x13, 140]],
+  [37, [0x13, 144]],
+  [37, [0x13, 132]],
+  [43, 93, 20],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+for (const profile of rectangleProfiles)
+  test(`${profile} entry rotation GCALL forwards raw selectors through cold owners`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'rectangle.kcs': rotationCode },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const base = await scene.objects.create({
+          kind: 0,
+          parent: scene.root,
+          nativeID: 0x00930001,
+        }),
+        target = scene.nativeTaskID(base),
+        ids = [],
+        planes = [];
+      assert.notEqual(base, target);
+      for (let i = 0; i < 3; i++) {
+        const id = await scene.objects.create({
+          kind: 2,
+          parent: base,
+          nativeID: 0x00930010 + i * 16,
+        });
+        ids.push(id);
+        planes.push(scene.graphics.get(id));
+        if (i < 2)
+          await scene.sendNativeEngine(scene.nativeTaskID(id), scene.main.id, 41, 0, 0, {
+            payload: new NativeGraphicsPacket([
+              0,
+              0,
+              0,
+              floatBits(12),
+              floatBits(8),
+              32,
+              1,
+              0xffffffff,
+            ]),
+          });
+      }
+      assert.equal(planes[2].graph, null, 'The late child owns no selected model');
+      const vector = (plane, texture = false) =>
+          motionVector(
+            texture ? plane.graph.textureTransform : plane.graph.kx2,
+            MOTION_ABI.rotation,
+          ),
+        initialTexture = planes.slice(0, 2).map((plane) => vector(plane, true)),
+        traces = [],
+        replies = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native;
+      scene.sendNativeEngine = function (destination, sender, id, w, l, context) {
+        let trace;
+        if (id === 55) {
+          trace = {
+            destination,
+            sender,
+            id,
+            w,
+            l,
+            flags: context.flags,
+            words: [0, 4, 8].map((at) => context.payload.load(at)),
+          };
+          traces.push(trace);
+        }
+        const reply = send.call(this, destination, sender, id, w, l, context);
+        if (trace) trace.reply = reply;
+        return reply;
+      };
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 93) replies.push(reply);
+        return reply;
+      };
+      const firstValues = [0.125, -0.25, 0.5],
+        first = await positionCaller(scene, 0x00931000, target, 0, firstValues);
+      await scene.runtime.scheduler.execute(first.task);
+      for (const plane of planes.slice(0, 2))
+        assert.deepEqual(
+          vector(plane),
+          firstValues,
+          'flags1 reaches each real loaded child through a Base without a model',
+        );
+      assert.deepEqual(
+        planes.slice(0, 2).map((plane) => vector(plane, true)),
+        initialTexture,
+      );
+      rectangleContinuation(first);
+      assert.equal(traces.length, 1, 'Zero target skipped before transport');
+      assert.deepEqual(
+        [
+          traces[0].destination,
+          traces[0].sender,
+          traces[0].id,
+          traces[0].w,
+          traces[0].l,
+          traces[0].flags,
+        ],
+        [target, first.task.id, 55, 0, 0, 1],
+      );
+      assert.deepEqual(traces[0].words, firstValues.map(floatBits));
+      const highValues = [-0.5, 0.75, -1.25],
+        high = await positionCaller(scene, 0x00931010, target, 0x80000000, highValues);
+      await scene.runtime.scheduler.execute(high.task);
+      rectangleContinuation(high);
+      for (const plane of planes.slice(0, 2)) {
+        assert.deepEqual(
+          vector(plane),
+          firstValues,
+          'Raw nonzero selector preserves geometry rotation',
+        );
+        assert.deepEqual(
+          vector(plane, true),
+          highValues,
+          'Raw high selector reaches the separate texture transform',
+        );
+      }
+      assert.deepEqual([traces[1].w, traces[1].flags], [0x80000000, 1]);
+      assert.deepEqual(traces[1].words, highValues.map(floatBits));
+      assert.equal(planes[2].graph, null);
+      assert.equal(typeof traces[0].reply.then, 'function');
+      assert.deepEqual(
+        await Promise.all(replies),
+        Array.from({ length: 4 }, () => ({ control: 2 })),
+      );
+      const entry = nativeABI(profile).tables.main.entries[93];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.signature.argumentWords, 5);
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.resultWritten, false);
+      const dto = scene.snapshot(),
+        decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
+      fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.runtime.native = () => {
+        throw new Error('Rotation cold restore replayed native');
+      };
+      for (const stream of [fresh.random.integer, fresh.random.real])
+        stream.nextUint32 = () => {
+          throw new Error('Rotation cold restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), dto, 'Full cold DTO before warm tick');
+      for (const id of ids.slice(0, 2)) {
+        const restored = fresh.graphics.get(id);
+        assert.notStrictEqual(restored.graph.kx2, scene.graphics.get(id).graph.kx2);
+        assert.deepEqual(vector(restored), firstValues);
+        assert.deepEqual(vector(restored, true), highValues);
+      }
+      await scene.objects.release(base);
+      assert.equal(scene.objects.objects.has(ids[0]), false);
+      assert.equal(fresh.objects.objects.has(ids[0]), true);
       assert.equal(scene.nativeEngine, undefined);
       assert.equal(fresh.nativeEngine, undefined);
     } finally {

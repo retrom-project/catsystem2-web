@@ -12192,7 +12192,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     341: {
-      name: 'draw.pop',
+      name: 'draw.clear',
       family: 'draw',
       signature: {
         argumentWords: 1,
