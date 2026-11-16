@@ -44,16 +44,96 @@ async function writeSetup(page, logLimit) {
   );
 }
 
-// Observe real owners before initialization; all wrappers return the original result.
+// Persist numeric observations in worker stdout before a timed-out page closes.
+// Event codes: 1 owner, 2 pre-tick, 3 first native, 4 synchronous native failure,
+// 5 published app failure, 6 lifecycle sample. No text, inputs or source are logged.
 async function observeNormalSDKWorlds(page) {
+  page.on('console', (message) => {
+    const text = message.text(),
+      prefix = 'SDK_OBSERVATION ';
+    if (!text.startsWith(prefix)) return;
+    try {
+      const values = JSON.parse(text.slice(prefix.length));
+      if (
+        Array.isArray(values) &&
+        values.length <= 16 &&
+        values.every((value) => value === null || Number.isSafeInteger(value))
+      )
+        console.log(prefix + JSON.stringify(values));
+    } catch {
+      // An unrelated console message cannot become test evidence.
+    }
+  });
   await page.evaluate(async () => {
     const { CatSystem2 } = await import('/src/engine.mjs'),
       trace = { worlds: [], restoring: false, calls: [], commands: [] },
-      create = CatSystem2.prototype.createNativeWorld;
+      create = CatSystem2.prototype.createNativeWorld,
+      integer = (value) => (Number.isSafeInteger(value) ? value : null);
+    let records = 0,
+      publishedFailure = false;
+    const record = (event, world, ...values) => {
+      // Keep bounded progress output; the first published failure is always kept.
+      if (event !== 5 && records++ >= 4096) return;
+      console.debug(
+        'SDK_OBSERVATION ' +
+          JSON.stringify([
+            event,
+            world ? trace.worlds.indexOf(world) : null,
+            integer(world?.frame),
+            ...values.map(integer),
+          ]),
+      );
+    };
+    trace.record = record;
+    new MutationObserver(() => {
+      if (publishedFailure) return;
+      const text = document.getElementById('diagnostics').textContent,
+        start = text.indexOf('\n{');
+      if (start < 0) return;
+      try {
+        const failure = JSON.parse(text.slice(start + 1)).failure;
+        if (!failure) return;
+        publishedFailure = true;
+        record(
+          5,
+          window.catSystem2?.world,
+          failure.details?.table === 'main' ? 1 : null,
+          failure.details?.id,
+          failure.kcs?.pc,
+          failure.details?.pc,
+          failure.details?.task,
+        );
+      } catch {
+        // The app may still be writing diagnostics; observe the next mutation.
+      }
+    }).observe(document.getElementById('diagnostics'), {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
     CatSystem2.prototype.createNativeWorld = function (...args) {
       const world = create.apply(this, args),
-        owner = trace.worlds.length;
+        owner = trace.worlds.length,
+        seen = new Set();
       trace.worlds.push(world);
+      record(1, world);
+      let lastBucket;
+      const tick = world.tick;
+      world.tick = function (...parameters) {
+        const bucket = Math.floor(world.frame / 120);
+        if (bucket !== lastBucket) {
+          lastBucket = bucket;
+          const tasks = [...world.runtime.scheduler.tasks.values()];
+          record(
+            2,
+            world,
+            world.main?.machine.pc,
+            tasks.find((task) => task.name === 'sscript')?.machine.pc,
+            tasks.length,
+          );
+        }
+        return tick.apply(this, parameters);
+      };
       for (const [object, name, method] of [
         [world.window, 'post', 'window post'],
         [world.window, 'command', 'window command'],
@@ -68,7 +148,28 @@ async function observeNormalSDKWorlds(page) {
           if (method === 'window command')
             trace.commands.push({ owner, command: parameters[0] & 65535 });
           if (trace.restoring) trace.calls.push({ owner, method });
-          return original.apply(this, parameters);
+          if (method !== 'VM native') return original.apply(this, parameters);
+          const [table, id, args, machine, task] = parameters,
+            key = table + ':' + id;
+          if (!seen.has(key)) {
+            seen.add(key);
+            record(3, world, table === 'main' ? 1 : null, id, machine?.pc, task?.id, args?.length);
+          }
+          try {
+            return original.apply(this, parameters);
+          } catch (error) {
+            record(
+              4,
+              world,
+              table === 'main' ? 1 : null,
+              id,
+              error.kcs?.pc,
+              error.details?.pc ?? machine?.pc,
+              task?.id,
+              args?.length,
+            );
+            throw error;
+          }
         };
       }
       return world;
@@ -355,7 +456,7 @@ const sdkJavaScriptState = (page) =>
       sceneText = source && world.runtime.stringBank(source, false)?.get(1000),
       graph = plane && world.graphics.attachment(plane.nativeID),
       channel = [...audio.channels.values()].find(({ file }) => file === 'bgm.int/bgm01.ogg');
-    return {
+    const result = {
       frame: world.frame,
       task: task?.id ?? null,
       loaded: task ? Number(implementation.loaded) : 0,
@@ -366,6 +467,17 @@ const sdkJavaScriptState = (page) =>
       playing: Boolean(channel?.playing && channel.source && channel.buffer),
       returned: Boolean(sceneText?.includes('シーンに戻りました')),
     };
+    window.normalSDKObservation.record(
+      6,
+      world,
+      task?.id,
+      task ? Number(implementation.loaded) : null,
+      task ? Number(implementation.running) : null,
+      plane?.id,
+      Number(result.playing),
+      Number(result.returned),
+    );
+    return result;
   });
 
 test('official SDK JavaScript tutorial draws its moving plane and resumes original sound and motion', async ({
