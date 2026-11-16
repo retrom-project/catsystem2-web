@@ -93,8 +93,8 @@ test('FES low button and every object own separate native tasks with independent
       v.region.enabled,
     ]),
     [
-      [6, owner, 107, [10, 20, 40, 60], true],
-      [6, owner, 109, [60, 20, 90, 60], false],
+      [6, owner, 107, [10, 20, 40, 60], 1],
+      [6, owner, 109, [60, 20, 90, 60], 0],
     ],
   );
   assert.equal(player.root.byKey.get('a[0]').nativeInputTaskID, a[0].task.id);
@@ -216,13 +216,13 @@ test('FES sleep hides retained entries and plane tasks while preserving authored
     assert.equal(player.globals[1], 7);
     assert.equal(h.instance.byKey.get('red').disp, true);
     assert.equal(h.instance.byKey.get('a').enable, true);
-    assert.equal(world.inputFor(h.id).get(buttonID).enabled, false);
+    assert.equal(world.inputFor(h.id).get(buttonID).enabled, 0);
     assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, false);
     assert.equal(input.snapshot().sleeping, true);
     assert.deepEqual([...(await drawPixels(world, h.surface)).subarray(0, 4)], [0, 0, 0, 0]);
     await world.graphics.setFESSleep(record, player, 0);
     assert.equal(player.globals[1], 9);
-    assert.equal(world.inputFor(h.id).get(buttonID).enabled, true);
+    assert.equal(world.inputFor(h.id).get(buttonID).enabled, 1);
     assert.equal(world.graphics.get(panel.nativeTaskID).state.shown, true);
     assert.deepEqual([...(await drawPixels(world, h.surface)).subarray(0, 4)], [255, 0, 0, 255]);
     assert.equal(world.nativeEngine, undefined);

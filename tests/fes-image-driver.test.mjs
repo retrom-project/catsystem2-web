@@ -355,11 +355,11 @@ for (const profile of profiles) {
         ).source;
       api.input.state.sleeping = true;
       await syncImages(api);
-      assert.equal(region.enabled, false);
+      assert.equal(region.enabled, 0);
       assert.deepEqual([button.disp, button.enable], authored);
       api.input.state.sleeping = false;
       await syncImages(api);
-      assert.equal(region.enabled, true);
+      assert.equal(region.enabled, 1);
       assert.equal(
         world.retainedDraw.record(world.graphics.drawTasks.get(api.surface), key(world, id, 30))
           .source,

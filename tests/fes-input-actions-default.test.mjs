@@ -562,11 +562,11 @@ for (const profile of profiles) {
       assert.equal(region.active, 0);
       await notify(h, 'DO');
       await drain(h);
-      assert.equal(region.active, true);
+      assert.equal(region.active, 1);
       assert.equal(
         h.world.inputFor(h.id).get(h.instance.collection.lookup('single', 0).nativeInputTaskID)
           .active,
-        false,
+        0,
       );
       assert.deepEqual(reference(h.input.state.focus), ['single', 0]);
     } finally {
