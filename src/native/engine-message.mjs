@@ -568,7 +568,10 @@ export class NativeEngineMessages {
   }
   async saveDump(record, sender, tag, filenameAddress, context) {
     const filename = readString(this.memory(sender, context), filenameAddress, false),
-      size = await this.dumpSize(record, context),
+      size = nativeEngineWord(
+        await this.send(record.id, record.id, 15, 0, 0, { flags: 0 }),
+        'Native Top dump size',
+      ),
       bytes = new Uint8Array(size + 20),
       view = new DataView(bytes.buffer),
       memory = { bytes: (at, count) => bytes.subarray(at, at + count) };
@@ -579,7 +582,7 @@ export class NativeEngineMessages {
       oldPayload = context.payload;
     context.payload = memory;
     try {
-      await this.dump(record, sender, 20, context);
+      await this.send(record.id, record.id, 16, 0, 20, { payload: memory, flags: 0 });
     } finally {
       if (hadPayload) context.payload = oldPayload;
       else delete context.payload;

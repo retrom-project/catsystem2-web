@@ -2463,7 +2463,7 @@
       {
         "kind": "identity",
         "file": "src/native/runtime.mjs",
-        "line": 338,
+        "line": 383,
         "expression": "state.profile !== this.profile",
         "domain": 8
       },
@@ -2502,7 +2502,7 @@
       "9": 37,
       "unassigned": 120
     },
-    "nativeNeedsReview": 303,
+    "nativeNeedsReview": 302,
     "runtimeFiles": 498,
     "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 189, "9": 55 },
     "fileNeedsReview": 77,
@@ -5763,7 +5763,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:568",
+          "registration": "src/native/script-task.mjs:575",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -6916,9 +6916,8 @@
           "table": "main",
           "id": 208,
           "hexID": "0xd0",
-          "semanticName": null,
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "semanticName": "task.dumpTree",
+          "catalogStatus": "recovered",
           "implementation": "original-handler",
           "module": "src/native/task-dump.mjs",
           "domain": 8,
@@ -6927,8 +6926,8 @@
           "features": ["task-dump"],
           "dependencies": ["src/native/task-dump.mjs"],
           "docs": ["docs/native-compatibility.md"],
-          "review": "needs-review",
-          "reviewReasons": ["catalog 未恢复该 ABI/ID 的语义名，不借用另一版本的同号语义。"]
+          "review": "traced",
+          "reviewReasons": []
         },
         {
           "table": "main",
@@ -14151,7 +14150,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -14170,7 +14169,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -14189,7 +14188,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -24994,7 +24993,7 @@
         },
         {
           "name": "scene-memory",
-          "registration": "src/native/script-task.mjs:566",
+          "registration": "src/native/script-task.mjs:573",
           "modules": ["src/native/scene-memory.mjs"],
           "dependencies": []
         },
@@ -28388,7 +28387,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:568",
+          "registration": "src/native/script-task.mjs:575",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -36806,7 +36805,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -36825,7 +36824,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -36844,7 +36843,7 @@
           "module": "src/native/script-task.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/script-task.mjs:589",
+          "registration": "src/native/script-task.mjs:596",
           "features": [],
           "dependencies": [],
           "docs": ["docs/native-compatibility.md"],
@@ -48448,7 +48447,7 @@
         },
         {
           "name": "scene-memory",
-          "registration": "src/native/script-task.mjs:566",
+          "registration": "src/native/script-task.mjs:573",
           "modules": ["src/native/scene-memory.mjs"],
           "dependencies": []
         },
@@ -49939,7 +49938,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "7c62446f0a51d900f26a23ff22730665aad07148167d68419789b83a1e4c114c",
+      "sourceSha256": "5c6e6168bc52a8511d09bca6226dcd4ed55d1b5038bd2baacdbed5f2f5e94173",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50272,7 +50271,7 @@
     },
     {
       "file": "src/native/buffer-memory.mjs",
-      "sourceSha256": "d6f5cd02063527f4c9b4b0d9b0f011472db9080830cf8fbb0d0150b38074e57e",
+      "sourceSha256": "e605ef59825600a95f86f709a755f9576abb4569868478b9aa7a641f5940c89e",
       "domain": 4,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51216,7 +51215,7 @@
     },
     {
       "file": "src/native/engine-message.mjs",
-      "sourceSha256": "89eaf8d28b0b3637db26c29290bc6737b738855e97e35132dd6a110bc8ba2e8c",
+      "sourceSha256": "8e25410652c2427161565007f6549c1933128e6cec2c142501894996461e0e51",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 18, "calls": 0, "references": 0 },
@@ -51226,7 +51225,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 669,
+          "line": 672,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
@@ -54724,7 +54723,7 @@
     },
     {
       "file": "src/native/runtime.mjs",
-      "sourceSha256": "9f36229b84d3de2ebd15ee3fd5176ac6a4902bfb01fee2591dcae3167a37e738",
+      "sourceSha256": "356c8015a5977411164389a0d1ad6d1703418d44e38ba3cafc794661cceb36cf",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54957,7 +54956,7 @@
     },
     {
       "file": "src/native/script-task.mjs",
-      "sourceSha256": "8bf3b8f7dbfba91e605dd1313b9bbf27bd8edf555a0bb77a12f8563057dc3551",
+      "sourceSha256": "5cbfb0ffdb2fed4cb1c6b459a0b3b34d81fdcd72b6a2d495c14f0114b6d0d9b0",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54972,105 +54971,98 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 66,
+          "line": 63,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 82,
-          "method": "sendEngine",
-          "feature": null,
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 106,
+          "line": 75,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 131,
+          "line": 91,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 147,
+          "line": 140,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 204,
+          "line": 156,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 217,
+          "line": 214,
           "method": "sendEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 333,
+          "line": 227,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 423,
           "method": "getNativeFeature",
           "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 417,
-          "method": "getNativeFeature",
-          "feature": "task-memory",
-          "review": "needs-review",
-          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
-        },
-        {
-          "line": 499,
-          "method": "sendEngine",
-          "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
           "line": 505,
+          "method": "sendEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 511,
           "method": "getNativeFeature",
           "feature": "scene-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 573,
+          "line": 580,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 579,
+          "line": 586,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 597,
+          "line": 604,
           "method": "ensureNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 599,
+          "line": 606,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -55605,7 +55597,7 @@
     },
     {
       "file": "src/native/task-dump.mjs",
-      "sourceSha256": "b4c0ad914470754d1f8de6419de3f5a2d3abb5b321af21e810b134ecabd983c7",
+      "sourceSha256": "8cb1a8181d947b5fb67a60174e2f57a7f2cfacfb309059ec38612844c9b84968",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 4, "calls": 3, "references": 0 },
@@ -55679,7 +55671,7 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 154,
+          "line": 150,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",

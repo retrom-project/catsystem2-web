@@ -140,6 +140,16 @@ floor, FP and switch word. C-string copies preserve the caller's unused header
 padding. An absent VM makes message 16 unhandled. Message 15 would dereference
 null in the original and is an explicit diagnostic.
 
+Ordinary dump/163 addresses share the runtime's existing raw byte-address owner.
+A finite borrowed region resolves `{taskID, memoryID, length}` to the live
+contiguous VM memory, including immediate bidirectional writes. The address is
+stable for that interpreter, distinct from a VM offset, task ID or opaque handle.
+Its checkpoint stores only the source reference while the scheduler owns the
+VM bytes. Invalid source identities or overlapping ranges fail before restore
+mutation; fresh aliases are available as soon as restore returns. Reload/close
+remove only that mapping. Explicit original owners retain their real guest
+addresses; there is no automatic EXE fallback for ordinary pointer queries.
+
 Opcodes 67/68 push/pop compiler symbol references. CALL/RETURN change the scope
 marker deque; RETURN does not silently erase symbols that require an explicit
 opcode 68. Opcode 66 stores a VM string address in the function stack, and RETURN

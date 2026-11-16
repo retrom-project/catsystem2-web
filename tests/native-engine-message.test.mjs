@@ -424,8 +424,8 @@ test('ordinary Game D0 formats the actual header packet, pushes its native zero 
   const unknown = await dataWorld(sdk);
   try {
     assert.throws(
-      () => unknown.runtime.native('main', 0xd0, [0], unknown.main.machine, unknown.main),
-      (error) => error.details?.id === 0xd0 && error.details.profile === sdk,
+      () => unknown.runtime.native('main', 109, [0], unknown.main.machine, unknown.main),
+      (error) => error.details?.id === 109 && error.details.profile === sdk,
     );
     assert.equal(unknown.nativeEngine, undefined);
   } finally {
@@ -522,4 +522,165 @@ test('enclosed graphics packets reject unwritten operands while replacing ignore
         await world.close({ flushFiles: false });
       }
     }
+});
+
+test('ordinary SDK D0 writes its live task tree before the result push and restores VM address aliases without replay', async () => {
+  const program = kcsProgram(
+      [
+        [43, 0x41, 0],
+        [37, 0x13579bdf],
+        [37, 256],
+        [43, 0xd0, 4],
+        [38, 400],
+        [43, 0x41, 0],
+        [37, 256],
+        [43, 0xd0, 4],
+        [38, 404],
+        [43, 0x41, 0],
+        [59],
+      ],
+      [[256, '木-%d[G512].css']],
+    ),
+    header = new DataView(program.buffer),
+    files = new Map(),
+    writes = [],
+    storage = {
+      read: async (name) => files.get(name) ?? null,
+      write: async (name, bytes) => {
+        writes.push(name);
+        if (name.endsWith('denied.css')) return false;
+        files.set(name, bytes.slice());
+        return true;
+      },
+    };
+  header.setUint16(8, 0x83ff, true);
+  header.setUint16(10, 0x1234, true);
+  const first = await dataWorld(sdk, { 'case.kcs': program }, { initialize: false, storage }),
+    fresh = await dataWorld(sdk, { 'case.kcs': program }, { initialize: false, storage }),
+    calls = [];
+  try {
+    await first.initialize('case.kcs');
+    const task = first.main,
+      m = task.machine,
+      root = first.objects.objects.get(first.root),
+      original = root.implementation.message,
+      shared = Uint8Array.of(11, 22, 33, 44, 55);
+    root.implementation.message = function (words, context, ...rest) {
+      if ([15, 16, 34].includes(words[1])) calls.push({ words: [...words], flags: context.flags });
+      return original.call(this, words, context, ...rest);
+    };
+    m.bytes(64, shared.length).set(shared);
+    await first.sendEngine(first.root, task.id, 30, shared.length, 64, { payload: m });
+    const leaf = await first.objects.create({ kind: 0, parent: task.id, name: 'Leaf' });
+    m.store(512, 73);
+    m.store(400, 0xa5a5a5a5);
+    m.store(404, 0xa5a5a5a5);
+    await first.runtime.scheduler.execute(task);
+    assert.equal(task.status, 'yielded');
+    assert.equal(m.pc, 51);
+    assert.equal(m.load(400), 0);
+    assert.equal(m.load(m.sp - 4), 0x13579bdf);
+    assert.deepEqual(
+      calls.map(({ words, flags }) => [words[0], words[1], words[2], flags]),
+      [
+        [first.nativeTaskID(task.id), 34, 0x83ff1234, 0],
+        [0, 15, 0, 0],
+        [0, 16, 0, 0],
+      ],
+    );
+    assert.equal(calls[2].words[3], 20);
+    const css = files.get('./木-73.css');
+    assert.ok(css instanceof Uint8Array);
+    const word = (at) => new DataView(css.buffer, css.byteOffset).getUint32(at, true),
+      name = (at) => {
+        const bytes = css.subarray(at + 16, at + 48);
+        return new TextDecoder('shift_jis').decode(bytes.subarray(0, bytes.indexOf(0)));
+      },
+      scriptAt = 20 + 60 + shared.length + 60;
+    assert.deepEqual([0, 4, 8, 12, 16].map(word), [0x535343, css.length - 20, 0x83ff1234, 0, 0]);
+    assert.equal(name(20), 'BASE TASK');
+    assert.deepEqual(
+      [48, 52, 56].map((n) => word(20 + n)),
+      [0, 3, shared.length],
+    );
+    assert.deepEqual(css.subarray(80, 85), shared);
+    assert.equal(name(85), 'INPUT TASK');
+    assert.equal(name(scriptAt), 'case.kcs');
+    const address = word(scriptAt + 68),
+      memory = first.runtime.imageDataBuffers.process;
+    assert.deepEqual(
+      [48, 52, 56, 60, 64, 72, 76, 80, 84].map((n) => word(scriptAt + n)),
+      [
+        first.nativeTaskID(task.id),
+        1,
+        m.shared.length,
+        34,
+        m.memory.length,
+        m.data.length + 4,
+        m.floor,
+        m.fp,
+        m.switchValue,
+      ],
+    );
+    assert.equal(word(scriptAt + 88 + 400), 0xa5a5a5a5);
+    assert.equal(word(scriptAt + 88 + 512), 73);
+    assert.equal(name(scriptAt + 88 + m.memory.length), 'Leaf');
+    assert.equal(word(scriptAt + 88 + m.memory.length + 48), first.nativeTaskID(leaf));
+    assert.equal(css.length, scriptAt + 88 + m.memory.length + 60);
+    await first.sendEngine(task.id, task.id, 163, 0, 128, { payload: m });
+    assert.equal(m.load(128), address);
+    assert.equal(memory.view(address, m.memory.length).buffer, m.memory.buffer);
+    memory.store(address + 512, 81);
+    assert.equal(m.load(512), 81);
+    m.store(512, 73);
+    assert.equal(memory.load(address + 512), 73);
+    const dto = structuredClone(first.snapshot()),
+      beforeWrites = [...writes],
+      restoredCalls = [];
+    let draws = 0;
+    for (const stream of [fresh.random.integer, fresh.random.real]) {
+      const next = stream.nextUint32;
+      stream.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    const dispatch = fresh.sendNativeEngine;
+    fresh.sendNativeEngine = function (...args) {
+      restoredCalls.push(args[2]);
+      return dispatch.apply(this, args);
+    };
+    await fresh.restore(structuredClone(dto));
+    assert.deepEqual(fresh.snapshot(), dto);
+    assert.deepEqual(writes, beforeWrites);
+    assert.deepEqual(restoredCalls, []);
+    assert.equal(draws, 0);
+    const restored = fresh.main,
+      fm = fresh.runtime.imageDataBuffers.process;
+    assert.equal(
+      fm.view(address, restored.machine.memory.length).buffer,
+      restored.machine.memory.buffer,
+    );
+    fm.store(address + 512, 99);
+    assert.equal(restored.machine.load(512), 99);
+    assert.equal(m.load(512), 73);
+    await fresh.runtime.scheduler.execute(restored);
+    assert.equal(restored.machine.load(404), 0);
+    assert.ok(files.has('./木-99.css'));
+    assert.equal(m.load(404), 0xa5a5a5a5);
+    restored.machine.writeString('denied.css', 256);
+    assert.deepEqual(await fresh.runtime.native('main', 0xd0, [256], restored.machine, restored), {
+      control: 1,
+      value: 0,
+    });
+    assert.equal(files.has('./denied.css'), false);
+    assert.equal(first.nativeEngine, undefined);
+    assert.equal(fresh.nativeEngine, undefined);
+    await fresh.objects.release(restored.id);
+    assert.equal(fm.contains(address, 1), false);
+    assert.equal(memory.contains(address, 1), true);
+  } finally {
+    await fresh.close({ flushFiles: false });
+    await first.close({ flushFiles: false });
+  }
 });

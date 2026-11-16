@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import {
   nativeDataBuffer,
   NativeDataBuffers,
@@ -241,4 +242,67 @@ test('bitmap decoding transfers its original wrapper and rolls back a rejected i
   );
   assert.deepEqual(closed, [110]);
   assert.deepEqual(await nativeDataBuffer(0x16c, [0, 9], {}, services), { control: 1, value: 0 });
+});
+
+test('ordinary buffer memory borrows one live VM region and checkpoints only its source reference', () => {
+  let bytes = Uint8Array.from({ length: 33 }, (_, i) => i);
+  const ref = { kind: 'vm', taskID: 7, memoryID: 19, length: bytes.length },
+    memory = new NativeBufferMemory({
+      resolveReference: (source) => {
+        assert.deepEqual(source, ref);
+        return bytes;
+      },
+    }),
+    owned = memory.allocate(9),
+    address = memory.borrow(ref);
+  memory.write(owned, Uint8Array.of(9, 8, 7));
+  assert.equal(memory.borrow({ ...ref }), address);
+  memory.store(address + 4, 0xf1234567);
+  assert.equal(new DataView(bytes.buffer).getUint32(4, true), 0xf1234567);
+  bytes[12] = 99;
+  assert.equal(memory.read(address + 12, 1)[0], 99);
+  assert.equal(memory.allocations.size, 1);
+  const state = structuredClone(memory.snapshot());
+  assert.deepEqual(state.regions.find(([at]) => at === address)[1], ref);
+  assert.ok(state.regions.find(([at]) => at === owned)[1] instanceof Uint8Array);
+  assert.throws(() => memory.free(address), /interpreter owner/);
+  assert.throws(() => memory.borrow({ ...ref, memoryID: 20 }), /./);
+  const freshBytes = bytes.slice(),
+    fresh = new NativeBufferMemory({ resolveReference: () => freshBytes });
+  fresh.restore(state);
+  fresh.store(address, 0x87654321);
+  assert.equal(new DataView(freshBytes.buffer).getUint32(0, true), 0x87654321);
+  assert.notEqual(memory.load(address), 0x87654321);
+  memory.releaseReferences(ref.taskID);
+  assert.equal(memory.contains(address), false);
+  assert.equal(memory.contains(owned), true);
+  assert.equal(bytes[12], 99);
+  bytes = new Uint8Array(bytes);
+  assert.equal(fresh.contains(address), true);
+  assert.throws(
+    () => fresh.restore({ ...state, regions: [...state.regions, state.regions[0]] }),
+    /Overlapping/,
+  );
+  assert.equal(fresh.load(address), 0x87654321);
+  fresh.releaseReferences(ref.taskID);
+  assert.equal(fresh.allocations.size, 1);
+});
+
+test('a borrowed VM region cannot impersonate an owned data-buffer descriptor', async () => {
+  const { NativeDataBuffers: OrdinaryBuffers } = await import('../src/native/data-buffer.mjs'),
+    { NativeHandles } = await import('../src/native/handles.mjs'),
+    bytes = Uint8Array.of(...Array(20).fill(7)),
+    memory = new NativeBufferMemory({ resolveReference: () => bytes }),
+    address = memory.borrow({ kind: 'vm', taskID: 7, memoryID: 19, length: 20 }),
+    buffers = new OrdinaryBuffers({ memory, handles: new NativeHandles() });
+  assert.throws(() => buffers.adoptPointer(address), /actual 20-byte allocation/);
+  assert.equal(memory.allocations.has(address), false);
+  const pointer = buffers.wrapPointer(address, bytes.length);
+  assert.deepEqual(buffers.data(pointer), bytes);
+  buffers.releasePointer(pointer);
+  assert.equal(memory.contains(address), true);
+  memory.releaseReferences(7);
+  assert.equal(memory.contains(address), false);
+  assert.equal(memory.allocations.size, 0);
+  assert.equal(bytes[0], 7);
 });

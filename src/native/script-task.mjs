@@ -58,6 +58,15 @@ export function createNativeScriptTask(world, record) {
   record.scriptMessages ??= [];
   world.runtime.stringBank({ context: record.context });
   Object.assign(implementation, {
+    async dataAddress() {
+      if (world.nativeEngine || world.nativeEngineLoading)
+        return (await world.getNativeFeature('task-memory')).guestAddress(
+          record.id,
+          this.machine,
+          0,
+        );
+      return world.runtime.vmDataAddress(record.id, this.machine);
+    },
     async bindMachineShared() {
       const machine = this.machine,
         reference = record.sharedDataRef;
@@ -103,7 +112,7 @@ export function createNativeScriptTask(world, record) {
         throw new Error('Script dump name exceeds native header');
       if (!record.nativeDumpHeader || record.nativeTypeName !== undefined) header.set(type, 0);
       header.set(name, 16);
-      const data = (await world.getNativeFeature('task-memory')).guestAddress(record.id, m, 0);
+      const data = await this.dataAddress();
       [
         world.nativeTaskID(record.id),
         0,
@@ -168,6 +177,7 @@ export function createNativeScriptTask(world, record) {
         world.runtime.scheduler.cancel(record.id, false);
         world.runtime.scheduler.tasks.delete(record.id);
       }
+      world.runtime.releaseVMData(record.id);
       world.nativeEngine?.features.get('task-memory')?.releaseMachine(record.id);
       const inherited = {
         variableBank: previousContext?.variableBank || 0,
@@ -327,11 +337,7 @@ export function createNativeScriptTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       if (id === 163) {
-        if (this.machine)
-          memory().store(
-            lParam,
-            (await world.getNativeFeature('task-memory')).guestAddress(record.id, this.machine, 0),
-          );
+        if (this.machine) memory().store(lParam, await this.dataAddress());
         return NATIVE_UNWRITTEN_WORD;
       }
       if (id === 164 || id === 165) {
@@ -526,6 +532,7 @@ export function createNativeScriptTask(world, record) {
           world.runtime.scheduler.cancel(record.id, false);
           world.runtime.scheduler.tasks.delete(record.id);
         }
+        world.runtime.releaseVMData(record.id);
         world.nativeEngine?.features.get('task-memory')?.releaseMachine(record.id);
         const bank = world.runtime.variableBank(task ?? { context: record.context }, false);
         bank?.unregisterContext(record.id);

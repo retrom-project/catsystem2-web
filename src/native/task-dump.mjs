@@ -134,10 +134,6 @@ export function installNativeTaskDump(world) {
     if (world.nativeEngine || world.nativeEngineLoading)
       return (await world.getNativeFeature('task-dump')).apply(args, machine, task);
     const abi = nativeABI(world.profile);
-    // SDK D0 remains blocked at its unknown catalog gate. Its distinct file
-    // writer is retained only as the explicit original oracle above.
-    if (abi.capabilities.taskDumpTopWriter)
-      throw new Error('Ordinary task dump writer is not recovered for this ABI');
     const formatted = nativeDataString(
         formatNativeAt(args[0] ?? machine.nativeArgument(0), machine),
       ),

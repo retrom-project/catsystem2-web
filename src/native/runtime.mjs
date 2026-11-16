@@ -4,6 +4,7 @@ import { KCSScheduler } from '../kcs/scheduler.mjs';
 import { nativeCatalog } from './catalog.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeHandles } from './handles.mjs';
+import { NativeBufferMemory } from './buffer-memory.mjs';
 import { nativeStandard } from './standard.mjs';
 import { nativeTask } from './task.mjs';
 import { nativeXML } from './xml.mjs';
@@ -77,6 +78,7 @@ export class NativeRuntime {
           : formatNativeAt),
     };
     this.imageDataBuffers = new NativeDataBuffers({
+      memory: new NativeBufferMemory({ resolveReference: (ref) => this.vmReferenceBytes(ref) }),
       handles: this.handles,
       read,
       diagnostic: services.diagnostic,
@@ -326,17 +328,61 @@ export class NativeRuntime {
   tick() {
     return this.scheduler.tick();
   }
+  vmReferenceBytes(reference) {
+    const machine = this.scheduler.tasks.get(reference.taskID)?.machine;
+    if (
+      !machine ||
+      machine.memoryID !== reference.memoryID ||
+      machine.memory.length !== reference.length
+    )
+      throw new Error('Native VM buffer source interpreter is absent or replaced');
+    return machine.memory;
+  }
+  vmDataAddress(taskID, machine) {
+    if (this.scheduler.tasks.get(taskID)?.machine !== machine)
+      throw new Error('Native VM data address requires its actual owning interpreter');
+    return this.imageDataBuffers.process.borrow({
+      kind: 'vm',
+      taskID,
+      memoryID: machine.memoryID,
+      length: machine.memory.length,
+    });
+  }
+  releaseVMData(taskID) {
+    this.imageDataBuffers.process.releaseReferences(taskID);
+  }
+  validateVMReferences(memory, scheduler) {
+    if (!Array.isArray(scheduler?.tasks)) throw new Error('Native checkpoint tasks are invalid');
+    const tasks = new Map(scheduler.tasks.map((task) => [task.id, task])),
+      owners = new Set();
+    this.imageDataBuffers.process.validateState(memory, (reference) => {
+      const saved = tasks.get(reference.taskID)?.machine;
+      if (
+        owners.has(reference.taskID) ||
+        !saved ||
+        saved.memoryID !== reference.memoryID ||
+        !(saved.memory instanceof Uint8Array) ||
+        saved.memory.length !== reference.length
+      )
+        throw new Error('Native VM buffer checkpoint source does not match its interpreter');
+      owners.add(reference.taskID);
+    });
+  }
   snapshot() {
+    const scheduler = this.scheduler.snapshot(),
+      imageDataBuffers = this.imageDataBuffers.snapshot();
+    this.validateVMReferences(imageDataBuffers.memory, scheduler);
     return {
       profile: this.profile,
       handles: this.handles.snapshot(),
-      imageDataBuffers: this.imageDataBuffers.snapshot(),
-      scheduler: this.scheduler.snapshot(),
+      imageDataBuffers,
+      scheduler,
     };
   }
   async restore(state) {
     if (state.profile !== this.profile)
       throw new Error('Native checkpoint ABI profile does not match');
+    this.validateVMReferences(state.imageDataBuffers?.memory, state.scheduler);
     const previous = { records: this.handles.records, next: this.handles.next };
     const previousBuffers = this.imageDataBuffers.snapshot();
     try {

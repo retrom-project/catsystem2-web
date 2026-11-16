@@ -349,4 +349,86 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       await world.close({ flushFiles: false });
     }
   });
+  test(`${profile} Script data addresses validate cold references and release the real VM alias on reload and close`, async () => {
+    const world = make(),
+      fresh = make();
+    for (const owner of [world, fresh])
+      owner.ensureNativeEngine = () => {
+        throw new Error('Ordinary Script data address attempted original CPU');
+      };
+    try {
+      await world.initialize('main.kcs');
+      const task = world.main,
+        machine = task.machine,
+        record = world.objects.objects.get(task.id),
+        memory = world.runtime.imageDataBuffers.process;
+      await world.sendEngine(task.id, task.id, 163, 0, 128, { payload: machine });
+      const address = machine.load(128);
+      assert.equal(world.runtime.vmDataAddress(task.id, machine), address);
+      memory.store(address + 512, 0xa1234567);
+      assert.equal(machine.load(512), 0xa1234567);
+      const dto = structuredClone(world.snapshot()),
+        reads = [],
+        read = world.game.read;
+      world.game.read = function (...args) {
+        reads.push(args);
+        return read.apply(this, args);
+      };
+      for (const corrupt of [
+        (ref) => {
+          ref.memoryID++;
+        },
+        (ref) => {
+          ref.taskID += 1000;
+        },
+        (ref) => {
+          ref.length++;
+        },
+        (ref) => {
+          ref.extra = 1;
+        },
+      ]) {
+        const bad = structuredClone(dto.runtime),
+          ref = bad.imageDataBuffers.memory.regions.find(([at]) => at === address)[1];
+        corrupt(ref);
+        await assert.rejects(world.runtime.restore(bad), /Native|native/);
+        assert.deepEqual(world.snapshot(), dto);
+      }
+      const overlap = structuredClone(dto.runtime);
+      overlap.imageDataBuffers.memory.regions.push(overlap.imageDataBuffers.memory.regions[0]);
+      await assert.rejects(world.runtime.restore(overlap), /Overlapping|match/);
+      assert.deepEqual(world.snapshot(), dto);
+      assert.deepEqual(reads, []);
+      await fresh.restore(structuredClone(dto));
+      assert.deepEqual(fresh.snapshot(), dto);
+      const restored = fresh.main.machine,
+        fm = fresh.runtime.imageDataBuffers.process;
+      assert.equal(fresh.runtime.vmDataAddress(task.id, restored), address);
+      restored.store(512, 0x87654321);
+      assert.equal(fm.load(address + 512), 0x87654321);
+      assert.equal(machine.load(512), 0xa1234567);
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+      await record.implementation.loadScript('other.kcs');
+      const next = record.implementation.machine;
+      assert.notEqual(next.memoryID, machine.memoryID);
+      assert.equal(memory.contains(address), false);
+      assert.throws(
+        () => world.runtime.vmDataAddress(task.id, machine),
+        /actual owning interpreter/,
+      );
+      await world.sendEngine(task.id, task.id, 163, 0, 128, { payload: next });
+      const replacement = next.load(128);
+      memory.store(replacement + 512, 123);
+      assert.equal(next.load(512), 123);
+      assert.equal(machine.load(512), 0xa1234567);
+      await world.objects.release(task.id);
+      assert.equal(memory.contains(replacement), false);
+      assert.equal(next.load(512), 123, 'removing the borrowed address does not destroy VM bytes');
+      assert.equal(fm.contains(address), true);
+    } finally {
+      await fresh.close({ flushFiles: false });
+      await world.close({ flushFiles: false });
+    }
+  });
 }
