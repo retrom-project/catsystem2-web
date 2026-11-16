@@ -134,6 +134,7 @@ function validateBehavior(abi) {
       'utf8Text',
       'emoteFes',
       'engineWorkers',
+      'hapMovieAnsiDriverPath',
       'windowsMediaReader',
       'systemEntropy',
       'inputNullText',

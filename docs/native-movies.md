@@ -58,6 +58,60 @@ instance for both frozen profiles. It checks the root/InputTask routing,
 cursor/update gates, normal renderer suppression, live movie handles across
 fresh World restore, old World disposal and explicit decoder close.
 
+## Ordinary Plane movie ownership
+
+Without an explicitly owned original engine, main `0x2BD/0x2BE` and
+`0x3DC/0x3DD` use ordinary Plane messages 43/87 and 44/88. Their actual
+packets retain sender identity, zero flags and initialized XYZ/output words.
+A zero load target skips formatting. The two loaders resolve `movie` and
+`veff` through the current resource-name authority and read the selected
+resource using native mode 3. Their borrowed handles share the existing
+movie controls; the Plane owns their destruction. They never acquire the
+fullscreen movie's input, cursor or renderer gate. Explicit original owners
+continue through the original wrappers, projection and physical oracles.
+
+A missing source, disabled standard movie, incompatible VRAM mode or unavailable
+SDK Windows Media reader leaves no borrower. The effect loader does not use
+the standard movie disable gate. Once a source has opened, a decoder/graph
+failure can retain an unprepared borrower. This is distinct from a missing
+file. Invalid ASF structures outside the accepted reader domain fail explicitly;
+they are not silently treated as decoded video. Existing WebM/Ogg stream
+parsers determine the selected audio tracks. The ASF header/sample reader and
+its indexed seek bounds remain authoritative even when a browser sidecar can
+seek farther. Decoding and PCM remain the existing browser/Hap host services;
+this path does not reproduce COM objects or Win32 worker threads.
+
+`hapMovieAnsiDriverPath` is mandatory in each registered profile. It records
+only whether the original Hap constructor converts the fixed
+`dsfilter/HAPCODEC.dll` registration path to ANSI: SDK does, Game passes UTF-16
+to the ANSI API. The ordinary loader retains that fixed-path registration's
+failed Game graph as an unprepared borrower. This flag does not assert that
+all Game paths or an external Windows codec registry lack a Hap decoder.
+External registration overrides and alternate driver paths are outside this
+finite input domain. The original constructor/ICInstall evidence and pixel
+comparisons below are reused; they are not rerun by the ordinary consumer.
+
+Decoded output belongs to the existing NativeImages bitmap/backing handles.
+The standard movie presents opaque RGB and opaque power-of-two padding;
+the effect preserves actual decoder alpha and transparent padding. Its Graph
+holds the same typed movie identity and uses the existing native geometry,
+UV transforms and GPU draw path. A bounded per-movie texture view follows
+that bitmap's revision; it is not another bitmap table. Model replacement,
+load failure and actual Plane close retire the old borrower, bitmap and
+texture view without releasing the calling Script. A close during source,
+decoder or frame I/O cancels publication and releases late resources.
+
+Settled checkpoints retain preparation/running/repeat/position, immutable
+source identity, selected stream metadata, the actual presented bitmap and
+Graph aliases. Cold restore validates those owners without media I/O or a
+warm frame. Its first consuming render/control opens a new decoder, verifies
+the source bytes and metadata, and seeks to the saved position. Restore does
+not replay the loader GCALL or start a video element; renderless elements stay
+detached. A changed immutable source or invalid saved seek fails instead of
+silently resetting time. Closing an old World cannot release a fresh World's
+resources. This acceptance is a bounded ordinary media/restore check, not a
+long movie, campaign or performance gate.
+
 ## Native workers for plane movies
 
 The original CThread start and destructor run in the mounted engine. The

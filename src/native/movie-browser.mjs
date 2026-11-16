@@ -9,6 +9,8 @@ export class BrowserNativeMovie {
     this.video.hidden = true;
     this.video.style.cssText =
       'position:absolute;inset:auto;object-fit:fill;pointer-events:none;background:#000';
+    this.waits = new Set();
+    this.source = null;
     this.video.addEventListener('ended', () => {
       Promise.resolve(this.ended?.()).catch((error) =>
         this.diagnostic({ type: 'movie-completion-failed', message: error.message }),
@@ -23,9 +25,19 @@ export class BrowserNativeMovie {
     });
   }
   async open(name, stream = null) {
+    if (this.closed) return false;
     if (!this.game.movieSource) throw new Error('Native movie source service is unavailable');
     if (stream?.audioEnabled !== undefined) this.video.muted = !stream.audioEnabled;
-    this.source = await this.game.movieSource(name, (type) => this.video.canPlayType(type), stream);
+    const source = await this.game.movieSource(
+      name,
+      (type) => this.video.canPlayType(type),
+      stream,
+    );
+    if (this.closed) {
+      source?.release?.();
+      return false;
+    }
+    this.source = source;
     if (!this.source) {
       this.diagnostic({ type: 'movie-codec-unavailable', filename: name });
       return false;
@@ -36,17 +48,20 @@ export class BrowserNativeMovie {
         timer = setTimeout(failed, this.timeout),
         finish = (success) => {
           clearTimeout(timer);
+          this.waits.delete(failed);
           this.video.removeEventListener('loadedmetadata', loaded);
           this.video.removeEventListener('error', failed);
           resolve(success);
         };
       this.video.addEventListener('loadedmetadata', loaded);
       this.video.addEventListener('error', failed);
+      this.waits.add(failed);
       this.video.src = this.source.url;
       this.video.load();
     });
   }
   metadata() {
+    if (this.closed) throw new Error('Movie decoder is closed');
     const { videoWidth: width, videoHeight: height, duration } = this.video;
     if (!width || !height || !Number.isFinite(duration))
       throw new Error('Native movie decoder did not open a finite video stream');
@@ -61,22 +76,26 @@ export class BrowserNativeMovie {
     };
   }
   async decodedFrame() {
+    if (this.closed) throw new Error('Movie decoder is closed');
     if (this.video.readyState < 2)
       await new Promise((resolve, reject) => {
         const finish = (error) => {
             clearTimeout(timer);
+            this.waits.delete(closed);
             this.video.removeEventListener('loadeddata', ready);
             this.video.removeEventListener('error', fail);
             error ? reject(error) : resolve();
           },
           ready = () => finish(),
           fail = () => finish(new Error('Native movie decoder could not supply a frame')),
+          closed = () => finish(new Error('Movie decoder closed while awaiting a frame')),
           timer = setTimeout(
             () => finish(new Error('Native movie decoder frame timed out')),
             this.timeout,
           );
         this.video.addEventListener('loadeddata', ready);
         this.video.addEventListener('error', fail);
+        this.waits.add(closed);
       });
     const { width, height } = this.metadata();
     this.frameCanvas ??= new OffscreenCanvas(width, height);
@@ -92,8 +111,13 @@ export class BrowserNativeMovie {
     this.video.volume = Math.max(0, Math.min(1, 10 ** (decibels / 2000)));
   }
   async play() {
+    if (this.closed) return false;
     try {
       await this.video.play();
+      if (this.closed) {
+        this.video.pause();
+        return false;
+      }
       return true;
     } catch (error) {
       this.diagnostic({ type: 'movie-play-failed', message: error.message });
@@ -113,12 +137,20 @@ export class BrowserNativeMovie {
     );
   }
   async seek(position) {
+    if (this.closed) throw new Error('Movie decoder is closed');
     const seconds =
       Number(position) /
       10000000; /* exe-address-check: non-address - media time units per second */
     if (Math.abs(this.video.currentTime - seconds) < 0.0000001) return;
     if (seconds > 0)
       await new Promise((resolve, reject) => {
+        const finish = (error) => {
+            clearTimeout(timer);
+            clearInterval(poll);
+            this.waits.delete(closed);
+            error ? reject(error) : resolve();
+          },
+          closed = () => finish(new Error('Movie decoder closed while awaiting a seek range'));
         const check = () => {
             if (
               this.video.readyState >= 2 &&
@@ -128,30 +160,31 @@ export class BrowserNativeMovie {
                   seconds >= this.video.seekable.start(i) && seconds <= this.video.seekable.end(i),
               ).some(Boolean)
             ) {
-              clearTimeout(timer);
-              clearInterval(poll);
-              resolve();
+              finish();
             }
           },
           timer = setTimeout(() => {
-            clearInterval(poll);
-            reject(new Error('Native movie source is not seekable at its saved position'));
+            finish(new Error('Native movie source is not seekable at its saved position'));
           }, this.timeout),
           poll = setInterval(check, 20);
+        this.waits.add(closed);
         check();
       });
     await new Promise((resolve, reject) => {
       const finish = (error) => {
           clearTimeout(timer);
+          this.waits.delete(closed);
           this.video.removeEventListener('seeked', seeked);
           this.video.removeEventListener('error', failed);
           error ? reject(error) : resolve();
         },
         seeked = () => finish(),
         failed = () => finish(new Error('Native movie seek failed')),
+        closed = () => finish(new Error('Movie decoder closed while seeking')),
         timer = setTimeout(() => finish(new Error('Native movie seek timed out')), this.timeout);
       this.video.addEventListener('seeked', seeked);
       this.video.addEventListener('error', failed);
+      this.waits.add(closed);
       try {
         this.video.currentTime = seconds;
       } catch (error) {
@@ -179,11 +212,15 @@ export class BrowserNativeMovie {
     if (this.record?.prepared && this.record.running) this.video.getBoundingClientRect();
   }
   activate() {
+    if (this.closed) return;
     this.activated = true;
     this.container?.append(this.video);
     if (this.record) this.configure(this.record);
   }
   async close() {
+    if (this.closed) return;
+    this.closed = true;
+    for (const cancel of [...this.waits]) cancel();
     this.activated = false;
     this.video.pause();
     this.video.hidden = true;

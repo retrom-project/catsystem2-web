@@ -35,6 +35,7 @@ export class NativeMovies {
     audio = () => ({ factor: 100, mute: false }),
     diagnostic = () => {},
     directShow = () => null,
+    planeMovies = () => null,
   }) {
     Object.assign(this, {
       handles,
@@ -48,6 +49,7 @@ export class NativeMovies {
       audio,
       diagnostic,
       directShow,
+      planeMovies,
     });
     if (!handles.codecs.has('movie')) handles.registerType('movie', codec);
     this.sessions = new Map();
@@ -68,6 +70,9 @@ export class NativeMovies {
     await this.pending;
     if (this.failure) throw this.failure;
     await this.directShow()?.update(this.activated);
+    await this.planeMovies()?.settle();
+    await this.pending;
+    if (this.failure) throw this.failure;
   }
   callbacks(handle, adapter, filename) {
     adapter.ended = () => this.exclusive(() => this.ended(handle));
@@ -82,12 +87,25 @@ export class NativeMovies {
     if (clear) this.clearBlack = true;
   }
   get(handle) {
-    return this.handles.get(handle, 'movie');
+    const entry = this.handles.records.get(handle >>> 0);
+    return this.handles.get(handle, entry?.type === 'plane-movie' ? 'plane-movie' : 'movie');
   }
   session(handle) {
     const session = this.sessions.get(handle);
     if (!session) throw new Error('Native movie host session is absent');
     return session;
+  }
+  async ensureSession(handle, playback = true) {
+    return this.sessions.get(handle) ?? (await this.planeMovies()?.resume(handle, { playback }));
+  }
+  time(handle) {
+    return position(this.sessions.get(handle)?.position() ?? this.get(handle).position);
+  }
+  async redraw(handle) {
+    const record = this.get(handle);
+    if (this.handles.records.get(handle)?.type === 'plane-movie') {
+      if (record.prepared) await this.planeMovies().frame({ handle });
+    } else this.sessions.get(handle)?.redraw();
   }
   async open(filename, owner) {
     if (this.disabled()) return 0;
@@ -138,8 +156,9 @@ export class NativeMovies {
     // The original sets running before IGraphControl::Run. A failed Run does
     // not roll this word back; stop is required before another play attempt.
     record.running = true;
-    const session = this.session(handle);
-    record.windowVisible = Boolean(record.mode);
+    const session = this.sessions.get(handle) ?? (await this.ensureSession(handle, false));
+    record.windowVisible =
+      this.handles.records.get(handle)?.type === 'movie' && Boolean(record.mode);
     session.configure(record);
     if (!(await session.play())) return 0;
     record.repeat = repeat >>> 0;
@@ -149,7 +168,7 @@ export class NativeMovies {
   async stop(handle) {
     const record = this.get(handle);
     if (!record.prepared || !record.running) return 0;
-    const session = this.session(handle);
+    const session = this.sessions.get(handle) ?? (await this.ensureSession(handle));
     if (!(await session.stop())) return 0;
     record.running = false;
     record.windowVisible = false;
@@ -195,24 +214,25 @@ export class NativeMovies {
       word = settings.mute ? 0 : Math.floor((Math.imul(word, settings.factor) >>> 0) / 100);
     record.volume = word >>> 0;
     record.decibels = nativeMovieDecibels(word);
-    this.session(handle).configure(record);
+    this.sessions.get(handle)?.configure(record);
   }
   rectangle(handle, x, y, width, height) {
     const record = this.get(handle);
     record.rectangle = [x | 0, y | 0, (x + width) | 0, (y + height) | 0];
-    this.session(handle).configure(record);
+    this.sessions.get(handle)?.configure(record);
   }
   mode(handle, word) {
     const record = this.get(handle);
     record.mode = word ? 0xffffffff : 0;
     record.windowVisible = Boolean(word);
-    this.session(handle).configure(record);
+    this.sessions.get(handle)?.configure(record);
   }
   capture() {
     for (const [handle, session] of this.sessions)
       this.get(handle).position = position(session.position());
   }
   snapshot() {
+    this.planeMovies()?.assertSettled();
     this.capture();
     return { renderGate: this.renderGate, clearBlack: this.clearBlack };
   }
@@ -220,6 +240,7 @@ export class NativeMovies {
     if (this.sessions.size) throw new Error('Native movie restore requires a fresh service');
     this.renderGate = state.renderGate;
     this.clearBlack = state.clearBlack;
+    this.planeMovies()?.restore();
     try {
       for (const [handle, { type, value: record }] of this.handles.records) {
         if (type !== 'movie') continue;
@@ -240,6 +261,7 @@ export class NativeMovies {
     if (this.activated) return;
     this.activated = true;
     for (const [handle, session] of this.sessions) {
+      if (this.handles.records.get(handle)?.type !== 'movie') continue;
       session.activate();
       const { running, filename } = this.get(handle);
       if (running)
@@ -254,6 +276,7 @@ export class NativeMovies {
     }
   }
   async close() {
+    await this.planeMovies()?.close();
     await this.pending;
     for (const handle of [...this.sessions.keys()]) await this.releaseSession(handle);
   }
@@ -275,11 +298,9 @@ export async function nativeMovie(id, args, machine, task, movies, format) {
   if (id === 0x10d)
     return result(handle ? Number(movies.get(handle).prepared && movies.get(handle).running) : 0);
   if (id === 0x3e6)
-    return result(
-      handle ? Number(BigInt.asUintN(32, position(movies.session(handle).position()) / 10000n)) : 0,
-    );
+    return result(handle ? Number(BigInt.asUintN(32, movies.time(handle) / 10000n)) : 0);
   if (handle) {
-    if (id === 0x10e) movies.session(handle).redraw();
+    if (id === 0x10e) await movies.redraw(handle);
     else if (id === 0x1a1) movies.volume(handle, args[1]);
     else if (id === 0x314) movies.rectangle(handle, ...args.slice(1));
     else if (id === 0x3e4) movies.mode(handle, args[1]);
@@ -328,6 +349,7 @@ export function installNativeMovies(world) {
     dimensions: () => [world.graphics.view.clientWidth, world.graphics.view.clientHeight],
     diagnostic: (detail) => world.host.nativeDiagnostic?.(detail),
     directShow: () => world.nativeEngine?.features.get('directshow'),
+    planeMovies: () => world.planeMovies,
   });
   for (const id of NATIVE_MOVIE_IDS)
     world.runtime.register('main', id, (args, machine, task) =>
@@ -335,9 +357,15 @@ export function installNativeMovies(world) {
         if (
           id !== 0x109 &&
           id !== 0x3e5 &&
-          world.runtime.handles.records.get(args[0])?.type === 'plane-movie'
+          world.runtime.handles.records.get(args[0])?.type === 'plane-movie' &&
+          (world.nativeEngine || world.nativeEngineLoading)
         )
           return (await world.getNativeFeature('plane-movie-commands')).control(id, args, task);
+        if (world.runtime.handles.records.get(args[0])?.type === 'plane-movie') {
+          if (id === 0x10c) throw new Error('The Plane owns this movie lifetime');
+          if (id === 0x3e4 && args[1])
+            throw new Error('The renderless Plane movie has no video window');
+        }
         return nativeMovie(id, args, machine, task, world.movies, (at, machine) => {
           const name = world.runtime.services.format(at, machine);
           return world.runtime.services.resourceFilename(name, 'movie') ?? '';

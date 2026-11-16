@@ -702,8 +702,10 @@ export class NativeGraphicTask {
   }
   async message(words, context = {}) {
     const [sender, id, w, l] = words;
-    if ([3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id))
+    if ([3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id)) {
       await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
+      await this.world.planeMovies.release(this);
+    }
     if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
       return this.base.message(words, context);
     const load = (address) =>
@@ -812,7 +814,10 @@ export class NativeGraphicTask {
           if (at >= 2048) throw new RangeError('Plane movie filename is too long');
           name.push(byte);
         }
-        const projection = await this.world.getNativeFeature('plane-movie-projection'),
+        const projection =
+            this.world.nativeEngine || this.world.nativeEngineLoading
+              ? await this.world.getNativeFeature('plane-movie-projection')
+              : this.world.planeMovies,
           source = await projection.load(
             this,
             id - 43,
@@ -835,7 +840,12 @@ export class NativeGraphicTask {
       }
       case 87:
       case 88:
-        store(l, this.graph?.movie?.mode === id - 87 ? this.graph.movie.pointer : 0);
+        store(
+          l,
+          this.graph?.movie?.mode === id - 87
+            ? (this.graph.movie.handle ?? this.graph.movie.pointer)
+            : 0,
+        );
         return 0;
       case 45:
         this.makeGraph({
@@ -1373,9 +1383,10 @@ export class NativeGraphicTask {
     )
       return;
     if (inputGraph.movie) {
-      const frame = this.world.nativeEngine.features
-        .get('plane-movie-projection')
-        .frame(inputGraph.movie);
+      const frame = inputGraph.movie.handle
+        ? await this.world.planeMovies.frame(inputGraph.movie)
+        : this.world.nativeEngine.features.get('plane-movie-projection').frame(inputGraph.movie);
+      if (!frame) return;
       gpu.drawGeometry(
         nativeGraphGeometry(inputGraph, state, this.graphics.projection(), frame),
         frame,
@@ -1447,6 +1458,7 @@ export class NativeGraphicTask {
   async close() {
     if (this.nativeClosed) return;
     await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
+    await this.world.planeMovies.release(this);
     this.closeGraph();
     this.nativeClosed = true;
   }

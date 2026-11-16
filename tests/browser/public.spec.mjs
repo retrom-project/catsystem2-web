@@ -5,6 +5,269 @@ import { basename, dirname, resolve } from 'node:path';
 import { hg3, kcsProgram, kif } from '../helpers.mjs';
 import { startupVersionImage, startupXML } from '../fixtures/ordinary-startup.mjs';
 
+test('ordinary renderless Plane movies decode through the production Host and retain real pixels across cold restore', async ({
+  page,
+}, info) => {
+  const profile = 'nekopara-vol3-engine-2.6.1.76',
+    original = new Uint8Array(
+      await readFile(new URL('../fixtures/native-plane-movie.avi', import.meta.url)),
+    ),
+    main = kcsProgram([
+      [43, 0x41, 0],
+      [41, 0],
+    ]),
+    load = kcsProgram(
+      [
+        [37, 21],
+        [37, 2048],
+        [43, 0x2bd, 8],
+        [37, 21],
+        [43, 0x2be, 4],
+        [38, 512],
+        [37, 22],
+        [37, 2048],
+        [43, 0x3dc, 8],
+        [37, 22],
+        [43, 0x3dd, 4],
+        [38, 516],
+        [43, 0x41, 0],
+      ],
+      [[2048, 'clip']],
+    ),
+    files = [
+      [
+        'startup.xml',
+        [
+          ...startupXML(
+            profile,
+            '<APP><title>Owned Plane movies</title></APP><SCREEN><width>64</width><height>48</height><v_width>64</v_width><v_height>48</v_height><fps>60</fps></SCREEN><SCRIPT><start>main.kcs</start></SCRIPT><INT><int00><name>kcs</name><ext>kcs</ext></int00><int01><name>config</name><int>config.int</int><ext>xml</ext></int01><int02><name>movie</name><int>movie.int</int><ext>avi</ext></int02><int03><name>veff</name><int>veff.int</int><ext>avi</ext></int03></INT>',
+          ),
+        ],
+      ],
+      ['config.int', [...kif([['gamedef.xml', startupXML(profile, '')]])]],
+      ['main.kcs', [...main]],
+      ['load.kcs', [...load]],
+      ['movie.int', [...kif([['clip.avi', original]])]],
+      ['veff.int', [...kif([['clip.avi', original]])]],
+    ],
+    errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/plane-movie-smoke.html', (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><canvas id="screen"></canvas>',
+    }),
+  );
+  await page.route('**/owned-plane-sidecar.webm', (route) =>
+    route.fulfill({
+      path: new URL('../fixtures/native-plane-movie.webm', import.meta.url).pathname,
+      contentType: 'video/webm',
+    }),
+  );
+  await page.goto('/plane-movie-smoke.html');
+  const result = await page.evaluate(
+    async ({ files, original, profile }) => {
+      const { CatSystem2 } = await import('/src/engine.mjs'),
+        { NativeWorld } = await import('/src/native/world.mjs'),
+        { GameFiles, BlobFile } = await import('/src/files.mjs'),
+        { NativeGraphicsPacket } = await import('/src/native/graphics-task.mjs'),
+        { floatBits } = await import('/src/kcs.mjs'),
+        { binaryIdentity } = await import('/src/identity.mjs'),
+        { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
+        trace = { restoring: false, cpu: 0, draws: 0, mediaReads: 0, calls: [] };
+      NativeWorld.prototype.ensureNativeEngine = function () {
+        trace.cpu++;
+        throw new Error('normal Plane movie attempted original CPU');
+      };
+      const make = CatSystem2.prototype.createNativeWorld;
+      CatSystem2.prototype.createNativeWorld = function (...args) {
+        const world = make.apply(this, args),
+          native = world.runtime.native;
+        world.runtime.native = function (...args) {
+          trace.calls.push([args[0], args[1]]);
+          return native.apply(this, args);
+        };
+        for (const stream of [world.random.integer, world.random.real]) {
+          const next = stream.nextUint32;
+          stream.nextUint32 = function (...args) {
+            if (trace.restoring) trace.draws++;
+            return next.apply(this, args);
+          };
+        }
+        return world;
+      };
+      const mounted = new Map(
+          files.map(([name, data]) => {
+            const file = new BlobFile(new Blob([Uint8Array.from(data)]));
+            if (name === 'movie.int' || name === 'veff.int') {
+              const read = file.read;
+              file.read = function (...args) {
+                if (trace.restoring) trace.mediaReads++;
+                return read.apply(this, args);
+              };
+            }
+            return [name, file];
+          }),
+        ),
+        game = new GameFiles(mounted);
+      await game.open();
+      const sourceIdentity = await game.fingerprint(),
+        sha256 = await binaryIdentity(Uint8Array.from(original)),
+        sidecar = {
+          sourceIdentity,
+          sourceSize: original.length,
+          sourceSha256: sha256,
+          mime: 'video/webm',
+          url: '/owned-plane-sidecar.webm',
+        };
+      game.media = { 'movie.int/clip.avi': sidecar, 'veff.int/clip.avi': sidecar };
+      const engine = new CatSystem2({
+        game,
+        canvas: document.getElementById('screen'),
+        audioContext: new AudioContext(),
+        nativeProfile: profile,
+        randomSeed: 17,
+      });
+      let source, fresh;
+      try {
+        await engine.initialize();
+        await engine.render();
+        source = engine.world;
+        const a = await source.objects.create({ kind: 2, parent: source.root, nativeID: 21 }),
+          b = await source.objects.create({ kind: 2, parent: source.root, nativeID: 22 }),
+          script = await source.spawnScript('load.kcs');
+        await source.runtime.scheduler.execute(script);
+        await source.sendEngine(b, script.id, 51, 0, 0, {
+          payload: new NativeGraphicsPacket([floatBits(32), 0, 0]),
+        });
+        const handleA = script.machine.load(512),
+          handleB = script.machine.load(516),
+          recordA = source.movies.get(handleA),
+          recordB = source.movies.get(handleB),
+          adapters = [source.movies.session(handleA), source.movies.session(handleB)];
+        await engine.render();
+        const gpu = source.stageRenderer.gpu,
+          pixels = gpu.pixels(),
+          width = gpu.primaryTarget.width,
+          height = gpu.primaryTarget.height,
+          canvasPixel = (x, y) => [
+            ...engine.renderer.canvas.getContext('2d').getImageData(x, y, 1, 1).data,
+          ],
+          pixel = (x, y) => [...pixels.subarray((y * width + x) * 4, (y * width + x) * 4 + 4)],
+          retainedA = await source.planeMovies.retainedFrame(
+            source.graphics.tasks.get(a).graph.movie,
+          ),
+          retainedB = await source.planeMovies.retainedFrame(
+            source.graphics.tasks.get(b).graph.movie,
+          ),
+          saved = await engine.snapshot(),
+          beforeCalls = trace.calls.length;
+        trace.restoring = true;
+        await engine.restore(structuredClone(saved));
+        fresh = engine.world;
+        const cold = await engine.snapshot(),
+          before = await serializeCheckpoint(saved),
+          after = await serializeCheckpoint(cold),
+          evidence = {
+            fullDTO: before.length === after.length && before.every((n, i) => n === after[i]),
+            noReplay: trace.calls.length === beforeCalls,
+            cpu: trace.cpu,
+            draws: trace.draws,
+            mediaReads: trace.mediaReads,
+            coldFrames: fresh.frame - saved.world.frame,
+            coldDecoders: fresh.movies.sessions.size,
+            handles: [handleA, handleB],
+            filenames: [recordA.filename, recordB.filename],
+            prepared: [recordA.prepared, recordB.prepared],
+            sizes: [
+              [recordA.width, recordA.height],
+              [recordB.width, recordB.height],
+            ],
+            dimensions: [width, height],
+            top: [pixel(8, 4), pixel(40, 4)],
+            canvasTop: [canvasPixel(8, 4), canvasPixel(40, 4)],
+            bottom: [pixel(8, 20), pixel(40, 20)],
+            canvasBottom: [canvasPixel(8, 20), canvasPixel(40, 20)],
+            padding: [
+              [...retainedA.rgba.subarray(24 * 32 * 4, 24 * 32 * 4 + 4)],
+              [...retainedB.rgba.subarray(24 * 32 * 4, 24 * 32 * 4 + 4)],
+            ],
+            sourceClosed: source.closed,
+            sourceDecoders: source.movies.sessions.size,
+            sourceElementsReleased: adapters.every(
+              (decoder) =>
+                decoder.closed &&
+                decoder.source === null &&
+                decoder.video.getAttribute('src') === null,
+            ),
+            callingScriptLive: fresh.objects.objects.has(script.id),
+          };
+        trace.restoring = false;
+        await engine.render();
+        evidence.resumedDecoders = fresh.movies.sessions.size;
+        evidence.aliases = [a, b].map((id) => fresh.graphics.tasks.get(id).graph.movie.handle);
+        await engine.step(1);
+        await engine.render();
+        evidence.frames = fresh.frame;
+        await engine.dispose();
+        return {
+          ...evidence,
+          freshClosed: fresh.closed,
+          freshDecoders: fresh.movies.sessions.size,
+          visibleVideos: document.querySelectorAll('video').length,
+        };
+      } finally {
+        if (!engine.disposed) await engine.dispose();
+      }
+    },
+    { files, original: [...original], profile },
+  );
+  await writeFile(info.outputPath('plane-movie-evidence.json'), JSON.stringify(result, null, 2));
+  expect(result).toMatchObject({
+    dimensions: [64, 48],
+    fullDTO: true,
+    noReplay: true,
+    cpu: 0,
+    draws: 0,
+    mediaReads: 0,
+    coldFrames: 0,
+    coldDecoders: 0,
+    filenames: ['movie.int/clip.avi', 'veff.int/clip.avi'],
+    prepared: [true, true],
+    sizes: [
+      [32, 24],
+      [32, 24],
+    ],
+    padding: [
+      [0, 0, 0, 255],
+      [0, 0, 0, 0],
+    ],
+    sourceClosed: true,
+    sourceDecoders: 0,
+    sourceElementsReleased: true,
+    callingScriptLive: true,
+    resumedDecoders: 2,
+    freshClosed: true,
+    freshDecoders: 0,
+    visibleVideos: 0,
+  });
+  expect(result.aliases).toEqual(result.handles);
+  for (const rgba of [...result.top, ...result.canvasTop]) {
+    expect(rgba[0]).toBeGreaterThan(180);
+    expect(rgba[1]).toBeLessThan(80);
+    expect(rgba[2]).toBeLessThan(80);
+    expect(rgba[3]).toBe(255);
+  }
+  for (const rgba of [...result.bottom, ...result.canvasBottom]) {
+    expect(rgba[0]).toBeLessThan(80);
+    expect(rgba[1]).toBeLessThan(80);
+    expect(rgba[2]).toBeGreaterThan(180);
+    expect(rgba[3]).toBe(255);
+  }
+  expect(result.frames).toBeLessThanOrEqual(3);
+  expect(errors).toEqual([]);
+});
+
 const sdkProfile = 'sdk-4.01-engine-2.6.1.74',
   gameProfile = 'nekopara-vol3-engine-2.6.1.76';
 

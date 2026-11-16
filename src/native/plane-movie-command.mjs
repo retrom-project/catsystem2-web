@@ -4,6 +4,9 @@
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NativePlaneMovies } from './plane-movie-session.mjs';
+import { formatNativeAt, encodeCP932 } from '../kcs.mjs';
+import { nativeCategoryFilename } from './resource-file.mjs';
 
 const PLANE_COMMANDS = new Map([
   [0x2bd, { words: 2, control: 2, message: 43, load: true, addresses: [0x640670, 0x512d50] }],
@@ -162,13 +165,62 @@ export class NativePlaneMovieCommands {
   }
 }
 
+async function ordinaryPlaneMovie(world, id, args, machine, task) {
+  const spec = PLANE_COMMANDS.get(id),
+    target = (args[0] ?? machine.nativeArgument(0)) >>> 0;
+  // Both loaders skip formatting and I/O for a zero target; queries initialize
+  // their own local output to zero even if the target writes no result.
+  if (spec.load && !target) return nativeReply(2);
+  let output = 0;
+  if (!spec.load) {
+    await world.sendNativeEngine(target, task.id, spec.message, 0, 0, {
+      flags: 0,
+      payload: {
+        store: (_at, word) => {
+          output = word >>> 0;
+        },
+      },
+    });
+    return nativeReply(1, output);
+  }
+  const raw = (world.runtime.services.formatBytes ?? formatNativeAt)(
+      args[1] ?? machine.nativeArgument(1),
+      machine,
+    ),
+    end = raw.indexOf(0),
+    filename = nativeCategoryFilename(
+      world.game,
+      new TextDecoder('shift_jis').decode(end < 0 ? raw : raw.subarray(0, end)),
+      spec.message === 44 ? 'veff' : 'movie',
+    );
+  // The category resolver can change the narrow path; preserve the native
+  // packet's zero-initialized XYZ and exactly one terminated filename.
+  const encoded = encodeCP932(filename ?? '');
+  const packet = new Uint8Array(12 + encoded.length + 1);
+  packet.set(encoded, 12);
+  const view = new DataView(packet.buffer);
+  await world.sendNativeEngine(target, task.id, spec.message, 0, 0, {
+    flags: 0,
+    payload: {
+      load: (at) => view.getUint32(at, true),
+      bytes: (at, count) => packet.subarray(at, at + count),
+    },
+  });
+  return nativeReply(2);
+}
+
 export function installNativePlaneMovieCommands(world) {
+  world.planeMovies = new NativePlaneMovies(world);
   world.registerNativeFeature('plane-movie-commands', async (engine) => {
     await world.getNativeFeature('directshow');
     return new NativePlaneMovieCommands(engine, world);
   });
   for (const id of PLANE_COMMANDS.keys())
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('plane-movie-commands')).apply(id, args, machine, task),
+    world.runtime.register('main', id, (args, machine, task) =>
+      world.nativeEngine || world.nativeEngineLoading
+        ? world
+            .getNativeFeature('plane-movie-commands')
+            .then((feature) => feature.apply(id, args, machine, task))
+        : ordinaryPlaneMovie(world, id, args, machine, task),
     );
 }

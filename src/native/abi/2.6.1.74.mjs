@@ -225,6 +225,7 @@ export default {
     utf8Text: false,
     emoteFes: false,
     engineWorkers: false,
+    hapMovieAnsiDriverPath: true,
     windowsMediaReader: false,
     systemEntropy: true,
     inputNullText: true,
