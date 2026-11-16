@@ -7,6 +7,7 @@ import { JavaScriptMachine } from '../javascript/machine.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 import { canonicalMessage } from './control-task.mjs';
+import { SDKJavaScriptImages } from './sdk-javascript-image.mjs';
 
 const decoder = new TextDecoder('shift_jis', { fatal: true });
 
@@ -19,11 +20,13 @@ export class NormalSDKJavaScriptTask {
       machine: null,
       link: null,
       child: null,
+      closed: false,
+      images: new SDKJavaScriptImages(world, record),
     });
     record.exitCode ??= -1;
   }
   get loaded() {
-    return Boolean(this.machine?.state.initialized);
+    return !this.closed && Boolean(this.machine?.state.initialized);
   }
   get running() {
     return this.loaded && this.machine.state.exitCode === null;
@@ -88,6 +91,8 @@ export class NormalSDKJavaScriptTask {
     );
   }
   host(name, args, location) {
+    if (this.closed) throw new Error('JavaScript task owner is closed');
+    if (name && typeof name === 'object') return this.images.host(name, args, location);
     if (
       name !== 'cfExit' ||
       !this.loaded ||
@@ -103,23 +108,39 @@ export class NormalSDKJavaScriptTask {
     return { value: undefined };
   }
   async load(name) {
+    if (this.closed) throw new Error('JavaScript task owner is closed');
     if (!this.link) throw new Error('JavaScript load requires a linked Script');
     if (this.machine)
       throw new Error('JavaScript reloading is outside the ordinary execution slice');
     const path = nativeCategoryFilename(this.world.game, name, 'javascript'),
       bytes = path === null ? null : await readNativeResource(this.world, path);
+    if (this.closed) throw new Error('JavaScript task owner is closed');
     if (bytes === null) throw new Error(`JavaScript source is absent: ${name}`);
-    const machine = new JavaScriptMachine(compileJavaScript(decoder.decode(bytes), name)),
-      result = machine.run((...args) => this.host(...args));
-    if (result.status === 'paused')
-      throw new Error('JavaScript initialization exceeded its instruction budget');
+    const machine = new JavaScriptMachine(compileJavaScript(decoder.decode(bytes), name));
     this.machine = machine;
+    await this.drain(
+      machine,
+      machine.run((...args) => this.host(...args)),
+    );
   }
-  tick(frame) {
-    if (!this.running) return;
-    const result = this.machine.call('GameLoop', [frame >>> 0], (...args) => this.host(...args));
+  async drain(machine, result) {
+    if (this.closed) throw new Error('JavaScript task owner is closed');
+    while (result.status === 'waiting') {
+      const value = await this.images.complete(result.request);
+      if (this.closed) throw new Error('JavaScript image owner is closed');
+      machine.resumeHost(value);
+      result = machine.run((...args) => this.host(...args));
+    }
     if (result.status === 'paused')
       throw new Error('JavaScript callback exceeded its instruction budget');
+  }
+  async tick(frame) {
+    if (!this.running) return;
+    const machine = this.machine;
+    await this.drain(
+      machine,
+      machine.call('GameLoop', [frame >>> 0], (...args) => this.host(...args)),
+    );
   }
   snapshot() {
     return {
@@ -146,8 +167,11 @@ export class NormalSDKJavaScriptTask {
     this.link = state.link && { ...state.link };
     this.child = state.child;
     this.machine = state.machine === null ? null : JavaScriptMachine.restore(state.machine);
+    this.images.validate(this.machine?.state.cells ?? []);
   }
-  close() {
+  async close() {
+    this.closed = true;
+    await this.images.close(this.link);
     this.machine = null;
     this.link = null;
     this.child = null;

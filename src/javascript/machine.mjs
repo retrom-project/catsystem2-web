@@ -9,6 +9,7 @@ export class JavaScriptMachine {
       cells: [],
       closures: [],
       frames: [],
+      waiting: null,
       initialized: false,
       exitCode: null,
     };
@@ -41,7 +42,7 @@ export class JavaScriptMachine {
     const cell = this.cell(environment, name);
     if (cell !== -1) return this.state.cells[cell];
     if (name === 'undefined') return undefined;
-    if (name === 'cfExit') return { host: name };
+    if (name === 'cfExit' || name === 'CsImage') return { host: name };
     throw scriptError('Unsupported JavaScript host import', location, name);
   }
   set(environment, name, value, location) {
@@ -74,8 +75,36 @@ export class JavaScriptMachine {
       stack: [],
     });
   }
+  resumeHost(value) {
+    const { state } = this,
+      waiting = state.waiting,
+      frame = state.frames.at(-1);
+    if (
+      !waiting ||
+      waiting.depth !== state.frames.length ||
+      waiting.pc !== frame?.pc ||
+      waiting.stack !== frame.stack.length
+    )
+      throw new Error('Invalid JavaScript host continuation');
+    state.waiting = null;
+    frame.stack.push(value);
+  }
   run(host, budget = 100000) {
     const { state } = this;
+    if (state.waiting) return { status: 'waiting', request: state.waiting.request };
+    const complete = (completion, frame) => {
+      if (completion?.wait) {
+        state.waiting = {
+          request: structuredClone(completion.wait),
+          depth: state.frames.length,
+          pc: frame.pc,
+          stack: frame.stack.length,
+        };
+        return { status: 'waiting', request: state.waiting.request };
+      }
+      frame.stack.push(completion?.value);
+      return null;
+    };
     for (let used = 0; state.frames.length && used < budget; used++) {
       const frame = state.frames.at(-1),
         instruction = state.program.functions[frame.fn].code[frame.pc++];
@@ -116,6 +145,18 @@ export class JavaScriptMachine {
         case 'binary': {
           const right = stack.pop(),
             left = stack.pop();
+          if (arg === '===' || arg === '!==') {
+            const key = (value) =>
+              value && typeof value === 'object' ? Object.keys(value)[0] : null;
+            const leftKey = key(left),
+              rightKey = key(right);
+            const equal =
+              leftKey || rightKey
+                ? leftKey === rightKey && left[leftKey] === right[rightKey]
+                : left === right;
+            stack.push(arg === '===' ? equal : !equal);
+            break;
+          }
           if ((left && typeof left === 'object') || (right && typeof right === 'object'))
             throw scriptError('Unsupported JavaScript syntax', location, 'object coercion');
           switch (arg) {
@@ -148,12 +189,28 @@ export class JavaScriptMachine {
         case 'jump':
           frame.pc = arg;
           break;
+        case 'construct': {
+          const args = stack.splice(stack.length - arg, arg),
+            target = stack.pop();
+          if (target?.host !== 'CsImage')
+            throw scriptError('Unsupported JavaScript syntax', location, 'constructor');
+          const result = complete(host({ construct: target.host }, args, location), frame);
+          if (result) return result;
+          break;
+        }
+        case 'member-call': {
+          const args = stack.splice(stack.length - arg.count, arg.count),
+            receiver = stack.pop();
+          const result = complete(host({ receiver, member: arg.name }, args, location), frame);
+          if (result) return result;
+          break;
+        }
         case 'call': {
           const args = stack.splice(stack.length - arg, arg),
             target = stack.pop();
           if (target?.host) {
-            const completion = host(target.host, args, location);
-            stack.push(completion?.value);
+            const result = complete(host(target.host, args, location), frame);
+            if (result) return result;
           } else this.pushCall(target, args, location);
           break;
         }
@@ -174,7 +231,7 @@ export class JavaScriptMachine {
     return { status: state.frames.length ? 'paused' : 'returned' };
   }
   snapshot() {
-    if (this.state.frames.length)
+    if (this.state.frames.length || this.state.waiting)
       throw new Error('JavaScript checkpoint requires a settled callback');
     return structuredClone(this.state);
   }
@@ -188,6 +245,7 @@ export class JavaScriptMachine {
       !Array.isArray(state.closures) ||
       !Array.isArray(state.frames) ||
       state.frames.length ||
+      state.waiting !== null ||
       !state.initialized
     )
       throw new Error('Invalid JavaScript checkpoint');
@@ -223,7 +281,9 @@ export class JavaScriptMachine {
           (Object.keys(value).length !== 1 ||
             !(
               (Number.isInteger(value.closure) && state.closures[value.closure]) ||
-              value.host === 'cfExit'
+              value.host === 'cfExit' ||
+              value.host === 'CsImage' ||
+              (Number.isSafeInteger(value.hostObject) && value.hostObject > 0)
             )))
       )
         throw new Error('Invalid JavaScript cell');

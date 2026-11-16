@@ -17,7 +17,8 @@ arithmetic, strict equality, conditional blocks and calls. Structural tokens
 are distinguished from quoted strings, including keyword and delimiter text.
 Function declarations directly in a program or function body are hoisted;
 block and conditional function declarations fail with a source span rather
-than applying unreviewed Annex B semantics. The only host import is `cfExit`
+than applying unreviewed Annex B semantics. The `CsImage` constructor and its
+finite member-call slice are described below. The other host import is `cfExit`
 from a running callback, with an
 integer first argument or no argument (code zero). It updates the exit code and
 clears running, then returns `undefined` normally: the current JavaScript call
@@ -26,21 +27,58 @@ continues, while subsequent logic frames do not call `GameLoop` again.
 successful program execution and its exit completion, rather than writable
 emulations of process fields. Unsupported syntax and host imports fail with
 the source filename and span. Relinking, reloading, missing-source behavior,
-`3D0`/`3EE`, arbitrary host waits, and the official tutorial's image/plane/sound
-imports remain outside this finite slice.
+`3D0`/`3EE`, arbitrary host waits, and the official tutorial's plane/sound,
+position, display and MOT APIs remain outside this finite slice.
 
 Checkpoints retain the program, lexical cells and closure references as data.
 Fresh restore does not execute source or callbacks, reload resources, or borrow
 the old World's mutable cells. Snapshots require a completed callback; an
 instruction-budget pause is not a finished frame. Close discards this task's
-VM and links while Base destruction releases its child. Calling Script banks
-are borrowed from the real runtime and remain owned by that Script.
+VM and links while Base destruction releases its child. Closing clears the
+loaded/running state immediately. Source IO that completes after close is
+rejected before a VM is published or any guest statement executes. Calling
+Script banks are borrowed from the real runtime and remain owned by that Script.
 
 The explicit original-engine adapter below remains an oracle path when a
 World already has `nativeEngine` or `nativeEngineLoading`. Original World
 fixtures open that owner explicitly before creating kind 55. Its original
 class and executable assertions remain unchanged. Ordinary execution never
 falls back to it on an unsupported program.
+
+## Ordinary CsImage loading
+
+`new CsImage()` creates a typed, data-only host reference in the existing
+`NativeHandles` registry, with a context slot and no explicit plane. Guest aliases
+retain that same reference. No second image table or pixel cache is created.
+`image.load(name)` (or a zero second argument) returns the actual Boolean result
+of the existing selector image factory. It releases the previous owned output
+before loading, including when the next name is missing. String filenames use
+the existing image-category, comma-selector, decoder and bitmap authorities.
+`setBaseType()` defaults to image mode; `"scene"` or numeric zero selects scene
+mode. The finite adapter accepts strings and signed32 integer numbers
+(`-2147483648` through `2147483647`); other numeric values fail with their
+source span. It does not emulate arbitrary V8 numeric coercion or modulo conversion. These setters return
+`undefined`; unsupported methods and argument forms fail with a source span.
+Image mode keeps the original base-anchor adjustment and normalizes the output
+bitmap's offsets and canvas to its physical extent. Scene mode preserves those
+source extents. No position, display, plane, animation or drawing API is enabled.
+
+A host load suspends the data interpreter at its call continuation. Only the
+adapter awaits the real IO Promise; its result resumes that call once, before
+any following guest statement. Pending IO is not a completed logic frame and
+cannot be checkpointed. A settled checkpoint saves typed references and the
+existing real bitmap outputs; fresh restore does not construct, reload, execute
+source, publish commands or draw RNG values.
+
+Without `setPlane`, the original CsImage virtual callback returns before its
+raw `113`/`11C`/`126` draw publications. This leaf therefore creates no drawable.
+Close still sends SDK raw `114` (Script canonical `278`) with the real calling
+Script target, JavaScript sender, context slot and flags zero. The ordinary
+Script/Base drawing consumer remains unimplemented; an unhandled transport
+result is not deletion success. Returning the local slot and releasing its owned
+bitmap are separate operations and do occur. The borrowed Script is retained;
+nonzero borrowed planes are outside this slice. IO completing after owner close
+releases its output instead of resurrecting the object or continuing its guest.
 
 ## Original engine oracle
 

@@ -96,9 +96,24 @@ function tokenize(source, name) {
     } else {
       value = ['===', '!==', '++'].find((op) => source.startsWith(op, at)) ?? source[at];
       if (
-        !['===', '!==', '++', '+', '-', '*', '/', '!', '=', '(', ')', '{', '}', ';', ','].includes(
-          value,
-        )
+        ![
+          '===',
+          '!==',
+          '++',
+          '+',
+          '-',
+          '*',
+          '/',
+          '!',
+          '=',
+          '(',
+          ')',
+          '{',
+          '}',
+          ';',
+          ',',
+          '.',
+        ].includes(value)
       )
         fail(start, `token ${value}`);
       for (let i = 0; i < value.length; i++) take();
@@ -239,7 +254,22 @@ class Parser {
         location: token.location,
       };
     }
-    if (this.is('function')) value = this.function(false);
+    if (this.accept('new')) {
+      const name = this.identifier();
+      this.expect('(');
+      const args = [];
+      if (!this.is(')'))
+        do {
+          args.push(this.expression());
+        } while (this.accept(','));
+      this.expect(')');
+      value = {
+        type: 'construct',
+        target: { type: 'identifier', name: name.value, location: name.location },
+        args,
+        location: token.location,
+      };
+    } else if (this.is('function')) value = this.function(false);
     else if (this.accept('(')) {
       value = this.expression();
       this.expect(')');
@@ -258,7 +288,10 @@ class Parser {
       value = { type: 'identifier', name: id.value, location: id.location };
     }
     for (;;) {
-      if (this.accept('(')) {
+      if (this.accept('.')) {
+        const name = this.identifier();
+        value = { type: 'member', target: value, name: name.value, location: name.location };
+      } else if (this.accept('(')) {
         const args = [];
         if (!this.is(')'))
           do {
@@ -338,10 +371,21 @@ export function compileJavaScript(source, name) {
           expression(node.right);
           emit('binary', node.operator, where);
           break;
-        case 'call':
+        case 'construct':
           expression(node.target);
           node.args.forEach(expression);
-          emit('call', node.args.length, where);
+          emit('construct', node.args.length, where);
+          break;
+        case 'call':
+          if (node.target.type === 'member') {
+            expression(node.target.target);
+            node.args.forEach(expression);
+            emit('member-call', { name: node.target.name, count: node.args.length }, where);
+          } else {
+            expression(node.target);
+            node.args.forEach(expression);
+            emit('call', node.args.length, where);
+          }
           break;
         default:
           throw scriptError('Unsupported JavaScript syntax', where, node.type);
