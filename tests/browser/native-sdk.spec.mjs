@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { test, expect } from '@playwright/test';
+import { test, expect } from './native-performance.mjs';
 import {
   frameClock,
   state,
