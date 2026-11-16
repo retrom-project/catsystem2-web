@@ -3,7 +3,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from '../src/native/engine-message.mjs';
+import {
+  NativeEngineMessages,
+  NATIVE_UNWRITTEN_WORD,
+  nativeEngineWord,
+} from '../src/native/engine-message.mjs';
+import { NativeTaskDump } from '../src/native/task-dump.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -683,4 +688,78 @@ test('ordinary SDK D0 writes its live task tree before the result push and resto
     await fresh.close({ flushFiles: false });
     await first.close({ flushFiles: false });
   }
+});
+
+for (const [profile, start, wide] of [
+  [sdk, 30, false],
+  [game, 32, true],
+])
+  test(
+    profile + ' normal Root routing owns protocol data without original code addresses',
+    async () => {
+      const world = await dataWorld(profile);
+      try {
+        const top = world.engineMessages.closestTop(world.main.id),
+          protocol = world.engineMessages,
+          input = await world.sendEngine(top.id, world.main.id, start + 2),
+          sound = await world.sendEngine(top.id, world.main.id, start + 3),
+          memory = world.main.machine,
+          text = 'root日本語',
+          narrow = encodeCP932(text + '\0'),
+          bytes = wide ? new Uint8Array((text.length + 1) * 2) : narrow;
+        if (wide) {
+          const view = new DataView(bytes.buffer);
+          for (let i = 0; i < text.length; i++) view.setUint16(i * 2, text.charCodeAt(i), true);
+        }
+        assert.equal(world.objects.objects.get(protocol.resolve(world.main.id, input)).kind, 11);
+        assert.equal(world.objects.objects.get(protocol.resolve(world.main.id, sound)).kind, 13);
+        memory.bytes(128, bytes.length).set(bytes);
+        assert.equal(
+          await world.sendEngine(top.id, world.main.id, start + 5, 0, 128),
+          NATIVE_UNWRITTEN_WORD,
+        );
+        assert.equal(top.implementation.caption, text);
+        memory.bytes(256, bytes.length).fill(0xa5);
+        await world.sendEngine(top.id, world.main.id, start + 6, 0, 256);
+        assert.deepEqual(memory.bytes(256, bytes.length), bytes);
+        await world.sendEngine(top.id, world.main.id, start + 8, 0, 0x89abcdef);
+        assert.equal(top.implementation.field, 0x89abcdef);
+        assert.equal(
+          Object.hasOwn(protocol.layout, 'base'),
+          false,
+          'normal routing owns no original function address',
+        );
+        assert.equal(
+          Object.hasOwn(protocol.layout, 'rootField'),
+          false,
+          'normal routing owns no C++ field offset',
+        );
+        assert.equal(world.nativeEngine, undefined);
+      } finally {
+        await world.close();
+      }
+    },
+  );
+
+test('original task dumps require their physical descriptor before accessing the process', () => {
+  let touched = 0;
+  const engine = {
+    profile: 'unregistered-engine',
+    get process() {
+      touched++;
+      throw new Error('original process accessed before descriptor gate');
+    },
+  };
+  for (const profile of ['unregistered-engine', 'constructor', '__proto__']) {
+    engine.profile = profile;
+    assert.throws(
+      () => new NativeTaskDump(engine, {}),
+      /Original task dump requires its reviewed physical descriptor/,
+    );
+  }
+  assert.equal(touched, 0);
+  assert.throws(
+    () => new NativeEngineMessages({ profile: engine.profile, objects: { objects: new Map() } }),
+    /Unregistered CatSystem2 ABI/,
+  );
 });

@@ -204,6 +204,17 @@ function validateBehavior(abi) {
   }
   if (!messages?.channels?.base || !messages?.channels?.control || !messages?.root)
     throw new Error(`Incomplete ABI message data ${abi.id}`);
+  const root = messages.root;
+  if (
+    !Number.isInteger(root.start) ||
+    root.start < 0 ||
+    root.start > 0xfffffff7 ||
+    typeof root.captionWide !== 'boolean' ||
+    !Number.isInteger(root.soundReset) ||
+    root.soundReset < 0 ||
+    root.soundReset > 0xffffffff
+  )
+    throw new Error(`Invalid ABI Root protocol ${abi.id}`);
   validateFESCommonHeads(fes.commonHeads);
 }
 

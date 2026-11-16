@@ -796,3 +796,12 @@ restoration before any warm tick. Restored commands and RNG are not replayed,
 and owners remain isolated through close. AuthorMode-dependent279/281 and the
 unproved688 receiver remain unknown; no conditional CFG census item enables a
 slot or another engine version.
+
+The normal task router requires the registered ABI's Root protocol: the first
+message number, caption encoding and Sound reset message. These fields are
+validated before constructing a World. Its logical Root state uses no original
+function address or C++ field offset. The existing Root `field` offset and the
+two original message-layout descriptors remain owned by the explicit original
+task bridge and its physical verifiers. An original task dump rejects a missing
+physical descriptor before accessing the process, installing traps or allocating
+memory. This separation adds no engine version or native-slot admission.

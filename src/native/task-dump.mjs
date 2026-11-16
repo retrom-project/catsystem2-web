@@ -21,10 +21,14 @@ export const NATIVE_TASK_DUMP = Object.freeze({
 
 export class NativeTaskDump {
   constructor(engine, world) {
+    const layout = Object.hasOwn(NATIVE_ENGINE_MESSAGE_LAYOUTS, engine?.profile)
+      ? NATIVE_ENGINE_MESSAGE_LAYOUTS[engine.profile]
+      : undefined;
+    if (!layout) throw new Error('Original task dump requires its reviewed physical descriptor');
     Object.assign(this, { engine, world, process: engine.process });
     this.sdk = engine.profile.startsWith('sdk-');
     this.spec = this.sdk ? NATIVE_TASK_DUMP.sdk : NATIVE_TASK_DUMP.game;
-    this.layout = NATIVE_ENGINE_MESSAGE_LAYOUTS[engine.profile];
+    this.layout = layout;
     const p = this.process,
       send = p.trap('KCS task dump transport', 7, (args) => this.dispatch(args, true));
     this.vtable = p.allocate(20, true);

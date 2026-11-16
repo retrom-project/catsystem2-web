@@ -190,3 +190,30 @@ test('ABI message data retains every original control, screen and area boundary 
     /Unknown ABI message/,
   );
 });
+
+test('normal Root ABI protocol fields are strict while original field offsets remain separate', () => {
+  for (const registered of Object.values(NATIVE_ABIS)) {
+    const normal = structuredClone(registered);
+    delete normal.messages.root.field;
+    assert.equal(validateABI(normal), normal);
+    for (const field of ['start', 'captionWide', 'soundReset']) {
+      const missing = structuredClone(normal);
+      delete missing.messages.root[field];
+      assert.throws(() => validateABI(missing), /Root protocol/);
+    }
+    for (const [field, value] of [
+      ['start', -1],
+      ['start', 0x100000000],
+      ['start', 30.5],
+      ['captionWide', 0],
+      ['captionWide', null],
+      ['soundReset', -1],
+      ['soundReset', 0x100000000],
+      ['soundReset', 192.5],
+    ]) {
+      const invalid = structuredClone(normal);
+      invalid.messages.root[field] = value;
+      assert.throws(() => validateABI(invalid), /Root protocol/);
+    }
+  }
+});

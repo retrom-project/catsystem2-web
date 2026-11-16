@@ -83,10 +83,11 @@ function stringBytes(text, wide) {
 
 export class NativeEngineMessages {
   constructor(world) {
-    if (!NATIVE_ENGINE_MESSAGE_LAYOUTS[world?.profile] || !(world.objects?.objects instanceof Map))
+    if (!(world?.objects?.objects instanceof Map))
       throw new Error('Native engine messages require their profiled task world');
+    const { start, captionWide, soundReset } = nativeABI(world.profile).messages.root;
     this.world = world;
-    this.layout = NATIVE_ENGINE_MESSAGE_LAYOUTS[world.profile];
+    this.layout = Object.freeze({ rootStart: start, captionWide, soundReset });
   }
   get records() {
     return this.world.objects.objects;

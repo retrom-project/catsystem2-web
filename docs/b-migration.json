@@ -1498,7 +1498,7 @@
       {
         "kind": "guard",
         "file": "src/native/task-dump.mjs",
-        "line": 25,
+        "line": 29,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1709,24 +1709,6 @@
         "file": "src/native/engine-language.mjs",
         "line": 103,
         "expression": "LANGUAGE[engine.profile]",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/engine-message.mjs",
-        "line": 86,
-        "expression": "NATIVE_ENGINE_MESSAGE_LAYOUTS[world?.profile]",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "exe-layout",
-        "file": "src/native/engine-message.mjs",
-        "line": 89,
-        "expression": "NATIVE_ENGINE_MESSAGE_LAYOUTS[world.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
@@ -2292,7 +2274,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/task-dump.mjs",
-        "line": 27,
+        "line": 25,
         "expression": "NATIVE_ENGINE_MESSAGE_LAYOUTS[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2301,7 +2283,7 @@
       {
         "kind": "va-condition",
         "file": "src/native/task-dump.mjs",
-        "line": 32,
+        "line": 36,
         "expression": "this.sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2475,12 +2457,12 @@
         "domain": 8
       }
     ],
-    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 104, "needsReview": 0 }
+    "totals": { "profileIndexSites": 0, "exeVASelectionSites": 102, "needsReview": 0 }
   },
   "summary": {
     "nativeSlots": 2344,
     "remainingProfileIndexSites": 0,
-    "remainingExeVASelectionSites": 104,
+    "remainingExeVASelectionSites": 102,
     "profileSelectionNeedsReview": 0,
     "implementations": {
       "pure-js": 1850,
@@ -6921,7 +6903,7 @@
           "module": "src/native/task-dump.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/task-dump.mjs:133",
+          "registration": "src/native/task-dump.mjs:137",
           "features": ["task-dump"],
           "dependencies": ["src/native/task-dump.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -25061,7 +25043,7 @@
         },
         {
           "name": "task-dump",
-          "registration": "src/native/task-dump.mjs:132",
+          "registration": "src/native/task-dump.mjs:136",
           "modules": [],
           "dependencies": []
         },
@@ -29542,7 +29524,7 @@
           "module": "src/native/task-dump.mjs",
           "domain": 8,
           "route": "NativeWorld/registered-handler",
-          "registration": "src/native/task-dump.mjs:133",
+          "registration": "src/native/task-dump.mjs:137",
           "features": ["task-dump"],
           "dependencies": ["src/native/task-dump.mjs"],
           "docs": ["docs/native-compatibility.md"],
@@ -48509,7 +48491,7 @@
         },
         {
           "name": "task-dump",
-          "registration": "src/native/task-dump.mjs:132",
+          "registration": "src/native/task-dump.mjs:136",
           "modules": [],
           "dependencies": []
         },
@@ -49973,7 +49955,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "ce12606e59122c223311588d87ed691862f31ef02c22b21f4c17a2c3648122cf",
+      "sourceSha256": "343457f1ad1c277e8524c3699a3ec8958e45852fffae68c9a2d1e341d87a2b53",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51211,7 +51193,7 @@
     },
     {
       "file": "src/native/engine-message.mjs",
-      "sourceSha256": "8e25410652c2427161565007f6549c1933128e6cec2c142501894996461e0e51",
+      "sourceSha256": "53f4791aa00d7dff1ffb5ed7a6ec0907b160bb96fb2fb050135fd28b99a2892d",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 18, "calls": 0, "references": 0 },
@@ -51221,7 +51203,7 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 672,
+          "line": 673,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
@@ -55593,7 +55575,7 @@
     },
     {
       "file": "src/native/task-dump.mjs",
-      "sourceSha256": "8cb1a8181d947b5fb67a60174e2f57a7f2cfacfb309059ec38612844c9b84968",
+      "sourceSha256": "29af7eb9bf668a6bc225c30dfb148772498b6801638b9ea1b1ab1d2a2f8847e4",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 4, "calls": 3, "references": 0 },
@@ -55608,28 +55590,28 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 42,
+          "line": 46,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
           "reason": "SDK task dump 将已核验的 EXE send call rel32 改写为宿主 trap。"
         },
         {
-          "line": 71,
+          "line": 75,
           "method": "callFromHost",
           "target": "this.layout.root",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 107,
+          "line": 111,
           "method": "callFromHost",
           "target": "this.spec.address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 108,
+          "line": 112,
           "method": "call",
           "target": "this.spec.address",
           "review": "needs-review",
@@ -55639,35 +55621,35 @@
       "executionSiteCounts": { "direct-code-write": 1, "callFromHost": 2, "call": 1 },
       "indirectSites": [
         {
-          "line": 69,
+          "line": 73,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 79,
+          "line": 83,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 89,
+          "line": 93,
           "method": "getNativeFeature",
           "feature": "task-memory",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 135,
+          "line": 139,
           "method": "getNativeFeature",
           "feature": "task-dump",
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 150,
+          "line": 154,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -60833,7 +60815,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 42,
+          "line": 46,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
@@ -61042,7 +61024,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 42,
+          "line": 46,
           "method": "direct-code-write",
           "target": "site + 1",
           "review": "traced",
@@ -61050,7 +61032,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 71,
+          "line": 75,
           "method": "callFromHost",
           "target": "this.layout.root",
           "review": "needs-review",
@@ -61058,7 +61040,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 107,
+          "line": 111,
           "method": "callFromHost",
           "target": "this.spec.address",
           "review": "needs-review",
@@ -61066,7 +61048,7 @@
         },
         {
           "file": "src/native/task-dump.mjs",
-          "line": 108,
+          "line": 112,
           "method": "call",
           "target": "this.spec.address",
           "review": "needs-review",
