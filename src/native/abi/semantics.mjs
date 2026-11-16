@@ -12219,7 +12219,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     342: {
-      name: 'draw.refresh',
+      name: 'draw.forceOutput',
       family: 'draw',
       signature: {
         argumentWords: 1,

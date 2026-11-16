@@ -85,6 +85,16 @@ authored ANM through the JS filename helper, and changes its animation gate. It 
 continues control and removes the retained object with independent ownership.
 Whole-game playback and GPU effect pixels have their own acceptance checks.
 
+Main `156` (`draw.forceOutput`) takes one native Draw task ID and sends
+canonical message 292 with zero `w`, `l` and transport flags. It also sends a
+zero target through the caller's Top namespace. Both own wrappers return
+control 2 without writing a VM result; the SDK slot is independently admitted.
+The Draw receiver marks itself dirty even without a renderer. With a renderer,
+it invalidates the complete drawing area and forces the surface into VRAM even
+when ordinary output is disabled, then clears its pending flag. The existing
+Draw bitmap, retained-source and close owners remain the authority. Other
+unreviewed SDK drawing slots remain disabled.
+
 The shared RNG and all 18 ANM opcodes are compared against both retained
 oracles. Integer, MASK, BTYPE and affine CPU drawing use the 43 frozen cases
 with exact CPU and VRAM bytes. Additional RGB24, format-dispatch and nonfinite

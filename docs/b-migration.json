@@ -9640,7 +9640,7 @@
           "id": 342,
           "hexID": "0x156",
           "semanticName": "draw.forceOutput",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.forceOutput",
           "renderRoute": {
             "id": 342,
             "semanticName": "draw.forceOutput",
@@ -9664,8 +9664,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -32299,7 +32298,7 @@
           "id": 342,
           "hexID": "0x156",
           "semanticName": "draw.forceOutput",
-          "catalogSemanticName": "draw.refresh",
+          "catalogSemanticName": "draw.forceOutput",
           "renderRoute": {
             "id": 342,
             "semanticName": "draw.forceOutput",
@@ -49942,7 +49941,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "826dc7cbd3ada4df3cf431ff1b1417a2e1b1af463c371239bf0216ca02b3785d",
+      "sourceSha256": "a3232c7b6e3b089c28aadb3ae1428e2969ec4fddeb93d61ca396ad938f37674c",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50007,7 +50006,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "6cebacb82c185521208cbeddb865f5f878881811aac7510781740b9a9def9bc0",
+      "sourceSha256": "9fe1f7fca3e8eaf45a3d5852f103c6ccdd22a516f516fea26a268807799adc10",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

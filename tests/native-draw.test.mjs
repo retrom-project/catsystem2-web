@@ -8,6 +8,9 @@ import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { floatBits } from '../src/kcs.mjs';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
 import {
   defaultFESWorld,
   loadDefaultFES,
@@ -341,3 +344,159 @@ test('FES baseimg copies the original physical VRAM rows independently of the pl
     await world.close();
   }
 });
+const forceOutputSentinel = 0x13579bdf;
+const forceOutputCode = kcsProgram([
+  [37, forceOutputSentinel],
+  [37, [0x13, 128]],
+  [43, 342, 4],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+async function forceOutputCall(world, target) {
+  const id = await world.objects.create({ kind: 12, parent: world.main.id, name: 'force.kcs' }),
+    record = world.objects.objects.get(id);
+  await record.implementation.loadScript('force.kcs');
+  const task = record.implementation.task,
+    machine = task.machine,
+    initialSP = machine.sp;
+  machine.store(128, target);
+  machine.bytes(800, 16).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.load(516), 89);
+  assert.equal(machine.sp, initialSP + 4, 'the void call leaves only its original sentinel');
+  assert.equal(machine.load(machine.sp - 4), forceOutputSentinel);
+  assert.deepEqual(Array.from(machine.bytes(800, 16)), Array(16).fill(0xa5));
+  assert.equal(machine.load(128), target >>> 0);
+  return task;
+}
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} main342 GCALL forces full Draw pixels and retains cold ownership`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'force.kcs': forceOutputCode },
+      world = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const texture = world.configuration.fields.texture;
+      texture.size.set([64, 64]);
+      texture.grid.set([1, 1]);
+      texture.bppY.set([0, 1]);
+      texture.areas[0].set([0, 0, 1, 1]);
+      texture.bpp = 32;
+      const surfaceID = await world.objects.create({
+          kind: 15,
+          parent: world.main.id,
+          nativeID: 0x00342342,
+          name: 'force output surface',
+        }),
+        siblingID = await world.objects.create({ kind: 15, parent: world.main.id }),
+        draw = world.graphics.drawTasks.get(surfaceID),
+        sibling = world.graphics.drawTasks.get(siblingID),
+        target = world.nativeTaskID(surfaceID),
+        messages = [],
+        send = world.sendNativeEngine;
+      assert.notEqual(surfaceID, target);
+      world.sendNativeEngine = function (destination, sender, number, w, l, context) {
+        if (number === 292) messages.push([destination, sender, number, w, l, context?.flags ?? 0]);
+        return send.call(this, destination, sender, number, w, l, context);
+      };
+      await world.sendNativeEngine(target, world.main.id, 286, 0, 1);
+      await world.sendNativeEngine(target, world.main.id, 304, 0, 0);
+      const siblingBefore = structuredClone(sibling.state),
+        empty = await forceOutputCall(world, target);
+      assert.equal(draw.state.renderer, null);
+      assert.equal(draw.state.dirty, true, 'a missing renderer still receives the dirty store');
+      assert.equal(draw.state.pending, true, 'the missing-renderer branch does not clear pending');
+      assert.deepEqual(messages.at(-1), [target, empty.id, 292, 0, 0, 0]);
+      const call = (id, args) =>
+        world.runtime.native('main', id, args, world.main.machine, world.main);
+      await call(0x100, [target, 4, 1]);
+      await call(0x104, [target, 2, 1]);
+      const bitmapID = world.graphics.images.create(1, 1, world.main.id),
+        bitmap = world.graphics.images.get(bitmapID),
+        color = [17, 33, 65, 255];
+      (await bitmap.pixels()).set(color);
+      await bitmap.changed();
+      await call(0x101, [
+        target,
+        7,
+        bitmapID,
+        floatBits(1),
+        0,
+        0,
+        0,
+        0,
+        floatBits(1),
+        floatBits(1),
+        255,
+        1,
+        0,
+      ]);
+      await world.graphics.images.release(bitmapID);
+      const outputs = [],
+        output = world.graphics.output;
+      world.graphics.output = function (image, offset, region, ...rest) {
+        const promise = output.call(this, image, offset, region, ...rest);
+        outputs.push({ offset: [...offset], region, promise });
+        return promise;
+      };
+      await call(0x106, [target, 1]);
+      await call(0x216, [target, 0]);
+      await forceOutputCall(world, target);
+      const firstPixels = [0, 0, 0, 0, ...color, 0, 0, 0, 0, 0, 0, 0, 0];
+      assert.deepEqual(Array.from(await drawPixels(world, surfaceID)), firstPixels);
+      assert.equal(draw.state.pending, false);
+      assert.equal(outputs.length, 1);
+      assert.deepEqual(outputs[0].offset, [2, 1]);
+      assert.equal(outputs[0].region, null, 'force output copies the complete surface');
+      assert.equal(typeof outputs[0].promise?.then, 'function');
+      const alias = world.graphics.images.get(draw.state.renderer.items[0].image),
+        changed = [117, 133, 165, 255];
+      (await alias.pixels()).set(changed);
+      await alias.changed();
+      await call(0x106, [target, 0]);
+      await call(0x216, [target, 0]);
+      await forceOutputCall(world, target);
+      const expected = [0, 0, 0, 0, ...changed, 0, 0, 0, 0, 0, 0, 0, 0];
+      assert.deepEqual(Array.from(await drawPixels(world, surfaceID)), expected);
+      assert.equal(draw.state.enabled, false);
+      assert.equal(outputs.length, 2, 'disabled ordinary output is overridden by this command');
+      const vram = world.graphics.images.get(world.graphics.vramHandle),
+        pixels = await vram.pixels();
+      assert.deepEqual(
+        Array.from(pixels.subarray((vram.width + 2) * 4, (vram.width + 6) * 4)),
+        expected,
+      );
+      const zero = await forceOutputCall(world, 0),
+        missing = await forceOutputCall(world, 0x7f342342);
+      assert.deepEqual(messages.at(-2), [0, zero.id, 292, 0, 0, 0]);
+      assert.deepEqual(messages.at(-1), [0x7f342342, missing.id, 292, 0, 0, 0]);
+      assert.equal(outputs.length, 2);
+      assert.deepEqual(sibling.state, siblingBefore);
+
+      const saved = world.snapshot(),
+        encoded = await serializeCheckpoint(saved),
+        decoded = await deserializeCheckpoint(encoded);
+      fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.runtime.native = () => {
+        throw new Error('Draw restore replayed a native command');
+      };
+      for (const stream of [fresh.random.integer, fresh.random.real])
+        stream.nextUint32 = () => {
+          throw new Error('Draw restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), saved, 'the complete DTO agrees before a warm frame');
+      assert.deepEqual(Array.from(await drawPixels(fresh, surfaceID)), expected);
+      await world.objects.release(surfaceID);
+      assert.equal(world.objects.objects.has(surfaceID), false);
+      assert.deepEqual(Array.from(await drawPixels(fresh, surfaceID)), expected);
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+}
