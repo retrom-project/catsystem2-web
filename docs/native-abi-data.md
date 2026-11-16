@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 816       | 82            | 19            | 92      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 817       | 82            | 19            | 91      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -664,3 +664,36 @@ isolation and ordinary close are checked. The existing Input153 authority,
 canonical98 and every other slot/signature/version gate remain unchanged.
 The supported normal owner domain does not certify arbitrary native pointer
 layouts, all drag/frame variants or complete platform parity.
+
+## Main100 packed color and retained override word
+
+The SDK main100 failure is an explicit unknown-entry admission rejection
+before its installed handler runs. Own SDK5139C0 and Game6412E0 wrappers
+confirm the existing `plane.setColor` descriptor: three words for task, packed
+ARGB and override, control2 and unwritten VM output. Task0 skips before either
+remaining argument is read. Nonzero targets send SDKraw57/Game59 to canonical59
+with w equal to the complete override word, l equal to ARGB and flags0. Only
+SDK100 gains admission; the common signature and route label stay unchanged.
+
+Own SimplePlane routes4BDB16/5E17F6 reach the color manager and its owned
+family1 model. Source leaves55AB00/6844F0 retain the raw override DWORD at+15C
+and packed color at+160. Dirtiness depends on a zero/nonzero category change
+or a changed color; a different nonzero word with the same ARGB is retained
+without dirtying the source. Derived leaves55A630/683AC0 retain both words
+and always dirty. Native Base does not handle this color message, and an
+absent model receives no stored color update.
+
+The current native style's `colorOverride` field now stores DWORD0/1 or the
+complete command word. Existing explicit false/true native stores become0/1;
+renderer truthiness and public render-option APIs retain their contracts.
+There is one stored authority, updated in place with the current checkpoint
+contract. High words remain available after a cold restore. This does not
+introduce a second field, legacy reader or protocol version.
+
+Real dual-profile GCALLs cover raw ARGB/high override, nonzero-word changes,
+source dirty categories, actual namespace routing, a distinct sibling,
+loaded/unloaded and Base boundaries, target0 and skipped-argument reads. VM
+continuation/canaries, cold fullDTO restoration without call replay, fresh
+isolation and close cleanup are checked. The supported owned ordinary Plane
+domain does not certify arbitrary native pointers or every render family or
+pixel variant. All other native admissions and signatures remain unchanged.

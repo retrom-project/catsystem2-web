@@ -237,7 +237,7 @@ export class NativePlaneTrail {
         (color & 0xffffff) | (alpha << 24),
         true,
       );
-      graph.style = { ...this.task.state, trail: null, colorOverride: true };
+      graph.style = { ...this.task.state, trail: null, colorOverride: 1 };
       new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, view.getUint32(8, true), true);
       graph.priority = base[2];
       this.task.graphics.graphs.set(graph.nativeID, graph);

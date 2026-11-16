@@ -4746,7 +4746,7 @@
           "id": 100,
           "hexID": "0x64",
           "semanticName": "plane.setColor",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "plane.setColor",
           "renderRoute": {
             "id": 100,
             "semanticName": "plane.setColor",
@@ -4770,8 +4770,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/graphics.mjs",
           "domain": 6,
@@ -49936,7 +49935,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "103dd64b101c84f8fda50051aeeffa7e79aa66d74023e1e78dc98556110f40fb",
+      "sourceSha256": "227ba488f284e15dcb052e2e66e16ea2fc7f9fe2b26a3644f020aa95ab010d59",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -53035,7 +53034,7 @@
     },
     {
       "file": "src/native/graphics.mjs",
-      "sourceSha256": "7f27876e523af5e78e30d70a60f0c2e179a37ba3fbd85bfbc892424fbda4581f",
+      "sourceSha256": "0485baa5cd67965abaea38ad73ec9a3bc04fa2cdb7842e2d91857baf901ff38f",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54285,7 +54284,7 @@
     },
     {
       "file": "src/native/plane-models.mjs",
-      "sourceSha256": "1985641eacb0dad4761e82ef7f92fbc350812398cfd736ecb05dc25d607fd654",
+      "sourceSha256": "026b9b1a38145401b7abfb33c5a7714ce53ee2de828b133ac90d2f2d5fa4aa74",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

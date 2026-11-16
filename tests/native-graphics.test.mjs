@@ -2200,3 +2200,222 @@ for (const profile of rectangleProfiles)
       }
     }
   });
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main100 GCALL retains raw ARGB and override words in its owned Plane`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'color.kcs': inputEnableProgram(100, 3) },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const targetID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x01000064,
+          name: 'color target',
+        }),
+        siblingID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x01010064,
+          name: 'color sibling',
+        }),
+        unloadedID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x01020064,
+          name: 'unloaded color target',
+        }),
+        baseID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x01030064,
+          name: 'unhandled Base color target',
+        });
+      const targetNative = scene.nativeTaskID(targetID),
+        siblingNative = scene.nativeTaskID(siblingID);
+      assert.notEqual(targetNative, targetID);
+      assert.notEqual(siblingNative, siblingID);
+      for (const nativeID of [targetNative, siblingNative])
+        await scene.sendNativeEngine(nativeID, scene.main.id, 42, 0, 0, {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(20.5),
+            floatBits(12.25),
+            0,
+            0,
+            0xff334455,
+          ]),
+        });
+      const target = scene.objects.objects.get(targetID).implementation,
+        sibling = scene.objects.objects.get(siblingID).implementation,
+        unloaded = scene.objects.objects.get(unloadedID).implementation,
+        base = scene.objects.objects.get(baseID).implementation,
+        graph = target.graph,
+        motion = new DataView(graph.kx2.buffer),
+        siblingBefore = sibling.snapshot(),
+        unloadedBefore = unloaded.snapshot(),
+        baseBefore = base.snapshot(),
+        frame = scene.frame,
+        order = scene.graphics.renderSequence,
+        argb = 0x80402010,
+        high = 0x80000000,
+        calls = [],
+        outer = [],
+        received = [],
+        originalNative = scene.runtime.native,
+        originalSend = scene.sendNativeEngine,
+        originalMark = target.markBoundsDirty;
+      let dirtyCalls = 0;
+      target.markBoundsDirty = function (...args) {
+        dirtyCalls++;
+        return originalMark.apply(this, args);
+      };
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = originalNative.call(this, table, id, ...args);
+        if (table === 'main' && id === 100)
+          calls.push({ args: [...args[0]], sender: args[2].id, reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (id, sender, number, w, l, context) {
+        if (number === 59) outer.push([id, sender, number, w, l, context.flags]);
+        return originalSend.call(this, id, sender, number, w, l, context);
+      };
+      for (const id of [targetID, siblingID, unloadedID, baseID]) {
+        const implementation = scene.objects.objects.get(id).implementation,
+          original = implementation.message;
+        implementation.message = function (words, context, ...rest) {
+          if (words[1] === 59)
+            received.push([id, ...words, context.nativeSenderWorldID, context.flags]);
+          return original.call(this, words, context, ...rest);
+        };
+      }
+      await inputEnableInvoke(scene, 'color.kcs', [targetNative, argb, high]);
+      assert.equal(motion.getUint32(MOTION_ABI.color, true), argb);
+      assert.equal(
+        target.state.colorOverride,
+        high,
+        'The override word is retained rather than reduced to Boolean',
+      );
+      assert.equal(graph.style.colorOverride, high);
+      assert.equal(dirtyCalls, 1);
+      await inputEnableInvoke(scene, 'color.kcs', [targetNative, argb, 1]);
+      assert.equal(target.state.colorOverride, 1);
+      assert.equal(dirtyCalls, 1, 'Equal ARGB and two nonzero modes do not dirty the source model');
+      await inputEnableInvoke(scene, 'color.kcs', [targetNative, argb, 0]);
+      assert.equal(target.state.colorOverride, 0);
+      assert.equal(dirtyCalls, 2, 'The nonzero-to-zero category change dirties the source model');
+      await inputEnableInvoke(scene, 'color.kcs', [targetNative, argb, 0]);
+      assert.equal(dirtyCalls, 2);
+      await inputEnableInvoke(scene, 'color.kcs', [targetNative, 0x4080c0e0, high]);
+      assert.equal(motion.getUint32(MOTION_ABI.color, true), 0x4080c0e0);
+      assert.equal(target.state.colorOverride, high);
+      assert.equal(dirtyCalls, 3);
+      assert.deepEqual(
+        sibling.snapshot(),
+        siblingBefore,
+        'The other registered native identity is unchanged',
+      );
+      await inputEnableInvoke(scene, 'color.kcs', [scene.nativeTaskID(unloadedID), argb, high]);
+      assert.deepEqual(
+        unloaded.snapshot(),
+        unloadedBefore,
+        'An absent owned model receives no color state',
+      );
+      await inputEnableInvoke(scene, 'color.kcs', [scene.nativeTaskID(baseID), argb, high]);
+      assert.deepEqual(
+        base.snapshot(),
+        baseBefore,
+        'Native Base does not handle the color message',
+      );
+      const beforeZero = outer.length,
+        zero = await inputEnableInvoke(scene, 'color.kcs', [0, argb, high]);
+      assert.equal(outer.length, beforeZero, 'A real zero-target GCALL does not dispatch');
+      const lazyArgs = [0];
+      for (const index of [1, 2])
+        Object.defineProperty(lazyArgs, index, {
+          get() {
+            throw new Error('zero target read a skipped color argument');
+          },
+        });
+      assert.deepEqual(await nativeGraphics(100, lazyArgs, zero.machine, zero.task, scene), {
+        control: 2,
+      });
+      const nonzero = calls.filter((call) => call.args[0] !== 0);
+      assert.equal(nonzero.length, outer.length);
+      assert.equal(nonzero.length, received.length);
+      for (let i = 0; i < nonzero.length; i++) {
+        const call = nonzero[i],
+          [id, color, mode] = call.args,
+          sender = scene.objects.objects.get(call.sender),
+          owner = scene.resolveTaskID(id, call.sender);
+        assert.deepEqual(outer[i], [id, call.sender, 59, mode, color, 0]);
+        assert.deepEqual(received[i], [owner, sender.nativeID, 59, mode, color, call.sender, 0]);
+      }
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: calls.length }, () => ({ control: 2 })),
+      );
+      assert.strictEqual(target.graph, graph);
+      assert.equal(scene.graphics.renderSequence, order);
+      assert.equal(scene.frame, frame);
+      const checkpoint = structuredClone(scene.snapshot());
+      fresh = await dataWorld(profile, files, { initialize: false });
+      let restoring = true,
+        replay = 0;
+      const execute = fresh.runtime.scheduler.execute,
+        native = fresh.runtime.native;
+      fresh.runtime.scheduler.execute = function (...args) {
+        if (restoring) replay++;
+        return execute.apply(this, args);
+      };
+      fresh.runtime.native = function (...args) {
+        if (restoring) replay++;
+        return native.apply(this, args);
+      };
+      await fresh.restore(structuredClone(checkpoint));
+      restoring = false;
+      assert.equal(replay, 0);
+      assert.deepEqual(
+        fresh.snapshot(),
+        checkpoint,
+        'Cold full DTO restoration needs no warm frame',
+      );
+      const restored = fresh.objects.objects.get(targetID).implementation;
+      assert.notStrictEqual(restored.graph, graph);
+      assert.equal(restored.state.colorOverride, high);
+      await inputEnableInvoke(fresh, 'color.kcs', [targetNative, 0x7f030201, 0]);
+      assert.equal(
+        new DataView(restored.graph.kx2.buffer).getUint32(MOTION_ABI.color, true),
+        0x7f030201,
+      );
+      assert.equal(restored.state.colorOverride, 0);
+      assert.deepEqual(
+        scene.snapshot(),
+        checkpoint,
+        'Fresh mutation does not change the source owner',
+      );
+      assert.equal(fresh.frame, frame);
+      for (const current of [scene, fresh])
+        assert.ok(!current.nativeEngine && !current.nativeEngineLoading);
+      const entry = nativeABI(profile).tables.main.entries[100];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.setColor');
+      assert.equal(entry.signature.argumentWords, 3);
+      assert.equal(entry.signature.parameters[1].name, 'colorARGB');
+      assert.equal(entry.signature.parameters[2].name, 'override');
+      assert.deepEqual(entry.signature.parameters[2].type, { bits: 32, kind: 'bits' });
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[97].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[108].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await fresh?.close();
+      await scene.close();
+      assert.equal(scene.graphics.tasks.size, 0);
+      if (fresh) assert.equal(fresh.graphics.tasks.size, 0);
+    }
+  });

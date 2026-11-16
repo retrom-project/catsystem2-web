@@ -538,7 +538,7 @@ export class NativeGraphicTask {
       drawType: 0,
       shapeWords: [],
       blendMode: 0,
-      colorOverride: false,
+      colorOverride: 0,
       coordMode: 0,
       vramType: 1,
       after: null,
@@ -696,7 +696,7 @@ export class NativeGraphicTask {
     // to that model, while textured rectangles have separate UV transforms.
     if (shape.type === 2 || shape.type === 7) this.graph.textureTransform = this.graph.kx2;
     this.state.rect = [0, 0, Math.abs(shape.width), Math.abs(shape.height)];
-    this.state.colorOverride = false;
+    this.state.colorOverride = 0;
     this.state.drawType = shape.type;
     this.sync();
   }
@@ -1005,12 +1005,12 @@ export class NativeGraphicTask {
           if (
             this.ownsTexturedBounds() ||
             view.getUint32(MOTION_ABI.color, true) !== l >>> 0 ||
-            this.state.colorOverride !== Boolean(w)
+            Boolean(this.state.colorOverride) !== Boolean(w)
           )
             this.markBoundsDirty();
           view.setUint32(MOTION_ABI.color, l, true);
+          this.state.colorOverride = w >>> 0;
         }
-        this.state.colorOverride = Boolean(w);
         this.sync();
         return 0;
       case 60:
@@ -1059,7 +1059,7 @@ export class NativeGraphicTask {
             this.markBoundsDirty();
           view.setUint32(MOTION_ABI.color, next, true);
         }
-        this.state.colorOverride = true;
+        this.state.colorOverride = 1;
         this.sync();
         return 0;
       case 66:
@@ -1119,7 +1119,7 @@ export class NativeGraphicTask {
         });
         this.state.rect = rect;
         this.state.drawType = drawType;
-        this.state.colorOverride = true;
+        this.state.colorOverride = 1;
         return 0;
       }
       case 84:
