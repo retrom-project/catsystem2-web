@@ -133,6 +133,10 @@ export function installNativeInputCommands(world) {
         await world.sendNativeEngine(input, task.id, 157, 0, 0, { flags: 0 });
         return nativeReply(2);
       }
+      if (id === 0x18a && !world.nativeEngine && !world.nativeEngineLoading) {
+        await world.sendNativeEngine(args[0], task.id, 97, 0, args[1], { flags: 0 });
+        return nativeReply(2);
+      }
       return (await world.getNativeFeature('input-commands')).apply(id, args, machine, task);
     });
 }

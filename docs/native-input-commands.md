@@ -1,11 +1,28 @@
 # Plane registration, input-owner query, bitmap mask and wheel reset
 
-Main `5F` and `18A` execute their complete original wrappers. Root queries
-use the caller's Top namespace; SDK's Root range remains distinct from its
-ordinary two-slot message offset. Source bitmap aliases share their original
-backing, and the wrapper passes that actual pointer to the plane's alpha-mask
-service. The mask helper runs in the original engine and owns a separate copy
-of the resulting packed bits.
+Main `5F` executes its complete original wrapper. With an explicit original
+engine or loading owner, `18A` retains its original wrapper and mask helper.
+Root queries use the caller's Top namespace; SDK's Root range remains distinct
+from its ordinary two-slot message offset. Original bitmap aliases share their
+backing, and the wrapper passes its first DWORD to the plane's alpha-mask
+service, which owns a separate copy of the resulting packed bits.
+
+In a normal World without that original owner, `18A` takes a native task ID
+and an owned typed bitmap handle. It sends canonical Plane97 (SDK raw95), with
+zero wParam and transport flags and the bitmap handle in lParam. Task0 is
+still dispatched in the caller's real Top namespace; bitmap0 clears the mask.
+Control2 leaves the VM result unwritten. The original Game649070/SDK515840
+wrappers and their first-DWORD getters establish the corresponding pointer
+packet; a JS bitmap handle is not cast to a native wrapper or pixel pointer.
+
+The existing NativeImages alias/dataHandle authority and Plane97 mask service
+sample canvas dimensions and source offsets. Nonzero 32BPP alpha produces
+packed bits in low-bit-first order, copied into the Input region. Releasing
+both source and alias does not free that copied mask. A fresh World restores
+its own copy, and clearing it leaves the prior World unchanged. The normal
+GCALL tests cover this owned 32BPP domain; the already reviewed 24BPP helper
+domain is unchanged. No second bitmap table, new codec or automatic original
+backend is introduced.
 
 In a normal World, `3A9` queries the caller's actual Top for its InputTask, then
 sends that task the wheel-cancel message. Both envelopes keep zero flags, wParam

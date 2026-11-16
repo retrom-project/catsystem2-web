@@ -18,7 +18,7 @@
   },
   "testMigration": {
     "targets": { "oracle": 33, "differential": 51, "js": 23 },
-    "counts": { "js": 320, "oracle": 149, "differential": 67 },
+    "counts": { "js": 321, "oracle": 149, "differential": 67 },
     "groups": {
       "js": [
         "tests/audio-contracts.test.mjs",
@@ -250,6 +250,7 @@
         "tests/native-image.test.mjs",
         "tests/native-input-active-default.test.mjs",
         "tests/native-input-bindings.test.mjs",
+        "tests/native-input-bitmap-mask-normal.test.mjs",
         "tests/native-input-route-context.test.mjs",
         "tests/native-input-wheel-default.test.mjs",
         "tests/native-input.test.mjs",
@@ -53401,7 +53402,7 @@
     },
     {
       "file": "src/native/input-commands.mjs",
-      "sourceSha256": "5ee5eca5553e430ba0ff65da566872effbc39c2feb67a8c777429c15346a071d",
+      "sourceSha256": "adde2561d098a4834945772cd81ad7e0ab39b1bc1a1d51795d579b5fb3f98005",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 8, "calls": 2, "references": 0 },
@@ -53467,7 +53468,14 @@
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 136,
+          "line": 137,
+          "method": "sendNativeEngine",
+          "feature": null,
+          "review": "needs-review",
+          "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
+        },
+        {
+          "line": 140,
           "method": "getNativeFeature",
           "feature": "input-commands",
           "review": "needs-review",
