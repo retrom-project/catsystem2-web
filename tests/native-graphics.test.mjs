@@ -260,7 +260,7 @@ function rectangleDeclaration(profile) {
   assert.deepEqual(entry.controlCodes, [2]);
   assert.equal(entry.signature.result.kind, 'void');
   assert.equal(entry.signature.resultWritten, false);
-  for (const id of [109, 455, 467])
+  for (const id of [109, 361, 467])
     assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
   assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
 }
@@ -703,7 +703,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.kind, 'float');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 455, 467])
+      for (const id of [109, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -921,7 +921,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.bits, 32);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 455, 467])
+      for (const id of [109, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -1216,7 +1216,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[6].name, 'bindingWord');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 455, 467])
+      for (const id of [109, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -2568,7 +2568,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(scene.snapshot(), checkpoint, 'the source owner is isolated');
       assert.equal(nativeABI(profile).tables.main.entries[108].name, 'plane.setInputReturn');
       assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[455].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[361].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
       for (const current of [scene, fresh])
         assert.ok(!current.nativeEngine && !current.nativeEngineLoading);

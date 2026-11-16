@@ -673,3 +673,196 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       await scene.close();
     }
   });
+
+const captureBaseCode = kcsProgram([
+  [37, forceOutputSentinel],
+  [37, [0x13, 128]],
+  [37, [0x13, 132]],
+  [43, 455, 8],
+  [37, 73],
+  [38, [0x13, 512]],
+  [59],
+]);
+async function captureBaseCall(world, target, bitmap, nativeID) {
+  const id = await world.objects.create({
+      kind: 12,
+      parent: world.main.id,
+      nativeID,
+      name: 'base capture caller',
+    }),
+    record = world.objects.objects.get(id);
+  await record.implementation.loadScript('capture.kcs');
+  const task = record.implementation.task,
+    machine = task.machine,
+    sp = machine.sp;
+  machine.store(128, target);
+  machine.store(132, bitmap);
+  machine.bytes(800, 8).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.halted, true);
+  assert.equal(machine.load(512), 73);
+  assert.equal(machine.pop(), forceOutputSentinel);
+  assert.equal(machine.sp, sp);
+  assert.deepEqual([...machine.bytes(800, 8)], Array(8).fill(0xa5));
+  return task;
+}
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(`${profile} main455 GCALL captures owned base pixels and hides without releasing the copy`, async () => {
+    const files = { 'case.kcs': kcsProgram([[59]]), 'capture.kcs': captureBaseCode },
+      scene = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const surfaceID = await scene.objects.create({
+          kind: 15,
+          parent: scene.main.id,
+          nativeID: 0x01c70001,
+        }),
+        target = scene.nativeTaskID(surfaceID),
+        draw = scene.graphics.drawTasks.get(surfaceID);
+      assert.notEqual(surfaceID, target);
+      await scene.runtime.native('main', 0x100, [target, 4, 3], scene.main.machine, scene.main);
+      await scene.runtime.native('main', 0x104, [target, 0, 0], scene.main.machine, scene.main);
+      const image = scene.graphics.images.create(2, 2),
+        source = scene.graphics.images.get(image);
+      await source.fill(0, 0, 2, 2, 0xff123456);
+      const traces = [],
+        replies = [],
+        send = scene.sendNativeEngine,
+        native = scene.runtime.native;
+      scene.sendNativeEngine = function (destination, sender, id, w, l, context = {}) {
+        const trace =
+          id === 296 ? { destination, sender, id, w, l, flags: context.flags ?? 0 } : null;
+        if (trace) traces.push(trace);
+        const reply = send.call(this, destination, sender, id, w, l, context);
+        if (trace) trace.reply = reply;
+        return reply;
+      };
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 455) replies.push(reply);
+        return reply;
+      };
+      const first = await captureBaseCall(scene, target, image, 0x01c71000),
+        captured = draw.state.baseImage;
+      assert.notEqual(first.id, scene.nativeTaskID(first.id));
+      assert.notEqual(captured, image);
+      assert.deepEqual(
+        traces.map(({ destination, sender, id, w, l, flags }) => [
+          destination,
+          sender,
+          id,
+          w,
+          l,
+          flags,
+        ]),
+        [[target, first.id, 296, 0, image, 0]],
+      );
+      assert.equal(typeof traces[0].reply.then, 'function');
+      assert.equal(draw.state.baseVisible, true);
+      assert.equal(scene.graphics.get(draw.state.basePlane).state.shown, true);
+      await source.fill(0, 0, 2, 2, 0xffabcdef);
+      await scene.graphics.images.release(image);
+      assert.equal(scene.runtime.handles.records.has(image), false);
+      await draw.render();
+      const expected = [
+        18, 52, 86, 255, 18, 52, 86, 255, 0, 0, 0, 0, 0, 0, 0, 0, 18, 52, 86, 255, 18, 52, 86, 255,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ];
+      assert.deepEqual([...(await drawPixels(scene, surfaceID))], expected);
+      const hidden = await captureBaseCall(scene, target, 0, 0x01c71001);
+      assert.deepEqual(
+        [
+          traces.at(-1).destination,
+          traces.at(-1).sender,
+          traces.at(-1).w,
+          traces.at(-1).l,
+          traces.at(-1).flags,
+        ],
+        [target, hidden.id, 0, 0, 0],
+      );
+      assert.equal(draw.entry(0), undefined);
+      assert.equal(draw.state.baseVisible, false);
+      assert.equal(scene.graphics.get(draw.state.basePlane).state.shown, false);
+      assert.equal(draw.state.baseImage, captured, 'zero retains the private base bitmap');
+      assert.equal(scene.runtime.handles.records.has(captured), true);
+      assert.deepEqual(
+        [...(await scene.graphics.images.get(captured).pixels())],
+        [18, 52, 86, 255, 18, 52, 86, 255, 18, 52, 86, 255, 18, 52, 86, 255],
+      );
+      const replacement = scene.graphics.images.create(1, 1);
+      await scene.graphics.images.get(replacement).fill(0, 0, 1, 1, 0xff224466);
+      await captureBaseCall(scene, target, replacement, 0x01c71002);
+      const current = draw.state.baseImage;
+      assert.notEqual(current, captured);
+      assert.equal(scene.runtime.handles.records.has(captured), false);
+      await scene.graphics.images.release(replacement);
+      await scene.runtime.native('main', 341, [target], scene.main.machine, scene.main);
+      assert.deepEqual(
+        draw.state.renderer.items.map((item) => item.key),
+        [0],
+      );
+      await draw.render();
+      const pixels = [...(await drawPixels(scene, surfaceID))];
+      assert.deepEqual(pixels, [34, 68, 102, 255, ...Array(44).fill(0)]);
+      const before = draw.snapshot(),
+        zero = await captureBaseCall(scene, 0, 0x80000000, 0x01c71003),
+        missing = await captureBaseCall(scene, 0x7fffffff, 0xffffffff, 0x01c71004);
+      assert.deepEqual(
+        traces
+          .slice(-2)
+          .map(({ destination, sender, id, w, l, flags }) => [
+            destination,
+            sender,
+            id,
+            w,
+            l,
+            flags,
+          ]),
+        [
+          [0, zero.id, 296, 0, 0x80000000, 0],
+          [0x7fffffff, missing.id, 296, 0, 0xffffffff, 0],
+        ],
+      );
+      assert.deepEqual(draw.snapshot(), before, 'unhandled targets cannot invent a bitmap owner');
+      assert.deepEqual(
+        await Promise.all(replies),
+        Array.from({ length: 5 }, () => ({ control: 2 })),
+      );
+      const dto = scene.snapshot(),
+        decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
+      fresh = await dataWorld(profile, files, { initialize: false });
+      const freshNative = fresh.runtime.native;
+      fresh.runtime.native = () => {
+        throw new Error('Base-image cold restore replayed a native command');
+      };
+      for (const stream of [fresh.random.integer, fresh.random.real])
+        stream.nextUint32 = () => {
+          throw new Error('Base-image cold restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), dto, 'the entire DTO agrees before any warm frame');
+      assert.deepEqual([...(await drawPixels(fresh, surfaceID))], pixels);
+      assert.notStrictEqual(
+        fresh.graphics.images.get(current).state.rgba,
+        scene.graphics.images.get(current).state.rgba,
+      );
+      fresh.runtime.native = freshNative;
+      await captureBaseCall(fresh, target, 0, 0x01c71005);
+      assert.equal(fresh.graphics.drawTasks.get(surfaceID).state.baseVisible, false);
+      assert.equal(draw.state.baseVisible, true);
+      assert.equal(fresh.runtime.handles.records.has(current), true);
+      const basePlane = draw.state.basePlane;
+      await scene.objects.release(surfaceID);
+      assert.equal(scene.runtime.handles.records.has(current), false);
+      assert.equal(scene.objects.objects.has(basePlane), false);
+      assert.equal(fresh.objects.objects.has(surfaceID), true);
+      assert.deepEqual([...(await drawPixels(fresh, surfaceID))], pixels);
+      assert.equal(scene.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await scene.close();
+      if (fresh) assert.equal(fresh.graphics.drawTasks.size, 0);
+      assert.equal(scene.graphics.drawTasks.size, 0);
+    }
+  });

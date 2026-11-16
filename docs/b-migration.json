@@ -11949,7 +11949,7 @@
           "id": 455,
           "hexID": "0x1c7",
           "semanticName": "draw.copyBase",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.copyBaseImage",
           "renderRoute": {
             "id": 455,
             "semanticName": "draw.copyBase",
@@ -11973,8 +11973,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -49936,7 +49935,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "5d0dd0ebe8762c8febd432d5877d4e1c771c425f305d88edd2577dbe8d727e99",
+      "sourceSha256": "95d96a137ae255e4b062b04d317796c923366722d55cb6ce1350354d1decd883",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

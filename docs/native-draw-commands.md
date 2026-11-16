@@ -99,3 +99,26 @@ The shared RNG and all 18 ANM opcodes are compared against both retained
 oracles. Integer, MASK, BTYPE and affine CPU drawing use the 43 frozen cases
 with exact CPU and VRAM bytes. Additional RGB24, format-dispatch and nonfinite
 integer-coordinate cases compare directly with both original managers.
+
+Main `1C7` (`draw.copyBaseImage`) takes a native Draw task ID and a bitmap
+handle. Its own SDK `51CE90` and Game `644850` wrappers send SDK message291 /
+canonical message296 with zero `w` and flags, preserving the bitmap word.
+A zero target still enters the caller's Top namespace. Both wrappers return
+control2 without writing the VM result; their initialized transport-output
+scratch is separate from the VM stack. The SDK slot is independently admitted.
+
+For an initialized Draw surface and a valid owned bitmap, the existing Draw
+and NativeImages owners make a private deep copy, bind key0 and show the real
+base Plane. Passing bitmap0 removes key0 and hides that Plane while retaining
+the private copy. Entry clearing can reinsert the copy; replacement releases
+the previous private bitmap, and Draw close releases its own resources.
+The bitmap handle belongs to the image service, separately from native task
+IDs and caller World IDs. This admission adds no pointer aliases, crop packet
+variant or malformed-resource fallback.
+
+The dual-profile GCALL tests retain literal bitmap pixels after source mutation
+and release, check zero/missing target transport, raw high words, the unchanged
+VM result/stack, real base visibility, replacement and close. Full checkpoint
+codec restore into a fresh World agrees before a warm frame and replays no
+native command or RNG. These focused tests do not claim the SDK tutorial case
+or an unobserved target's native task kind has passed.
