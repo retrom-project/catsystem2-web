@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 812       | 82            | 19            | 96      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 813       | 82            | 19            | 95      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -549,3 +549,29 @@ from SDK515770 and its own receiver chain, independently of Game648FA0. All othe
 slots, signatures, stubs and version gates stay unchanged; SDK78/455/467 and
 Game467 remain unknown. This does not claim rendered pixels or all Plane/drag
 platform behavior.
+
+## Main105 input enabled word
+
+Main105 is `plane.setInputEnabled(task, enabled)`, independently established by
+SDK5156A0 and Game648ED0. The two-word wrappers dispatch SDK raw90/Game92 to the
+same canonical92, with w0, l equal to the complete enabled DWORD and transport
+flags0. They dispatch legitimate task0 as well; control2 leaves the VM output
+unwritten. The existing Main97 catalog label `plane.setColor` is unchanged;
+both per-version Main97 entries remain unknown. Only SDK105 is newly admitted;
+other slots, signatures, table lengths and version gates stay unchanged,
+including SDK106/455/467 and Game467 unknown.
+
+The bound Base receiver and loaded SimplePlane delegate to the existing Input
+owner service. Input134 preserves the raw enabled DWORD on the first matching
+region and marks Input changed even if the owner is no longer registered.
+Exactly zero additionally invokes Input132 to clear all active records for that
+same owner; another owner's active word is retained. A nonzero enabled word
+leaves active unchanged. An unbound receiver does not access Input. The service
+uses the existing World owner identity and region authority, without a second
+state table or Boolean conversion.
+
+Real Script GCALLs through both registered profiles cover actual Main104 binding,
+Base and loaded SimplePlane enabled words, duplicate and removed registrations,
+legitimate task0 dispatch, literal messages, void stack/canaries, fresh checkpoint
+isolation and owner cleanup. These are ordinary JS receiver contracts, not a claim
+about native stack addresses, pixels or all Plane/Input operations.

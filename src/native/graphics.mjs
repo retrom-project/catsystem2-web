@@ -1172,11 +1172,12 @@ export class NativeGraphicTask {
         this.state.changed = l;
         return 0;
       case 92: {
-        const region = this.input?.get(this.record.id);
-        if (this.state.receiver !== -1 && region) {
-          region.enabled = Boolean(l);
-          if (!l) region.active = false;
-          this.input.changed = true;
+        if (this.state.receiver !== -1) {
+          if (!this.input?.message)
+            throw new Error('Native plane input enable service is unavailable');
+          const inputContext = { flags: context.flags ?? 0 };
+          await this.input.message(134, this.record.id, l, inputContext);
+          if (!l) await this.input.message(132, this.record.id, 0, inputContext);
         }
         return 0;
       }
@@ -1524,7 +1525,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();
   }
-  if (!args[0] && id !== 0x68) return [0x59, 0x62].includes(id) ? value(0) : done();
+  if (!args[0] && id !== 0x68 && id !== 0x69) return [0x59, 0x62].includes(id) ? value(0) : done();
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>
       world.sendNativeEngine(args[0], task.id, message, w, l, {

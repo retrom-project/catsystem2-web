@@ -3808,7 +3808,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     105: {
-      name: 'plane.setColor',
+      name: 'plane.setInputEnabled',
       family: 'plane',
       signature: {
         argumentWords: 2,
@@ -3824,8 +3824,8 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word color',
-            name: 'color',
+            description: 'word enabled',
+            name: 'enabled',
             type: {
               bits: 32,
               kind: 'bits',
