@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsDevice } from './graphics-device.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 // Native task graphics own graph state; construction alone does not load a
 // graph. Message contracts come from 5DF010/5E0920 and renderer graph setters.
 import { Stage } from '../stage.mjs';
@@ -862,7 +863,16 @@ export class NativeGraphicTask {
         });
         return 0;
       case 46: {
-        const a = Array.from({ length: 10 }, (_, i) => load(l + i * 4));
+        if (this.state.vramType !== 1)
+          throw new Error('Tiled planes require the reviewed ordinary mode1 backend');
+        const a = Array.from({ length: 10 }, (_, i) => load(l + i * 4)),
+          geometry = floats(l, 5),
+          columns = nativeEngineWord(a[8], 'Tile column count') | 0,
+          rows = nativeEngineWord(a[9], 'Tile row count') | 0;
+        if (!geometry.every(Number.isFinite))
+          throw new Error('Tiled planes require finite ordinary geometry');
+        this.unregisterGraph();
+        this.state.shapeWords = a;
         this.makeGraph({
           type: 5,
           registrationEnabled: false,
@@ -871,8 +881,8 @@ export class NativeGraphicTask {
           triangles: [],
           vram: false,
         });
-        for (let row = 0; row < (a[9] | 0); row++)
-          for (let column = 0; column < (a[8] | 0); column++) {
+        for (let row = 0; row < rows; row++)
+          for (let column = 0; column < columns; column++) {
             const id = await this.world.objects.create({
                 kind: 2,
                 parent: this.record.id,
@@ -880,12 +890,14 @@ export class NativeGraphicTask {
               }),
               child = this.graphics.get(id);
             await child.message([this.record.nativeID, 41, 0, 0], {
-              payload: new NativeGraphicsPacket([0, 0, 0, ...a.slice(3, 8)]),
+              payload: new NativeGraphicsPacket([0, 0, 0, ...a.slice(3, 8)], {
+                unwritten: [5, 6, 7].filter((index) => a[index] === undefined),
+              }),
             });
             await child.message([this.record.nativeID, 53, 0, 0], {
               payload: new NativeGraphicsPacket([
-                floatBits(Math.fround(bitsFloat(a[0]) + Math.fround(column * bitsFloat(a[3])))),
-                floatBits(Math.fround(bitsFloat(a[1]) + Math.fround(row * bitsFloat(a[4])))),
+                floatBits(Math.fround(geometry[0] + Math.fround(column * geometry[3]))),
+                floatBits(Math.fround(geometry[1] + Math.fround(row * geometry[4]))),
                 a[2],
               ]),
             });

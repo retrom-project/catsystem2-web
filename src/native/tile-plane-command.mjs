@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
+import { NativeGraphicsPacket } from './graphics-task.mjs';
 // Execute the original tiled SimplePlane KCS packet producer.
 import { nativeReply } from '../kcs/vm.mjs';
 
@@ -95,12 +96,28 @@ export class NativeTilePlaneCommand {
   }
 }
 
+async function ordinaryTilePlaneCommand(world, args, machine, task) {
+  const word = (index) => args[index] ?? machine.nativeArgument(index),
+    target = word(0);
+  if (!target) return nativeReply(2);
+  const payload = new NativeGraphicsPacket(
+    [0, 0, 0, word(1), word(2), undefined, undefined, undefined, word(3), word(4)],
+    { unwritten: [5, 6, 7] },
+  );
+  await world.sendNativeEngine(target, task.id, 46, 0, 0, { payload, flags: 0 });
+  return nativeReply(2);
+}
+
 export function installNativeTilePlaneCommand(world) {
   world.registerNativeFeature(
     'tile-plane-command',
     (engine) => new NativeTilePlaneCommand(engine, world),
   );
-  world.runtime.register('main', NATIVE_TILE_PLANE_COMMAND.id, async (args, machine, task) =>
-    (await world.getNativeFeature('tile-plane-command')).apply(args, machine, task),
+  world.runtime.register('main', NATIVE_TILE_PLANE_COMMAND.id, (args, machine, task) =>
+    world.nativeEngine || world.nativeEngineLoading
+      ? world
+          .getNativeFeature('tile-plane-command')
+          .then((feature) => feature.apply(args, machine, task))
+      : ordinaryTilePlaneCommand(world, args, machine, task),
   );
 }
