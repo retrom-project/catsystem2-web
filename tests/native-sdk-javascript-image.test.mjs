@@ -76,6 +76,8 @@ function fixture(source = program, delay = false, drawing = false) {
         ],
       ),
       'image.js': new TextEncoder().encode(source),
+      'mot.int/ppos.kcs': ownedPoseScript('position'),
+      'mot.int/pdisp.kcs': ownedPoseScript('display'),
       'plain.hg3': authoredHG3([
         {
           width: 2,
@@ -1552,6 +1554,147 @@ test('normal SDK CsImage publishes through its real Draw target and finite Plane
 function hostImageByName(world, name) {
   return world.runtime.handles.get(cell(world, name).hostObject, 'javascript-image');
 }
+
+// Authored semantic equivalents of the independently inspected one-update MOTs.
+// No private bytecode is embedded in this fixture.
+function ownedPoseScript(field) {
+  const code = [];
+  if (field === 'position')
+    for (let i = 0; i < 3; i++)
+      code.push(
+        [
+          21,
+          [0x04, 0x80000000 + MOTION_ABI.pos + i * 4],
+          [0x14, 0x80000000 + MOTION_ABI.registers + i * 4],
+        ],
+        [45],
+      );
+  else
+    code.push(
+      [56, [0x14, 0x80000000 + MOTION_ABI.registers]],
+      [38, [0x03, 0x80000000 + MOTION_ABI.display]],
+    );
+  return kcsProgram([...code, [43, 38, 0], [59]]);
+}
+
+const setterProgram = [
+  'var img=new CsImage(), pl=new CsPlane(6,4,2,1,7), alias=pl;',
+  'img.setPlane(pl); img.setBaseType("scene"); img.load("plain.hg3");',
+  'var initial=cfIsExecMotion(pl), a=pl.setPos(10,20,30);',
+  'var positionPending=cfIsExecMotion(pl); pl.setPos(11);',
+  'var omittedPending=cfIsExecMotion(pl); pl.setDisp(1);',
+  'var displayPending=cfIsExecMotion(pl); img.setPos(4,4,0);',
+  'var imagePending=cfIsExecMotion(); img.setDisp(1); var assigned=(img.disp=0);',
+  'var selected=false, total=false;',
+  'function query(){selected=cfIsExecMotion(pl); total=cfIsExecMotion();}',
+  'function omit(){pl.setPos();}',
+  'function GameLoop(frame){}',
+].join('\n');
+
+test('normal SDK setters retain same-callback MOT activity and pre-update omitted coordinates', async () => {
+  const f = fixture(setterProgram, false, true);
+  try {
+    await f.world.initialize('main.kcs');
+    assert.equal(cell(f.world, 'initial'), false);
+    assert.equal(cell(f.world, 'positionPending'), true);
+    assert.equal(cell(f.world, 'omittedPending'), true);
+    assert.equal(cell(f.world, 'displayPending'), true);
+    assert.equal(cell(f.world, 'imagePending'), true);
+    assert.equal(cell(f.world, 'a'), undefined);
+    assert.equal(cell(f.world, 'assigned'), 0);
+    const image = hostImageByName(f.world, 'img'),
+      graph = planeTask(f.world, 'pl').implementation.graph;
+    assert.deepEqual(motionVector(graph.kx2, MOTION_ABI.pos), [11, 20, 30]);
+    assert.deepEqual(image.position, [4, 4, 0]);
+    assert.equal(image.display, 0, 'the property store is immediate');
+    assert.equal(planeTask(f.world, 'pl').implementation.state.shown, false);
+    await f.world.tick();
+    assert.equal(image.display, 1, 'the earlier pending setDisp MOT writes on the object phase');
+    assert.equal(planeTask(f.world, 'pl').implementation.state.shown, true);
+    await invokeImageGuest(f.world, 'query');
+    assert.equal(cell(f.world, 'selected'), false);
+    assert.equal(cell(f.world, 'total'), false);
+    const expected = new Uint8ClampedArray(12 * 9 * 4);
+    expected.set(red, (3 * 12 + 4) * 4);
+    assert.deepEqual(
+      flipBitmapRows(
+        await f.world.graphics.images.get(drawingTask(f.world).state.renderer.bitmap).pixels(),
+        12,
+        9,
+      ),
+      expected,
+    );
+    await invokeImageGuest(f.world, 'omit');
+    await invokeImageGuest(f.world, 'query');
+    assert.equal(cell(f.world, 'selected'), true, 'even an all-omitted setter adds a real MOT');
+    await f.world.tick();
+    assert.deepEqual(motionVector(graph.kx2, MOTION_ABI.pos), [11, 20, 30]);
+    await invokeImageGuest(f.world, 'query');
+    assert.equal(cell(f.world, 'total'), false);
+    assert.equal(f.events.original, 0);
+  } finally {
+    await f.world.close();
+  }
+});
+
+test('normal SDK pending Image and Plane setters restore cold without replay or shared owners', async () => {
+  const first = fixture(setterProgram, false, true),
+    fresh = fixture(setterProgram, false, true);
+  try {
+    await first.world.initialize('main.kcs');
+    assert.equal(cell(first.world, 'displayPending'), true);
+    assert.equal(cell(first.world, 'imagePending'), true);
+    const dto = structuredClone(first.world.snapshot());
+    assertData(dto);
+    let commands = 0,
+      draws = 0;
+    const execute = fresh.world.runtime.scheduler.execute;
+    fresh.world.runtime.scheduler.execute = function (...args) {
+      commands++;
+      return execute.apply(this, args);
+    };
+    for (const stream of [fresh.world.random.integer, fresh.world.random.real]) {
+      const next = stream.nextUint32;
+      stream.nextUint32 = function (...args) {
+        draws++;
+        return next.apply(this, args);
+      };
+    }
+    await fresh.world.restore(structuredClone(dto));
+    assert.deepEqual(
+      fresh.world.snapshot(),
+      dto,
+      'complete DTO equality precedes every warm frame',
+    );
+    assert.equal(commands, 0);
+    assert.equal(draws, 0);
+    assert.deepEqual(fresh.events.native, []);
+    assert.deepEqual(fresh.events.packets, []);
+    assert.deepEqual(fresh.events.reads, ['main.kcs', 'mot.int/pDisp.kcs']);
+    assert.deepEqual(cell(fresh.world, 'pl'), cell(fresh.world, 'alias'));
+    const firstImage = hostImageByName(first.world, 'img'),
+      image = hostImageByName(fresh.world, 'img');
+    assert.notEqual(image, firstImage);
+    await first.world.objects.release(task(first.world).id);
+    assert.equal(
+      [...first.world.runtime.handles.records.values()].some((r) => r.type === 'motion-manager'),
+      false,
+    );
+    await invokeImageGuest(fresh.world, 'query');
+    assert.equal(cell(fresh.world, 'selected'), true);
+    assert.equal(cell(fresh.world, 'total'), true);
+    await fresh.world.tick();
+    assert.deepEqual(planePosition(fresh.world, 'pl'), [11, 20, 30]);
+    assert.equal(image.display, 1);
+    assert.equal(drawingTask(fresh.world).state.renderer.items[0].visible, true);
+    await invokeImageGuest(fresh.world, 'query');
+    assert.equal(cell(fresh.world, 'total'), false);
+    assert.equal(first.events.original + fresh.events.original, 0);
+  } finally {
+    await first.world.close();
+    await fresh.world.close();
+  }
+});
 test('normal SDK CsImage Draw aliases cold restore and detach without releasing borrowed owners', async () => {
   const first = fixture(drawingProgram, false, true),
     fresh = fixture(drawingProgram, false, true);

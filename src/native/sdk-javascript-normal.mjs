@@ -173,12 +173,13 @@ export class NormalSDKJavaScriptTask {
           location,
           'cfIsExecMotion selectors',
         );
-      // These are the current Context's supported type1 objects, not Graph kinds.
-      // CsImage has no enabled MOT methods; its accepted constructor leaves its
-      // manager empty. CsPlane uses its real object-local manager below.
+      // These are the Context's real object-local MOT managers, not Graph kinds.
       for (const record of this.world.runtime.handles.records.values()) {
         if (record.value?.owner !== this.record.id) continue;
-        if (record.type === 'javascript-plane' && this.planes.busy(record.value))
+        if (
+          (record.type === 'javascript-plane' && this.planes.busy(record.value)) ||
+          (record.type === 'javascript-image' && this.images.busy(record.value))
+        )
           return { value: true };
       }
       return { value: false };
@@ -250,7 +251,7 @@ export class NormalSDKJavaScriptTask {
     // Native 50FA7F still runs this object phase after this callback's cfExit.
     if (!this.closed) {
       await this.planes.tick(frame >>> 0);
-      await this.images.tick(this.link);
+      await this.images.tick(this.link, frame >>> 0);
     }
   }
   snapshot() {
@@ -313,6 +314,7 @@ export class NormalSDKJavaScriptTask {
     this.planes.validate(planes);
     this.sounds.validate(sounds);
     await this.planes.restoreMotions();
+    await this.images.restoreMotions();
   }
   async close() {
     this.closed = true;

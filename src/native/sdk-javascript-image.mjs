@@ -4,15 +4,11 @@ import { scriptError } from '../javascript/program.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { floatBits } from '../kcs.mjs';
-import { MOTION_ABI, motionVector } from '../motion/abi.mjs';
+import { MOTION_ABI, motionVector, setMotionVector, initialMotionObject } from '../motion/abi.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
+import { SDKJavaScriptMotions } from './sdk-javascript-motion.mjs';
 
-export class SDKJavaScriptImages {
-  constructor(world, owner) {
-    this.world = world;
-    this.owner = owner;
-    this.closed = false;
-  }
+export class SDKJavaScriptImages extends SDKJavaScriptMotions {
   records() {
     return [...this.world.runtime.handles.records].filter(
       ([, record]) => record.type === 'javascript-image' && record.value.owner === this.owner.id,
@@ -51,6 +47,25 @@ export class SDKJavaScriptImages {
     const image = this.world.runtime.handles.get(reference.hostObject, 'javascript-image');
     if (image.owner !== this.owner.id) throw new Error('JavaScript image belongs to another owner');
     return image;
+  }
+  motionOwner() {
+    return this.owner.id;
+  }
+  modelState(image) {
+    const state = initialMotionObject();
+    setMotionVector(state, MOTION_ABI.pos, image.position);
+    setMotionVector(state, MOTION_ABI.base, [image.x, image.y, 0]);
+    new DataView(state.buffer).setUint32(MOTION_ABI.display, image.display, true);
+    return state;
+  }
+  async publish(image, state) {
+    image.position = motionVector(state, MOTION_ABI.pos);
+    [image.x, image.y] = motionVector(state, MOTION_ABI.base);
+    image.display = new DataView(state.buffer, state.byteOffset, state.byteLength).getUint32(
+      MOTION_ABI.display,
+      true,
+    );
+    image.dirty = true;
   }
   host(operation, args, location) {
     this.checkOpen();
@@ -125,8 +140,8 @@ export class SDKJavaScriptImages {
       return {
         wait: {
           image: operation.receiver.hostObject,
-          operation: 'display',
-          value: args.length ? Number(Boolean(args[0])) : image.display,
+          operation: operation.assignment ? 'display' : 'motionDisplay',
+          ...(operation.assignment ? { value: Number(Boolean(args[0])) } : { args: [...args] }),
         },
       };
     }
@@ -176,13 +191,12 @@ export class SDKJavaScriptImages {
       }
       return undefined;
     }
-    if (request.operation === 'position') {
-      request.args.forEach((value, i) => {
-        image.position[i] = value;
-      });
-      image.dirty = true;
-      return undefined;
-    }
+    if (request.operation === 'position' || request.operation === 'motionDisplay')
+      return this.completePose(
+        image,
+        request.operation === 'position' ? 'setPos' : 'setDisp',
+        request.args,
+      );
     if (request.operation === 'display') {
       image.display = request.value;
       image.dirty = true;
@@ -220,10 +234,11 @@ export class SDKJavaScriptImages {
     }
     return Boolean(bitmap);
   }
-  async tick(link) {
+  async tick(link, frame) {
     this.checkOpen();
     for (const [, record] of this.records()) {
       const image = record.value;
+      await this.update(image, frame);
       if (!image.plane || !image.slot || !image.dirty) continue;
       const graph = this.plane(image.plane),
         target = this.drawing(link),
@@ -324,6 +339,7 @@ export class SDKJavaScriptImages {
           { flags: 0 },
         );
       }
+      this.releaseMotion(image);
       this.world.runtime.handles.release(handle, 'javascript-image');
       if (image.bitmap) await this.world.graphics.images.release(image.bitmap);
     }

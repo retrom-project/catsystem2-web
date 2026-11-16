@@ -4,13 +4,12 @@ import { scriptError } from '../javascript/program.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 import { canonicalMessage } from './control-task.mjs';
-import { readNativeResource } from './resource-file.mjs';
+import { SDKJavaScriptMotions } from './sdk-javascript-motion.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../motion/abi.mjs';
 
 const name = new TextEncoder().encode('JS Plane\0');
 const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const moveFile = 'mot.int/motMove.kcs';
-const moveKey = 'mot.int/motmove';
 const validArgs = (args) =>
   Array.isArray(args) &&
   args.length === 5 &&
@@ -18,12 +17,7 @@ const validArgs = (args) =>
   args[0] > 0 &&
   args[1] > 0;
 
-export class SDKJavaScriptPlanes {
-  constructor(world, owner) {
-    this.world = world;
-    this.owner = owner;
-    this.closed = false;
-  }
+export class SDKJavaScriptPlanes extends SDKJavaScriptMotions {
   records() {
     return [...this.world.runtime.handles.records].filter(
       ([, record]) => record.type === 'javascript-plane' && record.value.owner === this.owner.id,
@@ -56,12 +50,6 @@ export class SDKJavaScriptPlanes {
         'javascript-plane',
       );
       this.child(plane, true);
-      if (this.busy(plane))
-        throw scriptError(
-          'Unsupported JavaScript host import',
-          location,
-          'CsPlane pose while motion is active',
-        );
       return {
         wait: {
           planeState: operation.receiver.hostObject,
@@ -117,19 +105,8 @@ export class SDKJavaScriptPlanes {
       throw new Error('JavaScript Plane motion requires its real nonzero owned model');
     return child;
   }
-  motionRecord(plane) {
-    const record = this.world.runtime.handles.get(plane.motion, 'motion-manager');
-    if (record.owner !== plane.child) throw new Error('JavaScript Plane motion owner mismatch');
-    return record;
-  }
-  manager(plane) {
-    const record = this.motionRecord(plane);
-    if (!record.manager || record.pending)
-      throw new Error('JavaScript Plane motion manager is not settled');
-    return record.manager;
-  }
-  busy(plane) {
-    return plane.motion === undefined ? false : this.manager(plane).busy();
+  motionOwner(plane) {
+    return plane.child;
   }
   selectedBusy(reference, location) {
     this.checkOpen();
@@ -158,11 +135,19 @@ export class SDKJavaScriptPlanes {
     }
   }
   modelState(plane) {
-    const graph = this.child(plane, true).implementation.graph,
+    const implementation = this.child(plane, true).implementation,
+      graph = implementation.graph,
       state = graph.kx2.slice();
     // The native local KX2 packs the UV field separately from physical pos.
     setMotionVector(state, MOTION_ABI.vram, motionVector(graph.textureTransform, MOTION_ABI.pos));
     setMotionVector(state, MOTION_ABI.vscale, [1, 1, 1]);
+    // The task's display receiver owns visibility; its Graph transform can
+    // retain the initial display word after a direct show/hide command.
+    new DataView(state.buffer).setUint32(
+      MOTION_ABI.display,
+      Number(implementation.state.shown),
+      true,
+    );
     return state;
   }
   async publish(plane, state) {
@@ -196,14 +181,6 @@ export class SDKJavaScriptPlanes {
         throw new Error('JavaScript Plane motion child changed');
     }
   }
-  async update(plane, frame) {
-    this.checkOpen();
-    if (!this.busy(plane)) return;
-    const manager = this.manager(plane);
-    const state = manager.update(frame >>> 0);
-    await this.publish(plane, state);
-    if (!manager.busy()) manager.clear();
-  }
   async tick(frame) {
     this.checkOpen();
     for (const [, record] of this.records()) await this.update(record.value, frame);
@@ -211,8 +188,8 @@ export class SDKJavaScriptPlanes {
   async completeMotion(request) {
     this.checkOpen();
     const value = request.motion,
-      plane = this.world.runtime.handles.get(value.plane, 'javascript-plane'),
-      child = this.child(plane, true);
+      plane = this.world.runtime.handles.get(value.plane, 'javascript-plane');
+    this.child(plane, true);
     // 5397B4..C1: update first, then sample current/delta, all before source I/O.
     await this.update(
       plane,
@@ -231,75 +208,13 @@ export class SDKJavaScriptPlanes {
           Math.fround(Math.fround(args.length > i + 1 ? args[i + 1] : position) - position),
         ),
       ];
-    if (plane.motion !== undefined && !this.busy(plane)) this.manager(plane).base.set(base);
-    const registry = this.world.runtime.services.motion,
-      script = await registry.library.optional(moveFile, {
-        read: (name) => readNativeResource(this.world, name, 3),
-      });
-    this.checkOpen();
-    if (
-      this.world.runtime.handles.get(value.plane, 'javascript-plane') !== plane ||
-      this.child(plane, true) !== child
-    )
-      throw new Error('JavaScript Plane motion owner changed during I/O');
-    if (script === null) return undefined;
-    if (plane.motion === undefined) {
-      plane.motion = registry.create(child.id);
-      this.manager(plane).base.set(base);
-    }
-    this.manager(plane).add(script, { registers });
-    return undefined;
-  }
-  async restoreMotions() {
-    this.checkOpen();
-    const seen = new Set(),
-      registry = this.world.runtime.services.motion;
-    for (const [, record] of this.records()) {
-      const plane = record.value;
-      if (plane.motion === undefined) continue;
-      if (!Number.isSafeInteger(plane.motion) || plane.motion <= 0 || seen.has(plane.motion))
-        throw new Error('Invalid JavaScript Plane motion reference');
-      seen.add(plane.motion);
-      const resource = this.motionRecord(plane),
-        state = resource.manager ? resource.manager.snapshot() : resource.state;
-      if (
-        !state ||
-        !Array.isArray(state.records) ||
-        state.records.some((record) => record.script !== moveKey)
-      )
-        throw new Error('Invalid JavaScript Plane motion script checkpoint');
-      if (state.records.length) {
-        const script = await registry.library.optional(moveFile, {
-          read: (name) => readNativeResource(this.world, name, 3),
-        });
-        if (script === null) throw new Error('JavaScript Plane motion source is absent');
-        this.checkOpen();
-      }
-      await registry.get(plane.motion);
-      this.checkOpen();
-    }
+    return this.addMotion(plane, moveFile, registers, base);
   }
   async completeState(request) {
     this.checkOpen();
-    const plane = this.world.runtime.handles.get(request.planeState, 'javascript-plane'),
-      state = this.modelState(plane);
-    if (request.operation === 'setPos') {
-      const position = motionVector(state, MOTION_ABI.pos);
-      request.args.forEach((value, i) => {
-        position[i] = Math.fround(value);
-      });
-      setMotionVector(state, MOTION_ABI.pos, position);
-    } else if (request.operation === 'setDisp') {
-      if (request.args.length)
-        new DataView(state.buffer, state.byteOffset, state.byteLength).setUint32(
-          MOTION_ABI.display,
-          Number(Boolean(request.args[0])),
-          true,
-        );
-    } else throw new Error('Invalid JavaScript Plane pose continuation');
-    await this.publish(plane, state);
-    if (plane.motion !== undefined) this.manager(plane).base.set(state);
-    return undefined;
+    const plane = this.world.runtime.handles.get(request.planeState, 'javascript-plane');
+    this.child(plane, true);
+    return this.completePose(plane, request.operation, request.args);
   }
   async complete(request) {
     this.checkOpen();
@@ -404,14 +319,10 @@ export class SDKJavaScriptPlanes {
     for (const [handle, record] of this.records()) {
       const child = this.world.objects.objects.get(record.value.child);
       try {
-        if (record.value.motion !== undefined) {
-          try {
-            const motion = this.motionRecord(record.value);
-            motion.manager?.clear();
-            this.world.runtime.services.motion.release(record.value.motion);
-          } catch (error) {
-            errors.push(error);
-          }
+        try {
+          this.releaseMotion(record.value);
+        } catch (error) {
+          errors.push(error);
         }
         if (child) {
           try {

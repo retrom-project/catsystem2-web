@@ -289,18 +289,26 @@ Rebinding after detach and arbitrary/external Plane lifetime are outside this
 finite domain. Normal owner cleanup closes Images before Planes, matching the
 proved ownership without claiming native Plane destruction automatically detaches.
 
-Image and idle Plane `setPos` accept zero to three finite float32 numbers, keeping
-omitted components. `setDisp` accepts an optional boolean or0/1. These methods
-return `undefined`; active-MOT pose overrides and general V8/string forms remain
-unsupported. Plane methods publish through existing physical Graph packets and
-leave MOT to the existing manager. The Image `disp` property is independently
-proved to write its raw0/1 display/dirty fields; finite member assignment uses a
-located host setter and returns the original RHS, including through pure-data
-host waits. Unknown properties and general JavaScript objects remain unsupported.
+Image and Plane `setPos` accept zero to three finite float32 numbers; `setDisp`
+accepts an optional boolean or0/1. Each first updates its existing object-local MOT
+manager, then samples omitted components and adds the real mode3 `pPos` or `pDisp`
+script. The returned value is `undefined`. The record is busy immediately, before
+its next object update writes the pose and ends it. A following setter in the same
+callback consumes the prior record before sampling its defaults. Active records
+retain the existing MOT traversal/order; there is no direct-pose shortcut or second
+busy flag. General V8/string forms remain unsupported. Plane results publish through
+existing physical Graph packets, and Image results update its existing draw fields.
+The Image `disp` property is a distinct, independently proved immediate raw0/1
+display/dirty store: a previously pending `setDisp` MOT can overwrite it on the next
+update. Finite member assignment returns the original RHS, including through
+pure-data host waits. Unknown properties and general JavaScript objects remain
+unsupported.
 
 Actual Draw aliases, typed borrowed references, position/display/dirty and the
 caller banks restore with the full settled DTO before a warm frame, without
-source/image/native-command/RNG replay. Detach and close use actual Draw deletion
+source/image/native-command/RNG replay. Pending setter MOTs retain their real
+manager/instance state; fresh restoration may reread their immutable KCS without
+executing it. Detach and close use actual Draw deletion
 and NativeImages reference counts; they do not destroy borrowed owners or revive
 late I/O. Owned tiny-HG3 tests check literal packets and actual bitmap pixels,
 separately from the original SDK tutorial's still-required integration gate.

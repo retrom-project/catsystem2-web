@@ -2494,8 +2494,8 @@
       "unassigned": 120
     },
     "nativeNeedsReview": 303,
-    "runtimeFiles": 496,
-    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 187, "9": 55 },
+    "runtimeFiles": 497,
+    "fileDomains": { "3": 32, "4": 48, "5": 43, "6": 48, "7": 83, "8": 188, "9": 55 },
     "fileNeedsReview": 76,
     "exeDependencyFiles": 60,
     "exeDependencies": { "addresses": 499, "calls": 86, "references": 6 },
@@ -55084,7 +55084,7 @@
     },
     {
       "file": "src/native/sdk-javascript-image.mjs",
-      "sourceSha256": "6bfadb6cbe877e34ad686a585aa0d7e430841a7cef95d130e8d5800ef59f7634",
+      "sourceSha256": "b95f62bd5c5a8d1b410f9bd8836ee9bb36e2f2e99438cf62e33683b6ee4bc539",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55094,21 +55094,21 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 164,
+          "line": 179,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 261,
+          "line": 276,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 314,
+          "line": 329,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -55118,8 +55118,21 @@
       "review": "needs-review"
     },
     {
+      "file": "src/native/sdk-javascript-motion.mjs",
+      "sourceSha256": "6f2203b439f472c3854150de4e68ef554ad082fc1ff2d384e3d8c8ada578bdaf",
+      "domain": 8,
+      "role": "domain implementation/support",
+      "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
+      "dependencyTypes": [],
+      "docs": ["docs/native-compatibility.md"],
+      "executionSites": [],
+      "executionSiteCounts": {},
+      "indirectSites": [],
+      "review": "counted"
+    },
+    {
       "file": "src/native/sdk-javascript-normal.mjs",
-      "sourceSha256": "c9812988f0ea85f6ccf2caf9e06afdc6a3ff544e2f2b39dbf16542c4f32c2fad",
+      "sourceSha256": "bc101d59b5384e11dd87408250d982975a941eee40264b59a7104ad8efcc6ef9",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55127,7 +55140,7 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 248,
+          "line": 249,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",
@@ -55169,7 +55182,7 @@
     },
     {
       "file": "src/native/sdk-javascript-plane.mjs",
-      "sourceSha256": "cd8e6e12cfcdab5bd36091b5ad29e574da9055879f18cdccdf71fbb5b8872264",
+      "sourceSha256": "b810ec2bdbe72af731fc380e229d3fa3442b75381a475acee934bc673811f3cf",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55179,28 +55192,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 186,
+          "line": 171,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 313,
+          "line": 228,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 354,
+          "line": 269,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 419,
+          "line": 330,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -60973,7 +60986,7 @@
         },
         {
           "file": "src/native/sdk-javascript-normal.mjs",
-          "line": 248,
+          "line": 249,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",
