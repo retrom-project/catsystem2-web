@@ -5,7 +5,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { compileJavaScript, scriptError } from '../javascript/program.mjs';
 import { JavaScriptMachine } from '../javascript/machine.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
-import { nativeEngineWord } from './engine-message.mjs';
+import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { canonicalMessage } from './control-task.mjs';
 import { SDKJavaScriptImages } from './sdk-javascript-image.mjs';
 import { SDKJavaScriptPlanes } from './sdk-javascript-plane.mjs';
@@ -24,6 +24,7 @@ export class NormalSDKJavaScriptTask {
       link: null,
       child: null,
       closed: false,
+      optionWord: 0,
       images: new SDKJavaScriptImages(world, record),
       planes: new SDKJavaScriptPlanes(world, record),
       sounds: new SDKJavaScriptSounds(world, record),
@@ -37,6 +38,10 @@ export class NormalSDKJavaScriptTask {
     return this.loaded && this.machine.state.exitCode === null;
   }
   message(words, context) {
+    if (words[1] === canonicalMessage(this.world.profile, 55, 0x20c)) {
+      this.optionWord = nativeEngineWord(words[3], 'JavaScript option word');
+      return NATIVE_UNWRITTEN_WORD;
+    }
     return this.base.message(words, context);
   }
   async attach(caller, owner) {
@@ -214,6 +219,15 @@ export class NormalSDKJavaScriptTask {
       machine.run((...args) => this.host(...args)),
     );
   }
+  async callFunction(name, values) {
+    if (this.closed) throw new Error('JavaScript task owner is closed');
+    if (!this.loaded) return;
+    const machine = this.machine;
+    await this.drain(
+      machine,
+      machine.call(name, [values], (...args) => this.host(...args), { allowExited: true }),
+    );
+  }
   async drain(machine, result) {
     if (this.closed) throw new Error('JavaScript task owner is closed');
     while (result.status === 'waiting') {
@@ -259,9 +273,11 @@ export class NormalSDKJavaScriptTask {
       link: this.link && { ...this.link },
       child: this.child,
       machine: this.machine?.snapshot() ?? null,
+      optionWord: this.optionWord,
     };
   }
   async restore(state) {
+    this.optionWord = nativeEngineWord(state.optionWord, 'JavaScript option checkpoint');
     if (state.link) {
       const script = this.world.runtime.scheduler.tasks.get(state.link.script);
       if (
@@ -339,12 +355,33 @@ export class NormalSDKJavaScriptTask {
 }
 
 export async function normalSDKJavaScriptCommand(world, id, args, machine, caller) {
-  const target = world.objects.objects.get(world.resolveTaskID(args[0], caller.id));
+  const parent = world.objects.objects.get(world.objects.objects.get(caller.id)?.parent),
+    targetNativeID = args[0] === 0 ? parent?.nativeID : args[0];
+  if (targetNativeID === undefined) throw new Error('JavaScript command has no real parent target');
+  if (id === 0x3ee) {
+    await world.sendNativeEngine(
+      targetNativeID,
+      caller.id,
+      canonicalMessage(world.profile, 55, 0x20c),
+      0,
+      args[1],
+      { flags: 0 },
+    );
+    return nativeReply(2);
+  }
+  const target = world.objects.objects.get(world.resolveTaskID(targetNativeID, caller.id));
   if (target?.kind !== 55 || !(target.implementation instanceof NormalSDKJavaScriptTask))
     throw new Error('JavaScript command target is not an ordinary kind55 owner');
   if (id === 0x3ce) await target.implementation.attach(caller, args[1]);
   else if (id === 0x3cf)
     await target.implementation.load(decoder.decode(formatNativeAt(args[1], machine)));
-  else throw new Error(`Ordinary JavaScript command ${id} has not been implemented`);
+  else if (id === 0x3d0) {
+    const name = decoder.decode(formatNativeAt(args[1], machine)),
+      strings = world.runtime.stringBank(caller, false),
+      values = [];
+    for (let index = 0; index < (args[3] | 0); index++)
+      values.push(strings?.get((args[2] + index) >>> 0) ?? '');
+    await target.implementation.callFunction(name, values);
+  } else throw new Error(`Ordinary JavaScript command ${id} has not been implemented`);
   return nativeReply(2);
 }

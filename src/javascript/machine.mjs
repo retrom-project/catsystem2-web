@@ -53,8 +53,8 @@ export class JavaScriptMachine {
     this.state.cells[cell] = value;
     return value;
   }
-  call(name, args, host) {
-    if (this.state.frames.length || this.state.exitCode !== null)
+  call(name, args, host, { allowExited = false } = {}) {
+    if (this.state.frames.length || (!allowExited && this.state.exitCode !== null))
       throw new Error('JavaScript callback requires an idle program');
     const where = { source: this.state.program.source, line: 1, column: 1 },
       value = this.get(0, name, where);
@@ -148,7 +148,9 @@ export class JavaScriptMachine {
             left = stack.pop();
           if (arg === '===' || arg === '!==') {
             const key = (value) =>
-              value && typeof value === 'object' ? Object.keys(value)[0] : null;
+              value && typeof value === 'object' && !Array.isArray(value)
+                ? Object.keys(value)[0]
+                : null;
             const leftKey = key(left),
               rightKey = key(right);
             const equal =
@@ -201,6 +203,26 @@ export class JavaScriptMachine {
             throw scriptError('Unsupported JavaScript syntax', location, 'constructor');
           const result = complete(host({ construct: target.host }, args, location), frame);
           if (result) return result;
+          break;
+        }
+        case 'array-length': {
+          const receiver = stack.pop();
+          if (!Array.isArray(receiver) || arg !== 'length')
+            throw scriptError('Unsupported JavaScript syntax', location, 'array property');
+          stack.push(receiver.length);
+          break;
+        }
+        case 'array-index': {
+          const index = stack.pop(),
+            receiver = stack.pop();
+          if (
+            !Array.isArray(receiver) ||
+            !Number.isInteger(index) ||
+            index < 0 ||
+            index > 0xffffffff
+          )
+            throw scriptError('Unsupported JavaScript syntax', location, 'array index');
+          stack.push(receiver[index]);
           break;
         }
         case 'member-set': {
@@ -292,7 +314,16 @@ export class JavaScriptMachine {
         !state.environments[closure.environment]
       )
         throw new Error('Invalid JavaScript closure');
-    for (const value of state.cells)
+    for (const value of state.cells) {
+      if (Array.isArray(value)) {
+        if (
+          Reflect.ownKeys(value).length !== value.length + 1 ||
+          Object.keys(value).some((key, index) => key !== String(index)) ||
+          value.some((item) => typeof item !== 'string')
+        )
+          throw new Error('Invalid JavaScript string array');
+        continue;
+      }
       if (
         typeof value === 'function' ||
         (value &&
@@ -309,6 +340,7 @@ export class JavaScriptMachine {
             )))
       )
         throw new Error('Invalid JavaScript cell');
+    }
     const machine = Object.create(JavaScriptMachine.prototype);
     machine.state = structuredClone(state);
     return machine;

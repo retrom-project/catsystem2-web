@@ -26,8 +26,23 @@ continues, while subsequent logic frames do not call `GameLoop` again.
 successful program execution and its exit completion, rather than writable
 emulations of process fields. Unsupported syntax and host imports fail with
 the source filename and span. Relinking, reloading, missing-source behavior,
-`3D0`/`3EE` and arbitrary guest-scheduled host waits remain outside this finite
-implementation. Supported host methods do not imply general V8 or complete SDK
+arbitrary guest-scheduled host waits remain outside this finite implementation.
+`3EE` retains the option's complete unsigned DWORD in the real kind55 owner;
+its constructor default is zero. The normal route sends raw `20C` (canonical526)
+with the real Script sender, w zero, raw l and transport flags zero, without an
+output word. This retained field is not reinterpreted as a Boolean or running flag.
+`3D0` formats the function name and copies the calling KCS Script's selected live
+CP932 strings into one guest string array; absent indices become empty strings,
+and a nonpositive signed count produces an empty array. A loaded owner accepts
+that explicit call even after `cfExit` stopped future GameLoop callbacks. Only
+nonnegative integer indexing and readonly `length` on these arrays are supported;
+general JavaScript arrays and arbitrary object properties remain unsupported.
+The ordinary adapter passes these pure arguments directly to its data interpreter,
+without emulating the original V8 envelope's physical pointers. All four commands
+resolve a zero target from the real parent task's nativeID, not the caller's WorldID
+or an assumed Root zero. Link/load/call retain their explicit kind55 owner domain;
+option writes use the existing message router, including missing targets.
+Supported host methods do not imply general V8 or complete SDK
 API coverage; the official tutorial retains its separate integration gate.
 
 Checkpoints retain the program, lexical cells and closure references as data.

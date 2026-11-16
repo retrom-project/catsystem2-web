@@ -113,6 +113,8 @@ function tokenize(source, name) {
           ';',
           ',',
           '.',
+          '[',
+          ']',
         ].includes(value)
       )
         fail(start, `token ${value}`);
@@ -293,6 +295,10 @@ class Parser {
       if (this.accept('.')) {
         const name = this.identifier();
         value = { type: 'member', target: value, name: name.value, location: name.location };
+      } else if (this.accept('[')) {
+        const index = this.expression();
+        this.expect(']');
+        value = { type: 'index', target: value, index, location: value.location };
       } else if (this.accept('(')) {
         const args = [];
         if (!this.is(')'))
@@ -365,6 +371,15 @@ export function compileJavaScript(source, name) {
           expression(node.target);
           expression(node.value);
           emit('member-set', node.name, where);
+          break;
+        case 'member':
+          expression(node.target);
+          emit('array-length', node.name, where);
+          break;
+        case 'index':
+          expression(node.target);
+          expression(node.index);
+          emit('array-index', null, where);
           break;
         case 'increment':
           emit('increment', { name: node.name, prefix: node.prefix }, where);

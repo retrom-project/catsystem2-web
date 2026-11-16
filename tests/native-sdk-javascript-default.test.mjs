@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { JavaScriptMachine } from '../src/javascript/machine.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -21,7 +24,7 @@ const source = [
   '}',
 ].join('\n');
 
-function fixture(text = source) {
+function fixture(text = source, extraFiles = {}) {
   const own = [37, [0x14, 64]],
     target = [37, [0x14, 68]],
     start = [
@@ -50,6 +53,7 @@ function fixture(text = source) {
         ],
       ),
       'owned.js': new TextEncoder().encode(text),
+      ...extraFiles,
     }),
     random = new ParticleRandom(19, 23),
     world = new NativeWorld({
@@ -390,5 +394,199 @@ test('normal SDK kind55 separates literal delimiters and operators from grammar 
     assert.equal(invalid.events.original, 0);
   } finally {
     await invalid.world.close();
+  }
+});
+
+test('normal JavaScript option GCALL retains raw words, parent-native zero targets and cold ownership', async () => {
+  const words = [0, 1, 0x80000000, 0xffffffff],
+    program = kcsProgram([
+      [37, sentinel],
+      ...words.flatMap((word) => [
+        [37, [0x13, 128]],
+        [37, word],
+        [43, 1006, 8],
+      ]),
+      [37, 0],
+      [37, 7],
+      [43, 1006, 8],
+      [37, 73],
+      [38, [0x13, 512]],
+      [59],
+    ]),
+    files = {
+      'option.kcs': program,
+      'missing-option.kcs': kcsProgram([
+        [37, sentinel],
+        [37, 0x7f100600],
+        [37, 0xffffffff],
+        [43, 1006, 8],
+        [59],
+      ]),
+    },
+    first = fixture('function GameLoop(frame) {}', files),
+    fresh = fixture('function GameLoop(frame) {}', files),
+    { world } = first;
+  try {
+    await world.initialize('main.kcs');
+    const ownerID = await world.objects.create({
+        kind: 55,
+        parent: world.main.id,
+        nativeID: 0x1006abcd,
+      }),
+      owner = world.objects.objects.get(ownerID),
+      implementation = owner.implementation,
+      caller = await world.spawnScript('option.kcs', { parent: owner.id }),
+      sends = [],
+      send = world.sendNativeEngine;
+    assert.notEqual(owner.nativeID, owner.id);
+    assert.notEqual(owner.nativeID, 0);
+    const initialOption = implementation.optionWord;
+    const stores = [],
+      receive = implementation.message;
+    implementation.message = function (...parameters) {
+      const reply = receive.apply(this, parameters);
+      if (parameters[0][1] === 526) stores.push(this.optionWord);
+      return reply;
+    };
+    world.sendNativeEngine = function (...args) {
+      const reply = send.apply(this, args);
+      if (args[2] === 526) sends.push({ words: args.slice(0, 5), flags: args[5]?.flags, reply });
+      return reply;
+    };
+    caller.machine.store(128, owner.nativeID);
+    const sp = caller.machine.sp;
+    await world.runtime.scheduler.execute(caller);
+    assert.equal(caller.machine.load(512), 73);
+    assert.equal(caller.machine.load(caller.machine.sp - 4), sentinel);
+    assert.equal(caller.machine.sp, sp + 4);
+    assert.equal(initialOption, 0);
+    assert.equal(implementation.optionWord, 7);
+    assert.deepEqual(stores, [...words, 7]);
+    assert.equal(implementation.loaded, false);
+    assert.equal(implementation.running, false);
+    assert.deepEqual(
+      sends.map(({ words }) => words),
+      [...words, 7].map((word) => [owner.nativeID, caller.id, 526, 0, word]),
+    );
+    assert.deepEqual(
+      sends.map(({ flags }) => flags),
+      [0, 0, 0, 0, 0],
+    );
+    assert.deepEqual(
+      await Promise.all(sends.map(({ reply }) => reply)),
+      Array(5).fill(NATIVE_UNWRITTEN_WORD),
+    );
+    const missing = await world.spawnScript('missing-option.kcs', { parent: owner.id });
+    await world.runtime.scheduler.execute(missing);
+    assert.equal(missing.machine.load(missing.machine.sp - 4), sentinel);
+    assert.deepEqual(stores, [...words, 7]);
+    assert.equal(implementation.optionWord, 7);
+    const saved = world.snapshot();
+    assertNoExecutableValues(saved);
+    fresh.world.runtime.native = () => {
+      throw new Error('Option restore replayed a GCALL');
+    };
+    for (const random of [fresh.world.random.integer, fresh.world.random.real])
+      random.nextUint32 = () => {
+        throw new Error('Option restore replayed RNG');
+      };
+    await fresh.world.restore(await deserializeCheckpoint(await serializeCheckpoint(saved)));
+    assert.deepEqual(fresh.world.snapshot(), saved);
+    const restored = fresh.world.objects.objects.get(owner.id).implementation;
+    assert.equal(restored.optionWord, 7);
+    await fresh.world.sendNativeEngine(owner.nativeID, fresh.world.main.id, 526, 0, 0x80000000, {
+      flags: 0,
+    });
+    assert.equal(restored.optionWord, 0x80000000);
+    assert.equal(implementation.optionWord, 7);
+    assert.equal(world.nativeEngine, undefined);
+    assert.equal(first.events.original + fresh.events.original, 0);
+  } finally {
+    await fresh.world.close();
+    await world.close();
+  }
+});
+
+test('normal JavaScript foreign GCALL passes a live string array and restores aliases after stopped callbacks', async () => {
+  const program = kcsProgram(
+      [
+        [37, sentinel],
+        [37, 0],
+        [37, 800],
+        [37, 100],
+        [37, 2],
+        [43, 976, 16],
+        [37, 73],
+        [38, [0x13, 512]],
+        [59],
+      ],
+      [[800, 'Enable']],
+    ),
+    files = {
+      'foreign.kcs': program,
+      'foreign-empty.kcs': kcsProgram(
+        [[37, sentinel], [37, 0], [37, 800], [37, 0], [37, 0x80000000], [43, 976, 16], [59]],
+        [[800, 'Empty']],
+      ),
+    },
+    text =
+      'var received, alias; function Enable(values) { received = values; alias = values; if (values.length === 2) { if (values[0] === "\\u65e5\\u672c") { if (values[1] === "") cfExit(42); } } } function Empty(values) { if (values.length === 0) cfExit(43); } function GameLoop(frame) {}',
+    first = fixture(text, files),
+    fresh = fixture(text, files),
+    { world } = first;
+  try {
+    await world.initialize('main.kcs');
+    const owner = task(world),
+      implementation = owner.implementation,
+      caller = await world.spawnScript('foreign.kcs', { parent: owner.id }),
+      strings = world.runtime.stringBank(caller);
+    strings.set(100, '日本');
+    const sp = caller.machine.sp;
+    await world.runtime.scheduler.execute(caller);
+    assert.equal(caller.machine.load(512), 73);
+    assert.equal(caller.machine.sp, sp + 4);
+    assert.equal(caller.machine.load(caller.machine.sp - 4), sentinel);
+    assert.equal(owner.exitCode, 42);
+    assert.equal(implementation.loaded, true);
+    assert.equal(implementation.running, false);
+    const cell = implementation.machine.cell(0, 'received'),
+      alias = implementation.machine.cell(0, 'alias'),
+      values = implementation.machine.state.cells[cell];
+    assert.deepEqual(values, ['日本', '']);
+    assert.strictEqual(values, implementation.machine.state.cells[alias]);
+    for (const value of [() => 1, Promise.resolve(1), { host: 'cfExit' }]) {
+      const invalid = implementation.machine.snapshot();
+      invalid.cells[cell] = [value];
+      assert.throws(() => JavaScriptMachine.restore(invalid), /Invalid JavaScript string array/);
+    }
+    for (const values of [
+      Object.assign(new Array(1), { extra: () => 1 }),
+      Object.defineProperty(['owned'], 'hidden', { value: Promise.resolve(1) }),
+    ]) {
+      const invalid = implementation.machine.snapshot();
+      invalid.cells[cell] = values;
+      assert.throws(() => JavaScriptMachine.restore(invalid), /Invalid JavaScript string array/);
+    }
+    const saved = world.snapshot();
+    assertNoExecutableValues(saved);
+    fresh.world.runtime.native = () => {
+      throw new Error('Foreign restore replayed a GCALL');
+    };
+    await fresh.world.restore(await deserializeCheckpoint(await serializeCheckpoint(saved)));
+    assert.deepEqual(fresh.world.snapshot(), saved);
+    const restored = fresh.world.objects.objects.get(owner.id).implementation;
+    assert.notStrictEqual(restored.machine.state.cells[cell], values);
+    assert.strictEqual(restored.machine.state.cells[cell], restored.machine.state.cells[alias]);
+    const after = await fresh.world.spawnScript('foreign-empty.kcs', { parent: owner.id });
+    fresh.world.runtime.native = Object.getPrototypeOf(world.runtime).native;
+    await fresh.world.runtime.scheduler.execute(after);
+    assert.equal(fresh.world.objects.objects.get(owner.id).exitCode, 43);
+    assert.equal(owner.exitCode, 42);
+    assert.notStrictEqual(restored.machine.state.cells[cell], values);
+    assert.equal(world.nativeEngine, undefined);
+    assert.equal(first.events.original + fresh.events.original, 0);
+  } finally {
+    await fresh.world.close();
+    await world.close();
   }
 });
