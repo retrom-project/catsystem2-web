@@ -111,6 +111,7 @@ test(
       world = make();
     let fresh;
     try {
+      await world.ensureNativeEngine();
       world.root = await world.objects.create({ kind: 1, name: 'Authored Top' });
       world.main = await world.spawnScript('main.kcs');
       await world.tick();
