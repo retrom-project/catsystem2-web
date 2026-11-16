@@ -16,7 +16,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 811       | 82            | 19            | 97      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 812       | 82            | 19            | 96      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
 All 2,344 registered slots remain represented. Auxiliary generic entries have
@@ -459,7 +459,7 @@ plane mode 1 creates the solid model and publishes its dimensions, draw type and
 shape words. Modes 0 and 2 remove the old graph without a replacement, retaining
 those task fields; a later mode-1 request can create a new model. The SDK slot is
 explicitly recovered from its own wrapper and receiver evidence. Other unknown
-slots, including SDK104 and main467, remain guarded. The packet's two unused
+slots, including SDK78 and main467, remain guarded. The packet's two unused
 original scratch words carry no value claim; this contract does not establish
 pixels, other backends or malformed/OOM behavior.
 
@@ -488,7 +488,7 @@ write to those children. This normal hierarchy behavior is covered through real
 Script GCALL, Base/Plane services, guest continuation, memory canaries and void
 stack behavior in both registered profiles. SDK88 is explicitly recovered from
 its own wrapper and receiver evidence; the already matching common signature
-and Game registration remain unchanged. SDK104/455/467, unregistered versions
+and Game registration remain unchanged. SDK78/455/467, unregistered versions
 and other unknown slots remain guarded. This does not establish missing or
 nonresponding-model scratch values, malformed packets, alternative backends,
 inherited-position corner paths or rendered pixels.
@@ -509,6 +509,43 @@ coverage in both registered profiles checks hide/show, a high-bit nonzero flag,
 null-target continuation, unchanged caller words and canaries, and no VM result
 push. The existing graphs, geometry and render order are retained. SDK92 is
 explicitly recovered from its own wrapper and receiver; common signatures,
-Game admission, D2 and all other receivers remain unchanged. SDK104/455/467,
+Game admission, D2 and all other receivers remain unchanged. SDK78/455/467,
 Game467 and unregistered versions remain guarded. These checks do not claim
 rendered pixels, malformed packets, or inherited-position corner behavior.
+
+## Input-region binding main104
+
+Main104 `plane.bindInputRegion(task, x, y, width, height, priority, bindingWord)`
+takes seven DWORDs. Both own wrappers return control2 without writing a VM result,
+construct the four-word RECT with32-bit addition, and send SDK87/Game89 with
+transport flags0. Task number0 follows the real sender/Top registry; it is not
+an unconditional null or Root alias. Other wrappers retain their own zero rules.
+
+BasePlane binds the explicit RECT and priority once, retains the binding word
+and actual sender, and leaves an existing registration unchanged. A rectangle
+covering the configured viewport is replaced by the independently read literal
+`[-100000, -100000, 100000, 100000]` in both the Input region and retained bindArea.
+SimplePlane instead derives its rectangle from the loaded model's scalar-f32
+position-minus-base vector and dimensions, truncates coordinates toward zero,
+and uses truncated base.z as priority. It ignores the explicit rectangle and
+priority. Missing or unreviewed SimplePlane geometry is rejected rather than
+given fabricated zero bounds.
+
+The existing Input, geometry and owned packet services remain the authorities.
+The existing Input region.flags is opaque JS metadata only: the native Input
+registration packet does not carry the retained word. It does not affect native
+Input filtering or callbacks; transport flags remain0.
+The SimplePlane retains the packet's logical local address0 as its binding word;
+this is not a claim that a physical native C-stack address equals0. Own Base
+registration, actual frame, event forwarding and close paths do not pass that
+retained word to Input mask/filter or VM output. The same retained extra passed
+to the two original geometry-update helpers is unused. No raw native address,
+uninitialized scratch or arbitrary native memory-query equivalence is claimed.
+
+Real Script GCALLs through ordinary World services cover both registered profiles,
+Base and SimplePlane behavior, duplicate binding, fullscreen retention, legitimate
+zero routing, void stack/canary behavior and cleanup. SDK104 is explicitly admitted
+from SDK515770 and its own receiver chain, independently of Game648FA0. All other
+slots, signatures, stubs and version gates stay unchanged; SDK78/455/467 and
+Game467 remain unknown. This does not claim rendered pixels or all Plane/drag
+platform behavior.

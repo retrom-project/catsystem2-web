@@ -3731,7 +3731,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     104: {
-      name: 'plane.setRectangle',
+      name: 'plane.bindInputRegion',
       family: 'plane',
       signature: {
         argumentWords: 7,
@@ -3783,16 +3783,16 @@ export const NATIVE_SEMANTICS = freeze({
             },
           },
           {
-            description: 'word mode',
-            name: 'mode',
+            description: 'word priority',
+            name: 'priority',
             type: {
               bits: 32,
               kind: 'bits',
             },
           },
           {
-            description: 'word flags',
-            name: 'flags',
+            description: 'word retained binding data',
+            name: 'bindingWord',
             type: {
               bits: 32,
               kind: 'bits',

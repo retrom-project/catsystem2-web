@@ -255,7 +255,7 @@ function rectangleDeclaration(profile) {
   assert.deepEqual(entry.controlCodes, [2]);
   assert.equal(entry.signature.result.kind, 'void');
   assert.equal(entry.signature.resultWritten, false);
-  for (const id of [78, 104, 467])
+  for (const id of [78, 455, 467])
     assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
   assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
 }
@@ -698,7 +698,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.kind, 'float');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [104, 455, 467])
+      for (const id of [78, 455, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -916,10 +916,307 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.bits, 32);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [104, 455, 467])
+      for (const id of [78, 455, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
       await scene.close();
     }
+  });
+
+const inputBindingProgram = kcsProgram([
+  [37, rectangleSentinel],
+  ...[0, 1, 2, 3, 4, 5, 6].map((word) => [37, word]),
+  [43, 104, 28],
+  [37, 73],
+  [38, [0x13, 512]],
+  ...Array.from({ length: 7 }, (_, i) => [37, [0x13, 128 + i * 4]]),
+  [43, 104, 28],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+
+for (const profile of rectangleProfiles)
+  test(`${profile} main104 GCALL binds actual Base and SimplePlane input regions without a VM result`, async () => {
+    const scene = await dataWorld(profile, {
+      'case.kcs': kcsProgram([[59]]),
+      'rectangle.kcs': inputBindingProgram,
+    });
+    let input, ownedIDs;
+    try {
+      const root = scene.objects.objects.get(scene.root),
+        simpleID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x00680104,
+          name: 'input simple plane',
+        }),
+        baseID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x00680204,
+          name: 'input base plane',
+        }),
+        fullID = await scene.objects.create({
+          kind: 6,
+          parent: scene.root,
+          nativeID: 0x00680304,
+          name: 'input fullscreen base',
+        }),
+        emptyID = await scene.objects.create({
+          kind: 2,
+          parent: scene.root,
+          nativeID: 0x00680404,
+          name: 'unloaded input simple plane',
+        }),
+        simple = scene.objects.objects.get(simpleID).implementation,
+        base = scene.objects.objects.get(baseID).implementation,
+        full = scene.objects.objects.get(fullID).implementation,
+        empty = scene.objects.objects.get(emptyID).implementation,
+        simpleNative = scene.nativeTaskID(simpleID),
+        baseNative = scene.nativeTaskID(baseID),
+        fullNative = scene.nativeTaskID(fullID),
+        emptyNative = scene.nativeTaskID(emptyID);
+      ownedIDs = [simpleID, baseID, fullID, emptyID];
+      input = scene.inputFor(simpleID);
+      assert.strictEqual(scene.inputFor(baseID), input);
+      assert.strictEqual(scene.inputFor(fullID), input);
+      assert.equal(root.nativeID, 0, 'The ordinary fixture uses its real Top0 namespace');
+      assert.equal(scene.game.width, 640);
+      assert.equal(scene.game.height, 480);
+      await scene.sendNativeEngine(simpleNative, scene.main.id, 42, 0, 0, {
+        payload: new NativeGraphicsPacket([
+          0,
+          0,
+          0,
+          floatBits(20.5),
+          floatBits(12.25),
+          0,
+          0,
+          0x80445566,
+        ]),
+      });
+      await scene.sendNativeEngine(simpleNative, scene.main.id, 49, 0, 0, {
+        payload: new NativeGraphicsPacket([10.75, -3.25, 123.75].map(floatBits)),
+      });
+      await scene.sendNativeEngine(simpleNative, scene.main.id, 51, 0, 0, {
+        payload: new NativeGraphicsPacket([17.5, 8.125, 0].map(floatBits)),
+      });
+      assert.deepEqual(motionVector(simple.graph.kx2, MOTION_ABI.base), [10.75, -3.25, 123.75]);
+      assert.deepEqual(motionVector(simple.graph.kx2, MOTION_ABI.pos), [17.5, 8.125, 0]);
+      const graph = simple.graph,
+        order = scene.graphics.renderSequence,
+        frame = scene.frame,
+        outer = [],
+        deliveries = [],
+        calls = [],
+        callers = [],
+        native = scene.runtime.native,
+        send = scene.sendNativeEngine;
+      for (const id of [scene.root, simpleID, baseID, fullID, emptyID]) {
+        const record = scene.objects.objects.get(id),
+          original = record.implementation.message;
+        record.implementation.message = function (words, context, ...rest) {
+          if (words[1] === 89)
+            deliveries.push({
+              owner: id,
+              senderNative: words[0],
+              senderWorld: context.nativeSenderWorldID,
+              flags: context.flags,
+            });
+          return original.call(this, words, context, ...rest);
+        };
+      }
+      scene.runtime.native = function (table, id, ...args) {
+        const reply = native.call(this, table, id, ...args);
+        if (table === 'main' && id === 104) calls.push({ args: [...args[0]], reply });
+        return reply;
+      };
+      scene.sendNativeEngine = function (target, sender, message, w, l, context) {
+        if (message === 89)
+          outer.push({
+            target,
+            sender,
+            w,
+            l,
+            flags: context.flags,
+            words: [0, 4, 8, 12, 16, 20].map((at) => context.payload.load(at)),
+          });
+        return send.call(this, target, sender, message, w, l, context);
+      };
+      async function invoke(words) {
+        const caller = await rectangleCaller(scene);
+        assert.strictEqual(scene.engineMessages.closestTop(caller.task.id), root);
+        assert.equal(scene.resolveTaskID(0, caller.task.id), scene.root);
+        words.forEach((word, i) => caller.machine.store(128 + i * 4, word));
+        caller.machine.bytes(800, 16).fill(0xa5);
+        await scene.runtime.scheduler.execute(caller.task);
+        assert.equal(
+          caller.machine.load(512),
+          73,
+          'The real zero-ID call completed before binding',
+        );
+        rectangleContinuation(caller);
+        assert.deepEqual(
+          Array.from({ length: 7 }, (_, i) => caller.machine.load(128 + i * 4)),
+          words.map((word) => word >>> 0),
+        );
+        assert.deepEqual([...caller.machine.bytes(800, 16)], Array(16).fill(0xa5));
+        callers.push(caller);
+        return caller;
+      }
+      const simpleWords = [simpleNative, 1000, 2000, 3, 4, 700, 17],
+        simpleCaller = await invoke(simpleWords),
+        simpleRegion = input.get(simpleID);
+      // Independent own-SSE oracle: position-base=(6.75,11.375), size=(20.5,12.25).
+      // These values deliberately disagree with the wrapper's explicit rectangle.
+      assert.deepEqual(
+        simpleRegion.bounds,
+        [6, 11, 27, 23],
+        'SimplePlane uses actual graph input geometry',
+      );
+      assert.equal(
+        simpleRegion.priority,
+        123,
+        'SimplePlane priority is trunc(base.z), not explicit700',
+      );
+      assert.deepEqual(simple.state.bindArea, [6, 11, 27, 23]);
+      assert.equal(simple.state.inputTracksGraph, true);
+      assert.equal(
+        simple.state.bindFlags,
+        0,
+        'Retain the owned packet logical address, not explicit arg6',
+      );
+      assert.equal(simple.state.receiver, simpleCaller.record.nativeID);
+      assert.equal(simpleRegion.receiver, simpleCaller.record.nativeID);
+      assert.equal(simpleRegion.owner, simpleID);
+      assert.equal(simpleRegion.mask, 7);
+      assert.equal(simpleRegion.extra, 0);
+      const baseWords = [baseNative, -12, 9, 40, 35, 700, 0x80000001],
+        baseCaller = await invoke(baseWords),
+        baseRegion = input.get(baseID);
+      assert.deepEqual(baseRegion.bounds, [-12, 9, 28, 44]);
+      assert.deepEqual(base.state.bindArea, [-12, 9, 28, 44]);
+      assert.equal(baseRegion.priority, 700);
+      assert.equal(baseRegion.flags, 0x80000001);
+      assert.equal(base.state.bindFlags, 0x80000001);
+      assert.equal(base.state.receiver, baseCaller.record.nativeID);
+      assert.equal(baseRegion.receiver, baseCaller.record.nativeID);
+      assert.equal(base.state.inputTracksGraph, false);
+      const savedBase = structuredClone(baseRegion),
+        duplicateWords = [baseNative, 1, 2, 3, 4, 10, 0];
+      await invoke(duplicateWords);
+      assert.strictEqual(input.get(baseID), baseRegion);
+      assert.deepEqual(
+        baseRegion,
+        savedBase,
+        'An already-bound Base does not replace its registration',
+      );
+      assert.equal(base.state.receiver, baseCaller.record.nativeID);
+      assert.equal(base.state.bindFlags, 0x80000001);
+      const fullWords = [fullNative, 0, 0, 640, 480, 5, 3],
+        fullCaller = await invoke(fullWords),
+        fullRegion = input.get(fullID),
+        fullBounds = [-100000, -100000, 100000, 100000];
+      assert.deepEqual(fullRegion.bounds, fullBounds);
+      assert.deepEqual(
+        full.state.bindArea,
+        fullBounds,
+        'The own literal is retained as well as registered',
+      );
+      assert.equal(fullRegion.priority, 5);
+      assert.equal(full.state.bindFlags, 3);
+      assert.equal(full.state.receiver, fullCaller.record.nativeID);
+      assert.deepEqual(
+        outer.map(({ target, w, l, flags }) => [target, w, l, flags]),
+        callers.flatMap((_caller, i) => [
+          [0, 0, 0, 0],
+          [[simpleNative, baseNative, baseNative, fullNative][i], 0, 0, 0],
+        ]),
+      );
+      assert.deepEqual(
+        outer.map((x) => x.words),
+        [
+          [1, 2, 4, 6, 5, 6],
+          [1000, 2000, 1003, 2004, 700, 17],
+          [1, 2, 4, 6, 5, 6],
+          [0xfffffff4, 9, 28, 44, 700, 0x80000001],
+          [1, 2, 4, 6, 5, 6],
+          [1, 2, 4, 6, 10, 0],
+          [1, 2, 4, 6, 5, 6],
+          [0, 0, 640, 480, 5, 3],
+        ],
+      );
+      assert.deepEqual(
+        deliveries.map(({ owner, senderNative, senderWorld, flags }) => [
+          owner,
+          senderNative,
+          senderWorld,
+          flags,
+        ]),
+        callers.flatMap((caller, i) =>
+          [scene.root, [simpleID, baseID, baseID, fullID][i]].map((owner) => [
+            owner,
+            caller.record.nativeID,
+            caller.task.id,
+            0,
+          ]),
+        ),
+      );
+      assert.deepEqual(
+        calls.map((call) => call.args),
+        [simpleWords, baseWords, duplicateWords, fullWords].flatMap((words) => [
+          [0, 1, 2, 3, 4, 5, 6],
+          words.map((word) => word >>> 0),
+        ]),
+      );
+      assert.deepEqual(
+        await Promise.all(calls.map((call) => call.reply)),
+        Array.from({ length: 8 }, () => ({ control: 2 })),
+      );
+      const unbound = await rectangleCaller(scene),
+        emptyWords = [emptyNative, 1, 2, 3, 4, 1, 0],
+        regionCount = input.regions.length;
+      emptyWords.forEach((word, i) => unbound.machine.store(128 + i * 4, word));
+      unbound.machine.bytes(800, 16).fill(0xa5);
+      await assert.rejects(
+        () => scene.runtime.scheduler.execute(unbound.task),
+        /Native plane input geometry is unreviewed/,
+      );
+      assert.equal(
+        input.get(emptyID),
+        null,
+        'Do not invent a zero rectangle for an unloaded SimplePlane',
+      );
+      assert.equal(input.regions.length, regionCount);
+      assert.equal(empty.state.receiver, -1);
+      assert.equal(empty.state.inputTracksGraph, false);
+      assert.equal(unbound.machine.load(512), 73);
+      assert.equal(unbound.machine.load(516), 0);
+      assert.deepEqual([...unbound.machine.bytes(800, 16)], Array(16).fill(0xa5));
+      assert.strictEqual(simple.graph, graph);
+      assert.equal(scene.graphics.renderSequence, order);
+      assert.equal(
+        scene.frame,
+        frame,
+        'Only actual public Script execution was used; no World warmup',
+      );
+      const entry = nativeABI(profile).tables.main.entries[104];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, 'plane.bindInputRegion');
+      assert.equal(entry.signature.argumentWords, 7);
+      assert.deepEqual(entry.controlCodes, [2]);
+      assert.equal(entry.signature.parameters[5].name, 'priority');
+      assert.equal(entry.signature.parameters[6].name, 'bindingWord');
+      assert.equal(entry.signature.result.kind, 'void');
+      assert.equal(entry.signature.resultWritten, false);
+      for (const id of [78, 455, 467])
+        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+    } finally {
+      await scene.close();
+    }
+    for (const id of ownedIDs)
+      assert.equal(input.get(id), null, 'Closing releases each actual input owner');
   });

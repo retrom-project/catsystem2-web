@@ -1126,7 +1126,10 @@ export class NativeGraphicTask {
         this.state.vramType = l;
         return 0;
       case 89: {
-        const tracksGraph = context.graphInputRegistration && this.record.kind !== 6;
+        const tracksGraph =
+          this.record.kind === 2 || (context.graphInputRegistration && this.record.kind !== 6);
+        if (this.record.kind === 2 && !this.graph?.kx2)
+          throw new Error('Native plane input geometry is unreviewed');
         if (tracksGraph) this.state.inputTracksGraph = true;
         if (this.state.receiver !== -1) return tracksGraph ? undefined : 0;
         if (!this.input?.register)
@@ -1140,16 +1143,17 @@ export class NativeGraphicTask {
           bounds[1] <= 0 &&
           bounds[2] >= this.world.game.width &&
           bounds[3] >= this.world.game.height;
+        const retainedBounds = full ? [-100000, -100000, 100000, 100000] : bounds;
         await this.input.register({
           owner: this.record.id,
           receiver: sender,
-          bounds: full ? [-100000, -100000, 100000, 100000] : bounds,
+          bounds: retainedBounds,
           priority: fields[4] | 0,
           flags: fields[5],
           mask: 7,
           extra: 0,
         });
-        this.state.bindArea = bounds;
+        this.state.bindArea = retainedBounds;
         this.state.bindFlags = fields[5];
         this.state.receiver = sender;
         this.state.changed = 1;
@@ -1520,7 +1524,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();
   }
-  if (!args[0]) return [0x59, 0x62].includes(id) ? value(0) : done();
+  if (!args[0] && id !== 0x68) return [0x59, 0x62].includes(id) ? value(0) : done();
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>
       world.sendNativeEngine(args[0], task.id, message, w, l, {
