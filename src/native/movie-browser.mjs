@@ -170,6 +170,7 @@ export class BrowserNativeMovie {
         this.waits.add(closed);
         check();
       });
+    if (this.closed) throw new Error('Movie decoder closed before seeking');
     await new Promise((resolve, reject) => {
       const finish = (error) => {
           clearTimeout(timer);

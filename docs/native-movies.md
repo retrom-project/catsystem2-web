@@ -93,7 +93,11 @@ comparisons below are reused; they are not rerun by the ordinary consumer.
 
 Decoded output belongs to the existing NativeImages bitmap/backing handles.
 The standard movie presents opaque RGB and opaque power-of-two padding;
-the effect preserves actual decoder alpha and transparent padding. Its Graph
+the effect preserves actual decoder alpha and transparent padding.
+The immutable `planeMode` selects this variant; `mode` is the separate kcVideo
+window-mode word. A legal `0x3E4(handle, 0)` changes only that window state, not
+the registry variant or alpha. A cold running borrower first consumed by Stop
+opens and seeks its decoder without issuing an extra Run. Its Graph
 holds the same typed movie identity and uses the existing native geometry,
 UV transforms and GPU draw path. A bounded per-movie texture view follows
 that bitmap's revision; it is not another bitmap table. Model replacement,

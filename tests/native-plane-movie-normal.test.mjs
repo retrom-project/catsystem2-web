@@ -8,6 +8,7 @@ import { BrowserNativeMovie } from '../src/native/movie-browser.mjs';
 import { nativeABI, validateABI } from '../src/native/abi/index.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
+import { NativeHapPlayback } from '../src/native/movie-hap-playback.mjs';
 
 const sdk = 'sdk-4.01-engine-2.6.1.74';
 const game = 'nekopara-vol3-engine-2.6.1.76';
@@ -476,6 +477,140 @@ test('ordinary movie Run publishes its running word before the delegated host Pr
     assert.equal(calls, 1);
   } finally {
     await world.close();
+  }
+});
+
+test('cold running Plane Stop rebinds and seeks its real decoder without an extra Run', async () => {
+  const { world, plane } = await fixture();
+  let fresh;
+  const methods = Object.fromEntries(
+    ['open', 'seek', 'play', 'stop'].map((name) => [name, NativeHapPlayback.prototype[name]]),
+  );
+  try {
+    const script = await world.spawnScript('load.kcs');
+    await world.runtime.scheduler.execute(script);
+    const handle = script.machine.load(script.machine.sp - 4);
+    await world.runtime.native('main', 0x10a, [handle, 2], script.machine, script);
+    const saved = structuredClone(world.snapshot());
+    fresh = await dataWorld(
+      sdk,
+      { 'clip.hap': await clip(), 'load.kcs': loader() },
+      { initialize: false },
+    );
+    await fresh.restore(structuredClone(saved));
+    assert.deepEqual(fresh.snapshot(), saved);
+    assert.equal(fresh.movies.sessions.size, 0);
+    const calls = [];
+    for (const [name, original] of Object.entries(methods))
+      NativeHapPlayback.prototype[name] = function (...args) {
+        calls.push(name);
+        return original.apply(this, args);
+      };
+    const reply = await fresh.runtime.native(
+      'main',
+      0x10b,
+      [handle],
+      fresh.main.machine,
+      fresh.main,
+    );
+    assert.deepEqual(reply, { control: 1, value: 1 });
+    assert.deepEqual(calls, ['open', 'seek', 'stop']);
+    assert.equal(fresh.movies.get(handle).running, false);
+    assert.equal(fresh.movies.get(handle).repeat, 2);
+    assert.equal(fresh.graphics.tasks.get(plane).graph.movie.handle, handle);
+    assert.equal(fresh.frame, saved.frame);
+    assert.deepEqual(world.snapshot(), saved, 'fresh Stop leaves the source World running');
+  } finally {
+    for (const [name, original] of Object.entries(methods))
+      NativeHapPlayback.prototype[name] = original;
+    await fresh?.close();
+    await world.close();
+  }
+});
+
+test('effect borrower window mode zero keeps the actual movie variant, alpha and cold owner', async () => {
+  const { world, plane, task } = await fixture(sdk, { files: { 'load.kcs': loader(1) } });
+  let fresh;
+  try {
+    const script = await world.spawnScript('load.kcs');
+    await world.runtime.scheduler.execute(script);
+    const handle = script.machine.load(script.machine.sp - 4),
+      call = (id, args) => world.runtime.native('main', id, args, script.machine, script);
+    assert.equal(task.graph.movie.mode, 1);
+    assert.equal((await world.planeMovies.frame(task.graph.movie)).rgba[3], 0);
+    assert.deepEqual(await call(0x3e4, [handle, 0]), { control: 2 });
+    assert.deepEqual(await call(0x3dd, [21]), { control: 1, value: handle });
+    await call(0x10a, [handle, 1]);
+    world.clock.advance(4);
+    assert.equal(
+      (await world.planeMovies.frame(task.graph.movie)).rgba[3],
+      0,
+      'a window mode change must not force effect RGB opaque',
+    );
+    const record = world.movies.get(handle);
+    assert.equal(record.mode, 0, 'the actual kcVideo window mode word still changes');
+    assert.equal(record.planeMode, 1);
+    const saved = structuredClone(world.snapshot());
+    fresh = await dataWorld(
+      sdk,
+      { 'clip.hap': await clip(), 'load.kcs': loader(1) },
+      { initialize: false },
+    );
+    await fresh.restore(structuredClone(saved));
+    assert.deepEqual(fresh.snapshot(), saved);
+    assert.equal(fresh.frame, saved.frame);
+    assert.equal(fresh.movies.sessions.size, 0);
+    assert.equal(
+      (await fresh.planeMovies.retainedFrame(fresh.graphics.tasks.get(plane).graph.movie)).rgba[3],
+      0,
+    );
+    assert.equal(fresh.movies.get(handle).mode, 0);
+    assert.equal(fresh.movies.get(handle).planeMode, 1);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
+
+test('browser close after an already-ready seek range cannot install a late seek or write media time', async () => {
+  const previous = globalThis.document,
+    video = new EventTarget(),
+    add = video.addEventListener;
+  let at = 0,
+    writes = 0,
+    seekListeners = 0;
+  Object.assign(video, {
+    style: {},
+    readyState: 2,
+    seekable: { length: 1, start: () => 0, end: () => 3 },
+    pause() {},
+    load() {},
+    remove() {},
+    removeAttribute() {},
+    addEventListener(name, ...args) {
+      if (name === 'seeked') seekListeners++;
+      return add.call(this, name, ...args);
+    },
+  });
+  Object.defineProperty(video, 'currentTime', {
+    get: () => at,
+    set(value) {
+      at = value;
+      writes++;
+      queueMicrotask(() => video.dispatchEvent(new Event('seeked')));
+    },
+  });
+  globalThis.document = { createElement: () => video };
+  try {
+    const decoder = new BrowserNativeMovie({ game: {}, width: 64, height: 48 }),
+      seeking = assert.rejects(decoder.seek(10000000n), /closed/);
+    await decoder.close();
+    await seeking;
+    assert.equal(writes, 0);
+    assert.equal(seekListeners, 0);
+    assert.equal(decoder.source, null);
+  } finally {
+    globalThis.document = previous;
   }
 });
 

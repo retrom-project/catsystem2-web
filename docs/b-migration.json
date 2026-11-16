@@ -53829,7 +53829,7 @@
     },
     {
       "file": "src/native/movie-browser.mjs",
-      "sourceSha256": "82439f14786286933ee066658baae2d8807638383f2e2dfe3c874126a5102c3f",
+      "sourceSha256": "dc909600f951b095ee46a93ac88cf624a8ffb060de844b23959a1bf16cc375e5",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54096,7 +54096,7 @@
     },
     {
       "file": "src/native/movie.mjs",
-      "sourceSha256": "189b63ec91e4c80d3b1cd248a13020076c24298898c228bfd083490df79edfc7",
+      "sourceSha256": "7b81159a6a90dea6982f372796b79852617373b0958e131132a97c2bc16e2181",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -54387,7 +54387,7 @@
     },
     {
       "file": "src/native/plane-movie-session.mjs",
-      "sourceSha256": "c0902b0878f77b7a3582b743a9813c5d8430ee01da75350a0152e8e30d4f5d28",
+      "sourceSha256": "c4a50907c14715337ae5b7e122bbf83cf4b3918564cb7b76632ce5a9fe8de3db",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

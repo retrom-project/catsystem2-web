@@ -168,7 +168,7 @@ export class NativeMovies {
   async stop(handle) {
     const record = this.get(handle);
     if (!record.prepared || !record.running) return 0;
-    const session = this.sessions.get(handle) ?? (await this.ensureSession(handle));
+    const session = this.sessions.get(handle) ?? (await this.ensureSession(handle, false));
     if (!(await session.stop())) return 0;
     record.running = false;
     record.windowVisible = false;

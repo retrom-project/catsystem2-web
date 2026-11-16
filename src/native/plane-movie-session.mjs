@@ -125,7 +125,8 @@ export class NativePlaneMovies {
       record = {
         owner,
         filename,
-        mode,
+        planeMode: mode,
+        mode: 0xffffffff,
         prepared: false,
         running: false,
         repeat: 0,
@@ -273,13 +274,13 @@ export class NativePlaneMovies {
     const bitmap = this.world.graphics.images.get(record.bitmap),
       output = await bitmap.pixels();
     output.fill(0);
-    if (!record.mode) for (let i = 3; i < output.length; i += 4) output[i] = 255;
+    if (!record.planeMode) for (let i = 3; i < output.length; i += 4) output[i] = 255;
     for (let y = 0; y < decoded.height; y++)
       for (let x = 0; x < decoded.width; x++) {
         const from = (y * decoded.width + x) * 4,
           to = (y * bitmap.width + x) * 4;
         output.set(decoded.rgba.subarray(from, from + 4), to);
-        if (!record.mode || !record.video.alpha) output[to + 3] = 255;
+        if (!record.planeMode || !record.video.alpha) output[to + 3] = 255;
       }
     await bitmap.changed();
     record.frameStamp = stamp;
@@ -321,7 +322,7 @@ export class NativePlaneMovies {
       const record = entry.value,
         plane = this.world.graphics.tasks.get(record.owner);
       if (
-        ![0, 1].includes(record.mode) ||
+        ![0, 1].includes(record.planeMode) ||
         typeof record.filename !== 'string' ||
         !/^[0-9a-f]{64}$/.test(record.sha256) ||
         typeof record.prepared !== 'boolean' ||
@@ -333,7 +334,11 @@ export class NativePlaneMovies {
         (record.prepared && !record.source.renderable)
       )
         throw new Error('Invalid Plane movie checkpoint state');
-      if (!plane || plane.graph?.movie?.handle !== handle || plane.graph.movie.mode !== record.mode)
+      if (
+        !plane ||
+        plane.graph?.movie?.handle !== handle ||
+        plane.graph.movie.mode !== record.planeMode
+      )
         throw new Error('Plane movie checkpoint lost its actual graph owner');
       if (record.prepared) {
         const bitmap = this.world.graphics.images.get(record.bitmap);
