@@ -11,6 +11,12 @@ import { NATIVE_VERSION_QUERY } from '../src/native/version-query.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeWorld as OrdinaryWorld } from '../src/native/world.mjs';
 import { selectNativeProfile } from '../src/native/profile.mjs';
+import { CatSystem2 } from '../src/engine.mjs';
+import {
+  StartupCanvas,
+  startupEnvironment,
+  ordinaryStartupGame,
+} from './fixtures/ordinary-startup.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
@@ -362,3 +368,148 @@ test('ordinary main module cold restore rejects a different selected source befo
     await fresh.world.close();
   }
 });
+
+for (const profile of Object.keys(handlers)) {
+  test(`cold Core initialization keeps saved module authority without reading the executable in ${profile}`, async (t) => {
+    const environment = startupEnvironment();
+    t.mock.method(OrdinaryWorld.prototype, 'ensureNativeEngine', () => {
+      throw new Error('Cold module restore attempted original CPU');
+    });
+    try {
+      for (const withModule of [true, false]) {
+        const game = await ordinaryStartupGame(profile, {
+            sound: false,
+            files: withModule
+              ? {
+                  'owned_engine.exe': ownedVersionImage(profile, '7,8,9,65546'),
+                  'main.kcs': program,
+                }
+              : {},
+          }),
+          options = {
+            game,
+            canvas: new StartupCanvas(),
+            audioContext: { currentTime: 0, close: async () => {} },
+            randomSeed: 77,
+          },
+          first = new CatSystem2({ ...options, nativeProfile: profile });
+        let fresh;
+        try {
+          await first.initialize();
+          const gpu = first.world.stageRenderer.gpu,
+            { width, height } = gpu.primaryTarget;
+          gpu.uploadRenderTarget(gpu.primaryTarget, {
+            width,
+            height,
+            rgba: new Uint8Array(width * height * 4).fill(0x62),
+          });
+          const saved = await first.snapshot(),
+            required = [],
+            read = game.read.bind(game),
+            require = game.require.bind(game),
+            reads = [];
+          t.mock.method(game, 'read', (...args) => {
+            reads.push(args[0]);
+            return read(...args);
+          });
+          t.mock.method(game, 'require', (...args) => {
+            required.push(args[0]);
+            assert.equal(
+              args[0].endsWith('.exe'),
+              false,
+              'Cold module selection must not reread EXE data',
+            );
+            return require(...args);
+          });
+          // An invalid source is rejected before configuration/resource IO;
+          // a saved profile is checked, never inferred from a missing module.
+          for (const [checkpoint, nativeProfile, reason] of [
+            [{ ...saved, sourceIdentity: 'different-source' }, undefined, /current game or format/],
+            [
+              {
+                ...saved,
+                world: {
+                  ...saved.world,
+                  configuration: { ...saved.world.configuration, profile: 'unregistered' },
+                },
+              },
+              undefined,
+              /Unregistered.*ABI/,
+            ],
+            [
+              saved,
+              profile === 'sdk-4.01-engine-2.6.1.74'
+                ? 'nekopara-vol3-engine-2.6.1.76'
+                : 'sdk-4.01-engine-2.6.1.74',
+              /requested native profile/,
+            ],
+          ]) {
+            const invalid = new CatSystem2({
+                ...options,
+                canvas: new StartupCanvas(),
+                nativeProfile,
+              }),
+              before = reads.slice();
+            try {
+              await assert.rejects(invalid.initialize({ checkpoint }), reason);
+              assert.deepEqual(reads, before);
+            } finally {
+              await invalid.dispose();
+            }
+          }
+          fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
+          const create = fresh.createNativeWorld;
+          let liveBindings;
+          fresh.createNativeWorld = function (...args) {
+            const world = create.apply(this, args);
+            liveBindings ??= world.inputBindings.snapshot();
+            return world;
+          };
+          await fresh.initialize({ checkpoint: structuredClone(saved) });
+          assert.equal(fresh.nativeProfile, profile);
+          assert.deepEqual(fresh.nativeModule, saved.world.nativeModule);
+          // Core.restore adopts the actual current device bindings, unlike
+          // bare World.restore. Verify that source independently, and compare
+          // every other saved field without omitting input from the DTO.
+          assert.deepEqual(fresh.inputBindings.snapshot(), liveBindings);
+          assert.deepEqual(fresh.world.snapshot(), { ...saved.world, inputBindings: liveBindings });
+          assert.notEqual(
+            first.world.closed,
+            true,
+            'a separate Core has not released the original owner',
+          );
+          assert.equal(first.world.objects.objects.has(first.world.main.id), true);
+          assert.equal(
+            required.some((name) => name.endsWith('.exe')),
+            false,
+          );
+          if (withModule) {
+            assert.equal(fresh.nativeModule.name, 'owned_engine.exe');
+            assert.notEqual(fresh.nativeModule.resource, first.nativeModule.resource);
+            assert.deepEqual(
+              [256, 260, 264, 268].map((at) => fresh.world.main.machine.load(at)),
+              [7, 8, 9, 10],
+            );
+          } else {
+            assert.equal(fresh.nativeModule, null);
+            await assert.rejects(
+              fresh.world.runtime.native(
+                'main',
+                id,
+                [256, 260, 264, 268],
+                fresh.world.main.machine,
+                fresh.world.main,
+              ),
+              /actual uniquely selected main module/,
+            );
+          }
+        } finally {
+          await fresh?.dispose();
+          await first.dispose();
+        }
+      }
+    } finally {
+      environment.restore();
+    }
+  });
+}

@@ -14,7 +14,7 @@ import { parseXML, XMLNode } from './xml.mjs';
 import { EngineHost } from './host.mjs';
 import { Particles } from './particles.mjs';
 import { Transition } from './render/transition.mjs';
-import { selectNativeProfile } from './native/profile.mjs';
+import { nativeModuleMetadata, selectNativeProfile } from './native/profile.mjs';
 import { MotionLibrary } from './motion/library.mjs';
 import { ParticleRandom } from './ppi/random.mjs';
 import { CHECKPOINT_LIMIT, checkpointBytes } from './checkpoint.mjs';
@@ -85,7 +85,20 @@ export class CatSystem2 {
     this.random = new ParticleRandom(randomSeed);
   }
   async initialize({ checkpoint } = {}) {
-    const selected = await selectNativeProfile(this.game, this.requestedNativeProfile);
+    let selected, identity;
+    if (checkpoint) {
+      identity = await this.game.fingerprint();
+      if (
+        checkpoint.format !== 'catsystem2-web' ||
+        checkpoint.sourceIdentity !== identity ||
+        !checkpoint.world
+      )
+        throw new Error('Checkpoint does not match the current game or format');
+      const profile = nativeABI(checkpoint.world.configuration?.profile).profile;
+      if (this.requestedNativeProfile && nativeABI(this.requestedNativeProfile).profile !== profile)
+        throw new Error('Checkpoint does not match the requested native profile');
+      selected = { profile, module: nativeModuleMetadata(profile, checkpoint.world.nativeModule) };
+    } else selected = await selectNativeProfile(this.game, this.requestedNativeProfile);
     this.nativeProfile = selected.profile;
     this.nativeModule = selected.module;
     this.motionLibrary = new MotionLibrary(this.game, {
@@ -106,7 +119,7 @@ export class CatSystem2 {
       .filter((n) => /^L\d+$/i.test(n.name))
       .map((n) => ({ code: n.value('prefix'), name: n.value('lang') }));
     if (!this.languages.length) this.languages = [{ code: 'jp', name: 'Japanese' }];
-    this.identity = await this.game.fingerprint();
+    this.identity = identity ?? (await this.game.fingerprint());
     this.saves = new SaveStore(this.identity);
     await this.saves.open();
     this.quickSaveStart = Number(this.adv.value('save', 'quicksave', 'start')) || 5000;

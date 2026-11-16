@@ -2397,6 +2397,13 @@
       },
       {
         "kind": "identity",
+        "file": "src/engine.mjs",
+        "line": 98,
+        "expression": "nativeABI(this.requestedNativeProfile).profile !== profile",
+        "domain": 8
+      },
+      {
+        "kind": "identity",
         "file": "src/motion/instance.mjs",
         "line": 315,
         "expression": "state.profile !== this.profile",
@@ -49415,7 +49422,7 @@
     },
     {
       "file": "src/engine.mjs",
-      "sourceSha256": "e0a227878133f0cd0478c5575b9c6bce25930833b10c650bff12c5a670a15af0",
+      "sourceSha256": "2ccf7235b7bf20042a14e34a36662b9782abf71903d4f4d1c16b9740c993cb59",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -38,6 +38,9 @@ can coexist with the selected engine. An explicit profile must also be registere
 Selection returns that profile together with the selected module name and its
 version-resource bytes. Engine and World carry this same data through cold
 checkpoints; no executable mapping, original process or heap is introduced.
+Cold Core initialization validates the saved source identity and registered
+profile, then reuses this metadata without rereading the executable, cipher
+resources or startup credentials.
 Explicit profiles can still initialize owned games without an executable. If
 there is no uniquely identified matching module, only a query that requires
 that module reports its absence.
