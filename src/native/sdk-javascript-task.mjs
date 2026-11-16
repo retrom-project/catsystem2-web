@@ -8,6 +8,7 @@ import { canonicalMessage } from './control-task.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeKCSMemory } from './kcs-memory.mjs';
 import { NativeSDKJavaScriptBanks } from './sdk-javascript-banks.mjs';
+import { NormalSDKJavaScriptTask, normalSDKJavaScriptCommand } from './sdk-javascript-normal.mjs';
 
 const SDK = 'sdk-4.01-engine-2.6.1.74',
   VTABLE = 0x9984c0,
@@ -267,11 +268,20 @@ export function installNativeSDKJavaScriptTasks(world) {
     await world.getNativeFeature('engine-files');
     return new NativeSDKJavaScriptTasks(engine, world, tasks, platform);
   });
-  world.objects.register(55, async (record, _objects, options) =>
-    (await world.getNativeFeature('sdk-javascript-tasks')).create(record, options),
-  );
+  world.objects.register(55, async (record, _objects, options) => {
+    if (world.nativeEngine || world.nativeEngineLoading)
+      return (await world.getNativeFeature('sdk-javascript-tasks')).create(record, options);
+    return new NormalSDKJavaScriptTask(world, record);
+  });
   for (const id of COMMANDS.keys())
-    world.runtime.register('main', id, async (args, machine, task) =>
-      (await world.getNativeFeature('sdk-javascript-tasks')).command(id, args, machine, task),
-    );
+    world.runtime.register('main', id, async (args, machine, task) => {
+      if (world.nativeEngine || world.nativeEngineLoading)
+        return (await world.getNativeFeature('sdk-javascript-tasks')).command(
+          id,
+          args,
+          machine,
+          task,
+        );
+      return normalSDKJavaScriptCommand(world, id, args, machine, task);
+    });
 }
