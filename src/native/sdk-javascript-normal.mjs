@@ -120,6 +120,7 @@ export class NormalSDKJavaScriptTask {
       );
     }
     if (name === 'cfIsExecMotion') {
+      if (args.length === 1) return { value: this.planes.selectedBusy(args[0], location) };
       if (args.length)
         throw scriptError(
           'Unsupported JavaScript host import',

@@ -155,13 +155,14 @@ execution, or the official scene's complete drawing path.
 
 ## Finite CsPlane motion and Context busy query
 
-The normal SDK kind55 host supports `CsPlane.motMove(duration, x, y, z)`
-and the no-argument `cfIsExecMotion()`. Duration is a signed32 integer,
-default30; the selected MOT script clamps values below1 to1. Coordinates are
-finite float32 numbers or omitted current values. The result is `undefined`,
-not a native pointer or a manager handle. Selector arguments to the global
-query, general V8 coercions/string shorthand, other curves and `cfWait` remain
-explicitly unsupported. This slice does not run the complete official tutorial.
+The normal SDK kind55 host supports `CsPlane.motMove(duration, x, y, z)`,
+`cfIsExecMotion()` and `cfIsExecMotion(plane)` for one known CsPlane. Duration is a
+signed32 integer, default30; the selected MOT script clamps values below1 to1.
+Coordinates are finite float32 numbers or omitted current values. The motion
+call returns `undefined`, not a native pointer or a manager handle; queries
+return booleans. Other selector forms, general V8 coercions/string shorthand,
+other curves and `cfWait` remain explicitly unsupported. This slice does not
+run the complete official tutorial.
 
 Own callback539790 first updates the actual object at its owner's native frame,
 then samples physical position and freezes target-minus-current registers before
@@ -180,10 +181,21 @@ used. Existing NativeMotionRegistry/Manager/Instance own actual KCS records and
 execution; the private SDK script is retained only as ignored proof, while
 maintained tests construct their own semantic KCS fixture.
 
-The global query scans the current Context's supported type1 objects and reads
-real manager activity. It is independent of Graph kind numbers and of a supplied
-single Plane; the current CsImage slice has an empty manager and no enabled MOT
-methods. Ordinary tick order is GameLoop followed by object motion/publication,
+The no-argument global query scans the current Context's supported type1 objects
+and reads real manager activity, independently of Graph kind numbers. The
+one-Plane query reads only that Plane's actual manager; a Plane without motion
+returns false even while another Context member is busy. Queries do not update
+motion, advance frames, read files, send packets or draw RNG values. The current
+CsImage slice has an empty manager and no enabled MOT methods.
+
+The one-object form requires a live typed CsPlane reference from the same
+Context, with its real nonzero owned child/model. Missing, released, malformed,
+wrong-type or other-owner references, strings, numbers, arrays and multiple
+arguments fail with a located unsupported diagnostic. These typed isolation
+guards define this finite normal implementation; the native argument path does
+not establish a native cross-owner refusal contract.
+
+Ordinary tick order is GameLoop followed by object motion/publication,
 including the callback that called `cfExit`. Later stopped callbacks do not tick.
 The native same-frame pre-update is preserved; FES forest traversal or a generic
 same-frame suppression rule is not substituted. Frame0 retains the manager's

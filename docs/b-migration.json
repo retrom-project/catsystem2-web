@@ -55104,7 +55104,7 @@
     },
     {
       "file": "src/native/sdk-javascript-normal.mjs",
-      "sourceSha256": "e806ae43a4dd33cdeb90ffe39fdd478d7c9d210c368eda901350c532a2523ab8",
+      "sourceSha256": "ce7458912017a26cceaf33d1e71e356dcbedad531e69246d1add457f99f55355",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55112,7 +55112,7 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 189,
+          "line": 190,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",
@@ -55147,7 +55147,7 @@
     },
     {
       "file": "src/native/sdk-javascript-plane.mjs",
-      "sourceSha256": "f83cb9a4913bf3ced0faeb6068230cfc01dbe33afee01704a634104601b39682",
+      "sourceSha256": "5da65cfa15392bbcef038b983698031e33a5418ce18c0725867549214f495425",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55157,28 +55157,28 @@
       "executionSiteCounts": {},
       "indirectSites": [
         {
-          "line": 129,
+          "line": 155,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 234,
+          "line": 260,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 275,
+          "line": 301,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
           "reason": "间接进入共享进程 feature 或任务接收器，目标及输入决定 EXE 依赖。"
         },
         {
-          "line": 340,
+          "line": 366,
           "method": "sendNativeEngine",
           "feature": null,
           "review": "needs-review",
@@ -60923,7 +60923,7 @@
         },
         {
           "file": "src/native/sdk-javascript-normal.mjs",
-          "line": 189,
+          "line": 190,
           "method": "call",
           "target": "'GameLoop'",
           "review": "needs-review",

@@ -100,6 +100,32 @@ export class SDKJavaScriptPlanes {
   busy(plane) {
     return plane.motion === undefined ? false : this.manager(plane).busy();
   }
+  selectedBusy(reference, location) {
+    this.checkOpen();
+    const unsupported = () =>
+        scriptError(
+          'Unsupported JavaScript host import',
+          location,
+          'cfIsExecMotion CsPlane reference',
+        ),
+      record =
+        reference &&
+        typeof reference === 'object' &&
+        !Array.isArray(reference) &&
+        Object.keys(reference).length === 1 &&
+        Number.isSafeInteger(reference.hostObject) &&
+        this.world.runtime.handles.records.get(reference.hostObject);
+    if (record?.type !== 'javascript-plane' || record.value?.owner !== this.owner.id)
+      throw unsupported();
+    try {
+      this.child(record.value, true);
+      return this.busy(record.value);
+    } catch (cause) {
+      const error = unsupported();
+      error.cause = cause;
+      throw error;
+    }
+  }
   modelState(plane) {
     const graph = this.child(plane, true).implementation.graph,
       state = graph.kx2.slice();

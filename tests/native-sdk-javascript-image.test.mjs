@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NativeWorld } from '../src/native/world.mjs';
+import { NormalSDKJavaScriptTask } from '../src/native/sdk-javascript-normal.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
@@ -1113,7 +1114,7 @@ test('normal SDK CsPlane motion preserves mode3 reads and cancels pending owner 
     await missing.world.close();
   }
   const rejected = await motionFixture(
-    'var plane=new CsPlane(9,7,0,0,0); var busy=cfIsExecMotion(plane); function GameLoop(frame){}',
+    'var plane=new CsPlane(9,7,0,0,0); var busy=cfIsExecMotion("unsupported selector"); function GameLoop(frame){}',
   );
   try {
     await assert.rejects(
@@ -1142,4 +1143,122 @@ test('normal SDK CsPlane motion preserves mode3 reads and cancels pending owner 
     script,
   );
   assert.equal(reads, 1);
+});
+
+test('normal SDK selected Plane motion queries stay pure across aliases and fresh owners', async () => {
+  const source = [
+      'var plane=new CsPlane(9,7,3,-2,11), alias=plane, idle=new CsPlane(9,7,0,0,0);',
+      'var loops=0, selectedIdle=true, selectedBusy=false, selectedAlias=false, anyBusy=false;',
+      'function GameLoop(frame){ loops++; if(loops===1) plane.motMove(4,8,-4,2);',
+      'selectedIdle=cfIsExecMotion(idle); selectedBusy=cfIsExecMotion(plane);',
+      'selectedAlias=cfIsExecMotion(alias); anyBusy=cfIsExecMotion(); }',
+    ].join('\n'),
+    first = await motionFixture(source),
+    fresh = await motionFixture(source),
+    worlds = new Map([
+      [first.world, first],
+      [fresh.world, fresh],
+    ]),
+    observations = [],
+    originalHost = NormalSDKJavaScriptTask.prototype.host;
+  let restoring = false,
+    restoreHosts = 0,
+    restoreScripts = 0,
+    restoreDraws = 0;
+  const queryState = (world, fixture) => ({
+    frame: world.frame,
+    clock: world.clock.snapshot(),
+    effective: task(world).effectiveFrame,
+    paused: task(world).pausedFrames,
+    managers: [...world.runtime.handles.records]
+      .filter(([, record]) => record.type === 'motion-manager')
+      .map(([id, record]) => [id, record.value.manager?.snapshot() ?? record.value.state]),
+    random: world.random.snapshot(),
+    files: fixture.events.files.length,
+    packets: fixture.events.packets.length,
+    native: fixture.events.native.length,
+  });
+  NormalSDKJavaScriptTask.prototype.host = function (...args) {
+    const fixture = worlds.get(this.world),
+      query = fixture && args[0] === 'cfIsExecMotion',
+      before = query ? queryState(this.world, fixture) : null;
+    if (restoring && fixture) restoreHosts++;
+    const reply = originalHost.apply(this, args);
+    if (query) {
+      assert.deepEqual(queryState(this.world, fixture), before, 'a query is a pure read');
+      observations.push({ world: this.world, argc: args[1].length, value: reply.value });
+    }
+    return reply;
+  };
+  const execute = fresh.world.runtime.scheduler.execute;
+  fresh.world.runtime.scheduler.execute = function (...args) {
+    if (restoring) restoreScripts++;
+    return execute.apply(this, args);
+  };
+  for (const stream of [fresh.world.random.integer, fresh.world.random.real]) {
+    const next = stream.nextUint32;
+    stream.nextUint32 = function (...args) {
+      if (restoring) restoreDraws++;
+      return next.apply(this, args);
+    };
+  }
+  const expectQueries = (world, busy) => {
+    assert.equal(cell(world, 'selectedIdle'), false, 'another Plane must not contaminate idle');
+    assert.equal(cell(world, 'selectedBusy'), busy);
+    assert.equal(cell(world, 'selectedAlias'), busy);
+    assert.equal(cell(world, 'anyBusy'), busy);
+    assert.deepEqual(cell(world, 'plane'), cell(world, 'alias'));
+  };
+  try {
+    await first.world.initialize('main.kcs');
+    await first.world.tick();
+    expectQueries(first.world, true);
+    await first.world.tick();
+    expectQueries(first.world, true);
+    const checkpoint = structuredClone(first.world.snapshot());
+    assertData(checkpoint);
+    fresh.events.files.length = 0;
+    restoring = true;
+    try {
+      await fresh.world.restore(structuredClone(checkpoint));
+    } finally {
+      restoring = false;
+    }
+    assert.deepEqual(
+      fresh.world.snapshot(),
+      checkpoint,
+      'full DTO is restored with zero warm frames',
+    );
+    assert.equal(restoreHosts, 0);
+    assert.equal(restoreScripts, 0);
+    assert.equal(restoreDraws, 0);
+    assert.deepEqual(fresh.events.native, []);
+    assert.deepEqual(fresh.events.packets, []);
+    assert.equal(
+      fresh.events.files.some((read) => read.path === 'image.js'),
+      false,
+    );
+    assert.equal(motionReads(fresh.events).length, 1, 'only the permitted immutable MOT reread');
+    for (let loop = 3; loop <= 6; loop++) {
+      await fresh.world.tick();
+      assert.equal(cell(fresh.world, 'loops'), loop);
+      expectQueries(fresh.world, loop < 6);
+    }
+    assert.deepEqual(
+      first.world.snapshot(),
+      checkpoint,
+      'fresh queries and frames do not alter the source owner',
+    );
+    assert.ok(observations.some((entry) => entry.argc === 0 && entry.value === true));
+    assert.ok(observations.some((entry) => entry.argc === 1 && entry.value === false));
+    assert.equal(observations.filter((entry) => entry.world === first.world).length, 8);
+    assert.equal(observations.filter((entry) => entry.world === fresh.world).length, 16);
+    assert.equal(first.events.original + fresh.events.original, 0);
+    await first.world.objects.release(task(first.world).id);
+    assert.ok(planeTask(fresh.world).implementation.graph);
+  } finally {
+    NormalSDKJavaScriptTask.prototype.host = originalHost;
+    await first.world.close();
+    await fresh.world.close();
+  }
 });
