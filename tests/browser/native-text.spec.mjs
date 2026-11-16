@@ -30,6 +30,7 @@ for (const [profile, variable] of [
             { NativeDrawTask },
             { NativeBitmap },
             { NativeHandles },
+            { NativePlaneMovies },
             { NativeConfiguration },
             { StageRenderer },
             { MOTION_ABI, setMotionVector },
@@ -40,6 +41,7 @@ for (const [profile, variable] of [
             import('/src/native/draw-task.mjs'),
             import('/src/native/image.mjs'),
             import('/src/native/handles.mjs'),
+            import('/src/native/plane-movie-session.mjs'),
             import('/src/native/config.mjs'),
             import('/src/render/stage.mjs'),
             import('/src/motion/abi.mjs'),
@@ -69,6 +71,7 @@ for (const [profile, variable] of [
         world.configuration.fields.texture.grid.set([1, 1]);
         world.configuration.fields.texture.bppY.set([1, 1]);
         world.configuration.fields.texture.areas[0].set([0, 0, 1, 1]);
+        world.planeMovies = new NativePlaneMovies(world);
         world.graphics = new NativeGraphics(world);
         engine.createGraphicsProjection(world);
         new NativeRetainedDraw(engine, world);

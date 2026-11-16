@@ -525,6 +525,7 @@ test('StageRenderer orders a real native plane and JS particle task into one des
         { NativeHandles } = await import('/src/native/handles.mjs'),
         { NativeBufferMemory } = await import('/src/native/buffer-memory.mjs'),
         { installNativeGraphics, nativeGraphics } = await import('/src/native/graphics.mjs'),
+        { NativePlaneMovies } = await import('/src/native/plane-movie-session.mjs'),
         { installNativeParticles, nativeParticles } = await import('/src/native/particles.mjs'),
         { StageRenderer } = await import('/src/render/stage.mjs'),
         { ParticleRandom } = await import('/src/ppi/random.mjs'),
@@ -564,6 +565,7 @@ test('StageRenderer orders a real native plane and JS particle task into one des
             objects.objects.get(target).implementation.message([sender, message, w, l], context),
         };
       objects.register(0, (record) => world.base(record));
+      world.planeMovies = new NativePlaneMovies(world);
       installNativeGraphics(world);
       installNativeParticles(world, {
         atlas: undefined,

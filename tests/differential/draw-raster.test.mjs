@@ -8,6 +8,7 @@ import { floatBits } from '../../src/kcs.mjs';
 import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
 import { NativeGraphicsPlatform } from '../../oracle/graphics-consumer-projection.mjs';
 import { NativeGraphics } from '../../src/native/graphics.mjs';
+import { NativePlaneMovies } from '../../src/native/plane-movie-session.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
 import { NativeDrawTask } from '../../src/native/draw-task.mjs';
@@ -59,6 +60,7 @@ for (const fixture of await engineFixtureSet())
           base: () => ({ message: () => 0 }),
           getNativeFeature: async (name) => engine.features.get(name),
         };
+      world.planeMovies = new NativePlaneMovies(world);
       world.graphics = new NativeGraphics(world);
       const platform = new NativeGraphicsPlatform(engine, world),
         retained = (world.retainedDraw = new NativeRetainedDraw(engine, world)),

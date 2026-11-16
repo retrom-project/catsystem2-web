@@ -8,6 +8,7 @@ import { NativeTextRuntime, NativeNVTextWriter } from '../oracle/text.mjs';
 import { NativeTextRuntime as JSTextRuntime } from '../src/native/text.mjs';
 import { NativeNVTextTask } from '../src/native/text-task.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
+import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { encodeHG2 } from '../src/formats/hg2.mjs';
@@ -199,6 +200,7 @@ for (const [profile, , abi] of configs) {
           },
         },
       };
+      world.planeMovies = new NativePlaneMovies(world);
       installNativeGraphics(world);
       const record = { id: 12, kind: 49, state: 'active', effectiveFrame: 0, pausedFrames: 0 },
         task = new NativeNVTextTask({ world, runtime: async () => candidate }, record),

@@ -21,6 +21,7 @@ import { NativeScriptReplacementsBridge } from '../src/native/script-replacement
 import { NativeSceneData } from '../src/native/scene-data.mjs';
 import { StageRenderer } from '../src/render/stage.mjs';
 import { NativeGraphics, installNativeGraphics } from '../src/native/graphics.mjs';
+import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeTextWriter } from '../oracle/text.mjs';
@@ -821,6 +822,7 @@ async function fixture(profile, bytes, source) {
   );
   world.stageRenderer = new StageRenderer();
   installNativeBitmapMemory(world);
+  world.planeMovies = new NativePlaneMovies(world);
   installNativeGraphics(world);
   installNativeText(world, { glyphs });
   // This fixture observes original pointer consumers. Ordinary World FES is

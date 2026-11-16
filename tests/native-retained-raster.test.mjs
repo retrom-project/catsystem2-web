@@ -6,6 +6,7 @@ import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../src/native/engine-process.mjs';
 import { NativeGraphicsPlatform } from '../oracle/graphics-consumer-projection.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
+import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeDrawTask } from '../src/native/draw-task.mjs';
@@ -36,6 +37,7 @@ for (const [profile, variable, affineTable] of [
           configuration: new NativeConfiguration({ profile }),
           base: () => ({ message: () => 0 }),
         };
+      world.planeMovies = new NativePlaneMovies(world);
       world.graphics = new NativeGraphics(world);
       world.getNativeFeature = async (name) => {
         const feature = engine.features.get(name);
