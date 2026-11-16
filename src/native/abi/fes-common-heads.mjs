@@ -280,6 +280,15 @@ function sameNames(left, right) {
   );
 }
 
+function validNames(names, allowed) {
+  return (
+    Array.isArray(names) &&
+    names.every((name, index) => allowed.includes(name) && (index === 0 || names[index - 1] < name))
+  );
+}
+
+const additionNames = [...gameAdditions, ...sdkAdditions];
+
 const registrationFields = new Set([
   'shared',
   'additions',
@@ -297,9 +306,10 @@ export function validateFESCommonHeads(registration) {
     Object.keys(registration).some((key) => !registrationFields.has(key)) ||
     registration.complete !== true ||
     registration.comparison !== 'byte-exact-cstring' ||
-    !sameNames(registration.shared, sharedNames) ||
-    ![gameAdditions, sdkAdditions].some((names) => sameNames(registration.additions, names)) ||
+    !validNames(registration.shared, sharedNames) ||
+    !validNames(registration.additions, additionNames) ||
     !Number.isSafeInteger(registration.count) ||
+    registration.count <= 0 ||
     registration.count !== registration.shared.length + registration.additions.length ||
     !Array.isArray(registration.reviewedBindings) ||
     registration.reviewedBindings.some(
@@ -308,7 +318,9 @@ export function validateFESCommonHeads(registration) {
         list.indexOf(id) !== index ||
         !reviewRegistrations.some(
           (group) =>
-            sameNames(registration.additions, group.additions) && group.reviews.includes(id),
+            sameNames(registration.shared, sharedNames) &&
+            sameNames(registration.additions, group.additions) &&
+            group.reviews.includes(id),
         ),
     )
   )

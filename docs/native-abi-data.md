@@ -366,6 +366,15 @@ explicitly registers the shared set, its additions, the complete count and
 are rejected. These keywords are not entries or ordinals in the four VM native
 ID namespaces, and their presence does not change a slot or capability.
 
+The shared catalogue is independent of a version's complete membership. Each
+registered set contains sorted, unique catalogue names and an exact total;
+119 shared words is the current two engines' fact, rather than a minimum for
+another engine. The independently recovered .63/.67 tables contain 109/110
+members, with neither `getsndconfex` nor `setsndconfex`. This data does not
+register those ABIs or qualify any of their handlers for execution. The existing
+Game/SDK binding reviews still require their matching complete modern sets;
+an older set cannot inherit them by containing the same keyword.
+
 `nativeFESCommonHead(profile, narrowBytes)` resolves the exact registered profile
 before querying its data. It returns a tagged `present` descriptor or `absent`;
 the lookup compares narrow bytes through the first NUL, with an implicit NUL at

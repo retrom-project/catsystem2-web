@@ -6,6 +6,8 @@ import * as abiAPI from '../src/native/abi/index.mjs';
 import {
   lookupFESCommonHead,
   FES_COMMON_HEAD_BINDING_REVIEWS,
+  FES_COMMON_HEAD_REGISTRATIONS,
+  validateFESCommonHeads,
 } from '../src/native/abi/fes-common-heads.mjs';
 
 const bytes = (value) => new TextEncoder().encode(value),
@@ -290,5 +292,80 @@ for (const [profile, count, additions] of [
     rejects((value) => {
       value.reviewedBindings = [ownReview, otherLockReview];
     });
+  });
+}
+
+// Independently recovered complete inline tables: .63 has 109 entries; .67
+// adds strcmp. This is membership evidence, not either version's ABI admission.
+const oldAbsent = [
+  'cursormove',
+  'getsndconfex',
+  'inputdevice',
+  'opensiteenc',
+  'psversion',
+  'replacespace',
+  'saveget_date',
+  'setsndconfex',
+  'sysvoiceex',
+];
+for (const [version, count] of [
+  ['2.6.1.63', 109],
+  ['2.6.1.67', 110],
+]) {
+  test(`native FES common membership accepts an independently complete old set: ${version}`, () => {
+    const absent = [...oldAbsent, ...(version === '2.6.1.63' ? ['strcmp'] : [])],
+      registration = {
+        shared: FES_COMMON_HEAD_REGISTRATIONS.sdk.shared.filter((name) => !absent.includes(name)),
+        additions: [],
+        count,
+        complete: true,
+        comparison: 'byte-exact-cstring',
+        reviewedBindings: [],
+      };
+    assert.equal(registration.shared.length, count);
+    assert.strictEqual(validateFESCommonHeads(registration), registration);
+    for (const name of registration.shared) {
+      const result = lookupFESCommonHead(registration, bytes(name));
+      assert.equal(result.kind, 'present');
+      assert.equal(result.entry.keyword, name);
+      assert.equal(result.entry.semanticLink, null);
+      assert.equal(result.entry.dispatchBinding, null);
+    }
+    for (const name of [...absent, ...sdkOnly, ...gameOnly, 'IF'])
+      assert.deepEqual(lookupFESCommonHead(registration, bytes(name)), { kind: 'absent' });
+    for (const review of [
+      ...FES_COMMON_HEAD_REGISTRATIONS.sdk.reviewedBindings,
+      ...FES_COMMON_HEAD_REGISTRATIONS.game.reviewedBindings,
+    ])
+      assert.throws(
+        () => validateFESCommonHeads({ ...registration, reviewedBindings: [review] }),
+        /FES common head registration/,
+      );
+    for (const change of [
+      (value) => {
+        value.shared[0] = 'unreviewed_keyword';
+      },
+      (value) => {
+        value.shared[1] = value.shared[0];
+      },
+      (value) => {
+        value.shared.reverse();
+      },
+      (value) => {
+        value.additions = [value.shared[0]];
+        value.count++;
+      },
+      (value) => {
+        value.count--;
+      },
+      (value) => {
+        value.complete = false;
+      },
+    ]) {
+      const invalid = structuredClone(registration);
+      change(invalid);
+      assert.throws(() => validateFESCommonHeads(invalid), /FES common head registration/);
+    }
+    assert.throws(() => abiAPI.abiForEngineVersion(version), /Unregistered CatSystem2 engine/);
   });
 }
