@@ -726,3 +726,21 @@ than a new bitmap-handle constructor. Ordinary mode1 replaces the old model
 and retains all eight words. Modes0/2 remove the old model while keeping its
 rectangle, draw type and retained packet fields. Other backend modes, Base-only
 primitive targets and unreviewed SDK slots are outside this finite admission.
+
+SDK Main85 now independently admits the existing `plane.setBaseXY` signature:
+raw native task ID, float32 X/Y and an unchanged DWORD geometry/texture selector.
+Its own wrapper and the Game wrapper both query message61 and then send49 with
+transport flags1, preserving the last initialized query Z while replacing X/Y.
+Zero target returns before both sends. Control2 writes no VM result. The existing
+D2 Base-to-child traversal and typed model/MOT owner remain the authority.
+
+`NativeGraphicsPacket` has one explicit unwritten-word set; existing numeric
+callers default to all-known data. Main85 starts its three query words unwritten.
+A Plane without a graph leaves the query untouched, so a late unloaded child
+cannot overwrite an earlier loaded responder. An uninitialized preserved Z is
+an unsupported finite boundary, rather than an invented zero or a skipped Base
+with valid children. `load` can report `undefined`; raw data/view/byte reads reject
+unknown bytes, known slices cannot expose their backing storage, and constructors,
+stores and float consumers reject implicit conversion of unwritten words to zero.
+Only the ordinary loaded model domain is claimed. Other backends, rare entries
+without a selected model and other unreviewed SDK slots remain outside this leaf.

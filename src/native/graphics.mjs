@@ -723,7 +723,11 @@ export class NativeGraphicTask {
           : context.payload.read(address, size)
         : this.machine(context.nativeSenderWorldID ?? sender).bytes(address, size);
     const floats = (address, count) =>
-      Array.from({ length: count }, (_, i) => bitsFloat(load(address + i * 4)));
+      Array.from({ length: count }, (_, i) => {
+        const word = load(address + i * 4);
+        if (word === undefined) throw new Error('Native graphic float word is unwritten');
+        return bitsFloat(word);
+      });
     const put = (address, values) => values.forEach((v, i) => store(address + i * 4, floatBits(v)));
     const textureSelected = () => Boolean(w && this.graph?.textureTransform !== this.graph?.kx2);
     const transformState = () =>
@@ -1061,7 +1065,7 @@ export class NativeGraphicTask {
         this.state.blocked = Boolean(l >>> 31);
         return 0;
       case 61:
-        put(l, vector(MOTION_ABI.base));
+        if (this.graph) put(l, vector(MOTION_ABI.base));
         return 0;
       case 62:
         put(l, vector(MOTION_ABI.pos));
@@ -1608,11 +1612,14 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(51, args[4], 0, packet(args.slice(1, 4)));
       return done();
     case 0x55: {
-      const p = packet();
-      await send(61, args[3], 0, p);
+      if (!args[0]) return done();
+      const p = new NativeGraphicsPacket([], { unwritten: [0, 1, 2] });
+      await send(61, args[3], 0, p, 1);
+      if (p.load(8) === undefined)
+        throw new Error('Native plane base query has an unwritten third word');
       p.store(0, args[1]);
       p.store(4, args[2]);
-      await send(49, args[3], 0, p);
+      await send(49, args[3], 0, p, 1);
       return done();
     }
     case 0x56: {
