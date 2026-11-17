@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { AudioMixer } from '../src/audio.mjs';
+import { memoryGame } from './helpers.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { CHECKPOINT_LIMIT } from '../src/checkpoint.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
@@ -19,7 +21,7 @@ test('mixed snapshots budget guest state separately from the JS-owned graph', as
         movies: { async settle() {} },
         snapshot: () => ({ nativeEngine: guest, data: new Uint8Array(8) }),
       },
-      audio: { snapshot: () => ({}) },
+      audio: new AudioMixer(memoryGame({}), { currentTime: 0 }),
       emote: { snapshot: () => ({}) },
     });
   assert.equal(engine.checkpointLimit, 768 * 1024 * 1024);

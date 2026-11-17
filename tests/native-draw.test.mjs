@@ -5,7 +5,6 @@ import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
-import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
@@ -45,7 +44,6 @@ function fixture() {
       },
     }),
   };
-  world.planeMovies = new NativePlaneMovies(world);
   installNativeGraphics(world);
   return world;
 }

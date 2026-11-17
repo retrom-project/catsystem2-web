@@ -369,7 +369,7 @@ for (const profile of profiles) {
       t.bank.setBytes(12, ascii('KEEP'));
       assert.throws(
         () => h.instance.execute(ascii('fontcom default 12'), [], 0),
-        /data view is unavailable/,
+        /synchronous byte reader/,
       );
       assert.deepEqual(t.bank.getBytes(12), ascii('KEEP'));
       h.instance.setGlobal(10, 11);

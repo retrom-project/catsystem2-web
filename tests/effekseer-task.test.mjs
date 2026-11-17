@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
+import { ownsOriginalWorld } from '../oracle/world-operations.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -283,13 +284,16 @@ test('two task managers use actual frame/forced entries and actual queue drain,n
     await assert.rejects(w.sendEngine(a.record.id, w.main.id, 571), /live explicit/);
     assert.deepEqual(crts(w), before);
     assert.deepEqual(a.manager.snapshot(), manager);
+    w.transitionalExe = { ownsWorld: ownsOriginalWorld };
     w.nativeEngineLoading = Promise.resolve({});
     await assert.rejects(send(w, a, 571), /Mixed native CRT/);
     delete w.nativeEngineLoading;
+    w.transitionalExe = null;
     assert.deepEqual(crts(w), before);
     assert.equal(w.nativeEngine, undefined);
   } finally {
     delete w.nativeEngineLoading;
+    w.transitionalExe = null;
     await w.close({ flushFiles: false });
   }
 });

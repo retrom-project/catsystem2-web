@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { fesLabelPayload } from './fixtures/default-fes-world.mjs';
 import test from 'node:test';
+import { ownsOriginalWorld } from '../oracle/world-operations.mjs';
 import assert from 'node:assert/strict';
 import { open, object, task, step, notify, observe } from './fixtures/fes-effekseer-world.mjs';
 
@@ -134,6 +135,7 @@ test('unknown/closed and mixed-native raw36 sampling fail before any CRT word or
     );
     assert.equal(t.manager.sets.size, 0);
     assert.deepEqual(w.effekseer.threads.snapshot(), before);
+    w.transitionalExe = { ownsWorld: ownsOriginalWorld };
     w.nativeEngine = {};
     try {
       await assert.rejects(notify(h, 'PLAY'), /Mixed native CRT/);
@@ -141,6 +143,7 @@ test('unknown/closed and mixed-native raw36 sampling fail before any CRT word or
       assert.deepEqual(w.effekseer.threads.snapshot(), before);
     } finally {
       delete w.nativeEngine;
+      w.transitionalExe = null;
     }
   } finally {
     await w.close({ flushFiles: false });

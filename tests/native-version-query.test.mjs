@@ -372,7 +372,7 @@ test('ordinary main module cold restore rejects a different selected source befo
 for (const profile of Object.keys(handlers)) {
   test(`cold Core initialization keeps saved module authority without reading the executable in ${profile}`, async (t) => {
     const environment = startupEnvironment();
-    t.mock.method(OrdinaryWorld.prototype, 'ensureNativeEngine', () => {
+    t.mock.method(NativeEngineProcess, 'open', () => {
       throw new Error('Cold module restore attempted original CPU');
     });
     try {

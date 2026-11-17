@@ -6,7 +6,6 @@ import { NativeInput } from '../src/native/input.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
-import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { FESPlayer } from '../src/fes/player.mjs';
 import { memoryGame } from './helpers.mjs';
 import { FESObjectCollection } from '../src/native/fes-object-collection.mjs';
@@ -49,7 +48,6 @@ async function fixture(source) {
     objects.objects.get(id).implementation.message([sender, message, w, l], context);
   world.nativeTaskID = (id) => id;
   world.sendNativeEngine = (...args) => world.sendEngine(...args);
-  world.planeMovies = new NativePlaneMovies(world);
   installNativeGraphics(world);
   objects.register(1, () => ({
     message() {

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeConfigurationMemory } from '../oracle/config-memory.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { installOriginalWorldRuntime } from '../oracle/native-world-runtime.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
 const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
@@ -63,6 +64,7 @@ for (const profile of profiles) {
   test(`${profile} World borrows only an already mounted default Settings view and never ensures an engine`, async () => {
     const world = await dataWorld(profile, {}, { initialize: false }),
       h = viewFixture(profile);
+    installOriginalWorldRuntime(world);
     try {
       assert.equal(world.nativeEngine, undefined);
       assert.throws(() => world.nativeDefaultFontBytes(), /data view is unavailable/);

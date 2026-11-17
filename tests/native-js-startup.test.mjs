@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
+import { OriginalNativeWindow } from '../oracle/window-original.mjs';
 import assert from 'node:assert/strict';
 import { KIFArchive, BlobFile } from '../src/files.mjs';
 import { kif } from './helpers.mjs';
@@ -485,7 +486,7 @@ for (const profile of startupProfiles)
       player.world.nativeEngineLoading = new Promise(() => {});
       try {
         await assert.rejects(
-          player.world.window.sendEvent(158, 0, 1),
+          OriginalNativeWindow.prototype.sendEvent.call(player.world.window, 158, 0, 1),
           /window-events requires initialized original application, Settings and random owners/,
         );
       } finally {

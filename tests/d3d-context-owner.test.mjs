@@ -13,6 +13,14 @@ import {
 import { EffekseerSharedDeviceView } from '../src/effekseer/shared-device-view.mjs';
 import { NativeRenderer as ConsumerRenderer } from '../oracle/renderer-consumer-projection.mjs';
 import { NativeRenderer as M2Renderer } from '../oracle/m2-renderer-original.mjs';
+import {
+  installOriginalWorldRuntime,
+  snapshotOriginalWorld,
+  hasOriginalWorldCheckpoint,
+  restoreOriginalWorld,
+  closeOriginalWorld,
+} from '../oracle/native-world-runtime.mjs';
+import { ownsOriginalWorld } from '../oracle/world-operations.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
 const PROFILE = 'nekopara-vol3-engine-2.6.1.76';
@@ -197,6 +205,14 @@ function constructorBoundary(Renderer) {
   };
 }
 function engineBoundary(world, Renderer = ConsumerRenderer, events = []) {
+  installOriginalWorldRuntime(world);
+  world.transitionalExe = {
+    ownsWorld: ownsOriginalWorld,
+    snapshotWorld: snapshotOriginalWorld,
+    hasWorldCheckpoint: hasOriginalWorldCheckpoint,
+    restoreWorld: restoreOriginalWorld,
+    closeWorld: closeOriginalWorld,
+  };
   const process = new HostProcess(),
     Constructor = constructorBoundary(Renderer),
     engine = {

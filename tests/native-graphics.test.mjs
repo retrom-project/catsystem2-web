@@ -3,7 +3,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { installNativeGraphics, nativeGraphics } from '../src/native/graphics.mjs';
-import { NativePlaneMovies } from '../src/native/plane-movie-session.mjs';
 import { KCSMachine, floatBits } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
@@ -55,7 +54,6 @@ function world() {
     },
   };
   world.inputFor = () => world.input;
-  world.planeMovies = new NativePlaneMovies(world);
   installNativeGraphics(world);
   const machine = new KCSMachine(
     {

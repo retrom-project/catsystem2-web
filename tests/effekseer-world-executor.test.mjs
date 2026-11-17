@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
+import { ownsOriginalWorld } from '../oracle/world-operations.mjs';
 import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, loadDefaultFES, fesLabelPayload } from './fixtures/default-fes-world.mjs';
@@ -487,6 +488,7 @@ test('mixed native placeholder blocks W1 before sampling and never opens a proce
     noEXE = guard(w),
     before = w.effekseer.threads.snapshot();
   try {
+    w.transitionalExe = { ownsWorld: ownsOriginalWorld };
     w.nativeEngine = { unbound: true };
     assert.throws(
       () =>
@@ -500,9 +502,11 @@ test('mixed native placeholder blocks W1 before sampling and never opens a proce
     assert.deepEqual(w.effekseer.threads.snapshot(), before);
     assert.equal(m.a.sets.size, 0);
     delete w.nativeEngine;
+    w.transitionalExe = null;
     noEXE();
   } finally {
     delete w.nativeEngine;
+    w.transitionalExe = null;
     m.a.close();
     m.b.close();
     await w.close({ flushFiles: false });

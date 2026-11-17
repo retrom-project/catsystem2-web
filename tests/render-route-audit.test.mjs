@@ -23,6 +23,7 @@ for (const profile of Object.keys(NATIVE_ABIS))
       },
       sendNativeEngine(_target, _sender, message, _w, _l, context) {
         messages.push(message);
+        if (message === 285) context.payload.store(0, 0x13579bdf);
         if (message === 61)
           [0x3f800000, 0x40000000, 0x40400000].forEach((word, i) =>
             context.payload.store(i * 4, word),
@@ -62,6 +63,7 @@ for (const profile of Object.keys(NATIVE_ABIS))
       const reply = await handlers.get(row.id)(args, machine, { id: 9 });
       assert.deepEqual(messages, row.messages, row.semanticName);
       assert.ok([1, 2].includes(reply.control), row.semanticName);
+      if (row.id === 0x105) assert.equal(reply.value, 0x13579bdf);
       if (row.id === 0x108)
         assert.deepEqual(reply, { control: 2 }, 'original count is deliberately discarded');
     }
