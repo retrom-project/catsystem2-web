@@ -200,6 +200,11 @@ function validateBehavior(abi) {
       filename.directoryComparison !== 'c-locale-bytewise')
   )
     throw new Error(`Invalid ABI normal filename policy ${abi.id}`);
+  if (
+    Object.hasOwn(abi.sound, 'sameIdAllowsUnconfiguredSoundTree') &&
+    typeof abi.sound.sameIdAllowsUnconfiguredSoundTree !== 'boolean'
+  )
+    throw new Error(`Invalid ABI Sound same-ID policy ${abi.id}`);
   const valid = (path, predicate) =>
       Object.hasOwn(abi.unreviewed ?? {}, path) || predicate(behaviorAt(abi, path)),
     bool = (value) => typeof value === 'boolean',

@@ -257,6 +257,21 @@ test('67 admits the reviewed Sound and Script cursor message without admitting i
   }
 });
 
+test('the optional Sound same-ID policy accepts only booleans', () => {
+  const abi = structuredClone(nativeABI('sdk-4.01-engine-2.6.1.74')),
+    field = 'sameIdAllowsUnconfiguredSoundTree';
+  assert.equal(abi.sound[field], true);
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of [null, 0, 1, 'true', []]) {
+    abi.sound[field] = invalid;
+    assert.throws(() => validateABI(abi), /Invalid ABI Sound same-ID policy/);
+  }
+  abi.sound[field] = false;
+  assert.strictEqual(validateABI(abi), abi);
+  delete abi.sound[field];
+  assert.strictEqual(validateABI(abi), abi);
+});
+
 test('normal Root ABI protocol fields are strict while original field offsets remain separate', () => {
   for (const registered of Object.values(NATIVE_ABIS)) {
     const normal = structuredClone(registered);
