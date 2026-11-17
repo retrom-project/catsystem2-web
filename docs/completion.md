@@ -83,7 +83,9 @@ FULL 只移除原进度停止，保留原业务体、每个 until/action/expect 
 不能称已捕获；完整业务已通过但保全失败时另报失败。CP 在正常 teardown 前捕获；
 随后仅调用既有 Core.dispose/World.close，让其原 flush 和关闭回调完成，再以新的
 readonly 连接导出实际已提交 userdata。close 失败单列并保首因，不能称完整结束。
-观察器不额外推进帧、重放输入、改解锁或另造 flush/关闭规则。预点击 CP、终态 CP 和
+完整模式的普通断言失败先保留页面供终态观察器取证，再由既有 fixture 关闭 context；
+卡死帧仍遵循原 stall 关闭保护，页面已不可用时如实标记未捕获。观察器保留用例首错，
+不额外推进帧、重放输入、改解锁或另造 flush/关闭规则。预点击 CP、终态 CP 和
 各自 userdata 的实际源码/数据 namespace 分别记账，后续鉴赏与设置验收可复用真实终态。
 
 | 完整 UI 义务 | 实际判据与未覆盖部分                                                                                                                                                                |

@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import { ProgressBudget, FrameBudgetReached } from './progress-budget.mjs';
 const progress = new WeakMap();
 const budgets = new WeakMap();
+class FrameStallError extends Error {}
 
 export function fullAcceptanceMode(value = process.env.CATSYSTEM2_FULL_ACCEPTANCE) {
   if (value === undefined) return false;
@@ -32,7 +33,9 @@ export async function progressAcceptance(page, info, name, run) {
     });
     if (!(error instanceof FrameBudgetReached)) {
       console.log('acceptance failure state', JSON.stringify(budget.last));
-      await page.context().close();
+      // Full failures retain a responsive page for normal terminal teardown.
+      // The blocked-frame guard still closes at the original stall deadline.
+      if (!full || error instanceof FrameStallError) await page.context().close();
       throw error;
     }
     expect(budget.last.unsupported).toEqual([]);
@@ -165,7 +168,10 @@ export async function step(page, count = 1) {
         operation,
         new Promise((_, reject) => {
           timer = setTimeout(
-            () => reject(new Error(`Native acceptance wall stall ${JSON.stringify(budget.last)}`)),
+            () =>
+              reject(
+                new FrameStallError(`Native acceptance wall stall ${JSON.stringify(budget.last)}`),
+              ),
             budget.remainingWallMS(),
           );
         }),

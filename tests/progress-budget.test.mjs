@@ -163,3 +163,48 @@ test('explicit full campaign retains the original wall stall deadline and failur
     else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
   }
 });
+
+test('full campaign assertion failures retain the page for terminal teardown', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE,
+    original = new Error('owned first assertion failure');
+  let closes = 0;
+  const context = { close: async () => closes++ },
+    page = { on() {}, context: () => context },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+  try {
+    await assert.rejects(
+      progressAcceptance(page, info, 'game', async () => {
+        throw original;
+      }),
+      (error) => error === original,
+    );
+    assert.equal(closes, 0, 'terminal teardown needs the original live page');
+    await context.close();
+    assert.equal(closes, 1, 'the existing fixture remains the final context owner');
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
+
+test('progress campaign assertion failures preserve immediate cleanup and the original error', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE,
+    original = new Error('owned first progress failure');
+  let closes = 0;
+  const page = { on() {}, context: () => ({ close: async () => closes++ }) },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  try {
+    await assert.rejects(
+      progressAcceptance(page, info, 'game', async () => {
+        throw original;
+      }),
+      (error) => error === original,
+    );
+    assert.equal(closes, 1);
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
