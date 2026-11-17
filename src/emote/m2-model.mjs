@@ -102,6 +102,14 @@ export class M2Model {
   get busy() {
     return this.variables.busy || this.bodyVariables.busy || Boolean(this.external?.busy);
   }
+  setHitVariables(value) {
+    for (const name of this.pose.face.hitVariables) this.animation.setVariable(name, value);
+    // The engine's effect command commits one player update before a same-
+    // callback bitmap capture. This does not advance the World or DIF clocks.
+    this.animation.update(1);
+    if (this.finishHold && !this.sameRenderPose(this.finishHold.base)) this.finishHold = null;
+    if (!this.finishHold) this.geometry.update();
+  }
   prepareFadeSource() {
     // A document replacement captures the old program's requested pose, not
     // its transient automatic blink/lip values or an earlier crossfade.

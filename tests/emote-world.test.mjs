@@ -10,7 +10,7 @@ import { loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
-import { emoteM2Cases } from './fixtures/emote-m2-sequences.mjs';
+import { emoteM2Cases, emoteM2SequenceFiles } from './fixtures/emote-m2-sequences.mjs';
 
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/emote-m2-golden.json', import.meta.url)),
@@ -60,6 +60,73 @@ async function make(input, saved = new Map()) {
   });
   return world;
 }
+
+test('M2 hit-variable command publishes its readback pose in the same callback without a World tick', async () => {
+  const files = emoteM2SequenceFiles();
+  files['authored.dif'] = new TextEncoder().encode(
+    new TextDecoder().decode(files['authored.dif']) +
+      '\r\n#defval\r\nv0 1\r\n#hittest\r\nv0\r\n#touch\r\n0xff010203 $owned\r\n$owned\r\naction voice\r\n',
+  );
+  const world = await make({ files });
+  try {
+    await world.initialize('main.kcs');
+    const id = await world.objects.create({ kind: 54, parent: world.root }),
+      task = world.graphics.get(id),
+      machine = world.main.machine,
+      native = (id, args) => world.runtime.native('main', id, args, machine, world.main);
+    machine.writeString('aa01,1,1,1,1,1,1:0', 128);
+    await native(906, [id, 128, 0]);
+    await task.message([world.main.id, 47, 0, 1]);
+    for (const frame of [0, 1, 2, 3]) await task.drawTick(frame);
+    await native(908, [id]);
+    assert.notEqual(task.model.finishHold, null);
+    const before = task.model.geometry.commands.map((command) => command.bytes.slice()),
+      beforeTime = task.model.animation.time,
+      frame = world.frame,
+      mainSteps = world.main.machine.steps;
+    assert.equal(task.model.animation.variable('v0'), 1);
+    assert.deepEqual(await native(1025, [id, 1]), { control: 2 });
+    assert.equal(task.model.animation.variable('v0'), 0);
+    assert.equal(task.model.finishHold, null);
+    assert.equal(task.model.animation.time, beforeTime + 1);
+    assert.notDeepEqual(
+      task.model.geometry.commands.map((command) => command.bytes),
+      before,
+    );
+    assert.equal(world.frame, frame);
+    assert.equal(world.main.machine.steps, mainSteps);
+    // The configured raw color selects its real table through the actual task/router.
+    assert.deepEqual(await native(1029, [id, 0xff010203, 0]), { control: 1, value: 1 });
+    assert.deepEqual(world.m2.hits, [['action', 'voice']]);
+    const saved = world.snapshot(),
+      cold = await make({ files });
+    try {
+      await cold.restore(saved);
+      assert.deepEqual(cold.snapshot(), saved);
+      const restored = cold.graphics.get(id);
+      assert.equal(restored.model.animation.variable('v0'), 0);
+      assert.deepEqual(
+        restored.model.geometry.commands.map((command) => command.bytes),
+        task.model.geometry.commands.map((command) => command.bytes),
+      );
+    } finally {
+      await cold.close({ flushFiles: false });
+    }
+    assert.deepEqual(await native(1029, [id, 0xffabcdef, 0]), { control: 1, value: 0 });
+    assert.deepEqual(world.m2.hits, []);
+    assert.deepEqual(await native(1025, [id, 0]), { control: 2 });
+    assert.equal(task.model.animation.variable('v0'), 1);
+    assert.equal(task.model.animation.time, beforeTime + 2);
+    assert.deepEqual(
+      task.model.geometry.commands.map((command) => command.bytes),
+      before,
+    );
+    assert.equal(world.frame, frame);
+    assert.equal(world.main.machine.steps, mainSteps);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
 
 for (const input of emoteM2Cases())
   test(`JS M2 task ${input.name}: native results, message writes and draw packets match oracle`, async () => {

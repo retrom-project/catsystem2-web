@@ -16,6 +16,14 @@ packed color/tone/depth, display and pause state. Settings XML has the captured
 UTF-8/CRLF shape and original key order. Touch queries select the DIF color-table
 key and table index; they do not approximate this lookup as geometric picking.
 
+The effect/hit-variable command commits one PSB player update immediately after
+the variable writes, including when no World frame passes. The resulting geometry
+is available to bitmap capture in that same Script callback. A changed visible
+pose releases the retained Skip pose through the existing model rule; unchanged
+poses retain it. This does not tick the World, execute a Script VM, or advance
+the external DIF frame clock. Checkpoints retain the committed player/geometry
+state without replaying the effect command during restore.
+
 The original FES command functions for m2eff/m2att/m2fspeed/m2prmscale/m2iner,
 m2enable_blink/lip, m2splay and m2draw are no-ops in this ABI. The JS driver
 preserves them. Active load/body/color and m2enable_eff paths use task messages.

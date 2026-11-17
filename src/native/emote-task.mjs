@@ -316,8 +316,7 @@ export class M2Task extends NativeGraphicTask {
       case 548:
       case 549:
         this.m2.effects = message === 548;
-        for (const variable of this.model?.pose.face.hitVariables ?? [])
-          this.model.animation.setVariable(variable, Number(!this.m2.effects));
+        this.model?.setHitVariables(Number(!this.m2.effects));
         return undefined;
       case 550:
         this.model?.external.actions.base.clear();
