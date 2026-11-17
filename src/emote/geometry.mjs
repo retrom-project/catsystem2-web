@@ -487,24 +487,27 @@ export class EmoteGeometry {
       packet.stencil = 0;
       packet.maskWrite = false;
       packet.node = node;
-      for (let col = 0; col <= nx; col++)
-        for (let side = 0; side < 2; side++) {
-          const u = node.patch ? f(col / nx) : f(col * f(1 / nx)),
-            v = node.patch ? f((row + side) / ny) : f((row + side) * f(1 / ny)),
-            index = col * 2 + side;
-          point(u, v, this.patch.result);
-          const color = colorBilinear(node.colors, u, v);
-          packet.vertex(
-            index,
-            this.patch.result[0],
-            this.patch.result[1],
-            color,
-            f(f(f(col * du) + u0) * inverseWidth),
-            f(f(f((row + side) * dv) + v0) * inverseHeight),
-          );
-        }
-      this.commands.push(packet);
     }
+    // Adjacent strips share a grid row. Keep the same interleaved vertex
+    // positions in each packet while evaluating the shared row only once.
+    for (let row = 0; row <= ny; row++) {
+      const upper = node.packets[row - 1],
+        lower = node.packets[row],
+        v = node.patch ? f(row / ny) : f(row * f(1 / ny)),
+        textureV = f(f(f(row * dv) + v0) * inverseHeight);
+      for (let col = 0; col <= nx; col++) {
+        const u = node.patch ? f(col / nx) : f(col * f(1 / nx)),
+          index = col * 2,
+          textureU = f(f(f(col * du) + u0) * inverseWidth);
+        point(u, v, this.patch.result);
+        const x = this.patch.result[0],
+          y = this.patch.result[1],
+          color = colorBilinear(node.colors, u, v);
+        upper?.vertex(index + 1, x, y, color, textureU, textureV);
+        lower?.vertex(index, x, y, color, textureU, textureV);
+      }
+    }
+    for (const packet of node.packets) this.commands.push(packet);
   }
   applyMasks() {
     const plain = this.commands.slice();
