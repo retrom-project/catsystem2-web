@@ -7,6 +7,7 @@ import {
   progressAcceptance,
   step,
   state,
+  until,
 } from './browser/native-game-input.mjs';
 
 test('progress gates retain reviewed floors and stop at the fixed extra frame budget', () => {
@@ -186,6 +187,31 @@ test('full campaign assertion failures retain the page for terminal teardown', a
     if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
     else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
   }
+});
+
+test('a native FES wait observes overlay exit when the backdrop is already waiting', async () => {
+  let frame = 0;
+  const page = {
+      async evaluate(_observe, count) {
+        if (count !== undefined) {
+          frame += count;
+          return;
+        }
+        const overlay = frame === 0 ? 'ACTIVE' : frame === 6 ? 'EXIT' : 'WAIT';
+        return {
+          frame,
+          stack: ['backdrop#WAIT', `overlay#${overlay}`],
+          unsupported: [],
+          error: '',
+        };
+      },
+    },
+    settled = ({ stack }) => stack.includes('overlay#WAIT');
+  assert.equal((await until(page, 'backdrop#WAIT', 12, settled)).frame, 12);
+  frame = 0;
+  await assert.rejects(until(page, 'backdrop#WAIT', 6, settled));
+  assert.equal(frame, 6);
+  assert.equal((await until(page, 'backdrop#WAIT', 6)).frame, 6);
 });
 
 test('progress campaign assertion failures preserve immediate cleanup and the original error', async () => {

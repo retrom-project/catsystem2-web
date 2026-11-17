@@ -197,11 +197,13 @@ export async function step(page, count = 1) {
   return result;
 }
 
-export async function until(page, label, maxFrames) {
+export async function until(page, label, maxFrames, settled) {
   let result = await state(page);
-  const limit = result.frame + maxFrames;
-  while (!result.stack?.includes(label) && result.frame < limit) result = await step(page, 6);
+  const limit = result.frame + maxFrames,
+    reached = () => result.stack?.includes(label) && (!settled || settled(result));
+  while (!reached() && result.frame < limit) result = await step(page, 6);
   expect(result.stack, JSON.stringify(result)).toContain(label);
+  if (settled) expect(settled(result), JSON.stringify(result)).toBe(true);
   expect(result.unsupported).toEqual([]);
   return result;
 }

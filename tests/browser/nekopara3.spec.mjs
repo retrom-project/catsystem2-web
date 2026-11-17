@@ -85,7 +85,7 @@ async function runGame(page) {
   await clickGame(page, 640, 240);
   await nativeWait(page, () => /touch/i.test(window.catSystem2.audio.voiceInfo().file || ''));
   await page.keyboard.press('Escape');
-  await until(page, 'meswnd#WAIT', 240);
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) => stack.includes('touch#WAIT'));
 
   await page.click('#settings');
   await until(page, 'config#WAIT', 240);
