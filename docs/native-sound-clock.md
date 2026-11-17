@@ -85,7 +85,10 @@ Allocated sound loads retain the semantic category of the group that actually
 selected the bank. With a loaded sound configuration, explicit `PART` records
 relate their `type` to a group ID; an explicit `SOUNDGROUP` type can also supply
 that category. IDs and empty type strings are not legacy category enums. An
-absent or conflicting relationship remains unclassified. Without that tree,
+absent or conflicting relationship remains unclassified. A canonical PART
+ancestor supplies the category for its same-group subtree; custom speaker
+subtypes refine that ancestry. Independent unknown types, unknown explicit
+group types, or another canonical category remain conflicts. Without that tree,
 the existing reviewed legacy type table interprets the selected group's type
 code. Stream/static load mode, filenames, and physical bank numbers do not
 determine whether a track is dialogue.
@@ -95,6 +98,10 @@ the existing mixer channel's `nativeCategory`; both are retained in the current
 checkpoint contract. Release clears the device category, and swaps carry the
 device and channel metadata together. Cold reconstruction preserves that data
 without issuing a new guest command or looking up a replacement classification.
+The device/channel projections must agree before restore mutates an owner.
+Mixer restore likewise preflights the finite category enum and plain numeric
+tag map (unsigned source milliseconds converted to seconds) before stopping
+any current channel.
 
 Native channels keep their `native` mixing group and original volume factor.
 The shared `voiceInfo()` selection also includes native channels explicitly

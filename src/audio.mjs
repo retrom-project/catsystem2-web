@@ -10,6 +10,22 @@ import { sourcePCM, NativePCMWindows } from './native/audio-pcm.mjs';
 
 const isVoice = (channel) =>
   channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
+const nativeCategories = new Set([null, 'bgm', 'se', 'voice', 'sysvoice']);
+const validTags = (tags) => {
+  if (tags === null) return true;
+  if (!tags || Object.getPrototypeOf(tags) !== Object.prototype) return false;
+  return Reflect.ownKeys(tags).every((key) => {
+    const field = Object.getOwnPropertyDescriptor(tags, key);
+    return (
+      typeof key === 'string' &&
+      field.enumerable &&
+      Object.hasOwn(field, 'value') &&
+      Number.isFinite(field.value) &&
+      field.value >= 0 &&
+      field.value <= 0xffffffff / 1000
+    );
+  });
+};
 
 // decodeAudioData may resample to the AudioContext rate. Loop positions refer
 // to the source stream, so retain its header rate before browser decoding.
@@ -815,9 +831,9 @@ export class AudioMixer {
     if (
       state.channels.some(
         (channel) =>
-          (channel.nativeCategory !== null && typeof channel.nativeCategory !== 'string') ||
-          (isVoice(channel) &&
-            (!channel.tags || typeof channel.tags !== 'object' || Array.isArray(channel.tags))),
+          !nativeCategories.has(channel.nativeCategory) ||
+          !validTags(channel.tags) ||
+          (isVoice(channel) && channel.tags === null),
       )
     )
       throw new Error('Invalid audio playback category in checkpoint');

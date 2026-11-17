@@ -350,6 +350,10 @@ test('native voice classification follows legacy group types and retained banks,
     invalid.device[0].category = 'unreviewed-role';
     await assert.rejects(core.world.sound.restore(invalid), /playback category/);
     assert.deepEqual(core.world.sound.snapshot(), saved);
+    const inconsistent = structuredClone(saved);
+    inconsistent.channels[4].nativeCategory = 'se';
+    await assert.rejects(core.world.sound.restore(inconsistent), /playback category/);
+    assert.deepEqual(core.world.sound.snapshot(), saved);
   } finally {
     await core?.dispose();
     environment.restore();
@@ -368,9 +372,22 @@ test('native PART group classification leaves absent and conflicting roles uncla
         'sound.xml': startupXML(
           profile,
           `<PART><words><type>voice</type><group>97</group></words>
-          <other><type>bgm</type><group>97</group></other></PART>
+          <other><type>bgm</type><group>97</group></other>
+          <parallelVoice><type>voice</type><group>72</group></parallelVoice>
+          <parallelUnknown><type>custom</type><group>72</group></parallelUnknown>
+          <explicitVoice><type>voice</type><group>3</group></explicitVoice>
+          <ancestor><type>voice</type><group>91</group><part>
+            <speaker><type>custom-speaker</type><part><variant><type>custom-variant</type></variant></part></speaker>
+          </part></ancestor>
+          <conflict><type>voice</type><group>92</group><part>
+            <effect><type>se</type></effect>
+          </part></conflict></PART>
           <SOUNDGROUP><one><id>97</id><min>9</min><max>9</max></one>
-          <two><id>2</id><min>3</min><max>3</max></two></SOUNDGROUP>`,
+          <two><id>2</id><min>3</min><max>3</max></two>
+          <three><id>72</id><min>4</min><max>4</max></three>
+          <four><id>3</id><type>custom</type><min>5</min><max>5</max></four>
+          <five><id>91</id><min>6</min><max>6</max></five>
+          <six><id>92</id><min>7</min><max>7</max></six></SOUNDGROUP>`,
         ),
       },
     });
@@ -387,7 +404,7 @@ test('native PART group classification leaves absent and conflicting roles uncla
     });
     await core.initialize();
     const task = core.world.sound.primary();
-    for (const group of [97, 2]) {
+    for (const group of [97, 2, 72, 3, 92]) {
       const packet = new NativeSoundPacket([], 288);
       packet.store(4, group);
       packet.writeString('voice-spelled-effect.wav', 12);
@@ -398,9 +415,58 @@ test('native PART group classification leaves absent and conflicting roles uncla
       assert.equal(core.audio.channels.get(`native:${bank}`).nativeCategory, null);
       assert.deepEqual(core.audio.voiceInfo(), {});
     }
+    const packet = new NativeSoundPacket([], 288);
+    packet.store(4, 91);
+    packet.writeString('voice-spelled-effect.wav', 12);
+    const bank = await task.message([core.world.nativeTaskID(core.world.main.id), 205, 0, 0], {
+      payload: packet,
+    });
+    await core.world.sound.play(bank, 1, task.controls[bank]);
+    assert.equal(core.audio.channels.get(`native:${bank}`).nativeCategory, 'voice');
+    assert.equal(core.audio.voiceInfo().file, 'voice-spelled-effect.wav');
   } finally {
     await core?.dispose();
     environment.restore();
+  }
+});
+
+test('audio category and tag checkpoint preflight preserves the live owner on invalid data', async () => {
+  const { mixer, context } = fixture();
+  try {
+    await mixer.play({
+      channel: 'native:3',
+      bank: 3,
+      file: 'ordinary-line',
+      group: 'native',
+      nativeCategory: 'voice',
+      tags: { cue: 1.5 },
+    });
+    const saved = mixer.snapshot(),
+      channel = mixer.channels.get('native:3'),
+      starts = context.sources.length;
+    for (const mutate of [
+      (value) => (value.nativeCategory = 'unreviewed-role'),
+      (value) => (value.nativeCategory = undefined),
+      (value) => (value.tags = new Map([['cue', 1.5]])),
+      (value) => (value.tags = new Date(1500)),
+      (value) => (value.tags = new Set([1.5])),
+      (value) => (value.tags = []),
+      (value) => (value.tags = null),
+      (value) => (value.tags = { cue: NaN }),
+      (value) => (value.tags = { cue: Infinity }),
+      (value) => (value.tags = { cue: -1 }),
+      (value) => (value.tags = { cue: 4294967.296 }),
+      (value) => (value.tags = { cue: '1.5' }),
+    ]) {
+      const invalid = structuredClone(saved);
+      mutate(invalid.channels[0]);
+      await assert.rejects(mixer.restore(invalid), /playback category|voice tags/);
+      assert.strictEqual(mixer.channels.get('native:3'), channel);
+      assert.equal(context.sources.length, starts);
+      assert.deepEqual(mixer.snapshot(), saved);
+    }
+  } finally {
+    await mixer.dispose();
   }
 });
 

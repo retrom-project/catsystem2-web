@@ -402,6 +402,12 @@ export class NativeSound {
       )
     )
       throw new Error('Invalid native sound playback category in checkpoint');
+    if (
+      state.channels.some(
+        (channel, bank) => channel && channel.nativeCategory !== state.device[bank].category,
+      )
+    )
+      throw new Error('Native sound playback category projections differ');
     this.master = state.master;
     this.volumeGroups = new Map(state.volumeGroups);
     this.device = structuredClone(state.device);
@@ -537,16 +543,31 @@ export class NativeSoundTask {
     }
     // SOUNDGROUP IDs and type codes belong to the document, not the legacy enum.
     // A PART's explicit semantic type supplies the relationship to that group.
-    const categories = new Set();
-    if (soundCategories.has(group.type)) categories.add(group.type);
-    const visit = (nodes) => {
+    const categories = new Set(),
+      add = (type) => {
+        if (type !== '' && type !== undefined && type !== null) categories.add(type);
+      };
+    add(group.type);
+    const visit = (nodes, ancestor = null) => {
       for (const node of nodes) {
-        if (node.group === group.id && soundCategories.has(node.type)) categories.add(node.type);
-        visit(node.children);
+        if (node.group !== group.id) {
+          visit(node.children);
+          continue;
+        }
+        if (soundCategories.has(node.type)) {
+          add(node.type);
+          visit(node.children, node.type);
+        } else {
+          // Custom speaker subtypes refine an explicit semantic ancestor.
+          // An independent unknown association cannot supply that ancestry.
+          if (ancestor === null) add(node.type);
+          visit(node.children, ancestor);
+        }
       }
     };
     visit(tree.parts);
-    return categories.size === 1 ? categories.values().next().value : null;
+    const category = categories.values().next().value;
+    return categories.size === 1 && soundCategories.has(category) ? category : null;
   }
   async load(packet, type, allocated = false, group = null) {
     const bank = packet.load(0);
