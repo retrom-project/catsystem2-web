@@ -8,10 +8,10 @@ unknown 是 35 个 graphics、20 个 draw-task 和 2 个 mesh 包装器，均已
 
 可重跑证据在 [render-route-audit.mjs](../scripts/render-route-audit.mjs)、
 [render-route-audit.test.mjs](../tests/render-route-audit.test.mjs) 和
-[b-migration.json](b-migration.json)。测试从两个 ABI 的实际安装处理器捕获消息序列，
+[实际语义表](../src/native/abi/tables.mjs)。测试从两个 ABI 的实际安装处理器捕获消息序列，
 并用真实 M2 JS 接收器加进程替身核对条件分支，不装载或执行 EXE。
 
-看板的 `pure-js` 指该 domain 的包装器和普通接收器；`renderRoute.consumerRoutes`
+本页保留阶段 6 时点的包装器与普通接收器证据；当时的 `consumerRoutes`
 另列可到达的原处理器，不把条件 EXE 路径隐藏为无条件纯 JS：
 
 | 目标                                     | 当前接收器与状态                                             | 删除阶段                       |

@@ -194,5 +194,5 @@ These exclusions are recorded in the reports and are not successful comparisons.
 Private reports, raw function evidence and binaries remain in ignored `.local/`.
 
 The phase 4 raw-data path reads owned JS allocations directly for `23B`.
-Explicit legacy PE input pointers retain their domain 8 reader until that domain
-migrates. The scalar task-message projection is registered in `b-migration.json`.
+Physical PE pointers require an explicit oracle adapter. Ordinary task messages
+and borrowed whole-VM sourceRefs use the current JS memory owner.

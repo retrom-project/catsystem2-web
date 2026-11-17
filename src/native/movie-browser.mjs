@@ -68,11 +68,7 @@ export class BrowserNativeMovie {
     return {
       width,
       height,
-      duration: BigInt(
-        Math.round(
-          duration * 10000000 /* exe-address-check: non-address - media time units per second */,
-        ),
-      ),
+      duration: BigInt(Math.round(duration * 10000000 /* media time units per second  */)),
     };
   }
   async decodedFrame() {
@@ -129,18 +125,11 @@ export class BrowserNativeMovie {
     return true;
   }
   position() {
-    return BigInt(
-      Math.trunc(
-        this.video.currentTime *
-          10000000 /* exe-address-check: non-address - media time units per second */,
-      ),
-    );
+    return BigInt(Math.trunc(this.video.currentTime * 10000000 /* media time units per second  */));
   }
   async seek(position) {
     if (this.closed) throw new Error('Movie decoder is closed');
-    const seconds =
-      Number(position) /
-      10000000; /* exe-address-check: non-address - media time units per second */
+    const seconds = Number(position) / 10000000; /* media time units per second  */
     if (Math.abs(this.video.currentTime - seconds) < 0.0000001) return;
     if (seconds > 0)
       await new Promise((resolve, reject) => {

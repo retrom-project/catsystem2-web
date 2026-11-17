@@ -56,66 +56,28 @@ unsupported diagnostics and scoped corpus reachability decisions. Domain 4
 currently has 653 pure-JS slots and five reviewed unsupported slots. Details are
 recorded in the [domain-4 review](native-domain4-review.md).
 
-## B migration inventory
+## Ordinary runtime and explicit oracle boundary
 
-[b-migration.json](b-migration.json) records every slot in both engine ABIs,
-including main, generic/MOT and both particle tables, every file under `src/`,
-and the explicit shipped modules in `scripts/transitional-runtime.json`.
-Run `node scripts/b-migration.mjs` to regenerate it and
-`node scripts/b-migration.mjs --check` to verify the committed result. No private
-EXE is required. Update the reviewed route/ownership rules in the script when
-replacing an implementation, then regenerate the inventory in the same commit.
+`src/native/abi/` and the semantic catalog remain the native signature and admission
+sources. Unreviewed slots fail at the actual dispatcher. Physical table addresses
+and executable identities live in `oracle/executable-catalog.mjs`; ordinary ABI
+metadata contains only the data required by real consumers.
 
-The generator constructs the actual World in mounted and unmounted scenarios,
-reads its registrations and feature factories, and probes the actual fallback
-chain with guarded empty arguments. Generic and particle scripts have separate
-dispatchers. An argument-guard match establishes ownership, not successful
-execution. `needs-review` records unresolved names, input-dependent routes and
-conservative module-level dependencies. It must not be counted as completed JS
-coverage. `pure-js` describes the native body. Its dependency list can still
-include PE-backed state or feature initialization. `original-handler` invokes a
-native wrapper, while `exe-region` invokes EXE helpers or bounded regions.
-Patch/hook sites are recorded separately, including those installed indirectly
-by a feature. Zero native entries classified primarily as `patch` does not mean
-there are no patches. File counts reuse the phase 0 checker's exact AST scanner,
-whose syntactic counts also include independent DLL-host execution. After phase 3,
-all 285 domain-3 slots are pure JS: original-handler and exe-region are zero.
-Scalar, matrix/vector, rectangle/view and game UTF-8/output paths do not execute
-original instructions. The only remaining domain-3 EXE state binding is
-`random-memory.mjs`, explicitly retained through phase 10. The temporary JS view
-projection was removed with the domain-6 JS renderer in phase 6.
+The application imports ordinary Core directly. `scripts/production-files.mjs`
+walks its strict ESM graph and public asset dependencies for each build; the
+artifact's `build.json` binds the actual shipped files. The same graph drives
+source capability checks. It never imports oracle, raw EXE/PE/x86/Unicorn loaders
+or private test fixtures. The serialized physical-checkpoint input guard is
+visible separately from an execution owner.
 
-Eighteen domain-3 rows remain needs-review with explicit reasons: eight SDK
-host/allocator normal-execution fixtures, eight random-stream rows carrying the
-permitted PE binding, and two out-of-range FSINCOS rows whose original empty-stack
-pop can expose prior x87 register residue. Neither classification nor a canonical
-fresh-state comparison certifies that undefined historical residue. See
-[numeric semantics](native-vector-matrix.md) and [SDK review](native-standard-review.md).
+Node test groups follow actual imports and fixture capabilities, with explicit
+differential tests remaining separate. Each executable file belongs to one group.
+Historical target counts and migration status no longer constrain group membership.
+Source boundary checks and direct native/route tests replace the retired migration
+dashboard; no renamed copy of that dashboard is generated. Public calculation
+golden fixtures keep their original differential budgets and oracle controls.
 
-`remainingProfileSelections` lists the retained `profileIndex` sites, EXE version
-guards and VA selections with their owning migration phase. Counts use unique
-file/line locations. The VA total is the union of guards and address selections,
-so a same-line pair counts once. The AST audit follows literal address arrays
-and imported/local EXE layout bindings. Identity checks are listed separately.
-Dynamic execution targets retain the inventory's ordinary `needs-review` state.
-Review new selectors and update their ownership rules with each domain change.
-
-`testMigration` records the original 107 files' target ownership and the current
-executable groups. Pending domains retain their oracle regressions. Regenerate
-the inventory when adding a test or changing its import/fixture dependencies.
-The maintained source plan is `tests/native-test-plan.json`.
-
-The initial planning attachment is retained in inventory history, including files
-with zero checker counts. The current generated file is authoritative for runtime
-file membership and dependency totals; those totals decrease with each migration.
-
-Phase 3 introduced a permanent `check-calculation-boundary.mjs` check alongside the
-address baseline. It rejects EXE capabilities in migrated calculation modules and
-EXE-backed calculation classifications. The random-memory exception remains named
-explicitly. Public calculation golden fixtures can be regenerated or checked with
-`scripts/capture-native-calculations.mjs --write|--check`, using the two reviewed
-private EXE environment variables. A capture mismatch requires inspecting the
-original evidence; it is not permission to widen a floating-point budget.
+### Explicit original oracle evidence
 
 The frozen inputs and hashes are recorded in [references.json](../references.json).
 SDK 4.01 contains engine **2.6.1.74**; the prepared NEKOPARA Vol. 3 engine is
@@ -940,8 +902,8 @@ acceptance item remains unresolved; see [completion requirements](completion.md)
 
 Image-data buffers, record queues, record stacks and history cursors use JS
 state. Script175 reader/history views are one-way PE projections, written by JS
-without original constructors, parsers or history imports/exports. The registry
-in `b-migration.json` lists projected fields, consumers and removal phases.
+without original constructors, parsers or history imports/exports. Explicit original projections now live under `oracle/`; ordinary JS state and
+its checkpoint remain the sole runtime authority.
 Original handler tables for stacks and cursors remain in oracle-only modules.
 
 ## Completed data boundary

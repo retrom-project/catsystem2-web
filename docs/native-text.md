@@ -100,8 +100,8 @@ JS authority. This boundary is removed in phase 7.
 SDK JavaScript task consumers keep separate original text objects; their
 state belongs to domain 8 until that subsystem migrates. GDI/DC/DIB platform
 services shared with rendering/startup also remain domain 6/8 services.
-The complete ownership/deletion registry is generated in
-[`b-migration.json`](b-migration.json), with source in `scripts/b-migration.mjs`.
+Those physical platform consumers now live under `oracle/`; ordinary text owns
+its single writer/bitmap state and does not construct an original backend.
 
 ## Display logs
 

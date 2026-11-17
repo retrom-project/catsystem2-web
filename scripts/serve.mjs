@@ -5,7 +5,6 @@ import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve, sep, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 import { walk, NodeFile } from './node-files.mjs';
 import { sourceIdentity } from '../src/identity.mjs';
 import { PPI_BACKEND_FILES } from '../oracle/ppi-backend-artifact.mjs';
@@ -15,7 +14,6 @@ const args = process.argv.slice(2),
   option = (key, fallback) => (args.includes(key) ? args[args.indexOf(key) + 1] : fallback);
 const root = fileURLToPath(new URL('..', import.meta.url)),
   port = Number(option('--port', '4101'));
-const transitionalFiles = new Set(await transitionalRuntimeFiles(root));
 const gameRoot = option('--game') ? await realpath(option('--game')) : null;
 const gameFiles = gameRoot ? await walk(gameRoot) : [];
 const files = new Map(gameFiles.map((f) => [f.path, f]));
@@ -132,7 +130,7 @@ const server = createServer(async (request, response) => {
           name === 'index.html' ||
           name === 'third_party/fonts/noto-sans-jp/NotoSansJP.ttf' ||
           /^(src|web)\//.test(name) ||
-          transitionalFiles.has(name)
+          /^oracle\/.+\.mjs$/.test(name)
         )
       ) {
         response.writeHead(404);

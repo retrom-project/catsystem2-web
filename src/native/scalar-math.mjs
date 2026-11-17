@@ -30,8 +30,7 @@ const names = new Set([
   'unpackWords',
 ]);
 const nan = (word) => (word & 0x7fffffff) > 0x7f800000;
-const quiet = (word) =>
-  (word | 0x00400000) /* exe-address-check: non-address - IEEE quiet NaN bit */ >>> 0;
+const quiet = (word) => (word | 0x00400000) /* IEEE quiet NaN bit  */ >>> 0;
 const indefinite = 0xffc00000;
 function nearest(value) {
   const lower = Math.floor(value),

@@ -58,11 +58,9 @@ VM 的 `steps` 保留在 checkpoint 和诊断中。native 返回 control 5 后�
 文件进入 JS/golden 组。JS 平台服务测试可使用自制 PE32 内存、trap 和已固定的 WASM
 测试后端。每个 Node 测试文件只归入一个执行组。
 
-`tests/native-test-plan.json` 固定原 107 个文件的目标归属，其中 oracle 33、
-differential 51、JS 23，包含 92 个 Node 测试、2 个浏览器测试和 13 个辅助模块。
-仍混有原 EXE 回归的文件继续实际运行在 oracle 组，状态为
-`pending-domain-migration`。所属领域迁移时再调整其执行路径。盘点同时记录目标
-与当前分组，`npm run check` 校验原始集合和数量。
+`scripts/test-native.mjs` 从实际 imports 与 fixture capability 计算当前执行组。
+显式 oracle 和 differential 仍有独立入口；没有固定迁移目标名单或可伪造的完成状态。
+`npm run check` 校验当前可执行分组，正常组不注入私有输入。
 
 `tests/fixtures/oracle-fixtures.mjs` 校验两份 EXE 的版本和 SHA-256，并校验指定的
 E-mote/PPI DLL。提供路径但文件缺失或指纹错误时直接失败。默认模式对未提供的

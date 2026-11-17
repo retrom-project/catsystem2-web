@@ -126,8 +126,8 @@ GPU 上耗时较长。
 ## 实现与验收范围
 
 第 3 阶段的 285 个计算槽位均走 JS，包括标量、矩阵/向量、矩形/视图和 game 的
-UTF-8/Unicode 输出。视图状态由 JS 持有，仍需原渲染器读取的字段单向投影；随机状态
-保留已登记的 PE 绑定。[盘点与待审查原因](docs/native-compatibility.md#b-migration-inventory)
+UTF-8/Unicode 输出。视图和随机状态由普通 JS owner 持有并进入 checkpoint；
+物理投影只在显式 oracle 组合中。[普通运行时与 oracle 边界](docs/native-compatibility.md#ordinary-runtime-and-explicit-oracle-boundary)
 区分实现方式和验证边界。矩阵/向量有每 ABI 92 个自制 GCALL 样本，所有计算族都有
 不含私有 EXE 的公共 golden 测试。
 

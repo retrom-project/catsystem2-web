@@ -9,8 +9,8 @@ The explicitly injected EXE backend supplies `oracle/data-buffer-projection.mjs`
 for remaining image, FES and font consumers. It creates independent read-only
 PE snapshots. JS-to-font transfer consumes a JS reference explicitly, while
 external consumers manage their projection references. PE references and bytes
-never become the script buffer's authority. The projection registry in
-`b-migration.json` records fields, consumer domains and removal phases.
+never become the script buffer's authority. Physical projections belong only to explicit `oracle/` adapters; the ordinary
+NativeBufferMemory and VM sourceRef remain the unique data authority.
 
 | Main ID | Contract                                                            | Control                     |
 | ------- | ------------------------------------------------------------------- | --------------------------- |

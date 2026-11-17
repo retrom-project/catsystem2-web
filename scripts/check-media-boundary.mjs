@@ -3,52 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
-import { scanSource } from './check-no-exe-addresses.mjs';
+import { actualSourceDependencies } from './check-no-exe-addresses.mjs';
 
-export function validateMediaInventory(board) {
-  const rows = board.profiles.flatMap((p) => p.entries.filter((e) => e.domain === 5));
-  if (
-    !rows.length ||
-    rows.some((e) => e.implementation !== 'pure-js' || e.review === 'needs-review')
-  )
-    throw Error('Media native has an EXE implementation or unresolved review');
-  for (const file of board.files.filter((f) => f.domain === 5))
-    if (Object.values(file.exeDependencies).some(Boolean) || file.executionSites.length)
-      throw Error('Media EXE dependency ' + file.file);
-  const selections = board.remainingProfileSelections;
-  if (
-    ['profileIndexSites', 'addressSelections', 'versionGuards'].some((k) =>
-      selections[k].some((r) => r.domain === 5),
-    )
-  )
-    throw Error('Media profile/VA selector remains');
-  for (const name of [
-    'js-bitmap-to-exe-consumers',
-    'js-image-data-to-exe-consumers',
-    'js-text-to-exe-windows-consumer',
-  ]) {
-    const entry = board.nonNativeEntries.find((e) => e.name === name),
-      p = entry?.projection;
-    if (
-      !p?.authority ||
-      !p.consumers.length ||
-      p.consumers.some((consumer) => consumer.domain !== 8) ||
-      p.removePhase !== 8 ||
-      entry.domain !== 8
-    )
-      throw Error('Media consumer projection lacks ownership/removal record: ' + name);
-  }
-  const removed = new Set([
-    'js-image-owner-to-exe-consumers',
-    'js-log-to-exe-fes-consumer',
-    'js-text-to-exe-fes-consumers',
-    'js-image-codec-to-exe-consumers',
-  ]);
-  if (board.nonNativeEntries.some((entry) => removed.has(entry.name)))
-    throw Error('Media restored a removed FES consumer projection');
-}
 export function validateMediaSource(source, file) {
-  if (Object.values(scanSource(source, file)).some(Boolean))
+  if (Object.values(actualSourceDependencies(source, file)).some(Boolean))
     throw Error('Media EXE dependency ' + file);
   const forbidden = new Set([
     'call',
@@ -132,23 +90,54 @@ export function validateMediaSource(source, file) {
   );
   if (messages.length) throw Error(file + ': ' + messages[0].message);
 }
+const MEDIA_MODULES = Object.freeze([
+  'src/formats/font.mjs',
+  'src/formats/hg-codec.mjs',
+  'src/formats/hg2.mjs',
+  'src/formats/hg3.mjs',
+  'src/formats/jpeg-ifast.mjs',
+  'src/formats/jpeg.mjs',
+  'src/formats/png.mjs',
+  'src/formats/psb.mjs',
+  'src/formats/psd.mjs',
+  'src/formats/raster.mjs',
+  'src/native/bitmap-factory.mjs',
+  'src/native/bitmap-memory.mjs',
+  'src/native/bitmap-operations.mjs',
+  'src/native/bitmap-pixels.mjs',
+  'src/native/fes-text-layout.mjs',
+  'src/native/font-backend.mjs',
+  'src/native/image-affine.mjs',
+  'src/native/image-commands.mjs',
+  'src/native/image-composite.mjs',
+  'src/native/image-file.mjs',
+  'src/native/image-owner-load.mjs',
+  'src/native/image-owner-pixels.mjs',
+  'src/native/image-owner.mjs',
+  'src/native/image-persistence.mjs',
+  'src/native/image.mjs',
+  'src/native/legacy-text-state.mjs',
+  'src/native/text-config.mjs',
+  'src/native/text-core.mjs',
+  'src/native/text-layout.mjs',
+  'src/native/text-legacy.mjs',
+  'src/native/text-log.mjs',
+  'src/native/text-parser.mjs',
+  'src/native/text-plain.mjs',
+  'src/native/text-profile-data.mjs',
+  'src/native/text-raster.mjs',
+  'src/native/text-scanner.mjs',
+  'src/native/text-task.mjs',
+  'src/native/text.mjs',
+  'src/native/zlib.mjs',
+  'src/xml.mjs',
+]);
+
 export async function checkMediaBoundary(root) {
-  const board = JSON.parse(await readFile(resolve(root, 'docs/b-migration.json'), 'utf8'));
-  validateMediaInventory(board);
-  for (const [profile, count] of [
-    ['sdk-4.01-engine-2.6.1.74', 110],
-    ['nekopara-vol3-engine-2.6.1.76', 113],
-  ])
-    if (
-      board.profiles.find((p) => p.profile === profile)?.entries.filter((e) => e.domain === 5)
-        .length !== count
-    )
-      throw Error('Media domain ownership changed: ' + profile);
-  for (const file of board.files.filter((f) => f.domain === 5))
-    validateMediaSource(await readFile(resolve(root, file.file), 'utf8'), file.file);
-  console.log(
-    'Media boundary checked: JS owns domain 5; remaining consumer projections belong to domains 6–9.',
-  );
+  for (const file of MEDIA_MODULES)
+    validateMediaSource(await readFile(resolve(root, file), 'utf8'), file);
+  console.log('Media source boundary checked against actual ordinary modules.');
 }
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
   await checkMediaBoundary(fileURLToPath(new URL('..', import.meta.url)));

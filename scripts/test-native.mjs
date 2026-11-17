@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -18,22 +18,8 @@ async function testFiles(root, directory = 'tests') {
 }
 
 export async function nativeTestGroups(root) {
-  const plan = JSON.parse(await readFile(resolve(root, 'tests/native-test-plan.json'), 'utf8'));
-  if (
-    plan.version !== 1 ||
-    plan.files.length !== 107 ||
-    new Set(plan.files.map((item) => item.file)).size !== 107
-  )
-    throw new Error('Native test migration plan must cover the original 107 distinct files');
-  const targets = new Map(plan.files.map((item) => [item.file, item]));
-  const expected = { oracle: 33, differential: 51, js: 23 };
-  for (const [target, count] of Object.entries(expected))
-    if (plan.files.filter((item) => item.target === target).length !== count)
-      throw new Error(`Native test target count changed ${target}`);
-  for (const item of plan.files) await readFile(resolve(root, item.file));
   const groups = { js: [], oracle: [], differential: [] },
-    cache = new Map(),
-    current = new Map();
+    cache = new Map();
   const needsOracle = (graph) =>
     graph.some(
       (file) =>
@@ -43,39 +29,16 @@ export async function nativeTestGroups(root) {
     );
   for (const file of await testFiles(root)) {
     const graph = await nativeEntryGraph(root, file, cache);
-    const target = targets.get(file)?.target;
     const group = file.startsWith('tests/differential/')
       ? 'differential'
-      : target === 'oracle' || target === 'differential' || needsOracle(graph)
+      : needsOracle(graph)
         ? 'oracle'
         : 'js';
     groups[group].push(file);
-    current.set(file, group);
   }
-  for (const item of plan.files.filter((item) => !current.has(item.file))) {
-    const graph = await nativeEntryGraph(root, item.file, cache);
-    current.set(
-      item.file,
-      item.file.startsWith('tests/browser/') || item.target !== 'js' || needsOracle(graph)
-        ? 'oracle'
-        : 'js',
-    );
-  }
-  const original = plan.files.map((item) => ({
-    ...item,
-    role: item.file.startsWith('tests/fixtures/')
-      ? 'fixture'
-      : item.file.startsWith('tests/browser/')
-        ? 'browser'
-        : 'node',
-    currentGroup: current.get(item.file) ?? 'supporting-file',
-    state: current.get(item.file) === item.target ? 'current' : 'pending-domain-migration',
-  }));
   return {
-    targets: expected,
     counts: Object.fromEntries(Object.entries(groups).map(([name, files]) => [name, files.length])),
     groups,
-    original,
   };
 }
 
@@ -87,16 +50,14 @@ export async function runNativeTests(root, args) {
   );
   if (
     !['all', 'js', 'oracle', 'differential'].includes(group) ||
-    flags.some((flag) => !['--list', '--check-plan', '--require-fixtures'].includes(flag))
+    flags.some((flag) => !['--list', '--check-groups', '--require-fixtures'].includes(flag))
   )
     throw new Error(
-      'Usage: node scripts/test-native.mjs [--group all|js|oracle|differential] [--list|--check-plan] [--require-fixtures]',
+      'Usage: node scripts/test-native.mjs [--group all|js|oracle|differential] [--list|--check-groups] [--require-fixtures]',
     );
   const inventory = await nativeTestGroups(root);
-  if (flags.includes('--check-plan')) {
-    console.log(
-      `Native test targets ${JSON.stringify(inventory.targets)}; executable groups ${JSON.stringify(inventory.counts)}`,
-    );
+  if (flags.includes('--check-groups')) {
+    console.log(`Executable test groups ${JSON.stringify(inventory.counts)}`);
     return 0;
   }
   if (flags.includes('--list')) {
@@ -122,7 +83,7 @@ export async function runNativeTests(root, args) {
       if (!fixture.available) console.log(`SKIP fixture ${fixture.reason}`);
   }
   console.log(
-    `Node group ${group}, ${files.length} files. Original targets ${JSON.stringify(inventory.targets)}. Current groups ${JSON.stringify(inventory.counts)}.`,
+    `Node group ${group}, ${files.length} files. Actual groups ${JSON.stringify(inventory.counts)}.`,
   );
   const child = spawn(process.execPath, ['--test', ...files], { cwd: root, env, stdio: 'inherit' });
   return await new Promise((resolve, reject) => {

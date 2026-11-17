@@ -95,8 +95,8 @@ reach these entries through ordinary GCALL.
 Reproduce the static input with scripts/native-audit.mjs and its --corpus option,
 then inspect each corpus.nativeIds entry. references.json identifies the two
 frozen EXEs. Raw IDA output and private corpus measurements remain in ignored
-local evidence storage. The generator copies the five reviewed unsupported
-decisions into b-migration.json and preserves their unsupported classification.
+local evidence storage. The five reviewed unsupported decisions remain explicit dispatcher guards and
+contract tests; deleting the migration dashboard does not enable them.
 
 ## Mission empty-character query
 

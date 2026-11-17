@@ -18,10 +18,7 @@ function cstring(binary, at, width) {
 export function readCGList(bytes) {
   let b = new Binary(bytes, 'CGL');
   const variantWidth =
-    b.bytes.length > 4 &&
-    b.u32(0) === 0x004c4743 /* exe-address-check: non-address - CGL file signature */
-      ? 256
-      : 64;
+    b.bytes.length > 4 && b.u32(0) === 0x004c4743 /* CGL file signature  */ ? 256 : 64;
   if (variantWidth === 256) b = new Binary(b.bytes.subarray(4), 'CGL');
   const sections = [],
     groups = [],

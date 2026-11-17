@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import {
   validatePluginSource,
-  validatePluginInventory,
   validatePluginDistribution,
   checkPluginBoundary,
 } from '../scripts/check-plugin-boundary.mjs';
@@ -27,26 +25,6 @@ test('plugins reject restored DLL execution paths and unreviewed consumers', () 
   );
   assert.throws(() => validatePluginDistribution(['src/ppi/native.mjs']), /Distribution/);
   validatePluginDistribution(['oracle/transitional-exe.mjs', 'src/ppi/js-runtime.mjs']);
-});
-test('plugin inventory cannot hide execution, unknown routes or deferred projections', async () => {
-  const board = JSON.parse(await readFile(new URL('../docs/b-migration.json', import.meta.url)));
-  validatePluginInventory(board);
-  for (const mutate of [
-    (b) =>
-      (b.profiles.flatMap((p) => p.entries).find((e) => e.domain === 9).implementation =
-        'original-handler'),
-    (b) => b.files.find((f) => f.domain === 9).executionSites.push({ method: 'call' }),
-    (b) =>
-      b.nonNativeEntries.push({
-        name: 'stale-plugin',
-        projection: { removePhase: 9, consumers: [] },
-      }),
-    (b) => b.remainingProfileSelections.addressSelections.push({ domain: 9 }),
-  ]) {
-    const changed = structuredClone(board);
-    mutate(changed);
-    assert.throws(() => validatePluginInventory(changed), /Plugin/);
-  }
 });
 test('completed plugin implementation and deployment boundary agree', () =>
   checkPluginBoundary(fileURLToPath(new URL('..', import.meta.url))));

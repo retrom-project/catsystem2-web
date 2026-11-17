@@ -13,37 +13,27 @@ JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频�
   `callFromHost` 也不得用于执行 EXE 代码。地址和原执行能力只用于 oracle、离线工具与测试。
 - 版本差异是 ABI 数据，包括 native ID 到语义的映射、参数签名及声音 bank 数；
   业务代码不按 profile 名分支。未登记版本必须报错，不猜用相近版本。
-- E-mote/PPI 可以用 x86 执行独立 DLL，但只通过 DLL 导出表和宿主 API 交互，
-  不依赖 EXE 内部地址。禁止游戏专用特判、白名单和专用全局变量。
+- E-mote/PPI 的产品执行使用 JS；原 DLL 仅作显式差分 oracle。禁止游戏专用特判、
+  白名单和专用全局变量。
 - checkpoint 和内部接口仍在开发中，直接修改现有契约，不增加 V2、兼容读取或迁移；
   目标 checkpoint 不含 EXE 的 CPU、堆和 PE RAM 状态。
 - 原处理器使用 x87；每个数学 native 的差分测试必须记录容差，或在 JavaScript 中
   复现所需精度，不能假定浮点结果逐位一致。
 
-当前仍处于迁移期，下面描述的是尚未替换完的混合实现，不代表目标架构已经完成。
-`src/engine.mjs` 和 `NativeWorld` 通过 `transitionalExe` 显式接收过渡宿主。
-当前页面使用 `web/transitional-entry.mjs` 注入原 EXE 后端；纯入口的静态依赖图
-由 `scripts/check-native-entry.mjs` 检查。领域模块中的剩余地址随第 3–9 阶段迁移。
-共享 Windows 服务位于 `src/native/windows-services.mjs`，独立 DLL 宿主可直接使用。
-运行时版本行为读取 `src/native/abi/` 的冻结数据。字符宽度、配置布局、声音协议、
-消息映射和 capability 都由当前 ABI 声明。剩余纯 EXE 地址选择继续随领域迁移，
-盘点的 `remainingProfileSelections` 单独列出它们及对应阶段。
-第 3 阶段的标量、矩阵/向量、矩形/视图、UTF-8 和 Unicode 输出入口已改为 JS；
-计算状态由 World 拥有并进入其 checkpoint。标量原处理器和旧 facade 只供 oracle 测试，
-不再进入产品清单。`oracle/transitional-exe.mjs` 保留 accelerator 的有界 WinMain 区间，
-并将 JS 视图状态单向投影给尚未迁移的 EXE 渲染器；这项投影在第 6 阶段删除。
-随机数本体和独立差分已通过，原 EXE 消费者仍使用的随机状态绑定保留至第 10 阶段。`scripts/transitional-runtime.json` 明确列出
-产品使用的过渡模块，开发服务器按此清单提供文件，构建按此复制 oracle 模块。
-静态入口门禁同时核对页面依赖闭包，缺少清单项时失败。
-`npm run check` 按文件限制现有 EXE 地址、调用和引用的数量，防止依赖增加；
-规则和基线更新方式见 [完成标准](completion.md)。计算边界另由
-`check-calculation-boundary.mjs` 保证不重新引入 EXE 执行能力。
+普通页面直接导入 `src/engine.mjs`。Core、World、KCS、FES、MOT、图形、输入与媒体
+共同使用普通 JavaScript owner；不隐式打开原进程。当前唯一实际 ESM 图同时用于源码
+门禁和 standalone 文件计划，发行不复制整个 `src`/`web` 或 oracle 后端。
 
-## 当前混合实现
+原进程、Win32/Cpp 对象视图、PE/x86/Unicorn 和物理 checkpoint 消费位于 `oracle/`。
+研究工具或测试必须显式提供该 adapter；普通应用不提供它。它不替代普通 VM 内存、
+NativeBufferMemory、JS 数据句柄、配置、真实模块版本资源或媒体别名的所有权。
+纯 JS x87 精度辅助函数仍属于普通运行时，与原指令执行分开。
 
-正常入口由 `NativeWorld` 驱动。`NativeRuntime` 选择固定引擎 ABI，KCS VM 持续执行
-main、sscript 和辅助程序；`NativeObjects` 保存任务图和消息队列。FES、CST、运动、
-声音和插件属于这些任务的服务，界面入口和流程由原系统脚本决定。
+`npm run check` 对普通图实行零执行依赖上限，同时保留普通数据操作数的原始数值
+重叠诊断，以及一处序列化物理状态输入 guard 的真实计数。没有可抬高的旧基线或源码
+豁免标签；实际未知指针/能力、原模块引入和私有测试输入会使检查失败。
+
+## 当前普通实现
 
 普通 `CatSystem2.initialize` 使用现有 JS owner 完成 startup/gamedef、保存的 setup、
 音量派生、视图、语言和应用服务初始化，创建真实 root/Input/Sound/Script 并执行首帧；
@@ -70,11 +60,11 @@ saved-record/GameFiles lookup 查询 cs2_debug_key.dat 长度。只有实际 64 
 输入。有效凭据只跳过 V_CODE 比较；KEY/V_CODE/V_CODE2 的真实资源错误仍传播，其原
 私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer，因此不新增影子字段。
 细节与原不安全输入的诊断见 [启动资源契约](native-startup-resources.md)。加密 KIF 的
-`__key__.dat` 仍由输入边界独立拒绝。浏览器菜单/accelerator 和剩余按
-命令触发的 D8 服务仍待完成，不能据此称完整游戏启动或第 7 阶段已完成。
-显式 lazy 原消费者继续需要过渡宿主。真实 window.sendEvent 还要求既有的原 application
-窗口、Settings 和随机数 owner；普通 JS 启动缺少这些 owner 时，在 feature/open 前报错，
-即使调用方注入了过渡宿主也不自动运行部分旧启动。显式研究 oracle 路径保持独立。
+`__key__.dat` 仍由输入边界独立拒绝。浏览器菜单/accelerator 与已恢复 D8 服务使用普通 Window/Host/配置 owner；
+有限已恢复域与最终整章、影片和性能验收保持分开。
+显式研究 oracle 路径要求实际原对象/进程 owner。普通 Window/Host 的广播、输入、
+配置、文件/版本资源与调试 sink 沿当前普通对象域分派，不按初始化或 loading 状态兜底
+打开原进程。原物理地址与导出调用仍只属于显式适配器。
 W1 的 mixed CRT guard 和未知 ABI/native 拒绝规则保持不变。这里不以缺少 canvas 推断
 GPU ready，也不引入第二设备生命周期状态。
 
@@ -99,8 +89,9 @@ DIFIMAGE 的 `refex` 与 Draw 分别持有 JS render-source 引用，外部 imag
 移除对应 Draw 条目，拥有者 teardown 同样回收这些引用。
 Effekseer 的独立 typed GPU 后端接受显式几何、相机及共享设备状态，复用 StageRenderer 的
 当前 target/depth 和纹理。其普通 shader 像素与材质恢复有固定 profile 的独立验证，
-详见 [GPU 后端边界](effekseer-gpu.md)；它尚未接入真实 task/World、共享 CRT 或原 batch 生命周期。
-EFKPLANE 在现有默认工厂中仍明确未支持，是第 7 阶段尚未完成的子系统。
+详见 [GPU 后端边界](effekseer-gpu.md)；其实际 task/World、共享 CRT、资源与关闭契约有独立覆盖。
+默认工厂的 EFKPLANE 使用实际 typed task/World/GPU 与生命周期；其已验有限域
+不代表独立 ScenePlayer 的任意外部 header 或未恢复语义均已覆盖。
 旧 FES 原处理器 facade 与 draw/text/LOG/screen/owner/HG 输入投影只保留在未发布的
 `oracle/` 取证组合中，生产引擎不再注册这些工厂。Draw 直接使用 World 的 JS retained
 服务。仍需 PE bitmap 的显式 D8 SDK 消息使用同一个 bitmap consumer view；普通 bitmap
@@ -118,7 +109,7 @@ FES sound 的 452-byte 字段缓冲和 36-byte 表记录由 JavaScript 独有，
 这些缓冲不含 PE 指针或映像，不是隐藏的原进程状态；它们与 D8 声音协议包分别归属，
 不会因统一 FES 调度再复制一份权威状态或 checkpoint。
 
-原 EXE 的已恢复处理器、解析器、图像/字体代码与 DLL/PPI 共享 PE32 地址空间。
+显式差分 oracle 的原处理器、解析器、图像/字体代码与 DLL/PPI 共享 PE32 地址空间。
 `NativeEngineProcess` 管理指纹、已审查切点和平台边界。KCS 的数据、栈、共享区和扩展块
 映射到这一进程，避免每次 native 调用复制出相互失联的内存。浏览器拥有的变量、字符串、
 配置和场景资源通过各自的单份桥接同步；不能再建一个会与任务状态分叉的副本。
@@ -127,8 +118,8 @@ FES sound 的 452-byte 字段缓冲和 36-byte 表记录由 JavaScript 独有，
 文件系统提供。原生资源搜索保留类别、归档限定、LST 行顺序和补丁覆盖；普通目录查找保持
 自己的边界。持久写入由独立 IndexedDB namespace 承接，挂载内容保持只读。
 
-`StageRenderer`、纹理页和共享 GPU 承接原生绘制。E-mote/PPI 执行原始 DLL/插件，
-以宿主 ABI 调用 WebGL2、文件、时钟等服务。媒体实际解码和播放由浏览器负责。
+`StageRenderer`、纹理页和共享 GPU 承接普通绘制。E-mote/PPI 的 JS 宿主使用真实
+WebGL2、文件、时钟等服务；原 DLL adapter 不进入发行。媒体实际解码和播放由浏览器负责。
 这些平台接口各自有范围和测试，不表示实现了整个 Windows 桌面环境。
 
 ## 嵌入
@@ -136,13 +127,12 @@ FES sound 的 452-byte 字段缓冲和 36-byte 表记录由 JavaScript 独有，
 ```js
 import { GameFiles } from './src/files.mjs';
 import { CatSystem2 } from './src/engine.mjs';
-import { transitionalExe } from './web/transitional-entry.mjs';
 
 // 在用户点击处理函数中解锁音频。
 const audioContext = new AudioContext();
 await audioContext.resume();
 const game = await GameFiles.fromHTTP('/game.json');
-const player = new CatSystem2({ game, canvas, video, audioContext, onState, transitionalExe });
+const player = new CatSystem2({ game, canvas, video, audioContext, onState });
 await player.initialize();
 
 await player.step();

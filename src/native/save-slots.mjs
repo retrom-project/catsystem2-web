@@ -196,7 +196,7 @@ export class NativeSaveSlots {
         !data ||
         data.length < 4 ||
         new DataView(data.buffer, data.byteOffset).getUint32(0, true) !==
-          0x535343 /* exe-address-check: non-address - CSS file signature */ ||
+          0x535343 /* CSS file signature  */ ||
         !info
       )
         return 0;

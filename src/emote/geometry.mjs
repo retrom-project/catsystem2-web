@@ -13,7 +13,7 @@ import {
 } from './geometry-content.mjs';
 import { EmotePatch, patchDivisions } from './mesh.mjs';
 const f = Math.fround;
-const skipParentTransform = 0x400000; /* exe-address-check: non-address - PSB inheritance flag bypasses the parent transform */
+const skipParentTransform = 0x400000; /* PSB inheritance flag bypasses the parent transform  */
 const fields = ['flipX', 'flipY', 'angle', 'scaleX', 'scaleY', 'slantX', 'slantY'];
 const flags = [4, 8, 16, 32, 64, 128, 256];
 
@@ -434,9 +434,7 @@ export class EmoteGeometry {
     for (let i = 0; i < 4; i++) {
       let color = colorProduct(s.colors[i], this.color);
       if (!(s.blend & 16) && (s.blend & 15) !== 6)
-        color =
-          (color & 0xff000000) |
-          ((color >>> 1) & 0x7f7f7f) /* exe-address-check: non-address - RGB byte-halving mask */;
+        color = (color & 0xff000000) | ((color >>> 1) & 0x7f7f7f) /* RGB byte-halving mask  */;
       node.colors[i] =
         ((Math.trunc(((color >>> 24) * s.opacity) / 255) << 24) | (color & 0xffffff)) >>> 0;
     }

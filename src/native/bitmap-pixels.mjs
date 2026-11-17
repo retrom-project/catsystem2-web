@@ -249,11 +249,7 @@ export async function bitmapBlur(bitmap, radiusX, radiusY) {
           const value =
             s.bpp === 4
               ? (product >>> 24) +
-                Number(
-                  (product &
-                    0x800000) /* exe-address-check: non-address - bit 23 is the integer blur rounding bit */ !==
-                    0,
-                )
+                Number((product & 0x800000) /* bit 23 is the integer blur rounding bit  */ !== 0)
               : product >>> 16;
           // The 24-bit horizontal helper writes only its B result to consecutive
           // bytes. Unwritten temporary storage is explicitly zero-initialized.

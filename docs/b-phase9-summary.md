@@ -77,7 +77,7 @@ fresh JS checkpoint继续逐帧对照；Exec期间禁止新建TypedArray，缓�
 
 domain9：37个native均为pure-js，original-handler/exe-region/needs-review均0；
 55个运行时文件的EXE地址/调用/引用/执行站点/needs-review均0，删除阶段为9的投影及domain9消费者均0。
-完整全局计数由可重复生成的 [b-migration.json](b-migration.json) 维护。
+本页保留阶段 9 时点的统计；当前发行成员由实际 ordinary graph 与 build.json 核对。
 
 | 投影/所有权                                         | 本阶段结果                                        | 剩余消费者与删除阶段 |
 | --------------------------------------------------- | ------------------------------------------------- | -------------------- |

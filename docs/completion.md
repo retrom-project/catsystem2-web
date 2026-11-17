@@ -5,29 +5,20 @@
 
 目标是运行时仅用 JavaScript 实现引擎，不加载或执行原 EXE、E-mote DLL 或 PPI DLL 的代码。
 版本差异由 ABI 数据表达；原 EXE 和插件 DLL 的执行只用于离线取证和测试差分 oracle。
-第 9 阶段已将 E-mote/PPI 执行改为 JS。其他领域仍有依赖原 EXE 的过渡消费者，正在向目标迁移。
+普通页面直接使用 Core，原 EXE/插件执行及其物理 checkpoint adapter 仅在显式 oracle
+组合内。发行文件由实际 ordinary ESM 图和所需公开资源产生，不复制整个源目录或原后端。
 地址与调用边界、禁止游戏特判、开发期契约和 x87 浮点差分要求见
 [架构约束](architecture.md#目标与迁移状态)，均为完成条件。
 
-`npm run check` 以两份固定 EXE 的 PE 映像范围统计 `src/` 及
-`scripts/transitional-runtime.json` 显式产品清单中的地址字面量、
-引擎调用/patch 和 `NativeEngineProcess`/模块引用；每个文件的各项计数只能减少，
-新文件须为零。确认依赖减少后执行 `node scripts/check-no-exe-addresses.mjs --update`
-收紧已提交的基线。范围内无法直接区分的数值保守计数；确认是普通常量时，只能按检查脚本
-的格式为该字面量附上具体原因，不能借此豁免 EXE 地址。产品打包的 oracle 过渡模块
-继续计数，离线专用工具和测试在运行时清单之外。
+`npm run check` 对实际普通入口图实行不可提高的零执行依赖上限：不允许原进程 owner、
+EXE 调用、加载器或未审查的映像范围数值。现有格式 magic、IEEE/PCM/RGB 位操作、时间单位与指令预算操作数保留原字面量，
+原始数值重叠计数仍输出，只有其具体 AST 数据用途被区分为普通常量。源码豁免标签、
+更新基线和重定位计数接口均不进入该门禁。序列化物理状态的单个输入 owner 检查保留真实
+计数；普通组合不能丢弃物理 payload，明确选择的 oracle 恢复组合才可承接它。
 
-迁移到过渡层时使用 `node scripts/check-no-exe-addresses.mjs --relocate plan.json`。
-本地计划含 `version: 1`、完整当前 `base` commit、`sources` 的 src 模块和
-`targets` 的 oracle 模块。目标必须在产品清单内。门禁核对已提交基线、源文件和
-地址字面量多重集合，要求调用种类及各项总数不增加，清单外文件也只能减少。
-校验全部通过后原子写入基线。2.3 的 scalar 与启动区间模板重定位前后均为
-43 个地址、5 个调用，全局仍为 2,132 个地址、193 个调用、6 个引用。
-其余领域依赖在第 3–9 阶段迁移时处理。
-
-本地轻量标签 `x86-hybrid-baseline` 指向 `03d6523`。该提交的本地记录中，`npm run check`
-和 `npm run build` 通过，`npm test` 为 1,070 通过、1 跳过；公共浏览器 22 项和 PPI 15 项
-通过。SDK 与游戏浏览器记录各为一条筛选用例通过，不代表完整套件在该次运行中全部执行。
+原迁移看板、生成器及固定 107 文件目标计划已经退出当前契约。各领域源码边界、真实
+native 签名/准入数据、route 测试及实际 imports 产生的 Node 测试组继续维护；它们不把
+未恢复槽或保留签名当成功实现。`build.json` 是本次实际构建的文件摘要，不是迁移状态表。
 
 以 `references.json` 的固定输入为准：官方 SDK 4.01 中的引擎是 2.6.1.74，
 目标游戏的引擎是 2.6.1.76。两版主 native 表分别有 1,009 和 1,055 个非空槽位，

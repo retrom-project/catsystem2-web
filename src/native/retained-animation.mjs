@@ -10,8 +10,7 @@ export class RetainedAnimation {
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     if (
       bytes.length < 32 ||
-      view.getUint32(0, true) !==
-        0x004d4e41 /* exe-address-check: non-address - little-endian ANM file signature */
+      view.getUint32(0, true) !== 0x004d4e41 /* little-endian ANM file signature  */
     )
       throw new Error('Invalid ANM header');
     const count = view.getUint32(8, true);

@@ -13,8 +13,8 @@ export class EmoteRandom {
     words[2] = w;
     words[3] = (w ^ (w >>> 19) ^ t ^ (t >>> 8)) >>> 0;
     return (
-      (words[3] & 0x7fffff) /* exe-address-check: non-address - IEEE754 fraction mask */ /
-      8388608 /* exe-address-check: non-address - canonical fraction denominator 2^23 */
+      (words[3] & 0x7fffff) /* IEEE754 fraction mask  */ /
+      8388608 /* canonical fraction denominator 2^23  */
     );
   }
   snapshot() {

@@ -69,8 +69,8 @@ The existing Plane traversal remains until 6.6. During this interval,
 `oracle/area-geometry-projection.mjs` adapts the existing model callback data
 slot to JS geometry. It adds no instruction hooks or EXE function calls. Its
 removal phase is 6.6. CPU finish uploads still reach the old texture-page
-upload path, also scheduled for removal in 6.6. These residual execution paths
-remain visible in `b-migration.json`.
+upload path, also scheduled for removal in 6.6. These historical projections now belong to explicit `oracle/` compositions;
+ordinary output uses the shared JS renderer/VRAM owner.
 
 ## Verification
 

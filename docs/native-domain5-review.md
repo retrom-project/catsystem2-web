@@ -29,15 +29,14 @@ The image implementations are
 implementations are [`text-task.mjs`](../src/native/text-task.mjs),
 [`text-core.mjs`](../src/native/text-core.mjs) and
 [`text-legacy.mjs`](../src/native/text-legacy.mjs). Normal World registration,
-receiver creation and feature factories are traced by `scripts/b-migration.mjs`.
+receiver creation and actual source capability edges are checked from the ordinary graph.
 Sending arbitrary text messages to another task type remains the general
 message-transport contract, owned by domain 8; it does not make the text parser
 an EXE implementation.
 
 F1/FB can receive views of D6/D7-owned rendering targets. That view is a
 registered consumer output, distinct from an owned JS script bitmap. It does
-not change JS bitmap authority. The remaining consumer representations and
-removal phases are listed in `b-migration.json`.
+not change JS bitmap authority. Physical consumer representations now live only in explicit oracle adapters.
 
 ## Receiver and transport evidence
 

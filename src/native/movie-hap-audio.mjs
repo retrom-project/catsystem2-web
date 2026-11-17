@@ -33,7 +33,7 @@ function sampleReader(bits) {
   if (bits === 24)
     return (view, at) =>
       (view.getUint16(at, true) | (view.getInt8(at + 2) << 16)) /
-      8388608 /* exe-address-check: non-address - signed 24-bit PCM scale */;
+      8388608 /* signed 24-bit PCM scale  */;
   return (view, at) => view.getInt32(at, true) / 2147483648;
 }
 

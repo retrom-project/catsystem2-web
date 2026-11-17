@@ -3,65 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
-import { scanSource } from './check-no-exe-addresses.mjs';
-import { FES_ROUTE_AUDIT, reviewFESIndirect } from './fes-route-audit.mjs';
-import { nativeEntryGraph } from './check-native-entry.mjs';
-import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
-
-const removed = new Set([
-  'oracle/image-owner.mjs',
-  'oracle/image-owner-projection.mjs',
-  'oracle/hg3-delta.mjs',
-  'oracle/text-log-projection.mjs',
-  'oracle/fes-text-projection.mjs',
-  'oracle/fes-draw-projection.mjs',
-  'oracle/raster-kernel-projection.mjs',
-  'oracle/fes-screen-effect-projection.mjs',
-]);
-export function validateFESInventory(board) {
-  for (const profile of board.profiles) {
-    const entries = profile.entries.filter((entry) => entry.domain === 7);
-    if (
-      entries.length !== FES_ROUTE_AUDIT.length ||
-      entries.some(
-        (entry) =>
-          entry.implementation !== 'pure-js' ||
-          entry.review !== 'traced' ||
-          !entry.fesRoute?.label ||
-          !FES_ROUTE_AUDIT.some((row) => row.id === entry.id) ||
-          (!entry.semanticName && !entry.metadataNotes?.length),
-      )
-    )
-      throw new Error(
-        'FES native dispatch has an unresolved implementation/review: ' + profile.profile,
-      );
-    for (const entry of entries)
-      for (const consumer of entry.fesRoute.consumerRoutes)
-        if (consumer.domain !== 8 || consumer.removePhase !== 8 || !consumer.condition)
-          throw new Error('FES foreign receiver lost its explicit D8 route');
-  }
-  for (const file of board.files.filter((entry) => entry.domain === 7))
-    if (
-      file.file.startsWith('oracle/') ||
-      Object.values(file.exeDependencies).some(Boolean) ||
-      file.executionSites.length ||
-      file.indirectSites.some(
-        (site) => site.review !== 'traced' || !reviewFESIndirect(file.file, site),
-      )
-    )
-      throw new Error('FES file has an EXE dependency or unreviewed indirect route: ' + file.file);
-  if (
-    board.nonNativeEntries.some(
-      (entry) =>
-        entry.projection?.removePhase === 7 ||
-        entry.projection?.consumers.some((consumer) => consumer.domain === 7),
-    )
-  )
-    throw new Error('FES production projection remains');
-  for (const key of ['profileIndexSites', 'addressSelections', 'versionGuards'])
-    if (board.remainingProfileSelections[key].some((row) => row.domain === 7))
-      throw new Error('FES profile/EXE selector remains');
-}
+import { actualSourceDependencies } from './check-no-exe-addresses.mjs';
+import { reviewFESIndirect } from './fes-route-audit.mjs';
 
 function nativePointerGuard(node) {
   if (
@@ -77,7 +20,7 @@ function nativePointerGuard(node) {
   );
 }
 export function validateFESSource(source, file) {
-  if (Object.values(scanSource(source, file)).some(Boolean))
+  if (Object.values(actualSourceDependencies(source, file)).some(Boolean))
     throw new Error('FES EXE dependency: ' + file);
   const forbidden = new Set([
     'call',
@@ -164,18 +107,96 @@ export function validateFESSource(source, file) {
   );
   if (errors.length) throw new Error('FES boundary: ' + file + ': ' + errors[0].message);
 }
+const FES_MODULES = Object.freeze([
+  'src/cst-syntax.mjs',
+  'src/effekseer/camera.mjs',
+  'src/effekseer/crt-random.mjs',
+  'src/effekseer/crt-threads.mjs',
+  'src/effekseer/effect-loads.mjs',
+  'src/effekseer/effect-reader.mjs',
+  'src/effekseer/generation.mjs',
+  'src/effekseer/instance-operations.mjs',
+  'src/effekseer/instance-transform.mjs',
+  'src/effekseer/manager-lifecycle.mjs',
+  'src/effekseer/materials.mjs',
+  'src/effekseer/math43.mjs',
+  'src/effekseer/mesh-batch.mjs',
+  'src/effekseer/mesh-packet.mjs',
+  'src/effekseer/numerical.mjs',
+  'src/effekseer/render-state.mjs',
+  'src/effekseer/resources.mjs',
+  'src/effekseer/ribbon-track-geometry.mjs',
+  'src/effekseer/ring-current-state.mjs',
+  'src/effekseer/shared-device-view.mjs',
+  'src/effekseer/sprite-ring-geometry.mjs',
+  'src/effekseer/standard-batch.mjs',
+  'src/effekseer/task-gpu.mjs',
+  'src/effekseer/task.mjs',
+  'src/effekseer/texture-decoder.mjs',
+  'src/effekseer/texture-level0.mjs',
+  'src/effekseer/world.mjs',
+  'src/formats/scene.mjs',
+  'src/native/abi/fes-common-heads.mjs',
+  'src/native/fes-bitmap.mjs',
+  'src/native/fes-button-navigation.mjs',
+  'src/native/fes-common-commands.mjs',
+  'src/native/fes-common-model.mjs',
+  'src/native/fes-config.mjs',
+  'src/native/fes-control-driver.mjs',
+  'src/native/fes-control-model.mjs',
+  'src/native/fes-coordinator.mjs',
+  'src/native/fes-data.mjs',
+  'src/native/fes-definitions.mjs',
+  'src/native/fes-dif-image.mjs',
+  'src/native/fes-effect-driver.mjs',
+  'src/native/fes-effect-model.mjs',
+  'src/native/fes-effekseer-driver.mjs',
+  'src/native/fes-file-list.mjs',
+  'src/native/fes-fonts.mjs',
+  'src/native/fes-graphics.mjs',
+  'src/native/fes-image-cache.mjs',
+  'src/native/fes-image-control-commands.mjs',
+  'src/native/fes-image-driver.mjs',
+  'src/native/fes-image-filename.mjs',
+  'src/native/fes-image-model.mjs',
+  'src/native/fes-image-table-model.mjs',
+  'src/native/fes-input.mjs',
+  'src/native/fes-log-driver.mjs',
+  'src/native/fes-log-model.mjs',
+  'src/native/fes-log-text-service.mjs',
+  'src/native/fes-motion-driver.mjs',
+  'src/native/fes-motion-model.mjs',
+  'src/native/fes-motion.mjs',
+  'src/native/fes-object-collection.mjs',
+  'src/native/fes-object-factory.mjs',
+  'src/native/fes-object-graph.mjs',
+  'src/native/fes-panel-driver.mjs',
+  'src/native/fes-panel-model.mjs',
+  'src/native/fes-particle-driver.mjs',
+  'src/native/fes-plane-driver.mjs',
+  'src/native/fes-platform-frontends.mjs',
+  'src/native/fes-resource-commands.mjs',
+  'src/native/fes-resource-entries.mjs',
+  'src/native/fes-shell-errors.mjs',
+  'src/native/fes-sound-config.mjs',
+  'src/native/fes-sound-table.mjs',
+  'src/native/fes-sound.mjs',
+  'src/native/fes-source.mjs',
+  'src/native/fes-string-driver.mjs',
+  'src/native/fes-string-table.mjs',
+  'src/native/fes-system-voice.mjs',
+  'src/native/fes-task.mjs',
+  'src/native/fes-tone-table.mjs',
+  'src/native/fes-window-image.mjs',
+  'src/native/fes.mjs',
+  'src/scene.mjs',
+]);
+
 export async function checkFESBoundary(root) {
-  const board = JSON.parse(await readFile(resolve(root, 'docs/b-migration.json'), 'utf8'));
-  validateFESInventory(board);
-  for (const file of board.files.filter((entry) => entry.domain === 7))
-    validateFESSource(await readFile(resolve(root, file.file), 'utf8'), file.file);
-  const includes = await transitionalRuntimeFiles(root),
-    graph = await nativeEntryGraph(root, 'web/transitional-entry.mjs');
-  if ([...includes, ...graph].some((file) => removed.has(file)))
-    throw new Error('FES original producer is shipped or imported by the transitional entry');
-  console.log(
-    'FES boundary: reviewed JS dispatch/default receivers, explicit D8 pointer guard and no production D7 projection; interpreter contract gaps remain separately recorded.',
-  );
+  for (const file of FES_MODULES)
+    validateFESSource(await readFile(resolve(root, file), 'utf8'), file);
+  console.log('FES source boundary checked against actual ordinary modules.');
 }
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
   await checkFESBoundary(fileURLToPath(new URL('..', import.meta.url)));

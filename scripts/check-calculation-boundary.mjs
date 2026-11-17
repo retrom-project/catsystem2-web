@@ -19,24 +19,6 @@ export const CALCULATION_MODULES = Object.freeze(
     'cp932-data',
   ].map((name) => 'src/native/' + name + '.mjs'),
 );
-export function validateCalculationInventory(board) {
-  const rows = board.profiles.flatMap((profile) =>
-    profile.entries.filter((entry) => entry.domain === 3),
-  );
-  if (
-    !rows.length ||
-    rows.some((entry) => ['original-handler', 'exe-region', 'patch'].includes(entry.implementation))
-  )
-    throw Error('Calculation native still executes the EXE');
-  for (const file of board.files.filter(
-    (file) => file.domain === 3 && file.file !== 'src/native/random-memory.mjs',
-  ))
-    if (Object.values(file.exeDependencies).some(Boolean))
-      throw Error('Calculation EXE dependency ' + file.file);
-  for (const entry of rows)
-    if (entry.review === 'needs-review' && !entry.reviewReasons.length)
-      throw Error('Calculation review reason is missing');
-}
 export function validateCalculationSource(source, file, label = 'Calculation') {
   const forbidden = new Set([
     'ensureNativeEngine',
@@ -93,14 +75,10 @@ export function validateCalculationSource(source, file, label = 'Calculation') {
   if (messages.length) throw Error(file + ': ' + messages[0].message);
 }
 export async function checkCalculationBoundary(root) {
-  validateCalculationInventory(
-    JSON.parse(await readFile(resolve(root, 'docs/b-migration.json'), 'utf8')),
-  );
   for (const file of CALCULATION_MODULES)
     validateCalculationSource(await readFile(resolve(root, file), 'utf8'), file);
-  console.log(
-    'Calculation boundary: no EXE execution; random-memory binding is the recorded phase-10 exception.',
-  );
+  console.log('Calculation source boundary: ordinary math and codec modules.');
 }
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
   await checkCalculationBoundary(fileURLToPath(new URL('..', import.meta.url)));

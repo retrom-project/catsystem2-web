@@ -1,15 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readFile, writeFile, lstat, rename, rm } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
+import { readFile, lstat } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
-import { execFile as execute } from 'node:child_process';
-import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
 import { runtimeSourceFiles } from './runtime-source-files.mjs';
-import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
-export { transitionalRuntimeFiles } from './transitional-runtime.mjs';
-const execFile = promisify(execute);
 
 // PE32 ImageBase and SizeOfImage from the two EXEs identified by references.json.
 // End addresses are exclusive. No private EXE is needed to run this check.
@@ -35,13 +29,7 @@ export const IMAGE_RANGES = Object.freeze([
 // retains its full address/call/reference counts; no tag suppresses a source.
 // Numeric literals in either image range are conservatively counted, regardless
 // of notation. Comments, strings, regexes and negative numbers are not addresses.
-// If a literal is demonstrably an ordinary constant, attach exactly one block
-// comment after it: /* exe-address-check: non-address - reason */. Closing
-// parentheses or a semicolon may intervene when Prettier moves the comment.
-// Explain the actual non-address meaning; this cannot exempt a real EXE address.
-// Bare, misplaced or stale directives fail the check and need human review.
-const directivePrefix = /^\s*exe-address-check:/;
-const nonAddressDirective = /^\s*exe-address-check:\s*non-address\s+-\s+(.+?)\s*$/;
+// All overlap literals are counted. A source comment cannot suppress a count.
 const categories = ['addresses', 'calls', 'references'];
 const zero = () => ({ addresses: 0, calls: 0, references: 0 });
 const linter = new Linter();
@@ -86,7 +74,6 @@ function isTrackedCall(node) {
 
 export function scanSource(source, filename = 'source.mjs', evidence) {
   const counts = zero();
-  const consumedDirectives = new Set();
   const messages = linter.verify(
     source,
     [
@@ -101,8 +88,7 @@ export function scanSource(source, filename = 'source.mjs', evidence) {
           'exe-dependencies': {
             rules: {
               collect: {
-                create(context) {
-                  const code = context.sourceCode;
+                create() {
                   return {
                     Literal(node) {
                       if (
@@ -119,19 +105,6 @@ export function scanSource(source, filename = 'source.mjs', evidence) {
                         )
                       )
                         return;
-                      let next = code.getTokenAfter(node, { includeComments: true });
-                      while (
-                        [')', ';'].includes(next?.value) &&
-                        next.loc.start.line === node.loc.end.line
-                      )
-                        next = code.getTokenAfter(next, { includeComments: true });
-                      if (next?.type === 'Block' && next.loc.start.line === node.loc.end.line) {
-                        const match = nonAddressDirective.exec(next.value);
-                        if (match && match[1].trim().length >= 8) {
-                          consumedDirectives.add(next);
-                          return;
-                        }
-                      }
                       counts.addresses++;
                       evidence?.addresses.push(String(node.value));
                     },
@@ -146,16 +119,6 @@ export function scanSource(source, filename = 'source.mjs', evidence) {
                             ? node.callee.name
                             : propertyName(node.callee),
                         );
-                      }
-                    },
-                    'Program:exit'() {
-                      for (const comment of code.getAllComments()) {
-                        if (directivePrefix.test(comment.value) && !consumedDirectives.has(comment))
-                          context.report({
-                            loc: comment.loc,
-                            message:
-                              'non-address directive must immediately follow one in-range literal with a specific reason',
-                          });
                       }
                     },
                   };
@@ -176,217 +139,570 @@ export function scanSource(source, filename = 'source.mjs', evidence) {
   return counts;
 }
 
-async function assertRuntimeFile(root, name) {
-  let path = root;
-  for (const component of name.split('/')) {
-    path = join(path, component);
-    if ((await lstat(path)).isSymbolicLink())
-      throw new Error(`Symlink in transitional runtime path ${name}`);
-  }
-  if (!(await lstat(path)).isFile()) throw new Error(`Invalid transitional runtime file ${name}`);
-  if (!resolve(path).startsWith(resolve(root) + sep))
-    throw new Error(`Transitional runtime file escapes repository ${name}`);
+// Keep conservative numeric overlaps visible, while classifying only these
+// existing data operands by their actual AST use. No source tag exempts a file.
+const numericOperandRoles = Object.freeze({
+  'src/emote/geometry.mjs': [
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'VariableDeclarator',
+      operand: 'skipParentTransform=0x400000',
+      scope: [],
+      meaning: 'PSB parent-transform bit flag',
+    },
+    {
+      type: 'number',
+      value: '8355711',
+      parent: 'BinaryExpression',
+      operand: '(color>>>1)&0x7f7f7f',
+      scope: ['build'],
+      meaning: 'RGB byte-halving mask',
+    },
+  ],
+  'src/emote/m2-lip-samples.mjs': [
+    {
+      type: 'number',
+      value: '4477004',
+      parent: 'BinaryExpression',
+      operand: 'view.getUint32(0,true)!==0x0044504c',
+      scope: ['open'],
+      meaning: 'LPD signature comparison',
+    },
+    {
+      type: 'number',
+      value: '10000000',
+      parent: 'BinaryExpression',
+      operand: 'length>10000000',
+      scope: ['open'],
+      meaning: 'bounded decoded lip sample length',
+    },
+  ],
+  'src/emote/random.mjs': [
+    {
+      type: 'number',
+      value: '8388607',
+      parent: 'BinaryExpression',
+      operand: 'words[3]&0x7fffff',
+      scope: ['next'],
+      meaning: 'IEEE754 fraction mask',
+    },
+    {
+      type: 'number',
+      value: '8388608',
+      parent: 'BinaryExpression',
+      operand: '(words[3]&0x7fffff)/8388608',
+      scope: ['next'],
+      meaning: 'fraction denominator 2^23',
+    },
+  ],
+  'src/gallery.mjs': [
+    {
+      type: 'number',
+      value: '4998979',
+      parent: 'BinaryExpression',
+      operand: 'b.u32(0)===0x004c4743',
+      scope: ['readCGList'],
+      meaning: 'CGL signature comparison',
+    },
+  ],
+  'src/kcs/scheduler.mjs': [
+    {
+      type: 'number',
+      value: '5000000',
+      parent: 'AssignmentPattern',
+      operand: 'budget=5000000',
+      scope: ['constructor'],
+      meaning: 'scheduler instruction budget',
+    },
+  ],
+  'src/kcs/vm.mjs': [
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'BinaryExpression',
+      operand: 'a|0x00400000',
+      scope: ['arithmetic'],
+      meaning: 'quiet NaN mask',
+    },
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'BinaryExpression',
+      operand: 'b|0x00400000',
+      scope: ['arithmetic'],
+      meaning: 'quiet NaN mask',
+    },
+    {
+      type: 'number',
+      value: '5000000',
+      parent: 'AssignmentPattern',
+      operand: 'options=5000000',
+      scope: ['run'],
+      meaning: 'VM instruction budget argument',
+    },
+    {
+      type: 'number',
+      value: '5000000',
+      parent: 'AssignmentPattern',
+      operand: 'budget=5000000',
+      scope: ['run'],
+      meaning: 'VM instruction budget',
+    },
+  ],
+  'src/motion/instance.mjs': [
+    {
+      type: 'number',
+      value: '5000000',
+      parent: 'AssignmentPattern',
+      operand: 'budget=5000000',
+      scope: ['constructor'],
+      meaning: 'motion instruction budget',
+    },
+  ],
+  'src/motion/spline.mjs': [
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'BinaryExpression',
+      operand: 'x|0x400000',
+      scope: ['binary'],
+      meaning: 'quiet NaN mask',
+    },
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'BinaryExpression',
+      operand: 'y|0x400000',
+      scope: ['binary'],
+      meaning: 'quiet NaN mask',
+    },
+  ],
+  'src/native/bitmap-pixels.mjs': [
+    {
+      type: 'number',
+      value: '8388608',
+      parent: 'BinaryExpression',
+      operand: 'product&0x800000',
+      scope: ['bitmapBlur', 'pass'],
+      meaning: 'integer blur rounding bit',
+    },
+  ],
+  'src/native/engine-message.mjs': [
+    {
+      type: 'number',
+      value: '5460803',
+      parent: 'CallExpression',
+      operand: 'view.setUint32(0,0x00535343,true)',
+      scope: ['saveDump'],
+      meaning: 'CSS header write',
+    },
+  ],
+  'src/native/movie-browser.mjs': [
+    {
+      type: 'number',
+      value: '10000000',
+      parent: 'BinaryExpression',
+      operand: 'duration*10000000',
+      scope: ['metadata'],
+      meaning: 'duration seconds to 100ns',
+    },
+    {
+      type: 'number',
+      value: '10000000',
+      parent: 'BinaryExpression',
+      operand: 'this.video.currentTime*10000000',
+      scope: ['position'],
+      meaning: 'playback seconds to 100ns',
+    },
+    {
+      type: 'number',
+      value: '10000000',
+      parent: 'BinaryExpression',
+      operand: 'Number(position)/10000000',
+      scope: ['seek'],
+      meaning: 'seek 100ns to seconds',
+    },
+  ],
+  'src/native/movie-hap-audio.mjs': [
+    {
+      type: 'bigint',
+      value: '10000000',
+      parent: 'VariableDeclarator',
+      operand: 'TIME_UNITS=10000000n',
+      scope: [],
+      meaning: '100ns time units',
+    },
+    {
+      type: 'number',
+      value: '8388608',
+      parent: 'BinaryExpression',
+      operand: '(view.getUint16(at,true)|(view.getInt8(at+2)<<16))/8388608',
+      scope: ['sampleReader'],
+      meaning: 'signed 24-bit PCM normalization',
+    },
+  ],
+  'src/native/movie-hap-playback.mjs': [
+    {
+      type: 'bigint',
+      value: '10000000',
+      parent: 'BinaryExpression',
+      operand: 'BigInt(scale)*10000000n',
+      scope: ['frameStamp'],
+      meaning: 'AVI time scale',
+    },
+  ],
+  'src/native/movie-hap.mjs': [
+    {
+      type: 'bigint',
+      value: '10000000',
+      parent: 'VariableDeclarator',
+      operand: 'TIME_UNITS=10000000n',
+      scope: [],
+      meaning: '100ns time units',
+    },
+  ],
+  'src/native/persistence.mjs': [
+    {
+      type: 'number',
+      value: '5460803',
+      parent: 'CallExpression',
+      operand: 'word(out,0,0x00535343)',
+      scope: ['file'],
+      meaning: 'CSS header write',
+    },
+    {
+      type: 'number',
+      value: '5460803',
+      parent: 'BinaryExpression',
+      operand: 'b.u32(0)!==0x00535343',
+      scope: ['fromFile'],
+      meaning: 'CSS signature comparison',
+    },
+    {
+      type: 'number',
+      value: '5460803',
+      parent: 'BinaryExpression',
+      operand: 'newBinary(bytes).u32(0)!==0x00535343',
+      scope: ['nativePersistence'],
+      meaning: 'CSS signature comparison',
+    },
+  ],
+  'src/native/retained-animation.mjs': [
+    {
+      type: 'number',
+      value: '5066305',
+      parent: 'BinaryExpression',
+      operand: 'view.getUint32(0,true)!==0x004d4e41',
+      scope: ['constructor'],
+      meaning: 'ANM signature comparison',
+    },
+  ],
+  'src/native/save-slots.mjs': [
+    {
+      type: 'number',
+      value: '5460803',
+      parent: 'BinaryExpression',
+      operand: 'newDataView(data.buffer,data.byteOffset).getUint32(0,true)!==0x535343',
+      scope: ['command'],
+      meaning: 'CSS signature comparison',
+    },
+  ],
+  'src/native/scalar-math.mjs': [
+    {
+      type: 'number',
+      value: '4194304',
+      parent: 'BinaryExpression',
+      operand: 'word|0x00400000',
+      scope: ['quiet'],
+      meaning: 'quiet NaN mask',
+    },
+  ],
+  'src/native/sound.mjs': [
+    {
+      type: 'number',
+      value: '5002832',
+      parent: 'BinaryExpression',
+      operand: 'get32(plv,0)===0x4c5650',
+      scope: ['auxiliaries'],
+      meaning: 'PLV signature comparison',
+    },
+  ],
+  'src/ppi/script.mjs': [
+    {
+      type: 'number',
+      value: '5000000',
+      parent: 'AssignmentPattern',
+      operand: 'budget=5000000',
+      scope: ['constructor'],
+      meaning: 'particle instruction budget',
+    },
+  ],
+});
+
+export function ordinaryNumericConstants(source, file) {
+  const constants = [],
+    roles = numericOperandRoles[file] ?? [];
+  const messages = linter.verify(
+    source,
+    [
+      {
+        plugins: {
+          constants: {
+            rules: {
+              operands: {
+                create() {
+                  return {
+                    Literal(node) {
+                      if (!['number', 'bigint'].includes(typeof node.value)) return;
+                      const p = node.parent,
+                        scope = [];
+                      for (let current = node.parent; current; current = current.parent) {
+                        let name;
+                        if (current.type === 'FunctionDeclaration') name = current.id?.name;
+                        else if (current.type === 'MethodDefinition')
+                          name = current.key.name ?? current.key.value;
+                        else if (
+                          ['FunctionExpression', 'ArrowFunctionExpression'].includes(
+                            current.type,
+                          ) &&
+                          current.parent?.type === 'VariableDeclarator'
+                        )
+                          name = current.parent.id.name;
+                        if (name && !scope.includes(name)) scope.unshift(name);
+                      }
+                      const operand = source
+                        .slice(p.start, p.end)
+                        .replace(/\/\*[\s\S]*?\*\//g, '')
+                        .replace(/\s+/g, '');
+                      const role = roles.find(
+                        (r) =>
+                          r.type === typeof node.value &&
+                          r.value === String(node.value) &&
+                          r.parent === p.type &&
+                          r.operand === operand &&
+                          JSON.stringify(r.scope) === JSON.stringify(scope),
+                      );
+                      if (role)
+                        constants.push({
+                          file,
+                          line: node.loc.start.line,
+                          value: String(node.value),
+                          parent: p.type,
+                          operand,
+                          scope,
+                          meaning: role.meaning,
+                        });
+                    },
+                  };
+                },
+              },
+            },
+          },
+        },
+        rules: { 'constants/operands': 'error' },
+      },
+    ],
+    { filename: file },
+  );
+  if (messages.length) throw new Error(file + ': ' + messages[0].message);
+  return constants;
+}
+
+export function actualSourceDependencies(source, file) {
+  const raw = scanSource(source, file),
+    constants = ordinaryNumericConstants(source, file);
+  return { ...raw, addresses: raw.addresses - constants.length };
+}
+
+export function scanRuntimeCapabilities(source, file) {
+  const owners = [],
+    execution = [],
+    memory = [];
+  const forbidden = new Set([
+    'getNativeFeature',
+    'ensureNativeEngine',
+    'registerNativeFeature',
+    'loadUnicorn',
+    'loadExecutable',
+    'emu_start',
+    'callFromHost',
+    'callAsync',
+    'runThread',
+    'beforeInstruction',
+  ]);
+  const messages = linter.verify(
+    source,
+    [
+      {
+        plugins: {
+          owner: {
+            rules: {
+              capabilities: {
+                create() {
+                  const property = (node) =>
+                    node.computed ? node.property.value : node.property.name;
+                  const original = (node, name) => {
+                    if (!['nativeEngine', 'nativeEngineLoading'].includes(name)) return;
+                    let fn = node;
+                    while (fn && fn.type !== 'FunctionDeclaration') fn = fn.parent;
+                    const serialized =
+                      file === 'src/native/original-adapter.mjs' &&
+                      fn?.id?.name === 'requireCheckpointRestoreOwner' &&
+                      node.type === 'MemberExpression' &&
+                      node.object.name === 'state';
+                    owners.push({
+                      file,
+                      line: node.loc.start.line,
+                      property: name,
+                      serializedCheckpointGuard: serialized,
+                    });
+                  };
+                  return {
+                    MemberExpression(node) {
+                      const name = property(node);
+                      original(node, name);
+                      if (forbidden.has(name))
+                        execution.push({ file, line: node.loc.start.line, method: name });
+                      if (name === 'process') {
+                        const receiver = source.slice(node.object.start, node.object.end);
+                        const owned =
+                          (file === 'src/native/data-buffer.mjs' && receiver === 'this') ||
+                          /^(?:(?:this\.)?world\.runtime|this(?:\.runtime)?)\.imageDataBuffers$/.test(
+                            receiver,
+                          ) ||
+                          receiver === 'await services.imageDataBuffers()' ||
+                          (file === 'src/native/heap-data.mjs' && receiver === 'heap');
+                        memory.push({ file, line: node.loc.start.line, receiver, owned });
+                      }
+                    },
+                    Property(node) {
+                      if (node.parent.type !== 'ObjectPattern') return;
+                      const name = node.key.name ?? node.key.value;
+                      original(node, name);
+                      if (forbidden.has(name))
+                        execution.push({ file, line: node.loc.start.line, method: name });
+                    },
+                    CallExpression(node) {
+                      if (
+                        node.callee.type === 'Identifier' &&
+                        ['eval', 'Function', 'loadUnicorn', 'callFromHost'].includes(
+                          node.callee.name,
+                        )
+                      )
+                        execution.push({
+                          file,
+                          line: node.loc.start.line,
+                          constructor: node.callee.name,
+                        });
+                    },
+                    NewExpression(node) {
+                      if (
+                        node.callee.type === 'Identifier' &&
+                        [
+                          'Function',
+                          'NativeEngineProcess',
+                          'PE32Process',
+                          'Unicorn',
+                          'QuickJS',
+                        ].includes(node.callee.name)
+                      )
+                        execution.push({
+                          file,
+                          line: node.loc.start.line,
+                          constructor: node.callee.name,
+                        });
+                    },
+                  };
+                },
+              },
+            },
+          },
+        },
+        rules: { 'owner/capabilities': 'error' },
+      },
+    ],
+    { filename: file },
+  );
+  if (messages.length) throw new Error(file + ': ' + messages[0].message);
+  return { owners, execution, memory };
 }
 
 export async function scanRuntime(root) {
   const files = {};
   for (const name of await runtimeSourceFiles(root)) {
-    await assertRuntimeFile(root, name);
-    const counts = scanSource(await readFile(join(root, name), 'utf8'), name);
+    let path = root;
+    for (const component of name.split('/')) {
+      path = join(path, component);
+      if ((await lstat(path)).isSymbolicLink()) throw new Error('Symlink in runtime path ' + name);
+    }
+    if (!resolve(path).startsWith(resolve(root) + sep))
+      throw new Error('Runtime path escapes repository');
+    const counts = scanSource(await readFile(path, 'utf8'), name);
     if (categories.some((category) => counts[category])) files[name] = counts;
   }
-  return Object.fromEntries(Object.entries(files).sort(([a], [b]) => a.localeCompare(b, 'en')));
+  return files;
 }
 
-export function compareBaseline(baseline, current) {
-  const increases = [],
-    decreases = [];
-  for (const name of [...new Set([...Object.keys(baseline), ...Object.keys(current)])].sort()) {
-    for (const category of categories) {
-      const previous = baseline[name]?.[category] ?? 0;
-      const next = current[name]?.[category] ?? 0;
-      if (next > previous) increases.push(`${name}: ${category} ${previous} -> ${next}`);
-      if (next < previous) decreases.push(`${name}: ${category} ${previous} -> ${next}`);
+export async function check(root) {
+  validateReferences(JSON.parse(await readFile(join(root, 'references.json'), 'utf8')));
+  const modules = await runtimeSourceFiles(root),
+    raw = zero(),
+    actual = zero(),
+    constants = [],
+    owners = [],
+    execution = [],
+    memory = [];
+  for (const file of modules) {
+    const source = await readFile(join(root, file), 'utf8');
+    if (/exe-address-check:/.test(source))
+      throw new Error('Product source cannot exempt EXE sites: ' + file);
+    const counts = scanSource(source, file),
+      data = ordinaryNumericConstants(source, file),
+      capabilities = scanRuntimeCapabilities(source, file);
+    constants.push(...data);
+    owners.push(...capabilities.owners);
+    execution.push(...capabilities.execution);
+    memory.push(...capabilities.memory);
+    for (const name of categories) {
+      raw[name] += counts[name];
+      actual[name] += counts[name];
     }
+    actual.addresses -= data.length;
   }
-  return { increases, decreases };
-}
-
-function validateBaseline(data) {
-  if (!data || data.version !== 1 || !data.files || Array.isArray(data.files))
-    throw new Error('Invalid EXE dependency baseline');
-  for (const [name, counts] of Object.entries(data.files)) {
-    if (
-      !/^(?!.*(?:^|\/)\.\.?\/)(?:src|web|oracle)\/.+\.(?:[cm]?js|jsx)$/.test(name) ||
-      !counts ||
-      Object.keys(counts).length !== categories.length ||
-      categories.some((key) => !Number.isSafeInteger(counts[key]) || counts[key] < 0)
-    )
-      throw new Error(`Invalid baseline entry: ${name}`);
-  }
-}
-
-function requireSubset(before, after, category) {
-  const remaining = new Map();
-  for (const item of before) remaining.set(item, (remaining.get(item) ?? 0) + 1);
-  for (const item of after) {
-    const count = remaining.get(item) ?? 0;
-    if (!count) throw new Error(`Relocation introduces ${category} ${item}`);
-    remaining.set(item, count - 1);
-  }
-}
-
-export async function relocateBaseline(root, plan, baseline, current) {
+  const guards = owners.filter((row) => row.serializedCheckpointGuard),
+    live = owners.filter((row) => !row.serializedCheckpointGuard),
+    unexpected = memory.filter((row) => !row.owned);
+  // No mutable baseline, relocation or update can raise this ceiling.
   if (
-    plan?.version !== 1 ||
-    !/^[a-f0-9]{40}$/.test(plan.base) ||
-    !Array.isArray(plan.sources) ||
-    !plan.sources.length ||
-    !Array.isArray(plan.targets) ||
-    !plan.targets.length ||
-    plan.sources.some(
-      (file) => typeof file !== 'string' || !/^(?!.*(?:^|\/)\.\.?\/)src\/.+\.mjs$/.test(file),
-    ) ||
-    plan.targets.some(
-      (file) => typeof file !== 'string' || !/^(?!.*(?:^|\/)\.\.?\/)oracle\/.+\.mjs$/.test(file),
-    )
+    Object.values(actual).some((value) => value !== 0) ||
+    execution.length ||
+    live.length ||
+    unexpected.length
   )
-    throw new Error('Invalid EXE baseline relocation plan');
-  const paths = [...plan.sources, ...plan.targets],
-    group = new Set(paths);
-  if (group.size !== paths.length) throw new Error('Relocation paths must be unique');
-  const git = async (...args) => (await execFile('git', args, { cwd: root })).stdout.trimEnd();
-  if (resolve(await git('rev-parse', '--show-toplevel')) !== resolve(root))
-    throw new Error('Relocation root must be its Git repository root');
-  if ((await git('rev-parse', 'HEAD')) !== plan.base)
-    throw new Error('Relocation base must be the current HEAD');
-  const committed = JSON.parse(
-    await git('show', `${plan.base}:scripts/exe-dependency-baseline.json`),
-  );
-  validateBaseline(committed);
-  if (JSON.stringify(committed) !== JSON.stringify(baseline))
-    throw new Error('Relocation requires the committed baseline unchanged');
-  const includes = new Set(await transitionalRuntimeFiles(root));
-  if (plan.targets.some((file) => !includes.has(file)))
-    throw new Error('Relocation targets must be explicit shipped transitional includes');
-  const tracked = new Set(
-    (await git('ls-tree', '-r', '--name-only', plan.base, '--', ...paths)).split('\n'),
-  );
-  if (plan.sources.some((file) => !tracked.has(file)))
-    throw new Error('Relocation sources must exist at the base commit');
-  const before = { addresses: [], calls: [] },
-    after = { addresses: [], calls: [] };
-  const previousTotal = zero(),
-    nextTotal = zero();
-  for (const file of paths) {
-    const oldCounts = tracked.has(file)
-      ? scanSource(await git('show', `${plan.base}:${file}`), file, before)
-      : zero();
-    if (JSON.stringify(oldCounts) !== JSON.stringify(committed.files[file] ?? zero()))
-      throw new Error(`Relocation base source disagrees with its baseline ${file}`);
-    let source = '';
-    try {
-      source = await readFile(join(root, file), 'utf8');
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-    const newCounts = scanSource(source, file, after);
-    if (JSON.stringify(newCounts) !== JSON.stringify(current[file] ?? zero()))
-      throw new Error(`Relocation source changed during scan ${file}`);
-    for (const category of categories) {
-      previousTotal[category] += oldCounts[category];
-      nextTotal[category] += newCounts[category];
-    }
-  }
-  for (const category of categories)
-    if (nextTotal[category] > previousTotal[category])
-      throw new Error(`Relocation increases total ${category}`);
-  requireSubset(before.addresses, after.addresses, 'address');
-  requireSubset(before.calls, after.calls, 'call kind');
-  const outside = Object.fromEntries(Object.entries(current).filter(([file]) => !group.has(file)));
-  const oldOutside = Object.fromEntries(
-    Object.entries(committed.files).filter(([file]) => !group.has(file)),
-  );
-  const { increases } = compareBaseline(oldOutside, outside);
-  if (increases.length)
-    throw new Error(`EXE dependencies increased outside relocation\n${increases.join('\n')}`);
-  return {
-    base: plan.base,
-    sources: plan.sources,
-    targets: plan.targets,
-    before: previousTotal,
-    after: nextTotal,
-  };
-}
-
-async function writeBaseline(path, files) {
-  const temporary = `${path}.${randomUUID()}.tmp`;
-  try {
-    await writeFile(temporary, JSON.stringify({ version: 1, files }, null, 2) + '\n', {
-      flag: 'wx',
-    });
-    await rename(temporary, path);
-  } finally {
-    await rm(temporary, { force: true });
-  }
-}
-
-export async function check(root, { update = false, relocate } = {}) {
-  const baselinePath = join(root, 'scripts/exe-dependency-baseline.json');
-  const references = JSON.parse(await readFile(join(root, 'references.json'), 'utf8'));
-  validateReferences(references);
-  const baseline = JSON.parse(await readFile(baselinePath, 'utf8'));
-  validateBaseline(baseline);
-  const current = await scanRuntime(root);
-  const { increases, decreases } = compareBaseline(baseline.files, current);
-  if (relocate) {
-    if (update) throw new Error('Choose update or relocation');
-    const proof = await relocateBaseline(root, relocate, baseline, current);
-    await writeBaseline(baselinePath, current);
-    console.log(`Relocated EXE baseline from ${proof.base}\n${JSON.stringify(proof)}`);
-  } else if (increases.length)
-    throw new Error(`EXE dependencies increased:\n${increases.join('\n')}`);
-  if (decreases.length && update) {
-    await writeBaseline(baselinePath, current);
-    console.log(`Updated EXE dependency baseline (${decreases.length} decreases).`);
-  } else if (decreases.length && !relocate) {
-    console.log(
-      `EXE dependencies decreased:\n${decreases.join('\n')}\n` +
-        'Run node scripts/check-no-exe-addresses.mjs --update to lower the baseline.',
+    throw new Error(
+      'Ordinary execution dependency exceeds zero: ' +
+        JSON.stringify({ actual, execution, live, unexpected }),
     );
-  }
-  const totals = Object.values(current).reduce((sum, counts) => {
-    for (const category of categories) sum[category] += counts[category];
-    return sum;
-  }, zero());
+  if (guards.length !== 1)
+    throw new Error('Serialized checkpoint owner guard must remain visible exactly once');
   console.log(
-    `EXE dependency check: ${totals.addresses} addresses, ${totals.calls} calls, ` +
-      `${totals.references} references in ${Object.keys(current).length} files.`,
+    'Ordinary dependency ceiling 0: ' +
+      JSON.stringify({
+        modules: modules.length,
+        actual,
+        rawNumericOverlaps: raw.addresses,
+        ordinaryNumericConstants: constants,
+        serializedCheckpointGuards: guards.length,
+        liveOriginalOwners: live.length,
+        originalExecution: execution.length,
+        ownedBufferMemoryMembers: memory.length,
+      }),
   );
+  return { raw, actual, constants, guards, live, execution, memory };
 }
 
-const entry = process.argv[1] && resolve(process.argv[1]);
-if (entry === fileURLToPath(import.meta.url)) {
-  const args = process.argv.slice(2);
-  const valid =
-    args.length === 0 ||
-    (args.length === 1 && args[0] === '--update') ||
-    (args.length === 2 && args[0] === '--relocate');
-  if (!valid) {
-    console.error(
-      'Usage: node scripts/check-no-exe-addresses.mjs [--update | --relocate plan.json]',
-    );
-    process.exitCode = 1;
-  } else {
-    try {
-      await check(fileURLToPath(new URL('..', import.meta.url)), {
-        update: args[0] === '--update',
-        relocate:
-          args[0] === '--relocate' ? JSON.parse(await readFile(args[1], 'utf8')) : undefined,
-      });
-    } catch (error) {
-      console.error(error.message);
-      process.exitCode = 1;
-    }
-  }
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (process.argv.length !== 2) throw new Error('Usage: node scripts/check-no-exe-addresses.mjs');
+  await check(fileURLToPath(new URL('..', import.meta.url)));
 }

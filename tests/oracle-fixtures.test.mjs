@@ -57,18 +57,12 @@ test('an explicitly supplied missing or unreviewed fixture fails instead of skip
   );
 });
 
-test('all original 107 migration targets retain ownership and current executable groups are disjoint', async () => {
+test('actual import-based executable groups are disjoint and keep explicit oracle tests separate', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url)),
     inventory = await nativeTestGroups(root);
-  assert.deepEqual(inventory.targets, { oracle: 33, differential: 51, js: 23 });
-  assert.equal(inventory.original.length, 107);
   const files = Object.values(inventory.groups).flat();
   assert.equal(files.length, new Set(files).size);
   assert.ok(inventory.groups.js.includes('tests/native-abi.test.mjs'));
   assert.ok(inventory.groups.oracle.includes('tests/oracle/native-scalar-math.test.mjs'));
   assert.ok(inventory.groups.oracle.includes('tests/ppi-native.test.mjs'));
-  assert.equal(
-    inventory.original.find((item) => item.file === 'tests/native-engine-process.test.mjs')?.state,
-    'current',
-  );
 });

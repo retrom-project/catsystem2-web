@@ -21,8 +21,7 @@ export class M2LipSamples {
     if (kind === 'lpb') {
       if (
         bytes.length < 20 ||
-        view.getUint32(0, true) !==
-          0x0044504c /* exe-address-check: non-address - little-endian LPD file magic */ ||
+        view.getUint32(0, true) !== 0x0044504c /* little-endian LPD file magic  */ ||
         view.getUint32(8, true) !== 32 ||
         !view.getUint32(12, true)
       )
@@ -33,7 +32,7 @@ export class M2LipSamples {
       // byte array has no readable tail in JS; reject it before any access.
       if (count > Math.floor((bytes.length - 20) / 32)) return null;
       const length = view.getUint32(20 + (count - 1) * 32, true) + 1;
-      if (length > 10000000 /* exe-address-check: non-address - bounded decoded lip sample count */)
+      if (length > 10000000 /* bounded decoded lip sample count  */)
         throw new RangeError('M2 LPB sample count exceeds its bound');
       backup = new Float32Array(length);
       let index = 0;
