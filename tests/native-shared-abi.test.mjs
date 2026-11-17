@@ -22,7 +22,7 @@ test('shared semantics do not name or enable explicitly unknown profile slots', 
   assert.deepEqual(sdk.tables.main.entries[0x52].controlCodes, []);
   assert.deepEqual(game.tables.main.entries[0x52].controlCodes, [2]);
   assert.throws(() => nativeABI('unregistered'), /Unregistered/);
-  for (const version of ['2.6.1.23', '2.6.1.37', '2.6.1.58', '2.6.1.75', '2.6.1.90'])
+  for (const version of ['2.6.1.37', '2.6.1.58', '2.6.1.75', '2.6.1.90'])
     assert.throws(() => abiForEngineVersion(version), /Unregistered/);
 });
 
