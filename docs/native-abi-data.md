@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 20        | 0             | 0             | 918     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 23        | 0             | 0             | 915     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -970,6 +970,15 @@ fail at their own protocol boundaries.
 An owned FES program loads an authored WAV into a fixed bank and through the
 legacy group allocator, plays both banks, and uses the same FES and Sound
 owners during the destruction request and cleanup.
+
+## 2.6.1.63 Draw and FES waits
+
+Main 256, 260 and 262 initialize the Draw renderer, set its offsets and write
+its enabled word. A rising edge sets the pending word. The own FES common
+`wait` callback uses the numeric, no-argument and object-reference forms and
+the `frame` and `tag` selectors. The tag uses record 32 and a 32-byte field.
+The owned control reaches timed, frame-relative and no-argument suspensions
+with the attached Script bank and Draw owner active.
 
 ## 2.6.1.67 first-title entry and normal services
 

@@ -308,9 +308,9 @@ const oldAbsent = [
   'setsndconfex',
   'sysvoiceex',
 ];
-for (const [version, count] of [
-  ['2.6.1.63', 109],
-  ['2.6.1.67', 110],
+for (const [version, count, waitReview] of [
+  ['2.6.1.63', 109, 'engine63-common-wait-owned-parameters'],
+  ['2.6.1.67', 110, 'engine67-common-wait-owned-parameters'],
 ]) {
   test(`native FES common membership accepts an independently complete old set: ${version}`, () => {
     const absent = [...oldAbsent, ...(version === '2.6.1.63' ? ['strcmp'] : [])],
@@ -369,8 +369,12 @@ for (const [version, count] of [
     const abi = abiAPI.abiForEngineVersion(version);
     assert.deepEqual(abi.fes.commonHeads, {
       ...registration,
-      reviewedBindings: version === '2.6.1.67' ? ['engine67-common-wait-owned-parameters'] : [],
+      reviewedBindings: [waitReview],
     });
+    assert.strictEqual(
+      lookupFESCommonHead(abi.fes.commonHeads, bytes('wait')).entry.waitPolicy,
+      FES_COMMON_HEAD_BINDING_REVIEWS[waitReview],
+    );
     assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
     assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   });

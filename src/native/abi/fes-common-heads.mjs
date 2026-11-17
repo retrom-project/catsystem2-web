@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed native FES common membership. Name crossrefs are navigation only;
 // they do not establish semantic equivalence or bind a handler.
+import engine63 from './2.6.1.63.mjs';
 import engine67 from './2.6.1.67.mjs';
 const shared = {
   _redirect: [],
@@ -189,8 +190,16 @@ const sdkResetReview = 'sdk74-common-resetactive-null',
   gameLockReview = 'game76-common-lockactive-int32',
   sdkWaitReview = 'sdk74-common-wait-owned-parameters',
   gameWaitReview = 'game76-common-wait-owned-parameters',
+  engine63WaitReview = 'engine63-common-wait-owned-parameters',
   engine67WaitReview = 'engine67-common-wait-owned-parameters';
 export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
+  [engine63WaitReview]: {
+    binding: 'native-wait',
+    selectors: ['frame', 'tag'],
+    tagRecordCode: 32,
+    tagBytes: 32,
+    referenceDefaultIndex: -1,
+  },
   [engine67WaitReview]: {
     binding: 'native-wait',
     selectors: ['frame', 'tag'],
@@ -258,6 +267,11 @@ const boundEntries = freeze(
   ),
 );
 const reviewRegistrations = freeze([
+  {
+    shared: engine63.fes.commonHeads.shared,
+    additions: engine63.fes.commonHeads.additions,
+    reviews: [engine63WaitReview],
+  },
   {
     shared: engine67.fes.commonHeads.shared,
     additions: engine67.fes.commonHeads.additions,

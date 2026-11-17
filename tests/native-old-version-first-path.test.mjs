@@ -679,7 +679,7 @@ test('ordinary Draw enable follows each own pending policy and preserves raw sto
     ['bokutomo-engine-2.6.1.67', [0, 0, 1, 0]],
     ['sdk-4.01-engine-2.6.1.74', [1, 0, 0x80000005, 0x80000005]],
     ['nekopara-vol3-engine-2.6.1.76', [1, 0, 0x80000005, 0x80000005]],
-    ['rebellions-jp-engine-2.6.1.63', null],
+    ['rebellions-jp-engine-2.6.1.63', [0, 0, 1, 0]],
   ];
   for (const [profile, expected] of profiles) {
     const game = memoryGame({ 'empty.kcs': kcsProgram([[59]]) }),
@@ -701,12 +701,6 @@ test('ordinary Draw enable follows each own pending policy and preserves raw sto
         send = (value) => world.sendEngine(id, world.main.id, 286, 0, value);
       assert.equal(draw.state.enabled >>> 0, 1);
       assert.equal(draw.state.pending >>> 0, 0);
-      if (expected === null) {
-        const before = structuredClone(draw.snapshot());
-        await assert.rejects(send(1), /Unreviewed.*drawEnablePendingPolicy/);
-        assert.deepEqual(draw.snapshot(), before);
-        continue;
-      }
       const words = [1, 0, 0x80000005, 0x80000005];
       for (let i = 0; i < words.length; i++) {
         await send(words[i]);
@@ -1170,9 +1164,9 @@ for (const [version, profile] of versions) {
   );
 }
 
-test('63 FES GCALLs bind a real draw owner and update the attached Script bank', async () => {
+test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', async () => {
   const { world, audio } = await oldTitleWorld(
-    { 'entry.fes': bytes('#START\n$8=73\n') },
+    { 'entry.fes': bytes('#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n') },
     undefined,
     'rebellions-jp-engine-2.6.1.63',
   );
@@ -1188,12 +1182,19 @@ test('63 FES GCALLs bind a real draw owner and update the attached Script bank',
     assert.equal(created.control, 1);
     const fesID = world.resolveTaskID(created.value, main.id),
       record = world.objects.objects.get(fesID),
-      fes = record.implementation,
-      drawID = await world.objects.create({ kind: 15, parent: main.id });
+      fes = record.implementation;
     assert.equal(record.parent, main.id);
-    await world.sendEngine(drawID, main.id, 279, 4, 3);
-    await world.sendEngine(drawID, main.id, 283, 0, 0);
-    assert.deepEqual(await call(449, [created.value, world.nativeTaskID(drawID)]), { control: 2 });
+    const drawTask = await call(66, [15, world.nativeTaskID(main.id), 128]),
+      drawID = world.resolveTaskID(drawTask.value, main.id),
+      draw = world.graphics.drawTasks.get(drawID);
+    assert.equal(drawTask.control, 1);
+    assert.deepEqual(await call(256, [drawTask.value, 4, 3]), { control: 2 });
+    assert.deepEqual(await call(260, [drawTask.value, 0xffffffff, 2]), { control: 2 });
+    assert.deepEqual(await call(262, [drawTask.value, 0]), { control: 2 });
+    assert.deepEqual(await call(262, [drawTask.value, 9]), { control: 2 });
+    assert.deepEqual(draw.state.offset, [-1, 2]);
+    assert.deepEqual([draw.state.enabled, draw.state.pending], [9, 1]);
+    assert.deepEqual(await call(449, [created.value, drawTask.value]), { control: 2 });
     assert.equal(fes.surface, drawID);
     assert.deepEqual(await call(447, [created.value, 160]), { control: 2 });
     assert.equal(fes.variableBank(), bank);
@@ -1201,13 +1202,29 @@ test('63 FES GCALLs bind a real draw owner and update the attached Script bank',
     assert.equal(bank.get(8), 0);
     assert.deepEqual(await call(448, [created.value]), { control: 2 });
     assert.equal(bank.get(8), 73);
+    assert.equal(fes.player.root.commandDelayUntil, fes.player.root.nativeFrameWord + 2);
+    await world.tick();
+    assert.equal(bank.get(8), 73);
+    await world.tick();
+    assert.equal(bank.get(8), 74);
+    assert.equal(fes.player.root.commandDelayUntil, -2);
+    assert.equal(fes.player.root.waitParameters.frameThreshold, 4);
+    await world.tick();
+    assert.equal(bank.get(8), 74);
+    await world.tick();
+    assert.equal(bank.get(8), 75);
+    assert.equal(fes.player.root.commandDelayUntil, -1);
+    await world.tick();
+    assert.equal(bank.get(8), 75);
+    await world.tick();
+    assert.equal(bank.get(8), 76);
 
     assert.deepEqual(await call(67, [created.value]), { control: 2 });
     assert.equal(record.destroyRequested, true);
     await world.tick();
     assert.equal(world.objects.objects.has(fesID), false);
     assert.equal(world.graphics.fesSurfaces.get(drawID)?.has(fesID) ?? false, false);
-    assert.equal(bank.get(8), 73);
+    assert.equal(bank.get(8), 76);
   } finally {
     try {
       await world.close();
