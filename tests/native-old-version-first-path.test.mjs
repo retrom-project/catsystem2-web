@@ -1164,6 +1164,53 @@ for (const [version, profile] of versions) {
   );
 }
 
+test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main),
+      done = { control: 2 };
+    machine.writeString('owned startup plane', 128);
+    assert.deepEqual(await call(79, [0, 0, 0, 0]), done);
+    const child = await call(66, [2, world.nativeTaskID(main.id), 128]),
+      target = world.resolveTaskID(child.value, main.id),
+      plane = world.graphics.get(target);
+    assert.equal(child.control, 1);
+    assert.deepEqual(
+      await call(79, [child.value, floatBits(4.5), floatBits(3.25), 0x80112233]),
+      done,
+    );
+    assert.deepEqual(await call(88, [child.value, floatBits(23.5)]), done);
+    assert.deepEqual(await call(92, [child.value, 1]), done);
+    assert.deepEqual(await call(104, [child.value, 77, 80, 7, 8, 99, 0x81230005]), done);
+    assert.deepEqual(await call(105, [child.value, 0x81230001]), done);
+    assert.deepEqual(await call(848, [child.value, 0x80000005]), done);
+    assert.deepEqual(await call(849, [child.value, 0x80000007]), done);
+
+    const region = world.input.get(target);
+    assert.deepEqual(plane.state.bindArea, [0, 0, 4, 3]);
+    assert.equal(region.owner, target);
+    assert.equal(region.receiver, world.nativeTaskID(main.id));
+    assert.equal(region.priority, 23);
+    assert.equal(region.flags, 0);
+    assert.equal(region.enabled, 0x81230001);
+    assert.equal(region.hoverEnabled, 0x80000005);
+    assert.equal(region.dragEnabled, 0x80000007);
+
+    assert.deepEqual(await call(67, [child.value]), done);
+    await world.tick();
+    assert.equal(world.objects.objects.has(target), false);
+    assert.equal(world.input.get(target), null);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', async () => {
   const { world, audio } = await oldTitleWorld(
     { 'entry.fes': bytes('#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n') },

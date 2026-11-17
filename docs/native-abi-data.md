@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 37        | 0             | 0             | 901     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 44        | 0             | 0             | 894     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -989,6 +989,12 @@ filenames replace the start and keep the first accepted end. Missing tables
 and rejected records leave no result word on the VM stack.
 
 ## 2.6.1.63 Draw and FES waits
+
+Main 79, 88, 92, 104, 105, 848 and 849 set up the starting SimplePlane
+and its Input registration. The plane derives its rectangle and priority
+from the loaded graph. Its retained binding word uses the logical packet
+address 0. Enable, hover and drag requests each carry their literal DWORD.
+Destruction releases the Input registration with the plane.
 
 Main 256, 260 and 262 initialize the Draw renderer, set its offsets and write
 its enabled word. A rising edge sets the pending word. The own FES common
