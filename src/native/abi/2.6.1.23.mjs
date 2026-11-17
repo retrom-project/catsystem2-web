@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: MPL-2.0
+
+export const engine23TitleCommonHeads = {
+  shared: [
+    'baseimg',
+    'call',
+    'endfes',
+    'endif',
+    'endkcs',
+    'execfes',
+    'execkcs',
+    'fileexist',
+    'getconf',
+    'if',
+    'lockactive',
+    'messagebox',
+    'newsave',
+    'next',
+    'reset_frame',
+    'resetactive',
+    'setconf',
+    'sysvoice',
+    'wait',
+    'wndmenu',
+  ],
+  additions: [],
+  count: 20,
+  complete: false,
+  comparison: 'byte-exact-cstring',
+  reviewedBindings: ['engine23-common-wait-frame-reference'],
+};

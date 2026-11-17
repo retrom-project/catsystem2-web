@@ -401,6 +401,7 @@ export class FESCoordinator {
     const bytes = nativeDataString(this.instance.argumentBytes(token)),
       member = nativeFESCommonHead(this.world.profile, bytes),
       name = fesByteView(bytes);
+    if (member.kind === 'unreviewed') throw new Error('Unreviewed FES common command: ' + name);
     if (member.kind === 'absent') {
       const instance = this.instance,
         record = this.world.objects.objects.get(instance.player.nativeOwner),
@@ -447,11 +448,12 @@ export class FESCoordinator {
   wait(args, policy) {
     const instance = this.instance,
       parameters = instance.waitParameters,
+      operandBytes = policy.operandBytes ?? 2560,
       argument = (index) => {
         if (args[index] === undefined) return null;
         const bytes = nativeDataString(instance.argumentBytes(args[index]));
-        if (bytes.length >= 2560)
-          throw new RangeError('FES wait operand exceeds its2560-byte temporary');
+        if (bytes.length >= operandBytes)
+          throw new RangeError(`FES wait operand exceeds its ${operandBytes}-byte temporary`);
         return bytes;
       };
     let bytes = argument(0);

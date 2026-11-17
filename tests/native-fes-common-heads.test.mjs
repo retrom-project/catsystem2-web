@@ -3,6 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as abiAPI from '../src/native/abi/index.mjs';
+import { engine23TitleCommonHeads } from '../src/native/abi/2.6.1.23.mjs';
+import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
 import {
   lookupFESCommonHead,
   FES_COMMON_HEAD_BINDING_REVIEWS,
@@ -28,6 +30,56 @@ const bytes = (value) => new TextEncoder().encode(value),
     'steam_isbroadcast',
     'steam_isenable',
   ];
+
+test('2.6.1.23 scopes common command membership to its reviewed title path', () => {
+  const registration = engine23TitleCommonHeads;
+  assert.equal(registration.count, 20);
+  assert.equal(registration.complete, false);
+  const lookup = (name) => lookupFESCommonHead(registration, bytes(name));
+  assert.equal(lookup('wait').entry.dispatchBinding, 'native-wait');
+  assert.equal(lookup('baseimg').entry.dispatchBinding, null);
+  assert.deepEqual(lookup('WAIT'), { kind: 'unreviewed' });
+  assert.deepEqual(lookup('cgreg'), { kind: 'unreviewed' });
+  const invented = structuredClone(registration);
+  invented.shared[0] = 'bitcount';
+  assert.throws(() => validateFESCommonHeads(invented), /FES common head registration/);
+  assert.throws(
+    () => validateFESCommonHeads({ ...registration, complete: true }),
+    /FES common head registration/,
+  );
+  assert.throws(
+    () =>
+      validateFESCommonHeads({
+        ...registration,
+        reviewedBindings: ['engine63-common-wait-owned-parameters'],
+      }),
+    /FES common head registration/,
+  );
+});
+
+test('2.6.1.23 wait selects its frame threshold, named object and no-argument delay', () => {
+  const policy = lookupFESCommonHead(engine23TitleCommonHeads, bytes('wait')).entry.waitPolicy,
+    driver = Object.create(FESCoordinator.prototype),
+    waitParameters = { frameThreshold: 0, reference: null };
+  driver.instance = {
+    argumentBytes: (value) => value,
+    operandValue: (value) => Number(new TextDecoder().decode(value)) | 0,
+    waitParameters,
+  };
+  driver.collection = {
+    lookup: (name, index) =>
+      new TextDecoder().decode(name) === 'button' && index === 2 ? {} : null,
+  };
+  const wait = (...args) => driver.wait(args.map(bytes), policy);
+  assert.equal(wait('frame', '24'), -2);
+  assert.equal(waitParameters.frameThreshold, 24);
+  assert.equal(wait('button[2]'), -4);
+  assert.deepEqual(waitParameters.reference, { nameBytes: bytes('button'), index: 2 });
+  assert.equal(wait(), -1);
+  assert.equal(wait('tag', 'cue'), 1);
+  assert.equal(wait('8'), 8);
+  assert.throws(() => wait('0'.repeat(260)), /FES wait operand exceeds its 260-byte temporary/);
+});
 
 for (const [profile, count, additions] of [
   [sdk, 122, sdkOnly],

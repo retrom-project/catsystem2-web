@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed native FES common membership. Name crossrefs are navigation only;
 // they do not establish semantic equivalence or bind a handler.
+import { engine23TitleCommonHeads } from './2.6.1.23.mjs';
 import engine63 from './2.6.1.63.mjs';
 import engine67 from './2.6.1.67.mjs';
 const shared = {
@@ -190,9 +191,16 @@ const sdkResetReview = 'sdk74-common-resetactive-null',
   gameLockReview = 'game76-common-lockactive-int32',
   sdkWaitReview = 'sdk74-common-wait-owned-parameters',
   gameWaitReview = 'game76-common-wait-owned-parameters',
+  engine23WaitReview = 'engine23-common-wait-frame-reference',
   engine63WaitReview = 'engine63-common-wait-owned-parameters',
   engine67WaitReview = 'engine67-common-wait-owned-parameters';
 export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
+  [engine23WaitReview]: {
+    binding: 'native-wait',
+    selectors: ['frame'],
+    operandBytes: 260,
+    referenceDefaultIndex: -1,
+  },
   [engine63WaitReview]: {
     binding: 'native-wait',
     selectors: ['frame', 'tag'],
@@ -268,6 +276,12 @@ const boundEntries = freeze(
 );
 const reviewRegistrations = freeze([
   {
+    shared: engine23TitleCommonHeads.shared,
+    additions: engine23TitleCommonHeads.additions,
+    complete: false,
+    reviews: [engine23WaitReview],
+  },
+  {
     shared: engine63.fes.commonHeads.shared,
     additions: engine63.fes.commonHeads.additions,
     reviews: [engine63WaitReview],
@@ -335,12 +349,17 @@ const registrationFields = new Set([
 ]);
 
 export function validateFESCommonHeads(registration) {
+  const coverage = reviewRegistrations.find(
+    (group) =>
+      sameNames(registration?.shared, group.shared) &&
+      sameNames(registration?.additions, group.additions),
+  );
   if (
     !registration ||
     Object.getPrototypeOf(registration) !== Object.prototype ||
     Object.keys(registration).length !== registrationFields.size ||
     Object.keys(registration).some((key) => !registrationFields.has(key)) ||
-    registration.complete !== true ||
+    registration.complete !== (coverage?.complete ?? true) ||
     registration.comparison !== 'byte-exact-cstring' ||
     !validNames(registration.shared, sharedNames) ||
     !validNames(registration.additions, additionNames) ||
@@ -350,24 +369,18 @@ export function validateFESCommonHeads(registration) {
     !Array.isArray(registration.reviewedBindings) ||
     registration.reviewedBindings.some(
       (id, index, list) =>
-        typeof id !== 'string' ||
-        list.indexOf(id) !== index ||
-        !reviewRegistrations.some(
-          (group) =>
-            sameNames(registration.shared, group.shared) &&
-            sameNames(registration.additions, group.additions) &&
-            group.reviews.includes(id),
-        ),
+        typeof id !== 'string' || list.indexOf(id) !== index || !coverage?.reviews.includes(id),
     )
   )
     throw new Error('Invalid FES common head registration');
   return registration;
 }
 
-const absent = freeze({ kind: 'absent' });
+const absent = freeze({ kind: 'absent' }),
+  unreviewed = freeze({ kind: 'unreviewed' });
 
 // The ABI entry point supplies a registered profile. This helper only queries
-// its complete data; it never expands a head or decides an execution action.
+// its reviewed membership; it never expands a head or decides execution.
 export function lookupFESCommonHead(registration, bytes) {
   validateFESCommonHeads(registration);
   if (!(bytes instanceof Uint8Array))
@@ -381,7 +394,7 @@ export function lookupFESCommonHead(registration, bytes) {
     !Object.hasOwn(FES_COMMON_HEAD_CATALOGUE, keyword) ||
     (!registration.shared.includes(keyword) && !registration.additions.includes(keyword))
   )
-    return absent;
+    return registration.complete ? absent : unreviewed;
   const review = registration.reviewedBindings
       .map((id) => FES_COMMON_HEAD_BINDING_REVIEWS[id])
       .find((item) => boundEntries[item.binding].keyword === keyword),

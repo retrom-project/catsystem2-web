@@ -381,10 +381,8 @@ does not register a version or admit any unknown native slot.
 The separate [FES common catalogue](../src/native/abi/fes-common-heads.mjs) owns
 134 native keywords once: 119 shared by the registered engines, 12 additional
 Game words and three additional SDK words. Each engine's `fes.commonHeads`
-explicitly registers the shared set, its additions, the complete count and
-`byte-exact-cstring` comparison. Missing, incomplete or inconsistent registrations
-are rejected. These keywords are not entries or ordinals in the four VM native
-ID namespaces, and their presence does not change a slot or capability.
+explicitly registers its member names, additions, count, coverage and
+`byte-exact-cstring` comparison. These keywords have their own namespace.
 
 The shared catalogue is independent of a version's complete membership. Each
 registered set contains sorted, unique catalogue names and an exact total;
@@ -395,12 +393,17 @@ register those ABIs or qualify any of their handlers for execution. The existing
 Game/SDK binding reviews still require their matching complete modern sets;
 an older set cannot inherit them by containing the same keyword.
 
+`.23` declares the 20 command members verified for its title path. The shared
+lookup returns `unreviewed` for other common heads in this profile and the
+dispatcher rejects them. The reviewed `wait` binding takes a 260-byte operand
+buffer. It preserves frame thresholds, named object references and the
+no-argument delay.
+
 `nativeFESCommonHead(profile, narrowBytes)` resolves the exact registered profile
-before querying its data. It returns a tagged `present` descriptor or `absent`;
-the lookup compares narrow bytes through the first NUL, with an implicit NUL at
-the end of a getter-owned byte array. It preserves case and does not decode,
-expand, tokenize, evaluate or execute a command. It also does not establish
-native temporary-buffer or overflow behavior.
+before querying its data. A complete registration returns a tagged `present`
+descriptor or `absent`. The lookup compares narrow bytes through the first NUL,
+with an implicit NUL at the end of a getter-owned byte array. It preserves the
+original case.
 
 A descriptor's `nameCrossrefs` are navigation to existing audit names, including
 explicitly authored alias groups. They do not prove that a native common handler
