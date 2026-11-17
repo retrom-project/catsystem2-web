@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ProgressBudget, FrameBudgetReached } from './browser/progress-budget.mjs';
+import { captureTerminalState } from './browser/terminal-evidence.mjs';
 import {
   fullAcceptanceMode,
   progressAcceptance,
@@ -212,6 +213,51 @@ test('a native FES wait observes overlay exit when the backdrop is already waiti
   await assert.rejects(until(page, 'backdrop#WAIT', 6, settled));
   assert.equal(frame, 6);
   assert.equal((await until(page, 'backdrop#WAIT', 6)).frame, 6);
+});
+
+test('terminal evidence records a checkpoint fault and still visits userdata teardown', async () => {
+  const prior = globalThis.window,
+    error = new Error('private attachment text');
+  error.stack =
+    'Error: private attachment text\n  at snapshot (http://localhost/src/native/world.mjs:31:7)';
+  globalThis.window = {
+    catSystem2: {
+      world: { frame: 30 },
+      snapshot: async () => {
+        throw error;
+      },
+    },
+  };
+  try {
+    let evaluations = 0,
+      attached;
+    const page = {
+        isClosed: () => false,
+        evaluate: async (...args) => {
+          evaluations++;
+          return args[0](args[1]);
+        },
+      },
+      info = {
+        status: 'failed',
+        expectedStatus: 'passed',
+        attach: async (name, { body }) => {
+          attached = { name, result: JSON.parse(body) };
+        },
+      };
+    const result = await captureTerminalState(page, info);
+    assert.equal(evaluations, 3);
+    assert.deepEqual(result.errors[0], {
+      stage: 'checkpoint-snapshot',
+      type: 'Error',
+      location: { file: 'src/native/world.mjs', line: 31, column: 7 },
+    });
+    assert.equal(result.errors[1].stage, 'userdata');
+    assert.deepEqual(attached, { name: 'terminal-evidence.json', result });
+    assert.doesNotMatch(JSON.stringify(attached), /private attachment text/);
+  } finally {
+    globalThis.window = prior;
+  }
 });
 
 test('progress campaign assertion failures preserve immediate cleanup and the original error', async () => {

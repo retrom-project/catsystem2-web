@@ -15,31 +15,51 @@ export async function captureTerminalState(page, info) {
   else {
     try {
       const metadata = await page.evaluate(async (slot) => {
-        const engine = window.catSystem2;
-        if (!engine?.world || engine.world.closed)
-          throw new Error('Terminal checkpoint requires the live ordinary Core');
-        if (Object.hasOwn(window, slot)) throw new Error('Terminal transfer slot is occupied');
-        const { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
-          frame = engine.world.frame,
-          saved = await engine.snapshot(),
-          bytes = await serializeCheckpoint(saved, engine.checkpointLimit);
-        if (engine.world.frame !== frame) throw new Error('Terminal capture advanced the World');
-        window[slot] = bytes;
-        return {
-          bytes: bytes.length,
-          frame,
-          afterFrame: engine.world.frame,
-          profile: engine.world.profile,
-          source: engine.identity,
-          sha256: new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)).toHex(),
-        };
+        let stage = 'checkpoint-setup';
+        try {
+          const engine = window.catSystem2;
+          if (!engine?.world || engine.world.closed)
+            throw new Error('Terminal checkpoint requires the live ordinary Core');
+          if (Object.hasOwn(window, slot)) throw new Error('Terminal transfer slot is occupied');
+          const frame = engine.world.frame;
+          stage = 'checkpoint-snapshot';
+          const saved = await engine.snapshot();
+          stage = 'checkpoint-codec';
+          const { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
+            bytes = await serializeCheckpoint(saved, engine.checkpointLimit);
+          if (engine.world.frame !== frame) throw new Error('Terminal capture advanced the World');
+          window[slot] = bytes;
+          return {
+            bytes: bytes.length,
+            frame,
+            afterFrame: engine.world.frame,
+            profile: engine.world.profile,
+            source: engine.identity,
+            sha256: new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)).toHex(),
+          };
+        } catch (error) {
+          // Keep the runtime call site without copying strings from the mounted game.
+          const source = /\/(src\/[\w./-]+\.mjs):(\d+):(\d+)\b/.exec(error?.stack ?? '');
+          return {
+            failure: {
+              stage,
+              type: error?.name ?? typeof error,
+              ...(source && {
+                location: { file: source[1], line: Number(source[2]), column: Number(source[3]) },
+              }),
+            },
+          };
+        }
       }, slot);
-      const path = info.outputPath('terminal.cs2web'),
-        transfer = await transferCheckpointBytes(page, { slot, path, ...metadata });
-      await info.attach('terminal.cs2web', { path, contentType: 'application/octet-stream' });
-      result.checkpoint = { ...metadata, ...transfer, complete: true, productionCodec: true };
+      if (metadata.failure) result.errors.push(metadata.failure);
+      else {
+        const path = info.outputPath('terminal.cs2web'),
+          transfer = await transferCheckpointBytes(page, { slot, path, ...metadata });
+        await info.attach('terminal.cs2web', { path, contentType: 'application/octet-stream' });
+        result.checkpoint = { ...metadata, ...transfer, complete: true, productionCodec: true };
+      }
     } catch (error) {
-      failure('checkpoint', error);
+      failure('checkpoint-transport', error);
     }
     try {
       const prepared = await page.evaluate(async (stateSlot) => {

@@ -110,7 +110,9 @@ async function runGame(page) {
   await until(page, 'config#WAIT', 240);
   expect((await gameplay(page)).language).toMatchObject({ main: 2, ui: 2 });
   await page.keyboard.press('Escape');
-  await until(page, 'meswnd#WAIT', 240);
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
+    stack.every((label) => !label.startsWith('config#')),
+  );
   await noError(page);
 
   const before = (await gameplay(page)).saves;
