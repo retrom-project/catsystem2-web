@@ -180,9 +180,6 @@ function validateBehavior(abi) {
     !Number.isSafeInteger(messages?.screenEvent) ||
     !Number.isSafeInteger(text?.resourceMessages?.first?.cp932) ||
     !abi.layouts ||
-    !abi.layouts.motionCheckpoint ||
-    !abi.layouts.memoryFile ||
-    !abi.layouts.systemInformation ||
     !Number.isSafeInteger(messages?.tilePlaneCommand) ||
     !Number.isSafeInteger(fes?.variableBankOffset) ||
     typeof fes?.configurationMessage?.liveObjects !== 'boolean' ||

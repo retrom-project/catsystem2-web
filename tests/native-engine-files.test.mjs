@@ -9,6 +9,7 @@ import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { memoryGame, kif, kcsProgram } from './helpers.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { NativeResourceCache } from '../src/native/resource-cache.mjs';
+import { initializeNativeSystemInformation } from '../src/native/engine-system-information.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -313,3 +314,30 @@ for (const [profile, variable] of [
       }
     },
   );
+
+test('original file and system owners reject absent layouts before touching process', async () => {
+  for (const profile of [
+    'unregistered-engine-2.6.1.63',
+    'unregistered-engine-2.6.1.67',
+    'toString',
+  ]) {
+    const calls = [],
+      engine = {
+        profile,
+        get process() {
+          calls.push('process');
+          return {};
+        },
+        patch() {
+          calls.push('patch');
+        },
+      };
+    assert.throws(() => new NativeEngineFiles(engine, {}), /Native file objects are unavailable/);
+    assert.deepEqual(calls, [], 'no original file patch or memory access');
+    await assert.rejects(
+      initializeNativeSystemInformation(engine),
+      /Original system information layout is unavailable/,
+    );
+    assert.deepEqual(calls, [], 'no original system memory access or allocation');
+  }
+});

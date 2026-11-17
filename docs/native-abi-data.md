@@ -356,6 +356,15 @@ Executable fingerprints and table addresses remain separately owned by each
 entry in `NATIVE_EXE_PROFILES`. Sharing semantics does not make those binary
 identities, memory layouts or private survey observations interchangeable.
 
+The normal ABI validator does not require the original `motionCheckpoint`,
+`memoryFile` or `systemInformation` structure descriptors. They describe original
+C++ objects rather than the normal motion, resource or system services. Existing
+reviewed descriptors remain unchanged. The explicit original file and system
+owners require their own registered layout before accessing the process or
+installing patches; another profile's layout cannot supply that permission.
+Normal text and configuration data remain required. Resolving such an ABI still
+does not register a version or admit any unknown native slot.
+
 ## FES common keyword membership
 
 The separate [FES common catalogue](../src/native/abi/fes-common-heads.mjs) owns

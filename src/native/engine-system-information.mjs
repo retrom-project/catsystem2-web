@@ -116,10 +116,12 @@ function installSystemInformationAPIs(engine) {
 }
 
 export async function initializeNativeSystemInformation(engine) {
-  const layout = NATIVE_SYSTEM_INFORMATION[engine.profile],
-    p = engine.process;
-  if (!layout || p.load(layout.global))
-    throw new Error('Original system information already has an owner');
+  const layout = Object.hasOwn(NATIVE_SYSTEM_INFORMATION, engine.profile)
+    ? NATIVE_SYSTEM_INFORMATION[engine.profile]
+    : undefined;
+  if (!layout) throw new Error('Original system information layout is unavailable');
+  const p = engine.process;
+  if (p.load(layout.global)) throw new Error('Original system information already has an owner');
   installSystemInformationAPIs(engine);
   installNativeDxDiagnostics(engine);
   installNativeProfileStrings(engine.kernel);

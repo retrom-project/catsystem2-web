@@ -1444,7 +1444,7 @@
       {
         "kind": "guard",
         "file": "src/native/engine-files.mjs",
-        "line": 35,
+        "line": 39,
         "expression": "engine.profile.startsWith('sdk-')",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -1651,37 +1651,37 @@
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
       },
       {
-        "kind": "va-condition",
-        "file": "src/native/engine-files.mjs",
-        "line": 66,
-        "expression": "sdk",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/engine-files.mjs",
-        "line": 73,
-        "expression": "sdk",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
-        "kind": "va-condition",
-        "file": "src/native/engine-files.mjs",
-        "line": 79,
-        "expression": "!sdk",
-        "domain": 8,
-        "review": "deferred-domain-migration",
-        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
-      },
-      {
         "kind": "exe-layout",
         "file": "src/native/engine-files.mjs",
-        "line": 93,
+        "line": 33,
         "expression": "NATIVE_MEMORY_FILE_LAYOUTS[engine.profile]",
+        "domain": 8,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "src/native/engine-files.mjs",
+        "line": 70,
+        "expression": "sdk",
+        "domain": 8,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "src/native/engine-files.mjs",
+        "line": 77,
+        "expression": "sdk",
+        "domain": 8,
+        "review": "deferred-domain-migration",
+        "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
+      },
+      {
+        "kind": "va-condition",
+        "file": "src/native/engine-files.mjs",
+        "line": 83,
+        "expression": "!sdk",
         "domain": 8,
         "review": "deferred-domain-migration",
         "reason": "保留的 EXE handler/global/vtable/patch 布局选择，随所属领域删除。"
@@ -2058,7 +2058,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-system-information.mjs",
-        "line": 119,
+        "line": 120,
         "expression": "NATIVE_SYSTEM_INFORMATION[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2067,7 +2067,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-system-information.mjs",
-        "line": 136,
+        "line": 138,
         "expression": "NATIVE_SYSTEM_INFORMATION[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -2076,7 +2076,7 @@
       {
         "kind": "exe-layout",
         "file": "src/native/engine-system-information.mjs",
-        "line": 144,
+        "line": 146,
         "expression": "NATIVE_SYSTEM_INFORMATION[engine.profile]",
         "domain": 8,
         "review": "deferred-domain-migration",
@@ -24965,7 +24965,7 @@
         },
         {
           "name": "engine-files",
-          "registration": "src/native/engine-files.mjs:172",
+          "registration": "src/native/engine-files.mjs:174",
           "modules": [],
           "dependencies": []
         },
@@ -48419,7 +48419,7 @@
         },
         {
           "name": "engine-files",
-          "registration": "src/native/engine-files.mjs:172",
+          "registration": "src/native/engine-files.mjs:174",
           "modules": [],
           "dependencies": []
         },
@@ -49955,7 +49955,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "db775cd6f03b40d8f048ecd7599b2b716cb335ec022dbe61f0d99578d11602a2",
+      "sourceSha256": "2ffe605a1721c01e09effd0c305172eb0327072cad75be2dfddc65119e5eb185",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -51039,7 +51039,7 @@
     },
     {
       "file": "src/native/engine-files.mjs",
-      "sourceSha256": "28f8ced1aa868ac9e3182e82124b846d88a39161d923b32497f56c86ba3d7a50",
+      "sourceSha256": "e3ed68f7d998f75fda63052968d4127eb55816f8e001288c7251177a9de2b3d5",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 12, "calls": 8, "references": 0 },
@@ -51054,56 +51054,56 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 65,
+          "line": 69,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 72,
+          "line": 76,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 80,
+          "line": 84,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
           "reason": "直接使用原 EXE image 范围内的目标。"
         },
         {
-          "line": 95,
+          "line": 97,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 119,
+          "line": 121,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 120,
+          "line": 122,
           "method": "call",
           "target": "address",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 145,
+          "line": 147,
           "method": "callFromHost",
           "target": "destroy",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 146,
+          "line": 148,
           "method": "call",
           "target": "destroy",
           "review": "needs-review",
@@ -51113,7 +51113,7 @@
       "executionSiteCounts": { "patch": 4, "callFromHost": 2, "call": 2 },
       "indirectSites": [
         {
-          "line": 112,
+          "line": 114,
           "method": "getNativeFeature",
           "feature": "data-buffers",
           "review": "needs-review",
@@ -51768,7 +51768,7 @@
     },
     {
       "file": "src/native/engine-system-information.mjs",
-      "sourceSha256": "2be07430434b3a186740578e0c3fcd6567ce860f5a18a7db5931713df7d7bae3",
+      "sourceSha256": "2a3db1c764edc0377eb6488752f157a61f62eba20399348d58834fa0bd802baa",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 20, "calls": 1, "references": 0 },
@@ -51776,14 +51776,14 @@
       "docs": ["docs/native-compatibility.md"],
       "executionSites": [
         {
-          "line": 137,
+          "line": 139,
           "method": "call",
           "target": "layout.checkDirectX",
           "review": "needs-review",
           "reason": "目标可能来自布局、vtable、回调或 DLL。需在迁移该调用点时核对目标来源和具体分支。"
         },
         {
-          "line": 148,
+          "line": 150,
           "method": "callAsync",
           "target": "layout.destroy",
           "review": "needs-review",
@@ -58725,7 +58725,7 @@
         },
         {
           "file": "src/native/engine-system-information.mjs",
-          "line": 137,
+          "line": 139,
           "method": "call",
           "target": "layout.checkDirectX",
           "review": "needs-review",
@@ -58733,7 +58733,7 @@
         },
         {
           "file": "src/native/engine-system-information.mjs",
-          "line": 148,
+          "line": 150,
           "method": "callAsync",
           "target": "layout.destroy",
           "review": "needs-review",
@@ -59306,7 +59306,7 @@
       "executionSites": [
         {
           "file": "src/native/engine-files.mjs",
-          "line": 65,
+          "line": 69,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
@@ -59314,7 +59314,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 72,
+          "line": 76,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
@@ -59322,7 +59322,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 80,
+          "line": 84,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
@@ -59330,7 +59330,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 95,
+          "line": 97,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
@@ -59338,7 +59338,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 119,
+          "line": 121,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -59346,7 +59346,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 120,
+          "line": 122,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59354,7 +59354,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 145,
+          "line": 147,
           "method": "callFromHost",
           "target": "destroy",
           "review": "needs-review",
@@ -59362,7 +59362,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 146,
+          "line": 148,
           "method": "call",
           "target": "destroy",
           "review": "needs-review",
@@ -59721,7 +59721,7 @@
       "executionSites": [
         {
           "file": "src/native/engine-files.mjs",
-          "line": 65,
+          "line": 69,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
@@ -59729,7 +59729,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 72,
+          "line": 76,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
@@ -59737,7 +59737,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 80,
+          "line": 84,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
@@ -59745,7 +59745,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 95,
+          "line": 97,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",
@@ -59753,7 +59753,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 119,
+          "line": 121,
           "method": "callFromHost",
           "target": "address",
           "review": "needs-review",
@@ -59761,7 +59761,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 120,
+          "line": 122,
           "method": "call",
           "target": "address",
           "review": "needs-review",
@@ -59769,7 +59769,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 145,
+          "line": 147,
           "method": "callFromHost",
           "target": "destroy",
           "review": "needs-review",
@@ -59777,7 +59777,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 146,
+          "line": 148,
           "method": "call",
           "target": "destroy",
           "review": "needs-review",
@@ -60618,7 +60618,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 65,
+          "line": 69,
           "method": "patch",
           "target": "sdk ? 0x4b0830 : 0x5d39e0",
           "review": "needs-review",
@@ -60626,7 +60626,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 72,
+          "line": 76,
           "method": "patch",
           "target": "sdk ? 0x4b0710 : 0x5d3810",
           "review": "needs-review",
@@ -60634,7 +60634,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 80,
+          "line": 84,
           "method": "patch",
           "target": "0x5d3b30",
           "review": "traced",
@@ -60642,7 +60642,7 @@
         },
         {
           "file": "src/native/engine-files.mjs",
-          "line": 95,
+          "line": 97,
           "method": "patch",
           "target": "this.layout.open",
           "review": "needs-review",

@@ -29,6 +29,10 @@ export const NATIVE_MEMORY_FILE_LAYOUTS = Object.freeze({
 
 export class NativeEngineFiles {
   constructor(engine, world) {
+    this.layout = Object.hasOwn(NATIVE_MEMORY_FILE_LAYOUTS, engine.profile)
+      ? NATIVE_MEMORY_FILE_LAYOUTS[engine.profile]
+      : undefined;
+    if (!this.layout) throw new Error(`Native file objects are unavailable in ${engine.profile}`);
     this.engine = engine;
     this.world = world;
     const p = engine.process,
@@ -90,8 +94,6 @@ export class NativeEngineFiles {
     // remaining search mode, and handle size-only reads, failure logging and
     // destruction themselves. Keep those wrappers and their IFile calls in
     // the guest; only the mounted-resource opener crosses into the host.
-    this.layout = NATIVE_MEMORY_FILE_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error(`Native file objects are unavailable in ${engine.profile}`);
     engine.patch(
       this.layout.open,
       'mounted resource file object',

@@ -255,3 +255,15 @@ test('normal Root ABI protocol fields are strict while original field offsets re
     }
   }
 });
+
+for (const profile of Object.keys(NATIVE_ABIS)) {
+  test(`normal ABI keeps original-only structure layouts optional: ${profile}`, () => {
+    const abi = structuredClone(nativeABI(profile));
+    for (const name of ['motionCheckpoint', 'memoryFile', 'systemInformation'])
+      delete abi.layouts[name];
+    assert.strictEqual(validateABI(abi), abi);
+    assert.ok(abi.layouts.textCores, 'normal text layout remains present');
+    assert.equal(abi.tables.main.entries.length, nativeABI(profile).tables.main.entries.length);
+    assert.throws(() => nativeABI('cs2-unregistered-own-layout'), /Unregistered CatSystem2 ABI/);
+  });
+}
