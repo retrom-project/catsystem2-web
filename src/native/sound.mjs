@@ -750,6 +750,8 @@ export class NativeSoundTask {
     if (this.sound.abi.sound.delegateFrom !== null && rawID >= this.sound.abi.sound.delegateFrom)
       return this.base.message(words, context);
     if (!this.sound.audio) return 0;
+    if (this.sound.abi.messages.soundBaseOnly?.includes(id))
+      return this.base.message(words, context);
     const memory = () => this.memory(sender, context);
     const selected = this.select(bank),
       both = this.select(bank, true);
