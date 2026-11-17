@@ -301,8 +301,9 @@ they must not be interpreted as proof that a gesture or callback did not run.
 No dialogue, script source, resource bytes or typed input is written to this log.
 
 `touch-before.cs2web` contains the complete production checkpoint before that
-gesture. Transfer uses 64 KiB byte chunks and verifies the browser and file SHA-256;
-the companion metadata records the actual frame and resource identity. The
+gesture. Transfer uses bounded 4 MiB binary-to-base64 blocks, without decimal byte
+arrays, and verifies the complete browser and file SHA-256. The companion metadata
+records the actual frame, resource identity, block size and transferred block count. The
 transfer adds no step, render, warm-up, pause or guest command. Partial files from
 a capture failure are not valid checkpoints. This diagnostic does not replace
 any full raw DTO, pixel, audio or gameplay assertion.

@@ -8,6 +8,63 @@ import { createHash } from 'node:crypto';
 const captured = new WeakSet();
 const prefix = '__CS2_TOUCH_EVIDENCE__';
 
+export const checkpointTransferChunkBytes = 4 * 1024 * 1024;
+
+export async function transferCheckpointBytes(page, { slot, path, bytes, sha256 }) {
+  const digest = createHash('sha256');
+  let file,
+    failure,
+    chunks = 0;
+  try {
+    file = await open(path, 'wx');
+    for (let offset = 0; offset < bytes; offset += checkpointTransferChunkBytes) {
+      const length = Math.min(checkpointTransferChunkBytes, bytes - offset),
+        encoded = await page.evaluate(
+          ({ slot, offset, length }) => {
+            const block = window[slot].subarray(offset, offset + length);
+            let binary = '';
+            for (let at = 0; at < block.length; at += 8192)
+              binary += String.fromCharCode(...block.subarray(at, at + 8192));
+            return btoa(binary);
+          },
+          { slot, offset, length },
+        );
+      if (typeof encoded !== 'string' || encoded.length !== Math.ceil(length / 3) * 4)
+        throw new Error('Touch checkpoint byte transfer differs');
+      const block = Buffer.from(encoded, 'base64');
+      if (block.length !== length || block.toString('base64') !== encoded)
+        throw new Error('Touch checkpoint byte transfer differs');
+      digest.update(block);
+      await file.writeFile(block);
+      chunks++;
+    }
+  } catch (error) {
+    failure = error;
+  } finally {
+    for (const cleanup of [
+      () => file?.close(),
+      () =>
+        page.evaluate((slot) => {
+          delete window[slot];
+        }, slot),
+    ]) {
+      try {
+        await cleanup();
+      } catch (error) {
+        failure ??= error;
+      }
+    }
+  }
+  if (failure) throw failure;
+  const fileSHA256 = digest.digest('hex');
+  if (fileSHA256 !== sha256) throw new Error('Touch checkpoint browser/file digest differs');
+  return {
+    sha256: fileSHA256,
+    transferChunks: chunks,
+    transferChunkBytes: checkpointTransferChunkBytes,
+  };
+}
+
 export async function captureTouchBeforeClick(page, { key, owner }) {
   if (captured.has(page)) return;
   captured.add(page);
@@ -130,49 +187,12 @@ export async function captureTouchBeforeClick(page, { key, owner }) {
     };
   }, slot);
   const path = info.outputPath('touch-before.cs2web'),
-    digest = createHash('sha256');
-  let file, failure;
-  try {
-    file = await open(path, 'wx');
-    for (let offset = 0; offset < metadata.bytes; offset += 65536) {
-      const values = await page.evaluate(
-        ({ slot, offset }) => Array.from(window[slot].subarray(offset, offset + 65536)),
-        { slot, offset },
-      );
-      if (
-        values.length !== Math.min(65536, metadata.bytes - offset) ||
-        values.some((value) => !Number.isInteger(value) || value < 0 || value > 255)
-      )
-        throw new Error('Touch checkpoint byte transfer differs');
-      const bytes = Buffer.from(values);
-      digest.update(bytes);
-      await file.writeFile(bytes);
-    }
-  } catch (error) {
-    failure = error;
-  } finally {
-    for (const cleanup of [
-      () => file?.close(),
-      () =>
-        page.evaluate((slot) => {
-          delete window[slot];
-        }, slot),
-    ]) {
-      try {
-        await cleanup();
-      } catch (error) {
-        failure ??= error;
-      }
-    }
-  }
-  if (failure) throw failure;
-  const sha256 = digest.digest('hex');
-  if (sha256 !== metadata.sha256) throw new Error('Touch checkpoint browser/file digest differs');
+    transfer = await transferCheckpointBytes(page, { slot, path, ...metadata });
   await info.attach('touch-before.cs2web', { path, contentType: 'application/octet-stream' });
   await info.attach('touch-checkpoint.json', {
     body: JSON.stringify({
       ...metadata,
-      sha256,
+      ...transfer,
       productionCodec: true,
       replayedFrames: metadata.afterFrame - metadata.frame,
       purpose:
