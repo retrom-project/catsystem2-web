@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 23        | 0             | 0             | 915     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 24        | 0             | 0             | 914     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -970,6 +970,12 @@ fail at their own protocol boundaries.
 An owned FES program loads an authored WAV into a fixed bank and through the
 legacy group allocator, plays both banks, and uses the same FES and Sound
 owners during the destruction request and cleanup.
+
+Main 400 resolves the formatted table and each filename through the sound
+resources. Its Sound receiver requires ordered signed 64-bit endpoints.
+The default end of −1 is valid when the start is less than −1. Duplicate
+filenames replace the start and keep the first accepted end. Missing tables
+and rejected records leave no result word on the VM stack.
 
 ## 2.6.1.63 Draw and FES waits
 

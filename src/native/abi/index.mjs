@@ -219,6 +219,11 @@ function validateBehavior(abi) {
   )
     throw new Error(`Invalid ABI Sound same-ID policy ${abi.id}`);
   if (
+    Object.hasOwn(abi.sound, 'loopPointEndPolicy') &&
+    abi.sound.loopPointEndPolicy !== 'strict-order'
+  )
+    throw new Error(`Invalid ABI Sound loop-point end policy ${abi.id}`);
+  if (
     Object.hasOwn(abi.fes ?? {}, 'definitionMissIsDiagnostic') &&
     typeof abi.fes.definitionMissIsDiagnostic !== 'boolean'
   )

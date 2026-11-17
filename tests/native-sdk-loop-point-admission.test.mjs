@@ -13,7 +13,11 @@ import { nativeABI } from '../src/native/abi/index.mjs';
 import { NATIVE_SEMANTICS } from '../src/native/abi/semantics.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
-const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const profiles = [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'rebellions-jp-engine-2.6.1.63',
+];
 const sentinel = 0x24681357;
 const callerProgram = kcsProgram(
   [
@@ -126,11 +130,14 @@ for (const profile of profiles) {
         start: 32n,
         end: 0x100000002n,
       });
-      assert.deepEqual(sound.loopPoints.get('bgm.int/default.ogg'), {
-        file: 'bgm.int/default.ogg',
-        start: 0n,
-        end: -1n,
-      });
+      const defaultPoint = sound.loopPoints.get('bgm.int/default.ogg');
+      if (profile === 'rebellions-jp-engine-2.6.1.63') assert.equal(defaultPoint, undefined);
+      else
+        assert.deepEqual(defaultPoint, {
+          file: 'bgm.int/default.ogg',
+          start: 0n,
+          end: -1n,
+        });
       assert.deepEqual(sound.loopPoints.get('bgm.int/signed.ogg'), {
         file: 'bgm.int/signed.ogg',
         start: -3n,
@@ -140,7 +147,7 @@ for (const profile of profiles) {
       assert.equal(sound.loopPoints.has('bgm.int/invalid.ogg'), false);
       assert.equal(sound.loopPoints.has('music'), false);
       assert.equal(sound.loopPoints.has('unclassified'), false);
-      assert.equal(sound.loopPoints.size, 4);
+      assert.equal(sound.loopPoints.size, defaultPoint ? 4 : 3);
       assert.deepEqual(
         calls.map((call) => call.args),
         [

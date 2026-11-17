@@ -308,6 +308,18 @@ test('the optional Sound same-ID policy accepts only booleans', () => {
   assert.strictEqual(validateABI(abi), abi);
 });
 
+test('the optional Sound loop-point end policy accepts its reviewed value', () => {
+  const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63'));
+  assert.equal(abi.sound.loopPointEndPolicy, 'strict-order');
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of [null, true, 'unreviewed']) {
+    abi.sound.loopPointEndPolicy = invalid;
+    assert.throws(() => validateABI(abi), /Invalid ABI Sound loop-point end policy/);
+  }
+  delete abi.sound.loopPointEndPolicy;
+  assert.strictEqual(validateABI(abi), abi);
+});
+
 test('the optional FES definition diagnostic policy accepts only booleans', () => {
   const abi = structuredClone(nativeABI('nekopara-vol3-engine-2.6.1.76')),
     field = 'definitionMissIsDiagnostic';
