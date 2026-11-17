@@ -308,6 +308,17 @@ test('the optional Sound same-ID policy accepts only booleans', () => {
   assert.strictEqual(validateABI(abi), abi);
 });
 
+test('an optional loose startup path names a relative XML file', () => {
+  const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63'));
+  assert.strictEqual(validateABI(abi), abi);
+  abi.startup.loosePath = 'config/startup.xml';
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of ['', '/startup.xml', '../startup.xml', 'config//startup.xml', 1, null]) {
+    abi.startup.loosePath = invalid;
+    assert.throws(() => validateABI(abi), /Invalid ABI loose startup path/);
+  }
+});
+
 test('the optional Sound loop-point end policy accepts its reviewed value', () => {
   const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63'));
   assert.equal(abi.sound.loopPointEndPolicy, 'strict-order');

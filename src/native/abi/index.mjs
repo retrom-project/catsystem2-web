@@ -313,6 +313,12 @@ function validateBehavior(abi) {
     abi.floatingPoint?.rounding !== 'nearest'
   )
     throw new Error(`Invalid ABI behavior data ${abi.id}`);
+  if (
+    Object.hasOwn(abi.startup, 'loosePath') &&
+    (typeof abi.startup.loosePath !== 'string' ||
+      !/^(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.xml$/.test(abi.startup.loosePath))
+  )
+    throw new Error(`Invalid ABI loose startup path ${abi.id}`);
   const services = abi.startup.applicationServices;
   if (
     !Array.isArray(services) ||
