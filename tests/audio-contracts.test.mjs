@@ -232,7 +232,17 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.equal(core.audio.channels.get('native:9').group, 'native');
       assert.equal(core.audio.channels.get('native:9').nativeCategory, 'voice');
       // 50 * native factor 50 is 25 percent, or -2000 hundredths of a dB.
-      assert.equal(core.audio.channels.get('native:9').gain.gain.value, 0.1);
+      const nativeVoice = core.audio.channels.get('native:9'),
+        source = nativeVoice.source;
+      assert.equal(nativeVoice.gain.gain.value, 0.1);
+      await core.world.fesConfiguration.set('mute_master', 1);
+      assert.equal(nativeVoice.gain.gain.value, 0);
+      assert.equal(nativeVoice.source, source);
+      context.advance(0.0625);
+      assert.equal(core.audio.voiceInfo().time, 0.0625);
+      await core.world.fesConfiguration.set('mute_master', 0);
+      assert.equal(nativeVoice.gain.gain.value, 0.1);
+      assert.equal(nativeVoice.source, source);
       core.world.sound.master = 0;
       core.world.sound.refresh(bank);
       assert.equal(core.audio.channels.get('native:9').gain.gain.value, 0.00001);

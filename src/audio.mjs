@@ -309,6 +309,7 @@ export class AudioMixer {
     };
   }
   volume(channel) {
+    if (this.configuration?.voiceMuted?.()) return 0;
     let factor = channel.volumeFactor ?? 100;
     if (channel.volumeFactor !== undefined) {
       /* The native sound task already composed its configuration. */
