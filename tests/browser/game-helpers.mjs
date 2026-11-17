@@ -138,6 +138,39 @@ export async function waitForSlotCloseInput(page) {
     );
   });
 }
+export async function waitForLoadedSlotStory(page, maxFrames = 900) {
+  await nativeWait(
+    page,
+    () => {
+      const engine = window.catSystem2,
+        { world } = engine;
+      if (engine.status().stack.some((label) => /^(saveload|confirm2?)#/.test(label))) return false;
+      const player = [...engine.nativeFES.values()].find((p) => p.stack.includes('meswnd#WAIT')),
+        root = player?.root,
+        owner = world.objects.objects.get(root?.runtimeID),
+        body = root?.byKey.get('str'),
+        writer = world.objects.objects.get(body?.nativeTaskID),
+        text = writer?.implementation.text;
+      if (!owner || !writer || !body?.disp || body.deleted) return false;
+      const placement = root.placement(body);
+      return Boolean(
+        owner.state === 'active' &&
+          owner.implementation.player === player &&
+          world.runtime.scheduler.tasks.has(owner.parent) &&
+          writer.state === 'active' &&
+          writer.parent === owner.id &&
+          writer.implementation.state?.shown &&
+          placement.shown &&
+          placement.alpha > 0 &&
+          text?.source?.length &&
+          text.sourceEvents.some(({ kind }) => kind === 'append' || kind === 'secondary'),
+      );
+    },
+    undefined,
+    maxFrames,
+  );
+  expect(await page.evaluate(() => window.catSystem2.status().unsupported)).toEqual([]);
+}
 export const gameplay = (page) =>
   page.evaluate(() => {
     const e = window.catSystem2,
