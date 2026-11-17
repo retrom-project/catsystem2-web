@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Sound task 5EA210/5EB670/5EABC0. The 64 device banks are shared by all
+// The 64 device banks are shared by all
 // sound tasks; each task owns its own 140-byte control and auxiliary records.
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
@@ -305,7 +305,7 @@ export class NativeSound {
     device.sourceMode = type === 2 ? 'static' : 'stream';
     device.decoderOption = decoderOption >>> 0;
     // The native silently converts a short stream to a single static buffer.
-    // 5D11C0: 8 * (averageBytesPerSecond / 2) >= decoded PCM bytes.
+    // Static buffer threshold: 8 * (averageBytesPerSecond / 2) >= decoded PCM bytes.
     const m = device.metadata;
     if (
       m.sampleRate &&
@@ -325,7 +325,7 @@ export class NativeSound {
     const device = this.device[bank];
     if (!device.loaded) return false;
     const previous = this.channel(bank);
-    // 5D1510 resets a playing buffer through Stop, while a paused buffer's
+    // Playback resets a running buffer through Stop, while a paused buffer's
     // hardware cursor is retained when DirectSound Play is issued again.
     const offset = previous?.paused ? previous.offset : 0;
     device.loopCount = count >>> 0;
