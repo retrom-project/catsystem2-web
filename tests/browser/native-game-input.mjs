@@ -212,14 +212,39 @@ export async function hoverNativeButton(page, name) {
   const point = await page.evaluate((key) => {
     const e = window.catSystem2,
       player = e.activeFES(),
-      object = player?.root.byKey.get(key),
-      region = object && e.world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+      object = player?.root?.byKey.get(key),
+      center = ({ bounds: [left, top, right, bottom] }) => [(left + right) / 2, (top + bottom) / 2];
+    let region = object && e.world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+    if (!region) {
+      const matches = [];
+      for (const candidate of e.pointerPlayers()) {
+        const root = candidate.root,
+          button = root?.byKey.get(key);
+        if (!button?.disp || !button.enable || button.deleted || !root.placement(button).shown)
+          continue;
+        const input = e.world.inputFor(root.runtimeID),
+          target = input?.get(button.nativeInputTaskID);
+        if (!target?.enabled || !(target.mask & 2)) continue;
+        const at = center(target),
+          hovered = input
+            .ordered()
+            .find(
+              (other) =>
+                other.enabled &&
+                other.hoverEnabled &&
+                (other.alpha ? input.alphaHit(other, ...at) : input.hit(other, false, at)),
+            );
+        if (hovered === target) matches.push(target);
+      }
+      if (matches.length > 1) throw new Error(`Multiple native input regions for ${key}`);
+      [region] = matches;
+    }
     if (!region) throw new Error(`No native input region for ${key}`);
     const canvas = document.getElementById('screen').getBoundingClientRect(),
-      [left, top, right, bottom] = region.bounds;
+      [x, y] = center(region);
     return {
-      x: canvas.x + ((left + right) * canvas.width) / (2 * e.game.width),
-      y: canvas.y + ((top + bottom) * canvas.height) / (2 * e.game.height),
+      x: canvas.x + (x * canvas.width) / e.game.width,
+      y: canvas.y + (y * canvas.height) / e.game.height,
     };
   }, name);
   await page.mouse.move(point.x, point.y);

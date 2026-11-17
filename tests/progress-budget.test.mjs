@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { NativeInput } from '../src/native/input.mjs';
 import { ProgressBudget, FrameBudgetReached } from './browser/progress-budget.mjs';
 import { captureTerminalState } from './browser/terminal-evidence.mjs';
 import {
   fullAcceptanceMode,
   progressAcceptance,
+  hoverNativeButton,
   step,
   state,
   until,
@@ -213,6 +215,57 @@ test('a native FES wait observes overlay exit when the backdrop is already waiti
   await assert.rejects(until(page, 'backdrop#WAIT', 6, settled));
   assert.equal(frame, 6);
   assert.equal((await until(page, 'backdrop#WAIT', 6)).frame, 6);
+});
+
+test('native button fallback requires the real unobscured input owner', async (t) => {
+  const priorWindow = globalThis.window,
+    priorDocument = globalThis.document,
+    input = new NativeInput(),
+    story = {
+      root: {
+        runtimeID: 14,
+        byKey: new Map([['save', { disp: true, enable: true, nativeInputTaskID: 24 }]]),
+        placement: () => ({ shown: true }),
+      },
+    },
+    overlay = { root: { runtimeID: 40, byKey: new Map() } },
+    moves = [];
+  const page = {
+    evaluate: async (observe, argument) =>
+      typeof argument === 'string' ? observe(argument) : { error: '' },
+    mouse: { move: async (...point) => moves.push(point) },
+  };
+  globalThis.window = {
+    catSystem2: {
+      world: { inputFor: () => input },
+      game: { width: 128, height: 96 },
+      activeFES: () => overlay,
+      pointerPlayers: () => [overlay, story],
+    },
+  };
+  globalThis.document = {
+    getElementById: () => ({
+      getBoundingClientRect: () => ({ x: 100, y: 200, width: 128, height: 96 }),
+    }),
+  };
+  try {
+    input.register({ owner: 24, bounds: [20, 10, 40, 30], priority: 12, mask: 2 });
+    await t.test('a nonoverlapping live overlay leaves the story button actionable', async () => {
+      input.register({ owner: 41, bounds: [0, 0, 10, 10], priority: 20, mask: 2 });
+      await hoverNativeButton(page, 'save');
+      assert.deepEqual(moves, [[130, 220]]);
+      input.unregister(41);
+    });
+    await t.test('a modal region owning that point blocks the fallback', async () => {
+      moves.length = 0;
+      input.register({ owner: 42, bounds: [0, 0, 128, 96], priority: 20, mask: 2 });
+      await assert.rejects(hoverNativeButton(page, 'save'), /No native input region for save/);
+      assert.deepEqual(moves, []);
+    });
+  } finally {
+    globalThis.window = priorWindow;
+    globalThis.document = priorDocument;
+  }
 });
 
 test('terminal evidence records a checkpoint fault and still visits userdata teardown', async () => {
