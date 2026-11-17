@@ -270,6 +270,21 @@ test('the optional Sound same-ID policy accepts only booleans', () => {
   assert.strictEqual(validateABI(abi), abi);
 });
 
+test('the optional FES definition diagnostic policy accepts only booleans', () => {
+  const abi = structuredClone(nativeABI('nekopara-vol3-engine-2.6.1.76')),
+    field = 'definitionMissIsDiagnostic';
+  assert.equal(abi.fes[field], true);
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of [null, 1, 'true']) {
+    abi.fes[field] = invalid;
+    assert.throws(() => validateABI(abi), /Invalid ABI FES definition diagnostic policy/);
+  }
+  abi.fes[field] = false;
+  assert.strictEqual(validateABI(abi), abi);
+  delete abi.fes[field];
+  assert.strictEqual(validateABI(abi), abi);
+});
+
 test('normal Root ABI protocol fields are strict while original field offsets remain separate', () => {
   for (const registered of Object.values(NATIVE_ABIS)) {
     const normal = structuredClone(registered);

@@ -205,6 +205,11 @@ function validateBehavior(abi) {
     typeof abi.sound.sameIdAllowsUnconfiguredSoundTree !== 'boolean'
   )
     throw new Error(`Invalid ABI Sound same-ID policy ${abi.id}`);
+  if (
+    Object.hasOwn(abi.fes ?? {}, 'definitionMissIsDiagnostic') &&
+    typeof abi.fes.definitionMissIsDiagnostic !== 'boolean'
+  )
+    throw new Error(`Invalid ABI FES definition diagnostic policy ${abi.id}`);
   const valid = (path, predicate) =>
       Object.hasOwn(abi.unreviewed ?? {}, path) || predicate(behaviorAt(abi, path)),
     bool = (value) => typeof value === 'boolean',
