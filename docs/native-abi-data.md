@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 24        | 0             | 0             | 914     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 37        | 0             | 0             | 901     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -954,6 +954,17 @@ bank returns zero. Main254 copies the available prefix to a translated
 VM destination and returns its byte count. The owned control covers the
 two startup selectors in the Script's flag bank, file and tag misses,
 bounded imports, raw copying and handle release.
+
+## 2.6.1.63 startup resource and string calls
+
+Main 1, 14, 36 and 41 use the debug text formatter, the formatted copy with
+two terminating bytes, the byte fill and the delimiter-list writer. Main
+29, 30 and 32 own a file handle across open, bounded byte reads and close.
+The read returns its byte count and returns zero for EOF or a NULL handle.
+Main 210 returns an in-range Script variable or zero, and Main 276 writes
+the Script's narrow string bank. Main 590–593 open and release an XML owner
+and query integer and narrow text nodes. Missing integer paths keep the
+supplied default. Missing text paths leave the VM buffer intact.
 
 ## 2.6.1.63 FES sound playback and release
 

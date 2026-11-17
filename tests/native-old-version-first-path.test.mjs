@@ -1308,6 +1308,87 @@ test('63 startup file GCALLs import bounded flags through the selected Script ow
   }
 });
 
+test('63 startup GCALLs use owned XML, files and Script string storage', async () => {
+  const storage = new SaveSlotFiles(),
+    { world, audio } = await oldTitleWorld(
+      {
+        'config.xml': bytes(
+          '<?xml version="1.0" encoding="shift_jis"?><document><group><number>73</number><label>検証</label></group></document>',
+        ),
+      },
+      storage,
+      'rebellions-jp-engine-2.6.1.63',
+    );
+  try {
+    await storage.write('owned/bytes.bin', Uint8Array.of(0x11, 0x22, 0x33, 0x44, 0x55));
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main);
+    const voidReply = { control: 2 },
+      result = (value) => ({ control: 1, value });
+    const log = [];
+    world.runtime.services.log = (text) => log.push(text);
+    for (const [at, text] of [
+      [256, 'owned text'],
+      [288, 'a b,c'],
+      [304, ' ,'],
+      [320, 'owned/bytes.bin'],
+      [368, 'rb'],
+      [384, 'owned.int/config.xml'],
+      [432, 'group/number'],
+      [480, 'group/label'],
+      [528, 'group/missing'],
+      [576, 'owned.int/missing.xml'],
+    ])
+      machine.writeString(text, at);
+
+    assert.deepEqual(call(1, [256]), voidReply);
+    assert.deepEqual(log, ['owned text']);
+    assert.deepEqual(call(36, [0, 0x15a, 16]), voidReply);
+    assert.deepEqual(call(14, [0, 256]), result(0));
+    assert.deepEqual([...machine.bytes(0, 14)], [...bytes('owned text'), 0, 0, 0x5a, 0x5a]);
+    machine.bytes(64, 8).fill(0xa5);
+    assert.deepEqual(call(41, [64, 288, 304]), voidReply);
+    assert.deepEqual([...machine.bytes(64, 8)], [97, 0, 98, 0, 99, 0, 0, 0xa5]);
+    assert.deepEqual(call(276, [7, 0]), voidReply);
+    assert.equal(world.runtime.stringBank(main, false).get(7), 'owned text');
+    assert.deepEqual(call(209, [8]), voidReply);
+    assert.deepEqual(call(211, [7, 41]), voidReply);
+    assert.deepEqual(call(210, [7]), result(41));
+    assert.deepEqual(call(210, [8]), result(0));
+
+    const file = (await call(29, [320, 368])).value;
+    assert.ok(file);
+    machine.bytes(96, 8).fill(0xa5);
+    assert.deepEqual(call(30, [96, 2, 2, file]), result(4));
+    assert.deepEqual(call(30, [100, 2, 2, file]), result(1));
+    assert.deepEqual(call(30, [101, 2, 2, file]), result(0));
+    assert.deepEqual(call(30, [101, 1, 4, 0]), result(0));
+    assert.deepEqual([...machine.bytes(96, 8)], [0x11, 0x22, 0x33, 0x44, 0x55, 0xa5, 0xa5, 0xa5]);
+    assert.deepEqual(await call(32, [file]), voidReply);
+    assert.equal(world.runtime.handles.records.has(file), false);
+
+    const xml = (await call(590, [384])).value;
+    assert.ok(xml);
+    assert.deepEqual(call(592, [xml, 9, 432]), result(73));
+    assert.deepEqual(call(592, [xml, 9, 528]), result(9));
+    assert.deepEqual(call(592, [0, 9, 0xffffffff]), result(9));
+    assert.deepEqual(call(593, [xml, 0, 480]), voidReply);
+    assert.equal(machine.string(0), '検証');
+    assert.deepEqual(call(593, [xml, 0, 528]), voidReply);
+    assert.equal(machine.string(0), '検証');
+    assert.deepEqual(call(591, [xml]), voidReply);
+    assert.equal(world.runtime.handles.records.has(xml), false);
+    assert.deepEqual(await call(590, [576]), result(0));
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 FES sound loads, plays and closes through its own Sound receiver', async (t) => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld(
