@@ -2,7 +2,7 @@
 // Sound task 5EA210/5EB670/5EABC0. The 64 device banks are shared by all
 // sound tasks; each task owns its own 140-byte control and auxiliary records.
 import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import {
@@ -427,10 +427,11 @@ export class NativeSoundTask {
     } else {
       for (const group of this.world.configuration.soundGroups)
         if (group.id !== -1 && !this.groups.has(group.id)) {
-          const typeCode = ['bgm', 'se', 'voice', 'sysvoice'].indexOf(group.type.toLowerCase());
+          const types = nativeABIBehavior(this.world.profile, 'sound.legacyTypes'),
+            typeCode = types.indexOf(group.type.toLowerCase());
           this.groups.set(group.id, {
             ...group,
-            typeCode: typeCode < 0 ? 4 : typeCode,
+            typeCode: typeCode < 0 ? types.length : typeCode,
             volume: 100,
           });
         }
@@ -752,8 +753,9 @@ export class NativeSoundTask {
           [...this.world.soundConfiguration.groups.values()].find((group) => group.type === name)
             ?.id ?? 0
         );
-      const code = ['bgm', 'se', 'voice', 'sysvoice'].indexOf(name.toLowerCase());
-      return code < 0 ? 4 : code;
+      const types = nativeABIBehavior(this.world.profile, 'sound.legacyTypes'),
+        code = types.indexOf(name.toLowerCase());
+      return code < 0 ? types.length : code;
     }
     if (id === 214 && bank === 0xffffffff) {
       const name = memory().string(l);

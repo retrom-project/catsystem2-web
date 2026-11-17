@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import engine63 from './2.6.1.63.mjs';
+import engine67 from './2.6.1.67.mjs';
 import engine74 from './2.6.1.74.mjs';
 import engine76 from './2.6.1.76.mjs';
 import { validateNativeSignature, nativeSignatureDifferences } from './signature.mjs';
@@ -65,7 +67,9 @@ function freeze(value) {
 }
 
 export const NATIVE_ABIS = freeze(
-  Object.fromEntries([engine74, engine76].map((abi) => [abi.profile, resolveABI(abi)])),
+  Object.fromEntries(
+    [engine74, engine76, engine63, engine67].map((abi) => [abi.profile, resolveABI(abi)]),
+  ),
 );
 
 export function nativeABI(profile) {
@@ -117,32 +121,95 @@ function validateConfiguration(abi) {
     throw new Error(`Invalid ABI behavior data ${abi.id}: canonical configuration layout`);
 }
 
+function behaviorAt(abi, path) {
+  return path.split('.').reduce((value, name) => value?.[name], abi);
+}
+
+function validateUnreviewed(abi) {
+  if (abi.unreviewed === undefined) return;
+  if (!abi.unreviewed || Object.getPrototypeOf(abi.unreviewed) !== Object.prototype)
+    throw new Error(`Invalid ABI behavior data ${abi.id}: unreviewed map`);
+  for (const [path, reason] of Object.entries(abi.unreviewed))
+    if (
+      !/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)*$/.test(path) ||
+      typeof reason !== 'string' ||
+      !reason.length ||
+      behaviorAt(abi, path) !== null
+    )
+      throw new Error(`Invalid ABI behavior data ${abi.id}: unreviewed ${path}`);
+}
+
+// An explicit unknown is data, not a false capability or a modern default.
+// Consumers use this accessor at the real operation; metadata remains plain data.
+export function nativeABIBehavior(profile, path) {
+  const abi = nativeABI(profile),
+    value = behaviorAt(abi, path);
+  if (value === undefined || Object.hasOwn(abi.unreviewed ?? {}, path))
+    throw new Error(`Unreviewed ABI behavior ${profile}/${path}`);
+  return value;
+}
+
 function validateBehavior(abi) {
   validateConfiguration(abi);
-  const {
-    text,
-    configuration,
-    sound,
-    language,
-    plugins,
-    capabilities,
-    messages,
-    floatingPoint,
-    fes,
-    graphics,
-    startup,
-  } = abi;
+  validateUnreviewed(abi);
+  const defaults = abi.configuration.defaults,
+    word = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff;
   if (
-    ![1, 2].includes(text?.settingsCharacterBytes) ||
-    !Number.isSafeInteger(text?.pathBytes) ||
-    !text?.fesLayouts ||
-    !Array.isArray(text?.layoutModes) ||
-    !Array.isArray(sound?.missingIdPathFields) ||
-    !Number.isSafeInteger(sound?.controlBytes) ||
-    !['bytes', 'text'].includes(language?.storage) ||
-    !['native', 'placeholder'].includes(plugins?.emoteDriver) ||
-    !capabilities ||
-    [
+    !defaults ||
+    typeof defaults.font !== 'string' ||
+    typeof defaults.title !== 'string' ||
+    ![
+      ['message', 15],
+      ['effect', 7],
+      ['window', 3],
+    ].every(
+      ([name, count]) =>
+        Array.isArray(defaults[name]) &&
+        defaults[name].length === count &&
+        defaults[name].every(word),
+    ) ||
+    !word(defaults.contVoice) ||
+    !word(defaults.rawVolumePercent) ||
+    defaults.voiceRecords?.count !== 48 ||
+    defaults.voiceRecords?.firstByte !== 20 ||
+    defaults.voiceRecords?.stride !== 116 ||
+    !['enabled', 'masterPercent', 'group'].every((name) => word(defaults.voiceRecords[name])) ||
+    !Array.isArray(abi.sound.legacyTypes) ||
+    !abi.sound.legacyTypes.length ||
+    abi.sound.legacyTypes.length !== new Set(abi.sound.legacyTypes).size ||
+    abi.sound.legacyTypes.some((name) => typeof name !== 'string' || !/^[a-z]+$/.test(name)) ||
+    !abi.sound.legacyVolumeAliases ||
+    Object.values(abi.sound.legacyVolumeAliases).some(
+      (value) => !Number.isInteger(value) || value < 0 || value > 2,
+    ) ||
+    !['ascii-byte-directory', 'cp932-pair-directory'].includes(
+      abi.sound.filenamePolicy?.classification,
+    ) ||
+    !['wide', 'standard'].includes(abi.sound.filenamePolicy?.pairs)
+  )
+    throw new Error(`Invalid ABI normal configuration defaults ${abi.id}`);
+  const filename = abi.sound.filenamePolicy;
+  if (
+    filename.classification === 'cp932-pair-directory' &&
+    (filename.maximumBytes !== 255 ||
+      !['wide', 'standard'].includes(filename.pairs) ||
+      filename.caseFold !== 'c-locale-ascii' ||
+      filename.lastSeparatorZero !== 'retain-name' ||
+      filename.extensionScan !== 'raw-backwards' ||
+      filename.headComparison !== 'raw-byte-prefix' ||
+      filename.directoryComparison !== 'c-locale-bytewise')
+  )
+    throw new Error(`Invalid ABI normal filename policy ${abi.id}`);
+  const valid = (path, predicate) =>
+      Object.hasOwn(abi.unreviewed ?? {}, path) || predicate(behaviorAt(abi, path)),
+    bool = (value) => typeof value === 'boolean',
+    integer = Number.isSafeInteger,
+    oneOf =
+      (...values) =>
+      (value) =>
+        values.includes(value),
+    capabilities = [
+      'effekseerTask',
       'embeddedJavaScript',
       'cubeFlipGridHeightProduct',
       'steam',
@@ -161,69 +228,108 @@ function validateBehavior(abi) {
       'systemEntropy',
       'inputNullText',
       'taskDumpTopWriter',
-    ].some((name) => typeof capabilities[name] !== 'boolean') ||
-    [
-      'extendedPreferences',
-      'language',
-      'keyHide',
-      'windowActive',
-      'sceneAnimation',
-      'extendedQueries',
-    ].some((name) => typeof configuration[name] !== 'boolean') ||
-    [
-      'singleTable',
-      'resetOnReload',
-      'archiveFallback',
-      'switchWindowProtocol',
-      'dynamicMenus',
-    ].some((name) => typeof language[name] !== 'boolean') ||
-    !Number.isSafeInteger(messages?.screenEvent) ||
-    !Number.isSafeInteger(text?.resourceMessages?.first?.cp932) ||
-    !abi.layouts ||
-    !Number.isSafeInteger(messages?.tilePlaneCommand) ||
-    !Number.isSafeInteger(fes?.variableBankOffset) ||
-    typeof fes?.configurationMessage?.liveObjects !== 'boolean' ||
-    ![null, 'MES_CHANGECONFIG'].includes(fes?.configurationMessage?.notification) ||
-    ![null, 'c-locale-ascii'].includes(fes?.configurationMessage?.filenameComparison) ||
-    !['cp932', 'cp932-as-utf16le'].includes(fes?.fileList?.patternEncoding) ||
-    !['cp932', 'utf16le'].includes(fes?.fileList?.keyEncoding) ||
-    !['raw', 'unescape-quote'].includes(fes?.macroLiterals?.string) ||
-    !['raw', 'wrap-raw'].includes(fes?.macroLiterals?.character) ||
-    !graphics ||
-    ![null, 'virtual-d3d9'].includes(graphics.textureCapsPolicy) ||
-    ![null, 'model-and-pages'].includes(graphics.texturedBoundsQuery) ||
-    !startup ||
-    !['before-defaults', 'after-preferences'].includes(startup.resourceCheck) ||
-    startup.verification?.cipher !== 'blowfish-le32' ||
-    !['cp932', 'utf8'].includes(startup.verification?.codeEncoding) ||
-    !['decrypted-c-string', 'open-cs2-literal'].includes(startup.verification?.comparison) ||
-    floatingPoint?.precisionBits !== 24 ||
-    floatingPoint?.rounding !== 'nearest' ||
-    floatingPoint?.x87ControlWord !== 0x7f ||
-    floatingPoint?.mxcsr !== 0x1f80
+    ],
+    checks = [
+      ['text.settingsCharacterBytes', oneOf(1, 2)],
+      ['text.pathBytes', integer],
+      ['text.fesLayouts', (v) => v && typeof v === 'object'],
+      ['text.layoutModes', Array.isArray],
+      ['text.resourceMessages.first.cp932', integer],
+      ['sound.missingIdPathFields', Array.isArray],
+      ['sound.controlBytes', integer],
+      ['language.storage', oneOf('bytes', 'text')],
+      ['plugins.emoteDriver', oneOf('native', 'placeholder')],
+      ['messages.screenEvent', integer],
+      ['messages.tilePlaneCommand', integer],
+      ['layouts', (v) => v && typeof v === 'object'],
+      ['fes.variableBankOffset', integer],
+      ['fes.configurationMessage.liveObjects', bool],
+      ['fes.configurationMessage.notification', oneOf(null, 'MES_CHANGECONFIG')],
+      ['fes.configurationMessage.filenameComparison', oneOf(null, 'c-locale-ascii')],
+      ['fes.fileList.patternEncoding', oneOf('cp932', 'cp932-as-utf16le')],
+      ['fes.fileList.keyEncoding', oneOf('cp932', 'utf16le')],
+      ['fes.macroLiterals.string', oneOf('raw', 'unescape-quote')],
+      ['fes.macroLiterals.character', oneOf('raw', 'wrap-raw')],
+      ['graphics.textureCapsPolicy', oneOf(null, 'virtual-d3d9')],
+      ['graphics.texturedBoundsQuery', oneOf(null, 'model-and-pages')],
+      ['floatingPoint.x87ControlWord', oneOf(0x7f)],
+      ['floatingPoint.mxcsr', oneOf(0x1f80)],
+      ...capabilities.map((name) => ['capabilities.' + name, bool]),
+      ...[
+        'extendedPreferences',
+        'language',
+        'keyHide',
+        'windowActive',
+        'sceneAnimation',
+        'extendedQueries',
+      ].map((name) => ['configuration.' + name, bool]),
+      ...[
+        'singleTable',
+        'resetOnReload',
+        'archiveFallback',
+        'switchWindowProtocol',
+        'dynamicMenus',
+      ].map((name) => ['language.' + name, bool]),
+    ];
+  if (
+    checks.some(([path, predicate]) => !valid(path, predicate)) ||
+    !['before-defaults', 'after-preferences'].includes(abi.startup?.resourceCheck) ||
+    abi.startup.verification?.cipher !== 'blowfish-le32' ||
+    !['cp932', 'utf8'].includes(abi.startup.verification?.codeEncoding) ||
+    !['decrypted-c-string', 'open-cs2-literal'].includes(abi.startup.verification?.comparison) ||
+    abi.floatingPoint?.precisionBits !== 24 ||
+    abi.floatingPoint?.rounding !== 'nearest'
   )
     throw new Error(`Invalid ABI behavior data ${abi.id}`);
-  for (const definition of Object.values(messages?.channels ?? {})) {
-    for (const rules of Object.values(definition)) {
-      if (!Array.isArray(rules)) throw new Error(`Invalid ABI message rules ${abi.id}`);
+  const services = abi.startup.applicationServices;
+  if (
+    !Array.isArray(services) ||
+    services.length !== new Set(services).size ||
+    !services.length ||
+    services.at(-1) !== 'root-script' ||
+    services.some(
+      (name) =>
+        ![
+          'steam-if-capable',
+          'startup-sound',
+          'textures',
+          'global-strings',
+          'title',
+          'm2',
+          'root-script',
+        ].includes(name),
+    ) ||
+    !['startup-sound', 'textures', 'title', 'root-script'].every((name) =>
+      services.includes(name),
+    ) ||
+    !['raw', 'global-string'].includes(abi.startup.titleMode)
+  )
+    throw new Error(`Invalid ABI startup services ${abi.id}`);
+  for (const definition of Object.values(abi.messages?.channels ?? {})) {
+    if (definition.unmapped !== undefined && !['identity', 'reject'].includes(definition.unmapped))
+      throw new Error(`Invalid ABI unmapped-message policy ${abi.id}`);
+    for (const [direction, rules] of Object.entries(definition)) {
+      if (direction === 'unmapped') continue;
+      if (!['raw', 'canonical'].includes(direction) || !Array.isArray(rules))
+        throw new Error(`Invalid ABI message rules ${abi.id}`);
       for (const rule of rules) {
         if (
-          ![rule.min, rule.max].every((value) => value === null || Number.isSafeInteger(value)) ||
-          !Number.isSafeInteger(rule.offset) ||
+          ![rule.min, rule.max].every((value) => value === null || integer(value)) ||
+          !integer(rule.offset) ||
           (rule.min !== null && rule.max !== null && rule.min > rule.max) ||
           [rule.kinds, rule.exceptKinds].some(
             (kinds) =>
               kinds !== undefined &&
-              (!Array.isArray(kinds) || kinds.some((kind) => !Number.isSafeInteger(kind))),
+              (!Array.isArray(kinds) || kinds.some((kind) => !integer(kind))),
           )
         )
           throw new Error(`Invalid ABI message rule ${abi.id}`);
       }
     }
   }
-  if (!messages?.channels?.base || !messages?.channels?.control || !messages?.root)
+  if (!abi.messages?.channels?.base || !abi.messages?.channels?.control || !abi.messages?.root)
     throw new Error(`Incomplete ABI message data ${abi.id}`);
-  const root = messages.root;
+  const root = abi.messages.root;
   if (
     !Number.isInteger(root.start) ||
     root.start < 0 ||
@@ -235,14 +341,15 @@ function validateBehavior(abi) {
   )
     throw new Error(`Invalid ABI Root protocol ${abi.id}`);
   if (
-    Object.hasOwn(startup.verification, 'defaultCodeBytes') &&
-    (!Array.isArray(startup.verification.defaultCodeBytes) ||
-      startup.verification.defaultCodeBytes.some(
+    Object.hasOwn(abi.startup.verification, 'defaultCodeBytes') &&
+    !Object.hasOwn(abi.unreviewed ?? {}, 'startup.verification.defaultCodeBytes') &&
+    (!Array.isArray(abi.startup.verification.defaultCodeBytes) ||
+      abi.startup.verification.defaultCodeBytes.some(
         (byte) => !Number.isInteger(byte) || byte < 0 || byte > 255,
       ))
   )
     throw new Error(`Invalid ABI startup code default bytes ${abi.id}`);
-  validateFESCommonHeads(fes.commonHeads);
+  validateFESCommonHeads(abi.fes.commonHeads);
 }
 
 function validatePlainData(value) {

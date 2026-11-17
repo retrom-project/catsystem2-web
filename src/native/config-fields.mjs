@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Configuration sources: game 71C8D0/71D160/71D3A0/71D760/71EF80/720630;
 // SDK 5CE2F0/5CFB50/5D0BA0. These two builds use different text encodings.
-import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
+import { NATIVE_ABIS, nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { findNativeXML } from './xml.mjs';
 import { parseNativeInteger } from './standard.mjs';
@@ -102,7 +102,7 @@ export class NativeConfigurationFields {
     this.configType = 0;
     this.candidates = { name: [], ruby: [] };
     this.fontOverrides = { name: false, ruby: false };
-    this.writeText(0, 'ＭＳ ゴシック');
+    this.writeText(0, nativeABIBehavior(profile, 'configuration.defaults.font'));
     this.font = {};
     for (const [name, offset] of [
       ['name', 0],
@@ -176,7 +176,10 @@ export class NativeConfigurationFields {
       ],
     };
     this.window = { drag: 1, ...(abi.configuration.windowActive ? { active: 1 } : {}) };
-    this.application = { title: 'CS2', touch: 0 };
+    this.application = {
+      title: nativeABIBehavior(profile, 'configuration.defaults.title'),
+      touch: 0,
+    };
     this.scene = {
       textFrame: 5,
       autoSelect: 0,

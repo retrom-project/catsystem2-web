@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
-import { nativeABI } from './abi/index.mjs';
+import { nativeABIBehavior } from './abi/index.mjs';
 import {
   isNativeWindowCommandMessage,
   nativeWindowLanguageCommand,
@@ -57,7 +57,8 @@ export class NativeWindow {
       return (
         commands.has(command) ||
         command === 40030 ||
-        (command === 40096 && nativeABI(this.world.profile).capabilities.windowReturnTitle) ||
+        (command === 40096 &&
+          nativeABIBehavior(this.world.profile, 'capabilities.windowReturnTitle')) ||
         Boolean(this.world.configuration.language && nativeWindowLanguageCommand(command))
       );
     }
@@ -72,7 +73,7 @@ export class NativeWindow {
     const world = this.world;
     if (world.closed || world.disposalRequested) return [];
     return [
-      ...(nativeABI(world.profile).capabilities.windowBaseAccelerators
+      ...(nativeABIBehavior(world.profile, 'capabilities.windowBaseAccelerators')
         ? NATIVE_WINDOW_BASE_ACCELERATORS
         : []),
       ...this.languageAccelerators,
@@ -81,9 +82,9 @@ export class NativeWindow {
   get languageAccelerators() {
     const world = this.world;
     if (
-      !nativeABI(world.profile).capabilities.windowLanguageAccelerators ||
       world.closed ||
-      world.disposalRequested
+      world.disposalRequested ||
+      !nativeABIBehavior(world.profile, 'capabilities.windowLanguageAccelerators')
     )
       return [];
     const rows = [],
@@ -116,9 +117,9 @@ export class NativeWindow {
   refreshLanguageMenu() {
     const world = this.world;
     if (
-      !nativeABI(world.profile).capabilities.windowLanguageAccelerators ||
       world.closed ||
-      world.disposalRequested
+      world.disposalRequested ||
+      !nativeABIBehavior(world.profile, 'capabilities.windowLanguageAccelerators')
     )
       return;
     const { language } = world.configuration;
@@ -194,7 +195,7 @@ export class NativeWindow {
   }
   async broadcast() {
     const world = this.world;
-    if (!nativeABI(world.profile).capabilities.broadcast)
+    if (!nativeABIBehavior(world.profile, 'capabilities.broadcast'))
       throw new Error('This engine has no native broadcast flag');
     if (world.steamService.managerExists) {
       await world.steamService.observeBroadcastQuery();
@@ -222,7 +223,7 @@ export class NativeWindow {
       await world.screenCapture.menuBitmap();
       return true;
     }
-    if (command === 40096 && nativeABI(world.profile).capabilities.windowReturnTitle) {
+    if (command === 40096 && nativeABIBehavior(world.profile, 'capabilities.windowReturnTitle')) {
       const next = (this.broadcastFlag = Number(!this.broadcastFlag));
       if (world.configuration.authorMode) world.host.nativeMenuChecked?.(40096, Boolean(next));
       return true;

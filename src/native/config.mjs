@@ -2,11 +2,12 @@
 // Configuration block layouts recovered independently for the two frozen builds.
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
-import { findNativeXML } from './xml.mjs';
+import { findNativeXML, nativeXMLTextBytes } from './xml.mjs';
+import { nativeDataPair } from './data-text.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { NativeConfigurationFields } from './config-fields.mjs';
 import { NativeScriptReplacements } from './script-replacement.mjs';
-import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
+import { NATIVE_ABIS, nativeABI, nativeABIBehavior } from './abi/index.mjs';
 
 export const NATIVE_CONFIGURATION_LAYOUTS = Object.freeze(
   Object.fromEntries(
@@ -120,18 +121,20 @@ export class NativeConfiguration {
       displayModes,
     });
     for (const family of ['font', 'language', 'screen', 'keys']) this[family] = this.fields[family];
-    const [voice, message, effect, window] = this.blocks;
-    set(voice, 4, 1);
-    for (let i = 0; i < 48; i++) {
-      const record = 20 + 116 * i;
-      set(voice, record / 4, 1);
-      set(voice, (record + 36) / 4, 100);
-      set(voice, (record + 80) / 4, 100);
+    const [voice, message, effect, window] = this.blocks,
+      defaults = nativeABIBehavior(profile, 'configuration.defaults'),
+      records = defaults.voiceRecords;
+    set(voice, 4, defaults.contVoice);
+    for (let i = 0; i < records.count; i++) {
+      const record = records.firstByte + records.stride * i;
+      set(voice, record / 4, records.enabled);
+      set(voice, (record + 36) / 4, records.masterPercent);
+      set(voice, (record + 80) / 4, records.group);
     }
-    for (let i = 0; i < 5; i++) set(voice, 1397 + i, 100);
-    [4, 4, 0, 15, 5, 1, 0, 1, 0, 100, 0, -1, 0, 0, 0].forEach((v, i) => set(message, i, v));
-    [0, 0, 1, 1, 1, 5, 0].forEach((v, i) => set(effect, i, v));
-    [-1, 1, 1].forEach((v, i) => set(window, i, v));
+    for (let i = 0; i < 5; i++) set(voice, 1397 + i, defaults.rawVolumePercent);
+    defaults.message.forEach((v, i) => set(message, i, v));
+    defaults.effect.forEach((v, i) => set(effect, i, v));
+    defaults.window.forEach((v, i) => set(window, i, v));
     this.applyStartup(startup);
     if (gamedef) this.applyPreferences(gamedef);
     if (preferences) this.applyUserPreferences(preferences);
@@ -139,7 +142,8 @@ export class NativeConfiguration {
   }
 
   applyStartup(root) {
-    const [voice, message, , window] = this.blocks;
+    const [voice, message, , window] = this.blocks,
+      pairPolicy = nativeABIBehavior(this.profile, 'sound.filenamePolicy').pairs;
     this.fields.applyStartup(root);
     this.soundOptions = {
       ...this.soundOptions,
@@ -204,7 +208,8 @@ export class NativeConfiguration {
       ]) {
         const node = root && findNativeXML(root, `${path}/${name}`);
         if (!node) continue;
-        const bytes = encodeCP932(node.text);
+        const bytes =
+          node.encoding === 'Shift_JIS' ? nativeXMLTextBytes(node) : encodeCP932(node.text);
         if (bytes.length >= size)
           throw new Error(`Native VOICE ${name} field exceeds ${size - 1} bytes`);
         voice.set(bytes, record + offset);
@@ -213,12 +218,7 @@ export class NativeConfiguration {
       // The native lowercases the archive specification while skipping CP932 pairs.
       for (let at = record + 84; at < record + 116 && voice[at]; at++) {
         const b = voice[at];
-        const trail = voice[at + 1];
-        if (
-          ((b >= 0x81 && b <= 0x9f) || (b >= 0xe0 && b <= 0xef)) &&
-          ((trail >= 0x40 && trail <= 0x7e) || (trail >= 0x80 && trail <= 0xfc))
-        )
-          at++;
+        if (nativeDataPair(voice, at, pairPolicy)) at++;
         else if (b >= 65 && b <= 90) voice[at] += 32;
       }
     }

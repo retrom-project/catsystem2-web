@@ -245,7 +245,11 @@ export class FESInstance {
     return this.player.tokens ? this.player.tokens(bytes) : tokenizeFESByteLine(bytes);
   }
   expandMacros(line) {
-    return replaceFESMacros(line, this.macros, this.player.host.fesMacroLiterals?.());
+    return replaceFESMacros(
+      line,
+      this.macros,
+      this.macros.size ? this.player.host.fesMacroLiterals?.() : undefined,
+    );
   }
   operandValue(bytes) {
     if (!this.runtime) throw new Error('FES byte operands require the normal runtime');

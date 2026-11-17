@@ -8,10 +8,10 @@ import { bitmapTransfer } from './bitmap-pixels.mjs';
 import { openImage } from '../formats/hg3.mjs';
 import { floatBits } from '../kcs.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABIBehavior } from './abi/index.mjs';
 
 export function controlTaskBehavior(profile) {
-  return nativeABI(profile).fes.controlResources;
+  return nativeABIBehavior(profile, 'fes.controlResources');
 }
 
 const f = Math.fround;
@@ -843,14 +843,14 @@ export class JSControlTask {
   }
 }
 
-export function installJSControlTasks(
-  world,
-  { behavior = controlTaskBehavior(world.profile) } = {},
-) {
-  if (behavior?.scroll2Skin !== 'state-direct')
+export function installJSControlTasks(world, { behavior } = {}) {
+  if (behavior !== undefined && behavior?.scroll2Skin !== 'state-direct')
     throw new Error('A verified SCROLL2 skin selector policy is required');
   if ([...world.objects.objects.values()].some((record) => [40, 41, 42].includes(record.kind)))
     throw new Error('Install JS control factories before creating or restoring control tasks');
   for (const kind of [40, 41, 42])
-    world.objects.factories.set(kind, (record) => new JSControlTask(world, record, behavior));
+    world.objects.factories.set(
+      kind,
+      (record) => new JSControlTask(world, record, behavior ?? controlTaskBehavior(world.profile)),
+    );
 }

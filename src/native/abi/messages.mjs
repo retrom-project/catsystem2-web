@@ -2,7 +2,8 @@
 import { nativeABI } from './index.mjs';
 
 export function mapABIMessage(profile, channel, direction, message, kind) {
-  const rules = nativeABI(profile).messages.channels[channel]?.[direction];
+  const definition = nativeABI(profile).messages.channels[channel],
+    rules = definition?.[direction];
   if (!rules) throw new Error(`Unknown ABI message channel ${channel}/${direction}`);
   for (const rule of rules) {
     if (
@@ -13,5 +14,7 @@ export function mapABIMessage(profile, channel, direction, message, kind) {
     )
       return message + rule.offset;
   }
+  if (definition.unmapped === 'reject')
+    throw new Error(`Unreviewed ABI message ${profile}/${channel}/${direction}/${message}`);
   return message;
 }

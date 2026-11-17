@@ -90,9 +90,11 @@ export class NativeGraphics {
     this.screenShift = [0, 0];
     this.cameraNear = 1000;
     const texture = world.configuration?.fields.texture,
-      // The required native renderer's M2 initialization establishes linear
-      // filters before any script. Preserve that state in a JS-only World too.
-      pluginDeviceDefaults = world.profile && nativeABI(world.profile).plugins.requiredRenderer;
+      abi = world.profile ? nativeABI(world.profile) : null,
+      // Only a selected M2 initialization service establishes driver sampler
+      // defaults. Other startup paths use their own TEXTURE configuration.
+      pluginDeviceDefaults =
+        abi && abi.startup.applicationServices.includes('m2') ? abi.plugins.requiredRenderer : null;
     this.d3dContext = createD3DContext({
       depthStencilEnabled: true,
       magFilter: texture && !pluginDeviceDefaults ? texture.mag + 1 : 2,
@@ -132,23 +134,22 @@ export class NativeGraphics {
   set cursorAllowed(value) {
     this.cursor.state.allowed = value >>> 0;
   }
+  requireTextureCapsPolicy() {
+    const policy = this.world.profile && nativeABI(this.world.profile).graphics.textureCapsPolicy;
+    if (policy !== 'virtual-d3d9')
+      throw new Error('Native texture caps policy is unavailable or unsupported');
+  }
   initializeTextures() {
     if (this.texturePages) return;
     const texture = this.world.configuration?.fields.texture;
     if (!texture) throw new Error('Native texture configuration is unavailable');
+    this.requireTextureCapsPolicy();
     const gpu = this.world.getNativeGPU?.(),
       gl = gpu?.gl,
-      policy = this.world.profile && nativeABI(this.world.profile).graphics.textureCapsPolicy,
-      caps =
-        policy === 'virtual-d3d9'
-          ? virtualD3DTextureCaps(gpu ? gl.getParameter(gl.MAX_TEXTURE_SIZE) : 4096)
-          : null,
-      maximum = caps ? caps.maximumTextureSize : gl?.getParameter(gl.MAX_TEXTURE_SIZE),
-      layout = negotiateNativeTextureLayout(
-        texture,
-        caps || maximum ? { width: maximum, height: maximum } : undefined,
-      );
-    if (caps) layout.textureCaps = caps;
+      caps = virtualD3DTextureCaps(gpu ? gl.getParameter(gl.MAX_TEXTURE_SIZE) : 4096),
+      maximum = caps.maximumTextureSize,
+      layout = negotiateNativeTextureLayout(texture, { width: maximum, height: maximum });
+    layout.textureCaps = caps;
     texture.size.set(layout.configurationSize);
     for (const field of ['grid', 'bppY']) texture[field].set(layout[field]);
     texture.areas.forEach((row, i) => row.set(layout.areas[i]));
@@ -159,10 +160,8 @@ export class NativeGraphics {
     });
   }
   get tracksTextureDirty() {
-    return Boolean(
-      this.world.profile &&
-        nativeABI(this.world.profile).graphics.texturedBoundsQuery === 'model-and-pages',
-    );
+    // Internal uploads/clears are tracked independently of the native bounds-query API.
+    return true;
   }
   async meshTexture(index) {
     this.initializeTextures();
@@ -348,11 +347,8 @@ export class NativeGraphics {
       planeModelCommands,
       ...values
     } = structuredClone(state);
-    if (
-      texturePages &&
-      this.world.profile &&
-      nativeABI(this.world.profile).graphics.textureCapsPolicy === 'virtual-d3d9'
-    ) {
+    if (texturePages) {
+      this.requireTextureCapsPolicy();
       const caps = texturePages.layout.textureCaps,
         maximum = caps?.maximumTextureSize;
       if (

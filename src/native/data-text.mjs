@@ -56,9 +56,11 @@ export function nativeDataLines(bytes) {
   return result;
 }
 
-export function nativeDataPair(bytes, at) {
+export function nativeDataPair(bytes, at, policy = 'standard') {
   const first = bytes[at],
     second = bytes[at + 1];
+  if (policy === 'wide') return first >= 0x81 && first <= 0xfe && second >= 0x40 && second <= 0xfe;
+  if (policy !== 'standard') throw new Error('Unreviewed native data pair policy');
   return (
     ((first >= 0x81 && first <= 0x9f) || (first >= 0xe0 && first <= 0xef)) &&
     ((second >= 0x40 && second <= 0x7e) || (second >= 0x80 && second <= 0xfc))

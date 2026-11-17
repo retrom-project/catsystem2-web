@@ -3,7 +3,7 @@ import { originalOwner, requireCheckpointRestoreOwner } from './original-adapter
 import { findNativeFileEntries } from './file-search.mjs';
 import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
@@ -543,8 +543,15 @@ export class NativeWorld {
     if (ui) player.language = ui.prefix;
     if (main) player.languageMain = main.prefix;
   }
+  applicationTitle() {
+    const source = this.configuration.getField('application.title'),
+      mode = nativeABIBehavior(this.profile, 'startup.titleMode');
+    if (mode === 'raw') return source;
+    if (mode === 'global-string') return this.globalStrings.get(source);
+    throw new Error(`Unreviewed application title policy ${this.profile}`);
+  }
   refreshTitle() {
-    const title = this.globalStrings.get(this.configuration.getField('application.title'));
+    const title = this.applicationTitle();
     this.host.nativeTitleChanged?.(title, this);
     return title;
   }
@@ -684,7 +691,10 @@ export class NativeWorld {
         return world.fesSoundConfiguration.tokens(line);
       },
       fesMacroLiterals() {
-        return nativeABI(world.profile).fes.macroLiterals;
+        return {
+          string: nativeABIBehavior(world.profile, 'fes.macroLiterals.string'),
+          character: nativeABIBehavior(world.profile, 'fes.macroLiterals.character'),
+        };
       },
       soundConfig(tokens, context) {
         return world.fesSoundConfiguration.get(tokens, context);
@@ -784,23 +794,47 @@ export class NativeWorld {
   async initialize(name) {
     await this.imageFiles.initialize();
     await initializeNativeStartupInputs(this);
-    if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
     await this.initializeApplicationServices(name);
     await this.tick();
     return this.main;
   }
+  async initializeSteamService() {
+    if (nativeABIBehavior(this.profile, 'capabilities.steam')) await this.steamService.initialize();
+  }
   async initializeApplicationServices(name) {
-    await initializeNativeStartupSound(this);
-    this.graphics.initializeTextures();
-    await this.globalStrings.initialize();
-    this.refreshTitle();
-    await this.m2?.initialize();
-    this.root = await this.objects.create({
-      kind: 1,
-      name: 'BASE TASK',
-      frameRate: this.configuration.screen.fps,
-    });
-    this.main = await this.spawnScript(name, { parent: this.root });
+    for (const service of nativeABIBehavior(this.profile, 'startup.applicationServices')) {
+      switch (service) {
+        case 'steam-if-capable':
+          await this.initializeSteamService();
+          break;
+        case 'startup-sound':
+          await initializeNativeStartupSound(this);
+          break;
+        case 'textures':
+          this.graphics.initializeTextures();
+          break;
+        case 'global-strings':
+          await this.globalStrings.initialize();
+          break;
+        case 'title':
+          this.refreshTitle();
+          break;
+        case 'm2':
+          if (!this.m2) throw new Error(`Unreviewed M2 startup service ${this.profile}`);
+          await this.m2.initialize();
+          break;
+        case 'root-script':
+          this.root = await this.objects.create({
+            kind: 1,
+            name: 'BASE TASK',
+            frameRate: this.configuration.screen.fps,
+          });
+          this.main = await this.spawnScript(name, { parent: this.root });
+          break;
+        default:
+          throw new Error(`Unreviewed application startup service ${service}`);
+      }
+    }
   }
   async spawnScript(name, { parent = this.root, context = {}, initialExecute = false } = {}) {
     const id = await this.objects.create({ kind: 12, parent, name });
@@ -910,7 +944,8 @@ export class NativeWorld {
     if (module && typeof this.game.has === 'function' && !this.game.has(module.name))
       throw new Error('Checkpoint main module is not mounted');
     this.nativeModule = module;
-    if (nativeABI(this.profile).capabilities.steam) await this.steamService.initialize();
+    if (nativeABIBehavior(this.profile, 'startup.applicationServices').includes('steam-if-capable'))
+      await this.initializeSteamService();
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);

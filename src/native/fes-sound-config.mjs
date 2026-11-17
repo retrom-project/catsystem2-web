@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES getsndconfex/setsndconfex: game 783630/783FD0, SDK 61C6B0/61D050.
 // Tokens have already passed the FES string and language substitutions.
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior, nativeFESCommonHead } from './abi/index.mjs';
 import { tokenizeFESLine, tokenizeFESByteLine } from '../fes/tokens.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 
 export function tokenizeNativeFESSoundConfiguration(line, profile) {
-  if (!profiles.has(profile))
-    throw new Error('FES tokenization requires its native engine profile');
-  return (line instanceof Uint8Array ? tokenizeFESByteLine : tokenizeFESLine)(line, {
-    quoted: nativeABI(profile).sound.allowQuotedFesNames,
-  });
+  const abi = nativeABI(profile),
+    unknown = Object.hasOwn(abi.unreviewed ?? {}, 'sound.allowQuotedFesNames'),
+    hasQuote = line instanceof Uint8Array ? line.includes(34) : String(line).includes('"');
+  // Both token paths coincide when no quote occurs. Unknown quote semantics
+  // are consumed only for a row that actually needs that branch.
+  const quoted =
+    unknown && !hasQuote ? false : nativeABIBehavior(profile, 'sound.allowQuotedFesNames');
+  return (line instanceof Uint8Array ? tokenizeFESByteLine : tokenizeFESLine)(line, { quoted });
 }
 
 export function expandNativeFESSoundConfigurationToken(token, { string, replace } = {}) {
@@ -38,7 +41,6 @@ const fields = Object.freeze({
   mute: 'mute',
   voicebgm: 'voicevol',
 });
-const profiles = new Set(['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']);
 export const FES_SOUND_CONFIGURATION_GET_FIELDS = Object.freeze(
   ['', '_id', '_type'].flatMap((suffix) => Object.keys(fields).map((name) => name + suffix)),
 );
@@ -88,13 +90,22 @@ export function nativeFESSoundSelector(tokens, context = {}) {
 export class NativeFESSoundConfiguration {
   constructor({ soundConfiguration, configuration, changed } = {}) {
     if (
-      !profiles.has(soundConfiguration?.profile) ||
+      !soundConfiguration ||
+      typeof soundConfiguration.profile !== 'string' ||
       soundConfiguration.profile !== configuration?.profile
     )
       throw new Error('FES sound configuration requires the shared native configuration pair');
+    nativeABI(soundConfiguration.profile);
     Object.assign(this, { soundConfiguration, configuration, changed });
   }
+  requireCommand(write) {
+    const head = write ? 'setsndconfex' : 'getsndconfex',
+      bytes = Uint8Array.from(head, (value) => value.charCodeAt(0));
+    if (nativeFESCommonHead(this.configuration.profile, bytes).kind !== 'present')
+      throw new Error(`FES sound configuration command is absent: ${head}`);
+  }
   selector(tokens, context = {}, write = false) {
+    this.requireCommand(write);
     return nativeFESSoundSelector(tokens, { ...context, write });
   }
   tokens(line) {
@@ -105,6 +116,7 @@ export class NativeFESSoundConfiguration {
     return selected && this.soundConfiguration.get(selected.field, selected.selector);
   }
   set(tokens, value, context = {}) {
+    this.requireCommand(true);
     if (tokens[0] === undefined) return false;
     const {
       name,
