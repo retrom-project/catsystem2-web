@@ -1268,3 +1268,16 @@ Script replies through the native FES notification wrapper, task ID reuse,
 raw high words, complete cold DTOs without guest execution, and owner closure.
 These finite controls do not establish that any particular recorded game click
 reached its handler.
+
+DOM backlog, quick-save and quick-load actions use `EngineHost.systemAction`
+and the same ordinary `send` contract. Their codes remain 15, 21 and 22 in the
+fourth word of `[nativeSender, 0xffff0003, 0, code]`. The active FES root must
+still belong to its live interpreter record; a retained root cannot borrow a
+replacement task's identity. Parent and child recipients remain scheduler IDs,
+raw high arguments remain DWORDs, and the real synchronous Script reply is
+returned unchanged. An absent active FES task still fails explicitly and a
+missing child retains its existing no-recipient result.
+
+Other ordinary Script-message producers already receive the engine packet's
+native sender, use an explicit lifecycle sentinel, or forward an authored raw
+four-word message. Those words are not remapped at the scheduler or VM boundary.

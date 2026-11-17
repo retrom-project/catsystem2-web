@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { kcsProgram } from './helpers.mjs';
 import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import { EngineHost } from '../src/host.mjs';
 
 const source = `#DEFINE
 BUTTON btn
@@ -214,3 +215,73 @@ test('an earlier live FES hover owner keeps the parent request unissued', async 
     await world.close({ flushFiles: false });
   }
 });
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} DOM system actions retain native FES sender and real Script replies`, async () => {
+    const replyProgram = kcsProgram(
+        [
+          [37, 240],
+          [43, 0x47, 4],
+          [37, [0x33, 240]],
+          [37, 768],
+          [37, 832],
+          [37, 0],
+          [43, 0x276, 16],
+          [41, 0],
+        ],
+        [
+          [768, 'MES_ENTER'],
+          [832, ''],
+        ],
+      ),
+      world = await defaultFESWorld(profile, {
+        'case.kcs': replyProgram,
+        'child.kcs': replyProgram,
+        'screen.fes': new TextEncoder().encode(
+          source.replace('next WAIT\n', 'execkcs child.kcs\nnext WAIT\n'),
+        ),
+      });
+    try {
+      const retired = await world.objects.create({ kind: 6, parent: world.main.id });
+      await world.objects.release(retired);
+      const { id, task, instance } = await loadDefaultFES(world);
+      await task.tick();
+      const parent = world.runtime.scheduler.tasks.get(world.main.id),
+        child = world.runtime.scheduler.tasks.get(instance.kcsTaskID),
+        nativeID = world.nativeTaskID(id),
+        host = new EngineHost({
+          world,
+          nativeRuntime: world.runtime,
+          activeFES: () => world.objects.objects.get(id)?.implementation.player,
+        }),
+        words = (script) => Array.from({ length: 4 }, (_, i) => script.machine.load(240 + i * 4));
+      assert.notEqual(id, nativeID);
+      assert.notEqual(child.id, world.nativeTaskID(child.id));
+      for (const action of [15, 21, 22]) {
+        const reply = await host.systemAction(action);
+        assert.deepEqual(words(parent), [nativeID, 0xffff0003, 0, action]);
+        assert.equal(reply, 1);
+        assert.equal(parent.machine.waiting?.kind, 'message');
+        assert.equal(instance.label, 'WAIT_TOUCH');
+      }
+      const parentPacket = words(parent);
+      assert.equal(
+        await host.send([0x80000001, 0xffffffff, 0x80000002], instance, { target: 'script' }),
+        1,
+      );
+      assert.deepEqual(words(child), [nativeID, 0x80000001, 0xffffffff, 0x80000002]);
+      assert.deepEqual(words(parent), parentPacket);
+      await world.objects.release(child.id);
+      assert.equal(await host.send([7, 9, 11], instance, { target: 'script' }), 0);
+      assert.deepEqual(words(parent), parentPacket);
+      await world.objects.release(id);
+      const replacement = await world.objects.create({ kind: 6, parent: world.main.id });
+      assert.equal(replacement, id);
+      await assert.rejects(host.systemAction(15), /No active native FES task/);
+      await assert.rejects(host.send([7, 9, 11], instance), /FES message source owner/);
+      assert.deepEqual(words(parent), parentPacket);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+}

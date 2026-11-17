@@ -376,12 +376,20 @@ export class EngineHost {
       while (root.parent) root = root.parent;
       const record = e.world.objects.objects.get(root.runtimeID);
       if (!record) throw new Error('FES message sender has no native task');
+      if (record.implementation.player?.root !== root)
+        throw new Error('FES message source owner is no longer live');
       const id = target === 'script' ? instance.kcsTaskID : record.parent;
       if (target !== 'parent' && target !== 'script')
         throw new Error(`Unknown FES message destination ${target}`);
       if (id === null || id === undefined || (target === 'script' && !id)) return 0;
-      return (await e.nativeRuntime.scheduler.send(id, [record.id, code >>> 0, a >>> 0, b >>> 0]))
-        .result;
+      return (
+        await e.nativeRuntime.scheduler.send(id, [
+          e.world.nativeTaskID(record.id),
+          code >>> 0,
+          a >>> 0,
+          b >>> 0,
+        ])
+      ).result;
     }
     switch (code >>> 0) {
       case 0xfffe0001:
