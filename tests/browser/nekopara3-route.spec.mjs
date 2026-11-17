@@ -3,7 +3,12 @@
 import { test, expect } from './native-performance.mjs';
 import { writeFile } from 'node:fs/promises';
 import { launch, button, noError } from './game-helpers.mjs';
-import { step, until, progressAcceptance } from './native-game-input.mjs';
+import { step, until, progressAcceptance, fullAcceptanceMode } from './native-game-input.mjs';
+import { captureTerminalState } from './terminal-evidence.mjs';
+
+test.afterEach(async ({ page }, info) => {
+  if (fullAcceptanceMode()) await captureTerminalState(page, info);
+});
 
 test('main route reaches every chapter, decodes both movies and returns to the native title', async ({
   page,

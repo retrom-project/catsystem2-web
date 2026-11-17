@@ -2,17 +2,22 @@
 // Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from './native-performance.mjs';
 import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
+import { captureTerminalState } from './terminal-evidence.mjs';
 import {
   hoverNativeButton,
   step,
   until,
   progressAcceptance,
   guardNormalOriginalCPU,
+  fullAcceptanceMode,
 } from './native-game-input.mjs';
 
 test.afterEach(async ({ page }, info) => {
   if (info.status !== info.expectedStatus && !page.isClosed())
     console.log('failure state', await gameplay(page));
+});
+test.afterEach(async ({ page }, info) => {
+  if (fullAcceptanceMode()) await captureTerminalState(page, info);
 });
 test('native title, gamepad, story, touch, save, settings, backlog and new-instance recovery', async ({
   page,
