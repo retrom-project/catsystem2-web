@@ -348,11 +348,16 @@ export class NativeFESSound {
           : state.filename;
         if (!resolved) throw new Error(`FES sound category resource is missing: ${state.filename}`);
         if (bank !== -1 && !state.get('crossfade')) await send(181);
-        const crossfade = nativeABIBehavior(this.world.profile, 'sound.crossfade'),
-          packet = new NativeSoundPacket([], crossfade ? 288 : 280);
-        packet.store(0, bank);
-        packet.writeString(resolved, 12);
-        packet.store(272, 1);
+        // The filename protocol carries the bank or group in W and the string in L.
+        const profile = this.world.profile,
+          filenameOnly = nativeABI(profile).sound.loadMessageFormat === 'filename',
+          crossfade = !filenameOnly && nativeABIBehavior(profile, 'sound.crossfade'),
+          packet = new NativeSoundPacket([], filenameOnly ? 260 : crossfade ? 288 : 280);
+        packet.writeString(resolved, filenameOnly ? 0 : 12);
+        if (!filenameOnly) {
+          packet.store(0, bank);
+          packet.store(272, 1);
+        }
         if (crossfade) {
           packet.store(280, state.get('crossfade'));
           packet.store(284, state.get('crossfadeFrames'));
@@ -360,10 +365,11 @@ export class NativeFESSound {
         if (state.group) {
           const text = new NativeSoundPacket();
           text.writeString(state.group, 0);
-          packet.store(4, await send(209, 0, 0, text));
-          bank = (await send(205, 0, 0, packet)) | 0;
+          const group = await send(209, 0, 0, text);
+          if (!filenameOnly) packet.store(4, group);
+          bank = (await send(205, filenameOnly ? group : 0, 0, packet)) | 0;
           state.setBank(bank);
-        } else await send(179, 0, 0, packet);
+        } else await send(179, filenameOnly ? bank : 0, 0, packet);
         state.set('duration', await send(200));
       } else await send(181);
       state.set('pendingLoad', 0);
