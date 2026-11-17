@@ -98,10 +98,14 @@ function validateConfiguration(abi) {
   const { text, configuration } = abi,
     unit = text?.settingsCharacterBytes,
     layout = text?.configurationLayout,
+    keyRows = layout?.keyRows === undefined ? 80 : layout.keyRows,
+    voice = configuration?.defaults?.voiceRecords,
+    shortVoice = voice?.count === 32 && voice.stride === 88,
     word = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff,
-    minimumBlocks = [5628, 60, 28, 12];
+    minimumBlocks = shortVoice ? [2856, 56, 28, 12] : [5628, 60, 28, 12];
   if (
     ![1, 2].includes(unit) ||
+    ![64, 80].includes(keyRows) ||
     !layout ||
     !['fontBytes', 'keyNameBytes', 'keyStride', 'bytes'].every(
       (name) => word(layout[name]) && layout[name] > 0,
@@ -110,15 +114,27 @@ function validateConfiguration(abi) {
     layout.fontBytes % unit !== 0 ||
     layout.keyNameBytes % unit !== 0 ||
     layout.keyStride % 4 !== 0 ||
-    layout.keyStride < (configuration?.keyHide ? 40 : 36) ||
-    layout.bytes !== layout.fontBytes * 2 + 24 + 80 * layout.keyNameBytes + 80 * layout.keyStride ||
+    (keyRows === 64
+      ? unit !== 1 || configuration?.keyHide !== false || layout.keyStride !== 28
+      : layout.keyStride < (configuration?.keyHide ? 40 : 36)) ||
+    layout.bytes !==
+      layout.fontBytes * 2 + 24 + keyRows * (layout.keyNameBytes + layout.keyStride) ||
+    voice?.firstByte !== 20 ||
+    (!shortVoice && (voice.count !== 48 || voice.stride !== 116)) ||
+    (Object.hasOwn(voice, 'playWhenNamed') && typeof voice.playWhenNamed !== 'boolean') ||
+    (Object.hasOwn(configuration, 'systemVoiceRows') &&
+      ![32, 48].includes(configuration.systemVoiceRows)) ||
     !Array.isArray(configuration?.blockSizes) ||
     configuration.blockSizes.length !== 4 ||
     configuration.blockSizes.some(
-      (size, index) => !word(size) || size % 4 !== 0 || size < minimumBlocks[index],
+      (size, index) =>
+        !word(size) ||
+        size % 4 !== 0 ||
+        (shortVoice ? size !== minimumBlocks[index] : size < minimumBlocks[index]),
     )
   )
     throw new Error(`Invalid ABI behavior data ${abi.id}: canonical configuration layout`);
+  return shortVoice ? 14 : 15;
 }
 
 function behaviorAt(abi, path) {
@@ -150,7 +166,7 @@ export function nativeABIBehavior(profile, path) {
 }
 
 function validateBehavior(abi) {
-  validateConfiguration(abi);
+  const messageWords = validateConfiguration(abi);
   validateUnreviewed(abi);
   const defaults = abi.configuration.defaults,
     word = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff;
@@ -159,7 +175,7 @@ function validateBehavior(abi) {
     typeof defaults.font !== 'string' ||
     typeof defaults.title !== 'string' ||
     ![
-      ['message', 15],
+      ['message', messageWords],
       ['effect', 7],
       ['window', 3],
     ].every(
@@ -170,9 +186,6 @@ function validateBehavior(abi) {
     ) ||
     !word(defaults.contVoice) ||
     !word(defaults.rawVolumePercent) ||
-    defaults.voiceRecords?.count !== 48 ||
-    defaults.voiceRecords?.firstByte !== 20 ||
-    defaults.voiceRecords?.stride !== 116 ||
     !['enabled', 'masterPercent', 'group'].every((name) => word(defaults.voiceRecords[name])) ||
     !Array.isArray(abi.sound.legacyTypes) ||
     !abi.sound.legacyTypes.length ||
