@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// kcView cursor state: game 6771F0, software 681E20, D3D 680210/671A50.
+// The cursor owns position and visibility state for its drawing backend.
 export class NativeCursor {
   constructor(graphics, { backend = 'direct3d' } = {}) {
     if (!['software', 'direct3d'].includes(backend))

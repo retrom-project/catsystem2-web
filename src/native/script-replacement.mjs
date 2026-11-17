@@ -71,8 +71,8 @@ export class NativeScriptReplacements {
       order(a.find, b.find),
     )) {
       const result = replace(bytes, find, replacement);
-      // Original 6A59B0 writes a WORD NUL after the replacement prefix,
-      // then strcat copies the remaining source, including only its BYTE NUL.
+      // Write a WORD NUL after the replacement prefix. Copy the remaining source
+      // including its BYTE NUL.
       machine.bytes(address, result.prefix.length + 2).set([...result.prefix, 0, 0]);
       bytes = result.bytes;
       machine.bytes(address, bytes.length + 1).set([...bytes, 0]);

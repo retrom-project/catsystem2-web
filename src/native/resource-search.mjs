@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-// Search order follows game 5D57A0 / SDK 4B22C0. A mount's archive and loose
-// directory are independent candidates, including each row of a list mount.
+// A mount's archive and loose directory are separate candidates.
+// This includes each row of a list mount.
 const normalize = (value) => value.replaceAll('\\', '/').toLowerCase();
 export class NativeResourceSearch {
   constructor({ archives, loose, directories, lists, mounts, overrides = [] }) {
@@ -13,7 +13,7 @@ export class NativeResourceSearch {
     name = normalize(name);
     directory = normalize(directory);
     if (depth > 256) throw new Error('Native resource list nesting exceeds its mount capacity');
-    // 5D4910 replaces a previously loaded archive slot. Missing archives and
+    // Replacing an archive keeps its slot. Missing archives and
     // list placeholders occupy their slots until the server is destroyed.
     for (let i = 0; i < this.slots.length; i++)
       if (this.slots[i]?.archive && this.slots[i].name === name) this.slots[i] = null;

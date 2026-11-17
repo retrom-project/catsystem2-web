@@ -67,7 +67,7 @@ function stripHistoryExtension(bytes) {
 function nativeUTF8(bytes) {
   if (bytes.length > 4000) return empty();
   const text = decoder.decode(bytes);
-  // 6A5300 supplies a 260-WCHAR capacity despite its larger temporary array.
+  // The path conversion receives a capacity of 260 WCHARs.
   if (text.length + 1 > 260)
     throw new Error('Native CST UTF-8 conversion exceeds its initialized WCHAR buffer');
   return utf8.encode(text);
@@ -607,7 +607,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     if (!args[1]) return done();
     const source = services.handles.get(args[1], 'scene-data').history;
     if (id === 0x3e1) {
-      // 72DF60 clears the destination before traversing its source list.
+      // Clear the destination before traversing the source list.
       // Passing the same scene therefore clears its path as well.
       history.path =
         source === history

@@ -188,7 +188,7 @@ export class NativeInputBindings {
     for (const code of next)
       if (!this.down.joypad.has(code)) this.events.push({ category: 'joypad', code, down: true });
   }
-  // 70F930/70F830/70FA30 update sampled-on-press and live-on-both-edge
+  // Device events update sampled-on-press and live-on-both-edge
   // masks. The repeat word belongs to the logical key, shared by four slots.
   // Mouse and touch callbacks test both maps, preferring a touch-map match.
   apply(category, code, down, sourceOverride) {

@@ -19,8 +19,8 @@ export function createNativeInputBrowserServices(world, record, input, options =
         [width, height] = dimensions(),
         inside = source.x >= 0 && source.x < width && source.y >= 0 && source.y < height,
         device = bindings();
-      // 710C30 retains its last inside flag while focused outside the client;
-      // only a point inside or an unfocused outside sample changes that flag.
+      // The last inside flag persists while focused outside the client.
+      // An inside or unfocused pointer sample updates the flag.
       let value = device ? device.inside : input.cursorBlocked;
       if (inside) value = 1;
       else if (!foreground()) value = 0;

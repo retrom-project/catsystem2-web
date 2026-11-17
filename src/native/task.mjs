@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, originalFeature } from './original-adapter.mjs';
-// Main ABI task/message bridge, recovered from 0x65A430..0x65A876.
+// Main native task and message operations.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';

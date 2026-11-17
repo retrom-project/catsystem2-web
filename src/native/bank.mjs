@@ -68,7 +68,7 @@ export class NativeVariableBank {
     const source = this.context(sourceKey),
       destination = this.context(destinationKey);
     if (!source || !destination) return false;
-    // 729050 copies exactly the private 0x800-byte word allocation. Names,
+    // Copy the private 0x800-byte word allocation. Names,
     // selection and global-bank dirty state belong to separate fields.
     destination.words.set(source.words);
     return true;

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// InputTask: game 5E69A0/5E6DF0/5E7680, SDK 4C2C60/4C30B0/4C38F0.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
@@ -27,8 +26,8 @@ export const NATIVE_INPUT_IDS = Object.freeze([
   0x18c,
 ]);
 
-// 5E6CE0/4C2FA0 sample the canvas rectangle through the bitmap color getter;
-// this includes its origin offset and the lack of alpha in 24-bit colors.
+// Hit testing samples the canvas rectangle through the bitmap color getter.
+// Sampling accounts for the origin offset and 24-bit colors without alpha.
 export async function nativeInputBitmapMask(bitmap) {
   const state = bitmap.state,
     width = state.canvasWidth || bitmap.width,

@@ -64,7 +64,7 @@ export async function initializeNativeStartupSound(world) {
   }
   sound.load(document);
   // The original reaches saved preferences only after the resource XML and
-  // its MASTER/PART tree have loaded successfully (7186FC -> 718E2F).
+  // its MASTER/PART tree have loaded successfully.
   const preferences = (await storage.readSaved?.(sound.filename)) ?? null;
   if (preferences && !applyNativeSoundPreferences(sound, preferences))
     diagnostic({ type: 'preferences-invalid', file: sound.filename });

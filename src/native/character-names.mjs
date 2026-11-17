@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main 252..255: group RGB values and character-name aliases, 78D820..78E305.
+// Main slots 252 through 255 expose group RGB values and character-name aliases.
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { parseNativeInteger } from './standard.mjs';

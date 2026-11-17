@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Composition for the transitional product. src/engine.mjs stays host-free.
+// Explicit composition for the original-execution oracle.
 import { CatSystem2 as JavaScriptPlayer } from '../src/engine.mjs';
 import { NativeWorld as JavaScriptWorld } from '../src/native/world.mjs';
 import {

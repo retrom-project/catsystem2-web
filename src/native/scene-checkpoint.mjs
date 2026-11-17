@@ -126,7 +126,7 @@ export function pruneSceneCheckpoints(history, index, position) {
         throw new Error('Native scene checkpoint branch crosses its allocation');
       at = following;
     }
-    // 5B1330 uses SetExDataToPath, which writes the *last* path entry.
+    // SetExDataToPath updates the last path entry.
     // Finding no older checkpoint deliberately leaves all extra data intact.
     if (older && at > 0) history.path.at(-1).extra = extra.slice(at);
   }

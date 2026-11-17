@@ -19,15 +19,14 @@ npm run dev -- --game /path/to/prepared-game --port 4101
 
 打开 `http://localhost:4101`，点击 **Start game**。也可通过 **Open game folder** 选择本地目录。
 输入目录保持只读，原始 `.int` 归档按需读取，不会整体装进 JavaScript 内存。
-KIF 和 PSB 必须已经解密，目录还需包含与 profile 指纹匹配的引擎及其所需 DLL/PPI。
-当前处于架构迁移期：浏览器仍通过固定的 x86/WASM 后端执行部分原 EXE 区域、
-E-mote DLL 和 PPI。目标是以 JavaScript 实现引擎运行时，将原 EXE 执行降为离线/测试
-差分 oracle；独立插件 DLL 仍可通过宿主 API 使用 x86。浏览器服务承接文件、输入、GPU、
-音频及其他已实现的平台边界。启动时不进行脱壳或解密。
-当前固定两版引擎；它们的来源及 SHA-256 见 [references.json](references.json)。
-页面使用 `web/transitional-entry.mjs` 显式注入混合后端。直接使用 `src/engine.mjs`
-的宿主可传入 `transitionalExe`；没有宿主的入口可执行已迁移的 JS 路径，遇到未迁移
-操作会报告 operation 和 ABI。静态入口检查随 `npm run check` 执行。
+使用已准备的 KIF 和 PSB 资源。普通入口 `web/app.mjs` 直接使用 `src/engine.mjs`，
+通过模块版本资源选择已登记的 ABI。运行时用 JavaScript 解释脚本，浏览器提供文件、
+输入、渲染和音视频服务。已登记的插件通过对应的 JavaScript 实现运行。
+遇到未知版本、未审查的操作或未支持的插件时会报告错误。
+
+原 EXE 和插件 DLL 的执行入口只供显式的离线工具与差分测试使用。
+`npm run build` 依据普通入口的依赖图打包，`npm run check` 校验运行时边界。
+ABI 登记范围与原始对照来源分别见 [ABI 数据](docs/native-abi-data.md) 和 [references.json](references.json)。
 
 WMV 影片需要单独安装 FFmpeg，然后执行以下命令，并重启开发服务器：
 

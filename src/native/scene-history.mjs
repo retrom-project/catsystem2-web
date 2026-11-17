@@ -70,8 +70,8 @@ export function decodeNativeSceneHistory(bytes, { side = 'path', companionPath =
     let extra = null;
     if (extraSize) {
       const offset = b.u32(at + 44);
-      // 72D680's seen-list branch adds this offset to the companion path
-      // buffer, whereas its path branch adds it to the current record.
+      // The seen-list branch applies this offset to the companion path buffer.
+      // The path branch applies it to the current record.
       if (side === 'seen') {
         if (!companionPath)
           throw new Error('Native seen-list extra data refers to a null companion path buffer');

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// kcFileServer preload list: game 5D36D0/5D3C80/5D4410/5D4FF0/5D61C0.
+// Preloaded resources belong to the file server.
 import { nativeReply } from '../kcs/vm.mjs';
 
 export const NATIVE_RESOURCE_CACHE_IDS = Object.freeze([0x1b2, 0x1b3, 0x1b4, 0x1b5, 0x1b6]);

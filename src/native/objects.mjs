@@ -279,8 +279,8 @@ export class NativeObjects {
     }
   }
   async drawTick(frame, context = {}) {
-    // Root manager 5DC470 calls vft+12 after the entire vft+8 logic phase.
-    // Base 5DCBE0 writes its current frame even while the task is paused,
+    // The root starts the draw phase after every task completes its logic phase.
+    // Base records update the current frame even while paused,
     // then walks the live ordered child map before the derived draw phase.
     const visit = async (record, clock) => {
       if (record.state !== 'active') return;

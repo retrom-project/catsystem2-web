@@ -160,7 +160,7 @@ export class NativeConfiguration {
       use3d: integer(root, 'SOUND/use3d', this.soundOptions.use3d),
       sticky: integer(root, 'SOUND/sticky', this.soundOptions.sticky),
     };
-    // 71D760 visits these eight numbered records even across gaps. The
+    // Visit all eight numbered startup groups, including gaps. The
     // dynamic soundconf SOUNDGROUP tree is a separate configuration source.
     this.soundGroups = Array.from({ length: 8 }, (_, index) => {
       const path = `SOUNDGROUP/group${numberName(index)}`;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// System language tables: game 5AB510/5AB7A0/5ABE00, SDK 47E690/47E770/47ECF0.
+// The application owns system string tables and their selected language.
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 

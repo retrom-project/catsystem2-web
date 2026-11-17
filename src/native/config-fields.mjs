@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Configuration sources: game 71C8D0/71D160/71D3A0/71D760/71EF80/720630;
-// SDK 5CE2F0/5CFB50/5D0BA0. These two builds use different text encodings.
+// The ABI supplies the text encoding and layout for the configuration fields.
 import { NATIVE_ABIS, nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { findNativeXML } from './xml.mjs';
@@ -31,9 +30,9 @@ export const NATIVE_TEXT_CONFIGURATION_LAYOUTS = Object.freeze(
   ),
 );
 
-// 714590 chooses an exact current-format/aspect/rate mode, then the first
-// larger mode in enumeration order, then the desktop mode. No host means the
-// original helper returns without altering the requested dimensions.
+// Prefer an exact mode with the current format, aspect and rate, then the first
+// larger mode in enumeration order, then the desktop mode. Without a display
+// provider, retain the requested dimensions.
 export function nativeFullscreenSize(width, height, display) {
   if (!display) return [width >>> 0, height >>> 0];
   const current = display.current,

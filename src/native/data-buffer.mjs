@@ -278,7 +278,7 @@ export async function nativeDataBuffer(id, args, machine, services = {}) {
 
   if (id === 0x170 || id === 0x1af) {
     const address = args[id === 0x170 ? 2 : 1];
-    // 8772A0 returns NULL for unmapped VM pointers, but VM address zero itself
+    // An unmapped VM pointer maps to NULL. VM address zero
     // is a valid mapped data address. Failed mapping leaves caller bytes alone.
     let output;
     try {

@@ -166,7 +166,7 @@ export class EngineHost {
   async nativeWindowMessage(message, world) {
     if (message.message === 0x467) {
       const mode = message.lParam >>> 0;
-      if (mode > 1) return; // Original 53255F accepts only window/fullscreen.
+      if (mode > 1) return; // Only windowed and fullscreen modes are valid.
       const surface = this.engine.canvas.closest('#stage') || this.engine.canvas;
       try {
         if (mode && !document.fullscreenElement) await surface.requestFullscreen();

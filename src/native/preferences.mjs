@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original preference writers: SDK 5D1440/5D18F0; newer engine 721000/721510.
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { parseNativeXML } from './xml.mjs';

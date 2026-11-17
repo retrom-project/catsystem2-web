@@ -200,7 +200,7 @@ export class GameFiles {
           .replaceAll('"', '')
           .trim();
         if (!source) continue;
-        // 5D4C31..5D4C8D splits the first literal '/' into a loose
+        // The list parser splits the first literal '/' into a loose
         // directory and an archive name. Backslashes belong to the directory.
         const slash = source.indexOf('/');
         const directory = slash < 0 ? source : source.slice(0, slash);

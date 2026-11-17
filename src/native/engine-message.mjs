@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOperation, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
-// Task packet routing: game 5DD130..5DEC70; SDK 4B9360..4BB030.
 import { encodeCP932 } from '../kcs/strings.mjs';
 
 export const NATIVE_UNWRITTEN_WORD = Symbol('native engine output word was not written');
@@ -137,8 +136,8 @@ export class NativeEngineMessages {
       parents.push(parent);
       parent = this.records.get(parent.parent);
     }
-    // 5DD9D0/4B9C10 recurse before updating the local entry. The helper
-    // follows parent pointers and does not stop at a Top boundary.
+    // Update parent entries before the local entry. The helper
+    // follows parent pointers across Top boundaries.
     for (const owner of parents.reverse()) {
       if (erase) owner.nativeTaskRoutes.delete(idOf(record));
       else owner.nativeTaskRoutes.set(idOf(record), null);

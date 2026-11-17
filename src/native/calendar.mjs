@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main312 / 6A7910 is an integer weekday calculation, including invalid dates.
+// Main slot 312 computes weekdays with integer arithmetic, including invalid dates.
 import { nativeReply } from '../kcs/vm.mjs';
 const truncate32 = (value) =>
   Number.isFinite(value) && value >= -2147483648 && value < 2147483648
