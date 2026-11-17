@@ -49,12 +49,24 @@ for (const profile of Object.keys(NATIVE_ABIS)) {
   });
 }
 
-test('normal ABI configuration validates the short voice and key layouts', () => {
+test('normal ABI configuration validates compact messages independently of voice and key layouts', () => {
   const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63')),
     { configuration, text } = abi;
+  configuration.blockSizes[1] = 56;
+  configuration.defaults.message = configuration.defaults.message.slice(0, 14);
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of [
+    [5628, 56, 32, 12],
+    [5632, 56, 28, 12],
+    [5628, 60, 28, 12],
+  ]) {
+    const malformed = structuredClone(abi);
+    malformed.configuration.blockSizes = invalid;
+    assert.throws(() => validateABI(malformed), /Invalid ABI (behavior data|normal configuration)/);
+  }
+
   configuration.blockSizes = [2856, 56, 28, 12];
   configuration.systemVoiceRows = 32;
-  configuration.defaults.message = configuration.defaults.message.slice(0, 14);
   Object.assign(configuration.defaults.voiceRecords, {
     count: 32,
     stride: 88,
@@ -66,6 +78,10 @@ test('normal ABI configuration validates the short voice and key layouts', () =>
   for (const change of [
     (value) => (value.configuration.blockSizes[0] += 4),
     (value) => (value.configuration.blockSizes[1] += 4),
+    (value) => {
+      value.configuration.blockSizes[1] = 60;
+      value.configuration.defaults.message.push(0);
+    },
     (value) => (value.configuration.defaults.voiceRecords.firstByte = 24),
     (value) => (value.configuration.defaults.voiceRecords.count = 48),
     (value) => (value.configuration.defaults.voiceRecords.stride = 116),

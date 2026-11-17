@@ -102,8 +102,10 @@ function validateConfiguration(abi) {
     keyRows = layout?.keyRows === undefined ? 80 : layout.keyRows,
     voice = configuration?.defaults?.voiceRecords,
     shortVoice = voice?.count === 32 && voice.stride === 88,
+    blockSizes = configuration?.blockSizes,
+    compactMessage = blockSizes?.[1] === 56,
     word = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff,
-    minimumBlocks = shortVoice ? [2856, 56, 28, 12] : [5628, 60, 28, 12];
+    minimumBlocks = [shortVoice ? 2856 : 5628, compactMessage ? 56 : 60, 28, 12];
   if (
     ![1, 2].includes(unit) ||
     ![64, 80].includes(keyRows) ||
@@ -125,17 +127,18 @@ function validateConfiguration(abi) {
     (Object.hasOwn(voice, 'playWhenNamed') && typeof voice.playWhenNamed !== 'boolean') ||
     (Object.hasOwn(configuration, 'systemVoiceRows') &&
       ![32, 48].includes(configuration.systemVoiceRows)) ||
-    !Array.isArray(configuration?.blockSizes) ||
-    configuration.blockSizes.length !== 4 ||
-    configuration.blockSizes.some(
+    (shortVoice && !compactMessage) ||
+    !Array.isArray(blockSizes) ||
+    blockSizes.length !== 4 ||
+    blockSizes.some(
       (size, index) =>
         !word(size) ||
         size % 4 !== 0 ||
-        (shortVoice ? size !== minimumBlocks[index] : size < minimumBlocks[index]),
+        (compactMessage ? size !== minimumBlocks[index] : size < minimumBlocks[index]),
     )
   )
     throw new Error(`Invalid ABI behavior data ${abi.id}: canonical configuration layout`);
-  return shortVoice ? 14 : 15;
+  return compactMessage ? 14 : 15;
 }
 
 function behaviorAt(abi, path) {
