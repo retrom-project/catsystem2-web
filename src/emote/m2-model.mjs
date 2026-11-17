@@ -103,6 +103,7 @@ export class M2Model {
     return this.variables.busy || this.bodyVariables.busy || Boolean(this.external?.busy);
   }
   setHitVariables(value) {
+    if (!this.pose.hasFaceDescriptor) return;
     for (const name of this.pose.face.hitVariables) this.animation.setVariable(name, value);
     // The engine's effect command commits one player update before a same-
     // callback bitmap capture. This does not advance the World or DIF clocks.

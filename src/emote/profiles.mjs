@@ -96,7 +96,7 @@ export class EmoteProfiles {
     if (this.profiles.has(name)) return this.profiles.get(name);
     if (!this.profileFiles[name]) throw new Error(`Missing E-mote profile: ${name}`);
     const s = sections(this.text(this.profileFiles[name])),
-      p = { bodies: {}, expressions: {}, bodyFile: null, idles: {} };
+      p = { bodies: {}, expressions: {}, expressionDescriptors: {}, bodyFile: null, idles: {} };
     for (const [n, rest] of s.charaname || []) p.bodies[Number(n)] = rest.at(-1);
     for (const [n, rest] of s.motname || []) {
       if (rest.length >= 2 && /^-?\d+$/.test(rest[0]))
@@ -104,6 +104,7 @@ export class EmoteProfiles {
       const difs = rest.filter((v) => /\.dif$/i.test(v));
       if (!p.expressions[n] && difs.length) {
         p.expressions[n] = difs[0];
+        p.expressionDescriptors[n] = rest.length >= 3;
         if (difs[1]) p.bodyFile = difs[1];
       }
     }
@@ -249,7 +250,8 @@ export class EmoteProfiles {
       n = Number(fields[1] || 1);
     const model = profile.bodies[n] || Object.values(profile.bodies)[0];
     if (!model) throw new Error(`No model for E-mote profile ${fields[0]}`);
-    const face = this.expressions(profile.expressions[n] || Object.values(profile.expressions)[0]),
+    const faceIndex = profile.expressions[n] ? n : Object.keys(profile.expressions)[0],
+      face = this.expressions(profile.expressions[faceIndex]),
       bodyProfile = this.expressions(profile.bodyFile);
     const digits = fields.slice(2);
     let idle = 0;
@@ -288,6 +290,7 @@ export class EmoteProfiles {
       requestedCodes: Object.fromEntries(digits.map((code, i) => [i + 1, code])),
       requestedBodyCodes: Object.fromEntries(body.map((code, i) => [i + 1, code])),
       face,
+      hasFaceDescriptor: profile.expressionDescriptors[faceIndex] === true,
       body: bodyProfile,
       idle: profile.idles[n]?.[idle],
       scaleX: face.scaleX,

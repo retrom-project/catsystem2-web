@@ -61,6 +61,55 @@ async function make(input, saved = new Map()) {
   return world;
 }
 
+test('M2 hit updates distinguish absent or short expression declarations from a valid empty descriptor', async () => {
+  for (const kind of ['absent', 'short', 'empty']) {
+    const files = emoteM2SequenceFiles();
+    files['authored.dif'] = new Uint8Array();
+    if (kind !== 'empty')
+      files['authored.pfl'] = new TextEncoder().encode(
+        '#charaname\r\n1 body authored\r\n#motname\r\n' +
+          (kind === 'short' ? '1 base authored.dif\r\n' : ''),
+      );
+    const world = await make({ files });
+    try {
+      await world.initialize('main.kcs');
+      const id = await world.objects.create({ kind: 54, parent: world.root }),
+        task = world.graphics.get(id),
+        machine = world.main.machine,
+        native = (id, args) => world.runtime.native('main', id, args, machine, world.main);
+      machine.writeString('aa01,1,1,1,1,1,1:0', 128);
+      await native(906, [id, 128, 0]);
+      await task.message([world.main.id, 47, 0, 1]);
+      for (const frame of [0, 1, 2, 3]) await task.drawTick(frame);
+      await native(908, [id]);
+      const before = task.model.snapshot(),
+        hold = task.model.finishHold,
+        time = task.model.animation.time,
+        frame = world.frame,
+        steps = machine.steps;
+      assert.notEqual(hold, null);
+      assert.deepEqual(await native(1025, [id, 1]), { control: 2 });
+      assert.equal(task.model.animation.time, time + Number(kind === 'empty'), kind);
+      assert.equal(task.model.finishHold, hold, 'unchanged visible pose retains Skip');
+      if (kind !== 'empty') assert.deepEqual(task.model.snapshot(), before);
+      assert.deepEqual(await native(1025, [id, 0]), { control: 2 });
+      assert.equal(task.model.animation.time, time + 2 * Number(kind === 'empty'), kind);
+      assert.equal(world.frame, frame);
+      assert.equal(machine.steps, steps);
+      const saved = world.snapshot(),
+        cold = await make({ files });
+      try {
+        await cold.restore(saved);
+        assert.deepEqual(cold.snapshot(), saved);
+      } finally {
+        await cold.close({ flushFiles: false });
+      }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  }
+});
+
 test('M2 hit-variable command publishes its readback pose in the same callback without a World tick', async () => {
   const files = emoteM2SequenceFiles();
   files['authored.dif'] = new TextEncoder().encode(

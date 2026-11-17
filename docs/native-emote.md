@@ -23,6 +23,11 @@ pose releases the retained Skip pose through the existing model rule; unchanged
 poses retain it. This does not tick the World, execute a Script VM, or advance
 the external DIF frame clock. Checkpoints retain the committed player/geometry
 state without replaying the effect command during restore.
+This immediate update requires a selected face-expression descriptor: absent or
+short `MOTNAME` declarations do not provide one. A valid descriptor with an empty
+hit-variable list still receives the update. The distinction comes from the
+profile declaration, not a nonempty DIF file or hit-variable array; it is derived
+again on restore and does not add checkpoint fields.
 
 The original FES command functions for m2eff/m2att/m2fspeed/m2prmscale/m2iner,
 m2enable_blink/lip, m2splay and m2draw are no-ops in this ABI. The JS driver
