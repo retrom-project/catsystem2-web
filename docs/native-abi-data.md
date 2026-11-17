@@ -955,3 +955,41 @@ message policy. That policy is read with `nativeABIBehavior` only when one of
 those mappings is actually selected; a missing policy then rejects before
 changing the task. Base registration and destruction continue through their
 existing receivers. No modern message array supplies an old-version default.
+
+### 2.6.1.67 selected close callback
+
+The reviewed close message `0xffff0006` selects main callback 4036 and its
+persistence subroutine. Main 238/240/244/245/246/277/469/833/834/835/870/872
+are admitted only from their own complete wrappers and selected callees. Main
+247 was already admitted. Other operations, including 239/385/856/869/871/873,
+stay unknown; no neighbouring slot or other version is enabled by this group.
+
+The existing global-file, variable/string banks, database handles and single
+`NativeBufferMemory` remain the owners. Guest byte address zero remains valid;
+raw native-buffer addresses, typed handles, native task IDs and World IDs stay
+separate. Main 240 resolves a real native task ID before reading its bank. Main
+833/834 reuse the existing four-byte reference prefix; 835 copies the exact
+owned range. Database export 872 queries or writes `4 + count * 268` bytes,
+including a 256-byte name and three raw DWORD flags per record. A NULL database
+leaves the native result unwritten and is outside the admitted normal domain:
+the consumer rejects it without inventing zero or a scratch value. The VM reply
+contract is unchanged.
+
+Own version data records 67's 512 KiB global-file capacity increments and its
+getter result zero for both empty and missing strings. The existing modern
+64 KiB growth, empty-string presence result and explicit fixture sentinel
+policy are retained; these new data fields do not claim new native evidence
+for modern versions. Version 63 keeps these unreviewed behaviours unknown and
+its corresponding slots disabled. Growth is derived from the Runtime profile
+when a global-file handle is restored; it adds no checkpoint field, parallel
+heap or compatibility reader.
+
+Owned tests deliver the real close message through Root/Script, save CSS and
+check literal variable/guest/database bytes and buffer canaries. A full World
+DTO cold restore executes no native, VM step, World tick or MT draw, and closing
+the old owner preserves the fresh handles and buffer before independent close.
+The tests also distinguish empty/missing text, cross the actual growth bucket,
+and reject the unwritten database domain. The four unique short passes are a
+composite: the original two baseline native failures and all later dependency
+and author failures remain in ignored receipts. No new actual startup, close,
+title-WAIT, whole game, browser or physical-oracle result is claimed here.

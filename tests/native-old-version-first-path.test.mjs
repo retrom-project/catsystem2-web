@@ -24,6 +24,9 @@ import {
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 import { AudioMixer } from '../src/audio.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
+import { NativeDatabase } from '../src/native/database.mjs';
+import { NativeGlobalFile } from '../src/native/persistence.mjs';
+import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 
 const versions = [
   ['2.6.1.63', 'rebellions-jp-engine-2.6.1.63', 203, 3],
@@ -908,7 +911,7 @@ function title67Wave() {
   for (let offset = 44; offset < result.length; offset += 2) view.setInt16(offset, 8192, true);
   return result;
 }
-async function title67World(files) {
+async function title67World(files, storage = { read: async () => null, write: async () => true }) {
   const entries = {
       'startup.xml': bytes(
         '<?xml version="1.0" encoding="shift_jis"?><document><INT>' +
@@ -958,7 +961,7 @@ async function title67World(files) {
         startup: parseNativeXML(entries['startup.xml']),
       }),
       motionLibrary: new MotionLibrary(game, { profile: title67Profile, random }),
-      storage: { read: async () => null, write: async () => true },
+      storage,
     });
   return { world, audio };
 }
@@ -1114,4 +1117,229 @@ test('67 first-title motion runs own round linear triangle and clear contracts',
   );
   assert.equal(motion.machine.pop(), title67Sentinel);
   assert.equal(motion.machine.sp, initialSP);
+});
+
+const close67Program = (body, strings = [], dataSize = 16384) => {
+  const program = kcsProgram(body, strings);
+  new DataView(program.buffer, program.byteOffset, program.byteLength).setUint32(
+    32,
+    dataSize,
+    true,
+  );
+  return program;
+};
+async function close67Caller(world, name) {
+  const id = await world.objects.create({
+      kind: 12,
+      parent: world.main.id,
+      name: 'owned close caller',
+    }),
+    implementation = world.objects.objects.get(id).implementation;
+  await implementation.loadScript(name);
+  return implementation.task;
+}
+
+test('67 close GCALLs persist real banks and raw database bytes through a cold owner', async (t) => {
+  t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
+  const prefix = [
+      ...title67Call(238, [0x81234567], 512),
+      ...title67Call(244, [[0x13, 512], 16384, 4, 0], 516),
+      ...title67Call(833, [300], 536),
+    ],
+    waitPC = (await readKCS(kcsProgram(prefix))).codeSize,
+    program = close67Program(
+      [
+        ...prefix,
+        [37, 384],
+        [43, 71, 4],
+        [39, waitPC],
+        [37, title67Sentinel],
+        ...title67Call(240, [[0x13, 512], 1024, [0x13, 56], 2, 3], 520),
+        ...title67Call(469, [[0x13, 512], 16384]),
+        ...title67Call(244, [[0x13, 512], 16384, 4, 0], 524),
+        ...title67Call(277, [7, 128], 528),
+        ...title67Call(872, [[0x13, 52], 0], 532),
+        ...title67Call(
+          872,
+          [
+            [0x13, 52],
+            [0x13, 536],
+          ],
+          540,
+        ),
+        ...title67Call(835, [[0x13, 512], 0x10000001, [0x13, 532], [0x13, 536]], 544),
+        ...title67Call(245, [[0x13, 512], 10000], 548),
+        ...title67Call(834, [[0x13, 536]]),
+        ...title67Call(246, [[0x13, 512]]),
+        ...title67Call(870, [[0x13, 52]]),
+        [59],
+      ],
+      [[10000, 'owned-close.css']],
+    ),
+    files = new SaveSlotFiles(),
+    owned = { 'close-owned.kcs': program },
+    source = await title67World(owned, files);
+  let fresh,
+    restoring = false;
+  const warm = { native: 0, step: 0, tick: 0, random: 0 },
+    observe = (prototype, name, counter) => {
+      const original = prototype[name];
+      t.mock.method(prototype, name, function (...args) {
+        if (restoring) warm[counter]++;
+        return original.apply(this, args);
+      });
+    };
+  for (const [prototype, method, counter] of [
+    [NativeRuntime.prototype, 'native', 'native'],
+    [KCSMachine.prototype, 'step', 'step'],
+    [NativeWorld.prototype, 'tick', 'tick'],
+    [NativeMT19937.prototype, 'nextUint32', 'random'],
+  ])
+    if (typeof prototype[method] === 'function') observe(prototype, method, counter);
+  try {
+    await source.world.initialize('empty.kcs');
+    const task = await close67Caller(source.world, 'close-owned.kcs'),
+      machine = task.machine,
+      initialSP = machine.sp,
+      database = new NativeDatabase();
+    database.records.set('owned', {
+      name: bytes('owned'),
+      flags: new Uint32Array([0x81234567, 0x40000000, 1]),
+    });
+    const databaseHandle = source.world.runtime.handles.add('database', database);
+    machine.store(52, databaseHandle);
+    machine.store(56, source.world.nativeTaskID(task.id));
+    machine.bytes(0, 4).set([0xfe, 0xca, 0, 0x81]);
+    const bank = source.world.runtime.variableBank(task);
+    bank.initialize(8);
+    [0x80000000, 0xdeadbeef, 0x7fc01234].forEach((word, i) => bank.set(2 + i, word));
+    source.world.runtime.stringBank(task).set(7, '猫');
+    await source.world.runtime.scheduler.execute(task);
+    assert.equal(machine.waiting.kind, 'message');
+    const fileHandle = machine.load(512),
+      pointer = machine.load(536),
+      memory = source.world.runtime.imageDataBuffers.process;
+    memory.write(pointer, new Uint8Array(300).fill(0xa5));
+    assert.equal(memory.load(pointer - 4), 1);
+    assert.equal(memory.allocations.has(pointer - 4), true);
+    const state = source.world.snapshot(0);
+    fresh = await title67World(owned, files);
+    restoring = true;
+    await fresh.world.restore(structuredClone(state));
+    restoring = false;
+    assert.equal(await checkpointDifference(fresh.world.snapshot(0), state), null);
+    assert.deepEqual(warm, { native: 0, step: 0, tick: 0, random: 0 });
+    const restoredFile = fresh.world.runtime.handles.get(fileHandle, 'global-file');
+    assert.notStrictEqual(
+      restoredFile,
+      source.world.runtime.handles.get(fileHandle, 'global-file'),
+    );
+    assert.notStrictEqual(fresh.world.runtime.imageDataBuffers.process.regions, memory.regions);
+    const writes = [],
+      write = files.write.bind(files);
+    files.write = function (name, data, options) {
+      const owner = writes.length ? fresh.world : source.world;
+      const store = owner.runtime.imageDataBuffers.process;
+      writes.push({ name, data: data.slice(), options, canary: store.read(pointer + 272, 28) });
+      return write(name, data, options);
+    };
+    await source.world.close();
+    assert.equal(source.world.closed, true);
+    assert.equal(source.world.runtime.handles.records.size, 0);
+    assert.equal(fresh.world.runtime.handles.get(fileHandle, 'global-file'), restoredFile);
+    assert.equal(fresh.world.runtime.imageDataBuffers.process.load(pointer - 4), 1);
+    assert.deepEqual(
+      [520, 524, 528, 532, 540, 544, 548].map((at) => machine.load(at)),
+      [1, 1, 1, 272, 272, 1, 1],
+    );
+    assert.equal(machine.string(128), '猫');
+    assert.equal(machine.pop(), title67Sentinel);
+    assert.equal(machine.sp, initialSP);
+    const expectedDatabase = new Uint8Array(272),
+      view = new DataView(expectedDatabase.buffer);
+    view.setUint32(0, 1, true);
+    expectedDatabase.set(bytes('owned'), 4);
+    [0x81234567, 0x40000000, 1].forEach((word, i) => view.setUint32(260 + i * 4, word, true));
+    const saved = await NativeGlobalFile.fromFile(writes[0].data);
+    assert.equal(saved.tag, 0x81234567);
+    assert.deepEqual(
+      saved.records.map((row) => [row.id, row.bytes.length]),
+      [
+        [1024, 12],
+        [16384, 4],
+        [0x10000001, 272],
+      ],
+    );
+    assert.deepEqual(
+      Array.from(new Uint32Array(saved.read(1024).buffer)),
+      [0x80000000, 0xdeadbeef, 0x7fc01234],
+    );
+    assert.deepEqual([...saved.read(16384)], [0xfe, 0xca, 0, 0x81]);
+    assert.deepEqual(saved.read(0x10000001), expectedDatabase);
+    assert.deepEqual([...writes[0].canary], Array(28).fill(0xa5));
+    assert.deepEqual(writes[0].options, { updateModified: true });
+    await fresh.world.close();
+    assert.equal(fresh.world.runtime.handles.records.size, 0);
+    assert.equal(writes.length, 2);
+    assert.deepEqual(writes[1].data, writes[0].data);
+  } finally {
+    restoring = false;
+    await fresh?.world.close();
+    await fresh?.audio.dispose();
+    await source.world.close();
+    await source.audio.dispose();
+  }
+});
+
+test('67 close results keep empty text and growth own while refusing an unwritten database result', async () => {
+  const program = close67Program(
+      [
+        [37, title67Sentinel],
+        ...title67Call(277, [8, 64], 512),
+        ...title67Call(277, [9, 96], 516),
+        ...title67Call(238, [99], 520),
+        ...title67Call(244, [[0x13, 520], 1, 0x80001, 1024], 524),
+        [59],
+      ],
+      [],
+      0x82000,
+    ),
+    nullProgram = close67Program([...title67Call(872, [0, 0], 64), [59]]),
+    source = await title67World({ 'limits.kcs': program, 'null-export.kcs': nullProgram });
+  try {
+    const world = source.world;
+    await world.initialize('empty.kcs');
+    const task = await close67Caller(world, 'limits.kcs'),
+      machine = task.machine,
+      initialSP = machine.sp;
+    world.runtime.stringBank(task).set(8, '');
+    machine.bytes(64, 8).fill(0xa5);
+    machine.bytes(96, 8).fill(0xa5);
+    machine.bytes(1024, 0x80001).fill(0x5a);
+    await world.runtime.scheduler.execute(task);
+    assert.deepEqual([machine.load(512), machine.load(516), machine.load(524)], [0, 0, 1]);
+    assert.deepEqual([...machine.bytes(64, 3)], [0, 0xa5, 0xa5]);
+    assert.deepEqual([...machine.bytes(96, 3)], [0, 0xa5, 0xa5]);
+    const file = world.runtime.handles.get(machine.load(520), 'global-file');
+    assert.equal(file.capacity, 0x100000);
+    assert.equal(file.used, 0x80009);
+    assert.equal(file.read(1).length, 0x80001);
+    assert.equal(machine.pop(), title67Sentinel);
+    assert.equal(machine.sp, initialSP);
+    const empty = await close67Caller(world, 'null-export.kcs');
+    empty.machine.store(64, 0xa5a5a5a5);
+    const before = world.runtime.handles.snapshot();
+    await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
+    assert.equal(empty.machine.load(64), 0xa5a5a5a5);
+    assert.deepEqual(world.runtime.handles.snapshot(), before);
+    assert.equal(
+      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[238].status,
+      'unknown',
+    );
+    for (const id of [239, 385, 856, 869, 871, 873])
+      assert.equal(nativeABI(title67Profile).tables.main.entries[id].status, 'unknown');
+  } finally {
+    await source.world.close();
+    await source.audio.dispose();
+  }
 });

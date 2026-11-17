@@ -904,52 +904,57 @@ export default {
           179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196,
           197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 210, 212, 213, 214, 215, 216,
           217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234,
-          235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 248, 249, 250, 251, 252, 253,
-          254, 255, 257, 258, 259, 261, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274,
-          275, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293,
-          294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311,
-          312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
-          330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347,
-          348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 360, 361, 362, 363, 364, 365, 366,
-          367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384,
-          385, 386, 387, 388, 389, 390, 391, 392, 394, 395, 396, 397, 398, 399, 401, 402, 403, 404,
-          405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422,
-          423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440,
-          441, 442, 443, 444, 445, 446, 450, 451, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462,
-          463, 464, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481,
-          482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499,
-          500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517,
-          518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535,
-          536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553,
-          554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571,
-          572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589,
-          594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 606, 607, 608, 609, 610, 611, 612,
-          613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630,
-          631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648,
-          649, 650, 651, 652, 653, 654, 655, 656, 657, 658, 659, 660, 661, 662, 663, 664, 665, 666,
-          667, 668, 669, 670, 671, 672, 673, 674, 675, 676, 677, 678, 679, 680, 681, 682, 683, 684,
-          685, 686, 687, 688, 689, 690, 691, 692, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702,
-          703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720,
-          721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738,
-          739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756,
-          757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774,
-          775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 790, 791, 792, 793,
-          794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811,
-          812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
-          830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 843, 844, 845, 846, 847,
-          850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867,
-          868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885,
-          886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
-          904, 905, 906, 907, 908, 909, 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920, 921,
-          922, 923, 924, 925, 926, 927, 928, 929, 930, 931, 932, 933, 934, 935, 936, 937,
+          235, 236, 237, 239, 241, 242, 243, 248, 249, 250, 251, 252, 253, 254, 255, 257, 258, 259,
+          261, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 278, 279, 280, 281,
+          282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299,
+          300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317,
+          318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335,
+          336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353,
+          354, 355, 356, 357, 358, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372,
+          373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390,
+          391, 392, 394, 395, 396, 397, 398, 399, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410,
+          411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428,
+          429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446,
+          450, 451, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 466, 467, 468, 470,
+          471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488,
+          489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506,
+          507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524,
+          525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542,
+          543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560,
+          561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578,
+          579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 594, 595, 596, 597, 598, 599, 600,
+          601, 602, 603, 604, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619,
+          620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637,
+          638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650, 651, 652, 653, 654, 655,
+          656, 657, 658, 659, 660, 661, 662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673,
+          674, 675, 676, 677, 678, 679, 680, 681, 682, 683, 684, 685, 686, 687, 688, 689, 690, 691,
+          692, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709,
+          710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727,
+          728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 742, 743, 744, 745,
+          746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763,
+          764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781,
+          782, 783, 784, 785, 786, 787, 788, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800,
+          801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818,
+          819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838, 839,
+          840, 841, 842, 843, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
+          860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 871, 873, 874, 875, 876, 877, 878, 879,
+          880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897,
+          898, 899, 900, 901, 902, 903, 904, 905, 906, 907, 908, 909, 910, 911, 912, 913, 914, 915,
+          916, 917, 918, 919, 920, 921, 922, 923, 924, 925, 926, 927, 928, 929, 930, 931, 932, 933,
+          934, 935, 936, 937,
         ],
         recovered: [
-          1, 8, 13, 14, 36, 41, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 211, 247, 256,
-          260, 262, 276, 359, 393, 400, 447, 448, 449, 452, 465, 590, 591, 592, 593, 605, 789, 848,
-          849,
+          1, 8, 13, 14, 36, 41, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 211, 238, 240,
+          244, 245, 246, 247, 256, 260, 262, 276, 277, 359, 393, 400, 447, 448, 449, 452, 465, 469,
+          590, 591, 592, 593, 605, 789, 833, 834, 835, 848, 849, 870, 872,
         ],
       },
       evidence: [
+        {
+          ids: [238, 240, 244, 245, 246, 277, 469, 833, 834, 835, 870, 872],
+          value:
+            '2.6.1.67 own close-message selected CFG, complete wrappers and direct persistence/bank/raw-buffer/database callees; finite owned-address and nonnull database-export domains only. Other slots remain unknown.',
+        },
         {
           ids: [359],
           value:
@@ -975,6 +980,445 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [238],
+          fields: {
+            argumentWords: 1,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'tag',
+                description: 'tag',
+                type: {
+                  kind: 'bits',
+                  bits: 32,
+                },
+              },
+            ],
+            result: {
+              kind: 'handle',
+              handleKind: 'global-file',
+              ownership: 'unknown',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [240],
+          fields: {
+            argumentWords: 5,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'entry',
+                description: 'entry',
+                type: {
+                  kind: 'bits',
+                  bits: 32,
+                },
+              },
+              {
+                name: 'task',
+                description: 'native task ID; route lookup before bank access',
+                type: {
+                  kind: 'object-id',
+                  objectKind: 'task',
+                },
+              },
+              {
+                name: 'first',
+                description: 'first',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+              {
+                name: 'count',
+                description: 'count',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+            ],
+            result: {
+              kind: 'boolean',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [244],
+          fields: {
+            argumentWords: 4,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'entry',
+                description: 'entry',
+                type: {
+                  kind: 'bits',
+                  bits: 32,
+                },
+              },
+              {
+                name: 'bytes',
+                description: 'bytes',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+              {
+                name: 'source',
+                description: 'translated guest bytes; VM address zero is valid',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: {
+                    kind: 'integer',
+                    bits: 8,
+                    signed: false,
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'boolean',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [245],
+          fields: {
+            argumentWords: 2,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'filename',
+                description: 'filename',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: {
+                    kind: 'format-string',
+                    encoding: 'CP932',
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'boolean',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [246],
+          fields: {
+            argumentWords: 1,
+            controlCodes: [2],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+            ],
+            result: {
+              kind: 'void',
+            },
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [277],
+          fields: {
+            argumentWords: 2,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'index',
+                description: 'index',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+              {
+                name: 'destination',
+                description: 'destination',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  target: {
+                    kind: 'integer',
+                    bits: 8,
+                    signed: false,
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'boolean',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [469],
+          fields: {
+            argumentWords: 2,
+            controlCodes: [2],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'entry',
+                description: 'entry',
+                type: {
+                  kind: 'bits',
+                  bits: 32,
+                },
+              },
+            ],
+            result: {
+              kind: 'void',
+            },
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [833],
+          fields: {
+            argumentWords: 1,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'bytes',
+                description: 'bytes',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+            ],
+            result: {
+              kind: 'pointer',
+              addressSpace: 'native',
+              direction: 'out',
+              target: {
+                kind: 'integer',
+                bits: 8,
+                signed: false,
+              },
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [834],
+          fields: {
+            argumentWords: 1,
+            controlCodes: [2],
+            parameters: [
+              {
+                name: 'block',
+                description:
+                  'unique NativeBufferMemory allocation data address, not VM offset or handle',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'in',
+                  target: {
+                    kind: 'integer',
+                    bits: 8,
+                    signed: false,
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'void',
+            },
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [835],
+          fields: {
+            argumentWords: 4,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'globalFile',
+                description: 'globalFile',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'global-file',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'entry',
+                description: 'entry',
+                type: {
+                  kind: 'bits',
+                  bits: 32,
+                },
+              },
+              {
+                name: 'bytes',
+                description: 'bytes',
+                type: {
+                  kind: 'integer',
+                  bits: 32,
+                  signed: false,
+                },
+              },
+              {
+                name: 'source',
+                description: 'source',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'in',
+                  target: {
+                    kind: 'integer',
+                    bits: 8,
+                    signed: false,
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'boolean',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [870],
+          fields: {
+            argumentWords: 1,
+            controlCodes: [2],
+            parameters: [
+              {
+                name: 'database',
+                description: 'database',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'database',
+                  ownership: 'borrowed',
+                },
+              },
+            ],
+            result: {
+              kind: 'void',
+            },
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [872],
+          fields: {
+            argumentWords: 2,
+            controlCodes: [1],
+            parameters: [
+              {
+                name: 'database',
+                description:
+                  'nonnull owned database; native NULL branch leaves out unwritten and is unsupported',
+                type: {
+                  kind: 'handle',
+                  handleKind: 'database',
+                  ownership: 'borrowed',
+                },
+              },
+              {
+                name: 'nullableDestination',
+                description:
+                  'zero queries exact size; nonzero is an owned NativeBufferMemory range',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'out',
+                  target: {
+                    kind: 'integer',
+                    bits: 8,
+                    signed: false,
+                  },
+                },
+              },
+            ],
+            result: {
+              kind: 'integer',
+              bits: 32,
+              signed: false,
+            },
+            resultWritten: null,
+            review: 'reviewed',
+          },
+        },
         {
           ids: [385],
           fields: {
