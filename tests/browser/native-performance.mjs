@@ -5,7 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { arch, cpus, platform, release, totalmem } from 'node:os';
 
-export function observeFrames({ sampleLimit = 256 } = {}) {
+export function observeFrames({ sampleLimit = 256, collectDiagnostics = true } = {}) {
   if (!Number.isInteger(sampleLimit) || sampleLimit < 1 || sampleLimit > 4096)
     throw new RangeError('Invalid performance sample limit');
   const now = () => (window.performance ?? performance).now();
@@ -173,6 +173,7 @@ export function observeFrames({ sampleLimit = 256 } = {}) {
     if (name !== 'tick') return;
     totals.ticks++;
     totals.tickMS += ms;
+    if (!collectDiagnostics) return;
     const engine = window.catSystem2,
       frame = engine?.world?.frame;
     if (slowTicks.length < 10 || ms > slowTicks.at(-1).ms) {
@@ -857,7 +858,7 @@ export const test = base.extend({
         return writing;
       });
       await page.addInitScript({
-        content: `(${observeFrames.toString()})();\n(${observeRealRAF.toString()})();`,
+        content: `(${observeFrames.toString()})({ collectDiagnostics: false });\n(${observeRealRAF.toString()})();`,
       });
       let observationError;
       try {

@@ -364,7 +364,7 @@ test('real RAF scenes retain native scheduling and count actual render and prese
   try {
     const nativeRAF = window.requestAnimationFrame,
       cancel = window.cancelAnimationFrame;
-    observeFrames({ sampleLimit: 2 });
+    observeFrames({ sampleLimit: 2, collectDiagnostics: false });
     observeRealRAF({ sampleLimit: 2 });
     const sampling = window.nativeRAF.start({
       scene: 'owned-control',
@@ -389,6 +389,7 @@ test('real RAF scenes retain native scheduling and count actual render and prese
     assert.equal(report.intervals.raf.recent.count, 2);
     assert.equal(report.intervals.raf.recent.p95MS, 16);
     assert.equal(report.methodTimings.render.count, 4);
+    assert.equal(report.methodTimings.tick.count, 4);
     assert.equal(report.methodTimings.present.count, 4);
     assert.equal(report.methodTimings.render.meanMS, 2);
     assert.equal(report.methodTimings.present.meanMS, 1);
@@ -398,6 +399,8 @@ test('real RAF scenes retain native scheduling and count actual render and prese
     );
     assert.deepEqual(report.worldFrames, { before: 0, after: 4 });
     assert.equal(report.memory.before, null);
+    assert.deepEqual(window.nativePerformance.slowTicks, []);
+    assert.deepEqual(window.nativePerformance.samples, []);
     assert.equal(report.presentation.physicalDisplayTimestamps, null);
     assert.equal(report.targetFPSAssessment, null);
     assert.equal(control.callbacks.size, 0);
