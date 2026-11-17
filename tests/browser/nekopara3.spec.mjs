@@ -132,7 +132,9 @@ async function runGame(page) {
   await button(page, 'ret[0]');
   await until(page, 'confirm#WAIT', 240);
   await button(page, 'btn[0]');
-  await until(page, 'meswnd#WAIT', 900);
+  await until(page, 'meswnd#WAIT', 900, ({ stack }) =>
+    stack.every((label) => !/^(hist_b|confirm2?)#/.test(label)),
+  );
   await noError(page);
 
   await page.reload();
@@ -168,7 +170,9 @@ async function runGame(page) {
   );
   const ordinary = await gameplay(page);
   await page.keyboard.press('Escape');
-  await until(page, 'meswnd#WAIT', 240);
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
+    stack.every((label) => !label.startsWith('saveload#')),
+  );
   for (let i = 0; i < 8; i++) {
     await page.click('#next');
     await step(page, 6);
@@ -180,7 +184,9 @@ async function runGame(page) {
     window.catSystem2.status().stack.some((label) => /^confirm2?#WAIT$/.test(label)),
   );
   await button(page, 'btn[0]');
-  await until(page, 'meswnd#WAIT', 900);
+  await until(page, 'meswnd#WAIT', 900, ({ stack }) =>
+    stack.every((label) => !/^(saveload|confirm2?)#/.test(label)),
+  );
   expect((await gameplay(page)).text).toBe(ordinary.text);
   const frame = (await gameplay(page)).frame;
   await step(page, 6);
