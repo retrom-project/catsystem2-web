@@ -333,6 +333,17 @@ test('the optional Sound loop-point end policy accepts only reviewed values', ()
   assert.strictEqual(validateABI(abi), abi);
 });
 
+test('the optional Sound load message format accepts the filename request', () => {
+  const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63'));
+  assert.strictEqual(validateABI(abi), abi);
+  abi.sound.loadMessageFormat = 'filename';
+  assert.strictEqual(validateABI(abi), abi);
+  for (const invalid of [null, true, 1, 'packet', '']) {
+    abi.sound.loadMessageFormat = invalid;
+    assert.throws(() => validateABI(abi), /Invalid ABI Sound load message format/);
+  }
+});
+
 test('the optional FES definition diagnostic policy accepts only booleans', () => {
   const abi = structuredClone(nativeABI('nekopara-vol3-engine-2.6.1.76')),
     field = 'definitionMissIsDiagnostic';

@@ -223,6 +223,8 @@ function validateBehavior(abi) {
     !['strict-order', 'allow-unordered'].includes(abi.sound.loopPointEndPolicy)
   )
     throw new Error(`Invalid ABI Sound loop-point end policy ${abi.id}`);
+  if (Object.hasOwn(abi.sound, 'loadMessageFormat') && abi.sound.loadMessageFormat !== 'filename')
+    throw new Error(`Invalid ABI Sound load message format ${abi.id}`);
   if (
     Object.hasOwn(abi.fes ?? {}, 'definitionMissIsDiagnostic') &&
     typeof abi.fes.definitionMissIsDiagnostic !== 'boolean'
