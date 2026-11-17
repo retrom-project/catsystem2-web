@@ -41,6 +41,16 @@ interpreter's result. A Script without an interpreter consumes message 22
 and leaves the output word untouched. FES leaves the word untouched and
 allows Base handling. Each older profile registers its independently reviewed receivers.
 
+In 2.6.1.63, Input sends message 4 to the registered BasePlane on each configured
+keyboard edge. The plane sends raw 9 or 10 to its bound Script or FES with its
+native ID in both the sender and wParam fields and the key index as lParam.
+Script forwards `0xffff0003` or `0xffff0004` to its waiting interpreter and
+writes zero. Without an interpreter it writes one. Main slot 108 writes the
+plane's input return latch through its raw 90 receiver. The plane returns that
+word for Input's routing decision and clears the latch. FES samples held
+Control independently of that routing decision, then applies `keyskip` at its
+current wait.
+
 ## Identity and route maps
 
 `record.id` is the World's internal identity. `nativeID` is the engine number;

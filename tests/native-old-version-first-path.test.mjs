@@ -1148,7 +1148,7 @@ async function verifyCursorVisibility(t, profile) {
       result: NATIVE_UNWRITTEN_WORD,
     });
     await assert.rejects(
-      world.engineMessages.dispatch(main.id, input.id, 9),
+      world.engineMessages.dispatch(main.id, input.id, profile === title67Profile ? 9 : 65),
       /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
     );
   } finally {
@@ -1367,19 +1367,30 @@ test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', 
 });
 
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
-  const { world, audio } = await oldTitleWorld(
-    {
-      'flow.fes': bytes(
-        '#START\nexecfes warning\nnext POLL\n#POLL\nwait 1\nif ($8==3)\nendfes\nexecfes ready\nnext WAIT\nendif\nnext POLL\n#WAIT\n',
-      ),
-      'warning.fes': bytes(
-        '#START\nkeyskip off\n$8=1\nwait 4\nnext IN\n#IN\nkeyskip on\n$8=2\nwait 200\nnext TAIL\n#TAIL\nkeyskip off\nwait 3\n$8=3\nexit\n',
-      ),
-      'ready.fes': bytes('#START\n$9=17\nnext WAIT\n#WAIT\n'),
-    },
-    undefined,
-    'rebellions-jp-engine-2.6.1.63',
-  );
+  const packetAddress = 384,
+    keyScript = kcsProgram([
+      [37, packetAddress],
+      [43, 71, 4],
+      [39, 0],
+      [19, [0x13, packetAddress + 12], 12],
+      [39, 0],
+      ...title67Call(108, [[0x13, packetAddress + 8], 1]),
+      [41, 0],
+    ]),
+    { world, audio } = await oldTitleWorld(
+      {
+        'key-owner.kcs': keyScript,
+        'flow.fes': bytes(
+          '#START\nexecfes warning\nnext POLL\n#POLL\nwait 1\nif ($8==3)\nendfes\nexecfes ready\nnext WAIT\nendif\nnext POLL\n#WAIT\n',
+        ),
+        'warning.fes': bytes(
+          '#START\nkeyskip off\n$8=1\nwait 4\nnext IN\n#IN\nkeyskip on\n$8=2\nwait 200\nnext TAIL\n#TAIL\nkeyskip off\nwait 3\n$8=3\nexit\n',
+        ),
+        'ready.fes': bytes('#START\n$9=17\nnext WAIT\n#WAIT\n'),
+      },
+      undefined,
+      'rebellions-jp-engine-2.6.1.63',
+    );
   t.after(async () => {
     try {
       await world.close();
@@ -1407,12 +1418,39 @@ test('63 Flow and warning FES honor the configured Control key only during the s
     await world.tick();
   };
 
-  const main = await world.initialize('empty.kcs'),
+  const main = await world.initialize('key-owner.kcs'),
     bank = world.runtime.variableBank(main),
+    keyPlane = await world.objects.create({ kind: 6, parent: main.id }),
+    planeNativeID = world.nativeTaskID(keyPlane),
     draw = await world.objects.create({ kind: 15, parent: main.id }),
     owner = await world.objects.create({ kind: 34, parent: main.id }),
     flow = world.objects.objects.get(owner).implementation;
   bank.initialize(16);
+  assert.deepEqual(
+    await world.runtime.native(
+      'main',
+      104,
+      [planeNativeID, 16, 16, 16, 16, 10000, 0],
+      main.machine,
+      main,
+    ),
+    { control: 2 },
+  );
+  const keyPackets = [],
+    inputReplies = [],
+    dispatchImmediate = world.runtime.scheduler.send,
+    sendInput = world.input.send;
+  t.mock.method(world.runtime.scheduler, 'send', async function (id, words) {
+    const reply = await dispatchImmediate.call(this, id, words);
+    if (words[1] === 0xffff0003 || words[1] === 0xffff0004)
+      keyPackets.push({ id, words, accepted: reply.accepted });
+    return reply;
+  });
+  t.mock.method(world.input, 'send', async function (region, message, w, l, context) {
+    const reply = await sendInput.call(this, region, message, w, l, context);
+    if (message === 4 && w === 12) inputReplies.push([region.owner, l, reply.result]);
+    return reply;
+  });
   await world.sendEngine(draw, main.id, 279, 4, 3);
   await world.sendEngine(draw, main.id, 283, 0, 0);
   await flow.initialize(main.context.variableBank);
@@ -1420,7 +1458,11 @@ test('63 Flow and warning FES honor the configured Control key only during the s
   assert.equal(await flow.loadSource('flow.fes'), true);
   for (let frame = 0; frame < 4 && bank.get(8) === 0; frame++) await step();
   const warningID = flow.player.root.childTaskID,
-    warning = world.objects.objects.get(warningID).implementation.player.root;
+    warning = world.objects.objects.get(warningID).implementation.player.root,
+    warningRegion = world.input
+      .ordered()
+      .find((region) => region.receiver === world.nativeTaskID(warningID));
+  assert.ok(warningRegion);
   assert.equal(bank.get(8), 1);
   assert.equal(warning.label, 'START');
   assert.equal(warning.keySkipEnabled, false);
@@ -1449,6 +1491,37 @@ test('63 Flow and warning FES honor the configured Control key only during the s
   assert.equal(bank.get(9), 17);
   assert.equal(ready.label, 'WAIT');
   assert.equal(ready.skipControl, false);
+  assert.deepEqual(
+    keyPackets.map(({ id, words, accepted }) => [id, ...words, accepted]),
+    [0xffff0003, 0xffff0004, 0xffff0003, 0xffff0004].map((edge) => [
+      main.id,
+      planeNativeID,
+      edge,
+      planeNativeID,
+      12,
+      true,
+    ]),
+  );
+  assert.equal(world.runtime.calls.get('main:108'), 4);
+  assert.deepEqual(
+    inputReplies.filter(([region]) => region === keyPlane),
+    [1, 0, 1, 0].map((edge) => [keyPlane, edge, 1]),
+  );
+  assert.deepEqual(
+    inputReplies.filter(([region]) => region === warningRegion.owner),
+    [1, 0, 1, 0].map((edge) => [warningRegion.owner, edge, 1]),
+  );
+  assert.equal(world.graphics.tasks.get(keyPlane).state.changed, 0);
+  const inactiveScript = await world.objects.create({ kind: 12, parent: main.id });
+  for (const edge of [9, 10])
+    assert.deepEqual(
+      await world.engineMessages.dispatch(inactiveScript, keyPlane, edge, planeNativeID, 12),
+      { routed: true, handled: true, result: 1 },
+    );
+  await assert.rejects(
+    world.engineMessages.dispatch(main.id, keyPlane, 65, planeNativeID, 12),
+    /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
+  );
 });
 
 test('63 startup file GCALLs import bounded flags through the selected Script owner', async (t) => {

@@ -277,13 +277,19 @@ test('ABI message data retains every original control, screen and area boundary 
 });
 
 test('the .63 and .67 cursor announcements have individually registered receivers', () => {
-  for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67']) {
+  for (const [profile, scriptForward] of [
+    ['rebellions-jp-engine-2.6.1.63', [9, 10, 22]],
+    ['bokutomo-engine-2.6.1.67', [22]],
+  ]) {
     for (const direction of ['canonical', 'raw']) {
       assert.equal(mapABIMessage(profile, 'sound', direction, 22), 22);
       assert.throws(() => mapABIMessage(profile, 'sound', direction, 21), /Unreviewed ABI message/);
     }
-    for (const field of ['soundBaseOnly', 'scriptForward']) {
-      assert.deepEqual(nativeABIBehavior(profile, 'messages.' + field), [22]);
+    for (const [field, expected] of [
+      ['soundBaseOnly', [22]],
+      ['scriptForward', scriptForward],
+    ]) {
+      assert.deepEqual(nativeABIBehavior(profile, 'messages.' + field), expected);
       for (const words of [22, [22, 22], [-1], [0x100000000]]) {
         const invalid = structuredClone(nativeABI(profile));
         invalid.messages[field] = words;
