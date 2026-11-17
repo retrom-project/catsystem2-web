@@ -895,23 +895,27 @@ export class ParticlesGL {
       throw new Error('Native render target/depth combination is incomplete');
     target.attachmentsChecked = true;
   }
-  withRenderTarget(target, callback, { depthStencil = null } = {}) {
-    const restore = this.enterRenderTarget(target, depthStencil);
+  withRenderTarget(target, callback, { depthStencil = null, preserveState = false } = {}) {
+    const restore = this.enterRenderTarget(target, depthStencil, preserveState);
     try {
       return callback();
     } finally {
       restore();
     }
   }
-  async withRenderTargetAsync(target, callback, { depthStencil = null } = {}) {
-    const restore = this.enterRenderTarget(target, depthStencil);
+  async withRenderTargetAsync(
+    target,
+    callback,
+    { depthStencil = null, preserveState = false } = {},
+  ) {
+    const restore = this.enterRenderTarget(target, depthStencil, preserveState);
     try {
       return await callback();
     } finally {
       restore();
     }
   }
-  enterRenderTarget(target, depthStencil) {
+  enterRenderTarget(target, depthStencil, preserveState = false) {
     this.requireDevice();
     if (
       target.owner !== this ||
@@ -927,6 +931,7 @@ export class ParticlesGL {
       previousDepth = previousTarget.depthStencil,
       drawing = this.drawing,
       generation = this.graphicsDevice?.generation;
+    let bindings;
     const restore = () => {
       if (
         this.closed ||
@@ -939,14 +944,21 @@ export class ParticlesGL {
       const restoreGL = () => {
         gl.bindFramebuffer(gl.FRAMEBUFFER, previousTarget.framebuffer);
         this.attachDepthStencil(previousTarget, previousDepth);
-        gl.useProgram(this.program);
-        gl.uniform2f(this.uniform.resolution, previousTarget.width, previousTarget.height);
-        gl.viewport(0, 0, previousTarget.width, previousTarget.height);
+        if (bindings?.active) this.restoreBindings(bindings);
+        else {
+          gl.useProgram(this.program);
+          gl.uniform2f(this.uniform.resolution, previousTarget.width, previousTarget.height);
+          gl.viewport(0, 0, previousTarget.width, previousTarget.height);
+        }
       };
-      if (this.nativeBatch && !previous) this.nativeBatch.restore ??= restoreGL;
+      if (!preserveState && this.nativeBatch && !previous) this.nativeBatch.restore ??= restoreGL;
       else restoreGL();
     };
     try {
+      if (preserveState) {
+        this.drawing = true;
+        bindings = this.captureBindings(this.createBindingCapture());
+      }
       gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
       // A native DrawUP often repeats the same pair hundreds of times. Avoid
       // detaching its depth surface and synchronously revalidating the FBO
@@ -2187,12 +2199,15 @@ export class ParticlesGL {
   pixels(target = this.primaryTarget) {
     this.requireTargetContent(target);
     const gl = this.gl,
-      previous = gl.getParameter(gl.FRAMEBUFFER_BINDING),
+      previous = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING),
       bytes = new Uint8Array(target.width * target.height * 4);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
-    gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.UNSIGNED_BYTE, bytes);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, previous);
-    return bytes;
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, target.framebuffer);
+    try {
+      gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.UNSIGNED_BYTE, bytes);
+      return bytes;
+    } finally {
+      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previous);
+    }
   }
   releaseResources() {
     const gl = this.gl;

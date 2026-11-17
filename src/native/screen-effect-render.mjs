@@ -309,13 +309,13 @@ export class NativeScreenEffectRenderer {
   drawSurface(id, geometry, options) {
     if (id) this.drawFrame(this.stage.surfaceFrame(id), geometry, options);
   }
-  async render(items, draw, present) {
+  async render(items, draw, present, { minimum = 0, maximum = 1000000 } = {}) {
     if (this.frame || this.busy) throw new Error('Screen-effect rendering cannot be reentered');
     if (!this.world.graphics.view.active || this.paused()) return true;
     this.frame = { items: items.filter(nativeItem).sort(compare), draw };
     this.busy++;
     try {
-      const dirtyRectangle = this.collectDirty();
+      const dirtyRectangle = present ? this.collectDirty() : null;
       let presented = false,
         status;
       await this.prepareModels();
@@ -329,17 +329,19 @@ export class NativeScreenEffectRenderer {
               (![35, 36, 37].includes(effect.record.kind) || effect.state.active);
           if (!callback) {
             this.clear(0xff000000);
-            await this.drawRange(0, 1000000);
+            await this.drawRange(minimum, maximum);
           } else {
             this.clear(0xff000000);
             await effect.render();
           }
-          status = await present({
-            stageTarget: this.gpu.primaryTarget,
-            dirtyRectangle,
-            dirtyQueryGates: this.dirtyQueryGates.map((gate) => ({ ...gate })),
-          });
-          presented = true;
+          if (present) {
+            status = await present({
+              stageTarget: this.gpu.primaryTarget,
+              dirtyRectangle,
+              dirtyQueryGates: this.dirtyQueryGates.map((gate) => ({ ...gate })),
+            });
+            presented = true;
+          }
         },
         { depthStencil: this.stage.screenDepth() },
       );

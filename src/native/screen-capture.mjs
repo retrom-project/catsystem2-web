@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Screenshots and recording consume the JS compositor's completed framebuffer.
+// Native screenshots compose the current scene; recording reads the presented framebuffer.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { formatNativeAt } from '../kcs.mjs';
@@ -46,8 +46,15 @@ export class NativeScreenCapture {
   }
   async screenshot(task) {
     if (!this.world.graphics.view.active) return nativeReply(1, 0);
+    const stage = this.world.stageRenderer;
+    if (!stage?.gpu) return nativeReply(1, 0);
+    await stage.render(
+      this.world.graphics.stage,
+      this.world.audio?.voiceInfo(),
+      this.world.particles.drawItems(),
+      { present: false },
+    );
     const frame = this.frame();
-    if (!frame) return nativeReply(1, 0);
     const { width, height, rgba } = frame,
       images = this.world.graphics.images,
       handle = images.create(width, height, task.id),

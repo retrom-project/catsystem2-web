@@ -311,83 +311,110 @@ export class StageRenderer {
     }
     ctx.restore();
   }
-  async render(stage, voice, additionalItems = []) {
+  async render(stage, voice, additionalItems = [], { present = true } = {}) {
     if (this.rendering) throw new Error('Stage rendering cannot be reentered');
+    if (typeof present !== 'boolean') throw new TypeError('Stage presentation must be boolean');
+    if (!present && !stage.nativeGraphics?.world?.screenEffects)
+      throw new Error('Nonpresenting capture requires its native compositor');
+    const previousContext = this.currentD3DContext,
+      previousFrameContext = this.gpu.frameContext,
+      previousOpaqueTarget = this.gpu.frameOpaqueTarget;
     this.rendering = true;
     try {
-      const r = this.renderer,
-        ctx = r.ctx;
-      await stage.nativeGraphics?.prepareRender(this);
-      const nativeWorld = stage.nativeGraphics?.world,
-        effects = nativeWorld?.screenEffects ?? null;
-      if (!effects) r.begin();
-      this.gpu.beginFrame(0xff000000, { preserve: Boolean(effects) });
-      this.currentD3DContext = stage.nativeGraphics?.d3dContext || this.d3dContext;
-      this.gpu.frameContext = this.currentD3DContext;
-      const actors = Object.entries(stage.actors || {});
-      if (actors.length && !this.emote)
-        throw new Error('Stage actors require a model rendering provider');
-      if (this.emote) await this.emote.prepare(stage);
-      const ordered = [
-        ...Object.entries(stage.planes).map(([n, p]) => ({
-          type: 'plane',
-          n,
-          p,
-          priority: p.priority,
-          order: p.nativeGraph?.renderOrder ?? 0,
-        })),
-        ...actors.map(([n, p]) => ({
-          type: 'actor',
-          n,
-          p,
-          priority: p.priority,
-        })),
-        ...[...(stage.nativeGraphics?.drawItems() ?? []), ...additionalItems].map((item, index) => {
-          if (
-            !Number.isFinite(item.priority) ||
-            (typeof item.draw !== 'function' && typeof item.drawGPU !== 'function')
-          )
-            throw new Error('Invalid additional stage draw item');
-          return { ...item, order: item.nativeRenderOrder ?? item.order ?? index };
-        }),
-      ].sort(
-        (a, b) =>
-          a.priority - b.priority ||
-          (a.order ?? 0) - (b.order ?? 0) ||
-          Number(a.type === 'actor') - Number(b.type === 'actor') ||
-          Number(a.n) - Number(b.n),
-      );
-      const draw = (item, gpu = this.gpu, options = {}) =>
-        this.drawItem(stage, voice, item, gpu, options);
-      let presentation = null;
-      const overlays = [];
-      if (effects) {
-        await effects.rendering.render(
-          ordered,
-          (item, gpu) =>
-            draw(item, gpu, { fromHost: Boolean(originalView(nativeWorld, 'fromHost')) }),
-          (request) => {
-            presentation = request;
-            return this.presentNative(request);
-          },
+      const compose = async () => {
+        const r = this.renderer,
+          ctx = r.ctx;
+        await stage.nativeGraphics?.prepareRender(this);
+        const nativeWorld = stage.nativeGraphics?.world,
+          effects = nativeWorld?.screenEffects ?? null;
+        if (present) {
+          if (!effects) r.begin();
+          this.gpu.beginFrame(0xff000000, { preserve: Boolean(effects) });
+        }
+        this.currentD3DContext = stage.nativeGraphics?.d3dContext || this.d3dContext;
+        this.gpu.frameContext = this.currentD3DContext;
+        const actors = Object.entries(stage.actors || {});
+        if (actors.length && !this.emote)
+          throw new Error('Stage actors require a model rendering provider');
+        if (this.emote) await this.emote.prepare(stage);
+        const ordered = [
+          ...Object.entries(stage.planes).map(([n, p]) => ({
+            type: 'plane',
+            n,
+            p,
+            priority: p.priority,
+            order: p.nativeGraph?.renderOrder ?? 0,
+          })),
+          ...actors.map(([n, p]) => ({
+            type: 'actor',
+            n,
+            p,
+            priority: p.priority,
+          })),
+          ...[...(stage.nativeGraphics?.drawItems() ?? []), ...additionalItems].map(
+            (item, index) => {
+              if (
+                !Number.isFinite(item.priority) ||
+                (typeof item.draw !== 'function' && typeof item.drawGPU !== 'function')
+              )
+                throw new Error('Invalid additional stage draw item');
+              return { ...item, order: item.nativeRenderOrder ?? item.order ?? index };
+            },
+          ),
+        ].sort(
+          (a, b) =>
+            a.priority - b.priority ||
+            (a.order ?? 0) - (b.order ?? 0) ||
+            Number(a.type === 'actor') - Number(b.type === 'actor') ||
+            Number(a.n) - Number(b.n),
         );
-        for (const item of ordered)
-          if (!item.p?.nativeGraph && item.type !== 'particle') {
-            if (item.draw) overlays.push(item);
-            else await draw(item);
-          }
-      } else for (const item of ordered) await draw(item);
-      if (presentation) {
-        await nativeWorld?.screenCapture?.afterPresent();
-        this.gpu.endNativeFrame();
-        for (const item of overlays) await item.draw(ctx);
-      } else if (effects) {
-        this.gpu.endNativeFrame();
-      } else {
-        ctx.reset();
-        ctx.drawImage(this.gpu.endFrame(), 0, 0);
-      }
+        const draw = (item, gpu = this.gpu, options = {}) =>
+          this.drawItem(stage, voice, item, gpu, options);
+        let presentation = null;
+        const overlays = [];
+        if (effects) {
+          await effects.rendering.render(
+            ordered,
+            (item, gpu) =>
+              draw(item, gpu, { fromHost: Boolean(originalView(nativeWorld, 'fromHost')) }),
+            present
+              ? (request) => {
+                  presentation = request;
+                  return this.presentNative(request);
+                }
+              : null,
+            present ? undefined : { minimum: 0, maximum: 65535 },
+          );
+          if (present)
+            for (const item of ordered)
+              if (!item.p?.nativeGraph && item.type !== 'particle') {
+                if (item.draw) overlays.push(item);
+                else await draw(item);
+              }
+        } else for (const item of ordered) await draw(item);
+        if (!present) return;
+        if (presentation) {
+          await nativeWorld?.screenCapture?.afterPresent();
+          this.gpu.endNativeFrame();
+          for (const item of overlays) await item.draw(ctx);
+        } else if (effects) {
+          this.gpu.endNativeFrame();
+        } else {
+          ctx.reset();
+          ctx.drawImage(this.gpu.endFrame(), 0, 0);
+        }
+      };
+      if (present) await compose();
+      else
+        await this.gpu.withRenderTargetAsync(this.gpu.primaryTarget, compose, {
+          preserveState: true,
+        });
     } finally {
+      if (!present) {
+        this.currentD3DContext = previousContext;
+        this.gpu.frameContext = previousFrameContext;
+        this.gpu.frameOpaqueTarget = previousOpaqueTarget;
+      }
       this.rendering = false;
     }
   }

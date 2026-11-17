@@ -18,7 +18,7 @@ const golden = JSON.parse(
 async function make(input, saved = new Map()) {
   const game = memoryGame({ ...input.files, 'main.kcs': kcsProgram([[59]]) }),
     random = new ParticleRandom(),
-    profile = 'nekopara-vol3-engine-2.6.1.76',
+    profile = input.profile ?? 'nekopara-vol3-engine-2.6.1.76',
     configuration = new NativeConfiguration({ profile });
   game.width = game.height = 64;
   game.resolveCategory = (name, category) =>
@@ -60,6 +60,72 @@ async function make(input, saved = new Map()) {
   });
   return world;
 }
+
+test('native bitmap capture composes before readback without presenting or stepping its real World', async () => {
+  for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+    const world = await make({ files: {}, profile });
+    try {
+      await world.initialize('main.kcs');
+      const calls = [],
+        pixels = Uint8Array.of(1, 2, 3, 255, 4, 5, 6, 255, 7, 8, 9, 255, 10, 11, 12, 255),
+        target = { width: 2, height: 2 },
+        machine = world.main.machine,
+        frame = world.frame,
+        steps = machine.steps,
+        failure = new Error('owned capture composition failure');
+      let reject = false;
+      world.stageRenderer = {
+        gpu: {
+          primaryTarget: target,
+          pixels(value) {
+            assert.equal(value, target);
+            calls.push('pixels');
+            return pixels;
+          },
+        },
+        async render(stage, _voice, _items, options) {
+          assert.equal(stage, world.graphics.stage);
+          assert.deepEqual(options, { present: false });
+          calls.push('compose');
+          if (reject) throw failure;
+        },
+      };
+      world.screenCapture.state = { recording: 1, counter: 7, prefix: 'owned' };
+      const reply = await world.runtime.native('main', 113, [], machine, world.main);
+      assert.equal(reply.control, 1);
+      assert.notEqual(reply.value, 0);
+      assert.deepEqual(calls, ['compose', 'pixels']);
+      const bitmap = world.graphics.images.get(reply.value);
+      assert.equal(bitmap.owner, world.main.id);
+      assert.deepEqual(
+        await bitmap.pixels(),
+        Uint8ClampedArray.of(7, 8, 9, 255, 10, 11, 12, 255, 1, 2, 3, 255, 4, 5, 6, 255),
+      );
+      assert.deepEqual(world.screenCapture.state, { recording: 1, counter: 7, prefix: 'owned' });
+      assert.equal(world.frame, frame);
+      assert.equal(machine.steps, steps);
+      calls.length = 0;
+      world.graphics.view.active = false;
+      assert.deepEqual(await world.runtime.native('main', 113, [], machine, world.main), {
+        control: 1,
+        value: 0,
+      });
+      assert.deepEqual(calls, []);
+      world.graphics.view.active = true;
+      reject = true;
+      await assert.rejects(
+        world.runtime.native('main', 113, [], machine, world.main),
+        (error) => error === failure,
+      );
+      assert.deepEqual(calls, ['compose']);
+      assert.equal(world.frame, frame);
+      assert.equal(machine.steps, steps);
+    } finally {
+      world.stageRenderer = null;
+      await world.close({ flushFiles: false });
+    }
+  }
+});
 
 test('M2 hit updates distinguish absent or short expression declarations from a valid empty descriptor', async () => {
   for (const kind of ['absent', 'short', 'empty']) {

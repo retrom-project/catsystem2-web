@@ -29,6 +29,15 @@ hit-variable list still receives the update. The distinction comes from the
 profile declaration, not a nonempty DIF file or hit-variable array; it is derived
 again on restore and does not add checkpoint fields.
 
+Main113 composes the current native scene before reading its bitmap. It shares
+StageRenderer's ordered compositor and callback phases, using the native capture
+priority interval `[0, 65535)`. Capture does not present, retire presentation dirty
+state, record a frame, tick the World or execute a Script. Recording continues to
+read the completed presented framebuffer. The capture scope restores the caller's
+render target, depth attachment, viewport, clip and shared GPU bindings, including
+when composition rejects; readback preserves separate draw/read framebuffer bindings.
+Normal rendering retains its default presentation and recording behavior.
+
 The original FES command functions for m2eff/m2att/m2fspeed/m2prmscale/m2iner,
 m2enable_blink/lip, m2splay and m2draw are no-ops in this ABI. The JS driver
 preserves them. Active load/body/color and m2enable_eff paths use task messages.
