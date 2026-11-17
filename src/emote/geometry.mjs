@@ -438,6 +438,37 @@ export class EmoteGeometry {
       node.colors[i] =
         ((Math.trunc(((color >>> 24) * s.opacity) / 255) << 24) | (color & 0xffffff)) >>> 0;
     }
+    // Mesh separators can translate the layer origin without deforming its
+    // vertices. The translation depends on the layer, not the sampled point.
+    let positionAncestor = ancestor,
+      positionX = s.x,
+      positionY = s.y;
+    if (!node.separator)
+      while (positionAncestor && !positionAncestor.separator) {
+        if (positionAncestor.hasMesh)
+          [positionX, positionY] = this.patch.mapPosition(
+            positionAncestor.transformed,
+            positionAncestor.inverse,
+            positionX,
+            positionY,
+          );
+        positionAncestor = positionAncestor.ancestor;
+      }
+    const startX = positionX,
+      startY = positionY;
+    while (positionAncestor) {
+      if (positionAncestor.hasMesh)
+        [positionX, positionY] = this.patch.mapPosition(
+          positionAncestor.transformed,
+          positionAncestor.inverse,
+          positionX,
+          positionY,
+        );
+      positionAncestor = positionAncestor.ancestor;
+    }
+    const translate = startX !== positionX || startY !== positionY,
+      translateX = f(positionX - startX),
+      translateY = f(positionY - startY);
     const point = (u, v, out) => {
       let x, y;
       if (node.patch) [x, y] = this.patch.evaluate(node.transformed, u, v);
@@ -453,26 +484,15 @@ export class EmoteGeometry {
         x = f(f(rightX * fu) + f(leftX * iu));
         y = f(f(rightY * fu) + f(leftY * iu));
       }
-      let walk = ancestor,
-        px = s.x,
-        py = s.y;
+      let walk = ancestor;
       if (!node.separator)
         while (walk && !walk.separator) {
-          if (walk.hasMesh) {
-            [x, y] = this.patch.map(walk.transformed, walk.inverse, x, y);
-            [px, py] = this.patch.mapPosition(walk.transformed, walk.inverse, px, py);
-          }
+          if (walk.hasMesh) [x, y] = this.patch.map(walk.transformed, walk.inverse, x, y);
           walk = walk.ancestor;
         }
-      const startX = px,
-        startY = py;
-      while (walk) {
-        if (walk.hasMesh) [px, py] = this.patch.mapPosition(walk.transformed, walk.inverse, px, py);
-        walk = walk.ancestor;
-      }
-      if (startX !== px || startY !== py) {
-        x = f(x + f(px - startX));
-        y = f(y + f(py - startY));
+      if (translate) {
+        x = f(x + translateX);
+        y = f(y + translateY);
       }
       out[0] = x;
       out[1] = y;
