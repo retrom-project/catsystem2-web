@@ -18,8 +18,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 3         | 0             | 0             | 935     | 45 / 44 / 51 (unknown)     |
-| 2.6.1.67 | 938        | 3         | 0             | 0             | 935     | 45 / 44 / 51 (unknown)     |
+| 2.6.1.63 | 938        | 11        | 0             | 0             | 927     | 45 / 44 / 51 unknown       |
+| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
@@ -854,9 +854,9 @@ version metadata selects a reviewed registration; it does not execute an EXE.
 Main359 copies all four actual configuration blocks, including a valid VM address
 zero, and has control2 with no VM result. Main465 returns the existing author word
 with control1. Main605 formats one CString and returns the existing flat sound
-gain, including the already-derived master/group percentage and mute words. These
-three entries are explicit for .63. The independently reviewed .67 first-title
-set below adds only its selected own entries. In particular,
+gain, including the already-derived master/group percentage and mute words. Both
+older versions register these operations. The reviewed startup entries below
+expand each version's registration. In particular,
 0x181 retains four words rather than the modern five, and 0x358 retains seven
 words while remaining unknown. Table length, nearby IDs and stub observations
 never grant a semantic binding.
@@ -910,6 +910,24 @@ its verification data. Missing APP/v_code uses that reviewed default; explicit
 APP bytes still override it. Owned startup/cold controls cover both paths. This finite ordinary coverage
 and cold ownership do not establish either commercial sample's full campaign or
 complete the remaining multi-version corpus.
+
+## 2.6.1.63 startup and Script wait
+
+The .63 entry registers Main 8/13/68/71/209/211/393/789 from its own wrappers
+and receivers. Main393 reads the guest word in full, forwards message
+`0x464` to the application window and returns control 2. The owner uses its
+zero/nonzero value to update command `0x77`. Main8 writes the virtual
+dimensions through two translated VM pointers. Main13 copies narrow bytes,
+writes two terminating zero bytes and returns the destination address.
+Guest byte zero is a valid destination.
+
+Main789 returns the variable capacity set by `GAME/flag/max`. Main209
+creates the owner's zeroed bank. Main211 writes an in-range word and marks
+the existing bank dirty even for an out-of-range index. Both calls return
+control 2. Main68 returns the Script's native identity. Main71 stores the
+translated packet pointer and suspends the Script with control 4. The
+owned startup test covers these operations through guest GCALLs, then
+delivers one packet to resume the waiting Script.
 
 ## 2.6.1.67 first-title entry and normal services
 

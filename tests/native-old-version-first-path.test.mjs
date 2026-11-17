@@ -38,7 +38,7 @@ const title = '$unreviewed$Raw title 日本語';
 
 async function ownedGame(
   version,
-  { scripts = [], texture = '', voiceExtra = '', code = 'owned-code' } = {},
+  { scripts = [], texture = '', voiceExtra = '', code = 'owned-code', flagCount } = {},
 ) {
   const program = kcsProgram(
     [
@@ -68,6 +68,7 @@ async function ownedGame(
     (code === null ? '' : '<v_code>' + code + '</v_code>') +
     '</APP>' +
     texture +
+    (flagCount === undefined ? '' : '<GAME><flag><max>' + flagCount + '</max></flag></GAME>') +
     '<SCREEN><width>64</width><height>48</height><v_width>128</v_width>' +
     '<v_height>96</v_height><fps>60</fps></SCREEN>' +
     '<SCRIPT><start>main.kcs</start></SCRIPT>' +
@@ -735,6 +736,103 @@ const title67Call = (id, args, result) => [
   ...(result === undefined ? [] : [[38, [0x13, result]]]),
 ];
 
+test('63 startup GCALLs configure the variable bank and enter an ordinary Script wait', async () => {
+  const environment = startupEnvironment(),
+    attempted = { cpu: 0 },
+    version = '2.6.1.63',
+    profile = 'rebellions-jp-engine-2.6.1.63',
+    sentinel = 0x12345678,
+    capacity = 1032,
+    program = kcsProgram(
+      [
+        [37, sentinel],
+        [37, 0],
+        [43, 393, 4],
+        [37, 512],
+        [37, 516],
+        [43, 8, 8],
+        [37, 0],
+        [37, 768],
+        [43, 13, 8],
+        [38, [0x13, 520]],
+        [43, 68, 0],
+        [38, [0x13, 524]],
+        [43, 789, 0],
+        [38, [0x13, 528]],
+        [37, [0x13, 528]],
+        [43, 209, 4],
+        [37, capacity - 1],
+        [37, 93],
+        [43, 211, 8],
+        [38, [0x13, 532]],
+        [37, 576],
+        [43, 71, 4],
+        [59],
+      ],
+      [[768, 'owned']],
+    );
+  let source;
+  try {
+    source = core(
+      await ownedGame(version, { flagCount: capacity, scripts: [['entry63.kcs', program]] }),
+      profile,
+      attempted,
+    );
+    await source.initialize();
+    const world = source.world,
+      task = await world.spawnScript('entry63.kcs'),
+      machine = task.machine;
+    machine.bytes(0, 8).fill(0xa5);
+    await world.tick();
+
+    assert.equal(world.menu.get(0x77), false);
+    assert.deepEqual([machine.load(512), machine.load(516)], world.graphics.virtualSize());
+    const copied = [...bytes('owned'), 0, 0, 0xa5];
+    assert.deepEqual([...machine.bytes(0, 8)], copied);
+    assert.throws(
+      () => world.runtime.native('main', 13, [0, 0xffffffff], machine, task),
+      /KCS memory ffffffff/,
+    );
+    assert.deepEqual([...machine.bytes(0, 8)], copied);
+    assert.deepEqual(
+      [520, 524, 528, 532].map((at) => machine.load(at)),
+      [0, world.nativeTaskID(task.id), capacity, sentinel],
+    );
+
+    const bank = world.runtime.variableBank(task, false);
+    assert.equal(bank.capacity, capacity);
+    assert.equal(bank.get(0), 0);
+    assert.equal(bank.get(capacity - 1), 93);
+    assert.equal(bank.dirty, true);
+    bank.dirty = false;
+    assert.deepEqual(world.runtime.native('main', 211, [capacity, 12], machine, task), {
+      control: 2,
+    });
+    assert.equal(bank.get(capacity), 0);
+    assert.equal(bank.get(capacity - 1), 93);
+    assert.equal(bank.dirty, true);
+
+    assert.equal(machine.waiting.address, 576);
+    const words = [1, 0xffff0001, 0, 93];
+    assert.deepEqual(await world.runtime.scheduler.send(task.id, words), {
+      accepted: true,
+      result: 0,
+      message: words,
+    });
+    assert.deepEqual(
+      [576, 580, 584, 588].map((at) => machine.load(at)),
+      words,
+    );
+    assert.equal(attempted.cpu, 0);
+  } finally {
+    try {
+      await source?.dispose();
+    } finally {
+      environment.restore();
+    }
+  }
+});
+
 test('67 first-title entry GCALLs preserve VM zero and real task identity', async () => {
   const environment = startupEnvironment(),
     attempted = { cpu: 0 },
@@ -860,7 +958,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     for (const nativeID of [385, 856])
       assert.equal(nativeABI(title67Profile).tables.main.entries[nativeID].status, 'unknown');
     assert.equal(
-      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[393].status,
+      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
       'unknown',
     );
   } finally {
