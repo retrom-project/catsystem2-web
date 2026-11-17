@@ -27,6 +27,7 @@ import { MotionInstance } from '../src/motion/instance.mjs';
 import { NativeDatabase } from '../src/native/database.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
+import { compiledDatabase } from './fixtures/compiled-database-data.mjs';
 
 const versions = [
   ['2.6.1.63', 'rebellions-jp-engine-2.6.1.63', 203, 3],
@@ -1427,6 +1428,69 @@ test('63 startup GCALLs use owned XML, files and Script string storage', async (
     assert.deepEqual(call(591, [xml]), voidReply);
     assert.equal(world.runtime.handles.records.has(xml), false);
     assert.deepEqual(await call(590, [576]), result(0));
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
+test('63 startup database imports owned CSS flag bytes into its loaded records', async () => {
+  const store = new SaveSlotFiles(),
+    flags = new NativeGlobalFile(0, 524288),
+    { world, audio } = await oldTitleWorld(
+      { 'entry.kdb': compiledDatabase([{ ID: 1, INDEX: 'owned' }]) },
+      store,
+      'rebellions-jp-engine-2.6.1.63',
+    );
+  const persisted = new NativeDatabase();
+  persisted.records.set('owned', {
+    name: bytes('owned'),
+    flags: Uint32Array.of(0x80000001, 0x40000020, 1),
+  });
+  const raw = persisted.export();
+  try {
+    flags.write(0x10000001, raw);
+    await store.write('owned-flags.css', await flags.file());
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main),
+      memory = world.runtime.imageDataBuffers.process;
+    for (const [at, text] of [
+      [256, 'owned.int/entry.kdb'],
+      [288, '\\n'],
+      [320, ''],
+      [352, 'owned-flags.css'],
+      [384, 'owned.int/missing.kdb'],
+    ])
+      machine.writeString(text, at);
+
+    const loaded = await call(869, [256, 288, 288, 320]);
+    assert.equal(loaded.control, 1);
+    const database = world.runtime.handles.get(loaded.value, 'database');
+    assert.deepEqual([...database.records.keys()], ['owned']);
+    assert.deepEqual([...database.records.get('owned').flags], [0, 0, 0]);
+    const file = (await call(247, [352])).value;
+    assert.ok(file);
+    const pointer = (await call(836, [file, 0x10000001, 64])).value;
+    assert.equal(machine.load(64), raw.length);
+    assert.deepEqual(await call(873, [loaded.value, 0]), { control: 1, value: 0 });
+    await assert.rejects(call(873, [0, pointer]), /NULL-handle import has an unwritten result/);
+    assert.deepEqual(memory.read(pointer, raw.length), raw);
+    assert.deepEqual(await call(873, [loaded.value, pointer]), { control: 1, value: 1 });
+    assert.deepEqual(database.export(), raw);
+    assert.equal(database.modified, 0);
+    assert.deepEqual(await call(834, [pointer]), { control: 2 });
+    assert.deepEqual(call(246, [file]), { control: 2 });
+    assert.deepEqual(await call(870, [loaded.value]), { control: 2 });
+    assert.equal(world.runtime.handles.records.has(loaded.value), false);
+
+    const missing = (await call(869, [384, 288, 288, 320])).value;
+    assert.ok(missing);
+    assert.deepEqual(await call(872, [missing, 0]), { control: 1, value: 4 });
+    assert.deepEqual(await call(870, [missing]), { control: 2 });
   } finally {
     try {
       await world.close();

@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 56        | 0             | 0             | 882     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -1013,6 +1013,11 @@ output. A missing entry leaves the byte-count word intact. Main 277 returns
 1 for an existing empty string and 0 for a missing entry. Main 870 releases
 the database, and Main 872 returns or copies a record count followed by
 268-byte rows. A NULL database leaves its export result unwritten.
+
+Main 869 resolves the database resource and creates the database owner. Main
+873 applies flags from its CSS host buffer to matching database records.
+Import preserves the raw DWORDs and the database's dirty state. A NULL
+input buffer returns zero. A NULL database leaves the import result unwritten.
 
 An owned Script waits for the close message, persists its banks and releases
 its typed handles. A fresh World restores the complete saved fixture before

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { nativeABIBehavior } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeCompiledTable } from './compiled-table.mjs';
@@ -136,18 +136,24 @@ export async function nativeDatabase(id, args, machine, services) {
     if (handle) handles.release(handle, 'database');
     return nativeReply(2);
   }
-  if (
-    !handle &&
-    id === 0x368 &&
-    services.profile &&
-    nativeABIBehavior(services.profile, 'database.nullExportPolicy') === 'reject-unwritten'
-  )
-    throw new Error('Native database NULL-handle export has an unwritten result');
-  if (!handle)
+  if (!handle) {
+    if (
+      id === 0x368 &&
+      services.profile &&
+      nativeABIBehavior(services.profile, 'database.nullExportPolicy') === 'reject-unwritten'
+    )
+      throw new Error('Native database NULL-handle export has an unwritten result');
+    if (
+      id === 0x369 &&
+      services.profile &&
+      nativeABI(services.profile).database.nullImportPolicy === 'reject-unwritten'
+    )
+      throw new Error('Native database NULL-handle import has an unwritten result');
     return nativeReply(
       id === 0x367 || id === 0x36e ? 2 : 1,
       id === 0x368 || id === 0x369 ? 0xcccccccc : id === 0x36d ? 0 : undefined,
     );
+  }
   const database = handles.get(handle, 'database');
   if (id === 0x367) {
     const name = nativeDataFormat(args, machine, services, 2);

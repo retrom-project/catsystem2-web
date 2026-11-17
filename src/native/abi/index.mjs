@@ -228,6 +228,11 @@ function validateBehavior(abi) {
     typeof abi.fes.definitionMissIsDiagnostic !== 'boolean'
   )
     throw new Error(`Invalid ABI FES definition diagnostic policy ${abi.id}`);
+  if (
+    Object.hasOwn(abi.database ?? {}, 'nullImportPolicy') &&
+    abi.database.nullImportPolicy !== 'reject-unwritten'
+  )
+    throw new Error(`Invalid ABI database NULL import policy ${abi.id}`);
   const valid = (path, predicate) =>
       Object.hasOwn(abi.unreviewed ?? {}, path) || predicate(behaviorAt(abi, path)),
     bool = (value) => typeof value === 'boolean',
