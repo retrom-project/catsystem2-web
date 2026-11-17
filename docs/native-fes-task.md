@@ -1269,14 +1269,21 @@ raw high words, complete cold DTOs without guest execution, and owner closure.
 These finite controls do not establish that any particular recorded game click
 reached its handler.
 
-DOM backlog, quick-save and quick-load actions use `EngineHost.systemAction`
-and the same ordinary `send` contract. Their codes remain 15, 21 and 22 in the
-fourth word of `[nativeSender, 0xffff0003, 0, code]`. The active FES root must
-still belong to its live interpreter record; a retained root cannot borrow a
-replacement task's identity. Parent and child recipients remain scheduler IDs,
-raw high arguments remain DWORDs, and the real synchronous Script reply is
-returned unchanged. An absent active FES task still fails explicitly and a
-missing child retains its existing no-recipient result.
+DOM backlog and native quick-save/load requests use the same ordinary `send`
+contract. Their codes remain 15, 21 and 22 in the fourth word of
+`[nativeSender, 0xffff0003, 0, code]`. The active FES root must belong to its live
+interpreter record. Parent and child recipients remain scheduler IDs, raw high
+arguments remain DWORDs, and the synchronous Script reply is returned unchanged.
+
+The browser toolbar retains a settled Core checkpoint from before the quick-save
+request. The receiving Script must write CSS through its native persistence
+service into a configured quick slot while its scene reader remains at the same
+position. The real CSS file and the toolbar checkpoint commit in one IndexedDB
+transaction. The latest toolbar entry names the exact native file revision in
+that source namespace. Quick-load verifies those committed records before using
+the ordinary Core restore path, which is available from a fresh title. A missing
+pair uses the existing native action 22, and in-game save/load controls continue
+to use their own Script and CSS paths.
 
 Other ordinary Script-message producers already receive the engine packet's
 native sender, use an explicit lifecycle sentinel, or forward an authored raw

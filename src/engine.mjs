@@ -466,6 +466,7 @@ export class CatSystem2 {
       if (this.world) {
         this.inputBindings.sample();
         await this.world.tick();
+        this.nativeStorage?.pruneToolbarQuickSave();
         if (this.world.quitRequested) {
           this.mode = 'closed';
           await this.dispose();

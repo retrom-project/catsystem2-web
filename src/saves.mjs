@@ -19,17 +19,23 @@ export class SaveStore {
   }
   request(mode, action) {
     return new Promise((resolve, reject) => {
-      const tx = this.db.transaction('saves', mode),
+      const tx = this.db.transaction('saves', mode);
+      let request;
+      try {
         request = action(tx.objectStore('saves'));
+      } catch (error) {
+        tx.abort();
+        throw error;
+      }
       tx.oncomplete = () => resolve(request.result);
       tx.onabort = () => reject(tx.error || request.error || new Error('Save transaction aborted'));
       tx.onerror = () => reject(tx.error);
     });
   }
-  async put(slot, data, info) {
+  #makeRecord(slot, data, info) {
     const size = checkpointBytes(data);
     if (!size) throw new Error('Save must be nonempty');
-    const record = {
+    return {
       ...info,
       key: `${this.namespace}:${slot}`,
       namespace: this.namespace,
@@ -37,9 +43,22 @@ export class SaveStore {
       data,
       date: Date.now(),
     };
-    await this.request('readwrite', (store) => store.put(record));
+  }
+  async put(slot, data, info, companion) {
+    const record = this.#makeRecord(slot, data, info);
+    if (companion && companion.store.database !== this.database)
+      throw new Error('Linked saves require the same database');
+    const linked = companion?.store.#makeRecord(companion.slot, companion.data, companion.info);
+    await this.request('readwrite', (store) => {
+      if (linked) store.put(linked);
+      return store.put(record);
+    });
     this.records.set(slot, record);
+    if (linked) companion.store.records.set(linked.slot, linked);
     return record;
+  }
+  readStored(slot) {
+    return this.request('readonly', (store) => store.get(`${this.namespace}:${slot}`));
   }
   get(slot) {
     return this.records.get(slot);

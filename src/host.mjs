@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { decodeText } from './binary.mjs';
+import { deserializeCheckpoint, serializeCheckpoint } from './checkpoint.mjs';
 import { CanvasTextGlyphs } from './render/native-text.mjs';
 import { pointToRoot } from './emote/draw-list.mjs';
 import { BrowserNativeMovie } from './native/movie-browser.mjs';
@@ -7,6 +8,8 @@ import { BrowserNativeWindow } from './native/window-browser.mjs';
 import { BrowserNativeClipboard } from './native/clipboard-browser.mjs';
 const NATIVE_LOG_LIMIT = 1024;
 export class EngineHost {
+  #preparingQuickSave = false;
+
   nativeMovie(_name, _owner, world) {
     return new BrowserNativeMovie({
       game: world.game,
@@ -299,6 +302,84 @@ export class EngineHost {
     const voice = this.log[index]?.voice;
     if (voice) await this.sound({ channel: 'voice', file: voice, group: 'voice' });
   }
+  async quickSave() {
+    const e = this.engine,
+      world = e.world;
+    if (!world) return this.systemAction(21);
+    const root = e.activeFES()?.root;
+    if (!root) return this.systemAction(21);
+    const sender = this.#nativeFESRecord(root),
+      writer = world.objects.objects.get(sender.parent),
+      script = e.nativeRuntime.scheduler.tasks.get(sender.parent),
+      reader = script && e.nativeRuntime.sceneData(script)?.reader,
+      firstSlot = e.quickSaveStart,
+      count = Number(e.adv.value('save', 'quicksave', 'count')) || 12;
+    if (
+      !writer ||
+      script?.machine.waiting?.kind !== 'message' ||
+      !reader?.filename ||
+      !Number.isSafeInteger(firstSlot) ||
+      !Number.isSafeInteger(count) ||
+      firstSlot < 0 ||
+      count < 1
+    )
+      return this.systemAction(21);
+    if (this.#preparingQuickSave || e.nativeStorage.toolbarQuickSavePending) return 0;
+
+    // The saved World precedes the native save request. It can resume the story
+    // even if the script still has save notifications to finish after writing.
+    const { filename, block, line } = reader;
+    const stillAtStoryPoint = () =>
+      e.world === world &&
+      !world.closed &&
+      !world.disposalRequested &&
+      world.objects.objects.get(writer.id) === writer &&
+      e.nativeRuntime.sceneData(script)?.reader === reader &&
+      reader.filename === filename &&
+      reader.block === block &&
+      reader.line === line;
+    this.#preparingQuickSave = true;
+    try {
+      let checkpoint;
+      try {
+        checkpoint = await serializeCheckpoint(await e.snapshot(), e.checkpointLimit);
+      } catch (error) {
+        this.nativeDiagnostic({ type: 'toolbar-quick-save', message: error.message });
+        return 0;
+      }
+      if (!stillAtStoryPoint()) return 0;
+      const cancel = e.nativeStorage.armToolbarQuickSave({
+        writer,
+        firstSlot,
+        endSlot: firstSlot + count,
+        checkpoint,
+        saves: e.saves,
+        stillAtStoryPoint,
+        failed: (error) =>
+          this.nativeDiagnostic({ type: 'toolbar-quick-save', message: error.message }),
+      });
+      let accepted;
+      try {
+        accepted = await this.send([0xffff0003, 0, 21], root);
+        return accepted;
+      } finally {
+        if (!accepted) cancel();
+      }
+    } finally {
+      this.#preparingQuickSave = false;
+    }
+  }
+  async quickLoad() {
+    const e = this.engine;
+    if (e.world) {
+      const checkpoint = await e.nativeStorage.readToolbarQuickSave(e.saves);
+      if (!checkpoint) return this.systemAction(22);
+      return e.restore(await deserializeCheckpoint(checkpoint, e.checkpointLimit));
+    }
+    const slot = e.saves.newest(e.quickSaveStart, 12);
+    if (slot < 0) throw new Error('No quick save yet');
+    return e.restore(e.saves.get(slot).data);
+  }
   inputText(defaultText) {
     return globalThis.prompt?.('Comment', defaultText) ?? null;
   }
@@ -368,16 +449,20 @@ export class EngineHost {
         e.unsupported.add(`system action ${code}`);
     }
   }
+  #nativeFESRecord(instance) {
+    let root = instance;
+    while (root.parent) root = root.parent;
+    const record = this.engine.world.objects.objects.get(root.runtimeID);
+    if (!record) throw new Error('FES message sender has no native task');
+    if (record.implementation.player?.root !== root)
+      throw new Error('FES message source owner is no longer live');
+    return record;
+  }
   async send(values, instance, { target = 'parent' } = {}) {
     const e = this.engine,
       [code, a, b] = values;
     if (e.world) {
-      let root = instance;
-      while (root.parent) root = root.parent;
-      const record = e.world.objects.objects.get(root.runtimeID);
-      if (!record) throw new Error('FES message sender has no native task');
-      if (record.implementation.player?.root !== root)
-        throw new Error('FES message source owner is no longer live');
+      const record = this.#nativeFESRecord(instance);
       const id = target === 'script' ? instance.kcsTaskID : record.parent;
       if (target !== 'parent' && target !== 'script')
         throw new Error(`Unknown FES message destination ${target}`);

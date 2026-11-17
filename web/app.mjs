@@ -187,14 +187,8 @@ $('backlog').onclick = () =>
       ? engine.host.systemAction(15)
       : engine.openModal(engine.theme?.value('log', 'script') || 'hist_b'),
   ).catch(() => {});
-$('quick-save').onclick = () => enqueue(() => engine.host.systemAction(21)).catch(() => {});
-$('quick-load').onclick = () =>
-  enqueue(async () => {
-    if (engine.world) return engine.host.systemAction(22);
-    const slot = engine.saves.newest(engine.quickSaveStart, 12);
-    if (slot < 0) throw new Error('No quick save yet');
-    await engine.restore(engine.saves.get(slot).data);
-  }).catch(() => {});
+$('quick-save').onclick = () => enqueue(() => engine.host.quickSave()).catch(() => {});
+$('quick-load').onclick = () => enqueue(() => engine.host.quickLoad()).catch(() => {});
 $('fullscreen').onclick = () => {
   if (document.fullscreenElement) document.exitFullscreen().catch(fail);
   else $('stage').requestFullscreen().catch(fail);

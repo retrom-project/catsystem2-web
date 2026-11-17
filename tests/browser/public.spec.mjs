@@ -2632,7 +2632,7 @@ for (const native of [true, false])
         body: `export class GameFiles { static async fromHTTP() { return {width:64,height:48,title:'Toolbar fixture'}; } }`,
       }),
     );
-    await page.route('**/web/transitional-entry.mjs', (route) =>
+    await page.route('**/src/engine.mjs', (route) =>
       route.fulfill({
         contentType: 'text/javascript',
         body: `
@@ -2642,17 +2642,15 @@ for (const native of [true, false])
           this.world=${native ? '{window:{}}' : 'null'};this.story=${native ? 'null' : '{}'};
           window.toolbarCalls=[];const calls=window.toolbarCalls;
           this.inputBindings={gamepad(){}};
-          this.host={systemAction:async code=>calls.push(['action',code])};
+          this.host={systemAction:async code=>calls.push(['action',code]),
+            quickSave:async()=>calls.push(['quick-save']),quickLoad:async()=>calls.push(['quick-load'])};
           this.theme={value:()=> 'history-fixture'};
-          this.saves={newest:(from,count)=>{calls.push(['legacy-select',from,count]);return 7;},get:slot=>({data:{slot}})};
-          this.quickSaveStart=5000;
         }
         status(){return {mode:this.world?'running':'story',story:this.story,stack:[]};}
         activeFES(){return {root:{}};}
         async initialize(){this.options.onState(this.status());}
         async render(){} async step(){} async dispose(){} hover(){}
         async openModal(name){window.toolbarCalls.push(['legacy-modal',name]);}
-        async restore(data){window.toolbarCalls.push(['legacy-restore',data]);}
       }`,
       }),
     );
@@ -2667,17 +2665,8 @@ for (const native of [true, false])
       .poll(() => page.evaluate(() => window.toolbarCalls))
       .toEqual(
         native
-          ? [
-              ['action', 15],
-              ['action', 21],
-              ['action', 22],
-            ]
-          : [
-              ['legacy-modal', 'history-fixture'],
-              ['action', 21],
-              ['legacy-select', 5000, 12],
-              ['legacy-restore', { slot: 7 }],
-            ],
+          ? [['action', 15], ['quick-save'], ['quick-load']]
+          : [['legacy-modal', 'history-fixture'], ['quick-save'], ['quick-load']],
       );
     await expect(page.locator('#error')).toBeHidden();
   });

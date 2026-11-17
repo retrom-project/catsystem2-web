@@ -278,7 +278,16 @@ export function nativePersistence(id, args, machine, services = {}) {
       if (!storage.write) return undefined;
       return file(args[0])
         .file()
-        .then((bytes) => storage.write(name, bytes, { updateModified: id === 0xf5 }))
+        .then((bytes) => {
+          const options = { updateModified: id === 0xf5 },
+            writer =
+              options.updateModified &&
+              storage.toolbarQuickSavePending &&
+              services.world?.objects.objects.get(services.owner);
+          return writer
+            ? storage.write(name, bytes, options, writer)
+            : storage.write(name, bytes, options);
+        })
         .then((ok) => result(Number(Boolean(ok))));
     }
     if (!storage.read || (id === 0xff && !storage.stat)) return undefined;

@@ -3,6 +3,8 @@ import { SaveStore } from '../saves.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataArgument, nativeDataCString, nativeDataFormat } from './data-text.mjs';
 
+const toolbarQuickSaveSlot = 'toolbar-quick-save';
+
 function path(name) {
   if (typeof name !== 'string' || name.includes('\0')) throw new Error('Invalid native file name');
   const normalized = name.replaceAll('\\', '/').replace(/^c:\/catsystem2-web(?:\/|$)/i, '');
@@ -22,6 +24,8 @@ function path(name) {
 // Native writes have their own per-game namespace in the browser's persistent
 // store. Mounted SDK/game inputs remain read-only.
 export class NativeFileStorage {
+  #quickSave = null;
+
   constructor(game, namespace, database) {
     this.game = game;
     this.store = new SaveStore(`${namespace}:native-files`, database);
@@ -76,21 +80,66 @@ export class NativeFileStorage {
     const saved = this.store.get(path(name));
     return saved ? saved.data.bytes.slice() : null;
   }
-  async write(name, bytes, { updateModified = true } = {}) {
+  get toolbarQuickSavePending() {
+    return !!this.#quickSave?.stillAtStoryPoint();
+  }
+  pruneToolbarQuickSave() {
+    if (this.#quickSave && !this.#quickSave.stillAtStoryPoint()) this.#quickSave = null;
+  }
+  armToolbarQuickSave(request) {
+    this.#quickSave = request;
+    return () => {
+      if (this.#quickSave === request) this.#quickSave = null;
+    };
+  }
+  async readToolbarQuickSave(saves) {
+    const saved = await saves.readStored(toolbarQuickSaveSlot),
+      reference = saved?.nativeSave;
+    if (!reference || typeof reference.slot !== 'string') return null;
+    const file = await this.store.readStored(reference.slot);
+    return file?.namespace === this.store.namespace &&
+      typeof reference.revision === 'string' &&
+      file.data?.quickSaveRevision === reference.revision
+      ? saved.data
+      : null;
+  }
+  async write(name, bytes, { updateModified = true } = {}, nativeSaveWriter = null) {
     const key = path(name),
       previous = this.store.get(key),
       now = Date.now();
+    const pending = this.#quickSave;
+    let companion, revision;
+    if (pending && nativeSaveWriter === pending.writer && updateModified) {
+      const match = /(?:^|\/)save(\d+)\.dat$/.exec(key),
+        slot = match && Number(match[1]);
+      if (!pending.stillAtStoryPoint()) this.#quickSave = null;
+      else if (slot !== null && slot >= pending.firstSlot && slot < pending.endSlot) {
+        this.#quickSave = null;
+        revision = crypto.randomUUID();
+        companion = {
+          store: pending.saves,
+          slot: toolbarQuickSaveSlot,
+          data: pending.checkpoint,
+          info: { nativeSave: { slot: key, revision } },
+        };
+      }
+    }
     if (previous?.attributes & 1) return false;
-    await this.store.put(
-      key,
-      { bytes: bytes.slice() },
-      {
+    const data = { bytes: bytes.slice() },
+      info = {
         createdMs: previous?.createdMs ?? now,
         accessedMs: previous?.accessedMs ?? now,
         modifiedMs: updateModified || !previous ? now : previous.modifiedMs,
         attributes: previous?.attributes ?? 0x80,
-      },
-    );
+      };
+    if (companion) data.quickSaveRevision = revision;
+    try {
+      await this.store.put(key, data, info, companion);
+    } catch (error) {
+      if (!companion) throw error;
+      pending.failed(error);
+      return false;
+    }
     return true;
   }
   async remove(name) {
@@ -191,6 +240,7 @@ export class NativeFileStorage {
     return true;
   }
   close() {
+    this.#quickSave = null;
     this.store.close();
     this.platformStore.close();
   }
