@@ -13,6 +13,7 @@ import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
 import { kif, kcsProgram, memoryGame, hg3 } from './helpers.mjs';
@@ -965,6 +966,105 @@ async function title67World(files, storage = { read: async () => null, write: as
     });
   return { world, audio };
 }
+
+test('67 Input cursor changes reach the Sound, Script and FES receivers', async (t) => {
+  const { world, audio } = await title67World({
+    'main.kcs': kcsProgram([
+      [37, 512],
+      [43, 71, 4],
+      [37, 528],
+      [43, 71, 4],
+      [37, 544],
+      [43, 71, 4],
+      [59],
+    ]),
+  });
+  try {
+    const main = await world.initialize('main.kcs'),
+      records = world.objects.objects,
+      input = records.get(records.get(world.root).implementation.input),
+      sound = world.sound.primary(main.id),
+      fesID = await world.objects.create({ kind: 34, parent: main.id }),
+      notices = [],
+      envelopes = [],
+      sender = input.nativeID;
+    const observe = (receiver, owner) => {
+      const message = receiver.message;
+      t.mock.method(receiver, 'message', async function (words, context, output) {
+        const result = await message.call(this, words, context, output);
+        if (words[1] === 22)
+          notices.push([owner, words, result, context.nativeUnhandled, context.flags]);
+        return result;
+      });
+    };
+    observe(sound, 'Sound');
+    observe(records.get(main.id).implementation, 'Script');
+    observe(records.get(fesID).implementation, 'FES');
+    const send = world.sendNativeEngine;
+    t.mock.method(world, 'sendNativeEngine', async function (...args) {
+      const result = await send.apply(this, args);
+      if (args[2] === 11) envelopes.push([args[0], args[1], args[3], result]);
+      return result;
+    });
+
+    world.input.cursorAutoHide = 1;
+    world.input.cursorHideFrames = 1;
+    await input.implementation.tick(world.frame + 1);
+    assert.equal(world.input.cursorVisible, false);
+    assert.deepEqual(
+      [512, 516, 520, 524].map((at) => main.machine.load(at)),
+      [sender, 0xffff0014, 0, 0],
+    );
+
+    world.sound.audio = null;
+    world.input.pointer(4, 5);
+    await input.implementation.tick(world.frame + 2);
+    assert.equal(world.input.cursorVisible, true);
+    assert.deepEqual(
+      [528, 532, 536, 540].map((at) => main.machine.load(at)),
+      [sender, 0xffff0014, 0, 1],
+    );
+    assert.deepEqual(envelopes, [
+      [0, input.id, 0, 1],
+      [0, input.id, 0, 1],
+    ]);
+    assert.deepEqual(notices, [
+      ['Sound', [sender, 22, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
+      ['Script', [sender, 22, 0, 0], 1, false, 0],
+      ['FES', [sender, 22, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
+      ['Sound', [sender, 22, 0, 1], 0, false, 0],
+      ['Script', [sender, 22, 0, 1], 1, false, 0],
+      ['FES', [sender, 22, 0, 1], NATIVE_UNWRITTEN_WORD, true, 0],
+    ]);
+    await assert.rejects(
+      world.engineMessages.dispatch(sound.record.id, input.id, 21),
+      /Unreviewed ABI message .*\/sound\/canonical\/21/,
+    );
+
+    world.sound.audio = audio;
+    assert.deepEqual(
+      await world.engineMessages.dispatch(sound.record.id, input.id, 22, 0xffffffff, 0xffffffff),
+      { routed: true, handled: false, result: NATIVE_UNWRITTEN_WORD },
+    );
+    const emptyScript = await world.objects.create({ kind: 12, parent: main.id });
+    assert.deepEqual(await world.engineMessages.dispatch(emptyScript, input.id, 22, 0, 1), {
+      routed: true,
+      handled: true,
+      result: NATIVE_UNWRITTEN_WORD,
+    });
+    await assert.rejects(
+      world.engineMessages.dispatch(main.id, input.id, 9),
+      /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
+    );
+  } finally {
+    world.sound.audio = audio;
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
 
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {
   t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));

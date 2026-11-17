@@ -5,7 +5,7 @@ import {
   originalFeature,
   originalView,
 } from './original-adapter.mjs';
-import { nativeABIBehavior } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -51,7 +51,8 @@ const contextBytes = (record) => {
 };
 
 export function createNativeScriptTask(world, record) {
-  const implementation = world.base(record);
+  const implementation = world.base(record),
+    messagePolicy = nativeABI(world.profile).messages;
   record.scriptEnabled ??= 0;
   record.scriptLoaded ??= 0;
   record.scriptSharedBound ??= false;
@@ -480,6 +481,7 @@ export function createNativeScriptTask(world, record) {
       ]);
       if (
         (immediate.has(id) || queued.has(id)) &&
+        !messagePolicy.scriptForward?.includes(id) &&
         nativeABIBehavior(world.profile, 'messages.scriptBaseOnly').includes(id)
       )
         return implementation.baseMessage(words, context);

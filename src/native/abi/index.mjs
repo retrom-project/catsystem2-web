@@ -333,6 +333,14 @@ function validateBehavior(abi) {
   }
   if (!abi.messages?.channels?.base || !abi.messages?.channels?.control || !abi.messages?.root)
     throw new Error(`Incomplete ABI message data ${abi.id}`);
+  for (const field of ['soundBaseOnly', 'scriptForward']) {
+    const ids = abi.messages[field];
+    if (
+      ids !== undefined &&
+      (!Array.isArray(ids) || ids.some((id) => !word(id)) || new Set(ids).size !== ids.length)
+    )
+      throw new Error(`Invalid ABI message policy ${abi.id}/${field}`);
+  }
   const root = abi.messages.root;
   if (
     !Number.isInteger(root.start) ||
