@@ -178,11 +178,11 @@ async function runGame(page) {
     ),
   );
   await waitForSlotCloseInput(page);
-  const ordinary = await gameplay(page);
   await page.keyboard.press('Escape');
   await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
     stack.every((label) => !label.startsWith('saveload#')),
   );
+  const ordinary = await gameplay(page);
   for (let i = 0; i < 8; i++) {
     await page.click('#next');
     await step(page, 6);
