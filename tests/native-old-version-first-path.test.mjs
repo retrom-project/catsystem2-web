@@ -12,7 +12,6 @@ import { nativeABI, abiForEngineVersion } from '../src/native/abi/index.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
@@ -644,7 +643,7 @@ test('old ABI 67 owns its absent APP default, explicit override and cold startup
   }
 });
 
-test('old sound consumers reject unreviewed crossfade and do not invent elapsed tracking', async () => {
+test('old sound ticks preserve state with unreviewed elapsed tracking', async () => {
   const environment = startupEnvironment(),
     attempted = { cpu: 0 };
   try {
@@ -656,13 +655,6 @@ test('old sound consumers reject unreviewed crossfade and do not invent elapsed 
           sound = world.sound.primary(world.main.id),
           controls = structuredClone(sound.snapshot().controls);
         assert.equal(nativeABI(profile).sound.completionFrame, null);
-        if (version === '2.6.1.63') {
-          const packet = new NativeSoundPacket([], 280);
-          packet.store(0, 0);
-          packet.writeString('owned.wav', 12);
-          await assert.rejects(sound.load(packet, 1), /Unreviewed.*sound.crossfade/);
-          assert.deepEqual(sound.snapshot().controls, controls);
-        }
         await sound.tick(73);
         await sound.tick(77);
         assert.equal(sound.snapshot().frame, 77);
@@ -1297,6 +1289,97 @@ test('63 startup file GCALLs import bounded flags through the selected Script ow
       await audio.dispose();
     }
   }
+});
+
+test('63 FES sound loads, plays and closes through its own Sound receiver', async (t) => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld(
+      {
+        'bgm_owned.wav': title67Wave(),
+        'sounds.fes': bytes(
+          '#DEFINE\nSOUND fixed\nSOUND routed\n#OBJECT CHANNEL FILE\nfixed 0 bgm_owned.wav\n#OBJECT GROUP FILE\nrouted bgm bgm_owned.wav\n#START\nfixed play 1\nrouted play 1\nnext READY\n#READY\n',
+        ),
+      },
+      undefined,
+      profile,
+    );
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+    assert.equal(audio.channels.size, 0);
+  });
+  world.configuration.soundGroups[0] = { id: 0, type: 'bgm', min: 2, max: 3 };
+  const main = await world.initialize('empty.kcs');
+  world.runtime.variableBank(main).initialize(64);
+  const draw = await world.objects.create({ kind: 15, parent: main.id });
+  await world.sendEngine(draw, main.id, 279, 4, 3);
+  await world.sendEngine(draw, main.id, 283, 0, 0);
+  const id = await world.objects.create({ kind: 34, parent: main.id }),
+    task = world.objects.objects.get(id).implementation;
+  await task.initialize(main.context.variableBank);
+  await world.sendEngine(id, main.id, 334, 0, world.nativeTaskID(draw));
+  const packets = [],
+    send = world.sendNativeEngine;
+  t.mock.method(world, 'sendNativeEngine', async function (target, sender, message, w, l, context) {
+    const payload = context?.payload;
+    const packet =
+      message === 173 || message === 199
+        ? {
+            size: payload.data.length,
+            words: [0, 4, 8, 268, 272, 276].map((offset) => payload.load(offset)),
+          }
+        : null;
+    const result = await send.call(this, target, sender, message, w, l, context);
+    if (target === task.player?.nativeSoundTaskID)
+      packets.push({ sender, message, w, l, packet, result });
+    return result;
+  });
+
+  assert.equal(await task.loadSource('sounds.fes'), true);
+  for (let frame = 1; frame <= 4; frame++) await world.tick(frame);
+  const nativeSound = world.sound.primary(main.id);
+  assert.equal(world.sound.bankCount, 32);
+  assert.ok(packets.every((packet) => packet.sender === id));
+  assert.deepEqual(packets.find((packet) => packet.message === 173).packet, {
+    size: 280,
+    words: [0, 0, 0, 0, 1, 0],
+  });
+  assert.deepEqual(packets.find((packet) => packet.message === 199).packet, {
+    size: 280,
+    words: [0xffffffff, 0, 0, 0, 1, 0],
+  });
+  assert.equal(packets.find((packet) => packet.message === 203).result, 0);
+  assert.equal(packets.find((packet) => packet.message === 199).result, 2);
+  assert.deepEqual(
+    packets.filter((packet) => packet.message === 176).map(({ w, l }) => [w, l]),
+    [
+      [0, 1],
+      [2, 1],
+    ],
+  );
+  assert.deepEqual(
+    packets.filter((packet) => packet.message === 194).map(({ w, result }) => [w, result]),
+    [
+      [0, 120],
+      [2, 120],
+    ],
+  );
+  assert.ok(world.sound.playing(0));
+  assert.ok(world.sound.playing(2));
+  await assert.rejects(
+    nativeSound.message([main.nativeID, 182, 0, 0]),
+    /Unreviewed ABI message .*\/sound\/canonical\/182/,
+  );
+  await world.sendEngine(id, main.id, 3, 0, 0);
+  assert.deepEqual(
+    packets.filter((packet) => packet.message === 204).map(({ w }) => w),
+    [0, 2],
+  );
+  await world.tick(5);
+  assert.equal(world.objects.objects.has(id), false);
 });
 
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {

@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Candidate own normal data. Local registration only; no physical executable layouts.
+const fesSoundReceivers = [173, 175, 176, 178, 179, 180, 183, 194, 199, 203, 204, 210, 211];
+const soundReceivers = [...fesSoundReceivers, 188];
+const toSoundRaw = (raw) => ({ min: raw + 6, max: raw + 6, offset: -6 });
+
 export default {
   id: 'cs2-2.6.1.63',
   profile: 'rebellions-jp-engine-2.6.1.63',
@@ -78,10 +82,10 @@ export default {
     },
     controlBytes: null,
     missingIdPathFields: null,
-    crossfade: null,
+    crossfade: false,
     allowQuotedFesNames: null,
-    fesExtensions: null,
-    fesLoadParameters: null,
+    fesExtensions: false,
+    fesLoadParameters: false,
     completionFrame: null,
   },
   language: {
@@ -425,11 +429,7 @@ export default {
             max: 38,
             offset: 0,
           },
-          {
-            min: 203,
-            max: 203,
-            offset: 6,
-          },
+          ...soundReceivers.map((raw) => ({ min: raw, max: raw, offset: 6 })),
         ],
         raw: [
           {
@@ -532,12 +532,12 @@ export default {
             max: 38,
             offset: 0,
           },
-          {
-            min: 209,
-            max: 209,
-            offset: -6,
-          },
+          ...soundReceivers.map(toSoundRaw),
         ],
+      },
+      fesSound: {
+        unmapped: 'reject',
+        raw: fesSoundReceivers.map(toSoundRaw),
       },
     },
     root: {
@@ -959,13 +959,7 @@ export default {
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.missingIdPathFields':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'sound.crossfade':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.allowQuotedFesNames':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'sound.fesExtensions':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'sound.fesLoadParameters':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.completionFrame':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',

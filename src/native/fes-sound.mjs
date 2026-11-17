@@ -2,7 +2,7 @@
 // Sound object 74C550/74C700..74CDB0 and FES driver 662B50; SDK 532540.
 // The adapter sends the native task protocol and shares its hardware banks.
 import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesNarrowText } from '../fes/tokens.mjs';
 import { NativeSoundPacket } from './sound.mjs';
@@ -352,12 +352,15 @@ export class NativeFESSound {
           : state.filename;
         if (!resolved) throw new Error(`FES sound category resource is missing: ${state.filename}`);
         if (bank !== -1 && !state.get('crossfade')) await send(181);
-        const packet = new NativeSoundPacket([], 288);
+        const crossfade = nativeABIBehavior(this.world.profile, 'sound.crossfade'),
+          packet = new NativeSoundPacket([], crossfade ? 288 : 280);
         packet.store(0, bank);
         packet.writeString(resolved, 12);
         packet.store(272, 1);
-        packet.store(280, state.get('crossfade'));
-        packet.store(284, state.get('crossfadeFrames'));
+        if (crossfade) {
+          packet.store(280, state.get('crossfade'));
+          packet.store(284, state.get('crossfadeFrames'));
+        }
         if (state.group) {
           const text = new NativeSoundPacket();
           text.writeString(state.group, 0);

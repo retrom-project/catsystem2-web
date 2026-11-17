@@ -955,6 +955,22 @@ VM destination and returns its byte count. The owned control covers the
 two startup selectors in the Script's flag bank, file and tag misses,
 bounded imports, raw copying and handle release.
 
+## 2.6.1.63 FES sound playback and release
+
+The selected FES Sound producer and Sound task receiver use raw messages
+173, 175, 176, 178–180, 183, 194, 199, 203, 204, 210 and 211. Their
+typed operations cover load, allocation, playback, bank queries, volume, pan,
+tags and release. Root's separate reset uses raw 188. The FES load packet
+contains 280 bytes and supports the filename argument. The receiver's 32 banks
+and its consumed load fields through byte 279 establish the packet boundary.
+Allocated loads return the selected bank index. A WAV decoder query returns
+the PCM frame count. Elapsed-frame queries and other unreviewed messages still
+fail at their own protocol boundaries.
+
+An owned FES program loads an authored WAV into a fixed bank and through the
+legacy group allocator, plays both banks, and uses the same FES and Sound
+owners during the destruction request and cleanup.
+
 ## 2.6.1.67 first-title entry and normal services
 
 The .67 startup -> flow -> title slice separately registers Main
