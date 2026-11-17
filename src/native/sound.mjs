@@ -603,10 +603,26 @@ export class NativeSoundTask {
         control.loopEnd = BigInt(point.end);
       }
     }
-    await this.auxiliaries(target, file);
+    if (this.sound.abi.sound.loadMessageFormat === 'filename') {
+      this.clearAux(target);
+      control.tags.clear();
+    } else await this.auxiliaries(target, file);
     control.word(C.wallStart, -1);
     control.word(C.elapsedFrames, 0);
     return Number(loaded);
+  }
+  loadFilename(bank, filename, type, useLoop, group = null) {
+    const packet = new NativeSoundPacket([bank], 280);
+    packet.writeString(filename, 12);
+    packet.store(272, Number(useLoop));
+    return this.load(packet, type, group !== null, group);
+  }
+  allocateFilenameGroup(group) {
+    const capacity = this.sound.bankCount,
+      first = Math.max(0, Math.min(capacity, group.min | 0)),
+      end = Math.max(0, Math.min(capacity, group.max | 0));
+    for (let bank = first; bank < end; bank++) if (!this.sound.device[bank].loaded) return bank;
+    return this.controls.findIndex((control) => control.word(C.releasePending));
   }
   allocate(minimum, maximum) {
     const first = Math.max(0, Math.min(this.sound.bankCount, minimum | 0)),
@@ -759,12 +775,17 @@ export class NativeSoundTask {
     if (this.sound.abi.messages.soundBaseOnly?.includes(id))
       return this.base.message(words, context);
     const memory = () => this.memory(sender, context);
+    const filenameFormat = this.sound.abi.sound.loadMessageFormat === 'filename';
     const selected = this.select(bank),
       both = this.select(bank, true);
     const readFloat = (address) => bitsFloat(memory().load(address));
     if (id === 19) return 1;
     if (id === 179 || id === 180) {
       if (!this.valid(bank)) return 0;
+      if (filenameFormat) {
+        if (!l && !context.payload) return 0;
+        return this.loadFilename(bank, memory().string(l), id === 179 ? 1 : 2, id === 179);
+      }
       return this.load(packetView(memory(), l), id === 179 ? 1 : 2);
     }
     if (id === 203) {
@@ -783,6 +804,27 @@ export class NativeSoundTask {
       return 0;
     }
     if ([205, 206, 207, 208].includes(id)) {
+      if (filenameFormat && (id === 205 || id === 206)) {
+        const streaming = id === 205,
+          group = this.groups.get(streaming ? bank & 0xffff : bank);
+        if (!group || (!l && !context.payload)) return 0xffffffff;
+        const selected = this.allocateFilenameGroup(group);
+        if (selected === -1) return 0xffffffff;
+        this.clearControl(selected);
+        const control = this.controls[selected];
+        control.word(C.autoRelease, 0);
+        control.loopStart = 0n;
+        control.loopEnd = -1n;
+        return (await this.loadFilename(
+          selected,
+          memory().string(l),
+          streaming ? 1 : 2,
+          streaming && !(bank >>> 16),
+          group,
+        ))
+          ? selected
+          : 0xffffffff;
+      }
       const packet = packetView(memory(), l);
       const group =
         id === 205 || id === 206
@@ -822,7 +864,7 @@ export class NativeSoundTask {
     }
     if (id === 209) {
       const name = memory().string(l);
-      if (this.world.soundConfiguration?.loaded)
+      if (!filenameFormat && this.world.soundConfiguration?.loaded)
         return (
           [...this.world.soundConfiguration.groups.values()].find((group) => group.type === name)
             ?.id ?? 0
