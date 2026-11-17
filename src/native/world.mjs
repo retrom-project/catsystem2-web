@@ -778,9 +778,17 @@ export class NativeWorld {
           throw new Error(`Unknown FES message destination ${target}`);
         const id = target === 'script' ? instance.kcsTaskID : record.parent;
         if (id === null || id === undefined) return 0;
+        if (world.objects.objects.get(record.id) !== record)
+          throw new Error('FES message source owner is no longer live');
         const [code, a = 0, b = 0] = values;
-        return (await world.runtime.scheduler.send(id, [record.id, code >>> 0, a >>> 0, b >>> 0]))
-          .result;
+        return (
+          await world.runtime.scheduler.send(id, [
+            world.nativeTaskID(record.id),
+            code >>> 0,
+            a >>> 0,
+            b >>> 0,
+          ])
+        ).result;
       },
       openGallery(...args) {
         return world.galleries.open(...args);

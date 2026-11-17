@@ -1247,3 +1247,24 @@ Other early global/common routes, whole-row grammar, remaining common bindings,
 conditional/skip control flow and unproven native overflow domains remain
 separate work. The four VM tables, ABI registration/signature statuses and
 unknown-slot gates do not change.
+
+## Script message identity
+
+FES `send` selects its parent Script and `sendscript` selects its actual child
+Script using the scheduler's internal World task ID. The first word delivered
+to that Script's VM is the sending FES task's native task ID. It uses the same
+mapping as native task lookup and callback targets. Task release and allocation
+can separate these two number spaces; a World ID must not be copied into this
+VM word. A retained host whose original record has been released cannot borrow
+the identity of a new record allocated at the same World ID.
+
+The remaining words retain the raw message code and two DWORD arguments.
+Delivery still uses the existing armed-message wait and synchronous request/reply
+path; an absent child retains its existing no-recipient result. This changes no
+native admission, packet format, callback protocol or task ownership.
+
+The ordinary dual-profile controls cover real FES Input events, parent and child
+Script replies through the native FES notification wrapper, task ID reuse,
+raw high words, complete cold DTOs without guest execution, and owner closure.
+These finite controls do not establish that any particular recorded game click
+reached its handler.
