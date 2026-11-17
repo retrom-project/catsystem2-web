@@ -179,7 +179,10 @@ test('sound token expansion is one pass, accepts native signed/hex indices and p
   assert.equal(expand('$str+0'), 'zero');
   assert.equal(expand('$str99'), '');
   assert.equal(expand('\\_\\n$strx'), '\\_\\n$strx');
-  assert.throws(() => tokenizeNativeFESSoundConfiguration('get 1 volume_id 7'), /profile/);
+  assert.throws(
+    () => tokenizeNativeFESSoundConfiguration('get 1 volume_id 7'),
+    /Unregistered CatSystem2 ABI undefined/,
+  );
 });
 
 test('World FES configuration and KCS read one sound tree after a fresh-world checkpoint', async () => {

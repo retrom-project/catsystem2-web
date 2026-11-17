@@ -366,6 +366,9 @@ for (const [version, count] of [
       change(invalid);
       assert.throws(() => validateFESCommonHeads(invalid), /FES common head registration/);
     }
-    assert.throws(() => abiAPI.abiForEngineVersion(version), /Unregistered CatSystem2 engine/);
+    const abi = abiAPI.abiForEngineVersion(version);
+    assert.deepEqual(abi.fes.commonHeads, registration);
+    assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
+    assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   });
 }

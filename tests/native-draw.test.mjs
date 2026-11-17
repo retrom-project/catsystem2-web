@@ -5,6 +5,7 @@ import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { installNativeGraphics } from '../src/native/graphics.mjs';
+import { installNativeScreenEffects } from '../src/native/screen-effect.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
@@ -46,6 +47,7 @@ function fixture() {
     }),
   };
   installNativeGraphics(world);
+  installNativeScreenEffects(world);
   return world;
 }
 async function surface(world, width = 8, height = 6) {
