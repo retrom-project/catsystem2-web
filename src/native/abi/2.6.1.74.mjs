@@ -211,6 +211,7 @@ export default {
     firstMessage: 177,
     lastMessage: 218,
     missingIdPathFields: ['volume', 'play', 'sysplay', 'voicevol'],
+    sameIdAllowsUnconfiguredSoundTree: true,
     allowQuotedFesNames: false,
     crossfade: false,
     delegateFrom: 219,

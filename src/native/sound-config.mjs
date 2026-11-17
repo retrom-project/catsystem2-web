@@ -410,7 +410,7 @@ export function nativeSoundConfiguration(id, args, machine, services) {
   if (!((id >= 0x3aa && id <= 0x3c4) || [0x3e3, 0x3e8, 0x3e9].includes(id))) return undefined;
   const sound = services.soundConfiguration;
   if (!sound) return undefined;
-  nativeABI(sound.profile);
+  const abi = nativeABI(sound.profile);
   const expected = id <= 0x3ae ? 0 : 1;
   if (args.length !== expected)
     throw new Error(
@@ -426,6 +426,15 @@ export function nativeSoundConfiguration(id, args, machine, services) {
   const query = services.format(args[0], machine);
   if (id === 0x3c4 || id === 0x3e3)
     return nativeReply(1, sound.effectiveVolume(query, { voice: id === 0x3e3 }) >>> 0);
+  if (
+    id === 0x3e8 &&
+    abi.sound.sameIdAllowsUnconfiguredSoundTree &&
+    sound.filename === '' &&
+    !sound.loaded &&
+    sound.master === null &&
+    sound.parts.length === 0
+  )
+    return nativeReply(1, missing.sameid);
   if (id === 0x3e8 || id === 0x3e9)
     return nativeReply(
       1,

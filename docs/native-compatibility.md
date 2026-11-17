@@ -719,6 +719,9 @@ parse success and is not a profile constant. Sound selection is parent-first:
 filename lookup uses a nonempty `head` prefix, type lookup compares `type`, and
 key lookup compares the lowercased node key. ID-path missing values differ between
 the two fixed builds and remain profile-specific.
+SDK 2.6.1.74 filename same-ID lookup (0x3E8) returns the missing-record word 0
+when startup omits the optional `SOUNDCONFIG` leaf. A declared soundconf file
+still requires a parsed tree.
 
 FES sound configuration accepts `volume`, `play`, `sysplay`, `mute` and
 `voicebgm`, each with plain, `_id` and `_type` forms; setters also accept the

@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseXML } from '../src/xml.mjs';
+import { CatSystem2 } from '../src/engine.mjs';
 import {
   NativeSoundConfiguration,
   nativeSoundConfiguration,
@@ -9,6 +10,13 @@ import {
   serializeNativeSoundPreferences,
   applyNativeSoundPreferences,
 } from '../src/native/sound-config.mjs';
+import { kif, kcsProgram } from './helpers.mjs';
+import {
+  ordinaryStartupGame,
+  StartupCanvas,
+  startupEnvironment,
+  startupXML,
+} from './fixtures/ordinary-startup.mjs';
 
 const xml = (source) => parseXML(`<document>${source}</document>`);
 const tree = () =>
@@ -103,6 +111,98 @@ test('native sound selectors use one formatted argument and preserve return word
     }).value,
     0,
   );
+});
+
+test('SDK sound filename same-ID lookup uses the authored startup configuration', async (t) => {
+  const profile = 'sdk-4.01-engine-2.6.1.74',
+    matchingTree = startupXML(
+      profile,
+      '<MASTER><volume>100</volume></MASTER><PART><voice><head>VOICE_</head><sameid>9</sameid></voice></PART>',
+    ),
+    uninitialized = /Native soundconf fields were not initialized by a parsed document/;
+
+  for (const { label, sound, file, filename, native = 0x3e8, expected } of [
+    {
+      label: 'no declared sound configuration',
+      sound: false,
+      filename: 'VOICE_01.wav',
+      expected: 0,
+    },
+    {
+      label: 'loaded matching PART',
+      sound: true,
+      file: matchingTree,
+      filename: 'VOICE_01.wav',
+      expected: 9,
+    },
+    {
+      label: 'loaded tree without matching PART',
+      sound: true,
+      file: matchingTree,
+      filename: 'OTHER.wav',
+      expected: 0,
+    },
+    {
+      label: 'declared file is missing',
+      sound: true,
+      filename: 'VOICE_01.wav',
+      expected: uninitialized,
+    },
+    {
+      label: 'declared XML is malformed',
+      sound: true,
+      file: new TextEncoder().encode('<broken'),
+      filename: 'VOICE_01.wav',
+      expected: uninitialized,
+    },
+    {
+      label: 'master volume requires a parsed tree',
+      sound: false,
+      native: 0x3ab,
+      expected: uninitialized,
+    },
+  ]) {
+    await t.test(label, async () => {
+      const environment = startupEnvironment();
+      let core;
+      try {
+        const main = kcsProgram(
+          [
+            [37, 0x13579bdf],
+            [38, 256],
+            ...(filename ? [[37, 1024]] : []),
+            [43, native, filename ? 4 : 0],
+            [38, 256],
+            [43, 0x41, 0],
+            [59],
+          ],
+          filename ? [[1024, filename]] : [],
+        );
+        const game = await ordinaryStartupGame(profile, {
+          sound,
+          files: { 'scripts.int': kif([['main.kcs', main]]), 'sound.xml': file },
+        });
+        core = new CatSystem2({
+          game,
+          canvas: new StartupCanvas(),
+          audioContext: { currentTime: 0, close: async () => {} },
+          nativeProfile: profile,
+        });
+        if (expected instanceof RegExp) {
+          await assert.rejects(() => core.initialize(), expected);
+          return;
+        }
+        await core.initialize();
+        assert.equal(core.world.runtime.calls.get(`main:${native}`), 1);
+        assert.equal(core.world.main.machine.load(256), expected);
+        assert.equal(core.world.soundConfiguration.loaded, sound);
+        assert.equal(Boolean(core.world.soundConfiguration.master), sound);
+      } finally {
+        await core?.dispose();
+        environment.restore();
+      }
+    });
+  }
 });
 
 test('sound preferences retain their startup filename and serialize the mutable recursive tree', () => {
