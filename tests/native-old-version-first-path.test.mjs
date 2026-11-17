@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
-import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
+import { KCSMachine, encodeCP932, readKCS, floatBits, bitsFloat } from '../src/kcs.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeMT19937 } from '../src/ppi/random.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -15,13 +15,15 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
-import { kif, kcsProgram, memoryGame } from './helpers.mjs';
+import { kif, kcsProgram, memoryGame, hg3 } from './helpers.mjs';
 import {
   StartupCanvas,
   startupEnvironment,
   startupVersionImage,
 } from './fixtures/ordinary-startup.mjs';
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
+import { AudioMixer } from '../src/audio.mjs';
+import { MotionInstance } from '../src/motion/instance.mjs';
 
 const versions = [
   ['2.6.1.63', 'rebellions-jp-engine-2.6.1.63', 203, 3],
@@ -719,4 +721,397 @@ test('ordinary Draw enable follows each own pending policy and preserves raw sto
       await world.close();
     }
   }
+});
+
+const title67Profile = 'bokutomo-engine-2.6.1.67';
+const title67Sentinel = 0x23456789;
+const title67Call = (id, args, result) => [
+  ...args.map((value) => [37, value]),
+  [43, id, args.length * 4],
+  ...(result === undefined ? [] : [[38, [0x13, result]]]),
+];
+
+test('67 first-title entry GCALLs preserve VM zero and real task identity', async () => {
+  const environment = startupEnvironment(),
+    attempted = { cpu: 0 },
+    program = kcsProgram(
+      [
+        [37, title67Sentinel],
+        ...title67Call(393, [0]),
+        ...title67Call(8, [0, 4]),
+        [37, [0x13, 0]],
+        [38, [0x13, 8]],
+        [37, [0x13, 4]],
+        [38, [0x13, 12]],
+        ...title67Call(13, [0, 10000], 16),
+        ...title67Call(14, [64, 10032], 20),
+        ...title67Call(36, [128, 0x5a, 8]),
+        ...title67Call(209, [64]),
+        ...title67Call(66, [2, [0x13, 144], 10064], 40),
+        ...title67Call(79, [[0x13, 40], floatBits(4.5), floatBits(3.25), 0x80112233]),
+        ...title67Call(88, [[0x13, 40], floatBits(23.5)]),
+        ...title67Call(92, [[0x13, 40], 1]),
+        ...title67Call(104, [[0x13, 40], 0, 0, 4, 3, 17, 0x81230005]),
+        ...title67Call(105, [[0x13, 40], 0x81230001]),
+        ...title67Call(848, [[0x13, 40], 0x80000005]),
+        ...title67Call(849, [[0x13, 40], 1]),
+        ...title67Call(66, [15, [0x13, 144], 10096], 44),
+        ...title67Call(256, [[0x13, 44], 4, 3]),
+        ...title67Call(260, [[0x13, 44], 1, 2]),
+        ...title67Call(262, [[0x13, 44], 1]),
+        ...title67Call(66, [34, [0x13, 144], 10128], 48),
+        ...title67Call(449, [
+          [0x13, 48],
+          [0x13, 44],
+        ]),
+        ...title67Call(447, [[0x13, 48], 10160]),
+        ...title67Call(448, [[0x13, 48]]),
+        ...title67Call(452, [[0x13, 48]], 52),
+        [37, 73],
+        [38, [0x13, 56]],
+        [59],
+      ],
+      [
+        [10000, 'owned'],
+        [10032, 'formatted'],
+        [10064, 'entry plane'],
+        [10096, 'entry draw'],
+        [10128, 'entry FES'],
+        [10160, 'first'],
+      ],
+    );
+  new DataView(program.buffer).setUint32(32, 16384, true);
+  let source;
+  try {
+    source = core(
+      await ownedGame('2.6.1.67', {
+        scripts: [
+          ['entry-owned.kcs', program],
+          [
+            'entry-cleanup.kcs',
+            kcsProgram([...[144, 148, 152].flatMap((at) => title67Call(67, [[0x13, at]])), [59]]),
+          ],
+        ],
+      }),
+      title67Profile,
+      attempted,
+    );
+    await source.initialize();
+    const world = source.world,
+      id = await world.objects.create({ kind: 12, parent: world.main.id, name: 'entry caller' }),
+      record = world.objects.objects.get(id);
+    await record.implementation.loadScript('entry-owned.kcs');
+    const task = record.implementation.task,
+      machine = task.machine,
+      initialSP = machine.sp;
+    machine.store(144, record.nativeID);
+    machine.bytes(160, 8).fill(0xa5);
+    assert.strictEqual(world.runtime.scheduler.tasks.get(id), task);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.halted, true);
+    assert.deepEqual([machine.load(8), machine.load(12)], [128, 96]);
+    assert.equal(machine.string(0), 'owned');
+    assert.equal(machine.load(16), 0, 'The real native result may be guest address zero');
+    assert.equal(machine.string(64), 'formatted');
+    assert.equal(machine.load(20), 64);
+    assert.deepEqual([...machine.bytes(128, 8)], Array(8).fill(0x5a));
+    assert.deepEqual([...machine.bytes(160, 8)], Array(8).fill(0xa5));
+    assert.equal(machine.load(56), 73);
+    for (const [at, kind, name] of [
+      [40, 2, 'entry plane'],
+      [44, 15, 'entry draw'],
+      [48, 34, 'entry FES'],
+    ]) {
+      const child = [...world.objects.objects.values()].find((item) => item.name === name);
+      assert.equal(child.kind, kind);
+      assert.equal(child.parent, id);
+      assert.equal(world.nativeTaskID(child.id), machine.load(at));
+    }
+    const plane = [...world.objects.objects.values()].find((item) => item.name === 'entry plane'),
+      region = world.input.get(plane.id);
+    assert.deepEqual(plane.implementation.state.bindArea, [0, 0, 4, 3]);
+    assert.equal(region.enabled, 0x81230001);
+    assert.equal(region.hoverEnabled, 0x80000005);
+    assert.equal(machine.pop(), title67Sentinel);
+    assert.equal(machine.sp, initialSP);
+    const children = [machine.load(48), machine.load(44), machine.load(40)];
+    await record.implementation.loadScript('entry-cleanup.kcs');
+    const cleanup = record.implementation.task;
+    children.forEach((value, index) => cleanup.machine.store(144 + index * 4, value));
+    await world.runtime.scheduler.execute(cleanup);
+    const childWorldIDs = children.map((nativeID) => world.resolveTaskID(nativeID, id));
+    assert.ok(
+      childWorldIDs.every((childID) => world.objects.objects.get(childID).destroyRequested),
+    );
+    await world.objects.tick(world.frame + 1);
+    assert.ok(childWorldIDs.every((childID) => !world.objects.objects.has(childID)));
+
+    const beforeStrictMessage = structuredClone(record.implementation.snapshot());
+    await assert.rejects(
+      world.sendEngine(id, world.main.id, 9),
+      /Unreviewed.*messages.scriptBaseOnly/,
+    );
+    assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
+    assert.equal(attempted.cpu, 0);
+    for (const nativeID of [385, 856])
+      assert.equal(nativeABI(title67Profile).tables.main.entries[nativeID].status, 'unknown');
+    assert.equal(
+      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[393].status,
+      'unknown',
+    );
+  } finally {
+    await source?.dispose();
+    environment.restore();
+  }
+});
+
+function title67Audio() {
+  return {
+    currentTime: 0,
+    state: 'running',
+    decodeAudioData: async () => ({
+      duration: 2,
+      sampleRate: 60,
+      length: 120,
+      numberOfChannels: 1,
+      getChannelData: () => new Float32Array(120).fill(0.25),
+    }),
+    close: async () => {},
+  };
+}
+function title67Wave() {
+  const result = new Uint8Array(284),
+    view = new DataView(result.buffer),
+    text = new TextEncoder();
+  for (const [offset, value] of [
+    [0, 'RIFF'],
+    [8, 'WAVE'],
+    [12, 'fmt '],
+    [36, 'data'],
+  ])
+    result.set(text.encode(value), offset);
+  for (const [offset, value] of [
+    [4, 276],
+    [16, 16],
+    [24, 60],
+    [28, 120],
+    [40, 240],
+  ])
+    view.setUint32(offset, value, true);
+  for (const [offset, value] of [
+    [20, 1],
+    [22, 1],
+    [32, 2],
+    [34, 16],
+  ])
+    view.setUint16(offset, value, true);
+  for (let offset = 44; offset < result.length; offset += 2) view.setInt16(offset, 8192, true);
+  return result;
+}
+async function title67World(files) {
+  const entries = {
+      'startup.xml': bytes(
+        '<?xml version="1.0" encoding="shift_jis"?><document><INT>' +
+          ['kcs:kcs', 'fes:fes', 'image:hg3', 'bgm:wav', 'mot:kcs']
+            .map((entry, index) => {
+              const [name, ext] = entry.split(':');
+              return (
+                '<int0' +
+                index +
+                '><name>' +
+                name +
+                '</name><int>owned.int</int><ext>' +
+                ext +
+                '</ext></int0' +
+                index +
+                '>'
+              );
+            })
+            .join('') +
+          '</INT><VOICE><v00><head>bgm</head></v00></VOICE></document>',
+      ),
+      'owned.int': kif(
+        Object.entries({
+          'main.kcs': kcsProgram([[59]]),
+          'empty.kcs': kcsProgram([[59]]),
+          ...files,
+        }),
+      ),
+    },
+    game = new GameFiles(
+      new Map(
+        Object.entries(entries).map(([name, data]) => [name, new BlobFile(new Blob([data]))]),
+      ),
+    );
+  await game.open();
+  const random = new ParticleRandom(),
+    audio = new AudioMixer(game, title67Audio(), { deferPlayback: true }),
+    world = new NativeWorld({
+      profile: title67Profile,
+      game,
+      random,
+      audio,
+      host: {},
+      images: {},
+      configuration: new NativeConfiguration({
+        profile: title67Profile,
+        startup: parseNativeXML(entries['startup.xml']),
+      }),
+      motionLibrary: new MotionLibrary(game, { profile: title67Profile, random }),
+      storage: { read: async () => null, write: async () => true },
+    });
+  return { world, audio };
+}
+
+test('67 first-title models use real FES services and restore without warm replay', async (t) => {
+  t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
+  const pixels = new Uint8Array(4 * 3 * 4);
+  for (let at = 0; at < pixels.length; at += 4) pixels.set([64, 96, 128, 255], at);
+  const files = {
+      'atlas.hg3': hg3(4, 3, pixels),
+      'mask.hg3': hg3(4, 3, pixels),
+      'bgm_owned.wav': title67Wave(),
+      'dummy.kcs': kcsProgram([
+        [43, 38, 0],
+        [44, 0, 0],
+      ]),
+      'models.fes': bytes(
+        '#PRELOAD\natlas\n#DEFINE\nCPLANE overlay\nPLANE plane\nCIMAGE solid\nIMAGE image\nBUTTON button\nSOUND tone\n#OBJECT SIZE COLOR DISP PRI\noverlay 4,3 0xffffffff 0 90\n#OBJECT SIZE VRAM PRI DISP\nplane 4,3 0,0 10 1\n#OBJECT SIZE COLOR PL DISP PRI\nsolid 4,3 0xff112233 plane 1 11\n#OBJECT FILE ID.0 PL DISP PRI\nimage atlas 0 plane 1 12\n#OBJECT FILE ID.0 ID.1 ID.2 ID.3 PRI TYPE ENABLE DISP\nbutton atlas 0 0 0 0 30 1 0 0\n#OBJECT CHANNEL STYPE FILE\ntone 0 0 bgm_owned.wav\n#START\ntone[0] play 1\nwait 1\nplane wipe 1 mask\nwait\nnext WAIT\n#WAIT\n',
+      ),
+    },
+    source = await title67World(files),
+    sent = [];
+  let fresh;
+  const cleanupErrors = [];
+  try {
+    const world = source.world;
+    await world.initialize('empty.kcs');
+    world.runtime.variableBank(world.main).initialize(64);
+    const drawID = await world.objects.create({ kind: 15, parent: world.main.id });
+    await world.sendEngine(drawID, world.main.id, 279, 4, 3);
+    await world.sendEngine(drawID, world.main.id, 283, 0, 0);
+    const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+      task = world.objects.objects.get(id).implementation;
+    await task.initialize(world.main.context.variableBank);
+    await world.sendEngine(id, world.main.id, 334, 0, world.nativeTaskID(drawID));
+    const send = world.sendNativeEngine;
+    world.sendNativeEngine = function (target, sender, message, w, l, context) {
+      sent.push({
+        target,
+        sender,
+        message,
+        w,
+        l,
+        flags: context?.flags ?? 0,
+        loadWords:
+          message === 174 ? [0, 4, 8, 268, 272, 276].map((at) => context.payload.load(at)) : null,
+      });
+      return send.call(this, target, sender, message, w, l, context);
+    };
+    assert.equal(await task.loadSource('models.fes'), true);
+    const effects = task.player.root.runtime.effects.model,
+      declare = effects.declare;
+    let wipes = 0;
+    effects.declare = function (spec) {
+      if (spec.type === 8) wipes++;
+      return declare.call(this, spec);
+    };
+    for (let frame = 1; frame <= 12; frame++) await world.tick(frame);
+    const instance = task.player.root,
+      types = new Set(instance.objects.map((object) => object.nativeType));
+    for (const type of [1, 2, 3, 4, 6, 9]) assert.ok(types.has(type));
+    assert.equal(wipes, 1, 'One real type8 effect was declared by the selected wipe command');
+    assert.equal(
+      instance.runtime.effects.model.entries.size,
+      0,
+      'The actual WIPE child completed and was collected',
+    );
+    assert.ok(
+      sent.some((packet) => packet.message === 174),
+      'Own non-allocated Sound load opcode',
+    );
+    assert.ok(
+      sent.some((packet) => packet.message === 177),
+      'Own Sound play opcode',
+    );
+    const soundPackets = sent.filter((packet) => packet.target === task.player.nativeSoundTaskID);
+    assert.ok(soundPackets.length > 0);
+    assert.ok(soundPackets.every((packet) => packet.sender === id && packet.flags === 0));
+    assert.deepEqual(
+      soundPackets.find((packet) => packet.message === 174).loadWords,
+      [0, 0, 0, 0, 1, 0],
+    );
+    const play = soundPackets.find((packet) => packet.message === 177);
+    assert.deepEqual([play.w, play.l], [0, 1]);
+    assert.ok([...source.audio.channels.values()].some((channel) => channel.playing));
+    const state = world.snapshot(0),
+      audioState = source.audio.snapshot(0);
+    fresh = await title67World(files);
+    let replay = 0;
+    const native = NativeRuntime.prototype.native,
+      step = KCSMachine.prototype.step;
+    t.mock.method(NativeRuntime.prototype, 'native', function (...args) {
+      replay++;
+      return native.apply(this, args);
+    });
+    t.mock.method(KCSMachine.prototype, 'step', function (...args) {
+      replay++;
+      return step.apply(this, args);
+    });
+    await fresh.audio.restore(audioState);
+    await fresh.world.restore(structuredClone(state));
+    assert.equal(replay, 0);
+    assert.equal(await checkpointDifference(fresh.world.snapshot(0), state), null);
+    await world.close();
+    assert.ok(
+      [...fresh.audio.channels.values()].some((channel) => channel.playing),
+      'Closing the old World preserves the fresh owner',
+    );
+  } finally {
+    for (const owner of [fresh, source]) {
+      try {
+        await owner?.world.close();
+        await owner?.audio.dispose();
+      } catch (error) {
+        cleanupErrors.push(error);
+        t.diagnostic('Cleanup also rejected: ' + error.message);
+      }
+    }
+  }
+  if (cleanupErrors.length) throw new AggregateError(cleanupErrors, 'Owned title fixture cleanup');
+});
+
+test('67 first-title motion runs own round linear triangle and clear contracts', async () => {
+  const script = await readKCS(
+      kcsProgram([
+        [37, title67Sentinel],
+        ...title67Call(17, [floatBits(127.5)], 512),
+        ...title67Call(
+          41,
+          [floatBits(0), floatBits(255), floatBits(0), floatBits(30), floatBits(15)],
+          516,
+        ),
+        ...title67Call(42, [floatBits(45), floatBits(180)], 520),
+        ...title67Call(38, []),
+        [59],
+      ]),
+    ),
+    motion = new MotionInstance(script, { profile: title67Profile }),
+    initialSP = motion.machine.sp;
+  const result = motion.update(3);
+  assert.equal(result.active, false);
+  assert.equal(motion.machine.load(512), 128);
+  assert.equal(bitsFloat(motion.machine.load(516)), 127.5);
+  assert.equal(bitsFloat(motion.machine.load(520)), 1);
+  assert.deepEqual(
+    [...motion.calls],
+    [
+      [17, 1],
+      [41, 1],
+      [42, 1],
+      [38, 1],
+    ],
+  );
+  assert.equal(motion.machine.pop(), title67Sentinel);
+  assert.equal(motion.machine.sp, initialSP);
 });

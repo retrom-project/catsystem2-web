@@ -855,7 +855,8 @@ Main359 copies all four actual configuration blocks, including a valid VM addres
 zero, and has control2 with no VM result. Main465 returns the existing author word
 with control1. Main605 formats one CString and returns the existing flat sound
 gain, including the already-derived master/group percentage and mute words. These
-three entries are explicit; all other older slots remain unadmitted. In particular,
+three entries are explicit for .63. The independently reviewed .67 first-title
+set below adds only its selected own entries. In particular,
 0x181 retains four words rather than the modern five, and 0x358 retains seven
 words while remaining unknown. Table length, nearby IDs and stub observations
 never grant a semantic binding.
@@ -909,3 +910,48 @@ its verification data. Missing APP/v_code uses that reviewed default; explicit
 APP bytes still override it. Owned startup/cold controls cover both paths. This finite ordinary coverage
 and cold ownership do not establish either commercial sample's full campaign or
 complete the remaining multi-version corpus.
+
+## 2.6.1.67 first-title entry and normal services
+
+The .67 startup -> flow -> title slice separately registers Main
+1/8/13/14/36/41/66/67/68/71/79/88/92/100/104/105/117/209/211/247/256/260/262/276/
+359/393/400/447/448/449/452/465/590/591/592/593/789/848/849. Main605 keeps its
+previous finite binding. Each new entry has its own captured wrapper, argument
+count, control word and selected receiver proof. A shared semantic ID alone does
+not admit a version. Main393's zero action is a real void call, Main13/14 may
+return guest address zero, and the normal task/receiver IDs keep their existing
+separate domains. The .63 table and the modern tables are unchanged.
+
+The selected FES factory/parameter/frame chain covers CIMAGE/IMAGE/CPLANE/PLANE/
+BUTTON/WIPE/SOUND (types1/2/3/4/6/8/9). Its own FES raw messages320..323 are
+0x140..0x143; the normal typed service uses logical331..334. This is semantic
+normalization at the existing service, not a physical message-number identity
+claim. Generic17/38/41/42 use the existing MotionInstance and numerical authority;
+38 consumes no argument and returns control4 without a VM result. No other curve
+or generic slot is enabled.
+
+Only `wait` is newly bound from .67's own complete110-name common table. The
+captured callback has numeric/noarg/object waits and the own `frame`/`tag`
+selectors, with record32 and a32-byte tag. This does not bind other common heads.
+Its Sound service maps only own raw174/176/177/179/180/181/184/195/200/204/205/211/212
+to canonical IDs five higher. Unmapped messages remain errors. The280-byte load
+packet and filename-only FES load callback establish the finite absence of the
+later packet tail, not a claim that all engine crossfades are absent. Sound
+completion-frame tracking and elapsed message219 remain unreviewed. The captured
+SOUND constructor does not initialize its+17C play-option field; explicit `play`
+is the proved writer, and no raw uninitialized C++ field equals the normal DTO
+by assumption.
+
+Owned Core/Script GCALL, FES image/plane/effect/Sound and motion controls exercise
+this slice without executing commercial scripts or original code. They check
+literal outputs, actual child identities and resources, complete settled cold
+DTO restoration with no warm tick or command replay, and isolated close. Those
+controls do not establish an actual commercial title presentation or enable any
+unselected menu, storage branch, translation API, quoted-name policy or larger
+scratch domain. Unknown385/856 retain their own four/seven-word signatures.
+
+Ordinary Script child registration does not need its optional immediate/queued
+message policy. That policy is read with `nativeABIBehavior` only when one of
+those mappings is actually selected; a missing policy then rejects before
+changing the task. Base registration and destruction continue through their
+existing receivers. No modern message array supplies an old-version default.

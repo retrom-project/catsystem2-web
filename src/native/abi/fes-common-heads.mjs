@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed native FES common membership. Name crossrefs are navigation only;
 // they do not establish semantic equivalence or bind a handler.
+import engine67 from './2.6.1.67.mjs';
 const shared = {
   _redirect: [],
   _redirect_clear: [],
@@ -187,8 +188,16 @@ const sdkResetReview = 'sdk74-common-resetactive-null',
   sdkLockReview = 'sdk74-common-lockactive-int32',
   gameLockReview = 'game76-common-lockactive-int32',
   sdkWaitReview = 'sdk74-common-wait-owned-parameters',
-  gameWaitReview = 'game76-common-wait-owned-parameters';
+  gameWaitReview = 'game76-common-wait-owned-parameters',
+  engine67WaitReview = 'engine67-common-wait-owned-parameters';
 export const FES_COMMON_HEAD_BINDING_REVIEWS = freeze({
+  [engine67WaitReview]: {
+    binding: 'native-wait',
+    selectors: ['frame', 'tag'],
+    tagRecordCode: 32,
+    tagBytes: 32,
+    referenceDefaultIndex: -1,
+  },
   [sdkWaitReview]: {
     binding: 'native-wait',
     selectors: ['frame', 'tag'],
@@ -249,8 +258,21 @@ const boundEntries = freeze(
   ),
 );
 const reviewRegistrations = freeze([
-  { additions: sdkAdditions, reviews: [sdkResetReview, sdkLockReview, sdkWaitReview] },
-  { additions: gameAdditions, reviews: [gameResetReview, gameLockReview, gameWaitReview] },
+  {
+    shared: engine67.fes.commonHeads.shared,
+    additions: engine67.fes.commonHeads.additions,
+    reviews: [engine67WaitReview],
+  },
+  {
+    shared: sharedNames,
+    additions: sdkAdditions,
+    reviews: [sdkResetReview, sdkLockReview, sdkWaitReview],
+  },
+  {
+    shared: sharedNames,
+    additions: gameAdditions,
+    reviews: [gameResetReview, gameLockReview, gameWaitReview],
+  },
 ]);
 
 export const FES_COMMON_HEAD_REGISTRATIONS = freeze({
@@ -318,7 +340,7 @@ export function validateFESCommonHeads(registration) {
         list.indexOf(id) !== index ||
         !reviewRegistrations.some(
           (group) =>
-            sameNames(registration.shared, sharedNames) &&
+            sameNames(registration.shared, group.shared) &&
             sameNames(registration.additions, group.additions) &&
             group.reviews.includes(id),
         ),
