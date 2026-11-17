@@ -24,6 +24,7 @@ jobs:
           .local/emsdk/emsdk activate 3.1.74
           python3 scripts/prepare-ppi-backend.py --emsdk .local/emsdk --jobs 2
           python3 scripts/prepare-native-zlib.py --emsdk .local/emsdk
+          python3 scripts/prepare-native-freetype.py --emsdk .local/emsdk
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
