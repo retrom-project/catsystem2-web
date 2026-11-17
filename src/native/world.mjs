@@ -1008,7 +1008,7 @@ export class NativeWorld {
     }
     await this.flushConfiguration();
   }
-  snapshot() {
+  snapshot(audioTime = this.audio?.context?.currentTime) {
     if (this.running || this.frameSettled)
       throw new Error('Native world checkpoint requires a settled frame');
     if (this.quitRequested || this.disposalRequested) throw new Error('Native world is closing');
@@ -1027,7 +1027,7 @@ export class NativeWorld {
       graphics: this.graphics.snapshot(),
       calculations: { matrix: this.calculations.matrix.slice() },
       tileGame: this.tileGame.snapshot(),
-      sound: this.sound.snapshot(),
+      sound: this.sound.snapshot(audioTime),
       particles: this.particles.snapshot(),
       text: this.text.snapshot(),
       m2: this.m2?.snapshot() ?? null,

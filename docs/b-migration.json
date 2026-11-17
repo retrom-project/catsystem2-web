@@ -48603,7 +48603,7 @@
   "files": [
     {
       "file": "src/audio.mjs",
-      "sourceSha256": "28a55b6499610c839a2f7cfec422d9488c5d7e4b8aa580efdf9f97071440f1d6",
+      "sourceSha256": "7d9f5c37983f755cffc087a37f6a71da0f6e31aefcfd09f16b95c3e42063035f",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49396,7 +49396,7 @@
     },
     {
       "file": "src/engine.mjs",
-      "sourceSha256": "6cee87208bcf4705b22b26a010f941649178f029378c2896c88d2a0caaf13f32",
+      "sourceSha256": "c99a64e8beeb32ec9c6bec5eef81728adb978e85069d7a4793674e08e8fb9931",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -55444,7 +55444,7 @@
     },
     {
       "file": "src/native/sound.mjs",
-      "sourceSha256": "78934ade99624c76c37147f582c59a73ca394a09595d736a96646415ecaf59e6",
+      "sourceSha256": "43f1fe9e08e4dbd93162cedb6ce98d1c377b309a5bbafd940dab6d4e4d4c61c5",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 1, "calls": 0, "references": 0 },
@@ -57033,7 +57033,7 @@
     },
     {
       "file": "src/native/world.mjs",
-      "sourceSha256": "2052c02ca56d4b28596a7363707823e8abfd865b6ba4cd5e7a431febb81970aa",
+      "sourceSha256": "91cecb465f1f3291ecb1eeb4bc8f915d9bbcada3f3c6b502b7f4815c431e7b60",
       "domain": 8,
       "role": "cross-domain infrastructure",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

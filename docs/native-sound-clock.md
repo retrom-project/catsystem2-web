@@ -34,3 +34,31 @@ host clock epoch, and preservation of the saved media offset. A full SDK World
 also advances its PLV at 75 FPS, then restores an external-clock checkpoint to
 a fresh World. Advancing the restored clock changes only that instance.
 Reports and raw disassembly remain in ignored local storage.
+
+## Audio playback checkpoints
+
+The playback cursor belongs to the actual `AudioMixer` and its `AudioContext`.
+It is independent of the system timer used by PLV above. After pending resources
+and movies settle, `Core.snapshot()` samples that context clock once and passes
+the same time through the World sound and mixer projections. A direct World,
+NativeSound, or mixer snapshot likewise samples once for its complete bank set.
+Each channel uses that time for its PCM progress/refills, remaining duration,
+offset, and scheduled delay. Serializing other large owners cannot move one of
+those projections to a later audio quantum.
+
+The capture time is transient and is not stored as an absolute browser clock in
+the DTO. Restoring keeps the existing deferred staging: saved bank data is loaded
+without playing, then the committed mixer activates each live source once at the
+saved offset. No logical frame, native command, or RNG value is replayed. Capturing
+a checkpoint does not suspend, pause, or replace real audio output; subsequent
+observations continue to advance on the actual context clock. A snapshot made
+after elapsed playback therefore reports the new cursor, rather than returning
+a cached checkpoint or a frame-derived approximation.
+
+The regression uses a running owned Core with a clock advance during another
+owner's snapshot to distinguish the two projections, plus two banks whose clock
+changes between reads to expose internally inconsistent cursor fields. A short
+owned browser witness decodes authored WAV PCM with the real AudioContext,
+compares the complete cold World DTO, observes exactly one restored source start,
+and records later media-time progress. It is not a native sound-oracle rerun or
+a claim about the complete SDK tutorial campaign.

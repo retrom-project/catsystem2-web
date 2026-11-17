@@ -671,11 +671,12 @@ export class CatSystem2 {
     if (this.world) {
       await this.world.resourceCache.settle();
       await this.world.movies.settle();
+      const audioTime = this.audio.context.currentTime;
       const state = {
         format: 'catsystem2-web',
         sourceIdentity: this.identity,
-        world: this.world.snapshot(),
-        audio: this.audio.snapshot(),
+        world: this.world.snapshot(audioTime),
+        audio: this.audio.snapshot(audioTime),
         emote: this.emote.snapshot(),
       };
       this.checkpointSize(state);

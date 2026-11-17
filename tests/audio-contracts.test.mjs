@@ -2,6 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AudioMixer } from '../src/audio.mjs';
+import { CatSystem2 } from '../src/engine.mjs';
+import {
+  StartupCanvas,
+  startupEnvironment,
+  ordinaryStartupGame,
+} from './fixtures/ordinary-startup.mjs';
 
 function fixture() {
   const context = {
@@ -359,4 +365,86 @@ test('native finite loop counts, explicit points and paused restore keep the rem
   assert.equal(next.mixer.channels.get('native:2:0').source.stopWhen, 1.75);
   next.context.advance(1.8);
   assert.equal(next.mixer.channels.get('native:2:0').ended, true);
+});
+
+test('audio checkpoint banks and cursor components share one context clock sample', async () => {
+  const { context, mixer } = fixture();
+  await mixer.play({ channel: 'native:0', file: 'first', loopCount: 1, offset: 0.25 });
+  await mixer.play({ channel: 'native:1', file: 'second', loopCount: 1, offset: 0.125 });
+  let reads = 0;
+  Object.defineProperty(context, 'currentTime', {
+    configurable: true,
+    get: () => 0.375 + reads++ / 64,
+  });
+  const saved = mixer.snapshot();
+  assert.equal(reads, 1, 'A checkpoint must sample the audio clock only once across all banks');
+  for (const [index, offset, remaining] of [
+    [0, 0.625, 1.375],
+    [1, 0.5, 1.5],
+  ]) {
+    assert.equal(saved.channels[index].offset, offset);
+    assert.equal(saved.channels[index].remainingDuration, remaining);
+    assert.equal(saved.channels[index].pcmState.progress, offset);
+  }
+});
+
+test('Core cold audio keeps one checkpoint projection and resumes the actual source once', async () => {
+  const environment = startupEnvironment(),
+    { context } = fixture();
+  let core;
+  try {
+    const game = await ordinaryStartupGame('sdk-4.01-engine-2.6.1.74', {
+      sound: false,
+      files: { 'cue.wav': new Uint8Array([1]) },
+    });
+    core = new CatSystem2({
+      game,
+      canvas: new StartupCanvas(),
+      audioContext: context,
+      nativeProfile: 'sdk-4.01-engine-2.6.1.74',
+      randomSeed: 17,
+      transitionalExe: {
+        open() {
+          throw new Error('Unexpected original CPU');
+        },
+      },
+    });
+    await core.initialize();
+    const previous = core.world;
+    assert.equal(await previous.sound.load(0, 'cue.wav', 1), true);
+    assert.equal(await previous.sound.play(0, 1, {}), true);
+    context.advance(0.375);
+    const objectsSnapshot = previous.objects.snapshot;
+    previous.objects.snapshot = function (...args) {
+      context.advance(0.25);
+      return objectsSnapshot.apply(this, args);
+    };
+    const saved = await core.snapshot(),
+      native = saved.audio.channels.find((c) => c.channel === 'native:0');
+    assert.deepEqual(
+      native,
+      saved.world.sound.channels[0],
+      'Core and World must save the same actual bank cursor',
+    );
+    assert.equal(native.offset, 0.375);
+    const starts = context.sources.length;
+    await core.restore(saved);
+    assert.equal(
+      context.sources.length,
+      starts + 1,
+      'Staged decoding must not start an extra source',
+    );
+    assert.equal(core.world.frame, saved.world.frame);
+    assert.notEqual(core.world, previous);
+    assert.equal(previous.closed, true);
+    assert.deepEqual(core.world.snapshot(), saved.world);
+    assert.equal(core.audio.channels.get('native:0').source.offset, native.offset);
+    context.advance(0.125);
+    const live = core.audio.channelState('native:0', core.audio.channels.get('native:0'));
+    assert.equal(live.offset, 0.5, 'Real playback must continue on the media clock after restore');
+    assert.equal(live.remainingDuration, native.remainingDuration - 0.125);
+  } finally {
+    await core?.dispose();
+    environment.restore();
+  }
 });

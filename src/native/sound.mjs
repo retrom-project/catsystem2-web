@@ -371,14 +371,14 @@ export class NativeSound {
     }
     [this.device[a], this.device[b]] = [this.device[b], this.device[a]];
   }
-  snapshot() {
+  snapshot(audioTime = this.audio?.context?.currentTime) {
     return {
       master: this.master,
       volumeGroups: [...this.volumeGroups],
       device: structuredClone(this.device),
       channels: this.device.map((_device, bank) => {
         const channel = this.channel(bank);
-        return channel ? this.audio.channelState(this.key(bank), channel) : null;
+        return channel ? this.audio.channelState(this.key(bank), channel, audioTime) : null;
       }),
     };
   }

@@ -353,14 +353,14 @@ export class AudioMixer {
       this.scheduleEnd(channel);
     }
   }
-  remaining(channel) {
+  remaining(channel, time = this.context.currentTime) {
     if (channel.remainingDuration === null || channel.remainingDuration === undefined)
       return channel.remainingDuration;
     if (!channel.playing || channel.loading || this.deferPlayback) return channel.remainingDuration;
     return Math.max(
       0,
       channel.remainingDuration -
-        Math.max(0, this.context.currentTime - channel.scheduled) * (channel.playbackRate ?? 1),
+        Math.max(0, time - channel.scheduled) * (channel.playbackRate ?? 1),
     );
   }
   scheduleEnd(channel) {
@@ -471,12 +471,11 @@ export class AudioMixer {
       );
     }
   }
-  position(channel) {
+  position(channel, time = this.context.currentTime) {
     const value =
       channel.paused || channel.loading || channel.ended || this.deferPlayback
         ? channel.offset
-        : channel.offset +
-          Math.max(0, this.context.currentTime - channel.scheduled) * (channel.playbackRate ?? 1);
+        : channel.offset + Math.max(0, time - channel.scheduled) * (channel.playbackRate ?? 1);
     return this.wrapPosition(channel, value);
   }
   wrapPosition(channel, value) {
@@ -688,9 +687,8 @@ export class AudioMixer {
         }
       : {};
   }
-  syncNativePCM(channel) {
+  syncNativePCM(channel, now = this.context.currentTime) {
     if (!channel.pcmWindows || channel.loading) return;
-    const now = this.context.currentTime;
     if (channel.playing && !this.deferPlayback)
       channel.pcmProgress +=
         Math.max(0, now - Math.max(channel.pcmClock, channel.scheduled)) *
@@ -757,7 +755,7 @@ export class AudioMixer {
     this.syncNativePCM(channel);
     return channel.pcmWindows.levels(count, ...this.pcmCursors(channel));
   }
-  snapshot() {
+  snapshot(time = this.context.currentTime) {
     return {
       frame: this.frame,
       sequence: this.sequence,
@@ -765,11 +763,11 @@ export class AudioMixer {
       groups: structuredClone(this.groups),
       defaults: structuredClone([...this.defaults]),
       loopPoints: structuredClone([...this.loopPoints]),
-      channels: [...this.channels].map(([key, channel]) => this.channelState(key, channel)),
+      channels: [...this.channels].map(([key, channel]) => this.channelState(key, channel, time)),
     };
   }
-  channelState(key, c) {
-    this.syncNativePCM(c);
+  channelState(key, c, time = this.context.currentTime) {
+    this.syncNativePCM(c, time);
     return {
       channel: key,
       bank: c.bank,
@@ -793,14 +791,11 @@ export class AudioMixer {
             origin: c.pcmOrigin,
           }
         : null,
-      remainingDuration: this.remaining(c),
+      remainingDuration: this.remaining(c, time),
       volume: c.volume,
       pan: c.pan || 0,
-      offset: this.position(c),
-      delay:
-        c.paused || c.loading
-          ? c.remainingDelay
-          : Math.max(0, c.scheduled - this.context.currentTime) * this.fps,
+      offset: this.position(c, time),
+      delay: c.paused || c.loading ? c.remainingDelay : Math.max(0, c.scheduled - time) * this.fps,
       paused: c.paused,
       ended: !!c.ended,
       fade: structuredClone(c.fade || null),
