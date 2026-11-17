@@ -319,7 +319,7 @@ test('an optional loose startup path names a relative XML file', () => {
   }
 });
 
-test('the optional Sound loop-point end policy accepts its reviewed value', () => {
+test('the optional Sound loop-point end policy accepts only reviewed values', () => {
   const abi = structuredClone(nativeABI('rebellions-jp-engine-2.6.1.63'));
   assert.equal(abi.sound.loopPointEndPolicy, 'strict-order');
   assert.strictEqual(validateABI(abi), abi);
@@ -327,6 +327,8 @@ test('the optional Sound loop-point end policy accepts its reviewed value', () =
     abi.sound.loopPointEndPolicy = invalid;
     assert.throws(() => validateABI(abi), /Invalid ABI Sound loop-point end policy/);
   }
+  abi.sound.loopPointEndPolicy = 'allow-unordered';
+  assert.strictEqual(validateABI(abi), abi);
   delete abi.sound.loopPointEndPolicy;
   assert.strictEqual(validateABI(abi), abi);
 });
